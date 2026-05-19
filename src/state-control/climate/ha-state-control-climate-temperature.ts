@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -88,9 +89,9 @@ export class HaStateControlClimateTemperature extends LitElement {
     return this.stateObj.attributes.max_temp;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     const target = ev.type.replace("-changed", "");
     this._targetTemperature = {
       ...this._targetTemperature,
@@ -100,9 +101,9 @@ export class HaStateControlClimateTemperature extends LitElement {
     this._callService(target);
   }
 
-  private _valueChanging(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     const target = ev.type.replace("-changing", "");
     this._targetTemperature = {
       ...this._targetTemperature,

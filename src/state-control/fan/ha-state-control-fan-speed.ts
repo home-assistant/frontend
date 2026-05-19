@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-select";
@@ -41,8 +42,8 @@ export class HaStateControlFanSpeed extends LitElement {
     }
   }
 
-  private _speedValueChanged(ev: CustomEvent) {
-    const speed = (ev.detail as any).value as FanSpeed;
+  private _speedValueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const speed = ev.detail.value as FanSpeed;
 
     this.speedValue = speed;
 
@@ -54,9 +55,9 @@ export class HaStateControlFanSpeed extends LitElement {
     });
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
 
     this.sliderValue = value;
 
