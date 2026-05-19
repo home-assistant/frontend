@@ -122,18 +122,20 @@ class HuiTargetTemperatureCardFeature
     return this._stateObj!.attributes.max_temp;
   }
 
-  private _valueChanged =
-    (sliderTarget: Target) =>
-    async (ev: HASSDomEvent<HASSDomEvents["value-changed"]>) => {
-      const { value } = ev.detail;
-      if (typeof value !== "number" || isNaN(value)) return;
+  private async _valueChanged(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
+    const target =
+      (ev.currentTarget as HTMLElement & { target?: Target }).target ?? "value";
 
-      this._targetTemperature = {
-        ...this._targetTemperature,
-        [sliderTarget]: value,
-      };
-      this._debouncedCallService(sliderTarget);
+    this._targetTemperature = {
+      ...this._targetTemperature,
+      [target]: value,
     };
+    this._debouncedCallService(target);
+  }
 
   private _debouncedCallService = debounce(
     (target: Target) => this._callService(target),
@@ -211,12 +213,13 @@ class HuiTargetTemperatureCardFeature
         <ha-control-button-group>
           <ha-control-number-buttons
             .formatOptions=${options}
+            .target=${"value"}
             .value=${this._stateObj.attributes.temperature}
             .unit=${this.hass.config.unit_system.temperature}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
-            @value-changed=${this._valueChanged("value")}
+            @value-changed=${this._valueChanged}
             .label=${this.hass.formatEntityAttributeName(
               this._stateObj,
               "temperature"
@@ -242,6 +245,7 @@ class HuiTargetTemperatureCardFeature
         <ha-control-button-group>
           <ha-control-number-buttons
             .formatOptions=${options}
+            .target=${"low"}
             .value=${this._targetTemperature.low}
             .unit=${this.hass.config.unit_system.temperature}
             .min=${this._min}
@@ -250,7 +254,7 @@ class HuiTargetTemperatureCardFeature
               this._targetTemperature.high ?? this._max
             )}
             .step=${this._step}
-            @value-changed=${this._valueChanged("low")}
+            @value-changed=${this._valueChanged}
             .label=${this.hass.formatEntityAttributeName(
               this._stateObj,
               "target_temp_low"
@@ -264,6 +268,7 @@ class HuiTargetTemperatureCardFeature
           </ha-control-number-buttons>
           <ha-control-number-buttons
             .formatOptions=${options}
+            .target=${"high"}
             .value=${this._targetTemperature.high}
             .unit=${this.hass.config.unit_system.temperature}
             .min=${Math.max(
@@ -272,7 +277,7 @@ class HuiTargetTemperatureCardFeature
             )}
             .max=${this._max}
             .step=${this._step}
-            @value-changed=${this._valueChanged("high")}
+            @value-changed=${this._valueChanged}
             .label=${this.hass.formatEntityAttributeName(
               this._stateObj,
               "target_temp_high"
