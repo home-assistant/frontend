@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
@@ -45,6 +45,9 @@ export class DialogVacuumSegmentMapping
   @state() private _areaMapping?: Record<string, string[]>;
 
   @state() private _submitting = false;
+
+  @query("ha-vacuum-segment-area-mapper")
+  private _mapper?: HaVacuumSegmentAreaMapper;
 
   private _entry?: ExtEntityRegistryEntry;
 
@@ -91,9 +94,7 @@ export class DialogVacuumSegmentMapping
     this._submitting = true;
 
     try {
-      const mapper = this.renderRoot.querySelector(
-        "ha-vacuum-segment-area-mapper"
-      ) as HaVacuumSegmentAreaMapper;
+      const mapper = this._mapper!;
 
       const options: VacuumEntityOptions = {
         ...(this._entry?.options?.vacuum ?? {}),

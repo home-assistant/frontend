@@ -1,9 +1,8 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
@@ -59,9 +58,13 @@ class HaPanelDevTemplate extends LitElement {
 
   @state() private _descriptionExpanded = false;
 
+  @query("ha-tip") private _editorTip?: HTMLElement;
+
   private _template = "";
 
   private _inited = false;
+
+  private _tipResizeObserver?: ResizeObserver;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -73,6 +76,8 @@ class HaPanelDevTemplate extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeTemplate();
+    this._tipResizeObserver?.disconnect();
+    this._tipResizeObserver = undefined;
   }
 
   protected firstUpdated() {
@@ -82,6 +87,7 @@ class HaPanelDevTemplate extends LitElement {
       this._template = DEMO_TEMPLATE;
     }
     this._subscribeTemplate();
+    this._observeTipHeight();
     this._inited = true;
   }
 
@@ -93,7 +99,6 @@ class HaPanelDevTemplate extends LitElement {
           ? "list"
           : "dict"
         : type;
-    const editorTipHeight = this._getTipHeight();
 
     return html`
       <div class="content">
@@ -145,10 +150,7 @@ class HaPanelDevTemplate extends LitElement {
           layout: !this.narrow,
           horizontal: !this.narrow,
         })}"
-        style=${styleMap({
-          "--description-expanded": `${this._descriptionExpanded ? 1 : 0}`,
-          "--tip-height": `${editorTipHeight}`,
-        })}
+        style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
       >
         <ha-card
           class="edit-pane"
@@ -178,7 +180,7 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
-          <ha-tip id="editor-tip" .hass=${this.hass}>
+          <ha-tip .hass=${this.hass}>
             ${this.hass.localize(
               "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
               {
@@ -293,16 +295,19 @@ ${type === "object"
     `;
   }
 
-  private _getTipHeight(): string | undefined {
-    const tip = this.shadowRoot?.getElementById("editor-tip");
-    if (tip) {
-      const height = tip.scrollHeight;
-      if (!isNaN(height)) {
-        return `${height}px`;
-      }
-      return undefined;
+  private _observeTipHeight() {
+    if (!this._editorTip || this._tipResizeObserver) {
+      return;
     }
-    return undefined;
+    this._tipResizeObserver = new ResizeObserver((entries) => {
+      const height =
+        entries[0]?.borderBoxSize?.[0]?.blockSize ??
+        entries[0]?.contentRect.height;
+      if (height) {
+        this.style.setProperty("--tip-height", `${height}px`);
+      }
+    });
+    this._tipResizeObserver.observe(this._editorTip);
   }
 
   private _expandedChanged(

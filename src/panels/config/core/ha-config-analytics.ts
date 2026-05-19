@@ -250,6 +250,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   }
 
   private _scrollToSection(section: string): void {
+    // eslint-disable-next-line lit/prefer-query-decorators
     const card = this.shadowRoot?.querySelector(
       `[data-section="${section}"]`
     ) as HTMLElement;

@@ -1,7 +1,7 @@
 import { mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
@@ -34,6 +34,8 @@ class DialogSystemLogDetail extends LitElement {
   @state() private _manifest?: IntegrationManifest;
 
   @state() private _open = false;
+
+  @query(".contents") private _contents?: HTMLElement;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -205,9 +207,7 @@ class DialogSystemLogDetail extends LitElement {
   }
 
   private async _copyLog(): Promise<void> {
-    const copyElement = this.shadowRoot?.querySelector(
-      ".contents"
-    ) as HTMLElement;
+    const copyElement = this._contents!;
 
     let text = copyElement.innerText;
 

@@ -54,6 +54,8 @@ export class HaAuthFlow extends LitElement {
 
   @query("ha-auth-form") private _form?: HaAuthForm;
 
+  @query("ha-form") private _haForm?: HTMLElement;
+
   createRenderRoot() {
     return this;
   }
@@ -160,9 +162,8 @@ export class HaAuthFlow extends LitElement {
 
     // 100ms to give all the form elements time to initialize.
     setTimeout(() => {
-      const form = this.renderRoot.querySelector("ha-form");
-      if (form) {
-        (form as any).focus();
+      if (this._haForm) {
+        (this._haForm as any).focus();
       }
     }, 100);
   }

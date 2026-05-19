@@ -26,8 +26,7 @@ export const supportsMediaPlayerSourceCardFeature = (
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "media_player" &&
-    supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) &&
-    !!stateObj.attributes.source_list?.length
+    supportsFeature(stateObj, MediaPlayerEntityFeature.SELECT_SOURCE)
   );
 };
 

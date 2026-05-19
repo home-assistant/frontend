@@ -1,7 +1,7 @@
 import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -91,6 +91,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   @state() private _params?: BackupOnboardingDialogParams;
 
   @state() private _config?: BackupConfig;
+
+  @query("div") private _copyContainer?: HTMLElement;
 
   public showDialog(params: BackupOnboardingDialogParams): void {
     this._params = params;
@@ -478,7 +480,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
   private async _copyKeyToClipboard() {
     await copyToClipboard(
       this._config!.create_backup.password!,
-      this.renderRoot.querySelector("div")!
+      this._copyContainer!
     );
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),

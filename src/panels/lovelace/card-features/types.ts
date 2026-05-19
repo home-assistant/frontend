@@ -66,6 +66,8 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "volume_down",
   "volume_up",
   "volume_mute",
+  "shuffle",
+  "repeat",
 ] as const;
 
 export type MediaPlayerPlaybackControl =
@@ -83,6 +85,7 @@ export interface MediaPlayerSourceCardFeatureConfig {
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
+  show_mute_button?: boolean;
 }
 
 export interface MediaPlayerVolumeButtonsCardFeatureConfig {
@@ -93,6 +96,7 @@ export interface MediaPlayerVolumeButtonsCardFeatureConfig {
 
 export interface MediaPlayerSoundModeCardFeatureConfig {
   type: "media-player-sound-mode";
+  sound_modes?: string[];
 }
 
 export interface FanDirectionCardFeatureConfig {

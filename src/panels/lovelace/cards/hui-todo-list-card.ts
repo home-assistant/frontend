@@ -112,6 +112,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @query("ha-input", true) private _input!: HaInput;
 
+  @query("ha-list") private _list?: List;
+
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
   private _refreshTimer?: number;
@@ -764,7 +766,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     let focusedIndex: number | undefined;
     let list: List | undefined;
     if (ev.type === "keydown") {
-      list = this.renderRoot.querySelector("ha-list")!;
+      list = this._list!;
       focusedIndex = list.getFocusedItemIndex();
     }
     const item = this._getItem(ev.currentTarget.itemId);
@@ -894,7 +896,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private async _moveItem(oldIndex: number, newIndex: number) {
     await this.updateComplete;
 
-    const list = this.renderRoot.querySelector("ha-list")!;
+    const list = this._list!;
 
     const items = list.children;
 

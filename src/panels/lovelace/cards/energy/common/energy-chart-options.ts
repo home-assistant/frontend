@@ -91,17 +91,12 @@ export function getSuggestedMax(
   return suggestedMax;
 }
 
-function createYAxisLabelFormatter(locale: FrontendLocaleData) {
-  let previousValue: number | undefined;
-
-  return (value: number): string => {
-    const maximumFractionDigits = Math.max(
-      1,
-      -Math.floor(Math.log10(Math.abs(value - (previousValue ?? value) || 1)))
-    );
-    previousValue = value;
-    return formatNumber(value, locale, { maximumFractionDigits });
-  };
+function createYAxisLabelFormatter(
+  locale: FrontendLocaleData,
+  fractionDigits: number
+) {
+  return (value: number): string =>
+    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
 }
 
 export function getCommonOptions(
@@ -113,7 +108,8 @@ export function getCommonOptions(
   compareStart?: Date,
   compareEnd?: Date,
   formatTotal?: (total: number) => string,
-  detailedDailyData = false
+  detailedDailyData = false,
+  yAxisFractionDigits = 1
 ): ECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
   const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
@@ -152,7 +148,7 @@ export function getCommonOptions(
         align: "left",
       },
       axisLabel: {
-        formatter: createYAxisLabelFormatter(locale),
+        formatter: createYAxisLabelFormatter(locale, yAxisFractionDigits),
       },
       splitLine: {
         show: true,

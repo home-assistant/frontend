@@ -75,6 +75,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   @query("#body") private _bodyElement!: HTMLDivElement;
 
+  @query("[autofocus]") private _autofocusElement?: HTMLElement;
+
   protected get scrollableElement(): HTMLElement | null {
     return this._bodyElement;
   }
@@ -93,12 +95,12 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
+      const element = this._autofocusElement;
       if (
         this._hassConfig?.auth.external &&
         isIosApp(this._hassConfig.auth.external)
       ) {
-        const element = this.renderRoot.querySelector("[autofocus]");
-        if (element !== null) {
+        if (element) {
           if (!element.id) {
             element.id = "ha-bottom-sheet-autofocus";
           }
@@ -111,9 +113,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         }
         return;
       }
-      (
-        this.renderRoot.querySelector("[autofocus]") as HTMLElement | null
-      )?.focus();
+      element?.focus();
     });
   };
 

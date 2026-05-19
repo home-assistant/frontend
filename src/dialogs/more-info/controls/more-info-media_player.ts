@@ -37,7 +37,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -200,11 +200,12 @@ class MoreInfoMediaPlayer extends LitElement {
   protected _renderSourceControl() {
     if (
       !this.stateObj ||
-      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) ||
-      !this.stateObj.attributes.source_list?.length
+      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE)
     ) {
       return nothing;
     }
+
+    const sourceList = this.stateObj.attributes.source_list || [];
 
     return html`<ha-tooltip for="source-button">
         ${this.hass.localize(`ui.card.media_player.source`)}
@@ -217,7 +218,7 @@ class MoreInfoMediaPlayer extends LitElement {
           .path=${mdiLoginVariant}
         >
         </ha-icon-button>
-        ${this.stateObj.attributes.source_list!.map(
+        ${sourceList.map(
           (source) =>
             html`<ha-dropdown-item
               .value=${source}
@@ -275,7 +276,8 @@ class MoreInfoMediaPlayer extends LitElement {
   protected _renderGrouping() {
     if (
       !this.stateObj ||
-      isUnavailableState(this.stateObj.state) ||
+      // Compare against `unavailable` so we allow `unknown`
+      this.stateObj.state === UNAVAILABLE ||
       !supportsFeature(this.stateObj, MediaPlayerEntityFeature.GROUPING)
     ) {
       return nothing;
@@ -315,7 +317,7 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
-    if (isUnavailableState(this.stateObj.state)) {
+    if (this.stateObj.state === UNAVAILABLE) {
       return this._renderEmptyCover(this.hass.formatEntityState(this.stateObj));
     }
 
@@ -461,7 +463,7 @@ class MoreInfoMediaPlayer extends LitElement {
           : nothing}
         ${this._renderVolumeControl()}
         <div class="controls-row">
-          ${!isUnavailableState(stateObj.state) &&
+          ${stateObj.state !== UNAVAILABLE &&
           supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
             ? this._renderControlButton(
                 "browse_media",

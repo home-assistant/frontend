@@ -64,6 +64,8 @@ class OnboardingLocation extends LitElement {
 
   @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
+  @query("ha-input") private _input?: HTMLElement;
+
   protected render(): TemplateResult {
     const addressAttribution = this.onboardingLocalize(
       "ui.panel.page-onboarding.core-config.location_address",
@@ -201,7 +203,7 @@ class OnboardingLocation extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    setTimeout(() => this.renderRoot.querySelector("ha-input")!.focus(), 100);
+    setTimeout(() => this._input!.focus(), 100);
     this.addEventListener("keyup", (ev) => {
       if (ev.key === "Enter") {
         this._save(ev);
