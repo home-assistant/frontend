@@ -15,15 +15,11 @@ export interface HttpConfig {
   ssl_profile?: "modern" | "intermediate";
 }
 
-interface HttpConfigResponse {
-  config: HttpConfig;
-}
-
 export const fetchHttpConfig = (hass: HomeAssistant) =>
-  hass.callWS<HttpConfigResponse>({ type: "http/config/get" });
+  hass.callWS<HttpConfig>({ type: "http/config" });
 
 export const saveHttpConfig = (hass: HomeAssistant, config: HttpConfig) =>
-  hass.callWS<HttpConfigResponse>({
-    type: "http/config/update",
+  hass.callWS<undefined>({
+    type: "http/config/configure",
     config,
   });

@@ -207,8 +207,7 @@ class HaConfigHttpForm extends LitElement {
 
   private async _fetchConfig(): Promise<void> {
     try {
-      const result = await fetchHttpConfig(this.hass);
-      this._config = result.config;
+      this._config = await fetchHttpConfig(this.hass);
     } catch (err: any) {
       this._error = err.message;
     }
@@ -258,8 +257,7 @@ class HaConfigHttpForm extends LitElement {
     this._error = undefined;
     this._fieldErrors = {};
     try {
-      const result = await saveHttpConfig(this.hass, this._config);
-      this._config = result.config;
+      await saveHttpConfig(this.hass, this._config);
       this._saved = true;
     } catch (err: any) {
       // voluptuous formats errors as "<message> @ data['<field>']".
