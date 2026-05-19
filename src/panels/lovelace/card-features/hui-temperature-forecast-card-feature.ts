@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { UNIT_F } from "../../../common/const";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -35,6 +36,10 @@ import {
   supportsForecast,
 } from "./common/forecast";
 import {
+  getAbsoluteGradient,
+  getRelativeGradient,
+} from "./common/temperature-palette";
+import {
   graphLabelsStyles,
   LABEL_GAP,
   LABEL_HEIGHT,
@@ -52,14 +57,6 @@ import type {
 } from "./types";
 
 const MAX_BAR_WIDTH = 8;
-
-const TEMP_GRADIENT_STOPS: { tempC: number; cssVar: string }[] = [
-  { tempC: -20, cssVar: "--feature-temperature-freezing-color" },
-  { tempC: 0, cssVar: "--feature-temperature-cold-color" },
-  { tempC: 15, cssVar: "--feature-temperature-mild-color" },
-  { tempC: 25, cssVar: "--feature-temperature-warm-color" },
-  { tempC: 40, cssVar: "--feature-temperature-hot-color" },
-];
 
 export const supportsTemperatureForecastCardFeature = (
   hass: HomeAssistant,
@@ -312,37 +309,18 @@ class HuiTemperatureForecastCardFeature
       drawableHeight -
       ((value - tempMin) / (tempMax - tempMin)) * drawableHeight;
 
-    const isFahrenheit = this._stateObj?.attributes?.temperature_unit === "°F";
-    const toDisplayUnit = (tempC: number) =>
-      isFahrenheit ? (tempC * 9) / 5 + 32 : tempC;
-
-    const tempGradient = !customColor
-      ? (() => {
-          const stops = TEMP_GRADIENT_STOPS.map((stop) => ({
-            y: yFor(toDisplayUnit(stop.tempC)),
-            cssVar: stop.cssVar,
-          })).sort((a, b) => a.y - b.y);
-          const y1 = stops[0].y;
-          const y2 = stops[stops.length - 1].y;
-          const range = y2 - y1 || 1;
-          return svg`<defs>
-            <linearGradient
-              id="temp-gradient"
-              gradientUnits="userSpaceOnUse"
-              x1="0" y1=${y1}
-              x2="0" y2=${y2}
-            >
-              ${stops.map(
-                (stop) =>
-                  svg`<stop
-                    offset=${(stop.y - y1) / range}
-                    style="stop-color: var(${stop.cssVar})"
-                  ></stop>`
-              )}
-            </linearGradient>
-          </defs>`;
-        })()
-      : nothing;
+    const gradients = customColor
+      ? undefined
+      : entries.map(
+          (entry, i) => svg`<linearGradient
+            id="temp-bar-${i}"
+            x1="0" y1="0" x2="0" y2="1"
+          >
+            ${getRelativeGradient(entry.templow!, entry.temperature, 3).map(
+              (s) => svg`<stop offset=${s.offset} stop-color=${s.color}></stop>`
+            )}
+          </linearGradient>`
+        );
 
     const bars = entries.map((entry, i) => {
       const x = slotWidth * i + (slotWidth - barWidth) / 2;
@@ -350,7 +328,7 @@ class HuiTemperatureForecastCardFeature
       const yLow = yFor(entry.templow!);
       const barHeight = Math.max(1, yLow - yHigh);
       const rx = Math.min(barWidth / 2, barHeight / 2);
-      const fill = customColor ?? "url(#temp-gradient)";
+      const fill = customColor ?? `url(#temp-bar-${i})`;
       return svg`<rect
         x=${x}
         y=${yHigh}
@@ -369,7 +347,7 @@ class HuiTemperatureForecastCardFeature
         viewBox="0 0 ${width} ${height}"
         preserveAspectRatio="none"
       >
-        ${tempGradient}${bars}
+        ${gradients ? svg`<defs>${gradients}</defs>` : nothing}${bars}
       </svg>
     `;
   }
@@ -445,29 +423,20 @@ class HuiTemperatureForecastCardFeature
     // coordinates() pads with a trailing step-line point at x=width; drop it so the curve ends at the last forecast point.
     points.pop();
 
-    const isFahrenheit = this._stateObj.attributes?.temperature_unit === "°F";
-    const toDisplayUnit = (tempC: number) =>
-      isFahrenheit ? (tempC * 9) / 5 + 32 : tempC;
-    const yFor = (temp: number) =>
-      height - ((temp - minY) / (maxY - minY || 1)) * height;
-
-    const stops = TEMP_GRADIENT_STOPS.map((stop) => ({
-      y: yFor(toDisplayUnit(stop.tempC)),
-      cssVar: stop.cssVar,
-    })).sort((a, b) => a.y - b.y);
-    const y1 = stops[0].y;
-    const y2 = stops[stops.length - 1].y;
-    const gradientRange = y2 - y1 || 1;
+    // calcPoints (inside coordinates()) adds an extra 10% padding on top of
+    // what we pass, so the curve actually lives in this expanded range.
+    const padRange = maxY - minY || minY * 0.1;
+    const effMinY = minY - padRange * 0.1;
+    const effMaxY = maxY + padRange * 0.1;
+    const isFahrenheit = this._stateObj.attributes?.temperature_unit === UNIT_F;
+    const toCelsius = (t: number) => (isFahrenheit ? ((t - 32) * 5) / 9 : t);
 
     const gradient: HuiGraphGradient = {
       x1: 0,
-      y1,
+      y1: 0,
       x2: 0,
-      y2,
-      stops: stops.map((stop) => ({
-        offset: (stop.y - y1) / gradientRange,
-        color: `var(${stop.cssVar})`,
-      })),
+      y2: height,
+      stops: getAbsoluteGradient(toCelsius(effMinY), toCelsius(effMaxY)),
     };
 
     return { coordinates: points, yAxisOrigin, gradient };
@@ -519,11 +488,6 @@ class HuiTemperatureForecastCardFeature
         justify-content: flex-end;
         align-items: stretch;
         pointer-events: none !important;
-        --feature-temperature-freezing-color: #a89bd8;
-        --feature-temperature-cold-color: #7dc8dc;
-        --feature-temperature-mild-color: #a8dc7c;
-        --feature-temperature-warm-color: #e89042;
-        --feature-temperature-hot-color: #d24530;
       }
 
       .container {
