@@ -10,6 +10,7 @@ import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { UNIT_IN } from "../../../common/const";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -175,6 +176,21 @@ class HuiPrecipitationForecastCardFeature
     return false;
   }
 
+  // Floor for the bar scale so light drizzles don't fill the bar; observed
+  // values above this still drive the scale.
+  private _referenceMaxAmount(): number {
+    const isImperial =
+      this._stateObj?.attributes?.precipitation_unit === UNIT_IN;
+    switch (this._subscribedType) {
+      case "hourly":
+        return isImperial ? 0.1 : 2.5;
+      case "twice_daily":
+        return isImperial ? 0.25 : 6;
+      default:
+        return isImperial ? 0.4 : 10;
+    }
+  }
+
   private _resolvedForecastType(): ForecastResolution | undefined {
     return resolveForecastResolution(
       this._stateObj,
@@ -290,7 +306,8 @@ class HuiPrecipitationForecastCardFeature
     const values = entries.map((entry) =>
       getForecastPrecipitation(entry, precipitationType)
     );
-    let maxPrecipitation = precipitationType === "probability" ? 100 : 0;
+    let maxPrecipitation =
+      precipitationType === "probability" ? 100 : this._referenceMaxAmount();
     if (precipitationType === "amount") {
       for (const value of values) {
         if (Number.isFinite(value)) {
@@ -375,7 +392,8 @@ class HuiPrecipitationForecastCardFeature
       return undefined;
     }
 
-    let maxPrecipitation = precipitationType === "probability" ? 100 : 0;
+    let maxPrecipitation =
+      precipitationType === "probability" ? 100 : this._referenceMaxAmount();
     if (precipitationType === "amount") {
       for (const { value } of inRange) {
         if (Number.isFinite(value)) {
