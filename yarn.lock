@@ -4335,141 +4335,141 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsparticles/basic@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/basic@npm:4.0.0"
+"@tsparticles/basic@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/basic@npm:4.0.1"
   dependencies:
-    "@tsparticles/engine": "npm:4.0.0"
-    "@tsparticles/plugin-hex-color": "npm:4.0.0"
-    "@tsparticles/plugin-hsl-color": "npm:4.0.0"
-    "@tsparticles/plugin-move": "npm:4.0.0"
-    "@tsparticles/plugin-rgb-color": "npm:4.0.0"
-    "@tsparticles/shape-circle": "npm:4.0.0"
-    "@tsparticles/updater-opacity": "npm:4.0.0"
-    "@tsparticles/updater-out-modes": "npm:4.0.0"
-    "@tsparticles/updater-paint": "npm:4.0.0"
-    "@tsparticles/updater-size": "npm:4.0.0"
-  checksum: 10/5e455beb0663019d719bc111928a9e22a0f471450414391eed4be2f00455019c59ec85e1e8b7fadf8da2dc258c803d555ebb9b2e0a497a8f53b5922fffab314e
+    "@tsparticles/engine": "npm:4.0.1"
+    "@tsparticles/plugin-hex-color": "npm:4.0.1"
+    "@tsparticles/plugin-hsl-color": "npm:4.0.1"
+    "@tsparticles/plugin-move": "npm:4.0.1"
+    "@tsparticles/plugin-rgb-color": "npm:4.0.1"
+    "@tsparticles/shape-circle": "npm:4.0.1"
+    "@tsparticles/updater-opacity": "npm:4.0.1"
+    "@tsparticles/updater-out-modes": "npm:4.0.1"
+    "@tsparticles/updater-paint": "npm:4.0.1"
+    "@tsparticles/updater-size": "npm:4.0.1"
+  checksum: 10/693774cc82938763017a5797593ebd372e449150c907be35f59682a344d4764039b0495b5e09dbbf8907ce57a36c8593ac94c05421d80e20d9b7b4576884c92c
   languageName: node
   linkType: hard
 
-"@tsparticles/engine@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/engine@npm:4.0.0"
-  checksum: 10/05fd84ad82f75c9a9d44280ed948d9340cbfb5b18a18f112ee08c0c7d70ba35687197c9ce7508f7c2600410f42075369f2708504485912eb57e5e6e1cf8394ef
+"@tsparticles/engine@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/engine@npm:4.0.1"
+  checksum: 10/727d044de30145a7f4244c266b74ee40ee7a6ac9e0ab637b99908effd73cd929a6db16255db5d4b04d24538ba4556945a09bc685d49a24f3b9201ab453ccd6a6
   languageName: node
   linkType: hard
 
-"@tsparticles/interaction-particles-links@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/interaction-particles-links@npm:4.0.0"
+"@tsparticles/interaction-particles-links@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/interaction-particles-links@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/canvas-utils": 4.0.0
-    "@tsparticles/engine": 4.0.0
-    "@tsparticles/plugin-interactivity": 4.0.0
-  checksum: 10/98d7defc0af362775339f4d7016fa096d352065579036837c99c1a721d88f3207a074075d78130b95236e60a77f66dd29fe957b42e26b7421bdfb797e3271a28
+    "@tsparticles/canvas-utils": 4.0.1
+    "@tsparticles/engine": 4.0.1
+    "@tsparticles/plugin-interactivity": 4.0.1
+  checksum: 10/74097c18f958eabf753b2d3bb299a7bfcca8468e195d0791122ef7a88ec6424e4f1726960eaa877459be72d414d5312740240f93a8e3ada8dc88d887369d9b09
   languageName: node
   linkType: hard
 
-"@tsparticles/plugin-hex-color@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/plugin-hex-color@npm:4.0.0"
+"@tsparticles/plugin-hex-color@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/plugin-hex-color@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/356310741b0019bcdd352e2affc9090662d7191aff932a1e2743c8d1911f87bd8a49a623a3733cf032911884d52b4e65a291267f37e28513c597d5cd4cadba1e
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/e2e9970322049f6df59a315b2bbfd86ee3dc447a844e119f4c38e5224ba359e597edc610da7946f8dfe628184bc5935542f6bf6b043ab94623427281b2eb7f72
   languageName: node
   linkType: hard
 
-"@tsparticles/plugin-hsl-color@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/plugin-hsl-color@npm:4.0.0"
+"@tsparticles/plugin-hsl-color@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/plugin-hsl-color@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/cb04a297a40fdad04f25dfaa10d77a04c70dceded6c24e6f3ab766d5cc70514464011527d822fc883bb5da5003fdd5d8ab92b71046cb290a3c8ca60f7a40483f
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/f14168d72d112011c237605f1bb7384c874b72101ec9ae75ff521f25e2f71f29d5678af8d3b63bec94db439faeffbb4ecfd3aece01904ab0b14aa4c0e455fcac
   languageName: node
   linkType: hard
 
-"@tsparticles/plugin-interactivity@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/plugin-interactivity@npm:4.0.0"
+"@tsparticles/plugin-interactivity@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/plugin-interactivity@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/23b089e537f5fed67fe7e3cf6b67aa639d9586ebda6838d349d9a02095449ca7bcfe164040a9fa08bdfd779f44ae5917434a335e5c67db5df6d6a6bfd521819e
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/85963f34314faf0db1aa75267c48f13da43ef388c3fc090d2cec347d9b31a7e1a89adf1fca390509b474cfd3cdae3d04b91c15e248461de2b489d56239285410
   languageName: node
   linkType: hard
 
-"@tsparticles/plugin-move@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/plugin-move@npm:4.0.0"
+"@tsparticles/plugin-move@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/plugin-move@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/abc5d175105243171ce440d88ae322f2412fb1c390bd39859fde1dc201b528e5d6099f38fa4a87a47ff110eaf65a930306922c409b1404271ba61d222ca9e48d
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/9b50ca6467b19cc89b12dfbdfed08fde52780e458ec2166c9d3bd6daac4bd48d1762bef674b5a3bc5be190caa99d644201792992dce35015a2100b9019b64b1c
   languageName: node
   linkType: hard
 
-"@tsparticles/plugin-rgb-color@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/plugin-rgb-color@npm:4.0.0"
+"@tsparticles/plugin-rgb-color@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/plugin-rgb-color@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/7d2255d5f428c56cd56fcf00839707ca3fa554a25fa59b2353e30c1c275ca24f06b9f2eee28a869633a740c56b3609cb6540135fb7297ec54d5fcc140e2ce575
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/f435e46d564fb22177b9516ff1a01912b2cc6cdc2b8217316d7c6ff6097acf4ee0cd60e6660e26c0da2321f1a57e469e1ec344045fb4f95f69818e63b7c4c56f
   languageName: node
   linkType: hard
 
-"@tsparticles/preset-links@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/preset-links@npm:4.0.0"
+"@tsparticles/preset-links@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/preset-links@npm:4.0.1"
   dependencies:
-    "@tsparticles/basic": "npm:4.0.0"
-    "@tsparticles/engine": "npm:4.0.0"
-    "@tsparticles/interaction-particles-links": "npm:4.0.0"
-    "@tsparticles/plugin-interactivity": "npm:4.0.0"
-  checksum: 10/67d8c4c90c44a9f3f940aa249e2b86acef4485a54ac02005de5b947cc3c2d01d4b6b00695dc5ff47ab0a8594faa18ba2ccf05b7510f7fd84993939f7d137121e
+    "@tsparticles/basic": "npm:4.0.1"
+    "@tsparticles/engine": "npm:4.0.1"
+    "@tsparticles/interaction-particles-links": "npm:4.0.1"
+    "@tsparticles/plugin-interactivity": "npm:4.0.1"
+  checksum: 10/ef046ef9f384d2af62d5b237cf2f5f4d0373b49bb6ca1c3fdd20b8b58a2a2ebf2af58a2af2ed4b6ba4d8bdf81e7280f6332b46d17b95dd95bf104063e8ee6478
   languageName: node
   linkType: hard
 
-"@tsparticles/shape-circle@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/shape-circle@npm:4.0.0"
+"@tsparticles/shape-circle@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/shape-circle@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/37f010c44ba9b82712532da32c2cb6e482d5f5205aaf3bcd7fb04c87925218cd732a31d69ae424613810f11b2651a80fbbd9ec9d6b9d0e58884022ec68cc9d5b
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/f602034fd7dcc635b68b4065600f0a23dbecf3893354a7247132d2874657ac0ea2407292f7c75bad20b2db7f13ec14cb8e8e3ff3f9dce90727f5b1e8e81e59d7
   languageName: node
   linkType: hard
 
-"@tsparticles/updater-opacity@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/updater-opacity@npm:4.0.0"
+"@tsparticles/updater-opacity@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/updater-opacity@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/b078a28175372246d6861562bcc013c03dff88f6aeaf9b16558e533477340e1b3cd07d57997bdf11b730636df26ef0117bef9ba4ab1b791a9b9a4cd1d2e6623e
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/6d769e3fb36a33d553e4b32c35f8450bb72e6e995bfeb6ad493c17079201ee1b9c6a611aabd44b85a6e3990e2481a71d00a2710fdee72895c4c25a473c9db299
   languageName: node
   linkType: hard
 
-"@tsparticles/updater-out-modes@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/updater-out-modes@npm:4.0.0"
+"@tsparticles/updater-out-modes@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/updater-out-modes@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/3b27af0a68a7f320ae2481142ff9d6e342b75f245b94e875ea2bdc3f9f47c0b8e79b7ddbf45fea5eeaa9e4610dbdb7130e10056b1f26618958e7e6c28e25dbbe
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/0eb2e1e2a4480bc490ae82cf853a3dad26419b3812acf0d20b65868d6e633f2faf453f332f7d6a85779ae59dad1cbb2c94426f7ce43dccea9173ef8032911726
   languageName: node
   linkType: hard
 
-"@tsparticles/updater-paint@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/updater-paint@npm:4.0.0"
+"@tsparticles/updater-paint@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/updater-paint@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/22f9c275ee3eb1409923c74b63fc5984d978b68473bd0f58418d6c28a9be0e9e2e010e338adb7deb482021ab444fab85b962745c06d94066dd40265cf016395d
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/add5a658e70aa19ea0220ba73249408f845800bb015cbbdb365d99d0be1a732559dba869090166c3ef45ca93a55f982aafb39e20c66d63e55bfca61e78dd2f51
   languageName: node
   linkType: hard
 
-"@tsparticles/updater-size@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@tsparticles/updater-size@npm:4.0.0"
+"@tsparticles/updater-size@npm:4.0.1":
+  version: 4.0.1
+  resolution: "@tsparticles/updater-size@npm:4.0.1"
   peerDependencies:
-    "@tsparticles/engine": 4.0.0
-  checksum: 10/4664fc5c4c961331d733d98287e9fef0079077def528b814034aea163eb95e2f6c0549e1b87e95eef5f376a7cd0983fbf18c2d77023b9f1f1b163698b03ec504
+    "@tsparticles/engine": 4.0.1
+  checksum: 10/87a118066f97a21af99db8ecbba7de44e6ff758a5cded33cd2ac68ce0cdca0f9be4ddacdb185af46ac25f00e6e52fe0777530c10a168360385bb8ee93152f35c
   languageName: node
   linkType: hard
 
@@ -8774,8 +8774,8 @@ __metadata:
     "@rspack/dev-server": "npm:2.0.1"
     "@swc/helpers": "npm:0.5.21"
     "@thomasloven/round-slider": "npm:0.6.0"
-    "@tsparticles/engine": "npm:4.0.0"
-    "@tsparticles/preset-links": "npm:4.0.0"
+    "@tsparticles/engine": "npm:4.0.1"
+    "@tsparticles/preset-links": "npm:4.0.1"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.26"
     "@types/chromecast-caf-sender": "npm:1.0.11"
