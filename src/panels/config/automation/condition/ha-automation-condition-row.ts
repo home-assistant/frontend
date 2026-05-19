@@ -202,6 +202,13 @@ export default class HaAutomationConditionRow extends LitElement {
     const conditionTargetSpec =
       this.conditionDescriptions[this.condition.condition]?.target;
 
+    const trimmedComment = this.condition.comment?.trim() || "";
+    const commentTooltipText = !trimmedComment
+      ? ""
+      : trimmedComment.length > 250
+        ? `${trimmedComment.substring(0, 250)}...`
+        : trimmedComment;
+
     return html`
       <ha-condition-icon
         slot="leading-icon"
@@ -230,10 +237,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 class="comment-indicator"
               ></ha-svg-icon>
               <ha-tooltip for="comment-icon"
-                >${this.condition.comment.substring(0, 250)}${this.condition
-                  .comment.length > 250
-                  ? "..."
-                  : nothing}</ha-tooltip
+                ><p>${commentTooltipText}</p></ha-tooltip
               >
             `
           : nothing}

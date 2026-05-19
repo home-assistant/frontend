@@ -69,6 +69,14 @@ export default class HaScriptFieldRow extends LitElement {
   protected render() {
     const hasSelector =
       this.field.selector && typeof this.field.selector === "object";
+
+    const trimmedComment = this.field.description?.trim() || "";
+    const commentTooltipText = !trimmedComment
+      ? ""
+      : trimmedComment.length > 250
+        ? `${trimmedComment.substring(0, 250)}...`
+        : trimmedComment;
+
     return html`
       <ha-card outlined>
         <ha-automation-row
@@ -158,10 +166,7 @@ export default class HaScriptFieldRow extends LitElement {
                     class="comment-indicator"
                   ></ha-svg-icon>
                   <ha-tooltip for="comment-icon"
-                    >${this.field.description.substring(0, 250)}${this.field
-                      .description.length > 250
-                      ? "..."
-                      : nothing}</ha-tooltip
+                    ><p>${commentTooltipText}</p></ha-tooltip
                   >
                 `
               : nothing}

@@ -223,6 +223,16 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
+    const trimmedComment =
+      (type !== "list" &&
+        (this.trigger as Exclude<Trigger, TriggerList>).comment?.trim()) ||
+      "";
+    const commentTooltipText = !trimmedComment
+      ? ""
+      : trimmedComment.length > 250
+        ? `${trimmedComment.substring(0, 250)}...`
+        : trimmedComment;
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -256,13 +266,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 class="comment-indicator"
               ></ha-svg-icon>
               <ha-tooltip for="comment-icon"
-                >${(
-                  this.trigger as Exclude<Trigger, TriggerList>
-                ).comment!.substring(0, 250)}${(
-                  this.trigger as Exclude<Trigger, TriggerList>
-                ).comment!.length > 250
-                  ? "..."
-                  : nothing}</ha-tooltip
+                ><p>${commentTooltipText}</p></ha-tooltip
               >
             `
           : nothing}

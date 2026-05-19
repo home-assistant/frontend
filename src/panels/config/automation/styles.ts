@@ -60,6 +60,10 @@ export const rowStyles = css`
     cursor: default;
     max-width: 300px;
   }
+  .comment-indicator + ha-tooltip p {
+    white-space: pre;
+    margin: 0;
+  }
 `;
 
 export const editorStyles = css`

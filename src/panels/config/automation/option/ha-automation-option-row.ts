@@ -140,8 +140,14 @@ export default class HaAutomationOptionRow extends LitElement {
       </div>
     `;
   }
-
   private _renderRow() {
+    const trimmedComment = this.option?.comment?.trim() || "";
+    const commentTooltipText = !trimmedComment
+      ? ""
+      : trimmedComment.length > 250
+        ? `${trimmedComment.substring(0, 250)}...`
+        : trimmedComment;
+
     return html`
       <h3 slot="header">
         ${this.option
@@ -163,10 +169,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 class="comment-indicator"
               ></ha-svg-icon>
               <ha-tooltip for="comment-icon"
-                >${this.option.comment.substring(0, 250)}${this.option.comment
-                  .length > 250
-                  ? "..."
-                  : nothing}</ha-tooltip
+                ><p>${commentTooltipText}</p></ha-tooltip
               >
             `
           : nothing}

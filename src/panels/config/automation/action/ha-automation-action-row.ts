@@ -297,6 +297,13 @@ export default class HaAutomationActionRow extends LitElement {
             ?.target
         : undefined;
 
+    const trimmedComment = this.action.comment?.trim() || "";
+    const commentTooltipText = !trimmedComment
+      ? ""
+      : trimmedComment.length > 250
+        ? `${trimmedComment.substring(0, 250)}...`
+        : trimmedComment;
+
     return html`
       ${type === "service" && "action" in this.action && this.action.action
         ? html`
@@ -348,7 +355,7 @@ export default class HaAutomationActionRow extends LitElement {
                 )}
               </ha-tooltip>`
           : nothing}
-        ${this.action.comment?.trim()
+        ${commentTooltipText
           ? html`
               <ha-svg-icon
                 id="comment-icon"
@@ -357,12 +364,9 @@ export default class HaAutomationActionRow extends LitElement {
                   "ui.panel.config.automation.editor.comment.label"
                 )}
                 class="comment-indicator"
-              ></ha-svg-icon>
-              <ha-tooltip for="comment-icon"
-                >${this.action.comment.substring(0, 250)}${this.action.comment
-                  .length > 250
-                  ? "..."
-                  : nothing}</ha-tooltip
+              ></ha-svg-icon
+              ><ha-tooltip for="comment-icon"
+                ><p>${commentTooltipText}</p></ha-tooltip
               >
             `
           : nothing}
