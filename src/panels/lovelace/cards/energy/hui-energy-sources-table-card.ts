@@ -776,7 +776,6 @@ export class HuiEnergySourcesTableCard
       flex-direction: column;
       position: relative;
       width: 100%;
-      border: 0;
     }
     .mdc-data-table__table-container {
       -webkit-overflow-scrolling: touch;
@@ -829,9 +828,6 @@ export class HuiEnergySourcesTableCard
     }
     .clickable {
       cursor: pointer;
-    }
-    .total {
-      --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
     }
     .total .mdc-data-table__cell {
       border-top: 1px solid var(--divider-color);
