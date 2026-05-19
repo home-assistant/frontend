@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiBackupRestore,
   mdiChartBoxOutline,
@@ -17,13 +18,13 @@ import {
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -72,12 +73,12 @@ import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import {
+  computeShowHistoryComponent,
+  computeShowLogBookComponent,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   type MoreInfoView,
-  computeShowHistoryComponent,
-  computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
