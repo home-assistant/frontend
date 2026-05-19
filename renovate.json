@@ -18,6 +18,23 @@
     "enabled": true,
     "schedule": ["on the 19th day of the month before 4am"]
   },
+  "customDatasources": {
+    "ha-core-python": {
+      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/home-assistant/core/dev/.python-version",
+      "format": "plain"
+    }
+  },
+  "customManagers": [
+    {
+      "description": "Keep PYTHON_VERSION in sync with home-assistant/core",
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
+      "matchStrings": ["PYTHON_VERSION: \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "custom.ha-core-python",
+      "versioningTemplate": "python"
+    }
+  ],
   "packageRules": [
     {
       "description": "MDC packages are pinned to the same version as MWC",
