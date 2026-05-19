@@ -1,11 +1,15 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import type { HomeAssistant, TranslationDict } from "../../types";
+import type {
+  CallWS,
+  HomeAssistant,
+  HomeAssistantApi,
+  TranslationDict,
+} from "../../types";
 import { supervisorApiCall } from "../supervisor/common";
 import type { StoreAddonDetails } from "../supervisor/store";
 import type { Supervisor, SupervisorArch } from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
-import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
+import { extractApiErrorMessage } from "./common";
 
 export type AddonCapability = Exclude<
   keyof TranslationDict["ui"]["panel"]["config"]["apps"]["dashboard"]["capability"],
@@ -143,57 +147,38 @@ export interface HassioAddonSetOptionParams {
 }
 
 export const reloadHassioAddons = async (hass: HomeAssistant) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/addons/reload",
-      method: "post",
-    });
-    return;
-  }
-  await hass.callApi<HassioResponse<void>>("POST", `hassio/addons/reload`);
+  await hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/addons/reload",
+    method: "post",
+  });
 };
 
 export const fetchHassioAddonsInfo = async (
   hass: HomeAssistant
 ): Promise<HassioAddonsInfo> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: "/addons",
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioAddonsInfo>>("GET", `hassio/addons`)
-  );
+  return hass.callWS({
+    type: "supervisor/api",
+    endpoint: "/addons",
+    method: "get",
+  });
 };
 
 export const fetchHassioAddonInfo = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string
 ): Promise<HassioAddonDetails> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/info`,
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioAddonDetails>>(
-      "GET",
-      `hassio/addons/${slug}/info`
-    )
-  );
+  return callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/info`,
+    method: "get",
+  });
 };
 
 export const fetchHassioAddonChangelog = async (
-  hass: HomeAssistant,
+  api: HomeAssistantApi,
   slug: string
-) => hass.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
+) => api.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
 
 export const fetchHassioAddonLogs = async (hass: HomeAssistant, slug: string) =>
   hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
@@ -204,119 +189,77 @@ export const fetchHassioAddonDocumentation = async (
 ) => hass.callApi<string>("GET", `hassio/addons/${slug}/documentation`);
 
 export const setHassioAddonOption = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string,
   data: HassioAddonSetOptionParams
 ) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    const response = await hass.callWS<HassioResponse<any>>({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/options`,
-      method: "post",
-      data,
-    });
+  const response = await callWS<HassioResponse<any>>({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/options`,
+    method: "post",
+    data,
+  });
 
-    if (response.result === "error") {
-      throw Error(extractApiErrorMessage(response));
-    }
-    return response;
+  if (response.result === "error") {
+    throw Error(extractApiErrorMessage(response));
   }
-
-  return hass.callApi<HassioResponse<any>>(
-    "POST",
-    `hassio/addons/${slug}/options`,
-    data
-  );
+  return response;
 };
 
 export const validateHassioAddonOption = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string,
   data?: any
 ): Promise<{ message: string; valid: boolean }> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/options/validate`,
-      method: "post",
-      data,
-    });
-  }
-
-  return (
-    await hass.callApi<HassioResponse<{ message: string; valid: boolean }>>(
-      "POST",
-      `hassio/addons/${slug}/options/validate`
-    )
-  ).data;
+  return callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/options/validate`,
+    method: "post",
+    data,
+  });
 };
 
-export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/start`,
-      method: "post",
-      timeout: null,
-    });
-  }
-
-  return hass.callApi<string>("POST", `hassio/addons/${slug}/start`);
+export const startHassioAddon = async (callWS: CallWS, slug: string) => {
+  return callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/start`,
+    method: "post",
+    timeout: null,
+  });
 };
 
-export const stopHassioAddon = async (hass: HomeAssistant, slug: string) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/stop`,
-      method: "post",
-      timeout: null,
-    });
-  }
-
-  return hass.callApi<string>("POST", `hassio/addons/${slug}/stop`);
+export const stopHassioAddon = async (callWS: CallWS, slug: string) => {
+  return callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/stop`,
+    method: "post",
+    timeout: null,
+  });
 };
 
 export const setHassioAddonSecurity = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string,
   data: HassioAddonSetSecurityParams
 ) => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/security`,
-      method: "post",
-      data,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/security`,
-    data
-  );
+  await callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/security`,
+    method: "post",
+    data,
+  });
 };
 
 export const installHassioAddon = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string
 ): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/install`,
-      method: "post",
-      timeout: null,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/install`
-  );
+  await callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/install`,
+    method: "post",
+    timeout: null,
+  });
 };
 
 export const updateHassioAddon = async (
@@ -324,74 +267,37 @@ export const updateHassioAddon = async (
   slug: string,
   backup: boolean
 ): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2025, 2, 0)) {
-    await hass.callWS({
-      type: "hassio/update/addon",
-      addon: slug,
-      backup: backup,
-    });
-    return;
-  }
-
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/store/addons/${slug}/update`,
-      method: "post",
-      timeout: null,
-      data: { backup },
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/update`,
-    { backup }
-  );
+  await hass.callWS({
+    type: "hassio/update/addon",
+    addon: slug,
+    backup: backup,
+  });
 };
 
 export const restartHassioAddon = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string
 ): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/restart`,
-      method: "post",
-      timeout: null,
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/restart`
-  );
+  await callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/restart`,
+    method: "post",
+    timeout: null,
+  });
 };
 
 export const uninstallHassioAddon = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string,
   removeData: boolean
 ): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/uninstall`,
-      method: "post",
-      timeout: null,
-      data: { remove_config: removeData },
-    });
-    return;
-  }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/uninstall`,
-    { remove_config: removeData }
-  );
+  await callWS({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/uninstall`,
+    method: "post",
+    timeout: null,
+    data: { remove_config: removeData },
+  });
 };
 
 export const fetchAddonInfo = (
@@ -407,21 +313,13 @@ export const fetchAddonInfo = (
   );
 
 export const rebuildLocalAddon = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   slug: string
 ): Promise<void> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS<undefined>({
-      type: "supervisor/api",
-      endpoint: `/addons/${slug}/rebuild`,
-      method: "post",
-      timeout: null,
-    });
-  }
-  return (
-    await hass.callApi<HassioResponse<void>>(
-      "POST",
-      `hassio/addons/${slug}rebuild`
-    )
-  ).data;
+  return callWS<undefined>({
+    type: "supervisor/api",
+    endpoint: `/addons/${slug}/rebuild`,
+    method: "post",
+    timeout: null,
+  });
 };

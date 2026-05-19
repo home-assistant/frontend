@@ -3,7 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-bar";
-import "../../../../../components/ha-settings-row";
+import "../../../../../components/item/ha-row-item";
 import { roundWithOneDecimal } from "../../../../../util/calculate";
 
 @customElement("supervisor-app-metric")
@@ -16,9 +16,9 @@ class SupervisorAppMetric extends LitElement {
 
   protected render(): TemplateResult {
     const roundedValue = roundWithOneDecimal(this.value);
-    return html`<ha-settings-row empty>
-      <span slot="heading"> ${this.description} </span>
-      <div slot="description" .title=${this.tooltip ?? ""}>
+    return html`<ha-row-item empty>
+      <span slot="headline"> ${this.description} </span>
+      <div slot="supporting-text" .title=${this.tooltip ?? ""}>
         <span class="value"> ${roundedValue} % </span>
         <ha-bar
           class=${classMap({
@@ -28,16 +28,14 @@ class SupervisorAppMetric extends LitElement {
           .value=${this.value}
         ></ha-bar>
       </div>
-    </ha-settings-row>`;
+    </ha-row-item>`;
   }
 
   static styles = css`
-    ha-settings-row {
-      padding: 0;
-      height: 54px;
+    ha-row-item {
       width: 100%;
     }
-    ha-settings-row > div[slot="description"] {
+    ha-row-item > div[slot="supporting-text"] {
       white-space: normal;
       color: var(--secondary-text-color);
       display: flex;

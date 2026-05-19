@@ -332,7 +332,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
             import("../data/supervisor/store"),
           ]);
         const [info, repos] = await Promise.all([
-          fetchHassioAddonInfo(this.hass!, myParams.get("app")!),
+          fetchHassioAddonInfo(this.hass!.callWS, myParams.get("app")!),
           fetchStoreRepositories(this.hass!),
         ]);
         const repo = repos.find((r) => r.slug === info.repository);

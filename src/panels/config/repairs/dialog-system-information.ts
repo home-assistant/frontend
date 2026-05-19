@@ -9,8 +9,8 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-metric";
 import "../../../components/ha-spinner";
 import type { HassioStats } from "../../../data/hassio/common";
@@ -103,10 +103,10 @@ class DialogSystemInformation extends LitElement {
         this.hass,
         async () => {
           this._supervisorStats = await fetchHassioStats(
-            this.hass,
+            this.hass.callWS,
             "supervisor"
           );
-          this._coreStats = await fetchHassioStats(this.hass, "core");
+          this._coreStats = await fetchHassioStats(this.hass.callWS, "core");
         },
         10000
       );
