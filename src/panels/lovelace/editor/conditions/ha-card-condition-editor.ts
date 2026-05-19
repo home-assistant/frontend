@@ -21,6 +21,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
+import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
@@ -105,8 +106,7 @@ export class HaCardConditionEditor extends LitElement {
 
   @state() private _testingResult?: boolean;
 
-  @state() private _liveTestResult: "pass" | "fail" | "invalid" | "unknown" =
-    "unknown";
+  @state() private _liveTestResult: LiveTestState = "unknown";
 
   private _listeners = new ConditionListenersController(this);
 

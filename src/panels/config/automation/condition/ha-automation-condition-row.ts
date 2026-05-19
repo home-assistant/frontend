@@ -40,6 +40,7 @@ import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
+import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -149,8 +150,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _liveTestResult: "pass" | "fail" | "invalid" | "unknown" =
-    "unknown";
+  @state() private _liveTestResult: LiveTestState = "unknown";
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
