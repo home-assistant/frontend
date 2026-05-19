@@ -338,18 +338,6 @@ export default class HaAutomationActionRow extends LitElement {
               serviceTargetSpec
             )
           : nothing}
-        ${type !== "condition" &&
-        (this.action as NonConditionAction).continue_on_error === true
-          ? html`<ha-svg-icon
-                id="svg-icon"
-                .path=${mdiAlertCircleCheck}
-              ></ha-svg-icon>
-              <ha-tooltip for="svg-icon">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.continue_on_error_description"
-                )}
-              </ha-tooltip>`
-          : nothing}
         ${commentTooltipText
           ? html`
               <ha-svg-icon
@@ -364,6 +352,18 @@ export default class HaAutomationActionRow extends LitElement {
                 ><p>${commentTooltipText}</p></ha-tooltip
               >
             `
+          : nothing}
+        ${type !== "condition" &&
+        (this.action as NonConditionAction).continue_on_error === true
+          ? html`<ha-svg-icon
+                id="svg-icon"
+                .path=${mdiAlertCircleCheck}
+              ></ha-svg-icon>
+              <ha-tooltip for="svg-icon">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.continue_on_error_description"
+                )}
+              </ha-tooltip>`
           : nothing}
       </h3>
       <ha-automation-row-event-chip
