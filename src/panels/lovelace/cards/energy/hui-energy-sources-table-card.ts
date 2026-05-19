@@ -770,7 +770,7 @@ export class HuiEnergySourcesTableCard
     .mdc-data-table {
       background-color: var(--card-background-color);
       border-radius: var(--ha-border-radius-sm);
-      border-style: solid;
+      border: 0;
       box-sizing: border-box;
       display: inline-flex;
       flex-direction: column;
