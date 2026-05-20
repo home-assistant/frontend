@@ -552,10 +552,7 @@ export class HaConfigDevicePage extends LitElement {
                                 return entityState
                                   ? html`
                                       <a href=${url}>
-                                        <ha-list-item
-                                          hasMeta
-                                          .script=${script}
-                                        >
+                                        <ha-list-item hasMeta .script=${script}>
                                           ${computeStateName(entityState)}
                                           <ha-icon-next
                                             slot="meta"
