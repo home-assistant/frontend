@@ -712,7 +712,7 @@ export class MoreInfoDialog extends SubscribeMixin(
                                 .path=${mdiPlusBoxMultipleOutline}
                               ></ha-svg-icon>
                               ${this.hass.localize(
-                                "ui.dialogs.more_info_control.add_entity_to"
+                                "ui.dialogs.more_info_control.add_to"
                               )}
                             </ha-dropdown-item>
 
@@ -815,7 +815,7 @@ export class MoreInfoDialog extends SubscribeMixin(
                       <ha-icon-button
                         slot="headerActionItems"
                         .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.add_entity_to"
+                          "ui.dialogs.more_info_control.add_to"
                         )}
                         .path=${mdiPlusBoxMultipleOutline}
                         @click=${this._goToAddEntityTo}

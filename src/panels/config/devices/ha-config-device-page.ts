@@ -483,7 +483,7 @@ export class HaConfigDevicePage extends LitElement {
                         }
                       )
                     : this.hass.localize(
-                        "ui.dialogs.more_info_control.add_entity_to"
+                        "ui.dialogs.more_info_control.add_to"
                       )}
                   .path=${mdiPlusCircle}
                 ></ha-icon-button>
