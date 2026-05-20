@@ -1,0 +1,65 @@
+import { css, html, LitElement, type CSSResultGroup } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
+
+/**
+ * `ha-picker-search` — search input for picker UIs.
+ *
+ * Thin wrapper over `ha-input-search` that emits a `search-changed`
+ * event with `{ value: string }`. Use inside `ha-picker-popover`,
+ * paired with `ha-picker-list` or `ha-picker-section-chips`.
+ */
+@customElement("ha-picker-search")
+export class HaPickerSearch extends LitElement {
+  @property() public value = "";
+
+  @property() public placeholder?: string;
+
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: Boolean }) public autofocus = false;
+
+  @query("ha-input-search") private _input?: HaInputSearch;
+
+  public async focus() {
+    await this.updateComplete;
+    this._input?.focus();
+  }
+
+  protected render() {
+    return html`
+      <ha-input-search
+        appearance="outlined"
+        .value=${this.value}
+        .placeholder=${this.placeholder ?? ""}
+        ?autofocus=${this.autofocus}
+        @input=${this._handleInput}
+      ></ha-input-search>
+    `;
+  }
+
+  private _handleInput = (ev: Event) => {
+    const value = (ev.target as HaInputSearch).value ?? "";
+    this.value = value;
+    fireEvent(this, "search-changed", { value });
+  };
+
+  static styles: CSSResultGroup = css`
+    :host {
+      display: block;
+    }
+    ha-input-search {
+      width: 100%;
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-picker-search": HaPickerSearch;
+  }
+  interface HASSDomEvents {
+    "search-changed": { value: string };
+  }
+}

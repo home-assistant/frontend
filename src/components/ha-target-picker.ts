@@ -1,4 +1,3 @@
-import "@home-assistant/webawesome/dist/components/popover/popover";
 import { consume } from "@lit/context";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
@@ -53,19 +52,22 @@ import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-generic-picker";
-import type { HaGenericPicker } from "./ha-generic-picker";
+import "./ha-button";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import "./ha-picker-list";
+import type { PickerListEntry, PickerListItem } from "./ha-picker-list";
+import "./ha-picker-popover";
+import "./ha-picker-search";
+import "./ha-picker-section-chips";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
 import "./target-picker/ha-target-picker-item-group";
 import "./target-picker/ha-target-picker-value-chip";
 
 const SEPARATOR = "________";
-const CREATE_ID = "___create-new-entity___";
 const isTargetType = (value: string): value is TargetType =>
   value === "entity" ||
   value === "device" ||
@@ -122,11 +124,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
 
+  @state() private _pickerOpen = false;
+
+  @state() private _search = "";
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
-  @query("ha-generic-picker") private _picker?: HaGenericPicker;
+  @query(".add-target-wrapper") private _addTargetWrapper?: HTMLElement;
 
   private _newTarget?: TargetItem;
 
@@ -412,56 +418,97 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       },
     ];
 
+    const items = this._buildListEntries(
+      this._search,
+      this._selectedSection,
+      this.createDomains
+    );
+
     return html`
       <div class="add-target-wrapper">
-        <ha-generic-picker
-          .hass=${this.hass}
+        <ha-button
+          class="add-target-button"
+          size="small"
+          appearance="filled"
           .disabled=${this.disabled}
-          .autofocus=${this.autofocus}
-          .helper=${this.helper}
-          .sections=${sections}
-          .notFoundLabel=${this._noTargetFoundLabel}
-          .emptyLabel=${this.hass.localize(
-            "ui.components.target-picker.no_targets"
-          )}
-          .sectionTitleFunction=${this._sectionTitleFunction}
-          .selectedSection=${this._selectedSection}
-          .popoverAnchor=${this._replaceTargetAnchor}
-          .rowRenderer=${this._renderRow}
-          .getItems=${this._getItems}
-          @value-changed=${this._targetPicked}
-          @picker-closed=${this._handlePickerClosed}
-          .addButtonLabel=${this.hass.localize(
-            "ui.components.target-picker.add_target"
-          )}
-          .getAdditionalItems=${this._getAdditionalItems}
+          @click=${this._openPicker}
         >
-        </ha-generic-picker>
+          <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+          ${this.hass.localize("ui.components.target-picker.add_target")}
+        </ha-button>
+        <ha-picker-popover
+          .open=${this._pickerOpen}
+          .anchor=${this._replaceTargetAnchor ?? this._addTargetWrapper}
+          .label=${this.hass.localize("ui.components.target-picker.add_target")}
+          @closed=${this._handlePickerClosed}
+        >
+          <div class="picker-body">
+            <ha-picker-search
+              autofocus
+              .value=${this._search}
+              .placeholder=${this.hass.localize("ui.common.search")}
+              @search-changed=${this._handleSearchChanged}
+            ></ha-picker-search>
+            <ha-picker-section-chips
+              .sections=${sections}
+              .selected=${this._selectedSection}
+              @section-changed=${this._handleSectionChanged}
+            ></ha-picker-section-chips>
+            <ha-picker-list
+              .items=${items}
+              .rowRenderer=${this._renderRow}
+              .currentSearch=${this._search}
+              .notFoundLabel=${this._noTargetFoundLabel}
+              .emptyLabel=${this.hass.localize(
+                "ui.components.target-picker.no_targets"
+              )}
+              @item-selected=${this._handleItemSelected}
+              @picker-close-request=${this._closePicker}
+            ></ha-picker-list>
+          </div>
+        </ha-picker-popover>
       </div>
     `;
   }
 
-  private _targetPicked(ev: ValueChangedEvent<string>) {
-    ev.stopPropagation();
-    const value = ev.detail.value;
-    if (value.startsWith(CREATE_ID)) {
-      this._createNewDomainElement(value.substring(CREATE_ID.length));
-      return;
-    }
+  private _openPicker = () => {
+    if (this.disabled) return;
+    this._pickerOpen = true;
+  };
 
+  private _closePicker = () => {
+    this._pickerOpen = false;
+  };
+
+  private _handleSearchChanged = (ev: HASSDomEvent<{ value: string }>) => {
+    this._search = ev.detail.value;
+  };
+
+  private _handleSectionChanged = (
+    ev: HASSDomEvent<{ section: string | undefined }>
+  ) => {
+    this._selectedSection = ev.detail.section as
+      | TargetTypeFloorless
+      | undefined;
+  };
+
+  private _handleItemSelected = (
+    ev: HASSDomEvent<{ id: string; index: number; newTab?: boolean }>
+  ) => {
+    ev.stopPropagation();
+    const value = ev.detail.id;
     const [rawType, id] = value.split(SEPARATOR);
 
     if (!id || !isTargetType(rawType)) {
       return;
     }
 
-    if (this._replaceTarget) {
-      this._replaceTargetItem(this._replaceTarget, { type: rawType, id });
-      return;
-    }
+    // Close the popover; commit value when the closed event fires below.
+    this._pickerOpen = false;
+    this._pendingPick = { type: rawType, id };
+  };
 
-    this._addTarget(id, rawType);
-  }
+  private _pendingPick?: TargetItem;
 
   private _replaceTargetItem(currentTarget: TargetItem, newTarget: TargetItem) {
     const value = this._replaceTargetInValue(
@@ -734,18 +781,29 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
     this._replaceTarget = { type, id: ev.detail.id };
-    this._picker?.open(undefined, {
-      selectedValue: `${type}${SEPARATOR}${ev.detail.id}`,
-    });
+    this._pickerOpen = true;
   }
 
-  private _handlePickerClosed() {
+  private _handlePickerClosed = () => {
+    // Commit the pending pick (if any) on the close-after-animation event
+    // to avoid a flash of the new value while the popover hides.
+    if (this._pendingPick) {
+      const pick = this._pendingPick;
+      this._pendingPick = undefined;
+      if (this._replaceTarget) {
+        this._replaceTargetItem(this._replaceTarget, pick);
+      } else {
+        this._addTarget(pick.id, pick.type);
+      }
+    }
+    this._pickerOpen = false;
+    this._search = "";
     if (this._replaceTarget) {
       this._selectedSection = undefined;
     }
     this._replaceTarget = undefined;
     this._replaceTargetAnchor = undefined;
-  }
+  };
 
   private _addItems(
     value: this["value"],
@@ -782,55 +840,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     return undefined;
   }
 
-  private _sectionTitleFunction = ({
-    firstIndex,
-    lastIndex,
-    firstItem,
-    secondItem,
-    itemsCount,
-  }: {
-    firstIndex: number;
-    lastIndex: number;
-    firstItem: PickerComboBoxItem | string;
-    secondItem: PickerComboBoxItem | string;
-    itemsCount: number;
-  }) => {
-    if (
-      firstItem === undefined ||
-      secondItem === undefined ||
-      typeof firstItem === "string" ||
-      (typeof secondItem === "string" && secondItem !== "padding") ||
-      (firstIndex === 0 && lastIndex === itemsCount - 1)
-    ) {
-      return undefined;
-    }
-
-    const type = getTargetComboBoxItemType(firstItem as PickerComboBoxItem);
-    const translationType:
-      | "areas"
-      | "entities"
-      | "devices"
-      | "labels"
-      | undefined =
-      type === "area" || type === "floor"
-        ? "areas"
-        : type === "entity"
-          ? "entities"
-          : type && type !== "empty"
-            ? `${type}s`
-            : undefined;
-
-    return translationType
-      ? this.hass.localize(
-          `ui.components.target-picker.type.${translationType}`
-        )
-      : undefined;
-  };
-
-  private _getItems = (searchString: string, section: string) => {
-    this._selectedSection = section as TargetTypeFloorless | undefined;
-
-    return this._getItemsMemoized(
+  private _buildListEntries(
+    searchString: string,
+    section: TargetTypeFloorless | undefined,
+    createDomains: this["createDomains"]
+  ): PickerListEntry[] {
+    const items = this._getItemsMemoized(
       this.hass.localize,
       this.entityFilter,
       this.deviceFilter,
@@ -840,9 +855,37 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._replaceTarget,
       searchString,
       this._configEntryLookup,
-      this._selectedSection
-    );
-  };
+      section
+    ) as PickerListEntry[];
+
+    const actions = this._buildActionEntries(createDomains);
+    return actions.length ? [...items, ...actions] : items;
+  }
+
+  private _buildActionEntries = memoizeOne(
+    (createDomains: this["createDomains"]): PickerListItem[] => {
+      if (!createDomains?.length) return [];
+      return createDomains.map((domain) => ({
+        id: `__create-helper__${SEPARATOR}${domain}`,
+        primary: this.hass.localize(
+          "ui.components.entity.entity-picker.create_helper",
+          {
+            domain: isHelperDomain(domain)
+              ? this.hass.localize(`ui.panel.config.helpers.types.${domain}`)
+              : domainToName(this.hass.localize, domain),
+          }
+        ),
+        secondary: this.hass.localize(
+          "ui.components.entity.entity-picker.new_entity"
+        ),
+        icon_path: mdiPlus,
+        onSelect: ({ close }) => {
+          close();
+          this._createNewDomainElement(domain);
+        },
+      }));
+    }
+  );
 
   private _getItemsMemoized = memoizeOne(
     (
@@ -1083,36 +1126,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _getAdditionalItems = () => this._getCreateItems(this.createDomains);
-
-  private _getCreateItems = memoizeOne(
-    (createDomains: this["createDomains"]) => {
-      if (!createDomains?.length) {
-        return [];
-      }
-
-      return createDomains.map((domain) => {
-        const primary = this.hass.localize(
-          "ui.components.entity.entity-picker.create_helper",
-          {
-            domain: isHelperDomain(domain)
-              ? this.hass.localize(`ui.panel.config.helpers.types.${domain}`)
-              : domainToName(this.hass.localize, domain),
-          }
-        );
-
-        return {
-          id: CREATE_ID + domain,
-          primary: primary,
-          secondary: this.hass.localize(
-            "ui.components.entity.entity-picker.new_entity"
-          ),
-          icon_path: mdiPlus,
-        } satisfies EntityComboBoxItem;
-      });
-    }
-  );
-
   private async _loadConfigEntries() {
     const configEntries = await getConfigEntries(this.hass);
     this._configEntryLookup = Object.fromEntries(
@@ -1256,14 +1269,29 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     );
 
   static styles = css`
+    :host {
+      display: block;
+    }
+
     .add-target-wrapper {
       display: flex;
       justify-content: flex-start;
       margin-top: var(--ha-space-3);
+      width: 100%;
     }
 
-    ha-generic-picker {
-      width: 100%;
+    .picker-body {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      gap: var(--ha-space-2);
+      padding: var(--ha-space-3) var(--ha-space-3) 0;
+    }
+
+    .picker-body ha-picker-list {
+      flex: 1;
+      min-height: 0;
     }
 
     .items {
