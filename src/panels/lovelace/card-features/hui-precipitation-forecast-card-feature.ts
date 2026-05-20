@@ -40,7 +40,7 @@ import {
 import {
   graphLabelsStyles,
   renderDayLabels,
-  renderHourLabels,
+  renderHourSlotLabels,
 } from "./common/graph-labels";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
@@ -256,7 +256,7 @@ class HuiPrecipitationForecastCardFeature
         <div class=${containerClasses}>
           <div class="bars">${hourlyBars}</div>
           ${this._showLabels && this._locale
-            ? renderHourLabels(hoursToShow, this._locale)
+            ? renderHourSlotLabels(hoursToShow, this._locale)
             : nothing}
         </div>
       `;
@@ -370,17 +370,14 @@ class HuiPrecipitationForecastCardFeature
 
     const now = Date.now();
     const hoursToShow = this._config!.hours_to_show ?? DEFAULT_HOURS_TO_SHOW;
-    const maxTime =
-      Math.floor((now + hoursToShow * MS_PER_HOUR) / MS_PER_HOUR) * MS_PER_HOUR;
-    const timeRange = maxTime - now;
-    if (timeRange <= 0) {
-      return undefined;
-    }
+    const startTime = Math.ceil(now / MS_PER_HOUR) * MS_PER_HOUR;
+    const timeRange = hoursToShow * MS_PER_HOUR;
+    const maxTime = startTime + timeRange;
 
     const inRange: { value: number | undefined; t: number }[] = [];
     for (const entry of this._forecast) {
       const t = new Date(entry.datetime).getTime();
-      if (t >= now && t <= maxTime) {
+      if (t >= startTime && t < maxTime) {
         inRange.push({
           value: getForecastPrecipitation(entry, precipitationType),
           t,
@@ -408,7 +405,7 @@ class HuiPrecipitationForecastCardFeature
 
     const elements = inRange.map(({ value, t }) => {
       // Each entry represents an hour-long slot; center the bar in that slot.
-      const xCenter = ((t - now) / timeRange) * width + slotWidth / 2;
+      const xCenter = ((t - startTime) / timeRange) * width + slotWidth / 2;
       if (!Number.isFinite(value) || value! <= 0 || maxPrecipitation <= 0) {
         const cy = height - dotRadius;
         return svg`<circle

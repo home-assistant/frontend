@@ -115,7 +115,6 @@ export const UNIT_C = "°C";
 export const UNIT_F = "°F";
 
 /** Length units. */
-export const UNIT_MM = "mm";
 export const UNIT_IN = "in";
 
 /** Entity ID of the default view. */

@@ -1,5 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html } from "lit";
+import { css, html, nothing } from "lit";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -59,15 +60,50 @@ export const renderHourLabels = (
   `;
 };
 
+export const renderHourSlotLabels = (
+  hoursToShow: number,
+  locale: FrontendLocaleData
+): TemplateResult => {
+  const formatter = hourFormatter(locale.language, useAmPm(locale));
+  const startTime = Math.ceil(Date.now() / MS_PER_HOUR) * MS_PER_HOUR;
+  const step = Math.max(1, Math.round(hoursToShow / 4));
+  return html`
+    <div
+      class="hour-slot-labels"
+      style=${styleMap({
+        "grid-template-columns": `repeat(${hoursToShow}, 1fr)`,
+      })}
+    >
+      ${Array.from({ length: hoursToShow }, (_, i) => {
+        if (i % step !== 0) return nothing;
+        const t = startTime + i * MS_PER_HOUR;
+        return html`
+          <div
+            class="hour-slot-label"
+            style=${styleMap({ "grid-column": String(i + 1) })}
+          >
+            ${formatter.format(new Date(t))}
+          </div>
+        `;
+      })}
+    </div>
+  `;
+};
+
 export const graphLabelsStyles: CSSResultGroup = css`
   .day-labels,
-  .hour-labels {
-    display: flex;
+  .hour-labels,
+  .hour-slot-labels {
     align-items: center;
     height: 10px;
     color: var(--secondary-text-color);
     font-size: 9px;
     line-height: 1;
+  }
+
+  .day-labels,
+  .hour-labels {
+    display: flex;
   }
 
   .hour-labels {
@@ -77,5 +113,15 @@ export const graphLabelsStyles: CSSResultGroup = css`
   .day-label {
     flex: 1;
     text-align: center;
+  }
+
+  .hour-slot-labels {
+    display: grid;
+  }
+
+  .hour-slot-label {
+    text-align: center;
+    min-width: 0;
+    white-space: nowrap;
   }
 `;
