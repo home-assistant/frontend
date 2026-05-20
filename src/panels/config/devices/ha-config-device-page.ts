@@ -8,7 +8,7 @@ import {
   mdiMicrophone,
   mdiOpenInNew,
   mdiPencil,
-  mdiPlusCircle,
+  mdiPlus,
   mdiRestore,
   mdiShapeOutline,
 } from "@mdi/js";
@@ -20,7 +20,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
-import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -105,7 +108,7 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 export interface DeviceAction {
   href?: string;
   target?: string;
-  action?: (ev: any) => void;
+  action?: (ev: Event) => void;
   label: string;
   icon?: string;
   trailingIcon?: string;
@@ -470,43 +473,17 @@ export class HaConfigDevicePage extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.devices.automation.related_heading"
                 )}
-                <ha-tooltip for="add-to-button">
-                  ${device.disabled_by
-                    ? this.hass.localize(
-                        "ui.panel.config.devices.automation.create_disable",
-                        {
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )
-                    : this.hass.localize(
-                        "ui.dialogs.more_info_control.add_to.title"
-                      )}
-                </ha-tooltip>
-                <ha-icon-button
-                  id="add-to-button"
+                <ha-button
+                  appearance="filled"
+                  variant="brand"
                   @click=${this._showAddToDialog}
                   .disabled=${device.disabled_by}
-                  hide-title
-                  .label=${device.disabled_by
-                    ? this.hass.localize(
-                        "ui.panel.config.devices.automation.create_disable",
-                        {
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )
-                    : this.hass.localize(
-                        "ui.dialogs.more_info_control.add_to.title"
-                      )}
-                  .path=${mdiPlusCircle}
-                ></ha-icon-button>
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.dialogs.more_info_control.add_to.title"
+                  )}
+                </ha-button>
               </h1>
               ${!this._related
                 ? html`
@@ -573,36 +550,33 @@ export class HaConfigDevicePage extends LitElement {
                             ${this._related.script?.length
                               ? html`
                                   <div class="items">
-                                    ${this._getRelated(this._related).script.map(
-                                      (script) => {
-                                        const entityState = script;
-                                        const entry = this._entityReg.find(
-                                          (e) =>
-                                            e.entity_id === script.entity_id
-                                        );
-                                        let url = `/config/script/show/${entityState.entity_id}`;
-                                        if (entry) {
-                                          url = `/config/script/edit/${entry.unique_id}`;
-                                        }
-                                        return entityState
-                                          ? html`
-                                              <a href=${url}>
-                                                <ha-list-item
-                                                  hasMeta
-                                                  .script=${script}
-                                                >
-                                                  ${computeStateName(
-                                                    entityState
-                                                  )}
-                                                  <ha-icon-next
-                                                    slot="meta"
-                                                  ></ha-icon-next>
-                                                </ha-list-item>
-                                              </a>
-                                            `
-                                          : nothing;
+                                    ${this._getRelated(
+                                      this._related
+                                    ).script.map((script) => {
+                                      const entityState = script;
+                                      const entry = this._entityReg.find(
+                                        (e) => e.entity_id === script.entity_id
+                                      );
+                                      let url = `/config/script/show/${entityState.entity_id}`;
+                                      if (entry) {
+                                        url = `/config/script/edit/${entry.unique_id}`;
                                       }
-                                    )}
+                                      return entityState
+                                        ? html`
+                                            <a href=${url}>
+                                              <ha-list-item
+                                                hasMeta
+                                                .script=${script}
+                                              >
+                                                ${computeStateName(entityState)}
+                                                <ha-icon-next
+                                                  slot="meta"
+                                                ></ha-icon-next>
+                                              </ha-list-item>
+                                            </a>
+                                          `
+                                        : nothing;
+                                    })}
                                   </div>
                                 `
                               : html`
@@ -648,23 +622,24 @@ export class HaConfigDevicePage extends LitElement {
                                             `
                                           : html`
                                               <ha-list-item
-                                                .id="scene-${slugify(entityState.entity_id)}"
+                                                .id="scene-${slugify(
+                                                  entityState.entity_id
+                                                )}"
                                                 hasMeta
                                                 .scene=${entityState}
                                               >
-                                                ${computeStateName(
-                                                  entityState
-                                                )}
+                                                ${computeStateName(entityState)}
                                                 <ha-icon-next
                                                   slot="meta"
                                                 ></ha-icon-next>
                                               </ha-list-item>
                                               <ha-tooltip
-                                                .for="scene-${slugify(entityState.entity_id)}"
+                                                .for="scene-${slugify(
+                                                  entityState.entity_id
+                                                )}"
                                                 placement=${computeRTL(
                                                   this.hass.language,
-                                                  this.hass
-                                                    .translationMetadata
+                                                  this.hass.translationMetadata
                                                     .translations
                                                 )
                                                   ? "left"
@@ -1513,13 +1488,13 @@ export class HaConfigDevicePage extends LitElement {
           ) {
             // clear name if it matches the device name and it uses the device name (entity naming)
             newName = null;
-          } else if (name && name.includes(oldDeviceName)) {
+          } else if (name?.includes(oldDeviceName)) {
             newName = name.replace(oldDeviceName, newDeviceName);
           } else {
             return undefined;
           }
 
-          return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+          return updateEntityRegistryEntry(this.hass, entity.entity_id, {
             name: newName,
           });
         });
@@ -1539,21 +1514,27 @@ export class HaConfigDevicePage extends LitElement {
     fileDownload(signedUrl.path);
   }
 
-  private _deviceActionSelected(ev: HaDropdownSelectEvent) {
-    const deviceAction = (ev.detail?.item as any)?.data as DeviceAction;
+  private _deviceActionSelected(
+    ev: HaDropdownSelectEvent<DeviceAction> & {
+      detail?: { item?: { data?: DeviceAction } };
+    }
+  ) {
+    const deviceAction = ev.detail?.item?.data;
     if (deviceAction?.action) {
       deviceAction.action(ev);
     }
   }
 
-  private _deviceActionClicked(ev) {
+  private _deviceActionClicked(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { action: (ev: Event) => void }>
+  ) {
     if (!ev.currentTarget.action) {
       return;
     }
 
     ev.preventDefault();
 
-    (ev.currentTarget as any).action(ev);
+    ev.currentTarget.action(ev);
   }
 
   private _voiceAssistantSetup = () => {
@@ -1585,12 +1566,10 @@ export class HaConfigDevicePage extends LitElement {
           padding-bottom: var(--ha-space-3);
         }
 
-        .card-header ha-icon-button {
+        .card-header ha-button {
           margin-right: calc(var(--ha-space-2) * -1);
           margin-inline-end: calc(var(--ha-space-2) * -1);
           margin-inline-start: initial;
-          color: var(--primary-color);
-          height: auto;
           direction: var(--direction);
         }
 
