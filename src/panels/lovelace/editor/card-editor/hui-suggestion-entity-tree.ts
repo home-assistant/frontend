@@ -4,11 +4,13 @@ import {
   mdiMagnify,
   mdiTextureBox,
 } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -24,7 +26,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import { getConfigEntries } from "../../../../data/config_entries";
+import { configEntriesContext } from "../../../../data/context";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -51,12 +53,6 @@ import {
   unassignedKey,
 } from "./entity-tree-builder";
 
-declare global {
-  interface HASSDomEvents {
-    "entity-picked": { entityId: string };
-  }
-}
-
 @customElement("hui-suggestion-entity-tree")
 export class HuiSuggestionEntityTree extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -67,7 +63,15 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   @state() private _expanded: Record<string, boolean> = {};
 
-  @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: (value) =>
+      value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined,
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
 
   // Captured from the load promise to avoid racing parent hass propagation.
   @state() private _domainLocalize?: HomeAssistant["localize"];
@@ -80,9 +84,6 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (this.hass && !Object.keys(this._configEntryLookup).length) {
-      this._loadConfigEntries();
-    }
     this._loadDomainTranslations();
   }
 
@@ -96,24 +97,10 @@ export class HuiSuggestionEntityTree extends LitElement {
     this._setFilter.cancel();
   }
 
-  private async _loadConfigEntries() {
-    if (!this.hass) return;
-    try {
-      const entries = await getConfigEntries(this.hass);
-      const lookup: Record<string, ConfigEntry> = {};
-      for (const entry of entries) {
-        lookup[entry.entry_id] = entry;
-      }
-      this._configEntryLookup = lookup;
-    } catch (_err) {
-      // Device rows will fall back to a generic icon
-    }
-  }
-
   private _deviceDomain(deviceId: string): string | undefined {
     const device = this.hass?.devices[deviceId];
     if (!device?.primary_config_entry) return undefined;
-    return this._configEntryLookup[device.primary_config_entry]?.domain;
+    return this._configEntryLookup?.[device.primary_config_entry]?.domain;
   }
 
   private _searchMemo = memoizeOne(searchEntities);
@@ -121,8 +108,23 @@ export class HuiSuggestionEntityTree extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
     if (!this._tree && this.hass && this._domainLocalize) {
-      this._tree = buildEntityTree(this.hass, this._domainLocalize);
+      this._tree = buildEntityTree({
+        states: this.hass.states,
+        entities: this.hass.entities,
+        devices: this.hass.devices,
+        areas: this.hass.areas,
+        floors: this.hass.floors,
+        language: this.hass.locale?.language,
+        localize: this._domainLocalize,
+      });
       this._fuseIndex = buildSearchIndex(this._tree.searchableEntities);
+      // With a single real floor, save users an extra click and expand it.
+      // Other-areas (when present) stays collapsed since it's a real choice.
+      if (this._tree.floors.length === 1) {
+        this._expanded = {
+          [floorKey(this._tree.floors[0].id)]: true,
+        };
+      }
     }
   }
 
@@ -151,6 +153,10 @@ export class HuiSuggestionEntityTree extends LitElement {
   }
 
   private _renderTree(tree: EntityTree): TemplateResult {
+    // With no real floors, drop the synthetic "other areas" wrapper and
+    // surface areas as roots so users don't see a meaningless single group.
+    const otherAreasAsRoot =
+      tree.floors.length === 0 && tree.otherAreas.length > 0;
     return html`
       ${tree.floors.length || tree.otherAreas.length
         ? html`
@@ -163,18 +169,25 @@ export class HuiSuggestionEntityTree extends LitElement {
               (floor: FloorNode) => this._renderFloor(floor, false)
             )}
             ${tree.otherAreas.length
-              ? this._renderFloor(
-                  {
-                    id: OTHER_AREAS_ID,
-                    name: this.hass.localize(
-                      "ui.panel.lovelace.editor.cardpicker.other_areas"
-                    ),
-                    icon: null,
-                    level: null,
-                    areas: tree.otherAreas,
-                  },
-                  true
-                )
+              ? otherAreasAsRoot
+                ? repeat(
+                    tree.otherAreas,
+                    (area: AreaNode) => area.id,
+                    (area: AreaNode) =>
+                      this._renderArea(area, floorKey(OTHER_AREAS_ID))
+                  )
+                : this._renderFloor(
+                    {
+                      id: OTHER_AREAS_ID,
+                      name: this.hass.localize(
+                        "ui.panel.lovelace.editor.cardpicker.other_areas"
+                      ),
+                      icon: null,
+                      level: null,
+                      areas: tree.otherAreas,
+                    },
+                    true
+                  )
               : nothing}
           `
         : nothing}
@@ -542,7 +555,7 @@ export class HuiSuggestionEntityTree extends LitElement {
         }
         ha-input-search {
           padding: var(--ha-space-3);
-          border-bottom: 1px solid var(--divider-color);
+          border-bottom: var(--ha-border-width-sm) solid var(--divider-color);
         }
         .tree {
           flex: 1;
@@ -640,5 +653,8 @@ export class HuiSuggestionEntityTree extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-suggestion-entity-tree": HuiSuggestionEntityTree;
+  }
+  interface HASSDomEvents {
+    "entity-picked": { entityId: string };
   }
 }

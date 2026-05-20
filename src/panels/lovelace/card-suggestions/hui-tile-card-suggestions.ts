@@ -140,12 +140,12 @@ const SENSOR_TREND_VARIANTS: TileVariant[] = [
 const EXCLUDED_DOMAINS = new Set(["calendar", "todo"]);
 
 const getVariants = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityId: string
 ): TileVariant[] | undefined => {
   const domain = computeDomain(entityId);
   if (domain === "sensor") {
-    const deviceClass = hass.states[entityId]?.attributes.device_class;
+    const deviceClass = states[entityId]?.attributes.device_class;
     if (deviceClass && SENSOR_TREND_DEVICE_CLASSES.has(deviceClass)) {
       return SENSOR_TREND_VARIANTS;
     }
@@ -185,7 +185,7 @@ const allFeaturesSupported = (
 export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
   getEntitySuggestion(hass, entityId) {
     if (EXCLUDED_DOMAINS.has(computeDomain(entityId))) return null;
-    const variants = getVariants(hass, entityId) ?? [DEFAULT_VARIANT];
+    const variants = getVariants(hass.states, entityId) ?? [DEFAULT_VARIANT];
     const suggestions: CardSuggestion<TileCardConfig>[] = [];
     for (const variant of variants) {
       if (!allFeaturesSupported(hass, entityId, variant.features)) continue;

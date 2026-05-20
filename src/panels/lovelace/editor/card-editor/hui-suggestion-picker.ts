@@ -22,16 +22,9 @@ import type { CardSuggestion } from "../../card-suggestions/types";
 import "./hui-suggestion-card";
 import "./hui-suggestion-entity-tree";
 
-declare global {
-  interface HASSDomEvents {
-    "browse-cards": undefined;
-    "suggestion-picked": { config: LovelaceCardConfig };
-  }
-}
-
 @customElement("hui-suggestion-picker")
 export class HuiSuggestionPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Array, attribute: false })
   public prioritizedCardTypes?: string[];
@@ -66,7 +59,6 @@ export class HuiSuggestionPicker extends LitElement {
       entityId: string | undefined,
       priorityTypesKey: string
     ): CardSuggestion[] => {
-      if (!this.hass) return [];
       const suggestions = generateCardSuggestions(this.hass, entityId);
       const priorityTypes = priorityTypesKey
         ? priorityTypesKey.split("|")
@@ -82,7 +74,6 @@ export class HuiSuggestionPicker extends LitElement {
   );
 
   protected render() {
-    if (!this.hass) return nothing;
     const hasEntity = !!this._entityId;
     // Tree is rendered unconditionally so its state (filter, expanded
     // branches, fuse index) survives the desktop/mobile and tree/suggestions
@@ -114,7 +105,7 @@ export class HuiSuggestionPicker extends LitElement {
       return html`
         ${this._renderSelectedEntity()}
         <ha-section-title>
-          ${this.hass!.localize(
+          ${this.hass.localize(
             "ui.panel.lovelace.editor.cardpicker.suggestions_title"
           )}
         </ha-section-title>
@@ -125,13 +116,13 @@ export class HuiSuggestionPicker extends LitElement {
   }
 
   private _renderSelectedEntity(): TemplateResult {
-    const stateObj = this.hass!.states[this._entityId!];
+    const stateObj = this.hass.states[this._entityId!];
     const { primary, secondary } = stateObj
-      ? computeEntityPickerDisplay(this.hass!, stateObj)
+      ? computeEntityPickerDisplay(this.hass, stateObj)
       : { primary: this._entityId!, secondary: undefined };
     return html`
       <ha-section-title>
-        ${this.hass!.localize(
+        ${this.hass.localize(
           "ui.panel.lovelace.editor.cardpicker.selected_entity"
         )}
       </ha-section-title>
@@ -149,7 +140,7 @@ export class HuiSuggestionPicker extends LitElement {
           : nothing}
         <ha-icon-button
           slot="end"
-          .label=${this.hass!.localize("ui.common.clear")}
+          .label=${this.hass.localize("ui.common.clear")}
           .path=${mdiClose}
           @click=${this._clearEntity}
         ></ha-icon-button>
@@ -161,18 +152,18 @@ export class HuiSuggestionPicker extends LitElement {
     return html`
       <div class="content-empty">
         <h2>
-          ${this.hass!.localize(
+          ${this.hass.localize(
             "ui.panel.lovelace.editor.cardpicker.content_empty_title"
           )}
         </h2>
         <p>
-          ${this.hass!.localize(
+          ${this.hass.localize(
             "ui.panel.lovelace.editor.cardpicker.content_empty_description"
           )}
         </p>
         <ha-button appearance="plain" @click=${this._browseCards}>
           <ha-svg-icon slot="start" .path=${mdiViewGridPlus}></ha-svg-icon>
-          ${this.hass!.localize(
+          ${this.hass.localize(
             "ui.panel.lovelace.editor.cardpicker.browse_cards"
           )}
         </ha-button>
@@ -199,7 +190,7 @@ export class HuiSuggestionPicker extends LitElement {
           class="browse-card"
           tabindex="0"
           role="button"
-          aria-label=${this.hass!.localize(
+          aria-label=${this.hass.localize(
             "ui.panel.lovelace.editor.cardpicker.browse_cards"
           )}
           @click=${this._browseCards}
@@ -207,12 +198,12 @@ export class HuiSuggestionPicker extends LitElement {
         >
           <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
           <span class="browse-card-title">
-            ${this.hass!.localize(
+            ${this.hass.localize(
               "ui.panel.lovelace.editor.cardpicker.browse_cards"
             )}
           </span>
           <p>
-            ${this.hass!.localize(
+            ${this.hass.localize(
               "ui.panel.lovelace.editor.cardpicker.not_found"
             )}
           </p>
@@ -270,7 +261,8 @@ export class HuiSuggestionPicker extends LitElement {
           flex: 0 0 320px;
           display: flex;
           flex-direction: column;
-          border-inline-end: 1px solid var(--divider-color);
+          border-inline-end: var(--ha-border-width-sm) solid
+            var(--divider-color);
           min-height: 0;
           overflow: hidden;
         }
@@ -299,6 +291,7 @@ export class HuiSuggestionPicker extends LitElement {
           padding: var(--ha-space-3);
         }
         .content-empty {
+          box-sizing: border-box;
           height: 100%;
           display: flex;
           flex-direction: column;
@@ -377,5 +370,9 @@ export class HuiSuggestionPicker extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-suggestion-picker": HuiSuggestionPicker;
+  }
+  interface HASSDomEvents {
+    "browse-cards": undefined;
+    "suggestion-picked": { config: LovelaceCardConfig };
   }
 }

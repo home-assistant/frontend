@@ -7,6 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-dialog";
@@ -42,6 +43,8 @@ export class HuiCreateDialogCard
 
   @state() private _narrow = false;
 
+  @state() private _saving = false;
+
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
 
@@ -71,6 +74,7 @@ export class HuiCreateDialogCard
     this._open = false;
     this._params = undefined;
     this._currTab = "entity";
+    this._saving = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -111,7 +115,7 @@ export class HuiCreateDialogCard
                     .active=${this._currTab === "entity"}
                     panel="entity"
                     ?autofocus=${this._narrow}
-                    >${this.hass!.localize(
+                    >${this.hass.localize(
                       "ui.panel.lovelace.editor.cardpicker.by_entity"
                     )}</ha-tab-group-tab
                   >
@@ -128,26 +132,35 @@ export class HuiCreateDialogCard
               `
             : nothing}
         </ha-dialog-header>
-        ${cache(
-          this._currTab === "entity"
+        <div class="body">
+          ${cache(
+            this._currTab === "entity"
+              ? html`
+                  <hui-suggestion-picker
+                    .hass=${this.hass}
+                    .prioritizedCardTypes=${this._params.suggestedCards}
+                    @suggestion-picked=${this._handleSuggestionPicked}
+                    @browse-cards=${this._handleBrowseCards}
+                  ></hui-suggestion-picker>
+                `
+              : html`
+                  <hui-card-picker
+                    ?autofocus=${!this._narrow}
+                    .suggestedCards=${this._params.suggestedCards}
+                    .lovelace=${this._params.lovelaceConfig}
+                    .hass=${this.hass}
+                    @config-changed=${this._handleCardPicked}
+                  ></hui-card-picker>
+                `
+          )}
+          ${this._saving
             ? html`
-                <hui-suggestion-picker
-                  .hass=${this.hass}
-                  .prioritizedCardTypes=${this._params.suggestedCards}
-                  @suggestion-picked=${this._handleSuggestionPicked}
-                  @browse-cards=${this._handleBrowseCards}
-                ></hui-suggestion-picker>
+                <div class="saving-overlay" aria-live="polite">
+                  <ha-spinner></ha-spinner>
+                </div>
               `
-            : html`
-                <hui-card-picker
-                  ?autofocus=${!this._narrow}
-                  .suggestedCards=${this._params.suggestedCards}
-                  .lovelace=${this._params.lovelaceConfig}
-                  .hass=${this.hass}
-                  @config-changed=${this._handleCardPicked}
-                ></hui-card-picker>
-              `
-        )}
+            : nothing}
+        </div>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -173,6 +186,8 @@ export class HuiCreateDialogCard
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
+          --ha-dialog-min-height: min(900px, 80vh);
+          --ha-dialog-max-height: var(--ha-dialog-min-height);
         }
 
         ha-dialog::part(body) {
@@ -189,22 +204,26 @@ export class HuiCreateDialogCard
           width: 100%;
           justify-content: center;
         }
-        hui-card-picker {
+        .body {
+          position: relative;
           display: flex;
           flex-direction: column;
+          flex: 1;
           min-height: 0;
         }
-
         hui-card-picker,
         hui-suggestion-picker {
-          height: calc(100vh - 198px);
+          flex: 1;
+          min-height: 0;
         }
-
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          hui-card-picker,
-          hui-suggestion-picker {
-            height: calc(100vh - 158px);
-          }
+        .saving-overlay {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: rgba(var(--rgb-card-background-color), 0.75);
         }
       `,
     ];
@@ -217,19 +236,24 @@ export class HuiCreateDialogCard
   private async _handleSuggestionPicked(
     ev: CustomEvent<{ config: LovelaceCardConfig }>
   ): Promise<void> {
+    if (this._saving) return;
+    this._saving = true;
     const config = ev.detail.config;
-    if (this._params!.saveCard) {
-      await this._params!.saveCard(config);
+    try {
+      if (this._params!.saveCard) {
+        await this._params!.saveCard(config);
+      } else {
+        const lovelaceConfig = this._params!.lovelaceConfig;
+        const containerPath = this._params!.path;
+        const saveConfig = this._params!.saveConfig;
+        const newConfig = addCard(lovelaceConfig, containerPath, config);
+        await saveConfig(newConfig);
+      }
       this.closeDialog();
-      return;
+    } catch (err) {
+      this._saving = false;
+      throw err;
     }
-
-    const lovelaceConfig = this._params!.lovelaceConfig;
-    const containerPath = this._params!.path;
-    const saveConfig = this._params!.saveConfig;
-    const newConfig = addCard(lovelaceConfig, containerPath, config);
-    await saveConfig(newConfig);
-    this.closeDialog();
   }
 
   private _handleCardPicked(ev) {

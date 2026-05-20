@@ -13,7 +13,6 @@ import { computeEntityName } from "../../../../common/entity/compute_entity_name
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../common/string/compare";
 import { entityComboBoxKeys } from "../../../../data/entity/entity_picker";
-import { isUnavailableState } from "../../../../data/entity/entity";
 import { getFloorAreaLookup } from "../../../../data/floor_registry";
 import { domainToName } from "../../../../data/integration";
 import { multiTermSortedSearch } from "../../../../resources/fuseMultiTerm";
@@ -103,20 +102,26 @@ export const childKeyPrefix = (key: string) => `${key}${SEP}`;
 
 const FUSE_KEY_NAMES = entityComboBoxKeys.map((k) => k.name as string);
 
-export function buildEntityTree(
-  hass: HomeAssistant,
-  // Override for callers that loaded translations themselves and need to
-  // bypass the parent's possibly-stale hass.localize.
-  localize: HomeAssistant["localize"] = hass.localize
-): EntityTree {
+export interface BuildEntityTreeInput {
+  states: HomeAssistant["states"];
+  entities: HomeAssistant["entities"];
+  devices: HomeAssistant["devices"];
+  areas: HomeAssistant["areas"];
+  floors: HomeAssistant["floors"];
+  language: string | undefined;
+  localize: HomeAssistant["localize"];
+}
+
+export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
   const {
     states,
     entities: entityReg,
     devices: deviceReg,
     areas: areaReg,
     floors: floorReg,
-  } = hass;
-  const language = hass.locale?.language;
+    language,
+    localize,
+  } = input;
 
   const areaDirectEntities = new Map<string, string[]>();
   const areaDeviceEntities = new Map<string, Map<string, string[]>>();
@@ -128,7 +133,7 @@ export function buildEntityTree(
 
   for (const entityId of Object.keys(states)) {
     const stateObj = states[entityId];
-    if (!stateObj || isUnavailableState(stateObj.state)) continue;
+    if (!stateObj) continue;
 
     const entry = entityReg[entityId];
     if (entry?.hidden) continue;

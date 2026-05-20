@@ -8,12 +8,6 @@ import type { HomeAssistant } from "../../../../types";
 import "../../cards/hui-card";
 import type { CardSuggestion } from "../../card-suggestions/types";
 
-declare global {
-  interface HASSDomEvents {
-    "pick-suggestion": { suggestion: CardSuggestion };
-  }
-}
-
 const PREVIEW_ITEM_CAP = 6;
 
 interface PreviewState {
@@ -65,9 +59,9 @@ export class HuiSuggestionCard extends LitElement {
         tabindex="0"
         role="button"
         aria-label=${suggestion.label}
-        @click=${this._handleClick}
         @keydown=${this._handleKeyDown}
       >
+        <div class="overlay" @click=${this._handleClick}></div>
         <div class="card-header">${suggestion.label}</div>
         <div class="preview">
           ${this._preview
@@ -116,16 +110,22 @@ export class HuiSuggestionCard extends LitElement {
       display: flex;
       flex-direction: column;
       border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      background: var(--primary-background-color, #fafafa);
+      background: var(--primary-background-color);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      border: var(--ha-card-border-width, 1px) solid
+      border: var(--ha-card-border-width, var(--ha-border-width-sm)) solid
         var(--ha-card-border-color, var(--divider-color));
     }
     .card:focus-visible {
       outline: 2px solid var(--primary-color);
       outline-offset: 2px;
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
     }
     .card-header {
       color: var(--ha-card-header-color, var(--primary-text-color));
@@ -163,5 +163,8 @@ export class HuiSuggestionCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-suggestion-card": HuiSuggestionCard;
+  }
+  interface HASSDomEvents {
+    "pick-suggestion": { suggestion: CardSuggestion };
   }
 }
