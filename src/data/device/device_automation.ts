@@ -39,19 +39,28 @@ export interface DeviceCapabilities {
   extra_fields: HaFormSchema[];
 }
 
-export const fetchDeviceActions = (hass: HomeAssistant, deviceId: string) =>
+export const fetchDeviceActions = (
+  hass: Pick<HomeAssistant, "callWS">,
+  deviceId: string
+) =>
   hass.callWS<DeviceAction[]>({
     type: "device_automation/action/list",
     device_id: deviceId,
   });
 
-export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
+export const fetchDeviceConditions = (
+  hass: Pick<HomeAssistant, "callWS">,
+  deviceId: string
+) =>
   hass.callWS<DeviceCondition[]>({
     type: "device_automation/condition/list",
     device_id: deviceId,
   });
 
-export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
+export const fetchDeviceTriggers = (
+  hass: Pick<HomeAssistant, "callWS">,
+  deviceId: string
+) =>
   hass
     .callWS<DeviceTrigger[]>({
       type: "device_automation/trigger/list",
@@ -60,7 +69,7 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     .then((triggers) => migrateAutomationTrigger(triggers) as DeviceTrigger[]);
 
 export const fetchDeviceActionCapabilities = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   action: DeviceAction
 ) =>
   hass.callWS<DeviceCapabilities>({
@@ -69,7 +78,7 @@ export const fetchDeviceActionCapabilities = (
   });
 
 export const fetchDeviceConditionCapabilities = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   condition: DeviceCondition
 ) =>
   hass.callWS<DeviceCapabilities>({
@@ -78,7 +87,7 @@ export const fetchDeviceConditionCapabilities = (
   });
 
 export const fetchDeviceTriggerCapabilities = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   trigger: DeviceTrigger
 ) =>
   hass.callWS<DeviceCapabilities>({
