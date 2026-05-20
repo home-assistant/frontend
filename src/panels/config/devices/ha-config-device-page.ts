@@ -1075,12 +1075,12 @@ export class HaConfigDevicePage extends LitElement {
                 this.deviceId,
                 entry.entry_id
               );
-            } catch (err: any) {
+            } catch (err: unknown) {
               showAlertDialog(this, {
                 title: this.hass.localize(
                   "ui.panel.config.devices.error_delete"
                 ),
-                text: err.message,
+                text: err instanceof Error ? err.message : String(err),
               });
             }
           },
@@ -1418,12 +1418,12 @@ export class HaConfigDevicePage extends LitElement {
                 try {
                   // eslint-disable-next-line no-await-in-loop
                   result = await disableConfigEntry(this.hass, cnfg_entry);
-                } catch (err: any) {
+                } catch (err: unknown) {
                   showAlertDialog(this, {
                     title: this.hass.localize(
                       "ui.panel.config.integrations.config_entry.disable_error"
                     ),
-                    text: err.message,
+                    text: err instanceof Error ? err.message : String(err),
                   });
                   return;
                 }
@@ -1446,12 +1446,12 @@ export class HaConfigDevicePage extends LitElement {
         }
         try {
           await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
-        } catch (err: any) {
+        } catch (err: unknown) {
           showAlertDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.devices.update_device_error"
             ),
-            text: err.message,
+            text: err instanceof Error ? err.message : String(err),
           });
           return;
         }
