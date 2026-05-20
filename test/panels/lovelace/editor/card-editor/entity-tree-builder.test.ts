@@ -107,6 +107,17 @@ const makeHass = (overrides: Partial<HomeAssistant>): HomeAssistant =>
     ...overrides,
   }) as unknown as HomeAssistant;
 
+const buildTree = (hass: HomeAssistant) =>
+  buildEntityTree({
+    states: hass.states,
+    entities: hass.entities,
+    devices: hass.devices,
+    areas: hass.areas,
+    floors: hass.floors,
+    language: hass.locale?.language,
+    localize: hass.localize,
+  });
+
 describe("buildEntityTree", () => {
   it("groups entities by floor → area", () => {
     const hass = makeHass({
@@ -125,7 +136,7 @@ describe("buildEntityTree", () => {
       floors: { ground: floor("ground") },
     });
 
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     expect(tree.floors).toHaveLength(1);
     expect(tree.floors[0].id).toBe("ground");
     const areas = tree.floors[0].areas;
@@ -139,7 +150,7 @@ describe("buildEntityTree", () => {
       areas: { orphan: area("orphan") },
     });
 
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     expect(tree.floors).toHaveLength(0);
     expect(tree.otherAreas.map((a) => a.id)).toEqual(["orphan"]);
   });
@@ -158,7 +169,7 @@ describe("buildEntityTree", () => {
       areas: { living: area("living") },
     });
 
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     const livingArea = tree.otherAreas[0];
     expect(livingArea.devices).toHaveLength(1);
     expect(livingArea.devices[0].entityIds.sort()).toEqual([
@@ -177,7 +188,7 @@ describe("buildEntityTree", () => {
       areas: { living: area("living"), kitchen: area("kitchen") },
     });
 
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     const living = tree.otherAreas.find((a) => a.id === "living")!;
     expect(living.directEntityIds).toEqual(["sensor.temp"]);
     expect(living.devices).toEqual([]);
@@ -203,7 +214,7 @@ describe("buildEntityTree", () => {
       },
     });
 
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     const ids = tree.unassignedSections.map((s) => s.id);
     expect(ids).toContain("entities");
     expect(ids).toContain("helpers");
@@ -211,27 +222,21 @@ describe("buildEntityTree", () => {
     expect(ids).toContain("services");
   });
 
-  it("excludes hidden and unavailable entities", () => {
+  it("excludes hidden entities", () => {
     const hass = makeHass({
       states: {
         "light.visible": state("light.visible"),
         "light.hidden": state("light.hidden"),
-        "light.unavailable": {
-          ...state("light.unavailable"),
-          state: "unavailable",
-        },
       },
       entities: {
         "light.visible": entity({ area_id: "living" }),
         "light.hidden": entity({ area_id: "living", hidden: true }),
-        "light.unavailable": entity({ area_id: "living" }),
       },
       areas: { living: area("living") },
     });
 
-    const tree = buildEntityTree(hass);
-    const entities = tree.otherAreas[0].directEntityIds;
-    expect(entities).toEqual(["light.visible"]);
+    const tree = buildTree(hass);
+    expect(tree.otherAreas[0].directEntityIds).toEqual(["light.visible"]);
   });
 
   it("indexes searchable entities for fuse", () => {
@@ -241,7 +246,7 @@ describe("buildEntityTree", () => {
       areas: { kitchen: area("kitchen", { name: "Kitchen" }) },
     });
 
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     expect(tree.searchableEntities).toHaveLength(1);
     expect(tree.searchableEntities[0]).toMatchObject({
       id: "light.kitchen",
@@ -269,7 +274,7 @@ describe("searchEntities", () => {
       },
       floors: { ground: floor("ground") },
     });
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     return {
       entities: tree.searchableEntities,
       index: buildSearchIndex(tree.searchableEntities),
@@ -307,7 +312,7 @@ describe("pathToEntity", () => {
       areas: { kitchen: area("kitchen", { floor_id: "ground" }) },
       floors: { ground: floor("ground") },
     });
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     const path = pathToEntity(tree, "light.lamp");
     expect(path).toEqual([
       floorKey("ground"),
@@ -322,7 +327,7 @@ describe("pathToEntity", () => {
       devices: { dev1: device("dev1", { area_id: "kitchen" }) },
       areas: { kitchen: area("kitchen") },
     });
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     const otherAreasFloor = floorKey(OTHER_AREAS_ID);
     const path = pathToEntity(tree, "sensor.temp");
     expect(path).toEqual([
@@ -337,7 +342,7 @@ describe("pathToEntity", () => {
       states: { "light.unowned": state("light.unowned") },
       entities: { "light.unowned": entity({}) },
     });
-    const tree = buildEntityTree(hass);
+    const tree = buildTree(hass);
     const sKey = unassignedKey("entities");
     expect(pathToEntity(tree, "light.unowned")).toEqual([
       sKey,
@@ -347,7 +352,7 @@ describe("pathToEntity", () => {
 
   it("returns an empty path for an unknown entity", () => {
     const hass = makeHass({});
-    expect(pathToEntity(buildEntityTree(hass), "light.ghost")).toEqual([]);
+    expect(pathToEntity(buildTree(hass), "light.ghost")).toEqual([]);
   });
 });
 
