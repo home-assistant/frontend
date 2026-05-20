@@ -9,9 +9,17 @@ import {
   mdiShape,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { until } from "lit/directives/until";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -23,6 +31,7 @@ import "../../../../components/ha-svg-icon";
 import { showTargetDetailsDialog } from "../../../../components/target-picker/dialog/show-dialog-target-details";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
+  apiContext,
   configEntriesContext,
   internationalizationContext,
   labelsContext,
@@ -30,18 +39,18 @@ import {
   statesContext,
 } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import type { TargetSelector } from "../../../../data/selector";
-import type { TargetType } from "../../../../data/target";
+import {
+  deviceMeetsTargetSelector,
+  entityMeetsTargetSelector,
+  type TargetSelector,
+} from "../../../../data/selector";
+import { extractFromTarget, type TargetType } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
-import type { HomeAssistant } from "../../../../types";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
 @customElement("ha-automation-row-targets")
 export class HaAutomationRowTargets extends LitElement {
-  @property({ attribute: false })
-  public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public target?: HassServiceTarget;
 
@@ -63,9 +72,6 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
 
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
-
   @state()
   @consume({ context: configEntriesContext, subscribe: true })
   @transform<ConfigEntry[], Record<string, ConfigEntry>>({
@@ -76,6 +82,96 @@ export class HaAutomationRowTargets extends LitElement {
     },
   })
   private _configEntryLookup?: Record<string, ConfigEntry>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  private _countCache = new Map<string, Promise<number | undefined>>();
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("target") ||
+      changedProps.has("selector") ||
+      changedProps.has("_registries")
+    ) {
+      this._countCache.clear();
+    }
+  }
+
+  private _countMatchingEntities(referencedEntities: string[]): number {
+    const targetSelector = this.selector;
+    const hasEntityFilter = !!targetSelector?.target?.entity;
+    const hasDeviceFilter = !!targetSelector?.target?.device;
+
+    if (!hasEntityFilter && !hasDeviceFilter) {
+      return referencedEntities.length;
+    }
+
+    const entityRegistry = hasDeviceFilter
+      ? Object.values(this._registries.entities)
+      : [];
+
+    return referencedEntities.filter((entityId) => {
+      if (hasEntityFilter) {
+        const stateObj = this._states[entityId];
+        if (!entityMeetsTargetSelector(stateObj, targetSelector!)) {
+          return false;
+        }
+      }
+      if (hasDeviceFilter) {
+        const deviceId = this._registries.entities[entityId]?.device_id;
+        if (deviceId) {
+          const device = this._registries.devices[deviceId];
+          if (
+            device &&
+            !deviceMeetsTargetSelector(
+              this._states,
+              entityRegistry,
+              device,
+              targetSelector!
+            )
+          ) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }).length;
+  }
+
+  private _renderCount(
+    targetType: "floor" | "area" | "device" | "label",
+    targetId: string
+  ) {
+    const key = `${targetType}:${targetId}`;
+    if (!this._countCache.has(key)) {
+      this._countCache.set(
+        key,
+        extractFromTarget(
+          this._api.callWS,
+          {
+            [`${targetType}_id`]: [targetId],
+          },
+          false,
+          this.selector?.target?.primary_entities_only
+        )
+          .then((result) =>
+            this._countMatchingEntities(result.referenced_entities)
+          )
+          .catch(() => undefined)
+      );
+    }
+    return until(
+      this._countCache
+        .get(key)!
+        .then((count) => (count === undefined ? nothing : html` (${count})`)),
+      "(-)"
+    );
+  }
 
   protected render() {
     const length = Object.keys(this.target || {}).length;
@@ -217,7 +313,8 @@ export class HaAutomationRowTargets extends LitElement {
     warning = false,
     error = false,
     targetId?: string,
-    targetType?: string
+    targetType?: string,
+    countTemplate: unknown = nothing
   ) {
     return html`<div
       class=${classMap({
@@ -232,7 +329,7 @@ export class HaAutomationRowTargets extends LitElement {
       @click=${this._handleTargetClick}
     >
       ${icon}
-      <div class="label">${label}</div>
+      <div class="label">${label}${countTemplate}</div>
     </div>`;
   }
 
@@ -246,6 +343,7 @@ export class HaAutomationRowTargets extends LitElement {
     let warning = false;
     let badgeTargetId: string | undefined = targetId;
     let badgeTargetType: string | undefined = targetType;
+    let countTemplate: unknown = nothing;
 
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
       icon = mdiShape;
@@ -266,12 +364,29 @@ export class HaAutomationRowTargets extends LitElement {
       const exists = this._checkTargetExists(targetType, targetId);
       if (!exists) {
         icon = mdiAlert;
-        label = getTargetText(this.hass, targetType, targetId, this._getLabel);
+        label = getTargetText(
+          this._registries,
+          this._states,
+          this._i18n.localize,
+          targetType,
+          targetId,
+          this._getLabel
+        );
         warning = true;
         badgeTargetId = undefined;
         badgeTargetType = undefined;
       } else {
-        label = getTargetText(this.hass, targetType, targetId, this._getLabel);
+        label = getTargetText(
+          this._registries,
+          this._states,
+          this._i18n.localize,
+          targetType,
+          targetId,
+          this._getLabel
+        );
+        if (targetType !== "entity") {
+          countTemplate = this._renderCount(targetType, targetId);
+        }
       }
     }
 
@@ -281,7 +396,8 @@ export class HaAutomationRowTargets extends LitElement {
           .path=${icon}
         ></ha-svg-icon>`
       : getTargetIcon(
-          this.hass,
+          this._registries,
+          this._states,
           targetType,
           targetId,
           this._configEntryLookup || {},
@@ -299,7 +415,7 @@ export class HaAutomationRowTargets extends LitElement {
         class=${classMap({
           warning,
         })}
-        >${iconTemplate} ${label}</ha-dropdown-item
+        >${iconTemplate} ${label}${countTemplate}</ha-dropdown-item
       >`;
     }
 
@@ -309,7 +425,8 @@ export class HaAutomationRowTargets extends LitElement {
       warning,
       false,
       badgeTargetId,
-      badgeTargetType
+      badgeTargetType,
+      countTemplate
     );
   }
 

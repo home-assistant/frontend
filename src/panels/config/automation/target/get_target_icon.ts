@@ -7,10 +7,11 @@ import "../../../../components/ha-state-icon";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
 
 export const getTargetIcon = (
-  hass: HomeAssistant,
+  registries: HomeAssistantRegistries,
+  states: HomeAssistant["states"],
   targetType: string,
   targetId: string | undefined,
   configEntryLookup: Record<string, ConfigEntry>,
@@ -21,15 +22,15 @@ export const getTargetIcon = (
     return nothing;
   }
 
-  if (targetType === "floor" && hass.floors[targetId]) {
+  if (targetType === "floor" && registries.floors[targetId]) {
     return html`<ha-floor-icon
       .slot=${slot}
-      .floor=${hass.floors[targetId]}
+      .floor=${registries.floors[targetId]}
     ></ha-floor-icon>`;
   }
 
   if (targetType === "area") {
-    const area = hass.areas[targetId];
+    const area = registries.areas[targetId];
     if (area?.icon) {
       return html`<ha-icon .slot=${slot} .icon=${area.icon}></ha-icon>`;
     }
@@ -39,8 +40,8 @@ export const getTargetIcon = (
     ></ha-svg-icon>`;
   }
 
-  if (targetType === "device" && hass.devices[targetId]) {
-    const device = hass.devices[targetId];
+  if (targetType === "device" && registries.devices[targetId]) {
+    const device = registries.devices[targetId];
     const configEntry = device.primary_config_entry
       ? configEntryLookup[device.primary_config_entry]
       : undefined;
@@ -55,9 +56,9 @@ export const getTargetIcon = (
     }
   }
 
-  if (targetType === "entity" && hass.states[targetId]) {
+  if (targetType === "entity" && states[targetId]) {
     return html`<ha-state-icon
-      .stateObj=${hass.states[targetId]}
+      .stateObj=${states[targetId]}
       .slot=${slot}
     ></ha-state-icon>`;
   }
