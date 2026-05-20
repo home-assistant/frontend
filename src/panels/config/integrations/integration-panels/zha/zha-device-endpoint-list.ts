@@ -15,6 +15,8 @@ import type {
 } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
 
+const GROUPABLE_ENTITY_DOMAINS = ["fan", "light", "switch"];
+
 export interface DeviceEndpointRowData {
   id: string;
   name: string;
@@ -188,15 +190,13 @@ export class ZHADeviceEndpointList extends LitElement {
   private _deviceEndpointDetails(
     deviceEndpoint: DeviceEndpointRowData
   ): string {
-    const entitySummary = deviceEndpoint.entities.length
-      ? this.hass.localize(
-          `ui.panel.config.zha.groups.entity_count${
-            deviceEndpoint.entities.length === 1 ? "" : "_plural"
-          }`,
-          {
-            count: deviceEndpoint.entities.length,
-          }
-        )
+    const entityNames = deviceEndpoint.entities
+      .filter((entity) => this._isGroupableEntity(entity))
+      .map((entity) => entity.name || entity.original_name || entity.entity_id);
+    const entitySummary = entityNames.length
+      ? entityNames.length > 2
+        ? `${entityNames.slice(0, 2).join(", ")} +${entityNames.length - 2}`
+        : entityNames.join(", ")
       : this.hass.localize("ui.panel.config.zha.groups.no_entities");
 
     return [
@@ -208,6 +208,11 @@ export class ZHADeviceEndpointList extends LitElement {
     ]
       .filter(Boolean)
       .join(" · ");
+  }
+
+  private _isGroupableEntity(entity: ZHAEntityReference): boolean {
+    const domain = entity.entity_id.split(".", 1)[0];
+    return GROUPABLE_ENTITY_DOMAINS.includes(domain);
   }
 
   private _handleFilterChanged(ev: Event): void {
