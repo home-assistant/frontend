@@ -837,7 +837,7 @@ export class HaServiceControl extends LitElement {
         if (targetDevices.length) {
           targetDevices = targetDevices.filter((device) =>
             deviceMeetsTargetSelector(
-              this.hass,
+              this.hass.states,
               Object.values(this.hass.entities),
               this.hass.devices[device],
               targetSelector
