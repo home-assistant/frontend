@@ -114,7 +114,6 @@ export class DialogDeviceAddTo extends LitElement {
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
-        width="small"
         header-title=${this._i18n.localize(
           "ui.dialogs.more_info_control.add_entity_to"
         )}
