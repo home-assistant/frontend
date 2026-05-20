@@ -104,7 +104,8 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
-  status?: DeviceAvailabilityStatus;
+  availability?: DeviceAvailabilityStatus;
+  status?: string;
   battery_entity?: [string | undefined, string | undefined];
   label_entries: LabelRegistryEntry[];
 }
@@ -526,7 +527,10 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
-          status: availabilityStatus,
+          availability: availabilityStatus,
+          status: localize(
+            `ui.panel.config.devices.picker.status.${availabilityStatus}`
+          ),
           firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
@@ -675,7 +679,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         minWidth: "80px",
         maxWidth: "80px",
         template: (device) => {
-          const unavailable = device.status === "unavailable";
+          const unavailable = device.availability === "unavailable";
           return device.disabled_by || unavailable
             ? html`
                 <div
@@ -688,9 +692,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                     .path=${unavailable ? mdiAlertCircle : mdiCancel}
                   ></ha-svg-icon>
                   <ha-tooltip .for="svg-icon-${device.id}" placement="left">
-                    ${localize(
-                      `ui.panel.config.devices.picker.status.${device.status}`
-                    )}
+                    ${device.status}
                   </ha-tooltip>
                 </div>
               `
