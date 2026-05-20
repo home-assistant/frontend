@@ -209,8 +209,6 @@ export class DialogDeviceAddTo extends LitElement {
       `;
     }
 
-    const mode = this._params.mode;
-
     return html`
       <ha-list>
         ${hasTriggers
@@ -272,11 +270,11 @@ export class DialogDeviceAddTo extends LitElement {
                   .path=${mdiRoomService}
                 ></ha-svg-icon>
                 ${this.hass.localize(
-                  `ui.panel.config.devices.${mode}.actions.title`
+                  `ui.panel.config.devices.${this._params.mode}.actions.title`
                 )}
                 <span slot="secondary">
                   ${this.hass.localize(
-                    `ui.panel.config.devices.${mode}.actions.description`
+                    `ui.panel.config.devices.${this._params.mode}.actions.description`
                   )}
                 </span>
               </ha-list-item>
@@ -290,7 +288,7 @@ export class DialogDeviceAddTo extends LitElement {
     const key = (ev.currentTarget as HTMLElement).dataset
       .type as AddToActionKey;
     this.closeDialog();
-    addToActionHandler(key, { device_id: this._params!.device.id });
+    addToActionHandler(key, { device_id: this._params?.device.id });
   }
 
   private _handleLegacyAction(ev: Event) {
@@ -301,7 +299,7 @@ export class DialogDeviceAddTo extends LitElement {
 
     this.closeDialog();
 
-    if (this._params!.mode === "script") {
+    if (this._params?.mode === "script") {
       const newScript = {} as ScriptConfig;
       if (type === "action" && this._actions?.length) {
         newScript.sequence = [this._actions[0]];
