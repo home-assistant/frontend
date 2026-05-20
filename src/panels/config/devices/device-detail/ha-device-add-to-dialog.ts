@@ -1,5 +1,10 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiAbTesting, mdiGestureTap, mdiRoomService } from "@mdi/js";
+import {
+  mdiPlayCircleOutline,
+  mdiPlaylistCheck,
+  mdiRobotOutline,
+  mdiScriptTextOutline,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -140,7 +145,7 @@ export class DialogDeviceAddTo extends LitElement {
           @click=${this._handleNewAction}
           data-dialog="close"
         >
-          <ha-svg-icon slot="graphic" .path=${mdiGestureTap}></ha-svg-icon>
+          <ha-svg-icon slot="graphic" .path=${mdiRobotOutline}></ha-svg-icon>
           ${this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
             { target: deviceName }
@@ -152,7 +157,7 @@ export class DialogDeviceAddTo extends LitElement {
           @click=${this._handleNewAction}
           data-dialog="close"
         >
-          <ha-svg-icon slot="graphic" .path=${mdiAbTesting}></ha-svg-icon>
+          <ha-svg-icon slot="graphic" .path=${mdiPlaylistCheck}></ha-svg-icon>
           ${this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.actions.automation_condition",
             { target: deviceName }
@@ -164,7 +169,10 @@ export class DialogDeviceAddTo extends LitElement {
           @click=${this._handleNewAction}
           data-dialog="close"
         >
-          <ha-svg-icon slot="graphic" .path=${mdiRoomService}></ha-svg-icon>
+          <ha-svg-icon
+            slot="graphic"
+            .path=${mdiPlayCircleOutline}
+          ></ha-svg-icon>
           ${this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.actions.automation_action",
             { target: deviceName }
@@ -176,7 +184,10 @@ export class DialogDeviceAddTo extends LitElement {
           @click=${this._handleNewAction}
           data-dialog="close"
         >
-          <ha-svg-icon slot="graphic" .path=${mdiRoomService}></ha-svg-icon>
+          <ha-svg-icon
+            slot="graphic"
+            .path=${mdiScriptTextOutline}
+          ></ha-svg-icon>
           ${this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.actions.script_action",
             { target: deviceName }
@@ -225,7 +236,7 @@ export class DialogDeviceAddTo extends LitElement {
               >
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${mdiGestureTap}
+                  .path=${mdiRobotOutline}
                 ></ha-svg-icon>
                 ${this._i18n.localize(
                   "ui.panel.config.devices.automation.triggers.title"
@@ -247,7 +258,10 @@ export class DialogDeviceAddTo extends LitElement {
                 @click=${this._handleLegacyAction}
                 data-dialog="close"
               >
-                <ha-svg-icon slot="graphic" .path=${mdiAbTesting}></ha-svg-icon>
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiPlaylistCheck}
+                ></ha-svg-icon>
                 ${this._i18n.localize(
                   "ui.panel.config.devices.automation.conditions.title"
                 )}
@@ -270,7 +284,7 @@ export class DialogDeviceAddTo extends LitElement {
               >
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${mdiRoomService}
+                  .path=${mdiPlayCircleOutline}
                 ></ha-svg-icon>
                 ${this._i18n.localize(
                   "ui.panel.config.devices.automation.actions.title"
@@ -290,7 +304,7 @@ export class DialogDeviceAddTo extends LitElement {
               >
                 <ha-svg-icon
                   slot="graphic"
-                  .path=${mdiRoomService}
+                  .path=${mdiScriptTextOutline}
                 ></ha-svg-icon>
                 ${this._i18n.localize(
                   "ui.panel.config.devices.script.actions.title"
