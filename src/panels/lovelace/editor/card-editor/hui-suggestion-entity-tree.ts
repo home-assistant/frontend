@@ -10,6 +10,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { loadVirtualizer } from "../../../../resources/virtualizer";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
@@ -107,6 +108,9 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
     if (!this._tree && this.hass && this._domainLocalize) {
       this._tree = buildEntityTree({
         states: this.hass.states,
@@ -140,11 +144,11 @@ export class HuiSuggestionEntityTree extends LitElement {
         )}
         @input=${this._handleFilterChange}
       ></ha-input-search>
-      <div class="tree ha-scrollbar">
-        ${this._filter
-          ? this._renderSearchResults()
-          : this._renderTree(this._tree)}
-      </div>
+      ${this._filter
+        ? this._renderSearchResults()
+        : html`<div class="tree ha-scrollbar">
+            ${this._renderTree(this._tree)}
+          </div>`}
     `;
   }
 
@@ -209,6 +213,8 @@ export class HuiSuggestionEntityTree extends LitElement {
     `;
   }
 
+  private _searchKeyFunction = (item: SearchableEntity) => item.id;
+
   private _renderSearchResults(): TemplateResult {
     const results = this._searchMemo(
       this._tree!.searchableEntities,
@@ -232,28 +238,28 @@ export class HuiSuggestionEntityTree extends LitElement {
         </div>
       `;
     }
+    return html`
+      <lit-virtualizer
+        scroller
+        class="search-results ha-scrollbar"
+        .items=${results}
+        .keyFunction=${this._searchKeyFunction}
+        .renderItem=${this._renderSearchRow}
+      ></lit-virtualizer>
+    `;
+  }
+
+  private _renderSearchRow = (
+    item: SearchableEntity,
+    index: number
+  ): TemplateResult => {
+    const stateObj = this.hass.states[item.id];
+    const selected = this.selectedEntityId === item.id;
     const rtl = computeRTL(
       this.hass.language,
       this.hass.translationMetadata.translations
     );
     const separator = rtl ? " ◂ " : " ▸ ";
-    return html`
-      ${repeat(
-        results,
-        (item: SearchableEntity) => item.id,
-        (item: SearchableEntity, index: number) =>
-          this._renderSearchRow(item, index, separator)
-      )}
-    `;
-  }
-
-  private _renderSearchRow(
-    item: SearchableEntity,
-    index: number,
-    separator: string
-  ): TemplateResult {
-    const stateObj = this.hass.states[item.id];
-    const selected = this.selectedEntityId === item.id;
     const secondary = [item.area, item.device].filter(Boolean).join(separator);
     return html`
       <ha-combo-box-item
@@ -283,7 +289,7 @@ export class HuiSuggestionEntityTree extends LitElement {
           : nothing}
       </ha-combo-box-item>
     `;
-  }
+  };
 
   private _renderChevron(expanded: boolean): TemplateResult {
     return html`<ha-svg-icon
@@ -561,6 +567,11 @@ export class HuiSuggestionEntityTree extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--ha-space-3);
+        }
+        lit-virtualizer.search-results {
+          flex: 1;
+          min-height: 0;
           padding-bottom: var(--ha-space-3);
         }
         ha-combo-box-item {
