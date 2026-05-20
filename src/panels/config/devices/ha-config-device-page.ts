@@ -601,8 +601,7 @@ export class HaConfigDevicePage extends LitElement {
                                     ${this._getRelated(this._related).scene.map(
                                       (scene) => {
                                         const entityState = scene;
-                                        return entityState &&
-                                          entityState.attributes.id
+                                        return entityState?.attributes.id
                                           ? html`
                                               <a
                                                 href=${`/config/scene/edit/${entityState.attributes.id}`}
@@ -745,7 +744,8 @@ export class HaConfigDevicePage extends LitElement {
             : ""}
           <div class="header-right">
             ${battery &&
-            (batteryDomain === "binary_sensor" || !isNaN(battery.state as any))
+            (batteryDomain === "binary_sensor" ||
+              !Number.isNaN(Number(battery.state)))
               ? html`
                   <div class="battery">
                     ${batteryDomain === "sensor"
@@ -987,8 +987,8 @@ export class HaConfigDevicePage extends LitElement {
           let info: DiagnosticInfo;
           try {
             info = await fetchDiagnosticHandler(this.hass, entry.domain);
-          } catch (err: any) {
-            if (err.code === "not_found") {
+          } catch (err: unknown) {
+            if (err instanceof Error && err.message.includes("not_found")) {
               return false;
             }
             throw err;
@@ -1077,7 +1077,7 @@ export class HaConfigDevicePage extends LitElement {
 
             try {
               await removeConfigEntryFromDevice(
-                this.hass!,
+                this.hass,
                 this.deviceId,
                 entry.entry_id
               );
@@ -1129,7 +1129,7 @@ export class HaConfigDevicePage extends LitElement {
       device.configuration_url?.startsWith("homeassistant://") || false;
 
     const configurationUrl = configurationUrlIsHomeAssistant
-      ? device.configuration_url!.replace("homeassistant://", "/")
+      ? device.configuration_url?.replace("homeassistant://", "/")
       : device.configuration_url;
 
     if (configurationUrl) {
