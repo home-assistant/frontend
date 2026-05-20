@@ -1,13 +1,13 @@
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { consume, type ContextType } from "@lit/context";
+import { customElement, state } from "lit/decorators";
 import {
   mdiPlayCircleOutline,
   mdiPlaylistCheck,
   mdiRobotOutline,
   mdiScriptTextOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-adaptive-dialog";
