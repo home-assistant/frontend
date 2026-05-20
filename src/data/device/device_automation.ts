@@ -1,11 +1,12 @@
+import type { HassEntities } from "home-assistant-js-websocket";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import type { HomeAssistant } from "../../types";
+import type { CallWS } from "../../types";
 import type { BaseTrigger } from "../automation";
 import { migrateAutomationTrigger } from "../automation";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
 import {
-  computeEntityRegistryName,
   entityRegistryByEntityId,
   entityRegistryById,
 } from "../entity/entity_registry";
@@ -39,58 +40,47 @@ export interface DeviceCapabilities {
   extra_fields: HaFormSchema[];
 }
 
-export const fetchDeviceActions = (
-  hass: Pick<HomeAssistant, "callWS">,
-  deviceId: string
-) =>
-  hass.callWS<DeviceAction[]>({
+export const fetchDeviceActions = (callWS: CallWS, deviceId: string) =>
+  callWS<DeviceAction[]>({
     type: "device_automation/action/list",
     device_id: deviceId,
   });
 
-export const fetchDeviceConditions = (
-  hass: Pick<HomeAssistant, "callWS">,
-  deviceId: string
-) =>
-  hass.callWS<DeviceCondition[]>({
+export const fetchDeviceConditions = (callWS: CallWS, deviceId: string) =>
+  callWS<DeviceCondition[]>({
     type: "device_automation/condition/list",
     device_id: deviceId,
   });
 
-export const fetchDeviceTriggers = (
-  hass: Pick<HomeAssistant, "callWS">,
-  deviceId: string
-) =>
-  hass
-    .callWS<DeviceTrigger[]>({
-      type: "device_automation/trigger/list",
-      device_id: deviceId,
-    })
-    .then((triggers) => migrateAutomationTrigger(triggers) as DeviceTrigger[]);
+export const fetchDeviceTriggers = (callWS: CallWS, deviceId: string) =>
+  callWS<DeviceTrigger[]>({
+    type: "device_automation/trigger/list",
+    device_id: deviceId,
+  }).then((triggers) => migrateAutomationTrigger(triggers) as DeviceTrigger[]);
 
 export const fetchDeviceActionCapabilities = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: CallWS,
   action: DeviceAction
 ) =>
-  hass.callWS<DeviceCapabilities>({
+  callWS<DeviceCapabilities>({
     type: "device_automation/action/capabilities",
     action,
   });
 
 export const fetchDeviceConditionCapabilities = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: CallWS,
   condition: DeviceCondition
 ) =>
-  hass.callWS<DeviceCapabilities>({
+  callWS<DeviceCapabilities>({
     type: "device_automation/condition/capabilities",
     condition,
   });
 
 export const fetchDeviceTriggerCapabilities = (
-  hass: Pick<HomeAssistant, "callWS">,
+  callWS: CallWS,
   trigger: DeviceTrigger
 ) =>
-  hass.callWS<DeviceCapabilities>({
+  callWS<DeviceCapabilities>({
     type: "device_automation/trigger/capabilities",
     trigger,
   });
@@ -193,19 +183,18 @@ const compareEntityIdWithEntityRegId = (
 };
 
 const getEntityName = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  states: HassEntities,
   entityRegistry: EntityRegistryEntry[],
   entityId: string | undefined
 ): string => {
   if (!entityId) {
     return (
-      "<" +
-      hass.localize("ui.panel.config.automation.editor.unknown_entity") +
-      ">"
+      "<" + localize("ui.panel.config.automation.editor.unknown_entity") + ">"
     );
   }
   if (entityId.includes(".")) {
-    const state = hass.states[entityId];
+    const state = states[entityId];
     if (state) {
       return computeStateName(state);
     }
@@ -213,26 +202,37 @@ const getEntityName = (
   }
   const entityReg = entityRegistryById(entityRegistry)[entityId];
   if (entityReg) {
-    return computeEntityRegistryName(hass, entityReg) || entityId;
+    if (entityReg.name) {
+      return entityReg.name;
+    }
+    const state = states[entityReg.entity_id];
+    if (state) {
+      return computeStateName(state);
+    }
+    return entityReg.original_name ?? entityId;
   }
   return (
-    "<" +
-    hass.localize("ui.panel.config.automation.editor.unknown_entity") +
-    ">"
+    "<" + localize("ui.panel.config.automation.editor.unknown_entity") + ">"
   );
 };
 
 export const localizeDeviceAutomationAction = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  states: HassEntities,
   entityRegistry: EntityRegistryEntry[],
   action: DeviceAction
 ): string =>
-  hass.localize(
+  localize(
     `component.${action.domain}.device_automation.action_type.${action.type}`,
     {
-      entity_name: getEntityName(hass, entityRegistry, action.entity_id),
+      entity_name: getEntityName(
+        localize,
+        states,
+        entityRegistry,
+        action.entity_id
+      ),
       subtype: action.subtype
-        ? hass.localize(
+        ? localize(
             `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
           ) || action.subtype
         : "",
@@ -240,16 +240,22 @@ export const localizeDeviceAutomationAction = (
   ) || (action.subtype ? `"${action.subtype}" ${action.type}` : action.type!);
 
 export const localizeDeviceAutomationCondition = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  states: HassEntities,
   entityRegistry: EntityRegistryEntry[],
   condition: DeviceCondition
 ): string =>
-  hass.localize(
+  localize(
     `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
     {
-      entity_name: getEntityName(hass, entityRegistry, condition.entity_id),
+      entity_name: getEntityName(
+        localize,
+        states,
+        entityRegistry,
+        condition.entity_id
+      ),
       subtype: condition.subtype
-        ? hass.localize(
+        ? localize(
             `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
           ) || condition.subtype
         : "",
@@ -260,16 +266,22 @@ export const localizeDeviceAutomationCondition = (
     : condition.type!);
 
 export const localizeDeviceAutomationTrigger = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  states: HassEntities,
   entityRegistry: EntityRegistryEntry[],
   trigger: DeviceTrigger
 ): string =>
-  hass.localize(
+  localize(
     `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
     {
-      entity_name: getEntityName(hass, entityRegistry, trigger.entity_id),
+      entity_name: getEntityName(
+        localize,
+        states,
+        entityRegistry,
+        trigger.entity_id
+      ),
       subtype: trigger.subtype
-        ? hass.localize(
+        ? localize(
             `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
           ) || trigger.subtype
         : "",
@@ -278,18 +290,18 @@ export const localizeDeviceAutomationTrigger = (
   (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!);
 
 export const localizeExtraFieldsComputeLabelCallback =
-  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
+  (localize: LocalizeFunc, deviceAutomation: DeviceAutomation) =>
   // Returns a callback for ha-form to calculate labels per schema object
   (schema): string =>
-    hass.localize(
+    localize(
       `component.${deviceAutomation.domain}.device_automation.extra_fields.${schema.name}`
     ) || schema.name;
 
 export const localizeExtraFieldsComputeHelperCallback =
-  (hass: HomeAssistant, deviceAutomation: DeviceAutomation) =>
+  (localize: LocalizeFunc, deviceAutomation: DeviceAutomation) =>
   // Returns a callback for ha-form to calculate helper texts per schema object
   (schema): string | undefined =>
-    hass.localize(
+    localize(
       `component.${deviceAutomation.domain}.device_automation.extra_fields_descriptions.${schema.name}`
     );
 

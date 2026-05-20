@@ -113,11 +113,11 @@ export class HaDeviceCondition extends LitElement {
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
               .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
+                this.hass.localize,
                 this.condition
               )}
               .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
+                this.hass.localize,
                 this.condition
               )}
               @value-changed=${this._extraFieldsChanged}
@@ -151,7 +151,7 @@ export class HaDeviceCondition extends LitElement {
     const condition = this.condition;
 
     this._capabilities = condition.domain
-      ? await fetchDeviceConditionCapabilities(this.hass, condition)
+      ? await fetchDeviceConditionCapabilities(this.hass.callWS, condition)
       : undefined;
   }
 

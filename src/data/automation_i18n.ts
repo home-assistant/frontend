@@ -818,7 +818,8 @@ const describeLegacyTrigger = (
   if (trigger.trigger === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
-      hass,
+      hass.localize,
+      hass.states,
       entityRegistry,
       config
     );
@@ -1336,7 +1337,8 @@ const describeLegacyCondition = (
   if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
-      hass,
+      hass.localize,
+      hass.states,
       entityRegistry,
       config
     );

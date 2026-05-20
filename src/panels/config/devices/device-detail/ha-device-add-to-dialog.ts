@@ -85,12 +85,12 @@ export class DialogDeviceAddTo extends LitElement {
 
     const [triggers, conditions, actions] = await Promise.all([
       params.mode === "automation"
-        ? fetchDeviceTriggers(this._api, deviceId)
+        ? fetchDeviceTriggers(this._api.callWS, deviceId)
         : Promise.resolve([]),
       params.mode === "automation"
-        ? fetchDeviceConditions(this._api, deviceId)
+        ? fetchDeviceConditions(this._api.callWS, deviceId)
         : Promise.resolve([]),
-      fetchDeviceActions(this._api, deviceId),
+      fetchDeviceActions(this._api.callWS, deviceId),
     ]);
 
     this._triggers = triggers.sort(sortDeviceAutomations);
