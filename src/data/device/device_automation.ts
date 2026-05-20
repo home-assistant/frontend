@@ -189,9 +189,7 @@ const getEntityName = (
   entityId: string | undefined
 ): string => {
   if (!entityId) {
-    return (
-      "<" + localize("ui.panel.config.automation.editor.unknown_entity") + ">"
-    );
+    return `<${localize("ui.panel.config.automation.editor.unknown_entity")}>`;
   }
   if (entityId.includes(".")) {
     const state = states[entityId];
@@ -211,9 +209,7 @@ const getEntityName = (
     }
     return entityReg.original_name ?? entityId;
   }
-  return (
-    "<" + localize("ui.panel.config.automation.editor.unknown_entity") + ">"
-  );
+  return `<${localize("ui.panel.config.automation.editor.unknown_entity")}>`;
 };
 
 export const localizeDeviceAutomationAction = (
