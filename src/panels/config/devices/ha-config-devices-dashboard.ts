@@ -500,6 +500,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
+          firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
             this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -588,6 +589,13 @@ export class HaConfigDeviceDashboard extends LitElement {
         title: localize("ui.panel.config.devices.data_table.model"),
         sortable: true,
         filterable: true,
+        minWidth: "120px",
+      },
+      firmware_version: {
+        title: localize("ui.panel.config.devices.data_table.firmware_version"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
         minWidth: "120px",
       },
       battery_entity: {

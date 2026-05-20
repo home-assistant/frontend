@@ -6569,6 +6569,7 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
