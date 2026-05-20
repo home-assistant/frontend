@@ -271,7 +271,6 @@ export class DialogDeviceAddTo extends LitElement {
               ${hasTriggers
                 ? html`
                     <ha-list-item
-                      twoline
                       graphic="icon"
                       data-type="trigger"
                       @click=${this._handleLegacyAction}
@@ -282,20 +281,15 @@ export class DialogDeviceAddTo extends LitElement {
                         .path=${mdiRobotOutline}
                       ></ha-svg-icon>
                       ${this._i18n.localize(
-                        "ui.panel.config.devices.automation.triggers.title"
+                        "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
+                        { target: deviceName }
                       )}
-                      <span slot="secondary">
-                        ${this._i18n.localize(
-                          "ui.panel.config.devices.automation.triggers.description"
-                        )}
-                      </span>
                     </ha-list-item>
                   `
                 : nothing}
               ${hasConditions
                 ? html`
                     <ha-list-item
-                      twoline
                       graphic="icon"
                       data-type="condition"
                       @click=${this._handleLegacyAction}
@@ -306,20 +300,15 @@ export class DialogDeviceAddTo extends LitElement {
                         .path=${mdiPlaylistCheck}
                       ></ha-svg-icon>
                       ${this._i18n.localize(
-                        "ui.panel.config.devices.automation.conditions.title"
+                        "ui.dialogs.more_info_control.add_to.actions.automation_condition",
+                        { target: deviceName }
                       )}
-                      <span slot="secondary">
-                        ${this._i18n.localize(
-                          "ui.panel.config.devices.automation.conditions.description"
-                        )}
-                      </span>
                     </ha-list-item>
                   `
                 : nothing}
               ${hasActions
                 ? html`
                     <ha-list-item
-                      twoline
                       graphic="icon"
                       data-type="automation_action"
                       @click=${this._handleLegacyAction}
@@ -330,13 +319,9 @@ export class DialogDeviceAddTo extends LitElement {
                         .path=${mdiPlayCircleOutline}
                       ></ha-svg-icon>
                       ${this._i18n.localize(
-                        "ui.panel.config.devices.automation.actions.title"
+                        "ui.dialogs.more_info_control.add_to.actions.automation_action",
+                        { target: deviceName }
                       )}
-                      <span slot="secondary">
-                        ${this._i18n.localize(
-                          "ui.panel.config.devices.automation.actions.description"
-                        )}
-                      </span>
                     </ha-list-item>
                   `
                 : nothing}
@@ -358,7 +343,6 @@ export class DialogDeviceAddTo extends LitElement {
         ? html`
             <ha-list>
               <ha-list-item
-                twoline
                 graphic="icon"
                 data-type="script_action"
                 @click=${this._handleLegacyAction}
@@ -369,13 +353,9 @@ export class DialogDeviceAddTo extends LitElement {
                   .path=${mdiScriptTextOutline}
                 ></ha-svg-icon>
                 ${this._i18n.localize(
-                  "ui.panel.config.devices.script.actions.title"
+                  "ui.dialogs.more_info_control.add_to.actions.script_action",
+                  { target: deviceName }
                 )}
-                <span slot="secondary">
-                  ${this._i18n.localize(
-                    "ui.panel.config.devices.script.actions.description"
-                  )}
-                </span>
               </ha-list-item>
             </ha-list>
           `
