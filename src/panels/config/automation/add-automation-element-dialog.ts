@@ -130,8 +130,9 @@ import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import {
+  ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
-  ADD_AUTOMATION_ELEMENT_TARGET_PARAM,
   getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
 } from "./show-add-automation-element-dialog";
@@ -307,16 +308,18 @@ class DialogAddAutomationElement
     this._params = params;
     this._resetVariables();
 
-    const queryEntityId = getAddAutomationElementTargetFromQuery(
+    const queryTarget = getAddAutomationElementTargetFromQuery(
       this.hass.states,
+      this.hass.devices,
       params.type
     );
-    this._openedFromQuery = !!queryEntityId;
+    this._openedFromQuery = !!queryTarget;
 
-    if (queryEntityId) {
+    if (queryTarget) {
       const searchParams = new URLSearchParams(mainWindow.location.search);
       searchParams.delete(ADD_AUTOMATION_ELEMENT_QUERY_PARAM);
-      searchParams.delete(ADD_AUTOMATION_ELEMENT_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM);
       mainWindow.history.replaceState(
         mainWindow.history.state,
         "",
@@ -340,17 +343,17 @@ class DialogAddAutomationElement
         this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
         if (
-          queryEntityId &&
+          queryTarget &&
           this._newTriggersAndConditions &&
           !this._selectedTarget
         ) {
-          this._selectedTarget = { entity_id: queryEntityId };
+          this._selectedTarget = queryTarget;
           this._getItemsByTarget();
         }
       }
     );
 
-    if (!queryEntityId) {
+    if (!queryTarget) {
       // add initial dialog view state to history
       mainWindow.history.pushState(
         {
@@ -380,11 +383,11 @@ class DialogAddAutomationElement
     this._bottomSheetMode = this._narrow;
 
     if (
-      queryEntityId &&
+      queryTarget &&
       this._newTriggersAndConditions &&
       !this._selectedTarget
     ) {
-      this._selectedTarget = { entity_id: queryEntityId };
+      this._selectedTarget = queryTarget;
       this._tab = "targets";
       this._getItemsByTarget();
     }

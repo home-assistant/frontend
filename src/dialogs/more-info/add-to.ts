@@ -1,13 +1,16 @@
 import { navigate } from "../../common/navigate";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { createSearchParam } from "../../common/url/search-params";
+import type { SingleHassServiceTarget } from "../../data/target";
 import {
+  ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
-  ADD_AUTOMATION_ELEMENT_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
 } from "../../panels/config/automation/show-add-automation-element-dialog";
 import type { HomeAssistant, TranslationDict } from "../../types";
 
-type DefaultActionKey =
+/** Add to action keys are the keys of the translation dictionary for the add to actions. */
+export type AddToActionKey =
   TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["actions"] extends infer Actions
     ? keyof Actions
     : never;
@@ -27,7 +30,7 @@ export interface DefaultEntityAddToAction extends BaseEntityAddToAction {
   /** Type of action handled in the frontend */
   type: "default";
   /** Stable key used to resolve the action handler */
-  key: DefaultActionKey;
+  key: AddToActionKey;
 }
 
 export interface ExternalEntityAddToAction extends BaseEntityAddToAction {
@@ -44,7 +47,7 @@ export type EntityAddToAction =
 export type EntityAddToActions = EntityAddToAction[];
 
 interface ActionDefinition {
-  translation_key: DefaultActionKey;
+  translation_key: AddToActionKey;
   icon: string;
 }
 
@@ -81,7 +84,7 @@ export const getDefaultAddToActions = (
       name: localize(
         `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
         {
-          entity:
+          target:
             states[entityId] !== undefined
               ? formatEntityName(states[entityId], undefined)
               : entityId,
@@ -91,14 +94,23 @@ export const getDefaultAddToActions = (
     })
   );
 
-export function defaultActionHandler(
-  key: (typeof DEFAULT_ACTION_DEFS)[number]["translation_key"],
-  entityId: string
+/** Handler for adding a target to an automation/script. */
+export function addToActionHandler(
+  key: AddToActionKey,
+  target: SingleHassServiceTarget
 ): Promise<boolean> {
+  const searchParams: Record<string, string> = {};
+
+  if (target.entity_id) {
+    searchParams[ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM] = target.entity_id;
+  } else if (target.device_id) {
+    searchParams[ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM] = target.device_id;
+  }
+
   const params = (addElement: string) =>
     `?${createSearchParam({
       [ADD_AUTOMATION_ELEMENT_QUERY_PARAM]: addElement,
-      [ADD_AUTOMATION_ELEMENT_TARGET_PARAM]: entityId,
+      ...searchParams,
     })}`;
 
   switch (key) {

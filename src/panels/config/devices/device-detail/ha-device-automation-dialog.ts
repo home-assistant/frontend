@@ -1,3 +1,4 @@
+// When new_triggers_conditions labs feature is promoted, this file can be removed.
 import {
   mdiAbTesting,
   mdiGestureTap,

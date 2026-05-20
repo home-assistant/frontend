@@ -1,34 +1,50 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { SingleHassServiceTarget } from "../../../data/target";
 import type { HomeAssistant } from "../../../types";
 
 export const PASTE_VALUE = "__paste__";
 
 export const ADD_AUTOMATION_ELEMENT_QUERY_PARAM = "add_automation_element";
-export const ADD_AUTOMATION_ELEMENT_TARGET_PARAM = "target_entity_id";
+export const ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM = "target_entity_id";
+export const ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM = "target_device_id";
 
+/** Parameters for the add automation element dialog. */
 export interface AddAutomationElementDialogParams {
   type: "trigger" | "condition" | "action";
   add: (key: string, target?: HassServiceTarget) => void;
   clipboardItem: string | undefined;
   clipboardPasteToastBottomOffset?: number;
 }
-const loadDialog = () => import("./add-automation-element-dialog");
 
+/** Get the target from the query parameters. */
 export const getAddAutomationElementTargetFromQuery = (
   states: HomeAssistant["states"],
+  devices: HomeAssistant["devices"],
   type: AddAutomationElementDialogParams["type"]
-): string | undefined => {
+): SingleHassServiceTarget | undefined => {
   const params = new URLSearchParams(window.location.search);
-  const entityId = params.get(ADD_AUTOMATION_ELEMENT_TARGET_PARAM);
 
-  return params.get(ADD_AUTOMATION_ELEMENT_QUERY_PARAM) === type &&
-    entityId &&
-    states[entityId]
-    ? entityId
-    : undefined;
+  if (params.get(ADD_AUTOMATION_ELEMENT_QUERY_PARAM) !== type) {
+    return undefined;
+  }
+
+  const entityId = params.get(ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM);
+  if (entityId && states[entityId]) {
+    return { entity_id: entityId };
+  }
+
+  const deviceId = params.get(ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM);
+  if (deviceId && devices[deviceId]) {
+    return { device_id: deviceId };
+  }
+
+  return undefined;
 };
 
+const loadDialog = () => import("./add-automation-element-dialog");
+
+/** Show the add automation element dialog. */
 export const showAddAutomationElementDialog = (
   element: HTMLElement,
   dialogParams: AddAutomationElementDialogParams

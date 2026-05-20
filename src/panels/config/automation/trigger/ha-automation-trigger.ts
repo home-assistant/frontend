@@ -244,6 +244,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
     const addTriggerTargetFromQuery = getAddAutomationElementTargetFromQuery(
       this.hass.states,
+      this.hass.devices,
       "trigger"
     );
 

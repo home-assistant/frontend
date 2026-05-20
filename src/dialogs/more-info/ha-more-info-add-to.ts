@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../types";
 import {
   type EntityAddToAction,
   type EntityAddToActions,
-  defaultActionHandler,
+  addToActionHandler,
   getDefaultAddToActions,
 } from "./add-to";
 
@@ -107,7 +107,7 @@ export class HaMoreInfoAddTo extends LitElement {
       return;
     }
 
-    defaultActionHandler(action.key, this.entityId);
+    addToActionHandler(action.key, { entity_id: this.entityId });
   }
 
   private _renderActionItems(actions: EntityAddToActions) {
