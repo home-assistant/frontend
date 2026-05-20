@@ -1,8 +1,9 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, unsafeCSS } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
 import type { CoverEntity } from "../../data/cover";
@@ -47,7 +48,7 @@ export class HaStateControlInfoCoverTiltPosition extends LitElement {
 
   @state() value?: number;
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
+  protected updated(changedProp: PropertyValues<this>): void {
     if (changedProp.has("stateObj")) {
       this.value =
         this.stateObj.attributes.current_tilt_position != null
@@ -56,9 +57,9 @@ export class HaStateControlInfoCoverTiltPosition extends LitElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
 
     this.hass.callService("cover", "set_cover_tilt_position", {
       entity_id: this.stateObj!.entity_id,

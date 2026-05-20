@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { atLeastVersion } from "../common/config/version";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -22,7 +23,7 @@ import {
   subscribeTranslationPreferences,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { Constructor, HomeAssistant } from "../types";
+import type { Constructor, HomeAssistant, Resources } from "../types";
 import {
   getLocalLanguage,
   getTranslation,
@@ -76,7 +77,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     private __loadedTranslations: Record<string, LoadedTranslationCategory> =
       {};
 
-    protected firstUpdated(changedProps) {
+    private __resources: Resources = {};
+
+    protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) => {
         this._selectLanguage((e as CustomEvent).detail, true);
@@ -99,7 +102,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._loadCoreTranslations(getLocalLanguage());
     }
 
-    protected updated(changedProps) {
+    protected updated(changedProps: PropertyValues<this>) {
       super.updated(changedProps);
       if (!changedProps.has("hass")) {
         return;
@@ -446,13 +449,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       const resources = {
         [language]: {
-          ...(this.hass ?? this._pendingHass)?.resources?.[language],
+          ...this.__resources[language],
           ...data,
         },
       };
 
       // Update resources immediately, so when a new update comes in we don't miss values
-      this._updateHass({ resources });
+      this.__resources = resources;
 
       const localize = await computeLocalize(this, language, resources);
 

@@ -240,6 +240,10 @@ export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
 }
 
+export interface EnergyGridBalanceCardConfig extends EnergyCardConfig {
+  type: "energy-grid-balance";
+}
+
 export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
   type: "energy-carbon-consumed-gauge";
 }
@@ -454,8 +458,14 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+export interface GraphEntityConfig {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  color?: string;
+}
+
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
@@ -468,7 +478,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
   period?: "auto" | StatisticPeriod;
@@ -531,6 +541,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
+  show_entity_picture?: boolean;
   name?: string | EntityNameItem | EntityNameItem[];
   image?: string | MediaSelectorValue;
   camera_image?: string;

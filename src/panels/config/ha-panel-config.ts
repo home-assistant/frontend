@@ -414,7 +414,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBadgeAccountHorizontal,
       iconColor: "#5A87FA",
       core: true,
-      advancedOnly: true,
       adminOnly: true,
     },
   ],
@@ -784,7 +783,7 @@ class HaPanelConfig extends HassRouterPage {
     entityRegistryById.clear();
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
     this.hass.loadBackendTranslation("services");

@@ -58,7 +58,6 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.dialogs.config_entry_system_options.title",

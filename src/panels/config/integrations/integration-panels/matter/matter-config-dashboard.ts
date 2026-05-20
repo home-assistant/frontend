@@ -36,7 +36,7 @@ export class MatterConfigDashboard extends LitElement {
 
   @state() private _configEntry?: ConfigEntry;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchConfigEntry();

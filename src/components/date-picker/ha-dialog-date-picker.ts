@@ -11,13 +11,14 @@ import {
   formatDateYear,
   formatISODateOnly,
 } from "../../common/datetime/format_date";
+import { valueToDate } from "../../common/datetime/value_to_date";
 import { transform } from "../../common/decorators/transform";
 import { configContext, internationalizationContext } from "../../data/context";
 import { DialogMixin } from "../../dialogs/dialog-mixin";
 import type { HomeAssistantConfig } from "../../types";
 import "../ha-button";
 import type { DatePickerDialogParams } from "../ha-date-input";
-import "../ha-dialog";
+import "../ha-adaptive-popover";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
@@ -68,9 +69,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     super.connectedCallback();
 
     if (this.params) {
-      const date = this.params.value
-        ? new Date(`${this.params.value.split("T")[0]}T00:00:00`)
-        : new Date();
+      const date = valueToDate(this.params.value);
 
       this._pickerYear = formatDateYear(
         date,
@@ -101,7 +100,9 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
     if (!this.params) {
       return nothing;
     }
-    return html`<ha-dialog
+
+    return html`<ha-adaptive-popover
+      .dialogAnchor=${this.dialogAnchor}
       open
       width="small"
       .headerTitle=${this._value?.title ||
@@ -159,7 +160,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
           ${this._i18n.localize("ui.common.ok")}
         </ha-button>
       </ha-dialog-footer>
-    </ha-dialog>`;
+    </ha-adaptive-popover>`;
   }
 
   private _valueChanged(ev: Event) {
@@ -170,9 +171,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   }
 
   private _updateValue(value?: string, setFocusDay = false) {
-    const date = value
-      ? new Date(`${value.split("T")[0]}T00:00:00`)
-      : new Date();
+    const date = valueToDate(value);
     this._value = {
       year: formatDateYear(date, this._i18n.locale, this._hassConfig),
       title: formatDateShort(date, this._i18n.locale, this._hassConfig),
@@ -232,7 +231,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
   static styles = [
     datePickerStyles,
     css`
-      ha-dialog {
+      ha-adaptive-popover {
         --dialog-content-padding: 0;
       }
     `,

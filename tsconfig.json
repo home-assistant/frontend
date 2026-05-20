@@ -131,9 +131,6 @@
       "@formatjs/intl-relativetimeformat/polyfill-force": [
         "./node_modules/@formatjs/intl-relativetimeformat/polyfill-force.js"
       ],
-      "@formatjs/intl-durationformat/src/types": [
-        "./node_modules/@formatjs/intl-durationformat/src/types.js"
-      ],
       "@formatjs/intl-pluralrules/locale-data/en": [
         "./node_modules/@formatjs/intl-pluralrules/locale-data/en.js"
       ],

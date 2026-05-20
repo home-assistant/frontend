@@ -42,7 +42,6 @@ export class DialogYamlIntegration extends LitElement {
       : manifest.documentation;
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.integrations.config_flow.yaml_only_title"

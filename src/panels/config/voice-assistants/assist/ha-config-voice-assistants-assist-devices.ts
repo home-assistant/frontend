@@ -105,7 +105,7 @@ class AssistDevicesPage extends LitElement {
       })
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     listAssistPipelines(this.hass).then((pipelines) => {

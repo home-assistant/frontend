@@ -80,7 +80,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           time_zone: TimeZone.local,
           first_weekday: FirstWeekday.language,
         },
-        resources: null as any,
         localize: () => "",
         translationMetadata,
         kioskMode: false,

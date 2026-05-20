@@ -21,7 +21,7 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-state-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -173,9 +173,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const entityState = stateObj.state;
 
     const isOffState =
-      !stateActive(stateObj) && !isUnavailableState(entityState);
+      !stateActive(stateObj) &&
+      entityState !== UNAVAILABLE &&
+      entityState !== UNKNOWN;
     const isUnavailable =
-      isUnavailableState(entityState) ||
+      entityState === UNAVAILABLE ||
+      entityState === UNKNOWN ||
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
@@ -235,11 +238,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-state-icon
-                class="icon"
-                .stateObj=${stateObj}
-                .hass=${this.hass}
-              ></ha-state-icon>
+              <ha-state-icon class="icon" .stateObj=${stateObj}></ha-state-icon>
               <div>
                 ${this.hass.formatEntityName(
                   this.hass!.states[this._config!.entity],
@@ -365,7 +364,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
       changedProps.size > 1 ||

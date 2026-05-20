@@ -134,7 +134,7 @@ export class HuiDiscoveredDevicesCard
     );
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this._config || !this.hass) {

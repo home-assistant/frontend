@@ -120,7 +120,7 @@ export class HaDevicePicker extends LitElement {
       )
   );
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
     this._loadConfigEntries();
   }

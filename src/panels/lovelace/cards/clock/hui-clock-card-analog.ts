@@ -63,7 +63,7 @@ export class HuiClockCardAnalog extends LitElement {
     this._computeOffsets();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.locale !== this.hass?.locale) {

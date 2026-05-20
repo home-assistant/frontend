@@ -31,7 +31,7 @@ export class HaQrCode extends LitElement {
 
   @query("canvas") private _canvas?: HTMLCanvasElement;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (
       (changedProperties.has("data") ||
@@ -46,7 +46,7 @@ export class HaQrCode extends LitElement {
     }
   }
 
-  updated(changedProperties: PropertyValues) {
+  updated(changedProperties: PropertyValues<this>) {
     const canvas = this._canvas;
     if (
       canvas &&

@@ -121,7 +121,7 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
     this._config = config as TConfig;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
 
     if (

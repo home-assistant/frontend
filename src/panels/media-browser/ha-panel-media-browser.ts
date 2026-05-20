@@ -180,7 +180,7 @@ class PanelMediaBrowser extends LitElement {
     }
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (

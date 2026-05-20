@@ -168,21 +168,21 @@ export class LovelacePanel extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.lovelace && this._panelState !== "error" && !this._loading) {
       this._fetchConfig(false);
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     if (!this._unsubUpdates) {
       this._subscribeUpdates();
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (!changedProperties.has("hass")) {
       return;

@@ -5,12 +5,14 @@ import type {
   HomeAssistantApi,
   HomeAssistantConfig,
   HomeAssistantConnection,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
   HomeAssistantRegistries,
   HomeAssistantUI,
 } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
+import type { DomainManifestLookup } from "../integration";
 import type { LabelRegistryEntry } from "../label/label_registry";
 
 /**
@@ -63,6 +65,14 @@ export const uiContext = createContext<HomeAssistantUI>("hassUi");
 export const configContext = createContext<HomeAssistantConfig>("hassConfig");
 
 /**
+ * Entity formatting functions: `formatEntityState`, `formatEntityStateToParts`,
+ * `formatEntityAttributeValue`, `formatEntityAttributeValueToParts`,
+ * `formatEntityAttributeName`, and `formatEntityName`.
+ */
+export const formattersContext =
+  createContext<HomeAssistantFormatters>("hassFormatters");
+
+/**
  * Map of all entities in the entity registry, keyed by entity ID.
  */
 export const entitiesContext =
@@ -106,6 +116,12 @@ export const fullEntitiesContext =
  */
 export const configEntriesContext =
   createContext<ConfigEntry[]>("configEntries");
+
+/**
+ * Lazy loaded integration manifests, keyed by domain.
+ */
+export const manifestsContext =
+  createContext<DomainManifestLookup>("manifests");
 
 // #endregion lazy-contexts
 

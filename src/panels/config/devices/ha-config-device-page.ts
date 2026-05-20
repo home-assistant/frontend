@@ -296,12 +296,12 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("deviceId")) {
       this._findRelated();
@@ -588,7 +588,10 @@ export class HaConfigDevicePage extends LitElement {
                               </ha-list-item>
                               <ha-tooltip
                                 .for="scene-${slugify(entityState.entity_id)}"
-                                placement=${computeRTL(this.hass)
+                                placement=${computeRTL(
+                                  this.hass.language,
+                                  this.hass.translationMetadata.translations
+                                )
                                   ? "left"
                                   : "right"}
                               >

@@ -78,7 +78,6 @@ class DialogZHAChangeChannel
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.zha.change_channel_dialog.title"

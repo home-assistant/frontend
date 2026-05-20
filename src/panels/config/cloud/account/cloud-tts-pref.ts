@@ -1,4 +1,5 @@
 import { mdiContentCopy } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -132,7 +133,7 @@ export class CloudTTSPref extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       getCloudTTSInfo(this.hass).then((info) => {

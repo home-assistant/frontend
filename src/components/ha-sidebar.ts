@@ -8,13 +8,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -42,14 +36,15 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
-import "./ha-fade-in";
+import { isMobileClient } from "../util/is_mobile";
+import "./animation/ha-fade-in";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-md-list";
-import "./ha-md-list-item";
-import type { HaMdListItem } from "./ha-md-list-item";
 import "./ha-spinner";
 import "./ha-svg-icon";
+import "./ha-tooltip";
+import "./item/ha-list-item-button";
+import "./list/ha-list-nav";
 import "./user/ha-user-badge";
 
 const SORT_VALUE_URL_PATHS = {
@@ -185,17 +180,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   @state() private _hiddenPanels?: string[];
 
-  private _mouseLeaveTimeout?: number;
-
-  private _touchendTimeout?: number;
-
-  private _tooltipHideTimeout?: number;
-
-  private _recentKeydownActiveUntil = 0;
-
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
-
-  @query(".tooltip") private _tooltip!: HTMLDivElement;
 
   @query(".before-spacer") private _scrollableList?: HTMLDivElement;
 
@@ -237,14 +222,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    // clear timeouts
-    clearTimeout(this._mouseLeaveTimeout);
-    clearTimeout(this._tooltipHideTimeout);
-    clearTimeout(this._touchendTimeout);
-    // set undefined values
-    this._mouseLeaveTimeout = undefined;
-    this._tooltipHideTimeout = undefined;
-    this._touchendTimeout = undefined;
   }
 
   protected render() {
@@ -257,8 +234,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     // prettier-ignore
     return html`
       ${this._renderHeader()}
-      ${this._renderAllPanels(selectedPanel)}
-      <div class="tooltip"></div>`;
+      ${this._renderAllPanels(selectedPanel)}`;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -297,7 +273,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._subscribePersistentNotifications();
   }
@@ -314,7 +290,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     );
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
       toggleAttribute(this, "expanded", this.alwaysExpand);
@@ -377,17 +353,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   private _renderAllPanels(selectedPanel: string) {
     const renderList = (content, cls: string, scrollable: boolean) =>
-      html`<ha-md-list
+      html`<ha-list-nav
         class=${classMap({
           "ha-scrollbar": scrollable,
           [cls]: true,
         })}
-        @focusin=${this._listboxFocusIn}
-        @focusout=${this._listboxFocusOut}
-        @touchend=${this._listboxTouchend}
-        @scroll=${this._listboxScroll}
-        @keydown=${this._listboxKeydown}
-        >${content}</ha-md-list
+        >${content}</ha-list-nav
       >`;
 
     if (!this._panelOrder || !this._hiddenPanels) {
@@ -459,18 +430,19 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     const iconPath = getPanelIconPath(panel);
 
     return html`
-      <ha-md-list-item
+      <ha-list-item-button
         .href=${`/${urlPath}`}
-        type="link"
+        id="sidebar-panel-${urlPath}"
         class=${classMap({ selected: isSelected })}
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
       >
         ${iconPath
           ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
           : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
         <span class="item-text" slot="headline">${title}</span>
-      </ha-md-list-item>
+      </ha-list-item-button>
+      ${!this.alwaysExpand && title
+        ? this._renderToolTip(`sidebar-panel-${urlPath}`, title)
+        : nothing}
     `;
   }
 
@@ -482,15 +454,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     if (!this.hass.user?.is_admin) {
       return nothing;
     }
-    const isSelected =
-      selectedPanel === "config" || this.route.path?.startsWith("/hassio/");
+    const isSelected = selectedPanel === "config";
     return html`
-      <ha-md-list-item
+      <ha-list-item-button
         class="configuration ${classMap({ selected: isSelected })}"
-        type="button"
         href="/config"
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
+        id="sidebar-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
         ${this._updatesCount > 0 || this._issuesCount > 0
@@ -510,7 +479,13 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
               >
             `
           : nothing}
-      </ha-md-list-item>
+      </ha-list-item-button>
+      ${!this.alwaysExpand
+        ? this._renderToolTip(
+            "sidebar-config",
+            this.hass.localize("panel.config")
+          )
+        : nothing}
     `;
   }
 
@@ -520,12 +495,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       : 0;
 
     return html`
-      <ha-md-list-item
+      <ha-list-item-button
         class="notifications"
         @click=${this._handleShowNotificationDrawer}
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
-        type="button"
+        id="sidebar-notifications"
       >
         <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
         ${notificationCount > 0
@@ -539,25 +512,32 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         ${notificationCount > 0
           ? html`<span class="badge" slot="end">${notificationCount}</span>`
           : nothing}
-      </ha-md-list-item>
+      </ha-list-item-button>
+      ${!this.alwaysExpand
+        ? this._renderToolTip(
+            "sidebar-notifications",
+            this.hass.localize("ui.notification_drawer.title")
+          )
+        : nothing}
     `;
   }
 
   private _renderUserItem(selectedPanel: string) {
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
     const isSelected = selectedPanel === "profile";
 
     return html`
-      <ha-md-list-item
+      <ha-list-item-button
         href="/profile"
-        type="link"
+        id="sidebar-profile"
         class=${classMap({
           user: true,
           selected: isSelected,
           rtl: isRTL,
         })}
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
       >
         <ha-user-badge
           slot="start"
@@ -567,7 +547,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         <span class="item-text" slot="headline"
           >${this.hass.user ? this.hass.user.name : ""}</span
         >
-      </ha-md-list-item>
+      </ha-list-item-button>
+      ${!this.alwaysExpand && this.hass.user
+        ? this._renderToolTip("sidebar-profile", this.hass.user.name)
+        : nothing}
     `;
   }
 
@@ -576,18 +559,37 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       return nothing;
     }
     return html`
-      <ha-md-list-item
+      <ha-list-item-button
         @click=${this._handleExternalAppConfiguration}
-        type="button"
-        @mouseenter=${this._itemMouseEnter}
-        @mouseleave=${this._itemMouseLeave}
+        id="sidebar-external-config"
       >
         <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
-        <span class="item-text" slot="headline"
-          >${this.hass.localize("ui.sidebar.external_app_configuration")}</span
-        >
-      </ha-md-list-item>
+        <span class="item-text" slot="headline">
+          ${this.hass.localize("ui.sidebar.external_app_configuration")}
+        </span>
+      </ha-list-item-button>
+      ${!this.alwaysExpand
+        ? this._renderToolTip(
+            "sidebar-external-config",
+            this.hass.localize("ui.sidebar.external_app_configuration")
+          )
+        : nothing}
     `;
+  }
+
+  private _renderToolTip(id: string, text: string) {
+    if (isMobileClient) {
+      return nothing;
+    }
+
+    return html`<ha-tooltip
+      for=${id}
+      show-delay="0"
+      hide-delay="0"
+      placement="right"
+    >
+      ${text}
+    </ha-tooltip>`;
   }
 
   private _handleExternalAppConfiguration(ev: Event) {
@@ -603,98 +605,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     }
 
     showEditSidebarDialog(this);
-  }
-
-  private _itemMouseEnter(ev: MouseEvent) {
-    // On keypresses on the listbox, we're going to ignore mouse enter events
-    // for 100ms so that we ignore it when pressing down arrow scrolls the
-    // sidebar causing the mouse to hover a new icon
-    if (new Date().getTime() < this._recentKeydownActiveUntil) {
-      return;
-    }
-    if (this._mouseLeaveTimeout) {
-      clearTimeout(this._mouseLeaveTimeout);
-      this._mouseLeaveTimeout = undefined;
-    }
-    this._showTooltip(ev.currentTarget as HaMdListItem);
-  }
-
-  private _itemMouseLeave() {
-    if (this._mouseLeaveTimeout) {
-      clearTimeout(this._mouseLeaveTimeout);
-    }
-    this._mouseLeaveTimeout = window.setTimeout(() => {
-      this._hideTooltip();
-    }, 500);
-  }
-
-  private _listboxFocusIn(ev) {
-    if (ev.target.localName !== "ha-md-list-item") {
-      return;
-    }
-    this._showTooltip(ev.target);
-  }
-
-  private _listboxFocusOut() {
-    this._hideTooltip();
-  }
-
-  private _listboxTouchend() {
-    clearTimeout(this._touchendTimeout);
-    this._touchendTimeout = window.setTimeout(() => {
-      // Allow 1 second for users to read the tooltip on touch devices
-      this._hideTooltip();
-    }, 1000);
-  }
-
-  @eventOptions({
-    passive: true,
-  })
-  private _listboxScroll() {
-    // On keypresses on the listbox, we're going to ignore scroll events
-    // for 100ms so that if pressing down arrow scrolls the sidebar, the tooltip
-    // will not be hidden.
-    if (new Date().getTime() < this._recentKeydownActiveUntil) {
-      return;
-    }
-    this._hideTooltip();
-  }
-
-  private _listboxKeydown() {
-    this._recentKeydownActiveUntil = new Date().getTime() + 100;
-  }
-
-  private _showTooltip(item: HaMdListItem) {
-    if (this._tooltipHideTimeout) {
-      clearTimeout(this._tooltipHideTimeout);
-      this._tooltipHideTimeout = undefined;
-    }
-    const itemText = item.querySelector(".item-text") as HTMLElement | null;
-    if (this.hasAttribute("expanded") && itemText) {
-      const isTruncated = itemText.scrollWidth > itemText.clientWidth;
-      if (!isTruncated) {
-        this._hideTooltip();
-        return;
-      }
-    }
-    const tooltip = this._tooltip;
-    const itemRect = item.getBoundingClientRect();
-
-    tooltip.innerText = itemText?.innerText ?? "";
-    tooltip.style.display = "block";
-    tooltip.style.position = "fixed";
-    tooltip.style.top = `${itemRect.top + itemRect.height / 2 - tooltip.offsetHeight / 2}px`;
-    tooltip.style.left = `calc(${itemRect.right + 8}px)`;
-  }
-
-  private _hideTooltip() {
-    // Delay it a little in case other events are pending processing.
-    if (!this._tooltipHideTimeout) {
-      this._tooltipHideTimeout = window.setTimeout(() => {
-        this._tooltipHideTimeout = undefined;
-        this._tooltip.style.display = "none";
-      }, 10);
-    }
   }
 
   private _handleShowNotificationDrawer() {
@@ -716,7 +626,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         :host {
           overflow: visible;
           height: 100%;
-          display: block;
+          display: flex;
+          flex-direction: column;
           overflow: hidden;
           -ms-user-select: none;
           -webkit-user-select: none;
@@ -724,7 +635,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           background-color: var(--sidebar-background-color);
           width: 100%;
           box-sizing: border-box;
-          padding-bottom: calc(14px + var(--safe-area-inset-bottom, 0px));
+          padding-bottom: var(--safe-area-inset-bottom, 0px);
         }
         .menu {
           height: calc(var(--header-height) + var(--safe-area-inset-top, 0px));
@@ -791,9 +702,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         .panels-list {
           display: flex;
           flex-direction: column;
-          height: calc(
-            100vh - var(--header-height) - var(--safe-area-inset-top, 0px)
-          );
+          min-height: 0;
+          flex: 1;
         }
 
         ha-fade-in {
@@ -802,16 +712,14 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           display: flex;
           justify-content: center;
           align-items: center;
-          height: calc(
-            100vh - var(--header-height) - var(--safe-area-inset-top, 0px) -
-              152px
-          ); /* 152px = three list items w/o padding-top */
+          min-height: 0;
+          flex: 1;
         }
 
-        ha-md-list {
+        ha-list-nav {
           overflow-x: hidden;
-          background: none;
           margin-left: var(--safe-area-inset-left, 0px);
+          margin-block: var(--ha-space-2);
         }
 
         .wrapper {
@@ -821,42 +729,39 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           min-height: 0;
           flex: 1;
         }
-        ha-md-list.before-spacer {
+        ha-list-nav.before-spacer {
           padding-bottom: 0;
         }
-        ha-md-list.after-spacer {
+        ha-list-nav.after-spacer {
           padding-top: 0;
           min-height: fit-content;
         }
 
-        ha-md-list-item {
+        ha-list-item-button {
           flex-shrink: 0;
-          box-sizing: border-box;
-          margin: var(--ha-space-1);
+          margin: 0 var(--ha-space-1) var(--ha-space-1);
           border-radius: var(--ha-border-radius-sm);
-          --md-list-item-one-line-container-height: var(--ha-space-10);
-          --md-list-item-top-space: 0;
-          --md-list-item-bottom-space: 0;
+          --ha-row-item-min-height: var(--ha-space-10);
+          --ha-row-item-padding-block: 0;
+          --ha-row-item-padding-inline: var(--ha-space-3);
           width: var(--ha-space-12);
           position: relative;
-          --md-list-item-label-text-color: var(--sidebar-text-color);
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--ha-space-3);
-          --md-list-item-leading-icon-size: var(--ha-space-6);
           transition: width var(--ha-animation-duration-normal) ease;
         }
-        :host([expanded]) ha-md-list-item {
+        ha-list-item-button::part(headline) {
+          color: var(--sidebar-text-color);
+        }
+        :host([expanded]) ha-list-item-button {
           width: 248px;
         }
-        :host([narrow][expanded]) ha-md-list-item {
+        :host([narrow][expanded]) ha-list-item-button {
           width: calc(240px - var(--safe-area-inset-left, 0px));
         }
 
-        ha-md-list-item.selected {
-          --md-list-item-label-text-color: var(--sidebar-selected-icon-color);
-          --md-ripple-hover-color: var(--sidebar-selected-icon-color);
+        ha-list-item-button.selected::part(headline) {
+          color: var(--sidebar-selected-icon-color);
         }
-        ha-md-list-item.selected::before {
+        ha-list-item-button.selected::before {
           border-radius: var(--ha-border-radius-sm);
           position: absolute;
           top: 0;
@@ -878,12 +783,12 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           color: var(--sidebar-icon-color);
         }
 
-        ha-md-list-item.selected ha-svg-icon[slot="start"],
-        ha-md-list-item.selected ha-icon[slot="start"] {
+        ha-list-item-button.selected ha-svg-icon[slot="start"],
+        ha-list-item-button.selected ha-icon[slot="start"] {
           color: var(--sidebar-selected-icon-color);
         }
 
-        ha-md-list-item .item-text {
+        ha-list-item-button .item-text {
           display: block;
           max-width: 0;
           opacity: 0;
@@ -896,7 +801,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             max-width var(--ha-animation-duration-normal) ease,
             opacity var(--ha-animation-duration-normal) ease;
         }
-        :host([expanded]) ha-md-list-item .item-text {
+        :host([expanded]) ha-list-item-button .item-text {
           max-width: 100%;
           opacity: 1;
           transition-delay: 0ms, 80ms;
@@ -938,37 +843,18 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           pointer-events: none;
         }
 
-        ha-md-list-item.user {
-          --md-list-item-leading-icon-size: var(--ha-space-10);
-          --md-list-item-leading-space: var(--ha-space-1);
-        }
-
-        ha-md-list-item.user.rtl {
-          --md-list-item-leading-space: var(--ha-space-3);
-        }
-
         ha-user-badge {
-          flex-shrink: 0;
-          margin-right: calc(var(--ha-space-2) * -1);
+          width: 40px;
+          height: 40px;
+        }
+
+        ha-list-item-button.user {
+          --ha-row-item-padding-inline: var(--ha-space-1) 0;
         }
 
         .spacer {
           margin-top: auto;
           pointer-events: none;
-        }
-
-        .tooltip {
-          display: none;
-          position: absolute;
-          opacity: 0.9;
-          border-radius: var(--ha-border-radius-sm);
-          max-width: calc(var(--ha-space-20) * 3);
-          white-space: normal;
-          overflow-wrap: break-word;
-          color: var(--sidebar-background-color);
-          background-color: var(--sidebar-text-color);
-          padding: var(--ha-space-1);
-          font-weight: var(--ha-font-weight-medium);
         }
 
         .menu ha-icon-button {
@@ -978,8 +864,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
         @media (prefers-reduced-motion: reduce) {
           .menu,
-          ha-md-list-item,
-          ha-md-list-item .item-text,
+          ha-list-item-button,
+          ha-list-item-button .item-text,
           .title {
             transition: 1ms;
           }

@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -12,12 +13,15 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { ConditionListenersController } from "../../../../common/controllers/condition-listeners-controller";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import "../../../../components/automation/ha-automation-row-event-chip";
+import "../../../../components/automation/ha-automation-row-live-test";
+import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
@@ -32,27 +36,23 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
+  AndCondition,
   Condition,
   LegacyCondition,
-  OrCondition,
-  AndCondition,
   NotCondition,
+  OrCondition,
 } from "../../common/validate-condition";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../common/validate-condition";
+import type { ConditionsEntityContext } from "./context";
+import { conditionsEntityContext } from "./context";
 import type { LovelaceConditionEditorConstructor } from "./types";
-import type { PresetState } from "./types/ha-card-condition-state";
 
 const NO_ENTITY_CONDITIONS = ["state", "numeric_state"];
 
 const CONTAINER_CONDITIONS = ["and", "or", "not"];
-
-const NO_ENTITY_CONDITIONS_EXT = [
-  ...CONTAINER_CONDITIONS,
-  ...NO_ENTITY_CONDITIONS,
-];
 
 const isNoEntityCondition = (condition: string, noEntity: boolean): boolean =>
   NO_ENTITY_CONDITIONS.includes(condition) && noEntity;
@@ -80,9 +80,13 @@ export class HaCardConditionEditor extends LitElement {
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
 
-  @property({ attribute: "no-entity", type: Boolean }) public noEntity = false;
+  @state()
+  @consume({ context: conditionsEntityContext, subscribe: true })
+  private _entityContext?: ConditionsEntityContext;
 
-  @property({ attribute: false }) public presetStates: PresetState[] = [];
+  private get _noEntity(): boolean {
+    return this._entityContext?.mode === "filter";
+  }
 
   @storage({
     key: "dashboardConditionClipboard",
@@ -102,10 +106,14 @@ export class HaCardConditionEditor extends LitElement {
 
   @state() private _testingResult?: boolean;
 
+  @state() private _liveTestResult: LiveTestState = "unknown";
+
+  private _listeners = new ConditionListenersController(this);
+
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
-      getConditionClassName(this._condition.condition, this.noEntity)
+      getConditionClassName(this._condition.condition, this._noEntity)
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
@@ -115,7 +123,15 @@ export class HaCardConditionEditor extends LitElement {
     });
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  private _setupConditionListeners() {
+    this._listeners.setup(
+      this.condition ? [this.condition as Condition] : [],
+      this.hass,
+      () => this._evaluateLiveTest()
+    );
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("condition")) {
       this._condition = {
         condition: "state",
@@ -142,13 +158,56 @@ export class HaCardConditionEditor extends LitElement {
       if (!this._uiAvailable && !this._yamlMode) {
         this._yamlMode = true;
       }
+
+      this._setupConditionListeners();
     }
+
+    if (changedProperties.has("condition") || changedProperties.has("hass")) {
+      this._evaluateLiveTest();
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>): void {
+    if ((changedProperties as Map<string, unknown>).has("_entityContext")) {
+      this._evaluateLiveTest();
+    }
+  }
+
+  private _evaluateLiveTest() {
+    if (!this.condition || !this._condition) {
+      this._liveTestResult = "unknown";
+      return;
+    }
+
+    if (
+      isNoEntityCondition(this._condition.condition, this._noEntity) ||
+      containsNoEntityCondition(this._condition, this._noEntity)
+    ) {
+      this._liveTestResult = "unknown";
+      return;
+    }
+
+    if (!validateConditionalConfig([this.condition])) {
+      this._liveTestResult = "invalid";
+      return;
+    }
+
+    const testContext =
+      this._entityContext?.mode === "current"
+        ? { entity_id: this._entityContext.entityId }
+        : {};
+    const pass = checkConditionsMet([this.condition], this.hass, testContext);
+    this._liveTestResult = pass ? "pass" : "fail";
   }
 
   protected render() {
     const condition = this._condition;
 
     if (!condition) return nothing;
+
+    const hideLiveTest =
+      isNoEntityCondition(condition.condition, this._noEntity) ||
+      containsNoEntityCondition(condition, this._noEntity);
 
     return html`
       <div class="container">
@@ -163,6 +222,32 @@ export class HaCardConditionEditor extends LitElement {
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
             ) || condition.condition}
           </h3>
+          <ha-automation-row-event-chip
+            .show=${this._testingResult !== undefined}
+            .variant=${this._testingResult ? "success" : "warning"}
+            slot="event"
+            class="event-chip"
+            aria-live="polite"
+          >
+            ${this._testingResult
+              ? this.hass.localize(
+                  "ui.panel.lovelace.editor.condition-editor.testing_pass"
+                )
+              : this.hass.localize(
+                  "ui.panel.lovelace.editor.condition-editor.testing_error"
+                )}
+          </ha-automation-row-event-chip>
+          ${hideLiveTest
+            ? nothing
+            : html`
+                <ha-automation-row-live-test
+                  slot="icons"
+                  .state=${this._liveTestResult}
+                  .label=${this.hass.localize(
+                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult}`
+                  )}
+                ></ha-automation-row-live-test>
+              `}
           <ha-dropdown
             slot="icons"
             @wa-select=${this._handleAction}
@@ -176,8 +261,8 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            ${isNoEntityCondition(condition.condition, this.noEntity) ||
-            containsNoEntityCondition(condition, this.noEntity)
+            ${isNoEntityCondition(condition.condition, this._noEntity) ||
+            containsNoEntityCondition(condition, this._noEntity)
               ? nothing
               : html`<ha-dropdown-item value="test">
                   ${this.hass.localize(
@@ -251,48 +336,21 @@ export class HaCardConditionEditor extends LitElement {
             ${this._yamlMode
               ? html`
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this.condition}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 `
               : html`
                   ${dynamicElement(
-                    getConditionClassName(condition.condition, this.noEntity),
+                    getConditionClassName(condition.condition, this._noEntity),
                     {
                       hass: this.hass,
                       condition: condition,
-                      ...(this.noEntity &&
-                      NO_ENTITY_CONDITIONS_EXT.includes(condition.condition)
-                        ? {
-                            noEntity: this.noEntity,
-                            ...(condition.condition === "numeric_state"
-                              ? {}
-                              : { presetStates: this.presetStates }),
-                          }
-                        : {}),
                     }
                   )}
                 `}
           </div>
         </ha-expansion-panel>
-        <div
-          class="testing ${classMap({
-            active: this._testingResult !== undefined,
-            pass: this._testingResult === true,
-            error: this._testingResult === false,
-          })}"
-        >
-          ${this._testingResult
-            ? this.hass.localize(
-                "ui.panel.lovelace.editor.condition-editor.testing_pass"
-              )
-            : this._testingResult === false
-              ? this.hass.localize(
-                  "ui.panel.lovelace.editor.condition-editor.testing_error"
-                )
-              : nothing}
-        </div>
       </div>
     `;
   }
@@ -349,7 +407,15 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    this._testingResult = checkConditionsMet([condition], this.hass, {});
+    const testContext =
+      this._entityContext?.mode === "current"
+        ? { entity_id: this._entityContext.entityId }
+        : {};
+    this._testingResult = checkConditionsMet(
+      [condition],
+      this.hass,
+      testContext
+    );
 
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
@@ -419,41 +485,9 @@ export class HaCardConditionEditor extends LitElement {
         opacity: 0.5;
         pointer-events: none;
       }
-      .testing {
+      .event-chip {
         position: absolute;
-        top: 0px;
-        right: 0px;
-        left: 0px;
-        text-transform: uppercase;
-        font-size: var(--ha-font-size-m);
-        font-weight: var(--ha-font-weight-bold);
-        background-color: var(--divider-color, #e0e0e0);
-        color: var(--text-primary-color);
-        max-height: 0px;
-        overflow: hidden;
-        transition: max-height 0.3s;
-        text-align: center;
-        border-top-right-radius: calc(
-          var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-              --ha-card-border-width,
-              1px
-            )
-        );
-        border-top-left-radius: calc(
-          var(--ha-card-border-radius, var(--ha-border-radius-lg)) - var(
-              --ha-card-border-width,
-              1px
-            )
-        );
-      }
-      .testing.active {
-        max-height: 100px;
-      }
-      .testing.error {
-        background-color: var(--accent-color);
-      }
-      .testing.pass {
-        background-color: var(--success-color);
+        inset-inline-end: 40px;
       }
       .container {
         position: relative;

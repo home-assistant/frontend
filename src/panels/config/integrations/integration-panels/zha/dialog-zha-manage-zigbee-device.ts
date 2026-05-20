@@ -68,7 +68,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("close-dialog", () => this.closeDialog());
   }
@@ -96,7 +96,6 @@ class DialogZHAManageZigbeeDevice extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         @closed=${this._dialogClosed}

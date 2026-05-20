@@ -98,7 +98,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
   );
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
       return;
     }

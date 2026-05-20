@@ -54,7 +54,7 @@ export class ZHAGroupsDashboard extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchGroups();

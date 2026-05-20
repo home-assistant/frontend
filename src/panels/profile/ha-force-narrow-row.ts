@@ -2,9 +2,9 @@ import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-md-list-item";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
+import "../../components/item/ha-row-item";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-force-narrow-row")
@@ -13,7 +13,7 @@ class HaForcedNarrowRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize("ui.panel.profile.force_narrow.header")}</span
         >
@@ -27,7 +27,7 @@ class HaForcedNarrowRow extends LitElement {
           .checked=${this.hass.dockedSidebar === "always_hidden"}
           @change=${this._checkedChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
     `;
   }
 

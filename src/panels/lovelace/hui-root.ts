@@ -37,8 +37,8 @@ import {
 } from "../../common/url/search-params";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
-import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -409,6 +409,8 @@ class HUIRoot extends LitElement {
               slot="actionItems"
               .id="button-${index}"
               .path=${item.icon}
+              .label=${label}
+              hide-title
               @click=${item.buttonAction}
             ></ha-icon-button>
             <ha-tooltip placement="bottom" .for="button-${index}">
@@ -657,7 +659,7 @@ class HUIRoot extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
@@ -718,7 +720,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("lovelace")) {
       const oldLovelace = changedProperties.get("lovelace") as
         | Lovelace
@@ -740,7 +742,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
@@ -1243,8 +1245,10 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
-    const subItem = (ev.detail?.item as any)?.data as SubActionItem;
+  private _handleSubItemSelect(
+    ev: HaDropdownSelectEvent<SubActionItem["key"], SubActionItem>
+  ) {
+    const subItem = ev.detail.item.data;
     if (subItem?.action) {
       subItem.action();
     } else if (subItem?.overflowAction) {
@@ -1252,8 +1256,10 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
-    const item = (ev.detail?.item as any)?.data as ActionItem;
+  private _handleOverflowItemSelect(
+    ev: HaDropdownSelectEvent<ActionItem["key"], ActionItem>
+  ) {
+    const item = ev.detail.item.data;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");
       showListItemsDialog(this, {

@@ -343,10 +343,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         let pipelineName = "Home Assistant Cloud";
         let i = 1;
         while (
-          pipelines.pipelines.find(
-            // eslint-disable-next-line no-loop-func
-            (pipeline) => pipeline.name === pipelineName
-          )
+          pipelines.pipelines.find((pipeline) => pipeline.name === pipelineName)
         ) {
           pipelineName = `Home Assistant Cloud ${i}`;
           i++;

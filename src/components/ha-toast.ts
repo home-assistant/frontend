@@ -234,7 +234,10 @@ export class HaToast extends LitElement {
       border-radius: var(--ha-border-radius-sm);
       box-shadow: var(--wa-shadow-l);
       opacity: 0;
-      transform: translate(-50%, var(--ha-space-2));
+      transform: translate(
+        calc(-50% * var(--scale-direction)),
+        var(--ha-space-2)
+      );
       transition:
         opacity var(--ha-animation-duration-fast, 150ms) ease,
         transform var(--ha-animation-duration-fast, 150ms) ease;
@@ -242,7 +245,7 @@ export class HaToast extends LitElement {
 
     .toast.visible {
       opacity: 1;
-      transform: translate(-50%, 0);
+      transform: translate(calc(-50% * var(--scale-direction)), 0);
     }
 
     .toast:not(.active) {

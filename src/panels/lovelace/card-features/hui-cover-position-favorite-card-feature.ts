@@ -3,8 +3,8 @@ import type { CoverEntity } from "../../../data/cover";
 import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
   coverSupportsPosition,
-  normalizeCoverFavoritePositions,
 } from "../../../data/cover";
+import { normalizeFavoritePositions } from "../../../data/favorite_positions";
 import type { HomeAssistant } from "../../../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
@@ -23,7 +23,7 @@ const coverPositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefi
     supportsPosition: coverSupportsPosition,
     getFavoritePositions: (entry) => entry?.options?.cover?.favorite_positions,
     getCurrentValue: (stateObj) => stateObj.attributes.current_position,
-    normalizeFavoritePositions: normalizeCoverFavoritePositions,
+    normalizeFavoritePositions,
     defaultFavoritePositions: DEFAULT_COVER_FAVORITE_POSITIONS,
     setPositionService: "set_cover_position",
     serviceDataKey: "position",

@@ -1,6 +1,7 @@
-import { mdiDevices, mdiLink, mdiTextureBox } from "@mdi/js";
+import { mdiDevices, mdiLink, mdiPuzzle, mdiTextureBox } from "@mdi/js";
 import { describe, expect, it } from "vitest";
 import { computeNavigationPathInfo } from "../../src/data/compute-navigation-path-info";
+import type { IngressPanelInfoMap } from "../../src/data/hassio/ingress";
 import type { HomeAssistant } from "../../src/types";
 import type { LovelaceConfig } from "../../src/data/lovelace/config/types";
 
@@ -260,6 +261,86 @@ describe("computeNavigationPathInfo", () => {
 
       const result = computeNavigationPathInfo(hass, "/lovelace/overview");
       expect(result.label).toBe("Dashboard");
+    });
+  });
+
+  describe("ingress panel paths", () => {
+    const ingressPanels: IngressPanelInfoMap = {
+      my_addon: {
+        title: "My Addon",
+        icon: "mdi:puzzle",
+      },
+      no_icon_addon: {
+        title: "No Icon Addon",
+        icon: "",
+      },
+    };
+
+    it("resolves /app/<slug> with ingress panels data", () => {
+      const hass = createHass();
+      const result = computeNavigationPathInfo(
+        hass,
+        "/app/my_addon",
+        undefined,
+        ingressPanels
+      );
+      expect(result.label).toBe("My Addon");
+      expect(result.icon).toBe("mdi:puzzle");
+      expect(result.iconPath).toBe(mdiPuzzle);
+    });
+
+    it("falls back to slug when ingress panels not provided", () => {
+      const hass = createHass();
+      const result = computeNavigationPathInfo(hass, "/app/my_addon");
+      expect(result.label).toBe("my_addon");
+      expect(result.icon).toBeUndefined();
+      expect(result.iconPath).toBe(mdiPuzzle);
+    });
+
+    it("falls back to slug when addon not found in ingress panels", () => {
+      const hass = createHass();
+      const result = computeNavigationPathInfo(
+        hass,
+        "/app/unknown_addon",
+        undefined,
+        ingressPanels
+      );
+      expect(result.label).toBe("unknown_addon");
+      expect(result.icon).toBeUndefined();
+      expect(result.iconPath).toBe(mdiPuzzle);
+    });
+
+    it("resolves addon with empty icon as undefined", () => {
+      const hass = createHass();
+      const result = computeNavigationPathInfo(
+        hass,
+        "/app/no_icon_addon",
+        undefined,
+        ingressPanels
+      );
+      expect(result.label).toBe("No Icon Addon");
+      expect(result.icon).toBeUndefined();
+      expect(result.iconPath).toBe(mdiPuzzle);
+    });
+
+    it("does not resolve /app without a slug", () => {
+      const hass = createHass({
+        panels: {
+          app: {
+            url_path: "app",
+            title: "Apps",
+            component_name: "app",
+          },
+        } as unknown as HomeAssistant["panels"],
+      });
+      const result = computeNavigationPathInfo(
+        hass,
+        "/app",
+        undefined,
+        ingressPanels
+      );
+      // Falls through to panel resolution, not ingress
+      expect(result.label).toBe("Apps");
     });
   });
 });

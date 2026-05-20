@@ -53,7 +53,7 @@ class StepFlowProgress extends LitElement {
           text-align: center;
         }
         ha-spinner {
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
         }
       `,
     ];

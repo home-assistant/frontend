@@ -149,6 +149,38 @@ const CONFIGS = [
   max: 1.9
   unit: GBP/h`,
   },
+  {
+    heading: "A lot of segments",
+    config: `
+- type: gauge
+  needle: true
+  name: Percent gauge
+  entity: sensor.brightness_high
+  unit: "%"
+  min: 0
+  max: 100
+  segments:
+    - from: 0
+      color: "#db4437"
+    - from: 10
+      color: "#cc4d39"
+    - from: 20
+      color: "#bd563a"
+    - from: 30
+      color: "#ad603c"
+    - from: 40
+      color: "#9e693d"
+    - from: 50
+      color: "#8f723f"
+    - from: 60
+      color: "#807b41"
+    - from: 70
+      color: "#718442"
+    - from: 80
+      color: "#618e44"
+    - from: 90
+      color: "#43a047"`,
+  },
 ];
 
 @customElement("demo-lovelace-gauge-card")
@@ -159,7 +191,7 @@ class DemoGaugeEntity extends LitElement {
     return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");

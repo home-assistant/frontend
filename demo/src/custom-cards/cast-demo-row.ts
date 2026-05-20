@@ -1,5 +1,6 @@
 /// <reference types="chromecast-caf-sender" />
 import { mdiTelevision } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import type { CastManager } from "../../../src/cast/cast_manager";
@@ -37,7 +38,7 @@ class CastDemoRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     import("../../../src/cast/cast_manager").then(({ getCastManager }) =>
       getCastManager().then((mgr) => {
@@ -62,7 +63,7 @@ class CastDemoRow extends LitElement implements LovelaceRow {
     );
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     this.style.display = this._castManager ? "" : "none";
   }

@@ -35,7 +35,7 @@ class PanelEnergy extends LitElement {
   @state()
   private _error?: string;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {

@@ -43,7 +43,7 @@ import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog-header";
 import "../../../../../../components/ha-dialog-footer";
-import "../../../../../../components/ha-fade-in";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
 import "../../../../../../components/ha-dialog";
@@ -141,7 +141,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         ?prevent-scrim-close=${preventClose}
         @closed=${this._dialogClosed}

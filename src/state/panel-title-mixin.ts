@@ -18,7 +18,7 @@ export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(
   class extends superClass {
     private _previousPath?: string;
 
-    protected updated(changedProps: PropertyValues): void {
+    protected updated(changedProps: PropertyValues<this>): void {
       super.updated(changedProps);
       if (!changedProps.has("hass") || !this.hass) {
         return;

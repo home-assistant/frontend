@@ -1,13 +1,13 @@
 import ProgressRing from "@home-assistant/webawesome/dist/components/progress-ring/progress-ring";
 import { css } from "lit";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-progress-ring")
 export class HaProgressRing extends ProgressRing {
   @property() public size?: "tiny" | "small" | "medium" | "large";
 
-  public updated(changedProps) {
+  public updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("size")) {

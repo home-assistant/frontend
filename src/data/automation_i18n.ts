@@ -328,13 +328,12 @@ const describeLegacyTrigger = (
     let fromChoice = "other";
     let fromString = "";
     if (trigger.from !== undefined) {
-      let fromArray: string[] = [];
       if (trigger.from === null) {
         if (!trigger.attribute) {
           fromChoice = "null";
         }
       } else {
-        fromArray = ensureArray(trigger.from);
+        const fromArray = ensureArray(trigger.from);
 
         const from: string[] = [];
         for (const state of fromArray) {
@@ -362,13 +361,12 @@ const describeLegacyTrigger = (
     let toChoice = "other";
     let toString = "";
     if (trigger.to !== undefined) {
-      let toArray: string[] = [];
       if (trigger.to === null) {
         if (!trigger.attribute) {
           toChoice = "null";
         }
       } else {
-        toArray = ensureArray(trigger.to);
+        const toArray = ensureArray(trigger.to);
 
         const to: string[] = [];
         for (const state of toArray) {
@@ -521,7 +519,7 @@ const describeLegacyTrigger = (
       | "every_interval"
       | "on_the_xth"
       | "other"
-      | "has_seconds_or_minutes" = "other";
+      | "has_seconds_or_minutes";
 
     let seconds = 0;
     let minutes = 0;

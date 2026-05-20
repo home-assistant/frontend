@@ -31,7 +31,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     return { action: "", data: {} };
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("action")) {
       return;
     }
@@ -85,7 +85,6 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .value=${this._action}
         .disabled=${this.disabled}
-        .showAdvanced=${this.hass.userData?.showAdvanced}
         .hidePicker=${!!this._action.metadata}
         @value-changed=${this._actionChanged}
       ></ha-service-control>

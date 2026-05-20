@@ -46,7 +46,6 @@ class DialogNewBackup extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._opened}
         header-title=${this.hass.localize(
           "ui.panel.config.backup.dialogs.new.title"

@@ -25,6 +25,7 @@ import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -51,6 +52,8 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Trigger[] {
     return this.triggers;
@@ -107,7 +110,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("triggers");
   }
@@ -137,6 +140,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 .trigger=${trg}
                 .triggerDescriptions=${this._triggerDescriptions}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
@@ -231,8 +235,34 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     fireEvent(this, "value-changed", { value: triggers });
   };
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (!this.hass) {
+      return;
+    }
+
+    const addTriggerTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      "trigger"
+    );
+
+    if (changedProps.has("triggers") && addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.triggers.length === 0 &&
+      addTriggerTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addTriggerDialog());
+    } else if (this._openedAddDialogFromQuery && !addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
 
     if (
       changedProps.has("triggers") &&

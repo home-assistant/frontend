@@ -27,6 +27,16 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
   persons: "mdi:account-multiple",
 };
 
+export const HOME_SUMMARIES_COLORS: Record<HomeSummary, string> = {
+  light: "amber",
+  climate: "deep-orange",
+  security: "blue-grey",
+  media_players: "blue",
+  maintenance: "grey",
+  energy: "amber",
+  persons: "green",
+};
+
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
   light: lightEntityFilters,
   climate: climateEntityFilters,

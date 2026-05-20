@@ -53,7 +53,7 @@ class PartialPanelResolver extends HassRouterPage {
 
   private _hiddenTimeout?: number;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     // Attach listeners for visibility
@@ -65,7 +65,7 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {

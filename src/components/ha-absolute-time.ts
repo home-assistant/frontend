@@ -31,12 +31,12 @@ class HaAbsoluteTime extends ReactiveElement {
     return this;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._updateAbsolute();
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     this._updateAbsolute();
   }

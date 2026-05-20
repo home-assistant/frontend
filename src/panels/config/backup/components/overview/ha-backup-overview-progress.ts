@@ -260,7 +260,7 @@ export class HaBackupOverviewProgress extends LitElement {
     `;
   }
 
-  override willUpdate(changedProps: PropertyValues) {
+  override willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("manager")) {
       const isUpload = this._isUploadStage;
       if (this._wasUploadStage && !isUpload) {

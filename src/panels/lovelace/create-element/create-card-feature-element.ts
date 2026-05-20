@@ -43,7 +43,6 @@ import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
 import "../card-features/hui-bar-gauge-card-feature";
-import "../card-features/hui-hourly-forecast-card-feature";
 import "../card-features/hui-trend-graph-card-feature";
 
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
@@ -74,7 +73,6 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
-  "hourly-forecast",
   "humidifier-modes",
   "humidifier-toggle",
   "lawn-mower-commands",

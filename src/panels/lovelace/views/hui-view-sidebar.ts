@@ -27,7 +27,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
 
   private _visible = true;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("hass") || changedProperties.has("config")) {
       this._updateVisibility();

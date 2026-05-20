@@ -24,14 +24,13 @@ export class HaFilterChip extends FilterChip {
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--primary-text-color);
         --md-sys-color-on-secondary-container: var(--primary-text-color);
-        --md-filter-chip-container-shape: 16px;
+        --md-filter-chip-container-shape: var(--ha-border-radius-md);
         --md-filter-chip-outline-color: var(--outline-color);
         --md-filter-chip-selected-container-color: rgba(
           var(--rgb-primary-text-color),
           0.15
         );
         --_label-text-font: var(--ha-font-family-body);
-        border-radius: var(--ha-border-radius-md);
       }
     `,
   ];

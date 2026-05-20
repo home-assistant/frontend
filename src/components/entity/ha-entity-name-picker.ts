@@ -88,7 +88,7 @@ export class HaEntityNamePicker extends LitElement {
     }
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (this._mode === undefined) {
       const items = this._toItems(this.value);
       this._mode =

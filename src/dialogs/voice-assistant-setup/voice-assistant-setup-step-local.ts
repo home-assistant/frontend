@@ -156,7 +156,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     </div>`;
   }
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (!this.hasUpdated) {
@@ -199,13 +199,13 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
           this._detailState = this.hass.localize(
             `ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_${this._ttsProviderName}`
           );
-          await installHassioAddon(this.hass, this._ttsAddonName);
+          await installHassioAddon(this.hass.callWS, this._ttsAddonName);
         }
         if (!ttsAddon || ttsAddon.state !== "started") {
           this._detailState = this.hass.localize(
             `ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_${this._ttsProviderName}`
           );
-          await startHassioAddon(this.hass, this._ttsAddonName);
+          await startHassioAddon(this.hass.callWS, this._ttsAddonName);
         }
         this._detailState = this.hass.localize(
           `ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_${this._ttsProviderName}`
@@ -217,13 +217,13 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
           this._detailState = this.hass.localize(
             `ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_${this._sttProviderName}`
           );
-          await installHassioAddon(this.hass, this._sttAddonName);
+          await installHassioAddon(this.hass.callWS, this._sttAddonName);
         }
         if (!sttAddon || sttAddon.state !== "started") {
           this._detailState = this.hass.localize(
             `ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_${this._sttProviderName}`
           );
-          await startHassioAddon(this.hass, this._sttAddonName);
+          await startHassioAddon(this.hass.callWS, this._sttAddonName);
         }
         this._detailState = this.hass.localize(
           `ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_${this._sttProviderName}`
@@ -456,10 +456,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     );
     let i = 1;
     while (
-      pipelines.pipelines.find(
-        // eslint-disable-next-line no-loop-func
-        (pipeline) => pipeline.name === pipelineName
-      )
+      pipelines.pipelines.find((pipeline) => pipeline.name === pipelineName)
     ) {
       pipelineName = `${this.hass.localize(`ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`)} ${i}`;
       i++;

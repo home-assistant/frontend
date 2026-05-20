@@ -85,7 +85,7 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _storageInfo?: HostDisksUsage | null;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
     if (isComponentLoaded(this.hass.config, "hassio")) {

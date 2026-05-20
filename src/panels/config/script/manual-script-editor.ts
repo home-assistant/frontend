@@ -80,7 +80,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
     });
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (this._openFields && changedProps.has("config")) {
       this._openFields = false;

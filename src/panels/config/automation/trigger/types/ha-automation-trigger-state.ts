@@ -178,7 +178,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       ] as const satisfies HaFormSchema[]
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
       return true;
     }

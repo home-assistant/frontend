@@ -35,7 +35,7 @@ export interface IngressPanelInfo {
   icon: string;
 }
 
-type IngressPanelInfoMap = Record<string, IngressPanelInfo>;
+export type IngressPanelInfoMap = Record<string, IngressPanelInfo>;
 
 export const getIngressPanelInfoCollection = (conn: Connection) =>
   getCollection<IngressPanelInfoMap>(

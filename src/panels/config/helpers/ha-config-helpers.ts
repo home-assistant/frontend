@@ -146,6 +146,7 @@ interface HelperItem {
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   disabled?: boolean;
@@ -240,13 +241,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
 
   @state() private _filteredItems: DataTableFiltersItems = {};
 
@@ -334,10 +338,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         moveable: false,
         template: (helper) =>
           helper.entity
-            ? html`<ha-state-icon
-                .hass=${this.hass}
-                .stateObj=${helper.entity}
-              ></ha-state-icon>`
+            ? html`<ha-state-icon .stateObj=${helper.entity}></ha-state-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
                 style="color: var(--error-color)"
@@ -552,6 +553,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
+          const label_entries = (labels || []).map(
+            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+          );
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
           const areaId =
@@ -572,9 +576,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
               ) ||
               item.type,
-            label_entries: (labels || []).map(
-              (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-            ),
+            label_entries,
+            labels: label_entries.map((lbl) => lbl.name),
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
@@ -819,6 +822,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
@@ -929,6 +935,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
+  private _fromUrl = false;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -965,6 +973,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
@@ -978,6 +987,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 
@@ -1090,7 +1102,7 @@ ${rejected
     this._selected = ev.detail.value;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setFiltersFromUrl();
     this._fetchEntitySources();
@@ -1206,6 +1218,7 @@ ${rejected
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
 
@@ -1254,6 +1267,9 @@ ${rejected
       !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {
       this._helperEntities = newHelpers;
+      if (Object.keys(this._filters).length > 0) {
+        this._applyFilters();
+      }
     }
   }
 

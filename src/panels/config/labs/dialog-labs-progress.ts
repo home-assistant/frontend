@@ -40,7 +40,6 @@ export class DialogLabsProgress
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         @closed=${this._handleClosed}

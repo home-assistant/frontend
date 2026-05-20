@@ -1,4 +1,4 @@
-import type { DurationFormatConstructor } from "@formatjs/intl-durationformat/src/types";
+import type { DurationFormat as FormatJSDurationFormat } from "@formatjs/intl-durationformat";
 import type {
   Auth,
   Connection,
@@ -77,7 +77,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Intl {
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    const DurationFormat: DurationFormatConstructor;
+    const DurationFormat: typeof FormatJSDurationFormat;
   }
 }
 
@@ -253,6 +253,8 @@ export interface HomeAssistantInternationalization {
   loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
 }
 
+export type CallWS = <T>(msg: MessageBase) => Promise<T>;
+
 export interface HomeAssistantApi {
   callService<T = any>(
     domain: ServiceCallRequest["domain"],
@@ -277,7 +279,7 @@ export interface HomeAssistantApi {
   ): Promise<Response>;
   fetchWithAuth(path: string, init?: Record<string, any>): Promise<Response>;
   sendWS(msg: MessageBase): void;
-  callWS<T>(msg: MessageBase): Promise<T>;
+  callWS: CallWS;
 }
 
 export interface HomeAssistantFormatters {
@@ -339,7 +341,6 @@ export interface HomeAssistant
     HomeAssistantConfig {
   states: HassEntities;
   services: HassServices;
-  resources: Resources;
 }
 
 export interface Route {

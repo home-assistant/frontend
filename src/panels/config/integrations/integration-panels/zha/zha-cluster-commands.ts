@@ -40,7 +40,7 @@ export class ZHAClusterCommands extends LitElement {
   @state()
   private _commandData: Record<string, any> = {};
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("selectedCluster")) {
       this._commands = undefined;
       this._selectedCommandId = undefined;

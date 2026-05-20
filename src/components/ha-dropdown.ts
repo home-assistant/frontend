@@ -6,11 +6,18 @@ import type { HaIconButton } from "./ha-icon-button";
 
 /**
  * Event type for the ha-dropdown component when an item is selected.
- * @param T - The type of the value of the selected item.
+ * @param TValue - The type of the selected item's `value`.
+ * @param TData - The type of the selected item's `data` when set on `ha-dropdown-item`.
  */
-export type HaDropdownSelectEvent<T = string> = CustomEvent<{
-  item: Omit<HaDropdownItem, "value"> & { value: T };
-}>;
+export type HaDropdownSelectEvent<TValue = string, TData = undefined> = [
+  TData,
+] extends [undefined]
+  ? CustomEvent<{
+      item: Omit<HaDropdownItem, "value"> & { value: TValue };
+    }>
+  : CustomEvent<{
+      item: Omit<HaDropdownItem, "value"> & { value: TValue; data: TData };
+    }>;
 
 /**
  * Home Assistant dropdown component

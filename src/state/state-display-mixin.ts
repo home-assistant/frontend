@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { getSensorNumericDeviceClasses } from "../data/sensor";
@@ -11,7 +12,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       this._updateFormatFunctions();
     }
 
-    protected willUpdate(changedProps) {
+    protected willUpdate(changedProps: PropertyValues<this>) {
       super.willUpdate(changedProps);
 
       if (!changedProps.has("hass")) {

@@ -2,7 +2,7 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
@@ -48,6 +48,10 @@ class PanelHome extends LitElement {
 
   @state() private _extraActionItems?: ExtraActionItem[];
 
+  @query(".banner") private _banner?: HTMLElement;
+
+  private _loadConfigPromise?: Promise<void>;
+
   private get _showBanner(): boolean {
     // Don't show if already dismissed
     if (this._config.welcome_banner_dismissed) {
@@ -73,7 +77,7 @@ class PanelHome extends LitElement {
       (entries[0]?.target as HTMLElement | undefined)?.offsetHeight ?? 0,
   });
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
@@ -121,6 +125,12 @@ class PanelHome extends LitElement {
 
   private async _setup() {
     this._updateExtraActionItems();
+    this._loadConfigPromise = this._loadConfig();
+    await this._loadConfigPromise;
+    this._setLovelace();
+  }
+
+  private async _loadConfig() {
     try {
       const [_, data] = await Promise.all([
         this.hass.loadFragmentTranslation("lovelace"),
@@ -132,7 +142,6 @@ class PanelHome extends LitElement {
       console.error("Failed to load favorites:", err);
       this._config = {};
     }
-    this._setLovelace();
   }
 
   private _debounceRegistriesChanged = debounce(
@@ -292,9 +301,8 @@ class PanelHome extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_showBanner") || changedProps.has("_lovelace")) {
-      const banner = this.shadowRoot?.querySelector(".banner");
-      if (banner) {
-        this._bannerHeight.observe(banner);
+      if (this._banner) {
+        this._bannerHeight.observe(this._banner);
       }
     }
   }
@@ -313,14 +321,17 @@ class PanelHome extends LitElement {
   }
 
   private async _setLovelace() {
+    if (this._loadConfigPromise) {
+      await this._loadConfigPromise;
+    }
     const strategyConfig: LovelaceDashboardStrategyConfig = {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
-        hidden_summaries: this._config.hidden_summaries,
         hide_welcome_message: this._config.hide_welcome_message,
-        custom_shortcuts: this._config.custom_shortcuts,
+        hide_suggested_entities: this._config.hide_suggested_entities,
+        shortcuts: this._config.shortcuts,
       },
     };
 
@@ -382,7 +393,7 @@ class PanelHome extends LitElement {
       gap: var(--ha-space-2);
       position: fixed;
       top: var(--header-height, 56px);
-      left: var(--mdc-drawer-width, 0px);
+      left: var(--ha-sidebar-width, 0px);
       right: 0;
       z-index: 5;
     }

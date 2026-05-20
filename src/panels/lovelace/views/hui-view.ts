@@ -149,7 +149,7 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
-  public willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     /*

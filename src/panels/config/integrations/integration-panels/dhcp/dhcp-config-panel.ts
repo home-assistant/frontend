@@ -75,7 +75,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
     }))
   );
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this.hasUpdated) {

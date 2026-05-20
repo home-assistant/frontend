@@ -79,7 +79,7 @@ export class HaWebhookTrigger extends LitElement {
     return `${urlSafeAlias}-${urlSafeId}`;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("trigger")) {
       if (this.trigger.allowed_methods === undefined) {

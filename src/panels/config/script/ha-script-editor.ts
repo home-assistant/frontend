@@ -34,6 +34,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -90,6 +91,8 @@ export class HaScriptEditor extends SubscribeMixin(
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   private _newScriptId?: string;
 
   protected domainHooks: EditorDomainHooks<ScriptConfig> = {
@@ -104,7 +107,7 @@ export class HaScriptEditor extends SubscribeMixin(
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (
@@ -458,13 +461,11 @@ export class HaScriptEditor extends SubscribeMixin(
               `
             : this.mode === "yaml"
               ? html`<ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     disable-fullscreen
                     @value-changed=${this._yamlChanged}
                     @editor-save=${this._handleSaveScript}
-                    .showErrors=${false}
                   ></ha-yaml-editor>
                   <ha-button
                     slot="fab"
@@ -495,7 +496,7 @@ export class HaScriptEditor extends SubscribeMixin(
     this.currentEntityId = entity?.entity_id;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
     const oldScript = changedProps.get("scriptId");
@@ -752,7 +753,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.blueprintConfig = config;
       this.config = newConfig;
       if (this.mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
+        this._yamlEditor?.setValue(this.config);
       }
       this.readOnly = true;
       this.errors = undefined;

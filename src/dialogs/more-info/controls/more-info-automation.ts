@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-button";
 import "../../../components/ha-relative-time";
 import { triggerAutomationActions } from "../../../data/automation";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-automation")
@@ -34,7 +34,7 @@ class MoreInfoAutomation extends LitElement {
           appearance="plain"
           size="small"
           @click=${this._runActions}
-          .disabled=${isUnavailableState(this.stateObj!.state)}
+          .disabled=${this.stateObj!.state === UNAVAILABLE}
         >
           ${this.hass.localize("ui.card.automation.trigger")}
         </ha-button>

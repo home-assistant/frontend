@@ -86,7 +86,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.urlPath
           ? this._data.title ||

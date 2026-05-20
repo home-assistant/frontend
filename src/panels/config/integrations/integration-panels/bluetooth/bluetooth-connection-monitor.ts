@@ -155,7 +155,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
     }
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this.hasUpdated) {

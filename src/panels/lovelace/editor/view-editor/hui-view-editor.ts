@@ -203,8 +203,7 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _computeError = (error: string) =>
-    this.hass.localize(`ui.panel.lovelace.editor.edit_view.${error}` as any) ||
-    error;
+    this.hass.localize(`ui.panel.lovelace.editor.edit_view.${error}`) || error;
 
   private _computeLabel = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>

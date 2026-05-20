@@ -13,7 +13,7 @@ class ZHADeviceZigbeeInfo extends LitElement {
 
   @state() private _signature: any;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("device") && this.hass && this.device) {
       this._signature = JSON.stringify(
         {
@@ -35,13 +35,7 @@ class ZHADeviceZigbeeInfo extends LitElement {
     }
 
     return html`
-      <ha-code-editor
-        mode="yaml"
-        read-only
-        .hass=${this.hass}
-        .value=${this._signature}
-        dir="ltr"
-      >
+      <ha-code-editor mode="yaml" read-only .value=${this._signature} dir="ltr">
       </ha-code-editor>
     `;
   }

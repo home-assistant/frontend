@@ -50,7 +50,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private _deviceName?: string;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has("assistConfiguration")) {
@@ -363,9 +363,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      ha-md-list-item {
-        text-align: initial;
-      }
       ha-tts-voice-picker {
         display: block;
       }

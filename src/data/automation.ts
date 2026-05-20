@@ -1,4 +1,5 @@
 import type {
+  Connection,
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
@@ -322,6 +323,7 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
 
 export interface AutomationElementGroupCollection {
   titleKey?: LocalizeKeys;
+  generic?: boolean;
   groups: AutomationElementGroup;
 }
 
@@ -583,6 +585,19 @@ export const testCondition = (
     variables,
   });
 
+export const subscribeCondition = (
+  connection: Connection,
+  onChange: (result: {
+    result?: boolean;
+    error?: string | { code: string; message: string };
+  }) => void,
+  condition: Condition
+) =>
+  connection.subscribeMessage(onChange, {
+    type: "subscribe_condition",
+    condition,
+  });
+
 export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
@@ -607,6 +622,8 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   description?: TriggerDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
@@ -623,6 +640,8 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   description?: ConditionDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
@@ -641,6 +660,8 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   };
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {

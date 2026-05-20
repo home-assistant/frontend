@@ -6,7 +6,7 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -47,7 +47,7 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (isComponentLoaded(this.hass.config, "hassio")) {

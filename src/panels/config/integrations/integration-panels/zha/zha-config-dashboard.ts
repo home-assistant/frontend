@@ -64,7 +64,7 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _error?: string;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this.hass.loadBackendTranslation("config_panel", "zha", false);

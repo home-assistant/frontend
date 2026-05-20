@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../types";
@@ -58,7 +59,7 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
     this._snowflakes = snowflakes;
   }
 
-  protected willUpdate(changedProps: Map<string, unknown>) {
+  protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (changedProps.has("_enabled")) {
       this._generateSnowflakes();

@@ -54,11 +54,13 @@ export class HaAuthFlow extends LitElement {
 
   @query("ha-auth-form") private _form?: HaAuthForm;
 
+  @query("ha-form") private _haForm?: HTMLElement;
+
   createRenderRoot() {
     return this;
   }
 
-  willUpdate(changedProps: PropertyValues) {
+  willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated && this.clientId === genClientId()) {
@@ -126,7 +128,7 @@ export class HaAuthFlow extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (this.clientId == null || this.redirectUri == null) {
@@ -148,7 +150,7 @@ export class HaAuthFlow extends LitElement {
     });
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("authProvider")) {
       this._providerChanged(this.authProvider);
@@ -160,9 +162,8 @@ export class HaAuthFlow extends LitElement {
 
     // 100ms to give all the form elements time to initialize.
     setTimeout(() => {
-      const form = this.renderRoot.querySelector("ha-form");
-      if (form) {
-        (form as any).focus();
+      if (this._haForm) {
+        (this._haForm as any).focus();
       }
     }, 100);
   }

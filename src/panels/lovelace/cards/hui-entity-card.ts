@@ -7,6 +7,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeEntityUnitDisplay } from "../../../common/entity/compute_entity_unit_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   stateColorBrightness,
@@ -18,14 +19,13 @@ import "../../../components/ha-attribute-value";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { isUnavailableState } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction, hasAnyAction } from "../common/has-action";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
+import { handleAction } from "../common/handle-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -119,27 +119,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain = computeStateDomain(stateObj);
+    const unit = computeEntityUnitDisplay(this.hass, stateObj, this._config);
     const stateParts = this.hass.formatEntityStateToParts(stateObj);
-
-    let unit;
-    if (
-      !isUnavailableState(stateObj.state) &&
-      (this._config.attribute ||
-        stateObj.attributes.device_class !== "duration")
-    ) {
-      unit = this._config.unit;
-      if (!unit) {
-        if (!this._config.attribute) {
-          unit = stateParts.find((part) => part.type === "unit")?.value;
-        } else {
-          const parts = this.hass.formatEntityAttributeValueToParts(
-            stateObj,
-            this._config.attribute
-          );
-          unit = parts.find((part) => part.type === "unit")?.value;
-        }
-      }
-    }
 
     const indexUnit = stateParts.findIndex((part) => part.type === "unit");
     const indexValue = stateParts.reduceRight(
@@ -178,7 +159,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
             <ha-state-icon
               .icon=${this._config.icon}
               .stateObj=${stateObj}
-              .hass=${this.hass}
               data-domain=${ifDefined(domain)}
               data-state=${stateObj.state}
               style=${styleMap({
@@ -253,7 +233,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     return undefined;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     // Side Effect used to update footer hass while keeping optimizations
     if (this._footerElement) {
       this._footerElement.hass = this.hass;

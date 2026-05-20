@@ -57,7 +57,7 @@ export class HaFileUpload extends LitElement {
 
   @query("#input") private _input?: HTMLInputElement;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.autoOpenFileDialog) {
       this._openFilePicker();

@@ -10,6 +10,7 @@ import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyData,
@@ -25,7 +26,10 @@ import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
+  isExternalStatistic,
 } from "../../../../data/recorder";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -72,6 +76,8 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _chartData: BarSeriesOption[] = [];
 
+  @state() private _yAxisFractionDigits = 1;
+
   @state() private _data?: EnergyData;
 
   @state() private _legendData?: CustomLegendOption["data"];
@@ -115,7 +121,7 @@ export class HuiEnergyDevicesDetailGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -154,10 +160,13 @@ export class HuiEnergyDevicesDetailGraphCard
               this.hass.config,
               UNIT,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
+            click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
             @dataset-unhidden=${this._datasetUnhidden}
+            @legend-label-click=${this._handleLegendLabelClick}
           ></ha-chart-base>
         </div>
       </ha-card>
@@ -185,15 +194,28 @@ export class HuiEnergyDevicesDetailGraphCard
     );
   }
 
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const entityId = this._getStatIdFromId(ev.detail.id);
+    if (isExternalStatistic(entityId)) {
+      return;
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
+  }
+
   private _createOptions = memoizeOne(
     (
       start: Date,
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      unit?: string,
-      compareStart?: Date,
-      compareEnd?: Date
+      unit: string | undefined,
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
     ): ECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -203,7 +225,9 @@ export class HuiEnergyDevicesDetailGraphCard
         unit,
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       );
 
       const selected = this._legendData
@@ -292,6 +316,13 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const datasets: BarSeriesOption[] = [];
 
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
+
     const { summedData, compareSummedData } = getSummedData(energyData);
 
     const showUntracked =
@@ -314,6 +345,7 @@ export class HuiEnergyDevicesDetailGraphCard
         energyData.prefs.device_consumption,
         sorted_devices,
         childMap,
+        trackY,
         true
       );
 
@@ -324,6 +356,7 @@ export class HuiEnergyDevicesDetailGraphCard
           computedStyle,
           processedCompareData,
           consumptionCompareData,
+          trackY,
           true
         );
         datasets.push(untrackedCompareData);
@@ -345,25 +378,31 @@ export class HuiEnergyDevicesDetailGraphCard
       energyData.statsMetadata,
       energyData.prefs.device_consumption,
       sorted_devices,
-      childMap
+      childMap,
+      trackY
     );
 
     datasets.push(...processedData);
-    this._legendData = processedData.map((d) => ({
-      id: d.id as string,
-      secondaryIds: [`compare-${d.id}`],
-      name: d.name as string,
-      itemStyle: {
-        color: d.color as string,
-        borderColor: d.itemStyle?.borderColor as string,
-      },
-    }));
+    this._legendData = processedData.map((d) => {
+      const statId = this._getStatIdFromId(d.id as string);
+      return {
+        id: d.id as string,
+        secondaryIds: [`compare-${d.id}`],
+        name: d.name as string,
+        itemStyle: {
+          color: d.color as string,
+          borderColor: d.itemStyle?.borderColor as string,
+        },
+        noLabelClick: isExternalStatistic(statId) || !this.hass.states[statId],
+      };
+    });
 
     if (showUntracked) {
       const untrackedData = this._processUntracked(
         computedStyle,
         processedData,
         consumptionData,
+        trackY,
         false
       );
       datasets.push(untrackedData);
@@ -375,10 +414,12 @@ export class HuiEnergyDevicesDetailGraphCard
           color: untrackedData.color as string,
           borderColor: untrackedData.itemStyle?.borderColor as string,
         },
+        noLabelClick: true,
       });
     }
 
     fillDataGapsAndRoundCaps(datasets);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
   }
 
@@ -386,6 +427,7 @@ export class HuiEnergyDevicesDetailGraphCard
     computedStyle: CSSStyleDeclaration,
     processedData,
     consumptionData,
+    trackY: (v: number) => void,
     compare: boolean
   ): BarSeriesOption {
     const totalDeviceConsumption: Record<number, number> = {};
@@ -421,6 +463,7 @@ export class HuiEnergyDevicesDetailGraphCard
         dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
       }
       untrackedConsumption.push(dataPoint);
+      trackY(value);
     });
     // random id to always add untracked at the end
     const order = Date.now();
@@ -461,6 +504,7 @@ export class HuiEnergyDevicesDetailGraphCard
     devices: DeviceConsumptionEnergyPreference[],
     sorted_devices: string[],
     childMap: Record<string, string[]>,
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -508,6 +552,7 @@ export class HuiEnergyDevicesDetailGraphCard
               cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
           });
 
+          const y = point.change - sumChildren;
           const dataPoint: EnergyDataPoint = [
             computeStatMidpoint(
               point.start,
@@ -515,10 +560,11 @@ export class HuiEnergyDevicesDetailGraphCard
               period,
               compare ? compareTransform : undefined
             ),
-            point.change - sumChildren,
+            y,
             point.start,
           ];
           consumptionData.push(dataPoint);
+          trackY(y);
           prevStart = point.start;
         }
       }

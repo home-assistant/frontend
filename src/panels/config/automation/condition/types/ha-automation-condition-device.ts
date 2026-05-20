@@ -60,7 +60,7 @@ export class HaDeviceCondition extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("condition")) {
       return true;
     }
@@ -137,7 +137,7 @@ export class HaDeviceCondition extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     const prevCondition = changedProps.get("condition");
     if (
       prevCondition &&

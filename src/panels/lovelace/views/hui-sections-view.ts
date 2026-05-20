@@ -147,7 +147,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
     }

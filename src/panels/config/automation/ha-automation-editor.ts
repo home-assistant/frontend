@@ -36,6 +36,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type {
   AutomationConfig,
   AutomationEntity,
@@ -76,6 +77,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
+import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
@@ -104,6 +106,9 @@ declare global {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
     "save-automation": undefined;
+    paste: {
+      item: Trigger | Condition | Action;
+    };
   }
 }
 
@@ -117,6 +122,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -139,7 +146,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (
@@ -538,12 +545,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                       `
                     : nothing}
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     @value-changed=${this._yamlChanged}
                     @editor-save=${this._handleSaveAutomation}
-                    .showErrors=${false}
                     disable-fullscreen
                   ></ha-yaml-editor>
                   <ha-button
@@ -568,11 +573,21 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
+    if (!this.hass) {
+      return;
+    }
+
+    const shouldResetNewAutomationConfigFromQuery =
+      changedProps.has("route") &&
+      this.route?.path === "/new" &&
+      new URLSearchParams(window.location.search).has(
+        ADD_AUTOMATION_ELEMENT_QUERY_PARAM
+      );
+
     const oldAutomationId = changedProps.get("automationId");
     if (
       changedProps.has("automationId") &&
       this.automationId &&
-      this.hass &&
       // Only refresh config if we picked a new automation. If same ID, don't fetch it.
       oldAutomationId !== this.automationId
     ) {
@@ -581,10 +596,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     }
 
     if (
-      changedProps.has("automationId") &&
+      (changedProps.has("automationId") ||
+        shouldResetNewAutomationConfigFromQuery) &&
       !this.automationId &&
-      !this.entityId &&
-      this.hass
+      !this.entityId
     ) {
       const initData = getAutomationEditorInitData();
       this.dirty = !!initData;
@@ -826,7 +841,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       this.blueprintConfig = config;
       this.config = newConfig;
       if (this.mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
+        this._yamlEditor?.setValue(this.config);
       }
       this.readOnly = true;
       this.errors = undefined;

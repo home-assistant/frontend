@@ -31,6 +31,7 @@ export type Selector =
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
+  | AutomationBehaviorSelector
   | BooleanSelector
   | ButtonToggleSelector
   | ChooseSelector
@@ -77,7 +78,7 @@ export type Selector =
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
-  | SerialSelector
+  | SerialPortSelector
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
@@ -122,6 +123,21 @@ export interface AttributeSelector {
 
 export interface BooleanSelector {
   boolean: {} | null;
+}
+
+export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+
+export type AutomationBehaviorConditionMode = "all" | "any";
+
+export type AutomationBehavior =
+  | AutomationBehaviorTriggerMode
+  | AutomationBehaviorConditionMode;
+
+export interface AutomationBehaviorSelector {
+  automation_behavior: {
+    mode: "trigger" | "condition";
+    translation_key?: string;
+  } | null;
 }
 
 export interface ButtonToggleSelector {
@@ -249,6 +265,16 @@ interface EntitySelectorFilter {
   unit_of_measurement?: string | readonly string[];
 }
 
+export interface EntitySelectorExtraOption {
+  id: string;
+  primary: string;
+  secondary?: string;
+  icon?: string;
+  icon_path?: string;
+  entity_id?: string;
+  hide_clear?: boolean;
+}
+
 export interface EntitySelector {
   entity: {
     multiple?: boolean;
@@ -256,6 +282,7 @@ export interface EntitySelector {
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     reorder?: boolean;
+    extra_options?: EntitySelectorExtraOption[];
   } | null;
 }
 
@@ -452,8 +479,10 @@ export interface SelectorSelector {
   selector: {} | null;
 }
 
-export interface SerialSelector {
-  serial: {} | null;
+export interface SerialPortSelector {
+  serial_port: {
+    extra_recommended_domains?: string[];
+  } | null;
 }
 
 export interface StateSelector {
@@ -463,7 +492,6 @@ export interface StateSelector {
     attribute?: string;
     hide_states?: string[];
     multiple?: boolean;
-    no_entity?: boolean;
   } | null;
 }
 
@@ -513,6 +541,7 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    primary_entities_only?: boolean;
   } | null;
 }
 
@@ -612,7 +641,7 @@ export const expandLabelTarget = (
     if (
       device.labels.includes(labelId) &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -679,7 +708,7 @@ export const expandAreaTarget = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -739,7 +768,7 @@ export const areaMeetsTargetSelector = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -769,7 +798,7 @@ export const areaMeetsTargetSelector = (
 };
 
 export const deviceMeetsTargetSelector = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector,
@@ -793,7 +822,7 @@ export const deviceMeetsTargetSelector = (
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
-      const entityState = hass.states[entity.entity_id];
+      const entityState = states[entity.entity_id];
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,

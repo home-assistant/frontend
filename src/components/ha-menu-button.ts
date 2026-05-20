@@ -1,5 +1,6 @@
 import { mdiMenu } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -57,7 +58,7 @@ class HaMenuButton extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("narrow") && !changedProps.has("hass")) {

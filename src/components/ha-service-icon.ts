@@ -32,7 +32,11 @@ export class HaServiceIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = serviceIcon(this.hass, this.service).then((icn) => {
+    const icon = serviceIcon(
+      this.hass.connection,
+      this.hass.config,
+      this.service
+    ).then((icn) => {
       if (icn) {
         return html`<ha-icon .icon=${icn}></ha-icon>`;
       }

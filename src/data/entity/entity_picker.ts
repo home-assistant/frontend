@@ -53,7 +53,7 @@ export const getEntities = (
   value?: string,
   idPrefix = ""
 ): EntityComboBoxItem[] => {
-  let items: EntityComboBoxItem[] = [];
+  let items: EntityComboBoxItem[];
 
   let entityIds = Object.keys(hass.states);
 
@@ -96,7 +96,10 @@ export const getEntities = (
 
     const domainName = domainToName(hass.localize, computeDomain(entityId));
 
-    const isRTL = computeRTL(hass);
+    const isRTL = computeRTL(
+      hass.language,
+      hass.translationMetadata.translations
+    );
 
     const primary = entityName || deviceName || entityId;
     const secondary = [areaName, entityName ? deviceName : undefined]

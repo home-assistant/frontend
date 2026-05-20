@@ -20,7 +20,7 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { Condition, Trigger } from "../../data/automation";
@@ -72,6 +72,9 @@ export class HatScriptGraph extends LitElement {
   @property({ attribute: false }) public trace!: TraceExtended;
 
   @property({ attribute: false }) public selected?: string;
+
+  @query("hat-graph-node[active], hat-graph-branch[active]")
+  private _activeNode?: HTMLElement;
 
   public hass!: HomeAssistant;
 
@@ -667,12 +670,10 @@ export class HatScriptGraph extends LitElement {
 
     // Scroll to active node when selection changes
     if (changedProps.has("selected")) {
-      const activeNode = this.renderRoot.querySelector(
-        "hat-graph-node[active], hat-graph-branch[active]"
-      ) as HTMLElement;
-      if (activeNode) {
-        activeNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
+      this._activeNode?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
     }
 
     if (!changedProps.has("trace")) {

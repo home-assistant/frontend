@@ -27,6 +27,7 @@ import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -56,6 +57,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Condition[] {
     return this.conditions;
@@ -112,12 +115,38 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("conditions");
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
+    if (!this.hass) {
+      return;
+    }
+
+    const addConditionTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      "condition"
+    );
+
+    if (changedProperties.has("conditions") && addConditionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.conditions.length === 0 &&
+      addConditionTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addConditionDialog());
+    } else if (this._openedAddDialogFromQuery && !addConditionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
     if (!changedProperties.has("conditions")) {
       return;
     }
@@ -226,6 +255,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}

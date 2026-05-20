@@ -17,6 +17,7 @@ import {
 import { blankBeforeUnit } from "../translations/blank_before_unit";
 import type { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
+import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../data/sensor";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
@@ -258,6 +259,7 @@ const computeStateToPartsFromEntityAttributes = (
       "infrared",
       "input_button",
       "notify",
+      "radio_frequency",
       "scene",
       "stt",
       "tag",
@@ -265,7 +267,8 @@ const computeStateToPartsFromEntityAttributes = (
       "wake_word",
       "datetime",
     ].includes(domain) ||
-    (domain === "sensor" && attributes.device_class === "timestamp")
+    (domain === "sensor" &&
+      SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(attributes.device_class))
   ) {
     try {
       return [

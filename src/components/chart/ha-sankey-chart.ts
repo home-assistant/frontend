@@ -291,20 +291,26 @@ export class HaSankeyChart extends LitElement {
   }
 
   private _findParentIndex(id: string, links: Link[], sections: Node[][]) {
-    const parent = links.find((l) => l.target === id)?.source;
-    if (!parent) {
+    const parents = links.filter((l) => l.target === id).map((l) => l.source);
+    if (parents.length === 0) {
       return -1;
     }
-    let offset = 0;
-    for (let i = sections.length - 1; i >= 0; i--) {
-      const section = sections[i];
-      const index = section.findIndex((n) => n.id === parent);
-      if (index !== -1) {
-        return offset + index;
+    let sum = 0;
+    let count = 0;
+    for (const parent of parents) {
+      let offset = 0;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        const index = section.findIndex((n) => n.id === parent);
+        if (index !== -1) {
+          sum += offset + index;
+          count++;
+          break;
+        }
+        offset += section.length;
       }
-      offset += section.length;
     }
-    return -1;
+    return count > 0 ? sum / count : -1;
   }
 
   static styles = css`

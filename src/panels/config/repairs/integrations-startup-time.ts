@@ -28,7 +28,7 @@ class IntegrationsStartupTime extends LitElement {
 
   @state() private _setups?: IntegrationSetup[];
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchManifests();
     this._fetchSetups();

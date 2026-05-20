@@ -11,6 +11,5 @@ declare module "echarts/lib/util/states" {
 }
 
 declare module "echarts/lib/chart/sankey/SankeyView" {
-  // eslint-disable-next-line no-restricted-exports
   export { default } from "echarts/types/src/chart/sankey/SankeyView";
 }

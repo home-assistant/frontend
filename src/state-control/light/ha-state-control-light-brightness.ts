@@ -1,8 +1,9 @@
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../common/color/convert-color";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
@@ -18,7 +19,7 @@ export class HaStateControlLightBrightness extends LitElement {
 
   @state() value?: number;
 
-  protected updated(changedProp: Map<string | number | symbol, unknown>): void {
+  protected updated(changedProp: PropertyValues<this>): void {
     if (changedProp.has("stateObj")) {
       this.value =
         this.stateObj.attributes.brightness != null
@@ -30,9 +31,9 @@ export class HaStateControlLightBrightness extends LitElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
 
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,

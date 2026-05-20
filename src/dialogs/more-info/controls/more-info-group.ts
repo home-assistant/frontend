@@ -23,7 +23,7 @@ class MoreInfoGroup extends LitElement {
 
   @state() private _moreInfoType?: string;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (
       !this.hass ||
       !this.stateObj ||

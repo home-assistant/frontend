@@ -1,4 +1,4 @@
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiAccountGroup, mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -92,12 +92,8 @@ class DialogCommunity extends LitElement {
           href="https://fosstodon.org/@homeassistant"
         >
           <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/images/logo_mastodon.svg"
-              slot="graphic"
-              alt="Mastodon Logo"
-            />
-            ${this.localize("ui.panel.page-onboarding.welcome.mastodon")}
+            <ha-svg-icon .path=${mdiAccountGroup} slot="graphic"></ha-svg-icon>
+            ${this.localize("ui.panel.page-onboarding.welcome.social_media")}
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
         </a>

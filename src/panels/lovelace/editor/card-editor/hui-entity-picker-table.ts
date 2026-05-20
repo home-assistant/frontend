@@ -45,7 +45,7 @@ export class HuiEntityPickerTable extends LitElement {
 
   @property({ type: Array }) public entities?: string[];
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
     this.hass.loadBackendTranslation("title");
   }
@@ -97,7 +97,10 @@ export class HuiEntityPickerTable extends LitElement {
 
     const columns = this._columns(
       this.narrow,
-      computeRTL(this.hass),
+      computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      ),
       showEntityId
     );
 

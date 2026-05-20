@@ -1,7 +1,7 @@
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
@@ -34,7 +34,9 @@ export class HaFilterDevices extends LitElement {
 
   @state() private _filter?: string;
 
-  public willUpdate(properties: PropertyValues) {
+  @query("ha-list") private _list?: HTMLElement;
+
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (!this.hasUpdated) {
@@ -131,12 +133,11 @@ export class HaFilterDevices extends LitElement {
     listItem.selected = this.value?.includes(value);
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 4 - 32}px`;
+        this._list!.style.height = `${this.clientHeight - 49 - 4 - 32}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input

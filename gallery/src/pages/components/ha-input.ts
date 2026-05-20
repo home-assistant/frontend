@@ -1,6 +1,6 @@
 import { ContextProvider } from "@lit/context";
 import { mdiMagnify } from "@mdi/js";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
@@ -27,7 +27,6 @@ export class DemoHaInput extends LitElement {
   constructor() {
     super();
     // Provides internationalizationContext for ha-input-copy, ha-input-multi and ha-input-search
-    // eslint-disable-next-line no-new
     new ContextProvider(this, {
       context: internationalizationContext,
       initialValue: {
@@ -179,7 +178,7 @@ export class DemoHaInput extends LitElement {
     `;
   }
 
-  firstUpdated(changedProps) {
+  firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     applyThemesOnElement(
       this.shadowRoot!.querySelector(".dark"),

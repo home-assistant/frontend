@@ -295,7 +295,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected override firstUpdated(changedProps: PropertyValues) {
+  protected override firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (isComponentLoaded(this.hass.config, "cloud")) {

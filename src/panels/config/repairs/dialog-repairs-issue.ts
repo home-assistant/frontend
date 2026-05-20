@@ -63,7 +63,6 @@ class DialogRepairsIssue extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
         aria-describedby="dialog-repairs-issue-description"

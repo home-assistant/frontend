@@ -30,24 +30,18 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import {
   getSummaryLabel,
+  HOME_SUMMARIES_COLORS,
   HOME_SUMMARIES_FILTERS,
   HOME_SUMMARIES_ICONS,
   type HomeSummary,
 } from "../strategies/home/helpers/home-summaries";
-import { filterNeedsAttentionEntities } from "../../maintenance/strategies/maintenance-view-strategy";
+import {
+  filterLowBatteryEntities,
+  filterUnavailableBatteryEntities,
+} from "../../maintenance/strategies/maintenance-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { HomeSummaryCard } from "./types";
-
-const COLORS: Record<HomeSummary, string> = {
-  light: "amber",
-  climate: "deep-orange",
-  security: "blue-grey",
-  media_players: "blue",
-  maintenance: "grey",
-  energy: "amber",
-  persons: "green",
-};
 
 @customElement("hui-home-summary-card")
 export class HuiHomeSummaryCard
@@ -267,19 +261,48 @@ export class HuiHomeSummaryCard
           maintenanceFilters
         );
 
-        const needsAttentionEntities = filterNeedsAttentionEntities(
+        const lowBatteryEntities = filterLowBatteryEntities(
           this.hass!,
           maintenanceEntities
         );
 
-        if (needsAttentionEntities.length > 0) {
-          return this.hass.localize(
-            "ui.card.home-summary.count_maintenance_issues",
-            {
-              count: needsAttentionEntities.length,
-            }
-          );
+        const unavailableBatteryEntities = filterUnavailableBatteryEntities(
+          this.hass!,
+          maintenanceEntities
+        );
+
+        const lowBatteryText =
+          lowBatteryEntities.length > 0
+            ? this.hass.localize(
+                "ui.card.home-summary.count_maintenance_low_battery_issues",
+                {
+                  count: lowBatteryEntities.length,
+                }
+              )
+            : undefined;
+
+        const unavailableText =
+          unavailableBatteryEntities.length > 0
+            ? this.hass.localize(
+                "ui.card.home-summary.count_maintenance_issues_unavailable_battery_entities",
+                {
+                  count: unavailableBatteryEntities.length,
+                }
+              )
+            : undefined;
+
+        if (lowBatteryText && unavailableText) {
+          return `${lowBatteryText}, ${unavailableText}`;
         }
+
+        if (lowBatteryText) {
+          return lowBatteryText;
+        }
+
+        if (unavailableText) {
+          return unavailableText;
+        }
+
         return this.hass.localize("ui.card.home-summary.all_maintenance_good");
       }
       case "energy": {
@@ -315,7 +338,7 @@ export class HuiHomeSummaryCard
       return nothing;
     }
 
-    const color = computeCssColor(COLORS[this._config.summary]);
+    const color = computeCssColor(HOME_SUMMARIES_COLORS[this._config.summary]);
 
     const style = {
       "--tile-color": color,

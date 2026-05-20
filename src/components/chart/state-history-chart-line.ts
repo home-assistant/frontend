@@ -11,6 +11,8 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import { sideTooltipPosition } from "./chart-tooltip-position";
+import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 import type { ECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
@@ -18,10 +20,12 @@ import {
   formatNumber,
 } from "../../common/number/format_number";
 import { measureTextWidth } from "../../util/text";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { filterXSS } from "../../common/util/xss";
+import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 const safeParseFloat = (value) => {
   const parsed = parseFloat(value);
@@ -35,6 +39,21 @@ const CLIMATE_MODE_CONFIGS = [
   { mode: "fan_only", action: "fan", cssVar: "--state-climate-fan_only-color" },
 ] as const;
 
+// Used to recover the underlying entity_id from a legend dataset id.
+// Kept in sync with the suffixes appended at dataset construction below
+// for climate / water_heater / humidifier multi-attribute charts.
+const ENTITY_DATASET_SUFFIXES = [
+  "-current_temperature",
+  "-target_temperature",
+  "-target_temperature_mode",
+  "-target_temperature_mode_low",
+  ...CLIMATE_MODE_CONFIGS.map((c) => `-${c.action}`),
+  "-current_humidity",
+  "-target_humidity",
+  "-humidifying",
+  "-on",
+];
+
 @customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,6 +61,11 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
   @property({ attribute: false }) public names?: Record<string, string>;
+
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
 
   @property() public unit?: string;
 
@@ -94,9 +118,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
-  private _previousYAxisLabelValue = 0;
-
-  private _yAxisMaximumFractionDigits = 0;
+  private _yAxisFractionDigits = 1;
 
   protected render() {
     return html`
@@ -111,6 +133,8 @@ export class StateHistoryChartLine extends LitElement {
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
         .hideResetButton=${this.hideResetButton}
+        .clickLabelForMoreInfo=${this.clickForMoreInfo}
+        @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
   }
@@ -128,8 +152,9 @@ export class StateHistoryChartLine extends LitElement {
       if (
         dataset.tooltip?.show === false ||
         this._hiddenStats.has(dataset.id as string)
-      )
+      ) {
         return;
+      }
       const param = params.find(
         (p: Record<string, any>) => p.seriesIndex === index
       );
@@ -221,6 +246,24 @@ export class StateHistoryChartLine extends LitElement {
     });
   }
 
+  private _handleLegendLabelClick(
+    ev: HASSDomEvent<HASSDomEvents["legend-label-click"]>
+  ) {
+    const id = ev.detail.id;
+    let entityId = id;
+    if (!this.hass.states[entityId]) {
+      for (const suffix of ENTITY_DATASET_SUFFIXES) {
+        if (id.endsWith(suffix)) {
+          entityId = id.slice(0, -suffix.length);
+          break;
+        }
+      }
+    }
+    if (this.hass.states[entityId]) {
+      fireEvent(this, "hass-more-info", { entityId });
+    }
+  }
+
   public willUpdate(changedProps: PropertyValues) {
     if (
       changedProps.has("data") ||
@@ -250,7 +293,10 @@ export class StateHistoryChartLine extends LitElement {
       (changedProps.has("hass") &&
         this._hasEntityStatesChanged(changedProps.get("hass")))
     ) {
-      const rtl = computeRTL(this.hass);
+      const rtl = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
         this.minYAxis;
       let maxYAxis: number | ((values: { max: number }) => number) | undefined =
@@ -310,12 +356,50 @@ export class StateHistoryChartLine extends LitElement {
             .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
             .map((item) => {
               const stateObj = this.hass.states[item.entityId];
+              let value: string | undefined;
+
+              if (stateObj) {
+                // For climate temperature datasets, show temperature values
+                const datasetId = item.dataset.id as string;
+                if (
+                  datasetId?.endsWith("-current_temperature") ||
+                  datasetId?.endsWith("-target_temperature") ||
+                  datasetId?.endsWith("-target_temperature_mode") ||
+                  datasetId?.endsWith("-target_temperature_mode_low")
+                ) {
+                  let attribute: string | undefined;
+                  if (datasetId.endsWith("-current_temperature")) {
+                    attribute = "current_temperature";
+                  } else if (
+                    datasetId.endsWith("-target_temperature_mode_low")
+                  ) {
+                    attribute = "target_temp_low";
+                  } else if (datasetId.endsWith("-target_temperature_mode")) {
+                    attribute = "target_temp_high";
+                  } else {
+                    attribute = "temperature";
+                  }
+                  // Use the helper to format temperature with proper unit
+                  value = computeAttributeValueDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    this.hass.config,
+                    this.hass.entities,
+                    attribute
+                  );
+                }
+
+                // Default for non-temperature datasets / missing attribute
+                if (value === undefined) {
+                  value = this.hass.formatEntityState(stateObj);
+                }
+              }
+
               return {
                 id: item.dataset.id as string,
                 name: item.dataset.name as string,
-                value: stateObj
-                  ? this.hass.formatEntityState(stateObj)
-                  : undefined,
+                value: value,
               };
             }),
         },
@@ -329,8 +413,7 @@ export class StateHistoryChartLine extends LitElement {
         tooltip: {
           trigger: "axis",
           renderMode: "html",
-          position: "bottom",
-          align: "center",
+          position: sideTooltipPosition,
           confine: true,
           formatter: this._renderTooltip,
         },
@@ -352,6 +435,14 @@ export class StateHistoryChartLine extends LitElement {
     const datasets: LineSeriesOption[] = [];
     const entityIds: string[] = [];
     const datasetToDataIndex: number[] = [];
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number | null | undefined) => {
+      if (typeof v === "number" && Number.isFinite(v)) {
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    };
     if (entityStates.length === 0) {
       return;
     }
@@ -359,9 +450,11 @@ export class StateHistoryChartLine extends LitElement {
     this._chartTime = new Date();
     const endTime = this.endTime;
     const names = this.names || {};
+    const colors = this.colors || {};
     entityStates.forEach((states, dataIdx) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
+      const color = colors[states.entity_id];
       // array containing [value1, value2, etc]
       let prevValues: any[] | null = null;
 
@@ -385,6 +478,7 @@ export class StateHistoryChartLine extends LitElement {
             d.data!.push([timestamp, prevValues[i]]);
           }
           d.data!.push([timestamp, datavalues[i]]);
+          trackY(datavalues[i]);
         });
         prevValues = datavalues;
       };
@@ -392,11 +486,11 @@ export class StateHistoryChartLine extends LitElement {
       const addDataSet = (
         id: string,
         nameY: string,
-        color?: string,
+        clr?: string,
         fill = false
       ) => {
-        if (!color) {
-          color = getGraphColorByIndex(colorIndex, computedStyles);
+        if (!clr) {
+          clr = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
@@ -405,7 +499,7 @@ export class StateHistoryChartLine extends LitElement {
           type: "line",
           cursor: "default",
           name: nameY,
-          color,
+          color: clr,
           symbol: "circle",
           symbolSize: 1,
           step: "end",
@@ -416,7 +510,7 @@ export class StateHistoryChartLine extends LitElement {
           },
           areaStyle: fill
             ? {
-                color: color + "7F",
+                color: clr + "7F",
               }
             : undefined,
           tooltip: {
@@ -664,7 +758,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(states.entity_id, name);
+        addDataSet(states.entity_id, name, color);
 
         let lastValue: number;
         let lastDate: Date;
@@ -735,6 +829,7 @@ export class StateHistoryChartLine extends LitElement {
         const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
         if (currentValue !== null) {
           data[0].data!.push([now, currentValue]);
+          trackY(currentValue);
         }
       }
 
@@ -742,6 +837,7 @@ export class StateHistoryChartLine extends LitElement {
       Array.prototype.push.apply(datasets, data);
     });
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
@@ -775,20 +871,8 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) => {
-    // show the first significant digit for tiny values
-    const maximumFractionDigits = Math.max(
-      1,
-      // use the difference to the previous value to determine the number of significant digits #25526
-      -Math.floor(
-        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-      )
-    );
-    this._yAxisMaximumFractionDigits = Math.max(
-      this._yAxisMaximumFractionDigits,
-      maximumFractionDigits
-    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits: this._yAxisMaximumFractionDigits,
+      maximumFractionDigits: this._yAxisFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -798,7 +882,6 @@ export class StateHistoryChartLine extends LitElement {
         chartIndex: this.chartIndex,
       });
     }
-    this._previousYAxisLabelValue = value;
     return label;
   };
 

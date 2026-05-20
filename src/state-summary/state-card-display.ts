@@ -5,8 +5,11 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
 import "../components/entity/state-info";
-import { isUnavailableState } from "../data/entity/entity";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
+import {
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+  SENSOR_DEVICE_CLASS_UPTIME,
+} from "../data/sensor";
 import "../panels/lovelace/components/hui-timestamp-display";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -38,13 +41,18 @@ class StateCardDisplay extends LitElement {
           })}"
         >
           ${computeDomain(this.stateObj.entity_id) === "sensor" &&
-          this.stateObj.attributes.device_class ===
-            SENSOR_DEVICE_CLASS_TIMESTAMP &&
-          !isUnavailableState(this.stateObj.state)
+          SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+            this.stateObj.attributes.device_class
+          ) &&
+          this.stateObj.state !== UNAVAILABLE &&
+          this.stateObj.state !== UNKNOWN
             ? html`<hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}
-                format="datetime"
+                .format=${this.stateObj.attributes.device_class ===
+                SENSOR_DEVICE_CLASS_UPTIME
+                  ? "total"
+                  : "datetime"}
                 capitalize
               ></hui-timestamp-display>`
             : this.hass.formatEntityState(this.stateObj)}

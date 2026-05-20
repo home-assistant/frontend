@@ -63,6 +63,11 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "media_stop",
   "media_previous_track",
   "media_next_track",
+  "volume_down",
+  "volume_up",
+  "volume_mute",
+  "shuffle",
+  "repeat",
 ] as const;
 
 export type MediaPlayerPlaybackControl =
@@ -75,19 +80,23 @@ export interface MediaPlayerPlaybackCardFeatureConfig {
 
 export interface MediaPlayerSourceCardFeatureConfig {
   type: "media-player-source";
+  sources?: string[];
 }
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
+  show_mute_button?: boolean;
 }
 
 export interface MediaPlayerVolumeButtonsCardFeatureConfig {
   type: "media-player-volume-buttons";
   step?: number;
+  show_mute_button?: boolean;
 }
 
 export interface MediaPlayerSoundModeCardFeatureConfig {
   type: "media-player-sound-mode";
+  sound_modes?: string[];
 }
 
 export interface FanDirectionCardFeatureConfig {
@@ -241,11 +250,6 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
-export interface HourlyForecastCardFeatureConfig {
-  type: "hourly-forecast";
-  hours_to_show?: number;
-}
-
 export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
@@ -300,7 +304,6 @@ export type LovelaceCardFeatureConfig =
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | TrendGraphCardFeatureConfig
-  | HourlyForecastCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig

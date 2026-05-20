@@ -5,11 +5,13 @@ import type {
 } from "@codemirror/autocomplete";
 import { snippetCompletion } from "@codemirror/autocomplete";
 import { syntaxTree } from "@codemirror/language";
+import type { EditorView, Tooltip } from "@codemirror/view";
 import type { SyntaxNode } from "@lezer/common";
-
-function completions(words: string[], type: string): Completion[] {
-  return words.map((label) => ({ label, type }));
-}
+import "../components/ha-code-editor-jinja-hover";
+import type { HaCodeEditorJinjaHover } from "../components/ha-code-editor-jinja-hover";
+import "../components/ha-code-editor-jinja-arg-hover";
+import type { HaCodeEditorJinjaArgHover } from "../components/ha-code-editor-jinja-arg-hover";
+import type { CompletionItem } from "../components/ha-code-editor-completion-items";
 
 // ---------------------------------------------------------------------------
 // Standard Jinja2 completions (from @codemirror/lang-jinja internals).
@@ -17,157 +19,744 @@ function completions(words: string[], type: string): Completion[] {
 // jinjaCompletionSource()'s own fallback fires in plain YAML text too.
 // ---------------------------------------------------------------------------
 
-const JINJA_TAGS: Completion[] = completions(
-  [
-    "raw",
-    "endraw",
-    "filter",
-    "endfilter",
-    "trans",
-    "pluralize",
-    "endtrans",
-    "with",
-    "endwith",
-    "autoescape",
-    "endautoescape",
-    "if",
-    "elif",
-    "else",
-    "endif",
-    "for",
-    "endfor",
-    "call",
-    "endcall",
-    "block",
-    "endblock",
-    "set",
-    "endset",
-    "macro",
-    "endmacro",
-    "import",
-    "include",
-    "break",
-    "continue",
-    "debug",
-    "do",
-    "extends",
-  ],
-  "keyword"
-);
+const JINJA_TAGS: Completion[] = [
+  {
+    label: "raw",
+    type: "keyword",
+    info: "Marks a block whose content is output as-is, without Jinja2 processing.",
+  },
+  {
+    label: "endraw",
+    type: "keyword",
+    info: "Ends a {% raw %} block.",
+  },
+  {
+    label: "filter",
+    type: "keyword",
+    detail: "filter_name",
+    info: "Applies a filter to the content of the block.",
+  },
+  {
+    label: "endfilter",
+    type: "keyword",
+    info: "Ends a {% filter %} block.",
+  },
+  {
+    label: "trans",
+    type: "keyword",
+    info: "Marks a block for translation.",
+  },
+  {
+    label: "pluralize",
+    type: "keyword",
+    info: "Provides plural and singular forms inside a {% trans %} block.",
+  },
+  {
+    label: "endtrans",
+    type: "keyword",
+    info: "Ends a {% trans %} block.",
+  },
+  {
+    label: "with",
+    type: "keyword",
+    info: "Creates a new inner scope where variables can be set.",
+  },
+  {
+    label: "endwith",
+    type: "keyword",
+    info: "Ends a {% with %} block.",
+  },
+  {
+    label: "autoescape",
+    type: "keyword",
+    detail: "true|false",
+    info: "Enables or disables HTML autoescaping for the block.",
+  },
+  {
+    label: "endautoescape",
+    type: "keyword",
+    info: "Ends an {% autoescape %} block.",
+  },
+  {
+    label: "if",
+    type: "keyword",
+    detail: "condition",
+    info: "Renders the block only when the condition is true.",
+  },
+  {
+    label: "elif",
+    type: "keyword",
+    detail: "condition",
+    info: "Alternative condition in an {% if %} block.",
+  },
+  {
+    label: "else",
+    type: "keyword",
+    info: "Fallback branch in an {% if %} or {% for %} block.",
+  },
+  {
+    label: "endif",
+    type: "keyword",
+    info: "Ends an {% if %} block.",
+  },
+  {
+    label: "for",
+    type: "keyword",
+    detail: "variable in iterable",
+    info: "Iterates over a list or other iterable. Provides loop.index, loop.first, loop.last, etc.",
+  },
+  {
+    label: "endfor",
+    type: "keyword",
+    info: "Ends a {% for %} block.",
+  },
+  {
+    label: "call",
+    type: "keyword",
+    detail: "macro_name(args)",
+    info: "Calls a macro and passes the call block's content as caller().",
+  },
+  {
+    label: "endcall",
+    type: "keyword",
+    info: "Ends a {% call %} block.",
+  },
+  {
+    label: "block",
+    type: "keyword",
+    detail: "block_name",
+    info: "Defines a named block that child templates can override.",
+  },
+  {
+    label: "endblock",
+    type: "keyword",
+    info: "Ends a {% block %} definition.",
+  },
+  {
+    label: "set",
+    type: "keyword",
+    detail: "variable = value",
+    info: "Assigns a value to a variable in the current scope.",
+  },
+  {
+    label: "endset",
+    type: "keyword",
+    info: "Ends a block {% set %} that captures rendered content.",
+  },
+  {
+    label: "macro",
+    type: "keyword",
+    detail: "name(args)",
+    info: "Defines a reusable template function (macro).",
+  },
+  {
+    label: "endmacro",
+    type: "keyword",
+    info: "Ends a {% macro %} definition.",
+  },
+  {
+    label: "import",
+    type: "keyword",
+    detail: "template as name",
+    info: "Imports macros from another template.",
+  },
+  {
+    label: "include",
+    type: "keyword",
+    detail: "template",
+    info: "Inserts another template inline at this point.",
+  },
+  {
+    label: "break",
+    type: "keyword",
+    info: "Exits the current {% for %} loop early.",
+  },
+  {
+    label: "continue",
+    type: "keyword",
+    info: "Skips the rest of the current loop iteration and continues with the next.",
+  },
+  {
+    label: "debug",
+    type: "keyword",
+    info: "Dumps debug information about the current context.",
+  },
+  {
+    label: "do",
+    type: "keyword",
+    detail: "expression",
+    info: "Evaluates an expression without printing its result.",
+  },
+  {
+    label: "extends",
+    type: "keyword",
+    detail: "template",
+    info: "Makes the current template extend a parent template.",
+  },
+];
 
-const JINJA_FILTERS: Completion[] = completions(
-  [
-    "abs",
-    "attr",
-    "batch",
-    "capitalize",
-    "center",
-    "count",
-    "default",
-    "d",
-    "dictsort",
-    "e",
-    "escape",
-    "filesizeformat",
-    "first",
-    "float",
-    "forceescape",
-    "format",
-    "groupby",
-    "indent",
-    "int",
-    "items",
-    "join",
-    "last",
-    "length",
-    "list",
-    "lower",
-    "map",
-    "max",
-    "min",
-    "pprint",
-    "random",
-    "reject",
-    "rejectattr",
-    "replace",
-    "reverse",
-    "round",
-    "safe",
-    "select",
-    "selectattr",
-    "slice",
-    "sort",
-    "string",
-    "striptags",
-    "sum",
-    "title",
-    "tojson",
-    "trim",
-    "truncate",
-    "unique",
-    "upper",
-    "urlencode",
-    "urlize",
-    "wordcount",
-    "wordwrap",
-    "xmlattr",
-  ],
-  "function"
-);
+const JINJA_FILTERS: Completion[] = [
+  {
+    label: "abs",
+    type: "function",
+    info: "Returns the absolute value of a number.",
+  },
+  {
+    label: "attr",
+    type: "function",
+    detail: "name",
+    info: "Returns an attribute of an object. Similar to getattr.",
+  },
+  {
+    label: "batch",
+    type: "function",
+    detail: "linecount, fill_with?",
+    info: "Collects items into batches of a given size, optionally filled with a placeholder.",
+  },
+  {
+    label: "capitalize",
+    type: "function",
+    info: "Capitalizes the first character of a string and lowercases the rest.",
+  },
+  {
+    label: "center",
+    type: "function",
+    detail: "width=80",
+    info: "Centers a string in a field of a given width.",
+  },
+  {
+    label: "count",
+    type: "function",
+    info: "Returns the number of items in a sequence or mapping. Alias for length.",
+  },
+  {
+    label: "default",
+    type: "function",
+    detail: "value, boolean=false",
+    info: "Returns the value if it is defined and not empty, otherwise returns the provided default.",
+  },
+  {
+    label: "d",
+    type: "function",
+    detail: "value, boolean=false",
+    info: "Shorthand alias for the default filter.",
+  },
+  {
+    label: "dictsort",
+    type: "function",
+    detail: "case_sensitive=false, by='key', reverse=false",
+    info: "Sorts a dictionary by key or value and returns a list of (key, value) pairs.",
+  },
+  {
+    label: "e",
+    type: "function",
+    info: "Escapes HTML special characters. Shorthand alias for escape.",
+  },
+  {
+    label: "escape",
+    type: "function",
+    info: "Escapes HTML special characters (<, >, &, ', \") in a string.",
+  },
+  {
+    label: "filesizeformat",
+    type: "function",
+    detail: "binary=false",
+    info: "Formats a byte count into a human-readable file size like '1.2 MB'.",
+  },
+  {
+    label: "first",
+    type: "function",
+    info: "Returns the first item of a sequence.",
+  },
+  {
+    label: "float",
+    type: "function",
+    detail: "default=0.0",
+    info: "Converts a value to a floating-point number.",
+  },
+  {
+    label: "forceescape",
+    type: "function",
+    info: "Enforces HTML escaping even on values already marked safe.",
+  },
+  {
+    label: "format",
+    type: "function",
+    detail: "*args, **kwargs",
+    info: "Applies Python's % string formatting using the given arguments.",
+  },
+  {
+    label: "groupby",
+    type: "function",
+    detail: "attribute, default?, case_sensitive=false",
+    info: "Groups a sequence of objects by a common attribute.",
+  },
+  {
+    label: "indent",
+    type: "function",
+    detail: "width=4, first=false, blank=false",
+    info: "Indents all lines of a string by the given number of spaces.",
+  },
+  {
+    label: "int",
+    type: "function",
+    detail: "default=0, base=10",
+    info: "Converts a value to an integer.",
+  },
+  {
+    label: "items",
+    type: "function",
+    info: "Returns an iterable of (key, value) pairs for a dictionary.",
+  },
+  {
+    label: "join",
+    type: "function",
+    detail: "d='', attribute?",
+    info: "Joins elements of a sequence into a string with an optional separator.",
+  },
+  {
+    label: "last",
+    type: "function",
+    info: "Returns the last item of a sequence.",
+  },
+  {
+    label: "length",
+    type: "function",
+    info: "Returns the number of items in a sequence or mapping.",
+  },
+  {
+    label: "list",
+    type: "function",
+    info: "Converts a value to a list. Useful to iterate over strings character by character.",
+  },
+  {
+    label: "tuple",
+    type: "function",
+    info: "Converts an iterable to a tuple. Similar to list, but the result is immutable.",
+  },
+  {
+    label: "lower",
+    type: "function",
+    info: "Converts a string to lowercase.",
+  },
+  {
+    label: "map",
+    type: "function",
+    detail: "attribute?, default?",
+    info: "Applies a filter or looks up an attribute on each item of a sequence.",
+  },
+  {
+    label: "max",
+    type: "function",
+    detail: "attribute?",
+    info: "Returns the largest item in a sequence.",
+  },
+  {
+    label: "min",
+    type: "function",
+    detail: "attribute?",
+    info: "Returns the smallest item in a sequence.",
+  },
+  {
+    label: "pprint",
+    type: "function",
+    info: "Pretty-prints a variable for debugging purposes.",
+  },
+  {
+    label: "random",
+    type: "function",
+    info: "Returns a random item from a sequence.",
+  },
+  {
+    label: "reject",
+    type: "function",
+    detail: "test, *args",
+    info: "Filters a sequence by rejecting items for which a test returns true.",
+  },
+  {
+    label: "rejectattr",
+    type: "function",
+    detail: "attribute, test?, *args",
+    info: "Filters a sequence of objects by rejecting those where an attribute test passes.",
+  },
+  {
+    label: "replace",
+    type: "function",
+    detail: "old, new, count?",
+    info: "Replaces occurrences of a substring. Optionally limits the number of replacements.",
+  },
+  {
+    label: "reverse",
+    type: "function",
+    info: "Reverses a sequence or string.",
+  },
+  {
+    label: "round",
+    type: "function",
+    detail: "precision=0, method='common'",
+    info: "Rounds a number to a given precision. Method can be 'common', 'ceil', or 'floor'.",
+  },
+  {
+    label: "safe",
+    type: "function",
+    info: "Marks a string as safe HTML so it is not escaped on output.",
+  },
+  {
+    label: "select",
+    type: "function",
+    detail: "test, *args",
+    info: "Filters a sequence to include only items for which a test returns true.",
+  },
+  {
+    label: "selectattr",
+    type: "function",
+    detail: "attribute, test?, *args",
+    info: "Filters a sequence of objects to include only those where an attribute test passes.",
+  },
+  {
+    label: "slice",
+    type: "function",
+    detail: "slices, fill_with?",
+    info: "Slices a sequence into a given number of parts.",
+  },
+  {
+    label: "sort",
+    type: "function",
+    detail: "reverse=false, case_sensitive=false, attribute?",
+    info: "Sorts a sequence. Optionally in reverse, case-sensitive, or by an attribute.",
+  },
+  {
+    label: "string",
+    type: "function",
+    info: "Converts an object to a string.",
+  },
+  {
+    label: "striptags",
+    type: "function",
+    info: "Strips HTML/XML tags from a string and normalizes whitespace.",
+  },
+  {
+    label: "sum",
+    type: "function",
+    detail: "attribute?, start=0",
+    info: "Returns the sum of a sequence of numbers, optionally summing an attribute.",
+  },
+  {
+    label: "title",
+    type: "function",
+    info: "Converts a string to title case.",
+  },
+  {
+    label: "tojson",
+    type: "function",
+    detail: "indent?",
+    info: "Serializes an object to a JSON string. Safe to use inside HTML.",
+  },
+  {
+    label: "trim",
+    type: "function",
+    detail: "chars?",
+    info: "Strips leading and trailing whitespace (or specified characters) from a string.",
+  },
+  {
+    label: "truncate",
+    type: "function",
+    detail: "length=255, killwords=false, end='...', leeway?",
+    info: "Truncates a string to the given length, appending an ellipsis.",
+  },
+  {
+    label: "unique",
+    type: "function",
+    detail: "case_sensitive=false, attribute?",
+    info: "Returns a sequence with duplicate items removed.",
+  },
+  {
+    label: "upper",
+    type: "function",
+    info: "Converts a string to uppercase.",
+  },
+  {
+    label: "urlencode",
+    type: "function",
+    info: "URL-encodes a string or a mapping.",
+  },
+  {
+    label: "urlize",
+    type: "function",
+    detail: "trim_url_limit?, nofollow?, target?, rel?, extra_schemes?",
+    info: "Converts URLs in plain text into clickable HTML links.",
+  },
+  {
+    label: "wordcount",
+    type: "function",
+    info: "Counts the number of words in a string.",
+  },
+  {
+    label: "wordwrap",
+    type: "function",
+    detail: "width=79, break_long_words=true, wrapstring?",
+    info: "Wraps words in a string at the given column width.",
+  },
+  {
+    label: "xmlattr",
+    type: "function",
+    detail: "autospace=true",
+    info: "Builds an HTML attribute string from a dictionary of values.",
+  },
+];
 
-const JINJA_EXPRESSIONS: Completion[] = completions(
-  [
-    // Tests / functions
-    "boolean",
-    "callable",
-    "defined",
-    "divisibleby",
-    "eq",
-    "escaped",
-    "even",
-    "filter",
-    "float",
-    "ge",
-    "gt",
-    "in",
-    "integer",
-    "iterable",
-    "le",
-    "lower",
-    "lt",
-    "mapping",
-    "ne",
-    "none",
-    "number",
-    "odd",
-    "sameas",
-    "sequence",
-    "string",
-    "test",
-    "undefined",
-    "upper",
-    // Globals
-    "range",
-    "lipsum",
-    "dict",
-    "joiner",
-    "namespace",
-    // Keywords
-    "loop",
-    "super",
-    "self",
-    "true",
-    "false",
-    "varargs",
-    "kwargs",
-    "caller",
-    "name",
-    "arguments",
-    "catch_kwargs",
-    "catch_varargs",
-  ],
-  "function"
-);
+const JINJA_EXPRESSIONS: Completion[] = [
+  // Tests (used with `is`)
+  {
+    label: "boolean",
+    type: "function",
+    info: "Test: returns true if the value is a boolean.",
+  },
+  {
+    label: "callable",
+    type: "function",
+    info: "Test: returns true if the value is callable (a function or macro).",
+  },
+  {
+    label: "defined",
+    type: "function",
+    info: "Test: returns true if the variable is defined.",
+  },
+  {
+    label: "divisibleby",
+    type: "function",
+    detail: "number",
+    info: "Test: returns true if the value is divisible by the given number.",
+  },
+  {
+    label: "eq",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value equals other. Equivalent to ==.",
+  },
+  {
+    label: "escaped",
+    type: "function",
+    info: "Test: returns true if the value has been marked as safe (escaped).",
+  },
+  {
+    label: "even",
+    type: "function",
+    info: "Test: returns true if the value is an even number.",
+  },
+  {
+    label: "filter",
+    type: "function",
+    detail: "name",
+    info: "Test: returns true if a filter with the given name exists.",
+  },
+  {
+    label: "float",
+    type: "function",
+    info: "Test: returns true if the value is a float.",
+  },
+  {
+    label: "ge",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value is greater than or equal to other.",
+  },
+  {
+    label: "gt",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value is greater than other.",
+  },
+  {
+    label: "in",
+    type: "function",
+    detail: "sequence",
+    info: "Test: returns true if the value is contained in the given sequence.",
+  },
+  {
+    label: "integer",
+    type: "function",
+    info: "Test: returns true if the value is an integer.",
+  },
+  {
+    label: "iterable",
+    type: "function",
+    info: "Test: returns true if the value can be iterated over.",
+  },
+  {
+    label: "le",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value is less than or equal to other.",
+  },
+  {
+    label: "lower",
+    type: "function",
+    info: "Test: returns true if the value is a lowercase string.",
+  },
+  {
+    label: "lt",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value is less than other.",
+  },
+  {
+    label: "mapping",
+    type: "function",
+    info: "Test: returns true if the value is a mapping (dictionary).",
+  },
+  {
+    label: "ne",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value is not equal to other.",
+  },
+  {
+    label: "none",
+    type: "function",
+    info: "Test: returns true if the value is None.",
+  },
+  {
+    label: "number",
+    type: "function",
+    info: "Test: returns true if the value is a number.",
+  },
+  {
+    label: "odd",
+    type: "function",
+    info: "Test: returns true if the value is an odd number.",
+  },
+  {
+    label: "sameas",
+    type: "function",
+    detail: "other",
+    info: "Test: returns true if the value is the same object as other (identity check).",
+  },
+  {
+    label: "sequence",
+    type: "function",
+    info: "Test: returns true if the value is a sequence (list, string, etc.).",
+  },
+  {
+    label: "string",
+    type: "function",
+    info: "Test: returns true if the value is a string.",
+  },
+  {
+    label: "test",
+    type: "function",
+    detail: "name",
+    info: "Test: returns true if a test with the given name exists.",
+  },
+  {
+    label: "undefined",
+    type: "function",
+    info: "Test: returns true if the variable is undefined.",
+  },
+  {
+    label: "upper",
+    type: "function",
+    info: "Test: returns true if the value is an uppercase string.",
+  },
+  // Globals
+  {
+    label: "range",
+    type: "function",
+    detail: "start, stop?, step?",
+    info: "Returns a list of numbers from start to stop (exclusive), similar to Python's range().",
+  },
+  {
+    label: "lipsum",
+    type: "function",
+    detail: "n=5, html=true, min=20, max=100",
+    info: "Generates n paragraphs of lorem ipsum placeholder text.",
+  },
+  {
+    label: "dict",
+    type: "function",
+    detail: "**kwargs",
+    info: "Creates a dictionary from keyword arguments. Useful when key names are not valid identifiers.",
+  },
+  {
+    label: "cycler",
+    type: "function",
+    detail: "*items",
+    info: "Creates an object that cycles through a sequence of values. Call .next() to advance, .current for the current value, .reset() to restart.",
+  },
+  {
+    label: "joiner",
+    type: "function",
+    detail: "sep=', '",
+    info: "Returns an empty string the first time it is called, then the separator on subsequent calls. Useful for joining in loops.",
+  },
+  {
+    label: "namespace",
+    type: "function",
+    detail: "**kwargs",
+    info: "Creates an object that allows variable assignment across scopes inside a loop.",
+  },
+  // Loop variable and block helpers
+  {
+    label: "loop",
+    type: "variable",
+    info: "Special variable inside a {% for %} block. Provides loop.index, loop.index0, loop.first, loop.last, loop.length, loop.depth, etc.",
+  },
+  {
+    label: "super",
+    type: "function",
+    info: "Renders the contents of the parent block inside a {% block %} override.",
+  },
+  {
+    label: "self",
+    type: "variable",
+    info: "Reference to the current template, allowing access to its block contents.",
+  },
+  {
+    label: "true",
+    type: "keyword",
+    info: "Boolean true literal.",
+  },
+  {
+    label: "false",
+    type: "keyword",
+    info: "Boolean false literal.",
+  },
+  {
+    label: "varargs",
+    type: "variable",
+    info: "Inside a macro, holds extra positional arguments not explicitly declared.",
+  },
+  {
+    label: "kwargs",
+    type: "variable",
+    info: "Inside a macro, holds extra keyword arguments not explicitly declared.",
+  },
+  {
+    label: "caller",
+    type: "function",
+    info: "Inside a macro called via {% call %}, renders the body of the call block.",
+  },
+  {
+    label: "name",
+    type: "variable",
+    info: "Inside a macro, holds the name of the macro itself.",
+  },
+  {
+    label: "arguments",
+    type: "variable",
+    info: "Inside a macro, holds the declared argument names.",
+  },
+  {
+    label: "catch_kwargs",
+    type: "variable",
+    info: "Inside a macro, indicates whether the macro accepts extra keyword arguments via kwargs.",
+  },
+  {
+    label: "catch_varargs",
+    type: "variable",
+    info: "Inside a macro, indicates whether the macro accepts extra positional arguments via varargs.",
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Home Assistant-specific additions
@@ -766,58 +1355,179 @@ const HA_FUNCTION_COMPLETIONS: Completion[] = HA_FUNCTION_DEFS.map((def) =>
 );
 
 // HA-specific plain variables / constants (no arguments)
-const HA_PLAIN_VARIABLES: Completion[] = completions(
-  [
-    "areas",
-    "floors",
-    "labels",
-    "now",
-    "utcnow",
-    "e",
-    "pi",
-    "tau",
-    "version",
-    "relative_time",
-    "issue",
-    "issues",
-  ],
-  "variable"
-);
+const HA_PLAIN_VARIABLES: Completion[] = [
+  {
+    label: "areas",
+    type: "variable",
+    info: "A list of all area IDs in Home Assistant.",
+  },
+  {
+    label: "floors",
+    type: "variable",
+    info: "A list of all floor IDs in Home Assistant.",
+  },
+  {
+    label: "labels",
+    type: "variable",
+    info: "A list of all label IDs in Home Assistant.",
+  },
+  {
+    label: "now",
+    type: "variable",
+    info: "The current local datetime object.",
+  },
+  {
+    label: "utcnow",
+    type: "variable",
+    info: "The current UTC datetime object.",
+  },
+  {
+    label: "e",
+    type: "variable",
+    info: "Euler's number (approximately 2.71828).",
+  },
+  {
+    label: "pi",
+    type: "variable",
+    info: "The mathematical constant π (approximately 3.14159).",
+  },
+  {
+    label: "tau",
+    type: "variable",
+    info: "The mathematical constant τ = 2π (approximately 6.28318).",
+  },
+  {
+    label: "version",
+    type: "variable",
+    info: "The current Home Assistant version as a string.",
+  },
+  {
+    label: "relative_time",
+    type: "variable",
+    info: "When used as a filter, converts a datetime to a human-readable relative string like '2 minutes ago'.",
+  },
+  {
+    label: "issue",
+    type: "variable",
+    info: "The current repair issue object, available inside repair issue templates.",
+  },
+  {
+    label: "issues",
+    type: "variable",
+    info: "A list of all active repair issues.",
+  },
+];
 
 // HA-specific tests (used after `is` keyword)
-const HA_TESTS: Completion[] = completions(
-  [
-    "contains",
-    "false",
-    "has_value",
-    "is_device_attr",
-    "is_hidden_entity",
-    "is_number",
-    "is_state",
-    "is_state_attr",
-    "match",
-    "search",
-    "true",
-  ],
-  "function"
-);
+const HA_TESTS: Completion[] = [
+  {
+    label: "contains",
+    type: "function",
+    detail: "value",
+    info: "Test: returns true if the sequence contains the given value.",
+  },
+  {
+    label: "false",
+    type: "function",
+    info: "Test: returns true if the value is boolean false.",
+  },
+  {
+    label: "has_value",
+    type: "function",
+    info: "Test: returns true if the entity exists and does not have an unknown or unavailable state.",
+  },
+  {
+    label: "is_device_attr",
+    type: "function",
+    detail: "device_id, attribute, value",
+    info: "Test: returns true if the device attribute matches the given value.",
+  },
+  {
+    label: "is_hidden_entity",
+    type: "function",
+    info: "Test: returns true if the entity is hidden.",
+  },
+  {
+    label: "is_number",
+    type: "function",
+    info: "Test: returns true if the value can be interpreted as a number.",
+  },
+  {
+    label: "is_state",
+    type: "function",
+    detail: "entity_id, state",
+    info: "Test: returns true if the entity's state matches the given value.",
+  },
+  {
+    label: "is_state_attr",
+    type: "function",
+    detail: "entity_id, attribute, value",
+    info: "Test: returns true if the entity attribute matches the given value.",
+  },
+  {
+    label: "match",
+    type: "function",
+    detail: "pattern",
+    info: "Test: returns true if the value matches the given regular expression pattern.",
+  },
+  {
+    label: "search",
+    type: "function",
+    detail: "pattern",
+    info: "Test: returns true if the pattern is found anywhere in the value.",
+  },
+  {
+    label: "true",
+    type: "function",
+    info: "Test: returns true if the value is boolean true.",
+  },
+];
 
 // HA-specific filters (used after `|` pipe).
 // Derived automatically from HA_FUNCTION_DEFS (every function that takes at
 // least one argument can be used as a filter) plus a small set of HA-specific
 // filters that exist only as filters (no function form in HA_FUNCTION_DEFS).
-const HA_FILTER_ONLY: Completion[] = completions(
-  [
-    // These exist as HA filters but have no entry in HA_FUNCTION_DEFS.
-    "is_defined",
-    "multiply",
-    "ordinal",
-    "relative_time",
-    "slugify",
-    "version",
-  ],
-  "function"
-);
+const HA_FILTER_ONLY: Completion[] = [
+  // These exist as HA filters but have no entry in HA_FUNCTION_DEFS.
+  {
+    label: "is_defined",
+    type: "function",
+    info: "Returns true if the value is defined (not undefined or None).",
+  },
+  {
+    label: "add",
+    type: "function",
+    detail: "amount, default?",
+    info: "Adds the given amount to a numeric value. Returns the default if the value cannot be converted to a number.",
+  },
+  {
+    label: "multiply",
+    type: "function",
+    detail: "factor",
+    info: "Multiplies the value by the given factor.",
+  },
+  {
+    label: "ordinal",
+    type: "function",
+    info: "Converts an integer to its ordinal string representation (e.g. 1 → '1st', 2 → '2nd').",
+  },
+  {
+    label: "relative_time",
+    type: "function",
+    info: "Converts a datetime to a human-readable relative time string like '2 minutes ago'.",
+  },
+  {
+    label: "slugify",
+    type: "function",
+    detail: "separator='-'",
+    info: "Converts a string to a URL-friendly slug.",
+  },
+  {
+    label: "version",
+    type: "function",
+    info: "Converts a version string to a comparable version object.",
+  },
+];
 
 // Zero-argument functions from HA_FUNCTION_DEFS that don't make sense as
 // filters (nothing to pipe into them).
@@ -831,6 +1541,8 @@ const HA_FILTERS: Completion[] = [
   }).map((d) => ({
     label: d.snippet.split("(")[0],
     type: "function" as const,
+    detail: d.detail || undefined,
+    info: d.info,
   })),
 ];
 
@@ -942,4 +1654,634 @@ export function haJinjaCompletionSource(
   const word = context.matchBefore(/[\w\u00c0-\uffff]+$/);
   if (!word || !isInsideJinja(node)) return null;
   return { options: ALL_EXPRESSIONS, from: word.from, validFor: VALID_FOR };
+}
+
+// ---------------------------------------------------------------------------
+// Hover tooltip
+//
+// Lookup maps built once from the completion arrays so hover resolution is O(1).
+// ---------------------------------------------------------------------------
+
+/**
+ * Minimal HA data passed from ha-code-editor into haJinjaHoverSource so the
+ * hover tooltip can resolve entity / device / area friendly names without
+ * importing the full HomeAssistant type into this resource file.
+ */
+export interface HassArgHoverContext {
+  /** Live entity states keyed by entity_id. */
+  states: Record<
+    string,
+    { state: string; attributes: Record<string, unknown> }
+  >;
+  /** Device registry keyed by device_id. */
+  devices: Record<
+    string,
+    {
+      name: string | null;
+      name_by_user: string | null;
+      area_id?: string | null;
+    }
+  >;
+  /** Area registry keyed by area_id. */
+  areas: Record<string, { name: string; floor_id?: string | null }>;
+  /** Floor registry keyed by floor_id. */
+  floors: Record<string, { name: string }>;
+  /** Entity registry (display entries) keyed by entity_id. */
+  entities: Record<string, { device_id?: string; area_id?: string }>;
+  /** Label registry entries keyed by label_id. */
+  labels: Record<string, { name: string; description?: string | null }>;
+  /** Returns a localised, formatted entity state string for the given entity_id. */
+  formatEntityState(entityId: string): string;
+  /** Returns the friendly name of an entity (from attributes or registry). */
+  formatEntityName(entityId: string): string | undefined;
+  /** Returns a localised attribute name for the given entity + attribute key. */
+  formatAttributeName(entityId: string, attribute: string): string;
+  /** Returns a localised, formatted attribute value for the given entity + attribute key. */
+  formatAttributeValue(entityId: string, attribute: string): string;
+  /** Returns a translated label for a well-known UI key, e.g. "State". */
+  localize(key: string): string;
+}
+
+/**
+ * Set of names that have a dedicated documentation page under
+ * https://www.home-assistant.io/docs/configuration/templating/template-functions/.
+ * Derived from https://github.com/home-assistant/home-assistant.io/tree/next/source/_template_functions
+ *
+ * This is intentionally kept separate from the completion arrays: the
+ * `Completion` type has no custom-data field, and whether a name has a docs
+ * page is orthogonal to its autocomplete metadata.
+ *
+ * Only names present in this set will receive a doc-link icon in the hover tooltip.
+ */
+const DOCUMENTED_NAMES = new Set<string>([
+  "abs",
+  "acos",
+  "add",
+  "add",
+  "apply",
+  "area_devices",
+  "area_entities",
+  "area_id",
+  "area_name",
+  "areas",
+  "as_datetime",
+  "as_function",
+  "as_local",
+  "as_timedelta",
+  "as_timestamp",
+  "asin",
+  "atan",
+  "atan2",
+  "attr",
+  "average",
+  "base64_decode",
+  "base64_encode",
+  "batch",
+  "bitwise_and",
+  "bitwise_or",
+  "bitwise_xor",
+  "bool",
+  "boolean",
+  "callable",
+  "capitalize",
+  "center",
+  "clamp",
+  "closest",
+  "combine",
+  "config_entry_attr",
+  "config_entry_id",
+  "contains",
+  "cos",
+  "cycler",
+  "default",
+  "defined",
+  "device_attr",
+  "device_entities",
+  "device_id",
+  "device_name",
+  "dict",
+  "dictsort",
+  "difference",
+  "distance",
+  "divisibleby",
+  "e",
+  "entity_name",
+  "eq",
+  "escape",
+  "even",
+  "expand",
+  "false",
+  "filesizeformat",
+  "first",
+  "flatten",
+  "float",
+  "floor_areas",
+  "floor_entities",
+  "floor_id",
+  "floor_name",
+  "floors",
+  "forceescape",
+  "format",
+  "from_hex",
+  "from_json",
+  "ge",
+  "groupby",
+  "gt",
+  "has_value",
+  "iif",
+  "in",
+  "indent",
+  "int",
+  "integer",
+  "integration_entities",
+  "intersect",
+  "is_defined",
+  "is_device_attr",
+  "is_hidden_entity",
+  "is_number",
+  "is_state",
+  "is_state_attr",
+  "issue",
+  "issues",
+  "items",
+  "iterable",
+  "join",
+  "joiner",
+  "label_areas",
+  "label_description",
+  "label_devices",
+  "label_entities",
+  "label_id",
+  "label_name",
+  "labels",
+  "last",
+  "le",
+  "length",
+  "lipsum",
+  "list",
+  "log",
+  "lower",
+  "lt",
+  "map",
+  "mapping",
+  "match",
+  "max",
+  "md5",
+  "median",
+  "merge_response",
+  "min",
+  "multiply",
+  "namespace",
+  "ne",
+  "none",
+  "now",
+  "number",
+  "odd",
+  "ord",
+  "ordinal",
+  "pack",
+  "pi",
+  "pprint",
+  "random",
+  "range",
+  "regex_findall",
+  "regex_findall_index",
+  "regex_match",
+  "regex_replace",
+  "regex_search",
+  "reject",
+  "rejectattr",
+  "relative_time",
+  "remap",
+  "replace",
+  "reverse",
+  "round",
+  "safe",
+  "sameas",
+  "search",
+  "select",
+  "selectattr",
+  "sequence",
+  "set",
+  "sha1",
+  "sha256",
+  "sha512",
+  "shuffle",
+  "sin",
+  "slice",
+  "slugify",
+  "sort",
+  "sqrt",
+  "state_attr",
+  "state_attr_translated",
+  "state_translated",
+  "states",
+  "statistical_mode",
+  "string",
+  "striptags",
+  "strptime",
+  "sum",
+  "symmetric_difference",
+  "tan",
+  "tau",
+  "time_since",
+  "time_until",
+  "timedelta",
+  "timestamp_custom",
+  "timestamp_local",
+  "timestamp_utc",
+  "title",
+  "to_json",
+  "today_at",
+  "tojson",
+  "trim",
+  "true",
+  "truncate",
+  "tuple",
+  "typeof",
+  "undefined",
+  "union",
+  "unique",
+  "unpack",
+  "upper",
+  "urlencode",
+  "urlize",
+  "utcnow",
+  "version",
+  "wordcount",
+  "wordwrap",
+  "wrap",
+  "xmlattr",
+  "zip",
+]);
+
+/** Maps filter name → Completion (merged Jinja2 + HA filters). */
+const FILTER_MAP = new Map<string, Completion>(
+  ALL_FILTERS.map((c) => [c.label, c])
+);
+
+/** Maps tag name → Completion. */
+const TAG_MAP = new Map<string, Completion>(ALL_TAGS.map((c) => [c.label, c]));
+
+/** Maps expression / function / variable / test name → Completion. */
+const EXPRESSION_MAP = new Map<string, Completion>(
+  ALL_EXPRESSIONS.map((c) => [c.label, c])
+);
+
+/** Builds a tooltip DOM node for a Completion. Returns null when there is nothing to show. */
+function buildTooltipDom(
+  completion: Completion,
+  docUrl?: string,
+  openDocumentation?: string
+): HTMLElement | null {
+  const info =
+    typeof completion.info === "string" ? completion.info : undefined;
+  if (!info && !completion.detail) return null;
+
+  const el = document.createElement(
+    "ha-code-editor-jinja-hover"
+  ) as HaCodeEditorJinjaHover;
+  el.completion = completion;
+  if (docUrl) el.docUrl = docUrl;
+  if (openDocumentation) el.openDocumentation = openDocumentation;
+  return el;
+}
+
+/**
+ * Builds a tooltip DOM node for a string argument value resolved via hass data.
+ * Returns null when no hass context is available or the value can't be resolved.
+ * `siblingEntityId` is only used for `attribute` arg types.
+ */
+function buildArgTooltipDom(
+  argType: JinjaArgType,
+  value: string,
+  ctx: HassArgHoverContext,
+  siblingEntityId?: string | null
+): HTMLElement | null {
+  let heading: string | undefined;
+  const items: CompletionItem[] = [];
+
+  if (argType === "entity_id") {
+    const stateObj = ctx.states[value];
+    if (!stateObj) return null;
+
+    heading = ctx.formatEntityName(value) ?? value;
+
+    const formattedState = ctx.formatEntityState(value);
+    items.push({
+      label: ctx.localize("ui.components.entity.entity-state-picker.state"),
+      value: formattedState,
+      subValue: stateObj.state === formattedState ? undefined : stateObj.state,
+    });
+
+    const entry = ctx.entities[value];
+    if (entry) {
+      const deviceId = entry.device_id;
+      const device = deviceId ? ctx.devices[deviceId] : undefined;
+      const deviceName = device
+        ? (device.name_by_user || device.name)?.trim()
+        : undefined;
+      if (deviceName) {
+        items.push({
+          label: ctx.localize("ui.components.device-picker.device"),
+          value: deviceName,
+        });
+      }
+      const areaId = entry.area_id || device?.area_id || undefined;
+      const area = areaId ? ctx.areas[areaId] : undefined;
+      if (area?.name) {
+        items.push({
+          label: ctx.localize("ui.components.area-picker.area"),
+          value: area.name,
+        });
+        const floor = area.floor_id ? ctx.floors[area.floor_id] : undefined;
+        if (floor?.name) {
+          items.push({
+            label: ctx.localize("ui.components.floor-picker.floor"),
+            value: floor.name,
+          });
+        }
+      }
+    }
+  } else if (argType === "device_id") {
+    const device = ctx.devices[value];
+    if (!device) return null;
+
+    heading = (device.name_by_user || device.name)?.trim();
+    if (!heading) return null;
+
+    const areaId = device.area_id || undefined;
+    const area = areaId ? ctx.areas[areaId] : undefined;
+    if (area?.name) {
+      items.push({
+        label: ctx.localize("ui.components.area-picker.area"),
+        value: area.name,
+      });
+      const floor = area.floor_id ? ctx.floors[area.floor_id] : undefined;
+      if (floor?.name) {
+        items.push({
+          label: ctx.localize("ui.components.floor-picker.floor"),
+          value: floor.name,
+        });
+      }
+    }
+  } else if (argType === "area_id") {
+    const area = ctx.areas[value];
+    if (!area?.name) return null;
+
+    heading = area.name;
+
+    const floor = area.floor_id ? ctx.floors[area.floor_id] : undefined;
+    if (floor?.name) {
+      items.push({
+        label: ctx.localize("ui.components.floor-picker.floor"),
+        value: floor.name,
+      });
+    }
+  } else if (argType === "floor_id") {
+    const floor = ctx.floors[value];
+    if (!floor?.name) return null;
+
+    heading = floor.name;
+  } else if (argType === "label_id") {
+    const label = ctx.labels[value];
+    if (!label?.name) return null;
+
+    heading = label.name;
+
+    if (label.description) {
+      items.push({
+        label: ctx.localize("ui.panel.config.labels.headers.description"),
+        value: label.description,
+      });
+    }
+  } else if (argType === "attribute") {
+    if (!siblingEntityId) return null;
+    const stateObj = ctx.states[siblingEntityId];
+    if (!stateObj || !(value in stateObj.attributes)) return null;
+
+    heading = ctx.formatAttributeName(siblingEntityId, value);
+
+    const formattedValue = ctx.formatAttributeValue(siblingEntityId, value);
+    const rawValue = stateObj.attributes[value];
+    const rawStr =
+      rawValue !== null && rawValue !== undefined
+        ? String(rawValue)
+        : undefined;
+    items.push({
+      label: ctx.localize("ui.components.entity.entity-state-picker.state"),
+      value: formattedValue,
+      subValue:
+        rawStr !== undefined && rawStr !== formattedValue ? rawStr : undefined,
+    });
+  } else {
+    return null;
+  }
+
+  if (!heading && !items.length) return null;
+
+  const el = document.createElement(
+    "ha-code-editor-jinja-arg-hover"
+  ) as HaCodeEditorJinjaArgHover;
+  if (heading) el.heading = heading;
+  el.items = items;
+  return el;
+}
+
+/**
+ * If `pos` is inside a `StringLiteral` that is a known typed argument of an
+ * HA Jinja function (or a subscript on `states`), returns a `{ argType, value }`
+ * describing what the string represents. Returns null otherwise.
+ */
+function resolveStringArgAtPos(
+  state: EditorView["state"],
+  pos: number
+): {
+  argType: JinjaArgType;
+  value: string;
+  from: number;
+  to: number;
+  siblingEntityId?: string | null;
+} | null {
+  const node = syntaxTree(state).resolveInner(pos);
+
+  if (node.name !== "StringLiteral") return null;
+
+  // Strip surrounding quotes to get the actual value.
+  const raw = state.doc.sliceString(node.from, node.to);
+  if (raw.length < 2) return null;
+  const value = raw.slice(1, -1);
+  if (!value) return null;
+
+  const from = node.from;
+  const to = node.to;
+
+  // Case 1: states["entity_id"] — SubscriptExpression with object "states"
+  const subscript = node.parent;
+  if (subscript?.name === "SubscriptExpression") {
+    const obj = subscript.firstChild;
+    if (obj && state.doc.sliceString(obj.from, obj.to) === "states") {
+      return { argType: "entity_id", value, from, to };
+    }
+  }
+
+  // Case 2: known_function("value", ...) — StringLiteral inside ArgumentList
+  const argList = node.parent;
+  if (argList?.name !== "ArgumentList") return null;
+
+  const callExpr = argList.parent;
+  if (callExpr?.name !== "CallExpression") return null;
+
+  const fnNode = callExpr.firstChild;
+  if (!fnNode) return null;
+
+  const fnName = state.doc.sliceString(fnNode.from, fnNode.to);
+  const argTypeMap = JINJA_FUNCTION_ARG_TYPES.get(fnName);
+  if (!argTypeMap) return null;
+
+  // Count the zero-based index of this StringLiteral in the argument list.
+  let argIndex = 0;
+  let child = argList.firstChild?.nextSibling; // skip opening "("
+  while (child) {
+    if (child.name === ")") break;
+    if (child.name !== ",") {
+      if (child.from === node.from) break;
+      argIndex++;
+    }
+    child = child.nextSibling;
+  }
+
+  const argType = argTypeMap.get(argIndex);
+  if (!argType) return null;
+
+  // For attribute args, find the sibling entity_id argument value.
+  if (argType === "attribute") {
+    let entityArgIndex: number | undefined;
+    for (const [idx, type] of argTypeMap) {
+      if (type === "entity_id") {
+        entityArgIndex = idx;
+        break;
+      }
+    }
+    let siblingEntityId: string | null = null;
+    if (entityArgIndex !== undefined) {
+      let idx = 0;
+      let c = argList.firstChild?.nextSibling;
+      while (c) {
+        if (c.name === ")") break;
+        if (c.name !== ",") {
+          if (idx === entityArgIndex && c.name === "StringLiteral") {
+            const r = state.doc.sliceString(c.from, c.to);
+            siblingEntityId = r.slice(1, -1);
+            break;
+          }
+          idx++;
+        }
+        c = c.nextSibling;
+      }
+    }
+    return { argType, value, from, to, siblingEntityId };
+  }
+
+  return { argType, value, from, to };
+}
+
+/** Word regex — same as VALID_FOR but anchored at both ends. */
+const WORD_RE = /[\w\u00c0-\uffff]+/;
+
+/**
+ * CodeMirror hoverTooltip source for Jinja2 + HA constructs.
+ *
+ * Detects the word under the pointer, determines context from the syntax tree
+ * (filter / tag / expression), looks up the matching Completion, and returns
+ * a tooltip with detail + info if available.
+ *
+ * When the cursor is on a string-literal argument of a known HA Jinja function
+ * (or a `states["…"]` subscript), and `hassContext` is provided, shows the
+ * entity/device/area friendly name instead.
+ *
+ * @param docBaseUrl    Optional base URL for documentation links.
+ * @param hassContext   Optional HA registry data for argument-value tooltips.
+ */
+export function haJinjaHoverSource(
+  view: EditorView,
+  pos: number,
+  docBaseUrl?: string,
+  hassContext?: HassArgHoverContext
+): Tooltip | null {
+  const { state } = view;
+
+  // --- Argument-value tooltip (entity / device / area hover) -----------------
+  if (hassContext) {
+    const argMatch = resolveStringArgAtPos(state, pos);
+    if (argMatch) {
+      const dom = buildArgTooltipDom(
+        argMatch.argType,
+        argMatch.value,
+        hassContext,
+        argMatch.siblingEntityId
+      );
+      if (dom) {
+        return {
+          pos: argMatch.from,
+          end: argMatch.to,
+          above: true,
+          create: () => ({ dom }),
+        };
+      }
+    }
+  }
+
+  // --- Jinja keyword / function / filter tooltip -----------------------------
+  const node = syntaxTree(state).resolveInner(pos);
+
+  // Determine the word span at `pos`
+  const lineText = state.doc.lineAt(pos).text;
+  const lineStart = state.doc.lineAt(pos).from;
+  const relPos = pos - lineStart;
+
+  // Walk left/right on the line to find the word boundary
+  let start = relPos;
+  let end = relPos;
+  while (start > 0 && WORD_RE.test(lineText[start - 1])) start--;
+  while (end < lineText.length && WORD_RE.test(lineText[end])) end++;
+  if (start === end) return null;
+
+  const word = lineText.slice(start, end);
+  const from = lineStart + start;
+  const to = lineStart + end;
+
+  // Resolve context from syntax tree
+  let completion: Completion | undefined;
+  let isTag = false;
+
+  if (node.name === "FilterName") {
+    completion = FILTER_MAP.get(word);
+  } else if (node.name === "TagName") {
+    completion = TAG_MAP.get(word);
+    isTag = true;
+  } else if (isInsideJinja(node)) {
+    const beforeWord = state.doc.sliceString(Math.max(0, from - 20), from);
+    if (/\|\s*$/.test(beforeWord)) {
+      completion = FILTER_MAP.get(word);
+    } else {
+      completion = EXPRESSION_MAP.get(word);
+    }
+  }
+
+  if (!completion) return null;
+
+  // Build doc URL only for completions with a dedicated documentation page
+  const docUrl =
+    docBaseUrl && !isTag && DOCUMENTED_NAMES.has(completion.label)
+      ? `${docBaseUrl}/template-functions/${completion.label}/`
+      : undefined;
+
+  const openDocumentation = hassContext?.localize(
+    "ui.components.codemirror.open_documentation"
+  );
+  const dom = buildTooltipDom(completion, docUrl, openDocumentation);
+  if (!dom) return null;
+
+  return { pos: from, end: to, above: true, create: () => ({ dom }) };
 }

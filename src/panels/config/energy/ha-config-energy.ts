@@ -88,7 +88,7 @@ class HaConfigEnergy extends LitElement {
     return this.route.path.substring(1) || "electricity";
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("route")) {
       const tab = this.route.path.substring(1);
       if (!tab || !TABS.some((t) => t.path.endsWith(`/${tab}`))) {

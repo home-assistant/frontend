@@ -57,7 +57,7 @@ export default class HaScriptFields extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("fields") && this._focusLastActionOnChange) {

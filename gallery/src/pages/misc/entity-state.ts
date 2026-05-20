@@ -2,6 +2,7 @@ import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -51,6 +52,7 @@ const SENSOR_DEVICE_CLASSES = [
   "sulphur_dioxide",
   "temperature",
   "timestamp",
+  "uptime",
   "volatile_organic_compounds",
   "volatile_organic_compounds_parts",
   "voltage",
@@ -397,7 +399,7 @@ export class DemoEntityState extends LitElement {
     ENTITIES.map(createRowData)
   );
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     mockIcons(hass);

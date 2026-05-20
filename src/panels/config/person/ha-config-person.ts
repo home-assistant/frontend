@@ -1,4 +1,5 @@
 import { mdiPlus } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
@@ -159,7 +160,7 @@ export class HaConfigPerson extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
     loadPersonDetailDialog();

@@ -80,7 +80,7 @@ export class HaConfigAppsAvailable extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadData();
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));

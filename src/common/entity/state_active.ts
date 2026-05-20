@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { isUnavailableState, OFF, UNAVAILABLE } from "../../data/entity/entity";
+import { OFF, UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { computeDomain } from "./compute_domain";
 
 export function stateActive(stateObj: HassEntity, state?: string): boolean {
@@ -7,12 +7,19 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const compareState = state !== undefined ? state : stateObj?.state;
 
   if (
-    ["button", "event", "infrared", "input_button", "scene"].includes(domain)
+    [
+      "button",
+      "event",
+      "infrared",
+      "input_button",
+      "radio_frequency",
+      "scene",
+    ].includes(domain)
   ) {
     return compareState !== UNAVAILABLE;
   }
 
-  if (isUnavailableState(compareState)) {
+  if (compareState === UNAVAILABLE || compareState === UNKNOWN) {
     return false;
   }
 

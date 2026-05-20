@@ -152,7 +152,6 @@ class DialogNewAutomation extends LitElement {
 
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._open}
         flexcontent
         header-title=${this.hass.localize(

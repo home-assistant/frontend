@@ -33,7 +33,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  public willUpdate(changedProperties: PropertyValues): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
@@ -78,7 +78,10 @@ export class PanelView extends LitElement implements LovelaceViewElement {
               size="large"
               @click=${this._addCard}
               class=${classMap({
-                rtl: computeRTL(this.hass!),
+                rtl: computeRTL(
+                  this.hass!.language,
+                  this.hass!.translationMetadata.translations
+                ),
               })}
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>

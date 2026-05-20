@@ -55,7 +55,7 @@ export class HaIcon extends LitElement {
 
   @state() private _legacy = false;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;

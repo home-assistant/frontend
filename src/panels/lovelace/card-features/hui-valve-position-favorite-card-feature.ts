@@ -3,9 +3,9 @@ import type { HomeAssistant } from "../../../types";
 import type { ValveEntity } from "../../../data/valve";
 import {
   DEFAULT_VALVE_FAVORITE_POSITIONS,
-  normalizeValveFavoritePositions,
   valveSupportsPosition,
 } from "../../../data/valve";
+import { normalizeFavoritePositions } from "../../../data/favorite_positions";
 import {
   HuiNumericFavoriteCardFeatureBase,
   type NumericFavoriteCardFeatureDefinition,
@@ -23,7 +23,7 @@ const valvePositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefi
     supportsPosition: valveSupportsPosition,
     getFavoritePositions: (entry) => entry?.options?.valve?.favorite_positions,
     getCurrentValue: (stateObj) => stateObj.attributes.current_position,
-    normalizeFavoritePositions: normalizeValveFavoritePositions,
+    normalizeFavoritePositions,
     defaultFavoritePositions: DEFAULT_VALVE_FAVORITE_POSITIONS,
     setPositionService: "set_valve_position",
     serviceDataKey: "position",

@@ -35,7 +35,7 @@ class HaMoreInfoDetails extends LitElement {
 
   @state() private _stateObj?: HassEntity;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("params") || changedProps.has("hass")) {
       if (this.params?.entityId && this.hass) {
@@ -57,7 +57,6 @@ class HaMoreInfoDetails extends LitElement {
       <div class="content">
         ${this.yamlMode
           ? html`<ha-yaml-editor
-              .hass=${this.hass}
               .value=${yamlData}
               read-only
               auto-update

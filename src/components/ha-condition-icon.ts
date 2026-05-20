@@ -55,7 +55,11 @@ export class HaConditionIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = conditionIcon(this.hass, this.condition).then((icn) => {
+    const icon = conditionIcon(
+      this.hass.connection,
+      this.hass.config,
+      this.condition
+    ).then((icn) => {
       if (icn) {
         return html`<ha-icon .icon=${icn}></ha-icon>`;
       }

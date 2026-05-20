@@ -43,7 +43,7 @@ export class HaCardConditionUser extends LitElement {
     )
   );
 
-  protected async firstUpdated(changedProps: PropertyValues) {
+  protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchUsers();
   }

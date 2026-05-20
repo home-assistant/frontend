@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -56,7 +57,7 @@ export class HaResizableBottomSheet extends LitElement {
     </dialog>`;
   }
 
-  protected firstUpdated(changedProperties) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._openSheet();
   }

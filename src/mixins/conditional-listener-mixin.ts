@@ -74,7 +74,10 @@ export const ConditionalListenerMixin = <
     protected willUpdate(changedProperties: PropertyValues) {
       super.willUpdate(changedProperties);
       if (changedProperties.has("_maxColumns")) {
-        this._conditionContext = { max_columns: this._maxColumns };
+        this._conditionContext = {
+          ...this._conditionContext,
+          max_columns: this._maxColumns,
+        };
       }
     }
 

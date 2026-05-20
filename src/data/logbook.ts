@@ -195,6 +195,49 @@ export const localizeTriggerSource = (
   return source;
 };
 
+// Mapping from a phrase key to the bare-phrase translation key (without the
+// "triggered by" prefix), used by localizeTriggerDescription below.
+const triggerDescriptionKeys: Record<
+  TriggerPhraseKeys,
+  | "numeric_state_of"
+  | "state_of"
+  | "event"
+  | "time"
+  | "time_pattern"
+  | "homeassistant_stopping"
+  | "homeassistant_starting"
+> = {
+  triggered_by_numeric_state_of: "numeric_state_of",
+  triggered_by_state_of: "state_of",
+  triggered_by_event: "event",
+  triggered_by_time_pattern: "time_pattern",
+  triggered_by_time: "time",
+  triggered_by_homeassistant_stopping: "homeassistant_stopping",
+  triggered_by_homeassistant_starting: "homeassistant_starting",
+};
+
+// Like localizeTriggerSource, but returns just the bare localized trigger
+// description (without the "triggered by" prefix). Used where the surrounding
+// template already supplies its own "triggered by" wording.
+export const localizeTriggerDescription = (
+  localize: LocalizeFunc,
+  source: string
+) => {
+  for (const triggerPhraseKey of Object.keys(
+    triggerPhrases
+  ) as TriggerPhraseKeys[]) {
+    const phrase = triggerPhrases[triggerPhraseKey];
+    if (source.startsWith(phrase)) {
+      const bareKey = triggerDescriptionKeys[triggerPhraseKey];
+      return source.replace(
+        phrase,
+        `${localize(`ui.components.logbook.${bareKey}`)}`
+      );
+    }
+  }
+  return source;
+};
+
 export const localizeStateMessage = (
   hass: HomeAssistant,
   localize: LocalizeFunc,

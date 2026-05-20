@@ -43,7 +43,7 @@ class StateCardInputText extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this.value = this.stateObj.state;

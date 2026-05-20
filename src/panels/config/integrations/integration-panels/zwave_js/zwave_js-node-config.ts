@@ -88,7 +88,7 @@ class ZWaveJSNodeConfig extends LitElement {
     this.deviceId = this.route.path.substr(1);
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (!this._config || changedProps.has("deviceId")) {
       this._fetchData();
     }

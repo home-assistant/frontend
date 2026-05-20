@@ -158,7 +158,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
-  protected update(changedProperties) {
+  protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
     if (changedProperties.has("layout")) {
       this.toggleAttribute("ispanel", this.layout === "panel");

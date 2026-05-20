@@ -64,7 +64,7 @@ export class HaDeviceTrigger extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
       return true;
     }
@@ -141,7 +141,7 @@ export class HaDeviceTrigger extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (!changedProps.has("trigger")) {
       return;
     }

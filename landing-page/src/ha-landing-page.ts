@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../src/common/url/search-params";
 import "../../src/components/ha-alert";
 import "../../src/components/ha-button";
-import "../../src/components/ha-fade-in";
+import "../../src/components/animation/ha-fade-in";
 import "../../src/components/ha-spinner";
 import "../../src/components/ha-svg-icon";
 import "../../src/components/progress/ha-progress-bar";
@@ -115,7 +115,7 @@ class HaLandingPage extends LandingPageBaseElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     makeDialogManager(this);

@@ -47,7 +47,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entry")) {
       this._fetchHelperConfigEntry();

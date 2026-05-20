@@ -217,7 +217,6 @@ export class HuiActionEditor extends LitElement {
             <ha-service-control
               .hass=${this.hass}
               .value=${this._serviceAction(this.config)}
-              .showAdvanced=${this.hass.userData?.showAdvanced}
               narrow
               @value-changed=${this._serviceValueChanged}
             ></ha-service-control>
@@ -280,14 +279,15 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  private _valueChanged(ev: InputEvent): void {
+  private _valueChanged(
+    ev: InputEvent & { target: HaInput & { configValue?: string } }
+  ): void {
     ev.stopPropagation();
     if (!this.hass) {
       return;
     }
-    const target = ev.target! as HaInput;
-    const configValue: string | undefined = (target as any).configValue;
-    const value = target.value ?? "";
+    const { configValue } = ev.target;
+    const value = ev.target.value ?? "";
     if (this[`_${configValue}`] === value) {
       return;
     }

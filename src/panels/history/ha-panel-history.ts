@@ -276,7 +276,7 @@ class HaPanelHistory extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {

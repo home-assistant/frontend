@@ -1,5 +1,4 @@
-import { atLeastVersion } from "../../common/config/version";
-import type { HomeAssistant } from "../../types";
+import type { CallWS } from "../../types";
 
 export interface HassioResponse<T> {
   data: T;
@@ -46,21 +45,12 @@ export const ignoreSupervisorError = (error): boolean => {
 };
 
 export const fetchHassioStats = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   container: string
 ): Promise<HassioStats> => {
-  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return hass.callWS({
-      type: "supervisor/api",
-      endpoint: `/${container}/stats`,
-      method: "get",
-    });
-  }
-
-  return hassioApiResultExtractor(
-    await hass.callApi<HassioResponse<HassioStats>>(
-      "GET",
-      `hassio/${container}/stats`
-    )
-  );
+  return callWS({
+    type: "supervisor/api",
+    endpoint: `/${container}/stats`,
+    method: "get",
+  });
 };

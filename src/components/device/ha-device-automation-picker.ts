@@ -1,4 +1,5 @@
 import { consume } from "@lit/context";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -110,7 +111,7 @@ export abstract class HaDeviceAutomationPicker<
     </ha-generic-picker>`;
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (changedProps.has("deviceId")) {

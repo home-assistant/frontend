@@ -48,7 +48,7 @@ class HaConfigBlueprint extends HassRouterPage {
     this.blueprints = { automation, script };
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("reload-blueprints", () => {
       this._getBlueprints();

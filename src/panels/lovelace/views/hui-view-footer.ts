@@ -38,7 +38,7 @@ export class HuiViewFooter extends LitElement {
     this.addEventListener("card-visibility-changed", this._checkHidden);
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("config")) {
       if (this.config?.card) {
         this.card = this._createCardElement(this.config.card);

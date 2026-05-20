@@ -20,7 +20,7 @@ class HaPanelNotFound extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.hasUpdated) {
       this._setup();
       return;
