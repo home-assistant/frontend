@@ -3,7 +3,6 @@ import type { DeviceRegistryEntry } from "../../../../data/device/device_registr
 
 export interface DeviceAddToDialogParams {
   device: DeviceRegistryEntry;
-  mode: "automation" | "script";
   newTriggersConditions: boolean;
 }
 

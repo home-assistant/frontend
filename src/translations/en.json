@@ -6490,6 +6490,8 @@
             "service": "service"
           },
           "automation": {
+            "automations_and_scripts_heading": "Automations & Scripts",
+            "automations_or_scripts": "automations or scripts",
             "automations_heading": "Automations",
             "automations": "automations",
             "no_automations": "No automations",

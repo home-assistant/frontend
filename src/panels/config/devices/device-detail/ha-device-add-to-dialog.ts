@@ -84,12 +84,8 @@ export class DialogDeviceAddTo extends LitElement {
     const deviceId = params.device.id;
 
     const [triggers, conditions, actions] = await Promise.all([
-      params.mode === "automation"
-        ? fetchDeviceTriggers(this._api.callWS, deviceId)
-        : Promise.resolve([]),
-      params.mode === "automation"
-        ? fetchDeviceConditions(this._api.callWS, deviceId)
-        : Promise.resolve([]),
+      fetchDeviceTriggers(this._api.callWS, deviceId),
+      fetchDeviceConditions(this._api.callWS, deviceId),
       fetchDeviceActions(this._api.callWS, deviceId),
     ]);
 
@@ -136,25 +132,6 @@ export class DialogDeviceAddTo extends LitElement {
       this._states
     );
 
-    if (this._params.mode === "script") {
-      return html`
-        <ha-list>
-          <ha-list-item
-            graphic="icon"
-            data-type="script_action"
-            @click=${this._handleNewAction}
-            data-dialog="close"
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiRoomService}></ha-svg-icon>
-            ${this._i18n.localize(
-              "ui.dialogs.more_info_control.add_to.actions.script_action",
-              { target: deviceName }
-            )}
-          </ha-list-item>
-        </ha-list>
-      `;
-    }
-
     return html`
       <ha-list>
         <ha-list-item
@@ -190,6 +167,18 @@ export class DialogDeviceAddTo extends LitElement {
           <ha-svg-icon slot="graphic" .path=${mdiRoomService}></ha-svg-icon>
           ${this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.actions.automation_action",
+            { target: deviceName }
+          )}
+        </ha-list-item>
+        <ha-list-item
+          graphic="icon"
+          data-type="script_action"
+          @click=${this._handleNewAction}
+          data-dialog="close"
+        >
+          <ha-svg-icon slot="graphic" .path=${mdiRoomService}></ha-svg-icon>
+          ${this._i18n.localize(
+            "ui.dialogs.more_info_control.add_to.actions.script_action",
             { target: deviceName }
           )}
         </ha-list-item>
@@ -275,7 +264,7 @@ export class DialogDeviceAddTo extends LitElement {
               <ha-list-item
                 twoline
                 graphic="icon"
-                data-type="action"
+                data-type="automation_action"
                 @click=${this._handleLegacyAction}
                 data-dialog="close"
               >
@@ -284,11 +273,31 @@ export class DialogDeviceAddTo extends LitElement {
                   .path=${mdiRoomService}
                 ></ha-svg-icon>
                 ${this._i18n.localize(
-                  `ui.panel.config.devices.${this._params.mode}.actions.title`
+                  "ui.panel.config.devices.automation.actions.title"
                 )}
                 <span slot="secondary">
                   ${this._i18n.localize(
-                    `ui.panel.config.devices.${this._params.mode}.actions.description`
+                    "ui.panel.config.devices.automation.actions.description"
+                  )}
+                </span>
+              </ha-list-item>
+              <ha-list-item
+                twoline
+                graphic="icon"
+                data-type="script_action"
+                @click=${this._handleLegacyAction}
+                data-dialog="close"
+              >
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiRoomService}
+                ></ha-svg-icon>
+                ${this._i18n.localize(
+                  "ui.panel.config.devices.script.actions.title"
+                )}
+                <span slot="secondary">
+                  ${this._i18n.localize(
+                    "ui.panel.config.devices.script.actions.description"
                   )}
                 </span>
               </ha-list-item>
@@ -315,13 +324,14 @@ export class DialogDeviceAddTo extends LitElement {
     const type = (ev.currentTarget as HTMLElement).dataset.type as
       | "trigger"
       | "condition"
-      | "action";
+      | "automation_action"
+      | "script_action";
 
     this.closeDialog();
 
-    if (this._params.mode === "script") {
+    if (type === "script_action") {
       const newScript = {} as ScriptConfig;
-      if (type === "action" && this._actions?.length) {
+      if (this._actions?.length) {
         newScript.sequence = [this._actions[0]];
       }
       showScriptEditor(newScript, true);
@@ -331,7 +341,7 @@ export class DialogDeviceAddTo extends LitElement {
         newAutomation.triggers = [this._triggers[0]];
       } else if (type === "condition" && this._conditions?.length) {
         newAutomation.conditions = [this._conditions[0]];
-      } else if (type === "action" && this._actions?.length) {
+      } else if (type === "automation_action" && this._actions?.length) {
         newAutomation.actions = [this._actions[0]];
       }
       showAutomationEditor(newAutomation, true);
