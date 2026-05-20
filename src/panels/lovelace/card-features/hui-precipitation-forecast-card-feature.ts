@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type {
   Connection,
+  HassConfig,
   HassEntity,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
@@ -17,16 +18,23 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { FrontendLocaleData } from "../../../data/translation";
 import "../../../components/ha-spinner";
 import {
+  configContext,
   connectionContext,
   internationalizationContext,
 } from "../../../data/context";
-import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
+import type {
+  ForecastAttribute,
+  ForecastEvent,
+  WeatherEntity,
+} from "../../../data/weather";
 import {
   getForecastPrecipitation,
+  getWeatherUnit,
   subscribeForecast,
 } from "../../../data/weather";
 import type {
   HomeAssistant,
+  HomeAssistantConfig,
   HomeAssistantConnection,
   HomeAssistantInternationalization,
 } from "../../../types";
@@ -101,6 +109,13 @@ class HuiPrecipitationForecastCardFeature
     transformer: ({ connection }) => connection,
   })
   private _connection!: Connection;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
 
   @state() private _config?: PrecipitationForecastCardFeatureConfig;
 
@@ -180,7 +195,13 @@ class HuiPrecipitationForecastCardFeature
   // values above this still drive the scale.
   private _referenceMaxAmount(): number {
     const isImperial =
-      this._stateObj?.attributes?.precipitation_unit === UNIT_IN;
+      this._hassConfig && this._stateObj
+        ? getWeatherUnit(
+            this._hassConfig,
+            this._stateObj as WeatherEntity,
+            "precipitation"
+          ) === UNIT_IN
+        : false;
     switch (this._subscribedType) {
       case "hourly":
         return isImperial ? 0.1 : 2.5;
