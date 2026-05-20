@@ -507,28 +507,27 @@ export class HaConfigDevicePage extends LitElement {
                                   <div class="items">
                                     ${this._getRelated(
                                       this._related
-                                    ).automation.map((automation) => {
-                                      const entityState = automation;
-                                      return entityState
+                                    ).automation.map((automation) =>
+                                      automation
                                         ? html`<a
                                             href=${ifDefined(
-                                              entityState.attributes.id
-                                                ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-                                                : `/config/automation/show/${entityState.entity_id}`
+                                              automation.attributes.id
+                                                ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
+                                                : `/config/automation/show/${automation.entity_id}`
                                             )}
                                           >
                                             <ha-list-item
                                               hasMeta
-                                              .automation=${entityState}
+                                              .automation=${automation}
                                             >
-                                              ${computeStateName(entityState)}
+                                              ${computeStateName(automation)}
                                               <ha-icon-next
                                                 slot="meta"
                                               ></ha-icon-next>
                                             </ha-list-item>
                                           </a>`
-                                        : nothing;
-                                    })}
+                                        : nothing
+                                    )}
                                   </div>
                                 `
                               : html`
@@ -553,29 +552,28 @@ export class HaConfigDevicePage extends LitElement {
                                     ${this._getRelated(
                                       this._related
                                     ).script.map((script) => {
-                                      const entityState = script;
+                                      if (!script) {
+                                        return nothing;
+                                      }
                                       const entry = this._entityReg.find(
                                         (e) => e.entity_id === script.entity_id
                                       );
-                                      let url = `/config/script/show/${entityState.entity_id}`;
-                                      if (entry) {
-                                        url = `/config/script/edit/${entry.unique_id}`;
-                                      }
-                                      return entityState
-                                        ? html`
-                                            <a href=${url}>
-                                              <ha-list-item
-                                                hasMeta
-                                                .script=${script}
-                                              >
-                                                ${computeStateName(entityState)}
-                                                <ha-icon-next
-                                                  slot="meta"
-                                                ></ha-icon-next>
-                                              </ha-list-item>
-                                            </a>
-                                          `
-                                        : nothing;
+                                      const url = entry
+                                        ? `/config/script/edit/${entry.unique_id}`
+                                        : `/config/script/show/${script.entity_id}`;
+                                      return html`
+                                        <a href=${url}>
+                                          <ha-list-item
+                                            hasMeta
+                                            .script=${script}
+                                          >
+                                            ${computeStateName(script)}
+                                            <ha-icon-next
+                                              slot="meta"
+                                            ></ha-icon-next>
+                                          </ha-list-item>
+                                        </a>
+                                      `;
                                     })}
                                   </div>
                                 `
@@ -599,20 +597,17 @@ export class HaConfigDevicePage extends LitElement {
                               ? html`
                                   <div class="items">
                                     ${this._getRelated(this._related).scene.map(
-                                      (scene) => {
-                                        const entityState = scene;
-                                        return entityState?.attributes.id
+                                      (scene) =>
+                                        scene?.attributes.id
                                           ? html`
                                               <a
-                                                href=${`/config/scene/edit/${entityState.attributes.id}`}
+                                                href=${`/config/scene/edit/${scene.attributes.id}`}
                                               >
                                                 <ha-list-item
                                                   hasMeta
-                                                  .scene=${entityState}
+                                                  .scene=${scene}
                                                 >
-                                                  ${computeStateName(
-                                                    entityState
-                                                  )}
+                                                  ${computeStateName(scene)}
                                                   <ha-icon-next
                                                     slot="meta"
                                                   ></ha-icon-next>
@@ -622,19 +617,19 @@ export class HaConfigDevicePage extends LitElement {
                                           : html`
                                               <ha-list-item
                                                 .id="scene-${slugify(
-                                                  entityState.entity_id
+                                                  scene.entity_id
                                                 )}"
                                                 hasMeta
-                                                .scene=${entityState}
+                                                .scene=${scene}
                                               >
-                                                ${computeStateName(entityState)}
+                                                ${computeStateName(scene)}
                                                 <ha-icon-next
                                                   slot="meta"
                                                 ></ha-icon-next>
                                               </ha-list-item>
                                               <ha-tooltip
                                                 .for="scene-${slugify(
-                                                  entityState.entity_id
+                                                  scene.entity_id
                                                 )}"
                                                 placement=${computeRTL(
                                                   this.hass.language,
@@ -648,8 +643,7 @@ export class HaConfigDevicePage extends LitElement {
                                                   "ui.panel.config.devices.cant_edit"
                                                 )}
                                               </ha-tooltip>
-                                            `;
-                                      }
+                                            `
                                     )}
                                   </div>
                                 `
