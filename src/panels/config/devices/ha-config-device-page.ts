@@ -468,9 +468,27 @@ export class HaConfigDevicePage extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.devices.automation.automations_and_scripts_heading"
                 )}
+                <ha-tooltip for="add-to-button">
+                  ${device.disabled_by
+                    ? this.hass.localize(
+                        "ui.panel.config.devices.automation.create_disable",
+                        {
+                          type: this.hass.localize(
+                            `ui.panel.config.devices.type.${
+                              device.entry_type || "device"
+                            }`
+                          ),
+                        }
+                      )
+                    : this.hass.localize(
+                        "ui.dialogs.more_info_control.add_to.title"
+                      )}
+                </ha-tooltip>
                 <ha-icon-button
+                  id="add-to-button"
                   @click=${this._showAddToDialog}
                   .disabled=${device.disabled_by}
+                  hide-title
                   .label=${device.disabled_by
                     ? this.hass.localize(
                         "ui.panel.config.devices.automation.create_disable",
@@ -483,7 +501,7 @@ export class HaConfigDevicePage extends LitElement {
                         }
                       )
                     : this.hass.localize(
-                        "ui.dialogs.more_info_control.add_to"
+                        "ui.dialogs.more_info_control.add_to.title"
                       )}
                   .path=${mdiPlusCircle}
                 ></ha-icon-button>
@@ -602,9 +620,34 @@ export class HaConfigDevicePage extends LitElement {
                   "ui.panel.config.devices.scene.scenes_heading"
                 )}
 
+                <ha-tooltip for="create-scene-button">
+                  ${device.disabled_by
+                    ? this.hass.localize(
+                        "ui.panel.config.devices.scene.create_disable",
+                        {
+                          type: this.hass.localize(
+                            `ui.panel.config.devices.type.${
+                              device.entry_type || "device"
+                            }`
+                          ),
+                        }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.devices.scene.create",
+                        {
+                          type: this.hass.localize(
+                            `ui.panel.config.devices.type.${
+                              device.entry_type || "device"
+                            }`
+                          ),
+                        }
+                      )}
+                </ha-tooltip>
                 <ha-icon-button
+                  id="create-scene-button"
                   @click=${this._createScene}
                   .disabled=${device.disabled_by}
+                  hide-title
                   .label=${device.disabled_by
                     ? this.hass.localize(
                         "ui.panel.config.devices.scene.create_disable",
@@ -698,10 +741,15 @@ export class HaConfigDevicePage extends LitElement {
       .narrow=${this.narrow}
       .header=${deviceName}
     >
+      <ha-tooltip for="edit-settings-button" slot="toolbar-icon">
+        ${this.hass.localize("ui.panel.config.devices.edit_settings")}
+      </ha-tooltip>
       <ha-icon-button
+        id="edit-settings-button"
         slot="toolbar-icon"
         .path=${mdiPencil}
         @click=${this._showSettings}
+        hide-title
         .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
       ></ha-icon-button>
       <ha-dropdown

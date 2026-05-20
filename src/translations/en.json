@@ -1675,7 +1675,6 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
-        "add_to": "Add to",
         "attributes": "Attributes",
         "history": "History",
         "aggregate": "5-minute aggregated",
@@ -1694,6 +1693,7 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
+          "title": "Add to",
           "actions": {
             "automation_trigger": "Create new automation using {target} as a trigger",
             "automation_condition": "Create new automation using {target} as a condition",
