@@ -60,14 +60,16 @@ export interface DataEntryFlowStepExternal {
   translation_domain?: string;
 }
 
-export interface DataEntryFlowStepCreateEntry {
+export interface DataEntryFlowStepCreateEntry<
+  T extends ConfigEntry | RepairsIssue = ConfigEntry,
+> {
   type: "create_entry";
   version: number;
   flow_id: string;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
-  result?: ConfigEntry | RepairsIssue;
+  result?: T;
   description: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
