@@ -72,13 +72,27 @@ export class DialogDeviceAddTo extends LitElement {
     this._params = params;
     this._open = true;
 
-    if (!params.newTriggersConditions) {
+    if (!params.newTriggersConditions && this._api) {
       this._fetchDeviceAutomations(params);
     }
   }
 
   public closeDialog(): void {
     this._open = false;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (
+      changedProps.has("_api") &&
+      this._api &&
+      this._params &&
+      !this._params.newTriggersConditions &&
+      !this._triggers
+    ) {
+      this._fetchDeviceAutomations(this._params);
+    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
