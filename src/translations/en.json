@@ -1698,7 +1698,8 @@
             "automation_trigger": "Create new automation using {target} as a trigger",
             "automation_condition": "Create new automation using {target} as a condition",
             "automation_action": "Create new automation using {target} in an action",
-            "script_action": "Create new script using {target} in an action"
+            "script_action": "Create new script using {target} in an action",
+            "scene": "Create new scene using {target}"
           },
           "app_actions": "App actions",
           "no_actions": "No actions available",
@@ -6490,8 +6491,8 @@
             "service": "service"
           },
           "automation": {
-            "automations_and_scripts_heading": "Automations & Scripts",
-            "automations_or_scripts": "automations or scripts",
+            "related_heading": "Related",
+            "automations_scripts_or_scenes": "automations, scripts or scenes",
             "automations_heading": "Automations",
             "automations": "automations",
             "no_automations": "No automations",
@@ -6520,7 +6521,7 @@
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
-            "no_device_automations": "There are no automations available for this device."
+            "no_device_automations": "There are no automations, scripts or scenes available for this device."
           },
           "script": {
             "scripts_heading": "Scripts",

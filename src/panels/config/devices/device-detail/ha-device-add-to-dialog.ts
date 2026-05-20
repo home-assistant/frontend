@@ -1,8 +1,9 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { consume, type ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
 import {
+  mdiPalette,
   mdiPlayCircleOutline,
   mdiPlaylistCheck,
   mdiRobotOutline,
@@ -34,6 +35,8 @@ import {
 } from "../../../../data/device/device_automation";
 import type { ScriptConfig } from "../../../../data/script";
 import { showScriptEditor } from "../../../../data/script";
+import type { SceneEntities } from "../../../../data/scene";
+import { showSceneEditor } from "../../../../data/scene";
 import {
   addToActionHandler,
   type AddToActionKey,
@@ -138,6 +141,11 @@ export class DialogDeviceAddTo extends LitElement {
     );
 
     return html`
+      <h3 class="section-header">
+        ${this._i18n.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        )}
+      </h3>
       <ha-list>
         <ha-list-item
           graphic="icon"
@@ -178,6 +186,11 @@ export class DialogDeviceAddTo extends LitElement {
             { target: deviceName }
           )}
         </ha-list-item>
+      </ha-list>
+      <h3 class="section-header">
+        ${this._i18n.localize("ui.panel.config.devices.script.scripts_heading")}
+      </h3>
+      <ha-list>
         <ha-list-item
           graphic="icon"
           data-type="script_action"
@@ -194,6 +207,7 @@ export class DialogDeviceAddTo extends LitElement {
           )}
         </ha-list-item>
       </ha-list>
+      ${this._renderSceneSection(deviceName)}
     `;
   }
 
@@ -209,11 +223,19 @@ export class DialogDeviceAddTo extends LitElement {
     if (!this._params) {
       return nothing;
     }
+
+    const deviceName = computeDeviceNameDisplay(
+      this._params.device,
+      this._i18n.localize,
+      this._states
+    );
+
     const hasTriggers = Boolean(this._triggers?.length);
     const hasConditions = Boolean(this._conditions?.length);
     const hasActions = Boolean(this._actions?.length);
+    const hasScenes = Boolean(this._params.entityIds.length);
 
-    if (!hasTriggers && !hasConditions && !hasActions) {
+    if (!hasTriggers && !hasConditions && !hasActions && !hasScenes) {
       return html`
         <div class="empty">
           ${this._i18n.localize(
@@ -224,77 +246,103 @@ export class DialogDeviceAddTo extends LitElement {
     }
 
     return html`
-      <ha-list>
-        ${hasTriggers
-          ? html`
-              <ha-list-item
-                twoline
-                graphic="icon"
-                data-type="trigger"
-                @click=${this._handleLegacyAction}
-                data-dialog="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiRobotOutline}
-                ></ha-svg-icon>
+      <h3 class="section-header">
+        ${this._i18n.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        )}
+      </h3>
+      ${hasTriggers || hasConditions || hasActions
+        ? html`
+            <ha-list>
+              ${hasTriggers
+                ? html`
+                    <ha-list-item
+                      twoline
+                      graphic="icon"
+                      data-type="trigger"
+                      @click=${this._handleLegacyAction}
+                      data-dialog="close"
+                    >
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiRobotOutline}
+                      ></ha-svg-icon>
+                      ${this._i18n.localize(
+                        "ui.panel.config.devices.automation.triggers.title"
+                      )}
+                      <span slot="secondary">
+                        ${this._i18n.localize(
+                          "ui.panel.config.devices.automation.triggers.description"
+                        )}
+                      </span>
+                    </ha-list-item>
+                  `
+                : nothing}
+              ${hasConditions
+                ? html`
+                    <ha-list-item
+                      twoline
+                      graphic="icon"
+                      data-type="condition"
+                      @click=${this._handleLegacyAction}
+                      data-dialog="close"
+                    >
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiPlaylistCheck}
+                      ></ha-svg-icon>
+                      ${this._i18n.localize(
+                        "ui.panel.config.devices.automation.conditions.title"
+                      )}
+                      <span slot="secondary">
+                        ${this._i18n.localize(
+                          "ui.panel.config.devices.automation.conditions.description"
+                        )}
+                      </span>
+                    </ha-list-item>
+                  `
+                : nothing}
+              ${hasActions
+                ? html`
+                    <ha-list-item
+                      twoline
+                      graphic="icon"
+                      data-type="automation_action"
+                      @click=${this._handleLegacyAction}
+                      data-dialog="close"
+                    >
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${mdiPlayCircleOutline}
+                      ></ha-svg-icon>
+                      ${this._i18n.localize(
+                        "ui.panel.config.devices.automation.actions.title"
+                      )}
+                      <span slot="secondary">
+                        ${this._i18n.localize(
+                          "ui.panel.config.devices.automation.actions.description"
+                        )}
+                      </span>
+                    </ha-list-item>
+                  `
+                : nothing}
+            </ha-list>
+          `
+        : html`
+            <ha-list>
+              <ha-list-item noninteractive>
                 ${this._i18n.localize(
-                  "ui.panel.config.devices.automation.triggers.title"
+                  "ui.panel.config.devices.automation.no_automations"
                 )}
-                <span slot="secondary">
-                  ${this._i18n.localize(
-                    "ui.panel.config.devices.automation.triggers.description"
-                  )}
-                </span>
               </ha-list-item>
-            `
-          : nothing}
-        ${hasConditions
-          ? html`
-              <ha-list-item
-                twoline
-                graphic="icon"
-                data-type="condition"
-                @click=${this._handleLegacyAction}
-                data-dialog="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiPlaylistCheck}
-                ></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.panel.config.devices.automation.conditions.title"
-                )}
-                <span slot="secondary">
-                  ${this._i18n.localize(
-                    "ui.panel.config.devices.automation.conditions.description"
-                  )}
-                </span>
-              </ha-list-item>
-            `
-          : nothing}
-        ${hasActions
-          ? html`
-              <ha-list-item
-                twoline
-                graphic="icon"
-                data-type="automation_action"
-                @click=${this._handleLegacyAction}
-                data-dialog="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiPlayCircleOutline}
-                ></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.panel.config.devices.automation.actions.title"
-                )}
-                <span slot="secondary">
-                  ${this._i18n.localize(
-                    "ui.panel.config.devices.automation.actions.description"
-                  )}
-                </span>
-              </ha-list-item>
+            </ha-list>
+          `}
+      <h3 class="section-header">
+        ${this._i18n.localize("ui.panel.config.devices.script.scripts_heading")}
+      </h3>
+      ${hasActions
+        ? html`
+            <ha-list>
               <ha-list-item
                 twoline
                 graphic="icon"
@@ -315,8 +363,42 @@ export class DialogDeviceAddTo extends LitElement {
                   )}
                 </span>
               </ha-list-item>
-            `
-          : nothing}
+            </ha-list>
+          `
+        : html`
+            <ha-list>
+              <ha-list-item noninteractive>
+                ${this._i18n.localize(
+                  "ui.panel.config.devices.script.no_scripts"
+                )}
+              </ha-list-item>
+            </ha-list>
+          `}
+      ${this._renderSceneSection(deviceName)}
+    `;
+  }
+
+  private _renderSceneSection(deviceName: string) {
+    if (!this._params?.entityIds.length) {
+      return nothing;
+    }
+
+    return html`
+      <h3 class="section-header">
+        ${this._i18n.localize("ui.panel.config.devices.scene.scenes_heading")}
+      </h3>
+      <ha-list>
+        <ha-list-item
+          graphic="icon"
+          @click=${this._handleCreateScene}
+          data-dialog="close"
+        >
+          <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
+          ${this._i18n.localize(
+            "ui.dialogs.more_info_control.add_to.actions.scene",
+            { target: deviceName }
+          )}
+        </ha-list-item>
       </ha-list>
     `;
   }
@@ -362,6 +444,18 @@ export class DialogDeviceAddTo extends LitElement {
     }
   }
 
+  private _handleCreateScene() {
+    if (!this._params) {
+      return;
+    }
+    const entities: SceneEntities = {};
+    for (const entityId of this._params.entityIds) {
+      entities[entityId] = "";
+    }
+    this.closeDialog();
+    showSceneEditor({ entities });
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -375,6 +469,14 @@ export class DialogDeviceAddTo extends LitElement {
         .empty {
           padding: var(--ha-space-4);
           text-align: center;
+        }
+
+        .section-header {
+          padding: var(--ha-space-2) var(--ha-space-4) 0;
+          margin: 0;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--secondary-text-color);
         }
       `,
     ];

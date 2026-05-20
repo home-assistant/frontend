@@ -75,8 +75,6 @@ import {
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
-import type { SceneEntities } from "../../../data/scene";
-import { showSceneEditor } from "../../../data/scene";
 import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
 import {
@@ -459,14 +457,18 @@ export class HaConfigDevicePage extends LitElement {
       ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
 
-    const automationScriptCard =
+    const hasSceneSupport =
+      isComponentLoaded(this.hass.config, "scene") && entities.length;
+
+    const relatedCard =
       isComponentLoaded(this.hass.config, "automation") ||
-      isComponentLoaded(this.hass.config, "script")
+      isComponentLoaded(this.hass.config, "script") ||
+      hasSceneSupport
         ? html`
             <ha-card outlined>
               <h1 class="card-header">
                 ${this.hass.localize(
-                  "ui.panel.config.devices.automation.automations_and_scripts_heading"
+                  "ui.panel.config.devices.automation.related_heading"
                 )}
                 <ha-tooltip for="add-to-button">
                   ${device.disabled_by
@@ -513,79 +515,177 @@ export class HaConfigDevicePage extends LitElement {
                     </div>
                   `
                 : this._related.automation?.length ||
-                    this._related.script?.length
+                    this._related.script?.length ||
+                    this._related.scene?.length
                   ? html`
-                      ${this._related.automation?.length
+                      ${isComponentLoaded(this.hass.config, "automation")
                         ? html`
                             <h3 class="section-header">
                               ${this.hass.localize(
                                 "ui.panel.config.devices.automation.automations_heading"
                               )}
                             </h3>
-                            <div class="items">
-                              ${this._getRelated(this._related).automation.map(
-                                (automation) => {
-                                  const entityState = automation;
-                                  return entityState
-                                    ? html`<a
-                                        href=${ifDefined(
-                                          entityState.attributes.id
-                                            ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-                                            : `/config/automation/show/${entityState.entity_id}`
-                                        )}
-                                      >
-                                        <ha-list-item
-                                          hasMeta
-                                          .automation=${entityState}
-                                        >
-                                          ${computeStateName(entityState)}
-                                          <ha-icon-next
-                                            slot="meta"
-                                          ></ha-icon-next>
-                                        </ha-list-item>
-                                      </a>`
-                                    : nothing;
-                                }
-                              )}
-                            </div>
+                            ${this._related.automation?.length
+                              ? html`
+                                  <div class="items">
+                                    ${this._getRelated(
+                                      this._related
+                                    ).automation.map((automation) => {
+                                      const entityState = automation;
+                                      return entityState
+                                        ? html`<a
+                                            href=${ifDefined(
+                                              entityState.attributes.id
+                                                ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
+                                                : `/config/automation/show/${entityState.entity_id}`
+                                            )}
+                                          >
+                                            <ha-list-item
+                                              hasMeta
+                                              .automation=${entityState}
+                                            >
+                                              ${computeStateName(entityState)}
+                                              <ha-icon-next
+                                                slot="meta"
+                                              ></ha-icon-next>
+                                            </ha-list-item>
+                                          </a>`
+                                        : nothing;
+                                    })}
+                                  </div>
+                                `
+                              : html`
+                                  <ha-list-item noninteractive>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.devices.automation.no_automations"
+                                    )}
+                                  </ha-list-item>
+                                `}
                           `
                         : nothing}
-                      ${this._related.script?.length
+                      ${isComponentLoaded(this.hass.config, "script")
                         ? html`
                             <h3 class="section-header">
                               ${this.hass.localize(
                                 "ui.panel.config.devices.script.scripts_heading"
                               )}
                             </h3>
-                            <div class="items">
-                              ${this._getRelated(this._related).script.map(
-                                (script) => {
-                                  const entityState = script;
-                                  const entry = this._entityReg.find(
-                                    (e) => e.entity_id === script.entity_id
-                                  );
-                                  let url = `/config/script/show/${entityState.entity_id}`;
-                                  if (entry) {
-                                    url = `/config/script/edit/${entry.unique_id}`;
-                                  }
-                                  return entityState
-                                    ? html`
-                                        <a href=${url}>
-                                          <ha-list-item
-                                            hasMeta
-                                            .script=${script}
-                                          >
-                                            ${computeStateName(entityState)}
-                                            <ha-icon-next
-                                              slot="meta"
-                                            ></ha-icon-next>
-                                          </ha-list-item>
-                                        </a>
-                                      `
-                                    : nothing;
-                                }
+                            ${this._related.script?.length
+                              ? html`
+                                  <div class="items">
+                                    ${this._getRelated(this._related).script.map(
+                                      (script) => {
+                                        const entityState = script;
+                                        const entry = this._entityReg.find(
+                                          (e) =>
+                                            e.entity_id === script.entity_id
+                                        );
+                                        let url = `/config/script/show/${entityState.entity_id}`;
+                                        if (entry) {
+                                          url = `/config/script/edit/${entry.unique_id}`;
+                                        }
+                                        return entityState
+                                          ? html`
+                                              <a href=${url}>
+                                                <ha-list-item
+                                                  hasMeta
+                                                  .script=${script}
+                                                >
+                                                  ${computeStateName(
+                                                    entityState
+                                                  )}
+                                                  <ha-icon-next
+                                                    slot="meta"
+                                                  ></ha-icon-next>
+                                                </ha-list-item>
+                                              </a>
+                                            `
+                                          : nothing;
+                                      }
+                                    )}
+                                  </div>
+                                `
+                              : html`
+                                  <ha-list-item noninteractive>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.devices.script.no_scripts"
+                                    )}
+                                  </ha-list-item>
+                                `}
+                          `
+                        : nothing}
+                      ${hasSceneSupport
+                        ? html`
+                            <h3 class="section-header">
+                              ${this.hass.localize(
+                                "ui.panel.config.devices.scene.scenes_heading"
                               )}
-                            </div>
+                            </h3>
+                            ${this._related.scene?.length
+                              ? html`
+                                  <div class="items">
+                                    ${this._getRelated(this._related).scene.map(
+                                      (scene) => {
+                                        const entityState = scene;
+                                        return entityState &&
+                                          entityState.attributes.id
+                                          ? html`
+                                              <a
+                                                href=${`/config/scene/edit/${entityState.attributes.id}`}
+                                              >
+                                                <ha-list-item
+                                                  hasMeta
+                                                  .scene=${entityState}
+                                                >
+                                                  ${computeStateName(
+                                                    entityState
+                                                  )}
+                                                  <ha-icon-next
+                                                    slot="meta"
+                                                  ></ha-icon-next>
+                                                </ha-list-item>
+                                              </a>
+                                            `
+                                          : html`
+                                              <ha-list-item
+                                                .id="scene-${slugify(entityState.entity_id)}"
+                                                hasMeta
+                                                .scene=${entityState}
+                                              >
+                                                ${computeStateName(
+                                                  entityState
+                                                )}
+                                                <ha-icon-next
+                                                  slot="meta"
+                                                ></ha-icon-next>
+                                              </ha-list-item>
+                                              <ha-tooltip
+                                                .for="scene-${slugify(entityState.entity_id)}"
+                                                placement=${computeRTL(
+                                                  this.hass.language,
+                                                  this.hass
+                                                    .translationMetadata
+                                                    .translations
+                                                )
+                                                  ? "left"
+                                                  : "right"}
+                                              >
+                                                ${this.hass.localize(
+                                                  "ui.panel.config.devices.cant_edit"
+                                                )}
+                                              </ha-tooltip>
+                                            `;
+                                      }
+                                    )}
+                                  </div>
+                                `
+                              : html`
+                                  <ha-list-item noninteractive>
+                                    ${this.hass.localize(
+                                      "ui.panel.config.devices.scene.no_scenes"
+                                    )}
+                                  </ha-list-item>
+                                `}
                           `
                         : nothing}
                     `
@@ -595,7 +695,7 @@ export class HaConfigDevicePage extends LitElement {
                           "ui.panel.config.devices.add_prompt",
                           {
                             name: this.hass.localize(
-                              "ui.panel.config.devices.automation.automations_or_scripts"
+                              "ui.panel.config.devices.automation.automations_scripts_or_scenes"
                             ),
                             type: this.hass.localize(
                               `ui.panel.config.devices.type.${
@@ -607,131 +707,6 @@ export class HaConfigDevicePage extends LitElement {
                         ${add_prompt}
                       </div>
                     `}
-            </ha-card>
-          `
-        : "";
-
-    const sceneCard =
-      isComponentLoaded(this.hass.config, "scene") && entities.length
-        ? html`
-            <ha-card outlined>
-              <h1 class="card-header">
-                ${this.hass.localize(
-                  "ui.panel.config.devices.scene.scenes_heading"
-                )}
-
-                <ha-tooltip for="create-scene-button">
-                  ${device.disabled_by
-                    ? this.hass.localize(
-                        "ui.panel.config.devices.scene.create_disable",
-                        {
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.devices.scene.create",
-                        {
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )}
-                </ha-tooltip>
-                <ha-icon-button
-                  id="create-scene-button"
-                  @click=${this._createScene}
-                  .disabled=${device.disabled_by}
-                  hide-title
-                  .label=${device.disabled_by
-                    ? this.hass.localize(
-                        "ui.panel.config.devices.scene.create_disable",
-                        {
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.devices.scene.create",
-                        {
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )}
-                  .path=${mdiPlusCircle}
-                ></ha-icon-button>
-              </h1>
-              ${this._related?.scene?.length
-                ? html`
-                    <div class="items">
-                      ${this._getRelated(this._related).scene.map((scene) => {
-                        const entityState = scene;
-                        return entityState && entityState.attributes.id
-                          ? html`
-                              <a
-                                href=${`/config/scene/edit/${entityState.attributes.id}`}
-                              >
-                                <ha-list-item hasMeta .scene=${entityState}>
-                                  ${computeStateName(entityState)}
-                                  <ha-icon-next slot="meta"></ha-icon-next>
-                                </ha-list-item>
-                              </a>
-                            `
-                          : html`
-                              <ha-list-item
-                                .id="scene-${slugify(entityState.entity_id)}"
-                                hasMeta
-                                .scene=${entityState}
-                              >
-                                ${computeStateName(entityState)}
-                                <ha-icon-next slot="meta"></ha-icon-next>
-                              </ha-list-item>
-                              <ha-tooltip
-                                .for="scene-${slugify(entityState.entity_id)}"
-                                placement=${computeRTL(
-                                  this.hass.language,
-                                  this.hass.translationMetadata.translations
-                                )
-                                  ? "left"
-                                  : "right"}
-                              >
-                                ${this.hass.localize(
-                                  "ui.panel.config.devices.cant_edit"
-                                )}
-                              </ha-tooltip>
-                            `;
-                      })}
-                    </div>
-                  `
-                : html`
-                    <div class="card-content">
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.add_prompt",
-                        {
-                          name: this.hass.localize(
-                            "ui.panel.config.devices.scene.scenes"
-                          ),
-                          type: this.hass.localize(
-                            `ui.panel.config.devices.type.${
-                              device.entry_type || "device"
-                            }`
-                          ),
-                        }
-                      )}
-                      ${add_prompt}
-                    </div>
-                  `}
             </ha-card>
           `
         : "";
@@ -945,7 +920,7 @@ export class HaConfigDevicePage extends LitElement {
                 `
               : ""}
           </ha-device-info-card>
-          ${!this.narrow ? [automationScriptCard, sceneCard] : ""}
+          ${!this.narrow ? relatedCard : ""}
         </div>
         <div class="column">
           ${(
@@ -982,7 +957,7 @@ export class HaConfigDevicePage extends LitElement {
           ></ha-device-via-devices-card>
         </div>
         <div class="column">
-          ${this.narrow ? [automationScriptCard, sceneCard] : ""}
+          ${this.narrow ? relatedCard : ""}
           ${isComponentLoaded(this.hass.config, "logbook")
             ? html`
                 <ha-card outlined>
@@ -1348,24 +1323,18 @@ export class HaConfigDevicePage extends LitElement {
     this._related = await findRelated(this.hass, "device", this.deviceId);
   }
 
-  private _createScene() {
-    const entities: SceneEntities = {};
-    this._entities(this.deviceId, this._entityReg, this.hass.devices).forEach(
-      (entity) => {
-        entities[entity.entity_id] = "";
-      }
-    );
-    showSceneEditor({
-      entities,
-    });
-  }
-
   private _showAddToDialog() {
     const device = this.hass.devices[this.deviceId];
     if (!device) return;
+    const entityIds = this._entities(
+      this.deviceId,
+      this._entityReg,
+      this.hass.devices
+    ).map((entity) => entity.entity_id);
     showDeviceAddToDialog(this, {
       device,
       newTriggersConditions: this._newTriggersConditions,
+      entityIds,
     });
   }
 

@@ -4,6 +4,7 @@ import type { DeviceRegistryEntry } from "../../../../data/device/device_registr
 export interface DeviceAddToDialogParams {
   device: DeviceRegistryEntry;
   newTriggersConditions: boolean;
+  entityIds: string[];
 }
 
 export const loadDeviceAddToDialog = () => import("./ha-device-add-to-dialog");
