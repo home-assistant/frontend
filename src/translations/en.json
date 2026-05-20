@@ -6571,7 +6571,6 @@
             "integration": "Integration",
             "firmware_version": "Firmware",
             "battery": "Battery",
-            "disabled_by": "Disabled",
             "no_devices": "No devices",
             "no_integration": "No integration",
             "unknown": "unknown"
@@ -6583,6 +6582,12 @@
           "picker": {
             "search": "Search {number} {number, plural,\n  one {device}\n  other {devices}\n}",
             "state": "Status",
+            "status": {
+              "available": "Available",
+              "unavailable": "Unavailable",
+              "unknown": "Unknown",
+              "disabled": "Disabled"
+            },
             "bulk_actions": {
               "move_area": "Move to area",
               "no_area": "No area",

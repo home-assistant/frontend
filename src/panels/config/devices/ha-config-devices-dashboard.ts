@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
+  mdiAlertCircle,
   mdiCancel,
   mdiDelete,
   mdiDotsVertical,
@@ -59,10 +60,13 @@ import {
   serializeFilters,
 } from "../../../data/data_table_filters";
 import type {
+  DeviceAvailabilityStatus,
   DeviceEntityLookup,
   DeviceRegistryEntry,
 } from "../../../data/device/device_registry";
 import {
+  DEVICE_AVAILABILITY_STATUSES,
+  computeDeviceAvailabilityStatus,
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
@@ -100,6 +104,7 @@ interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
+  status?: DeviceAvailabilityStatus;
   battery_entity?: [string | undefined, string | undefined];
   label_entries: LabelRegistryEntry[];
 }
@@ -224,8 +229,20 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _states = memoizeOne((localize: LocalizeFunc) => [
     {
+      value: "available",
+      label: localize("ui.panel.config.devices.picker.status.available"),
+    },
+    {
+      value: "unavailable",
+      label: localize("ui.panel.config.devices.picker.status.unavailable"),
+    },
+    {
+      value: "unknown",
+      label: localize("ui.panel.config.devices.picker.status.unknown"),
+    },
+    {
       value: "disabled",
-      label: localize("ui.panel.config.devices.data_table.disabled_by"),
+      label: localize("ui.panel.config.devices.picker.status.disabled"),
     },
   ]);
 
@@ -262,13 +279,6 @@ export class HaConfigDeviceDashboard extends LitElement {
     this._filter = history.state?.filter || "";
 
     this._filters = {
-      "ha-filter-states": {
-        value: [
-          ...((this._filters["ha-filter-states"]?.value as string[]) || []),
-          "disabled",
-        ],
-        items: undefined,
-      },
       "ha-filter-integrations": {
         value: domain ? [domain] : [],
         items: undefined,
@@ -438,11 +448,21 @@ export class HaConfigDeviceDashboard extends LitElement {
         | string[]
         | undefined;
 
-      const showDisabled =
-        stateFilters?.length && stateFilters.includes("disabled");
+      const availabilityFilters = stateFilters?.filter(
+        (status): status is DeviceAvailabilityStatus =>
+          (DEVICE_AVAILABILITY_STATUSES as readonly string[]).includes(status)
+      );
 
-      if (!showDisabled) {
-        outputDevices = outputDevices.filter((device) => !device.disabled_by);
+      if (availabilityFilters?.length) {
+        outputDevices = outputDevices.filter((device) =>
+          availabilityFilters.includes(
+            computeDeviceAvailabilityStatus(
+              this.hass,
+              device,
+              deviceEntityLookup[device.id] || []
+            )
+          )
+        );
       }
 
       const formattedOutputDevices = outputDevices.map((device) => {
@@ -469,6 +489,12 @@ export class HaConfigDeviceDashboard extends LitElement {
             floorName = computeFloorName(this.hass.floors[floorId!]);
           }
         }
+
+        const availabilityStatus = computeDeviceAvailabilityStatus(
+          this.hass,
+          device,
+          deviceEntityLookup[device.id] || []
+        );
 
         return {
           ...device,
@@ -500,6 +526,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
+          status: availabilityStatus,
           firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
@@ -637,16 +664,19 @@ export class HaConfigDeviceDashboard extends LitElement {
       },
       created_at: getCreatedAtTableColumn(localize, this.hass),
       modified_at: getModifiedAtTableColumn(localize, this.hass),
-      disabled_by: {
+      status: {
         title: localize("ui.panel.config.devices.picker.state"),
         type: "icon",
         defaultHidden: true,
         sortable: true,
         filterable: true,
+        groupable: true,
+        valueColumn: "status",
         minWidth: "80px",
         maxWidth: "80px",
-        template: (device) =>
-          device.disabled_by
+        template: (device) => {
+          const unavailable = device.status === "unavailable";
+          return device.disabled_by || unavailable
             ? html`
                 <div
                   tabindex="0"
@@ -654,16 +684,18 @@ export class HaConfigDeviceDashboard extends LitElement {
                 >
                   <ha-svg-icon
                     .id="svg-icon-${device.id}"
-                    .path=${mdiCancel}
+                    style=${unavailable ? "color: var(--error-color)" : ""}
+                    .path=${unavailable ? mdiAlertCircle : mdiCancel}
                   ></ha-svg-icon>
                   <ha-tooltip .for="svg-icon-${device.id}" placement="left">
-                    ${this.hass.localize(
-                      "ui.panel.config.entities.picker.status.disabled"
+                    ${localize(
+                      `ui.panel.config.devices.picker.status.${device.status}`
                     )}
                   </ha-tooltip>
                 </div>
               `
-            : "—",
+            : "—";
+        },
       },
       labels: getLabelsTableColumn(),
     } as DataTableColumnContainer<DeviceItem>;

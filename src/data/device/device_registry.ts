@@ -2,6 +2,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
+import { UNAVAILABLE } from "../entity/entity";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
@@ -47,6 +48,19 @@ export type DeviceEntityLookup<
     | EntityRegistryEntry
     | EntityRegistryDisplayEntry,
 > = Record<string, T[]>;
+
+export type DeviceAvailabilityStatus =
+  | "available"
+  | "unavailable"
+  | "unknown"
+  | "disabled";
+
+export const DEVICE_AVAILABILITY_STATUSES = [
+  "available",
+  "unavailable",
+  "unknown",
+  "disabled",
+] as const satisfies readonly DeviceAvailabilityStatus[];
 
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
@@ -132,6 +146,37 @@ export const getDeviceEntityDisplayLookup = (
     deviceEntityLookup[entity.device_id].push(entity);
   }
   return deviceEntityLookup;
+};
+
+export const computeDeviceAvailabilityStatus = (
+  hass: Pick<HomeAssistant, "states">,
+  device: DeviceRegistryEntry,
+  entities: EntityRegistryEntry[]
+): DeviceAvailabilityStatus => {
+  if (device.disabled_by) {
+    return "disabled";
+  }
+
+  const enabledEntities = entities.filter((entity) => !entity.disabled_by);
+  if (!enabledEntities.length) {
+    return "unknown";
+  }
+
+  const entityStates = enabledEntities
+    .map((entity) => hass.states[entity.entity_id])
+    .filter(Boolean);
+
+  if (!entityStates.length) {
+    return "unknown";
+  }
+
+  for (const stateObj of entityStates) {
+    if (stateObj.state !== UNAVAILABLE) {
+      return "available";
+    }
+  }
+
+  return "unavailable";
 };
 
 export const getDeviceIntegrationLookup = (
