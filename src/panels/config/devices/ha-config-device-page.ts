@@ -1313,6 +1313,7 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
+  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
   private _subscribeLabFeature() {
     if (!isComponentLoaded(this.hass.config, "automation")) {
       return;

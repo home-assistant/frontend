@@ -72,6 +72,7 @@ export class DialogDeviceAddTo extends LitElement {
     this._params = params;
     this._open = true;
 
+    // When new_triggers_conditions labs feature is promoted, this whole check can be removed.
     if (!params.newTriggersConditions && this._api) {
       this._fetchDeviceAutomations(params);
     }
@@ -84,6 +85,7 @@ export class DialogDeviceAddTo extends LitElement {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
+    // When new_triggers_conditions labs feature is promoted, this whole check can be removed.
     if (
       changedProps.has("_api") &&
       this._api &&
@@ -100,6 +102,7 @@ export class DialogDeviceAddTo extends LitElement {
     this._i18n.loadBackendTranslation("device_automation");
   }
 
+  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
   private async _fetchDeviceAutomations(
     params: DeviceAddToDialogParams
   ): Promise<void> {
@@ -225,6 +228,7 @@ export class DialogDeviceAddTo extends LitElement {
     `;
   }
 
+  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
   private _renderLegacyOptions() {
     if (!this._triggers && !this._conditions && !this._actions) {
       return html`
@@ -407,6 +411,7 @@ export class DialogDeviceAddTo extends LitElement {
     addToActionHandler(key, { device_id: this._params.device.id });
   }
 
+  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
   private _handleLegacyAction(ev: Event) {
     if (!this._params) {
       return;

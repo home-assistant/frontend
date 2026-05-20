@@ -261,7 +261,7 @@ export class MoreInfoDialog extends SubscribeMixin(
   }
 
   private _shouldShowAddEntityTo(): boolean {
-    // When labs feature is promoted, this whole check can be removed.
+    // When new_triggers_conditions labs feature is promoted, this whole check can be removed.
     return (
       this._newTriggersAndConditions ||
       !!this.hass.auth.external?.config.hasEntityAddTo
