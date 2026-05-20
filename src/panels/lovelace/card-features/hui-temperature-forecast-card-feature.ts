@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type {
   Connection,
+  HassConfig,
   HassEntity,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
@@ -18,13 +19,19 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { FrontendLocaleData } from "../../../data/translation";
 import "../../../components/ha-spinner";
 import {
+  configContext,
   connectionContext,
   internationalizationContext,
 } from "../../../data/context";
-import type { ForecastAttribute, ForecastEvent } from "../../../data/weather";
-import { subscribeForecast } from "../../../data/weather";
+import type {
+  ForecastAttribute,
+  ForecastEvent,
+  WeatherEntity,
+} from "../../../data/weather";
+import { getWeatherUnit, subscribeForecast } from "../../../data/weather";
 import type {
   HomeAssistant,
+  HomeAssistantConfig,
   HomeAssistantConnection,
   HomeAssistantInternationalization,
 } from "../../../types";
@@ -97,6 +104,13 @@ class HuiTemperatureForecastCardFeature
     transformer: ({ connection }) => connection,
   })
   private _connection!: Connection;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
 
   @state() private _config?: TemperatureForecastCardFeatureConfig;
 
@@ -181,6 +195,18 @@ class HuiTemperatureForecastCardFeature
 
   private get _showLabels(): boolean {
     return this._config?.show_labels !== false;
+  }
+
+  private _toCelsius(temp: number): number {
+    const isFahrenheit =
+      this._hassConfig && this._stateObj
+        ? getWeatherUnit(
+            this._hassConfig,
+            this._stateObj as WeatherEntity,
+            "temperature"
+          ) === UNIT_F
+        : false;
+    return isFahrenheit ? ((temp - 32) * 5) / 9 : temp;
   }
 
   protected render() {
@@ -316,7 +342,11 @@ class HuiTemperatureForecastCardFeature
             id="temp-bar-${i}"
             x1="0" y1="0" x2="0" y2="1"
           >
-            ${getRelativeGradient(entry.templow!, entry.temperature, 3).map(
+            ${getRelativeGradient(
+              this._toCelsius(entry.templow!),
+              this._toCelsius(entry.temperature),
+              3
+            ).map(
               (s) => svg`<stop offset=${s.offset} stop-color=${s.color}></stop>`
             )}
           </linearGradient>`
@@ -428,15 +458,15 @@ class HuiTemperatureForecastCardFeature
     const padRange = maxY - minY || minY * 0.1;
     const effMinY = minY - padRange * 0.1;
     const effMaxY = maxY + padRange * 0.1;
-    const isFahrenheit = this._stateObj.attributes?.temperature_unit === UNIT_F;
-    const toCelsius = (t: number) => (isFahrenheit ? ((t - 32) * 5) / 9 : t);
-
     const gradient: HuiGraphGradient = {
       x1: 0,
       y1: 0,
       x2: 0,
       y2: height,
-      stops: getAbsoluteGradient(toCelsius(effMinY), toCelsius(effMaxY)),
+      stops: getAbsoluteGradient(
+        this._toCelsius(effMinY),
+        this._toCelsius(effMaxY)
+      ),
     };
 
     return { coordinates: points, yAxisOrigin, gradient };
