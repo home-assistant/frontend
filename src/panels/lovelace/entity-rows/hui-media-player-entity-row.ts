@@ -2,7 +2,7 @@ import {
   mdiPause,
   mdiPlay,
   mdiPlayPause,
-  mdiPower,
+  mdiPowerStandby,
   mdiPowerOff,
   mdiPowerOn,
   mdiSkipNext,
@@ -198,7 +198,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           entityState !== UNAVAILABLE
             ? html`
                 <ha-icon-button
-                  .path=${assumedState ? mdiPowerOn : mdiPower}
+                  .path=${assumedState ? mdiPowerOn : mdiPowerStandby}
                   .label=${this.hass.localize("ui.card.media_player.turn_on")}
                   @click=${this._turnOn}
                 ></ha-icon-button>
@@ -216,7 +216,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           (stateActive(stateObj) || assumedState)
             ? html`
                 <ha-icon-button
-                  .path=${assumedState ? mdiPowerOff : mdiPower}
+                  .path=${assumedState ? mdiPowerOff : mdiPowerStandby}
                   .label=${this.hass.localize("ui.card.media_player.turn_off")}
                   @click=${this._turnOff}
                 ></ha-icon-button>

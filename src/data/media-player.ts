@@ -15,7 +15,7 @@ import {
   mdiPlaylistMusic,
   mdiPlayPause,
   mdiPodcast,
-  mdiPower,
+  mdiPowerStandby,
   mdiPowerOff,
   mdiPowerOn,
   mdiRepeat,
@@ -295,7 +295,7 @@ export const computeMediaControls = (
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
-            icon: mdiPower,
+            icon: mdiPowerStandby,
             action: "turn_on",
           },
         ]
@@ -316,7 +316,7 @@ export const computeMediaControls = (
 
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: assumedState ? mdiPowerOff : mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPowerStandby,
       action: "turn_off",
     });
   }
