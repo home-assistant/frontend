@@ -1,18 +1,15 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAbTesting,
   mdiCog,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
-  mdiGestureTap,
   mdiMicrophone,
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
   mdiRestore,
-  mdiRoomService,
   mdiShapeOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -23,10 +20,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
-import {
-  fireEvent,
-  type HASSDomCurrentTargetEvent,
-} from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -46,8 +40,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-adaptive-popover";
-import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
@@ -66,22 +58,7 @@ import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
-import type {
-  DeviceAction as DeviceAutomationAction,
-  DeviceCondition,
-  DeviceTrigger,
-} from "../../../data/device/device_automation";
-import {
-  fetchDeviceActions,
-  fetchDeviceConditions,
-  fetchDeviceTriggers,
-  sortDeviceAutomations,
-} from "../../../data/device/device_automation";
 import { subscribeLabFeature } from "../../../data/labs";
-import type { AutomationConfig } from "../../../data/automation";
-import { showAutomationEditor } from "../../../data/automation";
-import type { ScriptConfig } from "../../../data/script";
-import { showScriptEditor } from "../../../data/script";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
   fetchDiagnosticHandler,
@@ -106,8 +83,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
-import type { AddToActionKey } from "../../../dialogs/more-info/add-to";
-import { addToActionHandler } from "../../../dialogs/more-info/add-to";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -118,6 +93,7 @@ import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
 import "./device-detail/ha-device-via-devices-card";
+import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
@@ -173,20 +149,6 @@ export class HaConfigDevicePage extends LitElement {
   private _deviceAlertsActionsTimeout?: number;
 
   @state() private _newTriggersConditions = false;
-
-  @state() private _automationPopoverOpen = false;
-
-  @state() private _automationPopoverAnchor?: Element;
-
-  @state() private _scriptPopoverOpen = false;
-
-  @state() private _scriptPopoverAnchor?: Element;
-
-  @state() private _deviceTriggers?: DeviceTrigger[];
-
-  @state() private _deviceConditions?: DeviceCondition[];
-
-  @state() private _deviceAutomationActions?: DeviceAutomationAction[];
 
   private _unsubLabFeature?: (() => void) | undefined;
 
@@ -503,7 +465,7 @@ export class HaConfigDevicePage extends LitElement {
                 "ui.panel.config.devices.automation.automations_heading"
               )}
               <ha-icon-button
-                @click=${this._showAutomationPopover}
+                @click=${this._showAutomationDialog}
                 .disabled=${device.disabled_by}
                 .label=${device.disabled_by
                   ? this.hass.localize(
@@ -680,7 +642,7 @@ export class HaConfigDevicePage extends LitElement {
                 "ui.panel.config.devices.script.scripts_heading"
               )}
               <ha-icon-button
-                @click=${this._showScriptPopover}
+                @click=${this._showScriptDialog}
                 .disabled=${device.disabled_by}
                 .label=${device.disabled_by
                   ? this.hass.localize(
@@ -1012,8 +974,6 @@ export class HaConfigDevicePage extends LitElement {
             : ""}
         </div>
       </div>
-      ${this._renderAutomationPopover(device)}
-      ${this._renderScriptPopover(device)}
     </hass-subpage>`;
   }
 
@@ -1371,346 +1331,24 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  private _showAutomationPopover(ev: HASSDomCurrentTargetEvent<Element>) {
-    this._automationPopoverAnchor = ev.currentTarget;
-    this._automationPopoverOpen = true;
-
-    if (!this._newTriggersConditions) {
-      this._fetchDeviceAutomations();
-    }
-  }
-
-  private _showScriptPopover(ev: HASSDomCurrentTargetEvent<Element>) {
-    this._scriptPopoverAnchor = ev.currentTarget;
-    this._scriptPopoverOpen = true;
-
-    if (!this._newTriggersConditions) {
-      this._fetchDeviceAutomations();
-    }
-  }
-
-  private async _fetchDeviceAutomations() {
-    const deviceId = this.deviceId;
-    const [triggers, conditions, actions] = await Promise.all([
-      fetchDeviceTriggers(this.hass, deviceId),
-      fetchDeviceConditions(this.hass, deviceId),
-      fetchDeviceActions(this.hass, deviceId),
-    ]);
-    this._deviceTriggers = triggers.sort(sortDeviceAutomations);
-    this._deviceConditions = conditions.sort(sortDeviceAutomations);
-    this._deviceAutomationActions = actions.sort(sortDeviceAutomations);
-  }
-
-  private _handleAutomationPopoverAction(
-    ev: HASSDomCurrentTargetEvent<HTMLElement>
-  ) {
-    const type = ev.currentTarget.dataset.type as
-      | "trigger"
-      | "condition"
-      | "action";
-    this._automationPopoverOpen = false;
-
-    if (this._newTriggersConditions) {
-      addToActionHandler(`automation_${type}` as AddToActionKey, {
-        device_id: this.deviceId,
-      });
-    } else {
-      const newAutomation = {} as AutomationConfig;
-      if (type === "trigger" && this._deviceTriggers?.length) {
-        newAutomation.triggers = [this._deviceTriggers[0]];
-      } else if (type === "condition" && this._deviceConditions?.length) {
-        newAutomation.conditions = [this._deviceConditions[0]];
-      } else if (type === "action" && this._deviceAutomationActions?.length) {
-        newAutomation.actions = [this._deviceAutomationActions[0]];
-      }
-      showAutomationEditor(newAutomation, true);
-    }
-  }
-
-  private _handleScriptPopoverAction() {
-    this._scriptPopoverOpen = false;
-
-    if (this._newTriggersConditions) {
-      addToActionHandler("script_action", {
-        device_id: this.deviceId,
-      });
-    } else {
-      const newScript = {} as ScriptConfig;
-      if (this._deviceAutomationActions?.length) {
-        newScript.sequence = [this._deviceAutomationActions[0]];
-      }
-      showScriptEditor(newScript, true);
-    }
-  }
-
-  private _closeAutomationPopover() {
-    this._automationPopoverOpen = false;
-  }
-
-  private _closeScriptPopover() {
-    this._scriptPopoverOpen = false;
-  }
-
-  private _renderAutomationPopover(device: DeviceRegistryEntry) {
-    if (!isComponentLoaded(this.hass.config, "automation")) {
-      return nothing;
-    }
-
-    const deviceName = computeDeviceNameDisplay(
+  private _showAutomationDialog() {
+    const device = this.hass.devices[this.deviceId];
+    if (!device) return;
+    showDeviceAddToDialog(this, {
       device,
-      this.hass.localize,
-      this.hass.states
-    );
-
-    return html`
-      <ha-adaptive-popover
-        .hass=${this.hass}
-        .open=${this._automationPopoverOpen}
-        .dialogAnchor=${this._automationPopoverAnchor}
-        width="small"
-        withoutHeader
-        @closed=${this._closeAutomationPopover}
-      >
-        ${this._newTriggersConditions
-          ? html`
-              <ha-list>
-                <ha-list-item
-                  graphic="icon"
-                  data-type="trigger"
-                  @click=${this._handleAutomationPopoverAction}
-                  data-popover="close"
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiGestureTap}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-                    { target: deviceName }
-                  )}
-                </ha-list-item>
-                <ha-list-item
-                  graphic="icon"
-                  data-type="condition"
-                  @click=${this._handleAutomationPopoverAction}
-                  data-popover="close"
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiAbTesting}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-                    { target: deviceName }
-                  )}
-                </ha-list-item>
-                <ha-list-item
-                  graphic="icon"
-                  data-type="action"
-                  @click=${this._handleAutomationPopoverAction}
-                  data-popover="close"
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiRoomService}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.actions.automation_action",
-                    { target: deviceName }
-                  )}
-                </ha-list-item>
-              </ha-list>
-            `
-          : this._renderLegacyAutomationOptions()}
-      </ha-adaptive-popover>
-    `;
+      mode: "automation",
+      newTriggersConditions: this._newTriggersConditions,
+    });
   }
 
-  private _renderScriptPopover(device: DeviceRegistryEntry) {
-    if (!isComponentLoaded(this.hass.config, "script")) {
-      return nothing;
-    }
-
-    const deviceName = computeDeviceNameDisplay(
+  private _showScriptDialog() {
+    const device = this.hass.devices[this.deviceId];
+    if (!device) return;
+    showDeviceAddToDialog(this, {
       device,
-      this.hass.localize,
-      this.hass.states
-    );
-
-    return html`
-      <ha-adaptive-popover
-        .hass=${this.hass}
-        .open=${this._scriptPopoverOpen}
-        .dialogAnchor=${this._scriptPopoverAnchor}
-        width="small"
-        withoutHeader
-        @closed=${this._closeScriptPopover}
-      >
-        ${this._newTriggersConditions
-          ? html`
-              <ha-list>
-                <ha-list-item
-                  graphic="icon"
-                  @click=${this._handleScriptPopoverAction}
-                  data-popover="close"
-                >
-                  <ha-svg-icon
-                    slot="graphic"
-                    .path=${mdiRoomService}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.actions.script_action",
-                    { target: deviceName }
-                  )}
-                </ha-list-item>
-              </ha-list>
-            `
-          : this._renderLegacyScriptOptions()}
-      </ha-adaptive-popover>
-    `;
-  }
-
-  private _renderLegacyAutomationOptions() {
-    // When new_triggers_conditions labs feature is promoted, this function can be removed.
-    if (
-      !this._deviceTriggers &&
-      !this._deviceConditions &&
-      !this._deviceAutomationActions
-    ) {
-      return html`
-        <div class="popover-loading">
-          <ha-spinner></ha-spinner>
-        </div>
-      `;
-    }
-
-    const hasTriggers = Boolean(this._deviceTriggers?.length);
-    const hasConditions = Boolean(this._deviceConditions?.length);
-    const hasActions = Boolean(this._deviceAutomationActions?.length);
-
-    if (!hasTriggers && !hasConditions && !hasActions) {
-      return html`
-        <div class="popover-empty">
-          ${this.hass.localize(
-            "ui.panel.config.devices.automation.no_device_automations"
-          )}
-        </div>
-      `;
-    }
-
-    return html`
-      <ha-list>
-        ${hasTriggers
-          ? html`
-              <ha-list-item
-                twoline
-                graphic="icon"
-                data-type="trigger"
-                @click=${this._handleAutomationPopoverAction}
-                data-popover="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiGestureTap}
-                ></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.devices.automation.triggers.title"
-                )}
-                <span slot="secondary">
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.automation.triggers.description"
-                  )}
-                </span>
-              </ha-list-item>
-            `
-          : nothing}
-        ${hasConditions
-          ? html`
-              <ha-list-item
-                twoline
-                graphic="icon"
-                data-type="condition"
-                @click=${this._handleAutomationPopoverAction}
-                data-popover="close"
-              >
-                <ha-svg-icon slot="graphic" .path=${mdiAbTesting}></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.devices.automation.conditions.title"
-                )}
-                <span slot="secondary">
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.automation.conditions.description"
-                  )}
-                </span>
-              </ha-list-item>
-            `
-          : nothing}
-        ${hasActions
-          ? html`
-              <ha-list-item
-                twoline
-                graphic="icon"
-                data-type="action"
-                @click=${this._handleAutomationPopoverAction}
-                data-popover="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiRoomService}
-                ></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.devices.automation.actions.title"
-                )}
-                <span slot="secondary">
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.automation.actions.description"
-                  )}
-                </span>
-              </ha-list-item>
-            `
-          : nothing}
-      </ha-list>
-    `;
-  }
-
-  private _renderLegacyScriptOptions() {
-    // When new_triggers_conditions labs feature is promoted, this function can be removed.
-    if (!this._deviceAutomationActions) {
-      return html`
-        <div class="popover-loading">
-          <ha-spinner></ha-spinner>
-        </div>
-      `;
-    }
-
-    if (!this._deviceAutomationActions.length) {
-      return html`
-        <div class="popover-empty">
-          ${this.hass.localize(
-            "ui.panel.config.devices.automation.no_device_automations"
-          )}
-        </div>
-      `;
-    }
-
-    return html`
-      <ha-list>
-        <ha-list-item
-          twoline
-          graphic="icon"
-          @click=${this._handleScriptPopoverAction}
-          data-popover="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiRoomService}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.devices.script.actions.title")}
-          <span slot="secondary">
-            ${this.hass.localize(
-              "ui.panel.config.devices.script.actions.description"
-            )}
-          </span>
-        </ha-list-item>
-      </ha-list>
-    `;
+      mode: "script",
+      newTriggersConditions: this._newTriggersConditions,
+    });
   }
 
   private _subscribeLabFeature() {
@@ -2097,12 +1735,6 @@ export class HaConfigDevicePage extends LitElement {
           align-items: center;
           padding: var(--ha-space-1) var(--ha-space-4) var(--ha-space-1)
             var(--ha-space-1);
-        }
-
-        .popover-loading,
-        .popover-empty {
-          padding: var(--ha-space-4);
-          text-align: center;
         }
       `,
     ];
