@@ -1,3 +1,4 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiBackupRestore,
   mdiChartBoxOutline,
@@ -17,13 +18,13 @@ import {
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -57,10 +58,12 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
+import { subscribeLabFeature } from "../../data/labs";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { ScrollableFadeMixin } from "../../mixins/scrollable-fade-mixin";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -70,12 +73,12 @@ import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import {
+  computeShowHistoryComponent,
+  computeShowLogBookComponent,
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
   EDITABLE_DOMAINS_WITH_UNIQUE_ID,
   type MoreInfoView,
-  computeShowHistoryComponent,
-  computeShowLogBookComponent,
 } from "./const";
 import "./controls/more-info-default";
 import type { FavoritesDialogContext } from "./favorites";
@@ -117,7 +120,9 @@ declare global {
 const DEFAULT_VIEW: MoreInfoView = "info";
 
 @customElement("ha-more-info-dialog")
-export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
+export class MoreInfoDialog extends SubscribeMixin(
+  ScrollableFadeMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
@@ -155,6 +160,8 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   @state() private _isEscapeEnabled = true;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
+
+  @state() private _newTriggersAndConditions = false;
 
   protected scrollFadeThreshold = 24;
 
@@ -254,7 +261,24 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _shouldShowAddEntityTo(): boolean {
-    return !!this.hass.auth.external?.config.hasEntityAddTo;
+    // When labs feature is promoted, this whole check can be removed.
+    return (
+      this._newTriggersAndConditions ||
+      !!this.hass.auth.external?.config.hasEntityAddTo
+    );
+  }
+
+  protected hassSubscribe() {
+    return [
+      subscribeLabFeature(
+        this.hass.connection,
+        "automation",
+        "new_triggers_conditions",
+        (feature) => {
+          this._newTriggersAndConditions = feature.enabled;
+        }
+      ),
+    ];
   }
 
   private _getDeviceId(): string | null {
@@ -680,6 +704,21 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                         .path=${mdiDotsVertical}
                       ></ha-icon-button>
 
+                      ${this._shouldShowAddEntityTo()
+                        ? html`
+                            <ha-dropdown-item value="add_to">
+                              <ha-svg-icon
+                                slot="icon"
+                                .path=${mdiPlusBoxMultipleOutline}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                "ui.dialogs.more_info_control.add_entity_to"
+                              )}
+                            </ha-dropdown-item>
+
+                            <wa-divider></wa-divider>
+                          `
+                        : nothing}
                       ${supportsFavorites
                         ? html`
                             <ha-dropdown-item value="toggle_edit">
@@ -769,19 +808,6 @@ export class MoreInfoDialog extends ScrollableFadeMixin(LitElement) {
                           "ui.dialogs.more_info_control.details"
                         )}
                       </ha-dropdown-item>
-                      ${this._shouldShowAddEntityTo()
-                        ? html`
-                            <ha-dropdown-item value="add_to">
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiPlusBoxMultipleOutline}
-                              ></ha-svg-icon>
-                              ${this.hass.localize(
-                                "ui.dialogs.more_info_control.add_entity_to"
-                              )}
-                            </ha-dropdown-item>
-                          `
-                        : nothing}
                     </ha-dropdown>
                   `
                 : !__DEMO__ && this._shouldShowAddEntityTo()

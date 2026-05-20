@@ -21,6 +21,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
+import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
@@ -105,10 +106,7 @@ export class HaCardConditionEditor extends LitElement {
 
   @state() private _testingResult?: boolean;
 
-  @state() private _liveTestResult: {
-    state: "pass" | "fail" | "invalid" | "unknown";
-    message?: string;
-  } = { state: "unknown" };
+  @state() private _liveTestResult: LiveTestState = "unknown";
 
   private _listeners = new ConditionListenersController(this);
 
@@ -177,7 +175,7 @@ export class HaCardConditionEditor extends LitElement {
 
   private _evaluateLiveTest() {
     if (!this.condition || !this._condition) {
-      this._liveTestResult = { state: "unknown" };
+      this._liveTestResult = "unknown";
       return;
     }
 
@@ -185,22 +183,12 @@ export class HaCardConditionEditor extends LitElement {
       isNoEntityCondition(this._condition.condition, this._noEntity) ||
       containsNoEntityCondition(this._condition, this._noEntity)
     ) {
-      this._liveTestResult = {
-        state: "unknown",
-        message: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.live_test_state.unknown"
-        ),
-      };
+      this._liveTestResult = "unknown";
       return;
     }
 
     if (!validateConditionalConfig([this.condition])) {
-      this._liveTestResult = {
-        state: "invalid",
-        message: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.live_test_state.invalid"
-        ),
-      };
+      this._liveTestResult = "invalid";
       return;
     }
 
@@ -209,12 +197,7 @@ export class HaCardConditionEditor extends LitElement {
         ? { entity_id: this._entityContext.entityId }
         : {};
     const pass = checkConditionsMet([this.condition], this.hass, testContext);
-    this._liveTestResult = {
-      state: pass ? "pass" : "fail",
-      message: this.hass.localize(
-        `ui.panel.lovelace.editor.condition-editor.live_test_state.${pass ? "pass" : "fail"}`
-      ),
-    };
+    this._liveTestResult = pass ? "pass" : "fail";
   }
 
   protected render() {
@@ -259,11 +242,10 @@ export class HaCardConditionEditor extends LitElement {
             : html`
                 <ha-automation-row-live-test
                   slot="icons"
-                  .state=${this._liveTestResult.state}
+                  .state=${this._liveTestResult}
                   .label=${this.hass.localize(
-                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
+                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult}`
                   )}
-                  .message=${this._liveTestResult.message}
                 ></ha-automation-row-live-test>
               `}
           <ha-dropdown

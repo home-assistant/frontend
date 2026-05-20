@@ -28,7 +28,7 @@
     {
       "description": "Keep PYTHON_VERSION in sync with home-assistant/core (patch + minor)",
       "customType": "regex",
-      "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
+      "managerFilePatterns": ["/^\\.github/workflows/[^/]+\\.ya?ml$/"],
       "matchStrings": ["PYTHON_VERSION: \"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "python",
       "datasourceTemplate": "custom.ha-core-python",
@@ -37,7 +37,10 @@
     {
       "description": "Keep devcontainer image and requires-python in sync with home-assistant/core (minor only)",
       "customType": "regex",
-      "fileMatch": ["^\\.devcontainer/Dockerfile$", "^pyproject\\.toml$"],
+      "managerFilePatterns": [
+        "/^\\.devcontainer/Dockerfile$/",
+        "/^pyproject\\.toml$/"
+      ],
       "matchStrings": [
         "devcontainers/python:(?<currentValue>[\\d.]+)",
         "requires-python = \">=(?<currentValue>[^\"]+)\""

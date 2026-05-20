@@ -1,6 +1,5 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../ha-tooltip";
 
 export type LiveTestState = "pass" | "fail" | "invalid" | "unknown";
 
@@ -9,19 +8,16 @@ export type LiveTestState = "pass" | "fail" | "invalid" | "unknown";
  *
  * @summary
  * Small status indicator dot used in automation/condition rows to surface the
- * live evaluation result. Renders an optional tooltip with details on hover.
+ * live evaluation result.
  *
  * @attr {"pass"|"fail"|"invalid"|"unknown"} state - The current live-test state. Defaults to `unknown`.
  * @attr {string} label - Accessible label announced by assistive technology.
- * @attr {string} message - Optional tooltip body shown on hover/focus.
  */
 @customElement("ha-automation-row-live-test")
 export class HaAutomationRowLiveTest extends LitElement {
   @property({ reflect: true }) public state: LiveTestState = "unknown";
 
   @property() public label = "";
-
-  @property() public message?: string;
 
   protected render() {
     return html`
@@ -31,9 +27,6 @@ export class HaAutomationRowLiveTest extends LitElement {
         tabindex="0"
         aria-label=${this.label}
       ></div>
-      ${this.message
-        ? html`<ha-tooltip for="indicator">${this.message}</ha-tooltip>`
-        : nothing}
     `;
   }
 
@@ -56,30 +49,14 @@ export class HaAutomationRowLiveTest extends LitElement {
       background-color: var(--ha-color-fill-success-loud-resting);
       border-color: var(--ha-color-fill-success-loud-resting);
     }
-    :host([state="pass"]) #indicator:hover {
-      background-color: var(--ha-color-fill-success-loud-hover);
-      border-color: var(--ha-color-fill-success-loud-hover);
-    }
     :host([state="fail"]) #indicator {
       border-color: var(--ha-color-fill-warning-loud-resting);
-    }
-    :host([state="fail"]) #indicator:hover {
-      background-color: var(--ha-color-fill-warning-loud-hover);
-      border-color: var(--ha-color-fill-warning-loud-hover);
     }
     :host([state="invalid"]) #indicator {
       border-color: var(--ha-color-fill-danger-loud-resting);
     }
-    :host([state="invalid"]) #indicator:hover {
-      background-color: var(--ha-color-fill-danger-loud-hover);
-      border-color: var(--ha-color-fill-danger-loud-hover);
-    }
     :host([state="unknown"]) #indicator {
       border-color: var(--ha-color-fill-neutral-loud-resting);
-    }
-    :host([state="unknown"]) #indicator:hover {
-      background-color: var(--ha-color-fill-neutral-loud-hover);
-      border-color: var(--ha-color-fill-neutral-loud-hover);
     }
   `;
 }

@@ -77,6 +77,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
+import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
@@ -572,11 +573,21 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
+    if (!this.hass) {
+      return;
+    }
+
+    const shouldResetNewAutomationConfigFromQuery =
+      changedProps.has("route") &&
+      this.route?.path === "/new" &&
+      new URLSearchParams(window.location.search).has(
+        ADD_AUTOMATION_ELEMENT_QUERY_PARAM
+      );
+
     const oldAutomationId = changedProps.get("automationId");
     if (
       changedProps.has("automationId") &&
       this.automationId &&
-      this.hass &&
       // Only refresh config if we picked a new automation. If same ID, don't fetch it.
       oldAutomationId !== this.automationId
     ) {
@@ -585,10 +596,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     }
 
     if (
-      changedProps.has("automationId") &&
+      (changedProps.has("automationId") ||
+        shouldResetNewAutomationConfigFromQuery) &&
       !this.automationId &&
-      !this.entityId &&
-      this.hass
+      !this.entityId
     ) {
       const initData = getAutomationEditorInitData();
       this.dirty = !!initData;

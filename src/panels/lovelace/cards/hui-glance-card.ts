@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
@@ -323,8 +324,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
+  private _handleAction(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { config: GlanceConfigEntity }
+    > &
+      ActionHandlerEvent
+  ) {
+    const { config } = ev.currentTarget;
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
 }

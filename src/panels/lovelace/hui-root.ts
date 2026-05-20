@@ -37,8 +37,8 @@ import {
 } from "../../common/url/search-params";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
-import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -1245,8 +1245,10 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
-    const subItem = (ev.detail?.item as any)?.data as SubActionItem;
+  private _handleSubItemSelect(
+    ev: HaDropdownSelectEvent<SubActionItem["key"], SubActionItem>
+  ) {
+    const subItem = ev.detail.item.data;
     if (subItem?.action) {
       subItem.action();
     } else if (subItem?.overflowAction) {
@@ -1254,8 +1256,10 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
-    const item = (ev.detail?.item as any)?.data as ActionItem;
+  private _handleOverflowItemSelect(
+    ev: HaDropdownSelectEvent<ActionItem["key"], ActionItem>
+  ) {
+    const item = ev.detail.item.data;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");
       showListItemsDialog(this, {
