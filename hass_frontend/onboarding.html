@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant</title>
+    <meta charset="utf-8" />
+<link rel="manifest" href="http://homeassistant.local:8123/manifest.json" crossorigin="use-credentials" />
+<link rel="icon" href="/static/icons/favicon.ico" />
+
+  <link rel="modulepreload" href="/frontend_latest/onboarding.js" crossorigin="use-credentials" />
+
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, viewport-fit=cover, initial-scale=1">
+<style>
+  body {
+    font-family: Roboto, Noto, sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+</style>
+
+    <style>
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+        color: var(--primary-text-color, #212121);
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          background-color: var(--primary-background-color, #111111);
+          color: var(--primary-text-color, #e1e1e1);
+        }
+      }
+      body {
+        height: auto;
+        padding: 32px 0;
+      }
+
+      .content {
+        max-width: min(560px, calc(100vw - var(--safe-area-inset-right, 0px) - var(--safe-area-inset-left, 0px)));
+        margin: 0 auto;
+        padding: 0 16px;
+        box-sizing: content-box;
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 32px;
+        margin-left: 32px;
+        padding-top: var(--safe-area-inset-top);
+      }
+
+      .header img {
+        height: 56px;
+        width: 56px;
+      }
+    </style>
+  </head>
+  <body id="particles">
+    <div class="content">
+      <div class="header">
+        <img src="/static/icons/favicon-192x192.png" alt="Home Assistant" />
+      </div>
+      <ha-onboarding></ha-onboarding>
+    </div>
+    <script>
+  function _ls(src, notCustom) {
+    var script = document.createElement("script");
+    if (notCustom) {
+      script.crossOrigin = "use-credentials";
+    }
+    script.src = src;
+    return document.head.appendChild(script);
+  }
+  if (!("attachShadow" in Element.prototype)) {
+    _ls("/static/polyfills/webcomponents-bundle.js", true);
+    _ls("/static/polyfills/lit-polyfill-support.js", true);
+  }
+  // Modern browsers are detected primarily using the user agent string.
+  // A feature detection which roughly lines up with the modern targets is used
+  // as a fallback to guard against spoofs. It should be updated periodically.
+  var isModern = /Edge?\/(13[7-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Firefox\/(139|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Chrom(ium|e)\/(109|1[1-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|(Maci|X1{2}).+ Version\/(26\.\d+|(2[7-9]|[3-9]\d|\d{3,})\.\d+)([,.]\d+|)( \(\w+\)|)( Mobile\/\w+|) Safari\/|Chrome.+OPR\/(12\d|1[3-9]\d|[2-9]\d{2}|\d{4,})\.\d+\.\d+|(CPU[ +]OS|iPhone[ +]OS|CPU[ +]iPhone|CPU IPhone OS|CPU iPad OS)[ +]+(18[._]([5-9]|\d{2,})|(19|[2-9]\d|\d{3,})[._]\d+)([._]\d+|)|Android:?[ /-](13[7-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})(\.\d+|)(\.\d+|)|Mobile Safari.+OPR\/([89]\d|\d{3,})\.\d+\.\d+|Android.+Firefox\/(139|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|Android.+Chrom(ium|e)\/(13[7-9]|1[4-9]\d|[2-9]\d{2}|\d{4,})\.\d+(\.\d+|)|SamsungBrowser\/(29|[3-9]\d|\d{3,})\.\d+|Domolux\/[\d.]+ \(.+; macOS (2[6-9]|[3-9]\d|\d{3,})\.\d+(\.\d+)?\)/.test(navigator.userAgent) &&
+    "findLast" in Array.prototype;
+</script>
+
+        <script>
+      if (navigator.userAgent.indexOf("Android") === -1) {
+        function _pf(src, type) {
+          var el = document.createElement("link");
+          el.rel = "preload";
+          el.as = "font";
+          el.type = "font/woff2";
+          el.href = src;
+          el.crossOrigin = "anonymous";
+          document.head.appendChild(el);
+        }
+        _pf("/static/fonts/roboto/Roboto-Regular.woff2");
+        _pf("/static/fonts/roboto/Roboto-Medium.woff2");
+      }
+    </script>
+
+    <script crossorigin="use-credentials">
+  if (isModern) {
+    
+      import("/frontend_latest/onboarding.js");
+    
+    window.latestJS = true;
+  }
+</script>
+<script>
+  (function() {
+    if (!window.latestJS) {
+      
+        _ls("/frontend_es5/onboarding.js", true);
+      
+    }
+  })();
+</script>
+
+    <script crossorigin="use-credentials">
+      if (window.latestJS) {
+        window.stepsPromise = fetch("http://homeassistant.local:8123/api/onboarding", {
+          credentials: "same-origin",
+        });
+      }
+    </script>
+  </body>
+</html>
