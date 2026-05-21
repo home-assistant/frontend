@@ -5,13 +5,13 @@ import { customElement } from "lit/decorators";
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
 
 /**
- * Home Assistant button component
+ * Domolux button component
  *
  * @element ha-button
  * @extends {Button}
  *
  * @summary
- * A stylable button component supporting Home Assistant theming, variants, and appearances based on webawesome button.
+ * A stylable button component supporting Domolux theming, variants, and appearances based on webawesome button.
  *
  * @slot - Label of the button
  * @slot start - The prefix container (usually for icons).

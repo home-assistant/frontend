@@ -1,7 +1,7 @@
 import type { DemoConfig } from "../types";
 
 export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
-  title: "Home Assistant",
+  title: "Domolux",
   views: [
     {
       icon: "mdi:home-assistant",

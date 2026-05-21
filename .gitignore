@@ -1,60 +1,66 @@
-.DS_Store
-.reify-cache
-
-# build
-build/
-dist/
-/hass_frontend/
-/translations/
-
-# yarn
-.yarn/*
-!.yarn/patches
-!.yarn/releases
-!.yarn/plugins
-!.yarn/sdks
-!.yarn/versions
-.pnp.*
+```
+# Dependencies
 node_modules/
-yarn-error.log
-npm-debug.log
 
-# Python stuff
-*.py[cod]
-*.egg
-*.egg-info
+# Build artifacts
+dist/
+build/
+target/
 
-# venv stuff
-pyvenv.cfg
-pip-selfcheck.json
-/venv/
-.venv
+# Logs and temp files
+*.log
+*.tmp
 
-# vscode
-.vscode/*
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/tasks.json
+# Environment
+.env
+.env.local
+*.env.*
 
-# Cast dev settings
-src/cast/dev_const.ts
+# Editors
+.vscode/
+.idea/
 
-# Secrets
-.lokalise_token
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# asdf
-.tool-versions
+# Compression
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 
-# Home Assistant config
-/config/
+# OS
+.DS_Store
+Thumbs.db
 
-# Jetbrains
-/.idea/
+# Testing
+.coverage
+coverage/
+htmlcov/
 
-# test coverage
-test/coverage/
-
-# AI tooling
-.claude
-.cursor
-.opencode
+# Cache
+.mypy_cache/
+.pytest_cache/
+.gradle/
+```

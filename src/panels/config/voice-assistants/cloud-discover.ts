@@ -21,7 +21,7 @@ export class CloudDiscover extends LitElement {
               "ui.panel.config.voice_assistants.assistants.cloud.title",
               {
                 home_assistant_cloud: html`
-                  <span class="no-wrap">Home Assistant Cloud</span>
+                  <span class="no-wrap">Domolux Cloud</span>
                 `,
               }
             )}

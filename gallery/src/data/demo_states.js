@@ -36,7 +36,7 @@ export default {
     attributes: {
       title: "Welcome Home!",
       message:
-        "Here are some resources to get started:\n\n - [Configuring Home Assistant](https://home-assistant.io/getting-started/configuration/)\n - [Available integrations](https://home-assistant.io/integrations/)\n - [Troubleshooting your configuration](https://home-assistant.io/docs/configuration/troubleshooting/)\n - [Getting help](https://home-assistant.io/help/)\n\nTo not see this card popup in the future, edit your config in\n`configuration.yaml` and disable the `introduction` integration.",
+        "Here are some resources to get started:\n\n - [Configuring Domolux](https://home-assistant.io/getting-started/configuration/)\n - [Available integrations](https://home-assistant.io/integrations/)\n - [Troubleshooting your configuration](https://home-assistant.io/docs/configuration/troubleshooting/)\n - [Getting help](https://home-assistant.io/help/)\n\nTo not see this card popup in the future, edit your config in\n`configuration.yaml` and disable the `introduction` integration.",
     },
     last_changed: "2018-07-19T10:44:45.922241+00:00",
     last_updated: "2018-07-19T10:44:45.922241+00:00",
@@ -145,7 +145,7 @@ export default {
       humidity: 92,
       pressure: 1099,
       wind_speed: 0.5,
-      attribution: "Powered by Home Assistant",
+      attribution: "Powered by Domolux",
       forecast: [
         {
           datetime: "2018-07-19T16:00:45.924736",
@@ -210,7 +210,7 @@ export default {
       humidity: 54,
       pressure: 987,
       wind_speed: 4.8,
-      attribution: "Powered by Home Assistant",
+      attribution: "Powered by Domolux",
       forecast: [
         {
           datetime: "2018-07-19T16:00:45.925119",
@@ -1106,7 +1106,7 @@ export default {
       friendly_name: "Philips Hue",
       entity_picture: null,
       description:
-        "Press the button on the bridge to register Philips Hue with Home Assistant.",
+        "Press the button on the bridge to register Philips Hue with Domolux.",
       submit_caption: "I have pressed the button",
     },
     last_changed: "2018-07-19T10:44:46.515160+00:00",

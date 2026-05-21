@@ -30,7 +30,7 @@ and not mention sign-off.
 
 ## Signing
 
-To sign this CLA you must first submit a pull request to a repository under the Home Assistant organization.
+To sign this CLA you must first submit a pull request to a repository under the Domolux organization.
 
 ## Adoption
 

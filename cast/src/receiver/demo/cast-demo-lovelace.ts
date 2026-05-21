@@ -12,11 +12,11 @@ export const castDemoLovelace: () => LovelaceConfig = () => {
         cards: [
           {
             type: "markdown",
-            title: "Home Assistant Cast",
-            content: `With Home Assistant you can easily create interfaces (just like this one) which can be shown on Chromecast devices connected to TVs or Google Assistant devices with a screen.${
+            title: "Domolux Cast",
+            content: `With Domolux you can easily create interfaces (just like this one) which can be shown on Chromecast devices connected to TVs or Google Assistant devices with a screen.${
               touchSupported
                 ? "\n\nYou are able to interact with this demo using the touch screen."
-                : "\n\nOn a Google Nest Hub you are able to interact with Home Assistant Cast via the touch screen."
+                : "\n\nOn a Google Nest Hub you are able to interact with Domolux Cast via the touch screen."
             }`,
           },
           {

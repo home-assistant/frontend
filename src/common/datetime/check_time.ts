@@ -80,7 +80,7 @@ export const parseTimeString = (timeString: string, timezone: string): Date => {
 
 /**
  * Check if the current time matches the time condition (after/before/weekday)
- * @param hass Home Assistant object
+ * @param hass Domolux object
  * @param timeCondition Time condition to check
  * @returns true if current time matches the condition
  */

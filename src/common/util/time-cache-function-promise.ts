@@ -12,7 +12,7 @@ interface CacheResult<T> {
  * @param cacheTime the time to cache the result
  * @param func the function to fetch the data
  * @param generateCacheKey optional function to generate a cache key based on current hass + cached result. Cache is invalid if generates a different cache key.
- * @param hass Home Assistant object
+ * @param hass Domolux object
  * @param args extra arguments to pass to the function to fetch the data
  * @returns
  */

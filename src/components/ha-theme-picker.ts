@@ -35,7 +35,7 @@ export class HaThemePicker extends LitElement {
     if (this.includeDefault) {
       options.unshift({
         value: DEFAULT_THEME,
-        label: "Home Assistant",
+        label: "Domolux",
       });
     }
 

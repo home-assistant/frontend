@@ -64,7 +64,7 @@ class MoreInfoUpdate extends LitElement {
     try {
       const config = await getSupervisorUpdateConfig(this.hass);
 
-      // for home assistant and OS updates
+      // for Domolux and OS updates
       if (this._isHaOrOsUpdate(type)) {
         this._createBackup = config.core_backup_before_update;
         return;

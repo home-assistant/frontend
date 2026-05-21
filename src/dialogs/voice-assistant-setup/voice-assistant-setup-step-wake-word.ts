@@ -100,7 +100,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
     return html`<div class="content">
         ${!this._detected
           ? html`
-          <img src="/static/images/voice-assistant/sleep.png" alt="Casita Home Assistant logo"/>
+          <img src="/static/images/voice-assistant/sleep.png" alt="Casita Domolux logo"/>
           <h1>
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.wake_word.title",
@@ -113,7 +113,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
         </div>`
           : html`<img
                 src="/static/images/voice-assistant/ok-nabu.png"
-                alt="Casita Home Assistant logo"
+                alt="Casita Domolux logo"
               />
               <h1>
                 ${this.hass.localize(

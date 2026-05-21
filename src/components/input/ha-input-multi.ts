@@ -15,7 +15,7 @@ import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
 /**
- * Home Assistant multi-value input component
+ * Domolux multi-value input component
  *
  * @element ha-input-multi
  * @extends {LitElement}

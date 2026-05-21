@@ -3,12 +3,12 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
 /**
- * Home Assistant tile info component
+ * Domolux tile info component
  *
  * @element ha-tile-info
  *
  * @summary
- * A tile info component, used in tile card in Home Assistant to display primary and secondary text.
+ * A tile info component, used in tile card in Domolux to display primary and secondary text.
  *
  * @slot primary - The primary text container.
  * @slot secondary - The secondary text container.

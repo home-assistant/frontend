@@ -34,7 +34,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
         .label=${this.localize("ui.panel.page-onboarding.restore.back")}
         @click=${this._back}
       ></ha-icon-button-arrow-prev>
-      <h1>Home Assistant Cloud</h1>
+      <h1>Domolux Cloud</h1>
       <p>
         ${this.localize(
           "ui.panel.page-onboarding.restore.ha-cloud.sign_in_description"

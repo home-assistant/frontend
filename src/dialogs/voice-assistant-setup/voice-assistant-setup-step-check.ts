@@ -38,7 +38,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
       ${this._status === "timeout"
         ? html`<img
               src="/static/images/voice-assistant/error.png"
-              alt="Casita Home Assistant error logo"
+              alt="Casita Domolux error logo"
             />
             <h1>
               ${this.hass.localize(
@@ -70,7 +70,7 @@ export class HaVoiceAssistantSetupStepCheck extends LitElement {
             </div>`
         : html`<img
               src="/static/images/voice-assistant/hi.png"
-              alt="Casita Home Assistant hi logo"
+              alt="Casita Domolux hi logo"
             />
             <h1>
               ${this.hass.localize(

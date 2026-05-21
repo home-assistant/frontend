@@ -759,7 +759,7 @@ const JINJA_EXPRESSIONS: Completion[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Home Assistant-specific additions
+// Domolux-specific additions
 // ---------------------------------------------------------------------------
 
 // HA-specific global functions that take arguments — as rich snippet completions.
@@ -1359,17 +1359,17 @@ const HA_PLAIN_VARIABLES: Completion[] = [
   {
     label: "areas",
     type: "variable",
-    info: "A list of all area IDs in Home Assistant.",
+    info: "A list of all area IDs in Domolux.",
   },
   {
     label: "floors",
     type: "variable",
-    info: "A list of all floor IDs in Home Assistant.",
+    info: "A list of all floor IDs in Domolux.",
   },
   {
     label: "labels",
     type: "variable",
-    info: "A list of all label IDs in Home Assistant.",
+    info: "A list of all label IDs in Domolux.",
   },
   {
     label: "now",
@@ -1399,7 +1399,7 @@ const HA_PLAIN_VARIABLES: Completion[] = [
   {
     label: "version",
     type: "variable",
-    info: "The current Home Assistant version as a string.",
+    info: "The current Domolux version as a string.",
   },
   {
     label: "relative_time",

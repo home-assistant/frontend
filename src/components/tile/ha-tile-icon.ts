@@ -8,12 +8,12 @@ import "../ha-icon";
 import "../ha-svg-icon";
 
 /**
- * Home Assistant tile icon component
+ * Domolux tile icon component
  *
  * @element ha-tile-icon
  *
  * @summary
- * A tile icon component, used in tile card in Home Assistant to display an icon or image.
+ * A tile icon component, used in tile card in Domolux to display an icon or image.
  *
  * @slot - Additional content (for example, a badge).
  * @slot icon - The icon container (usually for custom icons like ha-state-icon).

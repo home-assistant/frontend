@@ -23,7 +23,7 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
     return html`<div class="padding content">
         <img
           src="/static/images/voice-assistant/change-wake-word.png"
-          alt="Casita Home Assistant logo"
+          alt="Casita Domolux logo"
         />
         <h1>
           ${this.hass.localize(

@@ -6,13 +6,13 @@ import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
 
 /**
- * Home Assistant dropdown item component
+ * Domolux dropdown item component
  *
  * @element ha-dropdown-item
  * @extends {DropdownItem}
  *
  * @summary
- * A stylable dropdown item component supporting Home Assistant theming, variants, and appearances based on webawesome dropdown item.
+ * A stylable dropdown item component supporting Domolux theming, variants, and appearances based on webawesome dropdown item.
  *
  */
 @customElement("ha-dropdown-item")

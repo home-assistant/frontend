@@ -98,7 +98,7 @@ export class HuiDistributionCardEditor
       }
 
       const targetDomain = computeDomain(entities[0].entity);
-      // Default to "none" if no device_class (Home Assistant pattern)
+      // Default to "none" if no device_class (Domolux pattern)
       const targetDeviceClass =
         firstEntityState.attributes.device_class || "none";
 

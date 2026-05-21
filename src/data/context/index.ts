@@ -27,7 +27,7 @@ export const registriesContext =
 export const statesContext = createContext<HomeAssistant["states"]>("states");
 
 /**
- * Provides the map of all available Home Assistant services, keyed by domain.
+ * Provides the map of all available Domolux services, keyed by domain.
  */
 export const servicesContext =
   createContext<HomeAssistant["services"]>("services");

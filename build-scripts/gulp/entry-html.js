@@ -20,7 +20,7 @@ import paths from "../paths.cjs";
 // major version from browserslist and manually map that to a supported macOS
 // version. Note this assumes the user has kept Safari updated.
 const HA_MACOS_REGEX =
-  /Home Assistant\/[\d.]+ \(.+; macOS (\d+)\.(\d+)(?:\.(\d+))?\)/;
+  /Domolux\/[\d.]+ \(.+; macOS (\d+)\.(\d+)(?:\.(\d+))?\)/;
 const SAFARI_TO_MACOS = {
   15: [10, 15, 0],
   16: [11, 0, 0],

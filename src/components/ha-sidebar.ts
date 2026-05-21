@@ -347,7 +347,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             ></ha-icon-button>
           `
         : ""}
-      <div class="title">Home Assistant</div>
+      <div class="title">Domolux</div>
     </div>`;
   }
 

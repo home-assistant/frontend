@@ -4,7 +4,7 @@ import { customElement } from "lit/decorators";
 import { HaInput } from "./ha-input";
 
 /**
- * Home Assistant search input component
+ * Domolux search input component
  *
  * @element ha-input-search
  * @extends {HaInput}

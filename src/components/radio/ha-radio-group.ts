@@ -3,13 +3,13 @@ import { css, type CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
 
 /**
- * Home Assistant radio group component
+ * Domolux radio group component
  *
  * @element ha-radio-group
  * @extends {RadioGroup}
  *
  * @summary
- * A Home Assistant themed radio group built on top of the Web Awesome radio group.
+ * A Domolux themed radio group built on top of the Web Awesome radio group.
  * Groups `ha-radio-option` children so they behave as a single form control.
  *
  * @slot - The default slot where `ha-radio-option` elements are placed.

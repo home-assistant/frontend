@@ -71,7 +71,7 @@ const initRouting = () => {
     new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
   );
 
-  // For rest of the files (on Home Assistant domain only) try both cache and network.
+  // For rest of the files (on Domolux domain only) try both cache and network.
   // This includes "/states" response and user files from "/local".
   // First access might bring stale data from cache, but a single refresh will bring updated
   // file.

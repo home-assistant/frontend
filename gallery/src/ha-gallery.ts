@@ -81,7 +81,7 @@ class HaGallery extends LitElement {
         .open=${!this._narrow}
         .type=${this._narrow ? "modal" : "dismissible"}
       >
-        <div class="drawer-title">Home Assistant Design</div>
+        <div class="drawer-title">Domolux Design</div>
         <div class="sidebar">${sidebar}</div>
         <div slot="appContent" class="app-content">
           <mwc-top-app-bar-fixed>

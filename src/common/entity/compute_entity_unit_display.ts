@@ -11,7 +11,7 @@ interface EntityUnitStubConfig {
 /**
  * Computes the display unit for an entity.
  *
- * @param hass - Home Assistant instance
+ * @param hass - Domolux instance
  * @param stateObj - Entity state object
  * @param config - Element configuration
  * @returns Computed entity unit

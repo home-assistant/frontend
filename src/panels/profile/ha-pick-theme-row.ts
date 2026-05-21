@@ -98,7 +98,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
               value: USE_DEFAULT_THEME,
               label: this.hass.localize("ui.panel.profile.themes.use_default"),
             },
-            { value: HOME_ASSISTANT_THEME, label: "Home Assistant" },
+            { value: HOME_ASSISTANT_THEME, label: "Domolux" },
             ...this._themeNames.map((theme) => ({
               value: theme,
               label: theme,

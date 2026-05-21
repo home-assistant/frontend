@@ -20,13 +20,13 @@ export type HaDropdownSelectEvent<TValue = string, TData = undefined> = [
     }>;
 
 /**
- * Home Assistant dropdown component
+ * Domolux dropdown component
  *
  * @element ha-dropdown
  * @extends {Dropdown}
  *
  * @summary
- * A stylable dropdown component supporting Home Assistant theming, variants, and appearances based on webawesome dropdown.
+ * A stylable dropdown component supporting Domolux theming, variants, and appearances based on webawesome dropdown.
  *
  */
 @customElement("ha-dropdown")

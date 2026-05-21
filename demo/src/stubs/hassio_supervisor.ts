@@ -38,7 +38,7 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
             name: "Z-Wave JS",
             slug: "core_zwave_js",
             description:
-              "Control a ZWave network with Home Assistant Z-Wave JS",
+              "Control a ZWave network with Domolux Z-Wave JS",
             state: "started",
             version: "0.1.45",
             version_latest: "0.1.45",

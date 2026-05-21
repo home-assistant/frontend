@@ -45,7 +45,7 @@ export class CloudLoginPanel extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        header="Home Assistant Cloud"
+        header="Domolux Cloud"
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
@@ -69,7 +69,7 @@ export class CloudLoginPanel extends LitElement {
         </ha-dropdown>
         <div class="content">
           <ha-config-section .isWide=${this.isWide}>
-            <span slot="header">Home Assistant Cloud</span>
+            <span slot="header">Domolux Cloud</span>
             <div slot="introduction">
               <p>
                 ${this.hass.localize(

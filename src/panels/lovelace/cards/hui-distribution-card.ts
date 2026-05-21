@@ -177,7 +177,7 @@ export class HuiDistributionCard
           const domain = computeDomain(entity.entity);
           domains.add(domain);
 
-          // Default to "none" if no device_class (Home Assistant pattern)
+          // Default to "none" if no device_class (Domolux pattern)
           const deviceClass = stateObj.attributes.device_class || "none";
           deviceClasses.add(deviceClass);
         }

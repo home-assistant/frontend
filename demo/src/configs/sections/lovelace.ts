@@ -2,11 +2,11 @@ import { isFrontpageEmbed } from "../../util/is_frontpage";
 import type { DemoConfig } from "../types";
 
 export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
-  title: "Home Assistant Demo",
+  title: "Domolux Demo",
   views: [
     {
       type: "sections",
-      title: isFrontpageEmbed ? "Home Assistant" : "Demo",
+      title: isFrontpageEmbed ? "Domolux" : "Demo",
       path: "home",
       icon: "mdi:home-assistant",
       badges: [

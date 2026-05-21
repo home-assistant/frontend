@@ -8,7 +8,7 @@ const fakeLocalize = ((key: string) => `<${key}>`) as any;
 
 describe("localizeTriggerSource", () => {
   it("replaces a known phrase with the prefixed translation", () => {
-    expect(localizeTriggerSource(fakeLocalize, "Home Assistant starting")).toBe(
+    expect(localizeTriggerSource(fakeLocalize, "Domolux starting")).toBe(
       "<ui.components.logbook.triggered_by_homeassistant_starting>"
     );
   });
@@ -29,7 +29,7 @@ describe("localizeTriggerSource", () => {
 describe("localizeTriggerDescription", () => {
   it("returns just the bare-phrase translation, without 'triggered by'", () => {
     expect(
-      localizeTriggerDescription(fakeLocalize, "Home Assistant starting")
+      localizeTriggerDescription(fakeLocalize, "Domolux starting")
     ).toBe("<ui.components.logbook.homeassistant_starting>");
   });
 

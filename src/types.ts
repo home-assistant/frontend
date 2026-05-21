@@ -225,14 +225,14 @@ export interface ServiceCallRequest {
   target?: HassServiceTarget;
 }
 
-export interface HomeAssistantRegistries {
+export interface DomoluxRegistries {
   entities: Record<string, EntityRegistryDisplayEntry>;
   devices: Record<string, DeviceRegistryEntry>;
   areas: Record<string, AreaRegistryEntry>;
   floors: Record<string, FloorRegistryEntry>;
 }
 
-export interface HomeAssistantInternationalization {
+export interface DomoluxInternationalization {
   // i18n
   // current effective language in that order:
   //   - backend saved user selected language
@@ -255,7 +255,7 @@ export interface HomeAssistantInternationalization {
 
 export type CallWS = <T>(msg: MessageBase) => Promise<T>;
 
-export interface HomeAssistantApi {
+export interface DomoluxApi {
   callService<T = any>(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
@@ -282,7 +282,7 @@ export interface HomeAssistantApi {
   callWS: CallWS;
 }
 
-export interface HomeAssistantFormatters {
+export interface DomoluxFormatters {
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
@@ -303,14 +303,14 @@ export interface HomeAssistantFormatters {
   ): string;
 }
 
-export interface HomeAssistantConnection {
+export interface DomoluxConnection {
   connection: Connection;
   connected: boolean;
   debugConnection: boolean;
   hassUrl(path?): string;
 }
 
-export interface HomeAssistantUI {
+export interface DomoluxUI {
   themes: Themes;
   selectedTheme: ThemeSettings | null;
   panels: Panels;
@@ -322,7 +322,7 @@ export interface HomeAssistantUI {
   suspendWhenHidden: boolean;
 }
 
-export interface HomeAssistantConfig {
+export interface DomoluxConfig {
   auth: Auth & { external?: ExternalMessaging };
   config: HassConfig;
   user?: CurrentUser;
@@ -330,15 +330,15 @@ export interface HomeAssistantConfig {
   systemData?: CoreFrontendSystemData;
 }
 
-export interface HomeAssistant
+export interface Domolux
   extends
-    HomeAssistantRegistries,
-    HomeAssistantInternationalization,
-    HomeAssistantApi,
-    HomeAssistantFormatters,
-    HomeAssistantConnection,
-    HomeAssistantUI,
-    HomeAssistantConfig {
+    DomoluxRegistries,
+    DomoluxInternationalization,
+    DomoluxApi,
+    DomoluxFormatters,
+    DomoluxConnection,
+    DomoluxUI,
+    DomoluxConfig {
   states: HassEntities;
   services: HassServices;
 }
@@ -349,14 +349,14 @@ export interface Route {
 }
 
 export interface PanelElement extends HTMLElement {
-  hass?: HomeAssistant;
+  hass?: Domolux;
   narrow?: boolean;
   route?: Route | null;
   panel?: PanelInfo;
 }
 
 export interface LocalizeMixin {
-  hass?: HomeAssistant;
+  hass?: Domolux;
   localize: LocalizeFunc;
 }
 

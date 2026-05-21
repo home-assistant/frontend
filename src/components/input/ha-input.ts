@@ -36,13 +36,13 @@ export type InputType =
   | "url";
 
 /**
- * Home Assistant input component
+ * Domolux input component
  *
  * @element ha-input
  * @extends {LitElement}
  *
  * @summary
- * A text input component supporting Home Assistant theming and validation, based on webawesome input.
+ * A text input component supporting Domolux theming and validation, based on webawesome input.
  * Supports multiple input types including text, number, password, email, search, and more.
  *
  * @slot start - Content placed before the input (usually for icons or prefixes).

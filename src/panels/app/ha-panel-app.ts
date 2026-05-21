@@ -64,7 +64,7 @@ class HaPanelApp extends LitElement {
   private _iframeRef = createRef<HTMLIFrameElement>();
 
   /**
-   * iFrames can subscribe to Home Assistant specific updates
+   * iFrames can subscribe to Domolux specific updates
    */
   private _iframeSubscribeUpdates = false;
 

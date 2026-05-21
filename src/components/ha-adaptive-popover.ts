@@ -7,7 +7,7 @@ import { ScrollLockMixin } from "../mixins/scroll-lock-mixin";
 import { HaAdaptiveDialog } from "./ha-adaptive-dialog";
 
 /**
- * Home Assistant adaptive popover component.
+ * Domolux adaptive popover component.
  *
  * Uses an anchored desktop popover when an anchor is available and falls back
  * to `ha-adaptive-dialog` otherwise.

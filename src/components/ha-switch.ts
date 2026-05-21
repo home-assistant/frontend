@@ -4,13 +4,13 @@ import { customElement, property } from "lit/decorators";
 import { forwardHaptic } from "../data/haptics";
 
 /**
- * Home Assistant switch component
+ * Domolux switch component
  *
  * @element ha-switch
  * @extends {Switch}
  *
  * @summary
- * A toggle switch component supporting Home Assistant theming, based on the webawesome switch.
+ * A toggle switch component supporting Domolux theming, based on the webawesome switch.
  * Represents two states: on and off.
  *
  * @cssprop --ha-switch-size - The size of the switch track height. Defaults to `24px`.

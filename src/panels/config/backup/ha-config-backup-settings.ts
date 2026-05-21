@@ -260,7 +260,7 @@ class HaConfigBackupSettings extends LitElement {
                       >${this.hass.localize(
                         "ui.panel.config.backup.settings.locations.ha_cloud_backup",
                         {
-                          home_assistant_cloud: "Home Assistant Cloud",
+                          home_assistant_cloud: "Domolux Cloud",
                         }
                       )}</span
                     >

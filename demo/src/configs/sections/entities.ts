@@ -524,7 +524,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         current: 0,
         max: 50,
         icon: "mdi:auto-mode",
-        friendly_name: "Home Assistant Auto-update",
+        friendly_name: "Domolux Auto-update",
       },
     },
     "update.home_assistant_operating_system_update": {
@@ -539,10 +539,10 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         release_url:
           "https://github.com/home-assistant/operating-system/commits/dev",
         skipped_version: null,
-        title: "Home Assistant Operating System",
+        title: "Domolux Operating System",
         entity_picture:
           "https://brands.home-assistant.io/homeassistant/icon.png",
-        friendly_name: "Home Assistant Operating System Update",
+        friendly_name: "Domolux Operating System Update",
         supported_features: 3,
       },
     },
@@ -558,9 +558,9 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         release_url:
           "https://github.com/home-assistant/supervisor/commits/main",
         skipped_version: null,
-        title: "Home Assistant Supervisor",
+        title: "Domolux Supervisor",
         entity_picture: "https://brands.home-assistant.io/hassio/icon.png",
-        friendly_name: "Home Assistant Supervisor Update",
+        friendly_name: "Domolux Supervisor Update",
         supported_features: 1,
       },
     },
@@ -575,10 +575,10 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         release_summary: null,
         release_url: "https://github.com/home-assistant/core/commits/dev",
         skipped_version: null,
-        title: "Home Assistant Core",
+        title: "Domolux Core",
         entity_picture:
           "https://brands.home-assistant.io/homeassistant/icon.png",
-        friendly_name: "Home Assistant Core Update",
+        friendly_name: "Domolux Core Update",
         supported_features: 11,
       },
     },

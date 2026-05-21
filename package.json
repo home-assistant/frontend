@@ -1,5 +1,5 @@
 {
-  "description": "A frontend for Home Assistant",
+  "description": "A frontend for Domolux",
   "repository": {
     "type": "git",
     "url": "https://github.com/home-assistant/frontend"

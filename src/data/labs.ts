@@ -20,7 +20,7 @@ export interface LabPreviewFeaturesResponse {
 
 /**
  * Fetch all lab features
- * @param hass - The Home Assistant instance
+ * @param hass - The Domolux instance
  * @returns A promise to fetch the lab features
  */
 export const fetchLabFeatures = async (
@@ -34,7 +34,7 @@ export const fetchLabFeatures = async (
 
 /**
  * Update a specific lab feature
- * @param hass - The Home Assistant instance
+ * @param hass - The Domolux instance
  * @param domain - The domain of the lab feature
  * @param preview_feature - The preview feature of the lab feature
  * @param enabled - Whether the lab feature is enabled
@@ -81,7 +81,7 @@ const subscribeLabUpdates = (
 
 /**
  * Subscribe to a collection of lab features
- * @param conn - The connection to the Home Assistant instance
+ * @param conn - The connection to the Domolux instance
  * @param onChange - The function to call when the lab features change
  * @returns The unsubscribe function
  */
@@ -99,7 +99,7 @@ export const subscribeLabFeatures = (
 
 /**
  * Subscribe to a specific lab feature
- * @param conn - The connection to the Home Assistant instance
+ * @param conn - The connection to the Domolux instance
  * @param domain - The domain of the lab feature
  * @param previewFeature - The preview feature identifier
  * @param onChange - The function to call when the lab feature changes

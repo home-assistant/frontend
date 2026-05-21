@@ -34,7 +34,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 const UPDATE_THROTTLE_TIME = 10000;
 
 const CORE_SOURCE_ID = "ha";
-const CORE_SOURCE_LABEL = "Home Assistant";
+const CORE_SOURCE_LABEL = "Domolux";
 
 const RSSI_COLOR_THRESHOLDS: [number, string][] = [
   [-70, "--green-color"], // Excellent: > -70 dBm

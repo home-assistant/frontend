@@ -65,8 +65,8 @@ const triggerPhrases: Record<TriggerPhraseKeys, string> = {
   triggered_by_event: "event", // event trigger
   triggered_by_time_pattern: "time pattern", // time trigger
   triggered_by_time: "time", // time trigger
-  triggered_by_homeassistant_stopping: "Home Assistant stopping", // stop event
-  triggered_by_homeassistant_starting: "Home Assistant starting", // start event
+  triggered_by_homeassistant_stopping: "Domolux stopping", // stop event
+  triggered_by_homeassistant_starting: "Domolux starting", // start event
 };
 
 export const getLogbookDataForContext = async (

@@ -275,8 +275,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     try {
       const response = await fetchInstallationType();
       this._supervisor = [
-        "Home Assistant OS",
-        "Home Assistant Supervised",
+        "Domolux OS",
+        "Domolux Supervised",
       ].includes(response.installation_type);
     } catch (err: any) {
       // eslint-disable-next-line no-console

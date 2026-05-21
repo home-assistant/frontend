@@ -264,7 +264,7 @@ function checkOrCondition(
 /**
  * Return the result of applying conditions
  * @param conditions conditions to apply
- * @param hass Home Assistant object
+ * @param hass Domolux object
  * @param context optional context for conditions that need runtime information
  * @returns true if conditions are respected
  */

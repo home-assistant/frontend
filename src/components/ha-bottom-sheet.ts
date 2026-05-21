@@ -27,7 +27,7 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
 const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
 
 /**
- * Home Assistant bottom sheet component.
+ * Domolux bottom sheet component.
  *
  * @element ha-bottom-sheet
  * @extends {LitElement}

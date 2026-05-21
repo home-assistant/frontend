@@ -46,7 +46,7 @@ const PROMPT_LIST_FORMAT = new Intl.ListFormat("en", {
 /**
  * Generates an AI task for suggesting metadata based on their configuration.
  *
- * @param connection - Home Assistant connection
+ * @param connection - Domolux connection
  * @param language - User's language preference
  * @param domain - The domain to suggest metadata for
  * @param config - The configuration to suggest metadata for
@@ -156,7 +156,7 @@ export async function generateMetadataSuggestionTask<T>(
     task: {
       task_name: `frontend__${domain}__save`,
       instructions: [
-        `Suggest in language "${language}" ${requestedPartsText} for the following Home Assistant ${domain}.`,
+        `Suggest in language "${language}" ${requestedPartsText} for the following Domolux ${domain}.`,
         "",
         include.name
           ? `The name should be relevant to the ${domain}'s purpose.`
@@ -200,7 +200,7 @@ export async function generateMetadataSuggestionTask<T>(
  * Processes the result of an AI task for suggesting metadata
  * based on their configuration.
  *
- * @param connection - Home Assistant connection
+ * @param connection - Domolux connection
  * @param domain - The domain of the ${domain}
  * @param result - The result of the AI task
  * @param include - The metadata fields to include in the suggestion

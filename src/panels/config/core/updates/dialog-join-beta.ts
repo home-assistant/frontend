@@ -58,9 +58,9 @@ export class DialogJoinBeta
           ${this.hass.localize("ui.dialogs.join_beta_channel.release_items")}
         </p>
         <ul>
-          <li>Home Assistant Core</li>
-          <li>Home Assistant Supervisor</li>
-          <li>Home Assistant Operating System</li>
+          <li>Domolux Core</li>
+          <li>Domolux Supervisor</li>
+          <li>Domolux Operating System</li>
         </ul>
         <a
           href=${documentationUrl(this.hass!, "/faq/release/")}

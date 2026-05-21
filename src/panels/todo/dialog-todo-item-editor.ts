@@ -57,8 +57,8 @@ class DialogTodoItemEditor extends LitElement {
   @state() private _open = false;
 
   // Dates are manipulated and displayed in the browser timezone
-  // which may be different from the Home Assistant timezone. When
-  // events are persisted, they are relative to the Home Assistant
+  // which may be different from the Domolux timezone. When
+  // events are persisted, they are relative to the Domolux
   // timezone, but floating without a timezone.
   private _timeZone?: string;
 

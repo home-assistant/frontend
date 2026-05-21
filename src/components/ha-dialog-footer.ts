@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 
 /**
- * Home Assistant dialog footer component
+ * Domolux dialog footer component
  *
  * @element ha-dialog-footer
  * @extends {LitElement}

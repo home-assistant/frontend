@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
 
 /**
- * Home Assistant trigger ID chip component
+ * Domolux trigger ID chip component
  *
  * @element ha-trigger-id-chip
  * @extends {LitElement}

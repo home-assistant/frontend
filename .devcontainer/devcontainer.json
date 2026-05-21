@@ -1,5 +1,5 @@
 {
-  "name": "Home Assistant Frontend",
+  "name": "Domolux Frontend",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

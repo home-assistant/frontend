@@ -13,7 +13,7 @@ class HcLaunchScreen extends LitElement {
     return html`
       <div class="container">
         <img
-          alt="Nabu Casa logo on left, Home Assistant logo on right, and red heart in center"
+          alt="Nabu Casa logo on left, Domolux logo on right, and red heart in center"
           src="https://cast.home-assistant.io/images/nabu-loves-hass.png"
         />
         <div class="status">

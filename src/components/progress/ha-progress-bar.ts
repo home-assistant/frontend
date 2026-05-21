@@ -4,14 +4,14 @@ import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 /**
- * Home Assistant progress bar component
+ * Domolux progress bar component
  *
  * @element ha-progress-bar
  * @extends {ProgressBar}
  *
  * @summary
  * A stylable progress bar component based on webawesome progress bar.
- * Supports regular, indeterminate, and loading states with Home Assistant theming.
+ * Supports regular, indeterminate, and loading states with Domolux theming.
  *
  * @cssprop --ha-progress-bar-indicator-color - Color of the filled progress indicator.
  * @cssprop --ha-progress-bar-indicator-background - Background of the filled progress indicator. Overrides `--ha-progress-bar-indicator-color` when set (accepts any CSS background value, e.g. gradients).

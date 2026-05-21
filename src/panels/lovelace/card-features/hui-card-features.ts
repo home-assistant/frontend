@@ -9,12 +9,12 @@ import type {
 } from "./types";
 
 /**
- * Home Assistant tile icon component
+ * Domolux tile icon component
  *
  * @element hui-card-features
  *
  * @summary
- * A card features component, used in cards in Home Assistant to display extra features in card.
+ * A card features component, used in cards in Domolux to display extra features in card.
  *
  * @cssprop --ha-card-features-border-radius - The border radius of the card features. defaults to `var(--ha-border-radius-lg)`.
  *

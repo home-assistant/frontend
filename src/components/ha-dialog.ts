@@ -27,7 +27,7 @@ export type DialogWidth = "small" | "medium" | "large" | "full";
 type DialogHideEvent = CustomEvent<{ source?: Element }>;
 
 /**
- * Home Assistant dialog component
+ * Domolux dialog component
  *
  * @element ha-dialog
  * @extends {LitElement}

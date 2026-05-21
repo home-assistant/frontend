@@ -181,7 +181,7 @@ export class HcMain extends HassElement {
       (this.hass && msg.hassUUID && msg.hassUUID !== this._hassUUID) ||
       (this.hass && msg.hassUrl && msg.hassUrl !== this.hass.auth.data.hassUrl)
     ) {
-      this._error = "Not connected to the same Home Assistant instance.";
+      this._error = "Not connected to the same Domolux instance.";
       this._sendError(
         ReceiverErrorCode.WRONG_INSTANCE,
         this._error,
@@ -260,7 +260,7 @@ export class HcMain extends HassElement {
     ) {
       this._sendStatus(msg.senderId!);
       this._error =
-        "Cannot show Lovelace because we're not connected to the same Home Assistant instance.";
+        "Cannot show Lovelace because we're not connected to the same Domolux instance.";
       this._sendError(
         ReceiverErrorCode.WRONG_INSTANCE,
         this._error,
@@ -375,15 +375,15 @@ export class HcMain extends HassElement {
   private _getErrorMessage(error: number): string {
     switch (error) {
       case 1:
-        return "Unable to connect to the Home Assistant websocket API.";
+        return "Unable to connect to the Domolux websocket API.";
       case 2:
         return "The supplied authentication is invalid.";
       case 3:
-        return "The connection to Home Assistant was lost.";
+        return "The connection to Domolux was lost.";
       case 4:
         return "Missing hassUrl. This is required.";
       case 5:
-        return "Home Assistant needs to be served over https:// to use with Home Assistant Cast.";
+        return "Domolux needs to be served over https:// to use with Domolux Cast.";
       default:
         return "Unknown Error";
     }

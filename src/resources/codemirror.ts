@@ -98,7 +98,7 @@ const yamlNumberMark = Decoration.mark({ class: "yaml-number" });
 const yamlNullMark = Decoration.mark({ class: "yaml-null" });
 const yamlStringMark = Decoration.mark({ class: "yaml-string" });
 
-// YAML 1.1 booleans (what Home Assistant / PyYAML recognises)
+// YAML 1.1 booleans (what Domolux / PyYAML recognises)
 const YAML_BOOL_RE =
   /^(?:true|True|TRUE|false|False|FALSE|yes|Yes|YES|no|No|NO|on|On|ON|off|Off|OFF)$/;
 const YAML_NULL_RE = /^(?:~|null|Null|NULL)$/;

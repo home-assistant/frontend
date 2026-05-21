@@ -1,7 +1,7 @@
-# Home Assistant OS Landingpage
+# Domolux OS Landingpage
 
-On initial startup of Home Assistant, HAOS needs to download Home Assistant core before the setup can start.
-In this time the [home-assistant/landingpage](https://github.com/home-assistant/landingpage) is serving a "Preparing Home Assistant" page.
+On initial startup of Domolux, HAOS needs to download Domolux core before the setup can start.
+In this time the [home-assistant/landingpage](https://github.com/home-assistant/landingpage) is serving a "Preparing Domolux" page.
 
 ## Functionality
 

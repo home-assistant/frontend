@@ -16,7 +16,7 @@ export const ADAPTIVE_DIALOG_MEDIA_QUERY =
   "(max-width: 870px), (max-height: 500px)";
 
 /**
- * Home Assistant adaptive dialog component
+ * Domolux adaptive dialog component
  *
  * @element ha-adaptive-dialog
  * @extends {LitElement}

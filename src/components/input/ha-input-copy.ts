@@ -12,7 +12,7 @@ import "./ha-input";
 import type { HaInput, InputType } from "./ha-input";
 
 /**
- * Home Assistant input with copy button
+ * Domolux input with copy button
  *
  * @element ha-input-copy
  * @extends {LitElement}

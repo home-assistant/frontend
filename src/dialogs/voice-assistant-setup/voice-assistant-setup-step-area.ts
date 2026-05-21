@@ -19,7 +19,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
     return html`<div class="content">
         <img
           src="/static/images/voice-assistant/area.png"
-          alt="Casita Home Assistant logo"
+          alt="Casita Domolux logo"
         />
         <h1>
           ${this.hass.localize(

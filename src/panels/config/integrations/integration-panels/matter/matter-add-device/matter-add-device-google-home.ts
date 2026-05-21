@@ -39,7 +39,7 @@ class MatterAddDeviceGoogleHome extends LitElement {
                     `ui.dialogs.matter-add-device.google_home.link_apps_services`
                   )}</b
                 >`,
-                home_assistant: html`<b>Home Assistant</b>`,
+                home_assistant: html`<b>Domolux</b>`,
               }
             )}
             <span

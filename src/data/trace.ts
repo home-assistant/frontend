@@ -91,7 +91,7 @@ interface BaseTrace {
     // Script execution stops because of an unexpected exception:
     | "error"
     // The exception is in the trace itself or in the last element of the trace
-    // Script execution stopped by async_stop called on the script run because home assistant is shutting down, script mode is SCRIPT_MODE_RESTART etc:
+    // Script execution stopped by async_stop called on the script run because Domolux is shutting down, script mode is SCRIPT_MODE_RESTART etc:
     | "cancelled";
 }
 
