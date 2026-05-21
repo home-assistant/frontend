@@ -36,6 +36,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/automation/ha-automation-row";
@@ -296,12 +297,10 @@ export default class HaAutomationActionRow extends LitElement {
             ?.target
         : undefined;
 
-    const trimmedComment = this.action.comment?.trim() || "";
-    const commentTooltipText = !trimmedComment
-      ? ""
-      : trimmedComment.length > 250
-        ? `${trimmedComment.substring(0, 250)}...`
-        : trimmedComment;
+    const commentTooltipText = truncateWithEllipsis(
+      this.action.comment?.trim() || "",
+      250
+    );
 
     return html`
       ${type === "service" && "action" in this.action && this.action.action

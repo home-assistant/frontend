@@ -35,6 +35,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
@@ -202,12 +203,10 @@ export default class HaAutomationConditionRow extends LitElement {
     const conditionTargetSpec =
       this.conditionDescriptions[this.condition.condition]?.target;
 
-    const trimmedComment = this.condition.comment?.trim() || "";
-    const commentTooltipText = !trimmedComment
-      ? ""
-      : trimmedComment.length > 250
-        ? `${trimmedComment.substring(0, 250)}...`
-        : trimmedComment;
+    const commentTooltipText = truncateWithEllipsis(
+      this.condition.comment?.trim() || "",
+      250
+    );
 
     return html`
       <ha-condition-icon

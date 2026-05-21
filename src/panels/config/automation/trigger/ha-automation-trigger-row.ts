@@ -32,6 +32,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
@@ -223,15 +224,12 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
-    const trimmedComment =
+    const commentTooltipText = truncateWithEllipsis(
       (type !== "list" &&
         (this.trigger as Exclude<Trigger, TriggerList>).comment?.trim()) ||
-      "";
-    const commentTooltipText = !trimmedComment
-      ? ""
-      : trimmedComment.length > 250
-        ? `${trimmedComment.substring(0, 250)}...`
-        : trimmedComment;
+        "",
+      250
+    );
 
     return html`
       ${type === "list"

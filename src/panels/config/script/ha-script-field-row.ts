@@ -13,6 +13,7 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { truncateWithEllipsis } from "../../../common/string/truncate-with-ellipsis";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../components/automation/ha-automation-row";
@@ -70,12 +71,10 @@ export default class HaScriptFieldRow extends LitElement {
     const hasSelector =
       this.field.selector && typeof this.field.selector === "object";
 
-    const trimmedComment = this.field.description?.trim() || "";
-    const commentTooltipText = !trimmedComment
-      ? ""
-      : trimmedComment.length > 250
-        ? `${trimmedComment.substring(0, 250)}...`
-        : trimmedComment;
+    const commentTooltipText = truncateWithEllipsis(
+      this.field.description?.trim() || "",
+      250
+    );
 
     return html`
       <ha-card outlined>
