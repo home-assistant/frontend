@@ -130,6 +130,7 @@ import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import {
+  ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
@@ -311,6 +312,7 @@ class DialogAddAutomationElement
     const queryTarget = getAddAutomationElementTargetFromQuery(
       this.hass.states,
       this.hass.devices,
+      this.hass.areas,
       params.type
     );
     this._openedFromQuery = !!queryTarget;
@@ -320,6 +322,7 @@ class DialogAddAutomationElement
       searchParams.delete(ADD_AUTOMATION_ELEMENT_QUERY_PARAM);
       searchParams.delete(ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM);
       searchParams.delete(ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM);
       mainWindow.history.replaceState(
         mainWindow.history.state,
         "",

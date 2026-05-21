@@ -143,6 +143,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
     const addActionTargetFromQuery = getAddAutomationElementTargetFromQuery(
       this.hass.states,
       this.hass.devices,
+      this.hass.areas,
       "action"
     );
 

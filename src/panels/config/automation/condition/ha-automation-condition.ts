@@ -128,6 +128,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     const addConditionTargetFromQuery = getAddAutomationElementTargetFromQuery(
       this.hass.states,
       this.hass.devices,
+      this.hass.areas,
       "condition"
     );
 
