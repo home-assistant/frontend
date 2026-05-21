@@ -9,7 +9,6 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-svg-icon";
@@ -18,12 +17,13 @@ import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import type { TargetType } from "../../../../data/target";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
-import { getTargetIcon } from "../target/get_target_icon";
+import "../target/ha-automation-target-badge";
 
-type Target = [string, string | undefined, string | undefined];
+type Target = [TargetType, string | undefined, string | undefined];
 
 @customElement("ha-automation-add-items")
 export class HaAutomationAddItems extends LitElement {
@@ -154,28 +154,17 @@ export class HaAutomationAddItems extends LitElement {
     `;
   }
 
-  private _renderTarget = memoizeOne((target?: Target) => {
+  private _renderTarget(target?: Target) {
     if (!target) {
       return nothing;
     }
 
-    return html`<div class="selected-target">
-      ${getTargetIcon(
-        {
-          entities: this.hass.entities,
-          devices: this.hass.devices,
-          areas: this.hass.areas,
-          floors: this.hass.floors,
-        },
-        this.hass.states,
-        target[0],
-        target[1],
-        this.configEntryLookup,
-        this.getLabel
-      )}
-      <div class="label">${target[2]}</div>
-    </div>`;
-  });
+    return html`<ha-automation-target-badge
+      .targetType=${target[0]}
+      .targetId=${target[1]}
+      .label=${target[2]}
+    ></ha-automation-target-badge>`;
+  }
 
   private _selected(ev) {
     const item = ev.currentTarget;
@@ -300,42 +289,6 @@ export class HaAutomationAddItems extends LitElement {
 
       ha-svg-icon.plus {
         color: var(--primary-color);
-      }
-
-      .selected-target {
-        display: inline-flex;
-        gap: var(--ha-space-1);
-        justify-content: center;
-        align-items: center;
-        border-radius: var(--ha-border-radius-md);
-        background: var(--ha-color-fill-neutral-normal-resting);
-        padding: 0 var(--ha-space-2) 0 var(--ha-space-1);
-        border: var(--ha-border-width-sm) solid
-          var(--ha-color-border-neutral-quiet);
-        color: var(--ha-color-on-neutral-normal);
-        overflow: hidden;
-      }
-      .selected-target .label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .selected-target ha-icon,
-      .selected-target ha-svg-icon,
-      .selected-target ha-domain-icon {
-        display: flex;
-        padding: var(--ha-space-1) 0;
-      }
-
-      .selected-target ha-floor-icon {
-        display: flex;
-        height: 32px;
-        width: 32px;
-        align-items: center;
-      }
-      .selected-target ha-domain-icon {
-        filter: grayscale(100%);
       }
     `,
   ];

@@ -5,6 +5,7 @@ import "../../components/ha-icon";
 import "../../components/ha-spinner";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
+import "../../panels/config/automation/target/ha-automation-target-badge";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import { showToast } from "../../util/toast";
 
@@ -12,10 +13,12 @@ import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import {
+  type AddToActionKey,
   type EntityAddToAction,
   type EntityAddToActions,
   addToActionHandler,
   getDefaultAddToActions,
+  getAddToActionLabelParts,
 } from "./add-to";
 
 @customElement("ha-more-info-add-to")
@@ -114,18 +117,47 @@ export class HaMoreInfoAddTo extends LitElement {
     return actions.map(
       (action) => html`
         <ha-list-item-button
+          aria-label=${action.name}
           .disabled=${!action.enabled}
           .action=${action}
           @click=${this._actionSelected}
         >
           <ha-icon slot="start" .icon=${action.icon}></ha-icon>
-          <span slot="headline">${action.name}</span>
+          <span slot="headline" class="action-label">
+            ${action.type === "default"
+              ? this._renderDefaultActionLabel(action.key)
+              : action.name}
+          </span>
           ${action.description
             ? html`<span slot="supporting-text">${action.description}</span>`
             : nothing}
         </ha-list-item-button>
       `
     );
+  }
+
+  private _renderDefaultActionLabel(key: AddToActionKey) {
+    const [beforeTarget, afterTarget] = getAddToActionLabelParts(
+      this.hass.localize,
+      key
+    );
+
+    return html`${beforeTarget}${this._renderTarget()}${afterTarget}`;
+  }
+
+  private _renderTarget() {
+    return html`<ha-automation-target-badge
+      target-type="entity"
+      .targetId=${this.entityId}
+      .label=${this._targetLabel}
+    ></ha-automation-target-badge>`;
+  }
+
+  private get _targetLabel(): string {
+    const stateObj = this.hass.states[this.entityId];
+    return stateObj
+      ? this.hass.formatEntityName(stateObj, undefined)
+      : this.entityId;
   }
 
   protected async firstUpdated() {
@@ -196,6 +228,13 @@ export class HaMoreInfoAddTo extends LitElement {
     ha-icon {
       display: flex;
       align-items: center;
+    }
+
+    .action-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ha-space-1);
+      flex-wrap: wrap;
     }
   `;
 }

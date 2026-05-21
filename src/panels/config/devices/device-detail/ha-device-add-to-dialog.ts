@@ -2,16 +2,10 @@ import { css, html, LitElement, nothing } from "lit";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { consume, type ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
-import {
-  mdiPalette,
-  mdiPlayCircleOutline,
-  mdiPlaylistCheck,
-  mdiRobotOutline,
-  mdiScriptTextOutline,
-} from "@mdi/js";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-adaptive-dialog";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-spinner";
@@ -38,10 +32,14 @@ import { showScriptEditor } from "../../../../data/script";
 import type { SceneEntities } from "../../../../data/scene";
 import { showSceneEditor } from "../../../../data/scene";
 import {
+  ADD_TO_ACTION_ICONS,
   addToActionHandler,
   type AddToActionKey,
+  getAddToActionLabel,
+  getAddToActionLabelParts,
 } from "../../../../dialogs/more-info/add-to";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import "../../automation/target/ha-automation-target-badge";
 import type { DeviceAddToDialogParams } from "./show-dialog-device-add-to";
 
 @customElement("dialog-device-add-to")
@@ -151,11 +149,7 @@ export class DialogDeviceAddTo extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    const deviceName = computeDeviceNameDisplay(
-      this._params.device,
-      this._i18n.localize,
-      this._states
-    );
+    const deviceName = this._deviceName;
 
     return html`
       <h3 class="section-header">
@@ -169,39 +163,51 @@ export class DialogDeviceAddTo extends LitElement {
           data-type="automation_trigger"
           @click=${this._handleNewAction}
           data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiRobotOutline}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-            { target: deviceName }
+          aria-label=${getAddToActionLabel(
+            this._i18n.localize,
+            "automation_trigger",
+            deviceName
           )}
+        >
+          <ha-icon
+            slot="graphic"
+            .icon=${ADD_TO_ACTION_ICONS.automation_trigger}
+          ></ha-icon>
+          ${this._renderActionLabel("automation_trigger")}
         </ha-list-item>
         <ha-list-item
           graphic="icon"
           data-type="automation_condition"
           @click=${this._handleNewAction}
           data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiPlaylistCheck}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-            { target: deviceName }
+          aria-label=${getAddToActionLabel(
+            this._i18n.localize,
+            "automation_condition",
+            deviceName
           )}
+        >
+          <ha-icon
+            slot="graphic"
+            .icon=${ADD_TO_ACTION_ICONS.automation_condition}
+          ></ha-icon>
+          ${this._renderActionLabel("automation_condition")}
         </ha-list-item>
         <ha-list-item
           graphic="icon"
           data-type="automation_action"
           @click=${this._handleNewAction}
           data-dialog="close"
-        >
-          <ha-svg-icon
-            slot="graphic"
-            .path=${mdiPlayCircleOutline}
-          ></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.automation_action",
-            { target: deviceName }
+          aria-label=${getAddToActionLabel(
+            this._i18n.localize,
+            "automation_action",
+            deviceName
           )}
+        >
+          <ha-icon
+            slot="graphic"
+            .icon=${ADD_TO_ACTION_ICONS.automation_action}
+          ></ha-icon>
+          ${this._renderActionLabel("automation_action")}
         </ha-list-item>
       </ha-list>
       <h3 class="section-header">
@@ -213,15 +219,17 @@ export class DialogDeviceAddTo extends LitElement {
           data-type="script_action"
           @click=${this._handleNewAction}
           data-dialog="close"
-        >
-          <ha-svg-icon
-            slot="graphic"
-            .path=${mdiScriptTextOutline}
-          ></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.script_action",
-            { target: deviceName }
+          aria-label=${getAddToActionLabel(
+            this._i18n.localize,
+            "script_action",
+            deviceName
           )}
+        >
+          <ha-icon
+            slot="graphic"
+            .icon=${ADD_TO_ACTION_ICONS.script_action}
+          ></ha-icon>
+          ${this._renderActionLabel("script_action")}
         </ha-list-item>
       </ha-list>
       ${this._renderSceneSection(deviceName)}
@@ -242,11 +250,7 @@ export class DialogDeviceAddTo extends LitElement {
       return nothing;
     }
 
-    const deviceName = computeDeviceNameDisplay(
-      this._params.device,
-      this._i18n.localize,
-      this._states
-    );
+    const deviceName = this._deviceName;
 
     const hasTriggers = Boolean(this._triggers?.length);
     const hasConditions = Boolean(this._conditions?.length);
@@ -279,15 +283,17 @@ export class DialogDeviceAddTo extends LitElement {
                       data-type="trigger"
                       @click=${this._handleLegacyAction}
                       data-dialog="close"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiRobotOutline}
-                      ></ha-svg-icon>
-                      ${this._i18n.localize(
-                        "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-                        { target: deviceName }
+                      aria-label=${getAddToActionLabel(
+                        this._i18n.localize,
+                        "automation_trigger",
+                        deviceName
                       )}
+                    >
+                      <ha-icon
+                        slot="graphic"
+                        .icon=${ADD_TO_ACTION_ICONS.automation_trigger}
+                      ></ha-icon>
+                      ${this._renderActionLabel("automation_trigger")}
                     </ha-list-item>
                   `
                 : nothing}
@@ -298,15 +304,17 @@ export class DialogDeviceAddTo extends LitElement {
                       data-type="condition"
                       @click=${this._handleLegacyAction}
                       data-dialog="close"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiPlaylistCheck}
-                      ></ha-svg-icon>
-                      ${this._i18n.localize(
-                        "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-                        { target: deviceName }
+                      aria-label=${getAddToActionLabel(
+                        this._i18n.localize,
+                        "automation_condition",
+                        deviceName
                       )}
+                    >
+                      <ha-icon
+                        slot="graphic"
+                        .icon=${ADD_TO_ACTION_ICONS.automation_condition}
+                      ></ha-icon>
+                      ${this._renderActionLabel("automation_condition")}
                     </ha-list-item>
                   `
                 : nothing}
@@ -317,15 +325,17 @@ export class DialogDeviceAddTo extends LitElement {
                       data-type="automation_action"
                       @click=${this._handleLegacyAction}
                       data-dialog="close"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiPlayCircleOutline}
-                      ></ha-svg-icon>
-                      ${this._i18n.localize(
-                        "ui.dialogs.more_info_control.add_to.actions.automation_action",
-                        { target: deviceName }
+                      aria-label=${getAddToActionLabel(
+                        this._i18n.localize,
+                        "automation_action",
+                        deviceName
                       )}
+                    >
+                      <ha-icon
+                        slot="graphic"
+                        .icon=${ADD_TO_ACTION_ICONS.automation_action}
+                      ></ha-icon>
+                      ${this._renderActionLabel("automation_action")}
                     </ha-list-item>
                   `
                 : nothing}
@@ -351,15 +361,17 @@ export class DialogDeviceAddTo extends LitElement {
                 data-type="script_action"
                 @click=${this._handleLegacyAction}
                 data-dialog="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiScriptTextOutline}
-                ></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.dialogs.more_info_control.add_to.actions.script_action",
-                  { target: deviceName }
+                aria-label=${getAddToActionLabel(
+                  this._i18n.localize,
+                  "script_action",
+                  deviceName
                 )}
+              >
+                <ha-icon
+                  slot="graphic"
+                  .icon=${ADD_TO_ACTION_ICONS.script_action}
+                ></ha-icon>
+                ${this._renderActionLabel("script_action")}
               </ha-list-item>
             </ha-list>
           `
@@ -390,15 +402,46 @@ export class DialogDeviceAddTo extends LitElement {
           graphic="icon"
           @click=${this._handleCreateScene}
           data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.scene",
-            { target: deviceName }
+          aria-label=${getAddToActionLabel(
+            this._i18n.localize,
+            "scene",
+            deviceName
           )}
+        >
+          <ha-icon slot="graphic" .icon=${ADD_TO_ACTION_ICONS.scene}></ha-icon>
+          ${this._renderActionLabel("scene")}
         </ha-list-item>
       </ha-list>
     `;
+  }
+
+  private _renderActionLabel(key: AddToActionKey) {
+    const [beforeTarget, afterTarget] = getAddToActionLabelParts(
+      this._i18n.localize,
+      key
+    );
+
+    return html`<span class="action-label">
+      ${beforeTarget}${this._renderDeviceTarget()}${afterTarget}
+    </span>`;
+  }
+
+  private _renderDeviceTarget() {
+    return html`<ha-automation-target-badge
+      target-type="device"
+      .targetId=${this._params?.device.id}
+      .label=${this._deviceName}
+    ></ha-automation-target-badge>`;
+  }
+
+  private get _deviceName(): string {
+    return this._params
+      ? computeDeviceNameDisplay(
+          this._params.device,
+          this._i18n.localize,
+          this._states
+        )
+      : "";
   }
 
   private _handleNewAction(ev: Event) {
@@ -476,6 +519,13 @@ export class DialogDeviceAddTo extends LitElement {
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
           color: var(--secondary-text-color);
+        }
+
+        .action-label {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          flex-wrap: wrap;
         }
       `,
     ];

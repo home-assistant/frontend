@@ -51,24 +51,58 @@ interface ActionDefinition {
   icon: string;
 }
 
+const ADD_TO_TARGET_PLACEHOLDER = "__HA_ADD_TO_TARGET__";
+
+export const ADD_TO_ACTION_ICONS: Record<AddToActionKey, string> = {
+  automation_trigger: "mdi:robot-outline",
+  automation_condition: "mdi:playlist-check",
+  automation_action: "mdi:play-circle-outline",
+  script_action: "mdi:script-text-outline",
+  scene: "mdi:palette",
+};
+
 export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
   {
     translation_key: "automation_trigger",
-    icon: "mdi:robot-outline",
+    icon: ADD_TO_ACTION_ICONS.automation_trigger,
   },
   {
     translation_key: "automation_condition",
-    icon: "mdi:playlist-check",
+    icon: ADD_TO_ACTION_ICONS.automation_condition,
   },
   {
     translation_key: "automation_action",
-    icon: "mdi:play-circle-outline",
+    icon: ADD_TO_ACTION_ICONS.automation_action,
   },
   {
     translation_key: "script_action",
-    icon: "mdi:script-text-outline",
+    icon: ADD_TO_ACTION_ICONS.script_action,
   },
 ];
+
+export const getAddToActionLabel = (
+  localize: LocalizeFunc,
+  key: AddToActionKey,
+  target: string
+): string =>
+  localize(`ui.dialogs.more_info_control.add_to.actions.${key}`, { target });
+
+export const getAddToActionLabelParts = (
+  localize: LocalizeFunc,
+  key: AddToActionKey
+): [string, string] => {
+  const label = getAddToActionLabel(localize, key, ADD_TO_TARGET_PLACEHOLDER);
+  const placeholderIndex = label.indexOf(ADD_TO_TARGET_PLACEHOLDER);
+
+  if (placeholderIndex === -1) {
+    return [label, ""];
+  }
+
+  return [
+    label.slice(0, placeholderIndex),
+    label.slice(placeholderIndex + ADD_TO_TARGET_PLACEHOLDER.length),
+  ];
+};
 
 export const getDefaultAddToActions = (
   states: HomeAssistant["states"],
@@ -81,14 +115,12 @@ export const getDefaultAddToActions = (
       type: "default",
       key: def.translation_key,
       enabled: true,
-      name: localize(
-        `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
-        {
-          target:
-            states[entityId] !== undefined
-              ? formatEntityName(states[entityId], undefined)
-              : entityId,
-        }
+      name: getAddToActionLabel(
+        localize,
+        def.translation_key,
+        states[entityId] !== undefined
+          ? formatEntityName(states[entityId], undefined)
+          : entityId
       ),
       icon: def.icon,
     })
