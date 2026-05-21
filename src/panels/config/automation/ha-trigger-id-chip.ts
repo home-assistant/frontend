@@ -1,25 +1,33 @@
 import { mdiPound } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
 
+/**
+ * Home Assistant trigger ID chip component
+ *
+ * @element ha-trigger-id-chip
+ * @extends {LitElement}
+ *
+ * @summary
+ * A small chip that displays an automation trigger ID prefixed with a hash icon.
+ *
+ * @slot start - Optional content rendered before the hash icon (usually an icon).
+ *
+ * @attr {string} trigger-id - The trigger ID to display.
+ * @attr {boolean} warning - Renders the chip with warning colors.
+ */
 @customElement("ha-trigger-id-chip")
 export class HaTriggerIdChip extends LitElement {
-  @property({ attribute: "trigger-id" }) public triggerId?: string;
-
-  @property({ attribute: false }) public triggerIds?: string[];
+  @property({ attribute: "trigger-id" }) public triggerId!: string;
 
   @property({ type: Boolean, reflect: true }) public warning = false;
 
   protected render() {
-    const label =
-      this.triggerIds !== undefined
-        ? this.triggerIds.join(", ")
-        : this.triggerId;
     return html`
-      <slot name="start"> </slot>
+      <slot name="start"></slot>
       <ha-svg-icon .path=${mdiPound}></ha-svg-icon>
-      <span>${label !== undefined ? label : nothing}</span>
+      <span>${this.triggerId}</span>
     `;
   }
 
