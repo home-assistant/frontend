@@ -128,10 +128,10 @@ export class HaAutomationTargetBadge extends LitElement {
       );
     } else if (!this._checkTargetExists(targetId)) {
       iconPath = mdiAlert;
-      label = label || this._targetText(targetId);
+      label = label || this._targetText(this.targetType, targetId);
       warning = true;
     } else {
-      label = label || this._targetText(targetId);
+      label = label || this._targetText(this.targetType, targetId);
     }
 
     const icon = iconPath
@@ -152,12 +152,12 @@ export class HaAutomationTargetBadge extends LitElement {
     };
   }
 
-  private _targetText(targetId: string): string {
+  private _targetText(targetType: TargetType, targetId: string): string {
     return getTargetText(
       this._registries,
       this._states,
       this._i18n.localize,
-      this.targetType,
+      targetType,
       targetId,
       this._getLabel
     );

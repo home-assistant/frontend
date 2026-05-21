@@ -107,7 +107,10 @@ export class HaAutomationAddItems extends LitElement {
           items,
           (item) => item.key,
           (item) => html`
-            <ha-list-item-button .value=${item.key} @click=${this._selected}>
+            <ha-list-item-button
+              data-value=${item.key}
+              @click=${this._selected}
+            >
               <div slot="headline" class=${this.target ? "item-headline" : ""}>
                 ${item.name}${this._renderTarget(this.target)}
               </div>
@@ -166,9 +169,9 @@ export class HaAutomationAddItems extends LitElement {
   }
 
   private _selected(ev) {
-    const item = ev.currentTarget;
+    const item = ev.currentTarget as HTMLElement;
     fireEvent(this, "value-changed", {
-      value: item.value,
+      value: item.dataset.value,
     });
   }
 
