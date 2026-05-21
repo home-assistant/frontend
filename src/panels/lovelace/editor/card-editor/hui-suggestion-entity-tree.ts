@@ -1,16 +1,15 @@
+import { consume } from "@lit/context";
 import {
   mdiChevronDown,
   mdiChevronRight,
   mdiMagnify,
   mdiTextureBox,
 } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { loadVirtualizer } from "../../../../resources/virtualizer";
 import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
@@ -29,6 +28,7 @@ import type { HaInputSearch } from "../../../../components/input/ha-input-search
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { configEntriesContext } from "../../../../data/context";
 import { haStyleScrollbar } from "../../../../resources/styles";
+import { loadVirtualizer } from "../../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AreaNode,
@@ -519,13 +519,13 @@ export class HuiSuggestionEntityTree extends LitElement {
     }
   }
 
-  private _pickEntity(ev: Event) {
+  private _pickEntity = (ev: Event) => {
     const target = ev.currentTarget as HTMLElement;
     const entityId = target.dataset.entityId;
     if (!entityId) return;
     this._expandToEntity(entityId);
     fireEvent(this, "entity-picked", { entityId });
-  }
+  };
 
   private _expandToEntity(entityId: string) {
     if (!this._tree) return;
