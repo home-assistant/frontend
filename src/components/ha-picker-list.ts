@@ -8,13 +8,7 @@ import {
   type CSSResultGroup,
   type TemplateResult,
 } from "lit";
-import {
-  customElement,
-  eventOptions,
-  property,
-  query,
-  state,
-} from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
 import {
   fireEvent,
@@ -28,17 +22,14 @@ import {
 } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 
+const EMPTY_ROW_ID = "___empty___";
+
 export interface PickerActionContext {
   host: HTMLElement;
-  /** Imperatively close any picker surface hosting this list. */
   close: () => void;
 }
 
-/**
- * Item entry in `ha-picker-list`. When `onSelect` is set, the row behaves
- * as an action: clicking calls the callback instead of firing
- * `item-selected`.
- */
+/** Items with `onSelect` are action rows: the callback fires instead of `item-selected`. */
 export interface PickerListItem extends PickerComboBoxItem {
   onSelect?: (ctx: PickerActionContext) => void | Promise<void>;
 }
@@ -58,18 +49,8 @@ const DEFAULT_ROW: RenderItemFunction<PickerListItem> = (item) =>
   </ha-combo-box-item>`;
 
 /**
- * `ha-picker-list` — virtualized list for picker UIs.
- *
- * Headless: receives `items` already filtered and sorted. Renders rows
- * via `rowRenderer` (or a default Material row template). Supports:
- * - String entries as section/group titles.
- * - Items with `onSelect` as action rows (callback fires instead of
- *   `item-selected`).
- * - Keyboard navigation (ArrowUp/Down/Home/End/Enter).
- * - Highlighting + pinning the row matching `value`.
- *
- * Use inside `ha-picker-popover`, optionally paired with
- * `ha-picker-search` and `ha-picker-section-chips`.
+ * Headless virtualized list for picker UIs. Receives pre-filtered `items`,
+ * renders rows via `rowRenderer`. String entries are section titles.
  */
 @customElement("ha-picker-list")
 export class HaPickerList extends LitElement {
@@ -80,31 +61,16 @@ export class HaPickerList extends LitElement {
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerListItem>;
 
-  /** Reserved for future multi-select support. */
-  @property({ attribute: "selection-mode" })
-  public selectionMode: "single" | "multiple" = "single";
-
-  /** Label shown when items is empty AND no search is active. */
   @property({ attribute: "empty-label" }) public emptyLabel?: string;
 
-  /**
-   * Label shown when items is empty and the current search yields no
-   * match. May be a string, TemplateResult, or function of the search.
-   */
   @property({ attribute: false })
   public notFoundLabel?:
     | string
     | TemplateResult
     | ((search: string) => string | TemplateResult);
 
-  /**
-   * Current search string. Used only to choose between empty/notFound
-   * placeholders and the leading icon. Filtering is the consumer's job.
-   */
+  /** Current search string. Picks between empty/notFound placeholders; filtering is the consumer's job. */
   @property({ attribute: "current-search" }) public currentSearch = "";
-
-  /** "popover" or "dialog" (affects bottom safe-area padding). */
-  @property() public mode: "popover" | "dialog" = "popover";
 
   @state() private _highlightedIndex = -1;
 
@@ -114,8 +80,13 @@ export class HaPickerList extends LitElement {
 
   private _unsubscribeKeys?: () => void;
 
+  public willUpdate() {
+    if (!this.hasUpdated) {
+      loadVirtualizer();
+    }
+  }
+
   protected firstUpdated() {
-    loadVirtualizer();
     this._registerKeys();
   }
 
@@ -129,18 +100,10 @@ export class HaPickerList extends LitElement {
     this.virtualizerElement?.focus();
   }
 
-  public scrollToItem(index: number) {
-    this.virtualizerElement
-      ?.element(index)
-      ?.scrollIntoView({ block: "nearest" });
-  }
-
-  // ──────────────────────────────────────────────────────────
-  // Render
-  // ──────────────────────────────────────────────────────────
-
   protected render() {
-    const items = this._displayItems();
+    const items = this.items.length
+      ? this.items
+      : [{ id: EMPTY_ROW_ID, primary: "" } as PickerListItem];
     return html`
       <lit-virtualizer
         .keyFunction=${this._keyFunction}
@@ -163,12 +126,6 @@ export class HaPickerList extends LitElement {
     `;
   }
 
-  private _displayItems(): PickerListEntry[] {
-    if (this.items.length > 0) return this.items;
-    // Single placeholder entry rendered as the "no items" row.
-    return [{ id: "__empty__", primary: "" } as PickerListItem];
-  }
-
   private _keyFunction = (item: PickerListEntry) =>
     typeof item === "string" ? item : item.id;
 
@@ -176,7 +133,7 @@ export class HaPickerList extends LitElement {
     if (typeof item === "string") {
       return html`<div class="title">${item}</div>`;
     }
-    if (item.id === "__empty__") {
+    if (item.id === EMPTY_ROW_ID) {
       return this._renderEmptyRow();
     }
     const renderer = this.rowRenderer ?? DEFAULT_ROW;
@@ -213,38 +170,37 @@ export class HaPickerList extends LitElement {
     `;
   }
 
-  // ──────────────────────────────────────────────────────────
-  // Selection
-  // ──────────────────────────────────────────────────────────
-
   private _handleClick = (
     ev: MouseEvent & HASSDomCurrentTargetEvent<PickerListRowElement>
   ) => {
     ev.stopPropagation();
     const row = ev.currentTarget;
     if (row.disabled) return;
-    const onSelect = row.onSelect;
-    if (onSelect) {
-      void onSelect({
+    this._dispatchSelection(
+      { id: row.value, onSelect: row.onSelect } as PickerListItem,
+      row.index,
+      ev.ctrlKey || ev.metaKey
+    );
+  };
+
+  private _dispatchSelection(
+    item: PickerListItem,
+    index: number,
+    newTab: boolean
+  ) {
+    if (item.onSelect) {
+      void item.onSelect({
         host: this,
         close: () => fireEvent(this, "picker-close-request"),
       });
       return;
     }
-    fireEvent(this, "item-selected", {
-      id: row.value,
-      index: row.index,
-      newTab: ev.ctrlKey || ev.metaKey,
-    });
-  };
+    fireEvent(this, "item-selected", { id: item.id, index, newTab });
+  }
 
   private _handleUnpinned = () => {
     this._valuePinned = false;
   };
-
-  // ──────────────────────────────────────────────────────────
-  // Keyboard navigation (ArrowUp/Down/Home/End/Enter)
-  // ──────────────────────────────────────────────────────────
 
   private _registerKeys() {
     this._unsubscribeKeys = tinykeys(this, {
@@ -292,7 +248,7 @@ export class HaPickerList extends LitElement {
   }
 
   private _isPickable(item: PickerListEntry | undefined): boolean {
-    return !!item && typeof item !== "string" && item.id !== "__empty__";
+    return !!item && typeof item !== "string" && item.id !== EMPTY_ROW_ID;
   }
 
   private _step(direction: 1 | -1) {
@@ -372,17 +328,9 @@ export class HaPickerList extends LitElement {
       index
     ) as PickerListRowElement | null;
     if (!row || row.disabled) return;
-    if (item.onSelect) {
-      void item.onSelect({
-        host: this,
-        close: () => fireEvent(this, "picker-close-request"),
-      });
-      return;
-    }
-    fireEvent(this, "item-selected", { id: item.id, index, newTab });
+    this._dispatchSelection(item, index, newTab);
   }
 
-  @eventOptions({ passive: true })
   private _scrollToHighlight() {
     this.virtualizerElement
       ?.querySelector(".selected")
@@ -399,34 +347,50 @@ export class HaPickerList extends LitElement {
 
   static styles: CSSResultGroup = css`
     :host {
-      display: block;
-      min-height: 0;
+      display: flex;
+      flex-direction: column;
       flex: 1;
+      min-height: 0;
     }
     lit-virtualizer {
-      height: 100%;
+      flex: 1;
       outline: none;
-      contain: strict;
     }
     .row {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      box-sizing: border-box;
+      min-height: 36px;
       cursor: pointer;
     }
     .row.empty {
       cursor: default;
     }
-    .row.current-value::part(base),
-    .row.current-value ha-combo-box-item::part(base) {
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+    .row ha-combo-box-item {
+      width: 100%;
     }
-    .row.selected::part(base),
-    .row.selected ha-combo-box-item::part(base) {
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+    .row.current-value {
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+    }
+    .row.selected {
+      background-color: var(--ha-color-fill-neutral-quiet-hover);
+    }
+    @media (prefers-color-scheme: dark) {
+      .row.selected {
+        background-color: var(--ha-color-fill-neutral-normal-hover);
+      }
     }
     .title {
-      padding: var(--ha-space-2) var(--ha-space-4);
-      font-weight: var(--ha-font-weight-medium);
+      box-sizing: border-box;
+      width: 100%;
+      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      padding: var(--ha-space-1) var(--ha-space-4);
+      font-weight: var(--ha-font-weight-bold);
       color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
+      min-height: var(--ha-space-6);
+      display: flex;
+      align-items: center;
     }
   `;
 }

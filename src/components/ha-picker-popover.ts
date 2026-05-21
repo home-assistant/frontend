@@ -12,27 +12,17 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-bottom-sheet";
 
 /**
- * `ha-picker-popover` — responsive popover container for picker UIs.
- *
- * Wraps `wa-popover` on desktop and `ha-bottom-sheet` on narrow viewports.
- * Width follows the anchor element (250px minimum, 95vw max) and height
- * fills up to 500px / 70vh (400px on short viewports). Body has zero
- * padding; lists provide their own.
- *
- * Use freely with any combination of `ha-picker-search`,
- * `ha-picker-section-chips`, and `ha-picker-list` inside.
+ * Responsive popover for picker UIs: anchored `wa-popover` on desktop,
+ * `ha-bottom-sheet` on narrow viewports. Anchor drives the width.
  */
 @customElement("ha-picker-popover")
 export class HaPickerPopover extends LitElement {
   @property({ type: Boolean, reflect: true }) public open = false;
 
-  /** Anchor element for desktop popover positioning. */
   @property({ attribute: false }) public anchor?: HTMLElement | null;
 
-  /** ARIA label for the dialog. */
   @property() public label?: string;
 
-  /** Popover placement relative to the anchor. */
   @property() public placement:
     | "bottom"
     | "top"
@@ -53,36 +43,37 @@ export class HaPickerPopover extends LitElement {
 
   @state() private _openedNarrow = false;
 
-  /**
-   * Keeps the popover element mounted across the close animation. Set
-   * to true when external `open` flips true; cleared only after the
-   * hide-animation event fires.
-   */
+  // Kept true across the hide animation so wa-popover can finish its
+  // transition; cleared on wa-after-hide.
   @state() private _mounted = false;
 
-  /**
-   * Drives the inner wa-popover's `.open`. Toggled one rAF AFTER mount
-   * so wa-popover sees a false→true transition and runs the show flow.
-   */
+  // Flipped one rAF after mount so wa-popover sees a false→true edge
+  // and runs the show flow.
   @state() private _showing = false;
+
+  // Defers slot projection until after the show animation so a
+  // virtualized list inside isn't measured at the scaled size.
+  @state() private _contentReady = false;
 
   private _openFrame?: number;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("open")) {
       if (this.open) {
-        if (this.anchor) {
-          this._bodyWidth = this.anchor.offsetWidth;
-        }
+        this._measureAnchor();
         this._openedNarrow = this._narrow;
         this._mounted = true;
       } else {
-        // External close request: start the hide animation; unmount on
-        // wa-after-hide / closed.
         this._showing = false;
       }
     }
-    if (changedProperties.has("anchor") && this.open && this.anchor) {
+    if (changedProperties.has("anchor") && this.open) {
+      this._measureAnchor();
+    }
+  }
+
+  private _measureAnchor() {
+    if (this.anchor) {
       this._bodyWidth = this.anchor.offsetWidth;
     }
   }
@@ -113,25 +104,33 @@ export class HaPickerPopover extends LitElement {
     super.connectedCallback();
     this._handleResize();
     window.addEventListener("resize", this._handleResize);
+    this.addEventListener("picker-close-request", this._handleCloseRequest);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("resize", this._handleResize);
+    this.removeEventListener("picker-close-request", this._handleCloseRequest);
     this._cancelShow();
   }
+
+  private _handleCloseRequest = (ev: Event) => {
+    ev.stopPropagation();
+    this._showing = false;
+  };
 
   private _handleResize = () => {
     this._narrow =
       window.matchMedia("(max-width: 870px)").matches ||
       window.matchMedia("(max-height: 500px)").matches;
 
-    if (!this._openedNarrow && this.open && this.anchor) {
-      this._bodyWidth = this.anchor.offsetWidth;
+    if (!this._openedNarrow && this.open) {
+      this._measureAnchor();
     }
   };
 
   private _handleShown = () => {
+    this._contentReady = true;
     fireEvent(this, "opened");
   };
 
@@ -139,6 +138,7 @@ export class HaPickerPopover extends LitElement {
     ev.stopPropagation();
     this._mounted = false;
     this._showing = false;
+    this._contentReady = false;
     fireEvent(this, "closed");
   };
 
@@ -156,7 +156,9 @@ export class HaPickerPopover extends LitElement {
           aria-modal="true"
           aria-label=${this.label ?? ""}
         >
-          <div class="content"><slot></slot></div>
+          <div class="content">
+            ${this._contentReady ? html`<slot></slot>` : nothing}
+          </div>
         </ha-bottom-sheet>
       `;
     }
@@ -178,7 +180,9 @@ export class HaPickerPopover extends LitElement {
         aria-modal="true"
         aria-label=${this.label ?? ""}
       >
-        <div class="content"><slot></slot></div>
+        <div class="content">
+          ${this._contentReady ? html`<slot></slot>` : nothing}
+        </div>
       </wa-popover>
     `;
   }
@@ -190,6 +194,8 @@ export class HaPickerPopover extends LitElement {
 
     wa-popover {
       --wa-space-l: 0;
+      /* Disable wa-popover's built-in 25rem cap. */
+      --max-width: none;
     }
 
     wa-popover::part(dialog)::backdrop {

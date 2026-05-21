@@ -12,14 +12,7 @@ export interface PickerSection {
 
 export type PickerSectionDef = PickerSection | "separator";
 
-/**
- * `ha-picker-section-chips` — section filter chip bar.
- *
- * Renders a row of selectable chips for filtering a picker list by
- * category. Emits `section-changed` with `{ section: string | undefined }`
- * when the user toggles a chip (toggling the active chip clears the
- * filter).
- */
+/** Section filter chip bar; emits `section-changed`. Toggling the active chip clears the filter. */
 @customElement("ha-picker-section-chips")
 export class HaPickerSectionChips extends LitElement {
   @property({ attribute: false }) public sections?: PickerSectionDef[];
@@ -60,18 +53,30 @@ export class HaPickerSectionChips extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
+      padding: 0 var(--ha-space-3) var(--ha-space-3);
     }
     ha-chip-set {
       display: flex;
-      flex-wrap: wrap;
-      gap: var(--ha-space-1);
-      align-items: center;
+      flex-wrap: nowrap;
+      gap: var(--ha-space-2);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+    }
+    ha-chip-set::-webkit-scrollbar {
+      display: none;
+    }
+    ha-chip-set ha-filter-chip {
+      flex-shrink: 0;
+      --md-filter-chip-selected-container-color: var(
+        --ha-color-fill-primary-normal-hover
+      );
+      color: var(--primary-color);
     }
     .separator {
-      width: 1px;
-      height: 20px;
-      background-color: var(--divider-color);
-      margin: 0 var(--ha-space-1);
+      height: var(--ha-space-8);
+      width: 0;
+      border: 1px solid var(--ha-color-border-neutral-quiet);
     }
   `;
 }

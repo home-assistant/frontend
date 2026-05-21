@@ -1,9 +1,9 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus, mdiShape } from "@mdi/js";
-import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
@@ -20,16 +20,16 @@ import {
 } from "../../panels/config/helpers/const";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
 import type { HomeAssistant } from "../../types";
+import "../ha-button";
 import "../ha-combo-box-item";
-import "../ha-generic-picker";
 import "../ha-icon";
-import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
+import "../ha-picker-field";
 import type { PickerValueRenderer } from "../ha-picker-field";
+import "../ha-picker-popover";
+import "../ha-picker-search-list";
+import type { PickerSearchFn } from "../ha-picker-search-list";
 import "../ha-svg-icon";
 import "./state-badge";
-
-const CREATE_ID = "___create-new-entity___";
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -122,14 +122,14 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @property({ attribute: "add-button", type: Boolean })
-  public addButton = false;
+  @query(".trigger") private _trigger?: HTMLElement;
 
-  @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
-
-  @query("ha-generic-picker") private _picker?: HaGenericPicker;
+  @state() private _pickerOpen = false;
 
   @state() private _pendingEntityId?: string;
+
+  // Commit fires on @closed (after the hide animation) to avoid flicker.
+  private _pendingValue?: string;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
@@ -275,39 +275,47 @@ export class HaEntityPicker extends LitElement {
     `;
   };
 
-  private _getAdditionalItems = () =>
-    this._getCreateItems(this.hass.localize, this.createDomains);
-
-  private _getCreateItems = memoizeOne(
+  private _getCreateActions = memoizeOne(
     (
       localize: this["hass"]["localize"],
       createDomains: this["createDomains"]
-    ) => {
+    ): EntityComboBoxItem[] => {
       if (!createDomains?.length) {
         return [];
       }
       this.hass.loadFragmentTranslation("config");
-      return createDomains.map((domain) => {
-        const primary = localize(
-          "ui.components.entity.entity-picker.create_helper",
-          {
-            domain: isHelperDomain(domain)
-              ? localize(
-                  `ui.panel.config.helpers.types.${domain as HelperDomain}`
-                ) || domain
-              : domainToName(localize, domain),
-          }
-        );
-
-        return {
-          id: CREATE_ID + domain,
-          primary: primary,
-          secondary: localize("ui.components.entity.entity-picker.new_entity"),
-          icon_path: mdiPlus,
-        } satisfies EntityComboBoxItem;
-      });
+      return createDomains.map((domain) => ({
+        id: `__create-helper__${domain}`,
+        primary: localize("ui.components.entity.entity-picker.create_helper", {
+          domain: isHelperDomain(domain)
+            ? localize(
+                `ui.panel.config.helpers.types.${domain as HelperDomain}`
+              ) || domain
+            : domainToName(localize, domain),
+        }),
+        secondary: localize("ui.components.entity.entity-picker.new_entity"),
+        icon_path: mdiPlus,
+        onSelect: ({ close }) => {
+          close();
+          this._openCreateHelper(domain);
+        },
+      }));
     }
   );
+
+  private _openCreateHelper(domain: string) {
+    showHelperDetailDialog(this, {
+      domain,
+      dialogClosedCallback: (item) => {
+        if (!item.entityId) return;
+        if (this.hass.states[item.entityId]) {
+          this._setValue(item.entityId);
+        } else {
+          this._pendingEntityId = item.entityId;
+        }
+      },
+    });
+  }
 
   private _getEntitiesMemoized = memoizeOne(getEntities);
 
@@ -341,53 +349,67 @@ export class HaEntityPicker extends LitElement {
     const placeholder =
       this.placeholder ??
       this.hass.localize("ui.components.entity.entity-picker.placeholder");
+    const items = this._getItems();
+    const actions = this._getCreateActions(
+      this.hass.localize,
+      this.createDomains
+    );
+    const hideClearIcon = this.hideClearIcon || this._shouldHideClearIcon();
 
     return html`
-      <ha-generic-picker
-        .hass=${this.hass}
-        .disabled=${this.disabled}
-        .autofocus=${this.autofocus}
-        .allowCustomValue=${this.allowCustomEntity}
-        .required=${this.required}
-        .label=${this.label}
-        .placeholder=${placeholder}
-        .helper=${this.helper}
-        .value=${this.addButton ? undefined : this.value}
-        .searchLabel=${this.searchLabel}
-        .notFoundLabel=${this._notFoundLabel}
-        .rowRenderer=${this._rowRenderer}
-        .getItems=${this._getItems}
-        .getAdditionalItems=${this._getAdditionalItems}
-        .hideClearIcon=${this.hideClearIcon || this._shouldHideClearIcon()}
-        .searchFn=${this._searchFn}
-        .valueRenderer=${this._valueRenderer}
-        .searchKeys=${entityComboBoxKeys}
-        use-top-label
-        .addButtonLabel=${this.addButton
-          ? (this.addButtonLabel ??
-            this.hass.localize("ui.components.entity.entity-picker.add"))
-          : undefined}
-        .unknownItemText=${this.hass.localize(
-          "ui.components.entity.entity-picker.unknown"
-        )}
-        @value-changed=${this._valueChanged}
-      >
-      </ha-generic-picker>
+      <div class="picker">
+        <div class="trigger" @click=${this._openPicker}>
+          <slot name="trigger">
+            <ha-picker-field
+              type="button"
+              compact
+              .label=${this.label}
+              .placeholder=${placeholder}
+              .value=${this.value}
+              .valueRenderer=${this._valueRenderer}
+              .required=${this.required}
+              .disabled=${this.disabled}
+              .helper=${this.helper}
+              .hideClearIcon=${hideClearIcon}
+              ?autofocus=${this.autofocus}
+              @clear=${this._clear}
+            ></ha-picker-field>
+          </slot>
+        </div>
+        <ha-picker-popover
+          .open=${this._pickerOpen}
+          .anchor=${this._trigger ?? null}
+          .label=${this.label ?? ""}
+          @closed=${this._handlePickerClosed}
+        >
+          <ha-picker-search-list
+            autofocus
+            .items=${items}
+            .value=${this.value}
+            .searchKeys=${entityComboBoxKeys}
+            .searchFn=${this._searchFn}
+            .rowRenderer=${this._rowRenderer}
+            .actions=${actions}
+            .searchPlaceholder=${this.searchLabel ??
+            this.hass.localize("ui.common.search")}
+            .notFoundLabel=${this._notFoundLabel}
+            @item-selected=${this._handleItemSelected}
+          ></ha-picker-search-list>
+        </ha-picker-popover>
+      </div>
     `;
   }
 
-  private _searchFn: PickerComboBoxSearchFn<EntityComboBoxItem> = (
+  private _searchFn: PickerSearchFn<EntityComboBoxItem> = (
     search,
     filteredItems
   ) => {
-    // If there is exact match for entity id, put it first
     const index = filteredItems.findIndex(
       (item) => item.stateObj?.entity_id === search
     );
     if (index === -1) {
       return filteredItems;
     }
-
     const [exactMatch] = filteredItems.splice(index, 1);
     filteredItems.unshift(exactMatch);
     return filteredItems;
@@ -395,46 +417,42 @@ export class HaEntityPicker extends LitElement {
 
   public async open() {
     await this.updateComplete;
-    await this._picker?.open();
+    this._openPicker();
   }
 
-  private _valueChanged(ev) {
+  private _openPicker = () => {
+    if (this.disabled) return;
+    this._pickerOpen = true;
+  };
+
+  private _handlePickerClosed = () => {
+    if (this._pendingValue !== undefined) {
+      const pending = this._pendingValue;
+      this._pendingValue = undefined;
+      this._setValue(pending);
+    }
+    this._pickerOpen = false;
+  };
+
+  private _handleItemSelected = (
+    ev: HASSDomEvent<{ id: string; index: number; newTab?: boolean }>
+  ) => {
     ev.stopPropagation();
-    const value = ev.detail.value;
-
-    if (!value) {
-      this._setValue(undefined);
-      return;
-    }
-
-    if (value.startsWith(CREATE_ID)) {
-      const domain = value.substring(CREATE_ID.length);
-
-      showHelperDetailDialog(this, {
-        domain,
-        dialogClosedCallback: (item) => {
-          if (item.entityId) {
-            if (this.hass.states[item.entityId]) {
-              this._setValue(item.entityId);
-            } else {
-              this._pendingEntityId = item.entityId;
-            }
-          }
-        },
-      });
-      return;
-    }
-
+    const value = ev.detail.id;
     if (!isValidEntityId(value) && !this._findExtraOption(value)) {
+      this._pickerOpen = false;
       return;
     }
+    this._pendingValue = value;
+    this._pickerOpen = false;
+  };
 
-    this._setValue(value);
+  private _clear() {
+    this._setValue(undefined);
   }
 
   private _setValue(value: string | undefined) {
     this.value = value;
-
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
@@ -443,6 +461,18 @@ export class HaEntityPicker extends LitElement {
     this.hass.localize("ui.components.entity.entity-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
+
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .picker {
+      position: relative;
+    }
+    ha-picker-field {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

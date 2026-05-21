@@ -1,10 +1,16 @@
-import { mdiClose, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlaylistPlus,
+} from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -114,8 +120,12 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         class="add-entity"
         .hass=${this.hass}
         @value-changed=${this._addEntity}
-        add-button
-      ></ha-entity-picker>
+      >
+        <ha-button slot="trigger" size="small" appearance="filled">
+          <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
+          ${this.hass!.localize("ui.components.entity.entity-picker.add")}
+        </ha-button>
+      </ha-entity-picker>
     `;
   }
 

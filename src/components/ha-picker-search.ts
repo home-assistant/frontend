@@ -4,13 +4,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
 
-/**
- * `ha-picker-search` — search input for picker UIs.
- *
- * Thin wrapper over `ha-input-search` that emits a `search-changed`
- * event with `{ value: string }`. Use inside `ha-picker-popover`,
- * paired with `ha-picker-list` or `ha-picker-section-chips`.
- */
+/** Search input for picker UIs; emits `search-changed`. */
 @customElement("ha-picker-search")
 export class HaPickerSearch extends LitElement {
   @property() public value = "";
@@ -48,6 +42,7 @@ export class HaPickerSearch extends LitElement {
   static styles: CSSResultGroup = css`
     :host {
       display: block;
+      padding: 0 var(--ha-space-3) var(--ha-space-3);
     }
     ha-input-search {
       width: 100%;

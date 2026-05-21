@@ -1,5 +1,5 @@
 import { consume } from "@lit/context";
-import { mdiPlus, mdiTextureBox } from "@mdi/js";
+import { mdiPlaylistPlus, mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -433,7 +433,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .disabled=${this.disabled}
           @click=${this._openPicker}
         >
-          <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+          <ha-svg-icon .path=${mdiPlaylistPlus} slot="start"></ha-svg-icon>
           ${this.hass.localize("ui.components.target-picker.add_target")}
         </ha-button>
         <ha-picker-popover
@@ -463,7 +463,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 "ui.components.target-picker.no_targets"
               )}
               @item-selected=${this._handleItemSelected}
-              @picker-close-request=${this._closePicker}
             ></ha-picker-list>
           </div>
         </ha-picker-popover>
@@ -474,10 +473,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _openPicker = () => {
     if (this.disabled) return;
     this._pickerOpen = true;
-  };
-
-  private _closePicker = () => {
-    this._pickerOpen = false;
   };
 
   private _handleSearchChanged = (ev: HASSDomEvent<{ value: string }>) => {
@@ -503,11 +498,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
 
-    // Close the popover; commit value when the closed event fires below.
     this._pickerOpen = false;
     this._pendingPick = { type: rawType, id };
   };
 
+  // Commit fires on @closed (after the hide animation) to avoid flicker.
   private _pendingPick?: TargetItem;
 
   private _replaceTargetItem(currentTarget: TargetItem, newTarget: TargetItem) {
@@ -785,8 +780,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _handlePickerClosed = () => {
-    // Commit the pending pick (if any) on the close-after-animation event
-    // to avoid a flash of the new value while the popover hides.
     if (this._pendingPick) {
       const pick = this._pendingPick;
       this._pendingPick = undefined;
@@ -1274,10 +1267,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
 
     .add-target-wrapper {
-      display: flex;
-      justify-content: flex-start;
+      display: block;
       margin-top: var(--ha-space-3);
-      width: 100%;
     }
 
     .picker-body {
@@ -1285,13 +1276,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       flex-direction: column;
       height: 100%;
       min-height: 0;
-      gap: var(--ha-space-2);
-      padding: var(--ha-space-3) var(--ha-space-3) 0;
-    }
-
-    .picker-body ha-picker-list {
-      flex: 1;
-      min-height: 0;
+      padding-top: var(--ha-space-4);
     }
 
     .items {
