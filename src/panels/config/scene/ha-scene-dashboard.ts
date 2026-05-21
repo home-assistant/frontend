@@ -410,9 +410,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      if (!this._searchParms.has("label")) {
+      if (!this._searchParms.has("area") && !this._searchParms.has("label")) {
         this._filters = this._storageFilters;
       }
+      this._filterArea();
       this._filterLabel();
     }
   }
@@ -782,6 +783,22 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     if (!this._fromUrl) {
       this._storageFilters = {};
     }
+    this._applyFilters();
+  }
+
+  private _filterArea() {
+    const area = this._searchParms.get("area");
+    if (!area) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-floor-areas": {
+        value: { areas: [area] },
+        items: undefined,
+      },
+    };
     this._applyFilters();
   }
 

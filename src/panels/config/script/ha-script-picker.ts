@@ -783,9 +783,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       const hasUrlFilter =
-        this._searchParms.has("blueprint") || this._searchParms.has("label");
+        this._searchParms.has("area") ||
+        this._searchParms.has("blueprint") ||
+        this._searchParms.has("label");
       if (!hasUrlFilter) {
         this._filters = this._storageFilters;
+      }
+      if (this._searchParms.has("area")) {
+        this._filterArea();
       }
       if (this._searchParms.has("blueprint")) {
         this._filterBlueprint();
@@ -801,6 +806,22 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     if (changedProps.has("_entityReg")) {
       this._applyFilters();
     }
+  }
+
+  private _filterArea() {
+    const area = this._searchParms.get("area");
+    if (!area) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-floor-areas": {
+        value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
   }
 
   private _filterLabel() {
