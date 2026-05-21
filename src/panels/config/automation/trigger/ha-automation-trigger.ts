@@ -76,8 +76,10 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   protected override pasteItem(ev: CustomEvent) {
     if (this.root && ev.detail.item) {
       const pasted = deepClone(ev.detail.item) as Trigger;
-      if (!isTriggerList(pasted) && pasted.id) {
-        pasted.id = getUniqueTriggerId(pasted.id, this.triggers);
+      if (!isTriggerList(pasted)) {
+        pasted.id = pasted.id
+          ? getUniqueTriggerId(pasted.id, this.triggers)
+          : getNextNumericTriggerId(this.triggers);
       }
       ev.detail.item = pasted;
     }
@@ -89,8 +91,10 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     const incoming = ensureArray(ev.detail.value) as Trigger[];
     if (this.root && incoming.length === 1) {
       const trigger = deepClone(incoming[0]);
-      if (!isTriggerList(trigger) && trigger.id) {
-        trigger.id = getUniqueTriggerId(trigger.id, this.triggers);
+      if (!isTriggerList(trigger)) {
+        trigger.id = trigger.id
+          ? getUniqueTriggerId(trigger.id, this.triggers)
+          : getNextNumericTriggerId(this.triggers);
       }
       ev.detail.value = trigger;
     }
@@ -101,8 +105,10 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     if (this.root) {
       const index = (ev.target as any).index;
       const duplicated = deepClone(this.triggers[index]);
-      if (!isTriggerList(duplicated) && duplicated.id) {
-        duplicated.id = getUniqueTriggerId(duplicated.id, this.triggers);
+      if (!isTriggerList(duplicated)) {
+        duplicated.id = duplicated.id
+          ? getUniqueTriggerId(duplicated.id, this.triggers)
+          : getNextNumericTriggerId(this.triggers);
       }
       fireEvent(this, "value-changed", {
         // @ts-expect-error Requires library bump to ES2023
@@ -261,8 +267,10 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       const pasted = deepClone(this._clipboard!.trigger!);
-      if (this.root && !isTriggerList(pasted) && pasted.id) {
-        pasted.id = getUniqueTriggerId(pasted.id, this.triggers);
+      if (this.root && !isTriggerList(pasted)) {
+        pasted.id = pasted.id
+          ? getUniqueTriggerId(pasted.id, this.triggers)
+          : getNextNumericTriggerId(this.triggers);
       }
       triggers = this.triggers.concat(pasted);
     } else {
