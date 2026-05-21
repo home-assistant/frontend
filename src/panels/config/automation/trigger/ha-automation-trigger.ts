@@ -23,7 +23,6 @@ import {
 import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import {
-  dedupeTriggerIds,
   getNextNumericTriggerId,
   getUniqueTriggerId,
   isTriggerList,
@@ -76,21 +75,24 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   protected override pasteItem(ev: CustomEvent) {
     if (this.root && ev.detail.item) {
-      const [deduped] = dedupeTriggerIds(
-        [deepClone(ev.detail.item) as Trigger],
-        this.triggers
-      );
-      ev.detail.item = deduped;
+      const pasted = deepClone(ev.detail.item) as Trigger;
+      if (!isTriggerList(pasted) && pasted.id) {
+        pasted.id = getUniqueTriggerId(pasted.id, this.triggers);
+      }
+      ev.detail.item = pasted;
     }
     super.pasteItem(ev);
   }
 
   protected override insertAfter(ev: CustomEvent) {
-    if (this.root) {
-      ev.detail.value = dedupeTriggerIds(
-        ensureArray(ev.detail.value) as Trigger[],
-        this.triggers
-      );
+    // Only dedupe when a single trigger is being inserted.
+    const incoming = ensureArray(ev.detail.value) as Trigger[];
+    if (this.root && incoming.length === 1) {
+      const trigger = deepClone(incoming[0]);
+      if (!isTriggerList(trigger) && trigger.id) {
+        trigger.id = getUniqueTriggerId(trigger.id, this.triggers);
+      }
+      ev.detail.value = trigger;
     }
     super.insertAfter(ev);
   }
@@ -98,13 +100,13 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   protected override duplicateItem(ev: CustomEvent) {
     if (this.root) {
       const index = (ev.target as any).index;
-      const [deduped] = dedupeTriggerIds(
-        [deepClone(this.triggers[index])],
-        this.triggers
-      );
+      const duplicated = deepClone(this.triggers[index]);
+      if (!isTriggerList(duplicated) && duplicated.id) {
+        duplicated.id = getUniqueTriggerId(duplicated.id, this.triggers);
+      }
       fireEvent(this, "value-changed", {
         // @ts-expect-error Requires library bump to ES2023
-        value: this.triggers.toSpliced(index + 1, 0, deduped),
+        value: this.triggers.toSpliced(index + 1, 0, duplicated),
       });
       ev.stopPropagation();
       return;

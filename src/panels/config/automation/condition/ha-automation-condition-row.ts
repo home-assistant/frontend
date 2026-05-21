@@ -42,13 +42,13 @@ import type { HaAutomationRow } from "../../../../components/automation/ha-autom
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-trigger-icon";
@@ -60,6 +60,7 @@ import type {
   PlatformCondition,
   Trigger,
   TriggerCondition,
+  TriggerList,
 } from "../../../../data/automation";
 import {
   automationConfigContext,
@@ -518,9 +519,11 @@ export default class HaAutomationConditionRow extends LitElement {
               >${this._renderRow()}
               <ha-automation-row-live-test
                 slot="icons"
-                .state=${this._liveTestResult}
+                .state=${this.condition.condition !== "trigger"
+                  ? this._liveTestResult
+                  : "unknown"}
                 .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult}`
+                  `ui.panel.config.automation.editor.conditions.live_test_state.${this.condition.condition !== "trigger" ? this._liveTestResult : "unknown"}`
                 )}
               ></ha-automation-row-live-test
             ></ha-automation-row>`
@@ -553,9 +556,7 @@ export default class HaAutomationConditionRow extends LitElement {
     `;
   }
 
-  private _getTriggerInfos = memoizeOne((triggers: Trigger[]) =>
-    getTriggerInfos(triggers, this.hass, this._entityReg)
-  );
+  private _getTriggerInfos = memoizeOne(getTriggerInfos);
 
   private _renderTriggerConditionDescription(condition: TriggerCondition) {
     const ids = ensureArray(condition.id ?? [])
@@ -579,7 +580,9 @@ export default class HaAutomationConditionRow extends LitElement {
     }
 
     const triggerInfos = this._getTriggerInfos(
-      ensureArray(this._automationConfig?.triggers || [])
+      ensureArray(this._automationConfig?.triggers || []),
+      this.hass,
+      this._entityReg
     );
     const infoById = new Map(triggerInfos.map((info) => [info.id, info]));
     return html`${prefix}
@@ -591,12 +594,22 @@ export default class HaAutomationConditionRow extends LitElement {
             <ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>
           </ha-trigger-id-chip>
           ${ids.length < 4
-            ? html` <span
+            ? html`<span
                 >${this.hass.localize("state.default.unavailable")}</span
               >`
-            : html`<ha-tooltip .for=${`trigger-${id}`}
-                >${this.hass.localize("state.default.unavailable")}</ha-tooltip
-              >`}
+            : nothing}
+
+          <ha-tooltip .for=${`trigger-${id}`}>
+            ${ids.length >= 4
+              ? html`<div>
+                  ${this.hass.localize("state.default.unavailable")}
+                </div>`
+              : nothing}
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
+              { id: html`<b>${id}</b>` }
+            )}
+          </ha-tooltip>
         </div>`;
       }
       const triggerIcon = html`<ha-trigger-icon
@@ -605,16 +618,38 @@ export default class HaAutomationConditionRow extends LitElement {
         .trigger=${info.triggerType}
       ></ha-trigger-icon>`;
 
+      const isDuplicateId =
+        ensureArray(this._automationConfig?.triggers || []).filter(
+          (trigger) => (trigger as Exclude<Trigger, TriggerList>).id === id
+        ).length > 1;
+
       return html`
         <div class="trigger">
           ${ids.length < 4 ? triggerIcon : nothing}
-          <ha-trigger-id-chip id=${`trigger-${id}`} .triggerId=${id}>
+          <ha-trigger-id-chip
+            id=${`trigger-${id}`}
+            .triggerId=${id}
+            .warning=${isDuplicateId}
+          >
+            ${isDuplicateId
+              ? html`<ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>`
+              : nothing}
           </ha-trigger-id-chip>
           ${ids.length < 4
             ? html`<span>${info.label}</span>`
-            : html`<ha-tooltip .for=${`trigger-${id}`}
-                >${triggerIcon}${info.label}</ha-tooltip
-              >`}
+            : html`<ha-tooltip .for=${`trigger-${id}`}></ha-tooltip>`}
+          ${isDuplicateId || ids.length >= 4
+            ? html`<ha-tooltip .for=${`trigger-${id}`}>
+                ${ids.length >= 4
+                  ? html`<div>${triggerIcon}${info.label}</div>`
+                  : nothing}
+                ${isDuplicateId
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
+                    )
+                  : nothing}
+              </ha-tooltip>`
+            : nothing}
         </div>
       `;
     })}`;
@@ -1136,7 +1171,7 @@ export default class HaAutomationConditionRow extends LitElement {
           align-items: center;
           gap: var(--ha-space-2);
           background-color: var(--ha-color-fill-neutral-normal-resting);
-          border-radius: var(--ha-border-radius-pill);
+          border-radius: var(--ha-border-radius-md);
           padding-inline: var(--ha-space-2);
           color: var(--ha-color-on-neutral-normal);
           height: 32px;

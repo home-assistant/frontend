@@ -94,6 +94,11 @@ export class HaTriggerCondition extends LitElement {
       (id) => !triggerInfos.some((info) => info.id === id)
     );
 
+    const alertIcon = html`<ha-svg-icon
+      slot="start"
+      .path=${mdiAlert}
+    ></ha-svg-icon>`;
+
     return html`
       ${unknownTriggerIds.map(
         (id) => html`
@@ -103,10 +108,20 @@ export class HaTriggerCondition extends LitElement {
             appearance="checkbox"
           >
             <div class="option" slot="headline">
-              <ha-trigger-id-chip warning .triggerId=${id}>
-                <ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>
+              <ha-trigger-id-chip
+                id=${`trigger-${id}`}
+                warning
+                .triggerId=${id}
+              >
+                ${alertIcon}
               </ha-trigger-id-chip>
               ${this.hass.localize("state.default.unavailable")}
+              <ha-tooltip .for=${`trigger-${id}`}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
+                  { id: html`<b>${id}</b>` }
+                )}
+              </ha-tooltip>
             </div>
           </ha-list-item-option>
         `
@@ -119,17 +134,19 @@ export class HaTriggerCondition extends LitElement {
             appearance="checkbox"
           >
             <div class="option" slot="headline">
-              <ha-trigger-id-chip .triggerId=${info.id}></ha-trigger-id-chip>
+              <ha-trigger-id-chip
+                id=${`trigger-${info.id}`}
+                .warning=${info.count > 1}
+                .triggerId=${info.id}
+              >
+                ${info.count > 1 ? alertIcon : nothing}
+              </ha-trigger-id-chip>
               ${info.label}${info.count > 1
-                ? html` <span
-                      id=${`trigger-${info.id}-duplicated`}
-                      class="duplicated"
-                      >+${info.count - 1}</span
-                    ><ha-tooltip .for=${`trigger-${info.id}-duplicated`}
-                      >${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.type.trigger.duplicated_info"
-                      )}</ha-tooltip
-                    >`
+                ? html`<ha-tooltip .for=${`trigger-${info.id}`}
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.conditions.type.trigger.duplicated_info"
+                    )}</ha-tooltip
+                  >`
                 : nothing}
             </div>
           </ha-list-item-option>

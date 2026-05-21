@@ -32,7 +32,6 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { dedupeTriggerIds } from "../../../data/trigger";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
@@ -370,9 +369,8 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
     }
 
     if ("triggers" in config) {
-      const existingTriggers = ensureArray(workingCopy.triggers || []);
-      workingCopy.triggers = existingTriggers.concat(
-        dedupeTriggerIds(ensureArray(config.triggers), existingTriggers)
+      workingCopy.triggers = ensureArray(workingCopy.triggers || []).concat(
+        ensureArray(config.triggers)
       );
     }
     if ("conditions" in config) {

@@ -111,24 +111,6 @@ const computeUniqueId = (id: string, existing: Set<string>): string => {
 export const getUniqueTriggerId = (id: string, triggers: Trigger[]): string =>
   computeUniqueId(id, new Set(getTriggerIds(triggers)));
 
-export const dedupeTriggerIds = (
-  newTriggers: Trigger[],
-  existingTriggers: Trigger[]
-): Trigger[] => {
-  const usedIds = new Set(getTriggerIds(existingTriggers));
-  return newTriggers.map((trigger) => {
-    if (isTriggerList(trigger) || !trigger.id) {
-      return trigger;
-    }
-    const newId = computeUniqueId(trigger.id, usedIds);
-    usedIds.add(newId);
-    if (newId === trigger.id) {
-      return trigger;
-    }
-    return { ...trigger, id: newId };
-  });
-};
-
 export interface TriggerDescription {
   target?: TargetSelector["target"];
   fields: Record<

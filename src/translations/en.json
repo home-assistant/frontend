@@ -5586,7 +5586,8 @@
                 "trigger": {
                   "label": "Triggered by",
                   "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
-                  "duplicated_info": "This trigger ID references multiple triggers in this automation. Trigger IDs should be unique to ensure the correct trigger is referenced.",
+                  "duplicated_info": "This ID is used by multiple triggers. Trigger IDs should be unique.",
+                  "unavailable_info": "No trigger has the ID {id}. Set this ID on a trigger to use it.",
                   "id": "Trigger",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
