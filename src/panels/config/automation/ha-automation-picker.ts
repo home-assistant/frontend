@@ -770,12 +770,16 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       const hasUrlFilter =
         this._searchParms.has("area") ||
         this._searchParms.has("blueprint") ||
+        this._searchParms.has("device") ||
         this._searchParms.has("label");
       if (!hasUrlFilter) {
         this._filters = this._storageFilters;
       }
       if (this._searchParms.has("area")) {
         this._filterArea();
+      }
+      if (this._searchParms.has("device")) {
+        this._filterDevice();
       }
       if (this._searchParms.has("blueprint")) {
         this._filterBlueprint();
@@ -886,6 +890,22 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       ...this._filters,
       "ha-filter-floor-areas": {
         value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
+  private _filterDevice() {
+    const device = this._searchParms.get("device");
+    if (!device) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-devices": {
+        value: [device],
         items: undefined,
       },
     };

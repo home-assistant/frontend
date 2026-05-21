@@ -6478,6 +6478,13 @@
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
+          "quick_links": {
+            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "helpers": "{count} {count, plural,\n  one {helper}\n  other {helpers}\n}",
+            "automations": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
+            "scenes": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}",
+            "scripts": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}"
+          },
           "unnamed_device": "Unnamed {type}",
           "unknown_error": "Unknown error",
           "name": "Name",
