@@ -2,6 +2,7 @@ import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
@@ -9,16 +10,61 @@ import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type { HaEntityPickerEntityFilterFunc } from "../entity/entity";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "../entity/entity_registry";
 import { domainToName } from "../integration";
 import {
   getDeviceEntityDisplayLookup,
   type DeviceEntityDisplayLookup,
+  type DeviceRegistryEntry,
 } from "./device_registry";
 
 export interface DevicePickerItem extends PickerComboBoxItem {
   domain?: string;
   domain_name?: string;
 }
+
+export interface DeviceAreaLabel {
+  areaName?: string;
+  viaDeviceName?: string;
+  viaDeviceAreaName?: string;
+}
+
+export const computeDeviceAreaLabel = (
+  device: DeviceRegistryEntry,
+  areas: HomeAssistant["areas"],
+  devices: HomeAssistant["devices"],
+  states: HomeAssistant["states"],
+  localize: LocalizeFunc,
+  language: HomeAssistant["language"],
+  translationMetadata: HomeAssistant["translationMetadata"],
+  viaDeviceEntities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[]
+): DeviceAreaLabel => {
+  const area = getDeviceArea(device, areas);
+
+  const viaDevice = device.via_device_id
+    ? devices[device.via_device_id]
+    : undefined;
+  const viaDeviceName = viaDevice
+    ? computeDeviceNameDisplay(viaDevice, localize, states, viaDeviceEntities)
+    : undefined;
+  const viaDeviceArea = viaDevice ? getDeviceArea(viaDevice, areas) : undefined;
+  const viaDeviceAreaName = viaDeviceArea
+    ? computeAreaName(viaDeviceArea)
+    : undefined;
+
+  const isRTL = computeRTL(language, translationMetadata.translations);
+
+  const areaName = area
+    ? computeAreaName(area)
+    : viaDeviceAreaName
+      ? `${viaDeviceAreaName}${isRTL ? " ◂ " : " ▸ "}${viaDeviceName}`
+      : viaDeviceName || undefined;
+
+  return { areaName, viaDeviceName, viaDeviceAreaName };
+};
 
 export const deviceComboBoxKeys: FuseWeightedKey[] = [
   {
@@ -158,36 +204,19 @@ export const getDevices = (
       deviceEntityLookup[device.id]
     );
 
-    const area = getDeviceArea(device, hass.areas);
-
-    const viaDeviceName =
-      device.via_device_id && hass.devices[device.via_device_id]
-        ? computeDeviceNameDisplay(
-            hass.devices[device.via_device_id],
-            hass.localize,
-            hass.states,
-            deviceEntityLookup[device.via_device_id]
-          )
-        : undefined;
-
-    const viaDeviceArea =
-      device.via_device_id && hass.devices[device.via_device_id]
-        ? getDeviceArea(hass.devices[device.via_device_id], hass.areas)
-        : undefined;
-    const viaDeviceAreaName = viaDeviceArea
-      ? computeAreaName(viaDeviceArea)
-      : undefined;
-
-    const isRTL = computeRTL(
-      hass.language,
-      hass.translationMetadata.translations
-    );
-
-    const areaName = area
-      ? computeAreaName(area)
-      : viaDeviceAreaName
-        ? `${viaDeviceAreaName}${isRTL ? " ◂ " : " ▸ "}${viaDeviceName}`
-        : viaDeviceName || undefined;
+    const { areaName, viaDeviceName, viaDeviceAreaName } =
+      computeDeviceAreaLabel(
+        device,
+        hass.areas,
+        hass.devices,
+        hass.states,
+        hass.localize,
+        hass.language,
+        hass.translationMetadata,
+        device.via_device_id
+          ? deviceEntityLookup[device.via_device_id]
+          : undefined
+      );
 
     const configEntry = device.primary_config_entry
       ? configEntryLookup?.[device.primary_config_entry]

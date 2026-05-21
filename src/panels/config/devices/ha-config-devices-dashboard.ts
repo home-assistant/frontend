@@ -18,6 +18,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -58,6 +59,7 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
+import { computeDeviceAreaLabel } from "../../../data/device/device_picker";
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -458,17 +460,29 @@ export class HaConfigDeviceDashboard extends LitElement {
           .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
           .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
 
-        let floorName;
-        if (
-          device.area_id &&
-          areas[device.area_id]?.floor_id &&
-          this.hass.floors
-        ) {
-          const floorId = areas[device.area_id].floor_id;
-          if (this.hass.floors[floorId!]) {
-            floorName = computeFloorName(this.hass.floors[floorId!]);
-          }
-        }
+        const { areaName } = computeDeviceAreaLabel(
+          device,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.states,
+          this.hass.localize,
+          this.hass.language,
+          this.hass.translationMetadata,
+          device.via_device_id
+            ? deviceEntityLookup[device.via_device_id]
+            : undefined
+        );
+
+        const floorArea =
+          getDeviceArea(device, areas) ??
+          (device.via_device_id && this.hass.devices[device.via_device_id]
+            ? getDeviceArea(this.hass.devices[device.via_device_id], areas)
+            : undefined);
+        const floorId = floorArea?.floor_id;
+        const floorName =
+          floorId && this.hass.floors?.[floorId]
+            ? computeFloorName(this.hass.floors[floorId])
+            : undefined;
 
         return {
           ...device,
@@ -484,10 +498,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           manufacturer:
             device.manufacturer ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
-          area:
-            device.area_id && areas[device.area_id]
-              ? areas[device.area_id].name
-              : undefined,
+          area: areaName,
           floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
