@@ -2,6 +2,7 @@ import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
+import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
@@ -35,6 +36,14 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.domain",
     weight: 4,
+  },
+  {
+    name: "search_labels.viaDeviceName",
+    weight: 3,
+  },
+  {
+    name: "search_labels.viaDeviceArea",
+    weight: 3,
   },
 ];
 
@@ -151,7 +160,34 @@ export const getDevices = (
 
     const area = getDeviceArea(device, hass.areas);
 
-    const areaName = area ? computeAreaName(area) : undefined;
+    const viaDeviceName =
+      device.via_device_id && hass.devices[device.via_device_id]
+        ? computeDeviceNameDisplay(
+            hass.devices[device.via_device_id],
+            hass.localize,
+            hass.states,
+            deviceEntityLookup[device.via_device_id]
+          )
+        : undefined;
+
+    const viaDeviceArea =
+      device.via_device_id && hass.devices[device.via_device_id]
+        ? getDeviceArea(hass.devices[device.via_device_id], hass.areas)
+        : undefined;
+    const viaDeviceAreaName = viaDeviceArea
+      ? computeAreaName(viaDeviceArea)
+      : undefined;
+
+    const isRTL = computeRTL(
+      hass.language,
+      hass.translationMetadata.translations
+    );
+
+    const areaName = area
+      ? computeAreaName(area)
+      : viaDeviceAreaName
+        ? `${viaDeviceAreaName}${isRTL ? " ◂ " : " ▸ "}${viaDeviceName}`
+        : viaDeviceName || undefined;
 
     const configEntry = device.primary_config_entry
       ? configEntryLookup?.[device.primary_config_entry]
@@ -174,6 +210,8 @@ export const getDevices = (
         areaName: areaName || null,
         domain: domain || null,
         domainName: domainName || null,
+        viaDeviceName: viaDeviceName || null,
+        viaDeviceArea: viaDeviceAreaName || null,
       },
       sorting_label: [primary, areaName, domainName].filter(Boolean).join("_"),
     };
