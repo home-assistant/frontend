@@ -625,7 +625,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.devices}
         .searchLabel=${this.hass.localize(
@@ -964,12 +966,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   };
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
     const category = this._searchParms.get("category");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!category && !label && !device) {
+    if (!area && !category && !label && !device && !voiceAssistant) {
       return;
     }
 
@@ -977,6 +980,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filter = history.state?.filter || "";
 
     this._filters = {
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
       "ha-filter-categories": category ? [category] : [],

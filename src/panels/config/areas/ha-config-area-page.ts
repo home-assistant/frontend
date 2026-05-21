@@ -9,6 +9,7 @@ import {
   mdiRobot,
   mdiScriptText,
   mdiShape,
+  mdiTools,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -92,6 +93,12 @@ const NAVIGATION_ACTIONS: {
     path: "/config/entities",
     icon: mdiShape,
     translationKey: "entities.caption",
+  },
+  {
+    value: "navigate-helpers",
+    path: "/config/helpers",
+    icon: mdiTools,
+    translationKey: "helpers.caption",
   },
   {
     value: "navigate-automations",
