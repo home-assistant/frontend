@@ -11,7 +11,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-markdown";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
@@ -141,7 +141,7 @@ class MoreInfoScript extends LitElement {
         <ha-control-button
           class="run-button"
           @click=${this._runScript}
-          .disabled=${isUnavailableState(stateObj.state) || !this._canRun()}
+          .disabled=${stateObj.state === UNAVAILABLE || !this._canRun()}
         >
           <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
           ${this.hass!.localize("ui.card.script.run")}

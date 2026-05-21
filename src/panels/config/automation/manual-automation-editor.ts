@@ -32,11 +32,11 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { showEditorToast } from "./editor-toast";
 import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
+import { showEditorToast } from "./editor-toast";
 import { ManualEditorMixin } from "./ha-manual-editor-mixin";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { manualEditorStyles, saveFabStyles } from "./styles";

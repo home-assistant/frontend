@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-control-select";
@@ -55,8 +56,10 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
     );
   }
 
-  private async _valueChanged(ev: CustomEvent) {
-    const mode = (ev.detail as any).value as AlarmMode;
+  private async _valueChanged(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ) {
+    const mode = ev.detail.value as AlarmMode;
 
     if (mode === this.stateObj!.state) return;
 

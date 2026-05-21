@@ -2,7 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-button";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import { callProtectedLockService } from "../../../data/lock";
 import type { HomeAssistant } from "../../../types";
 import { confirmAction } from "../common/confirm-action";
@@ -49,7 +49,7 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
           appearance="plain"
           size="small"
           @click=${this._callService}
-          .disabled=${isUnavailableState(stateObj.state)}
+          .disabled=${stateObj.state === UNAVAILABLE}
           class="text-content"
         >
           ${stateObj.state === "locked"

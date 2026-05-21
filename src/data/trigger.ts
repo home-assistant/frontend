@@ -8,6 +8,7 @@ import type {
   Trigger,
   TriggerList,
 } from "./automation";
+import { flattenTriggers } from "./automation";
 import type { Selector, TargetSelector } from "./selector";
 
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
@@ -55,6 +56,49 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
 
 export const isTriggerList = (trigger: Trigger): trigger is TriggerList =>
   "triggers" in trigger;
+
+export const getTriggerIds = (triggers: Trigger[]): string[] =>
+  flattenTriggers(triggers)
+    .map((trigger) => trigger.id)
+    .filter((id): id is string => !!id);
+
+export const getNextNumericTriggerId = (triggers: Trigger[]): string => {
+  let max = 0;
+  for (const id of getTriggerIds(triggers)) {
+    const num = Number(id);
+    if (Number.isInteger(num) && num > max) {
+      max = num;
+    }
+  }
+  return String(max + 1);
+};
+
+const computeUniqueId = (id: string, existing: Set<string>): string => {
+  if (!existing.has(id)) {
+    return id;
+  }
+
+  // Split into a base and a trailing integer suffix so we can bump the
+  // suffix on collision (e.g. "foo2" -> "foo3"); if there's no trailing
+  // digit we start at 2 ("foo" -> "foo2").
+  const match = id.match(/^(.*?)(\d+)$/);
+  let base: string;
+  let num: number;
+  if (match) {
+    base = match[1];
+    num = Number(match[2]) + 1;
+  } else {
+    base = id;
+    num = 2;
+  }
+  while (existing.has(`${base}${num}`)) {
+    num++;
+  }
+  return `${base}${num}`;
+};
+
+export const getUniqueTriggerId = (id: string, triggers: Trigger[]): string =>
+  computeUniqueId(id, new Set(getTriggerIds(triggers)));
 
 export interface TriggerDescription {
   target?: TargetSelector["target"];

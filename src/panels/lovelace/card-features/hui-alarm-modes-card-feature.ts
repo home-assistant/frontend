@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
@@ -101,9 +102,11 @@ class HuiAlarmModeCardFeature
     return supportedModes.find((mode) => mode === stateObj.state);
   });
 
-  private async _valueChanged(ev: CustomEvent) {
+  private async _valueChanged(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ) {
     if (!this._stateObj) return;
-    const mode = (ev.detail as any).value as AlarmMode;
+    const mode = ev.detail.value as AlarmMode;
 
     if (mode === this._stateObj.state) return;
 

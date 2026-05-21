@@ -6,11 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import {
-  UNAVAILABLE,
-  UNKNOWN,
-  isUnavailableState,
-} from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -20,7 +16,8 @@ import "../ha-switch";
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
   !STATES_OFF.includes(stateObj.state) &&
-  !isUnavailableState(stateObj.state);
+  stateObj.state !== UNAVAILABLE &&
+  stateObj.state !== UNKNOWN;
 
 /**
  * @element ha-entity-toggle

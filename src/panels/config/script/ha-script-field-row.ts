@@ -1,5 +1,7 @@
 import {
   mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiDelete,
   mdiDotsVertical,
   mdiPlaylistEdit,
@@ -11,6 +13,7 @@ import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { truncateWithEllipsis } from "../../../common/string/truncate-with-ellipsis";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../components/automation/ha-automation-row";
@@ -21,6 +24,7 @@ import "../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
+import { showPromptDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import { isMac } from "../../../util/is_mac";
 import { showEditorToast } from "../automation/editor-toast";
@@ -66,6 +70,12 @@ export default class HaScriptFieldRow extends LitElement {
   protected render() {
     const hasSelector =
       this.field.selector && typeof this.field.selector === "object";
+
+    const commentTooltipText = truncateWithEllipsis(
+      this.field.description?.trim() || "",
+      250
+    );
+
     return html`
       <ha-card outlined>
         <ha-automation-row
@@ -90,6 +100,16 @@ export default class HaScriptFieldRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
+
+            <ha-dropdown-item value="edit_comment">
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiCommentEditOutline}
+              ></ha-svg-icon>
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.comment.${this.field.description ? "edit" : "add"}`
+              )}
+            </ha-dropdown-item>
             <ha-dropdown-item value="toggle_yaml_mode">
               <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
               <div class="overflow-label">
@@ -132,7 +152,24 @@ export default class HaScriptFieldRow extends LitElement {
             </ha-dropdown-item>
           </ha-dropdown>
 
-          <h3 slot="header">${this.field.name ?? this.key}</h3>
+          <h3 slot="header">
+            ${this.field.name ?? this.key}
+            ${this.field.description?.trim()
+              ? html`
+                  <ha-svg-icon
+                    id="comment-icon"
+                    .path=${mdiCommentTextOutline}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.editor.comment.label"
+                    )}
+                    class="comment-indicator"
+                  ></ha-svg-icon>
+                  <ha-tooltip for="comment-icon"
+                    ><p>${commentTooltipText}</p></ha-tooltip
+                  >
+                `
+              : nothing}
+          </h3>
 
           <slot name="icons" slot="icons"></slot>
         </ha-automation-row>
@@ -324,10 +361,45 @@ export default class HaScriptFieldRow extends LitElement {
     });
   }
 
-  public openSidebar(selectorEditor = false): void {
+  private _editComment = async (): Promise<void> => {
+    const comment = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.comment.${this.field.description ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.comment.label"
+      ),
+      inputType: "string",
+      defaultValue: this.field.description,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (comment !== null) {
+      const value = { ...this.field };
+      if (comment === "") {
+        delete value.description;
+      } else {
+        value.description = comment;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected) {
+        this.openSidebar(false, value); // refresh sidebar
+      }
+    }
+  };
+
+  public openSidebar(
+    selectorEditor = false,
+    fieldValue?: HaScriptFieldRow["field"]
+  ): void {
     if (!selectorEditor) {
       this._selected = true;
     }
+
+    const field = fieldValue ?? this.field;
 
     fireEvent(this, "open-sidebar", {
       save: (value) => {
@@ -353,12 +425,13 @@ export default class HaScriptFieldRow extends LitElement {
       },
       delete: this._onDelete,
       config: {
-        field: this.field,
+        field,
         selector: selectorEditor,
         key: this.key,
         excludeKeys: this.excludeKeys,
       },
       yamlMode: this._yamlMode,
+      editComment: this._editComment,
     } satisfies ScriptFieldSidebarConfig);
 
     if (this.narrow) {
@@ -418,6 +491,9 @@ export default class HaScriptFieldRow extends LitElement {
         break;
       case "delete":
         this._onDelete();
+        break;
+      case "edit_comment":
+        this._editComment();
         break;
     }
   }

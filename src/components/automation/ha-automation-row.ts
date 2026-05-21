@@ -187,7 +187,6 @@ export class HaAutomationRow extends LitElement {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
-      margin: 0 var(--ha-space-3);
     }
     ::slotted([slot="header"]) {
       overflow-wrap: anywhere;

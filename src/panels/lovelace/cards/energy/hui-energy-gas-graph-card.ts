@@ -9,6 +9,7 @@ import type { BarSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import type {
   EnergyData,
@@ -63,6 +64,8 @@ export class HuiEnergyGasGraphCard
   }
 
   @state() private _chartData: BarSeriesOption[] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _start = startOfToday();
 
@@ -139,7 +142,8 @@ export class HuiEnergyGasGraphCard
               this.hass.config,
               this._unit,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -169,9 +173,10 @@ export class HuiEnergyGasGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      unit?: string,
-      compareStart?: Date,
-      compareEnd?: Date
+      unit: string | undefined,
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
     ): ECOption =>
       getCommonOptions(
         start,
@@ -181,7 +186,9 @@ export class HuiEnergyGasGraphCard
         unit,
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       )
   );
 
@@ -203,6 +210,13 @@ export class HuiEnergyGasGraphCard
 
     const computedStyles = getComputedStyle(this);
 
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
+
     if (energyData.statsCompare) {
       datasets.push(
         ...this._processDataSet(
@@ -210,6 +224,7 @@ export class HuiEnergyGasGraphCard
           energyData.statsMetadata,
           gasSources,
           computedStyles,
+          trackY,
           true
         )
       );
@@ -230,11 +245,13 @@ export class HuiEnergyGasGraphCard
         energyData.stats,
         energyData.statsMetadata,
         gasSources,
-        computedStyles
+        computedStyles,
+        trackY
       )
     );
 
     fillDataGapsAndRoundCaps(datasets);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, gasSources);
   }
@@ -261,6 +278,7 @@ export class HuiEnergyGasGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     gasSources: GasSourceTypeEnergyPreference[],
     computedStyles: CSSStyleDeclaration,
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -300,6 +318,7 @@ export class HuiEnergyGasGraphCard
             point.start,
           ];
           gasConsumptionData.push(dataPoint);
+          trackY(point.change);
           prevStart = point.start;
         }
       }

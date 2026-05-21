@@ -641,7 +641,7 @@ export const expandLabelTarget = (
     if (
       device.labels.includes(labelId) &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -708,7 +708,7 @@ export const expandAreaTarget = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -768,7 +768,7 @@ export const areaMeetsTargetSelector = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -798,7 +798,7 @@ export const areaMeetsTargetSelector = (
 };
 
 export const deviceMeetsTargetSelector = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector,
@@ -822,7 +822,7 @@ export const deviceMeetsTargetSelector = (
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
-      const entityState = hass.states[entity.entity_id];
+      const entityState = states[entity.entity_id];
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,

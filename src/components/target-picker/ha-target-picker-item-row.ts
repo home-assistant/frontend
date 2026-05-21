@@ -454,7 +454,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     try {
       const entries = await extractFromTarget(
-        this.hass,
+        this.hass.callWS,
         {
           [`${this.type}_id`]: [this.itemId],
         },

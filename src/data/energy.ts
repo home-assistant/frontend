@@ -148,6 +148,7 @@ export interface GridSourceTypeEnergyPreference {
   power_config?: PowerConfig;
 
   cost_adjustment_day: number;
+  name?: string;
 }
 
 export interface SolarSourceTypeEnergyPreference {
@@ -156,6 +157,7 @@ export interface SolarSourceTypeEnergyPreference {
   stat_energy_from: string;
   stat_rate?: string;
   config_entry_solar_forecast: string[] | null;
+  name?: string;
 }
 
 export interface BatterySourceTypeEnergyPreference {
@@ -165,6 +167,7 @@ export interface BatterySourceTypeEnergyPreference {
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
+  name?: string;
 }
 export interface GasSourceTypeEnergyPreference {
   type: "gas";

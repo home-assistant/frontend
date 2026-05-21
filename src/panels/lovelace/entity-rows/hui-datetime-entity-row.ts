@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -46,9 +46,10 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
 
     const unavailable = stateObj.state === UNAVAILABLE;
 
-    const dateObj = isUnavailableState(stateObj.state)
-      ? undefined
-      : new Date(stateObj.state);
+    const dateObj =
+      stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
+        ? undefined
+        : new Date(stateObj.state);
     const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
     const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
 

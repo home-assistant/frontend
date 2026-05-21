@@ -29,7 +29,7 @@ export interface AreaControlPickerItem extends PickerComboBoxItem {
   deviceClass?: string;
 }
 
-const AREA_CONTROL_DOMAINS: readonly AreaControlDomain[] = [
+const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
   "switch",
@@ -43,7 +43,7 @@ const AREA_CONTROL_DOMAINS: readonly AreaControlDomain[] = [
   "cover-door",
   "cover-window",
   "cover-damper",
-] as const;
+] as const satisfies readonly AreaControlDomain[];
 
 @customElement("ha-area-controls-picker")
 export class HaAreaControlsPicker extends LitElement {
@@ -130,7 +130,7 @@ export class HaAreaControlsPicker extends LitElement {
           (excludeValues !== undefined && excludeValues.includes(id));
 
         const controlEntities = getAreaControlEntities(
-          AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
+          AREA_CONTROL_DOMAINS,
           areaId,
           excludeEntities,
           this.hass

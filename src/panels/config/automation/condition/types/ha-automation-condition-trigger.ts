@@ -1,26 +1,31 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { html, LitElement } from "lit";
+import { consume } from "@lit/context";
+import { mdiAlert } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-select";
+import "../../../../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectedDetail } from "../../../../../components/list/types";
 import {
-  flattenTriggers,
+  automationConfigContext,
   type AutomationConfig,
-  type Trigger,
   type TriggerCondition,
 } from "../../../../../data/automation";
+import {
+  getTriggerInfos,
+  type TriggerInfo,
+} from "../../../../../data/automation_i18n";
+import { fullEntitiesContext } from "../../../../../data/context";
+import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../../../types";
-
-const getTriggersIds = (triggers: Trigger[]): string[] => {
-  const triggerIds = flattenTriggers(triggers)
-    .map((t) => ("id" in t ? t.id : undefined))
-    .filter(Boolean) as string[];
-  return Array.from(new Set(triggerIds));
-};
+import "../../ha-trigger-id-chip";
 
 @customElement("ha-automation-condition-trigger")
 export class HaTriggerCondition extends LitElement {
@@ -30,9 +35,25 @@ export class HaTriggerCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @state() private _triggerIds: string[] = [];
+  @state()
+  @consume({ context: automationConfigContext, subscribe: true })
+  private _automationConfig?: AutomationConfig;
 
-  private _unsub?: UnsubscribeFunc;
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityReg: EntityRegistryEntry[] = [];
+
+  private _triggerInfos = memoizeOne(
+    (
+      triggers: AutomationConfig["triggers"] | undefined,
+      entityReg: EntityRegistryEntry[]
+    ): TriggerInfo[] =>
+      getTriggerInfos(
+        triggers ? ensureArray(triggers) : undefined,
+        this.hass,
+        entityReg
+      )
+  );
 
   public static get defaultConfig(): TriggerCondition {
     return {
@@ -41,89 +62,146 @@ export class HaTriggerCondition extends LitElement {
     };
   }
 
-  private _schema = memoizeOne(
-    (triggerIds: string[]) =>
-      [
-        {
-          name: "id",
-          selector: {
-            select: {
-              multiple: true,
-              options: triggerIds,
-            },
-          },
-          required: true,
-        },
-      ] as const
-  );
-
-  connectedCallback() {
-    super.connectedCallback();
-    const details = { callback: (config) => this._automationUpdated(config) };
-    fireEvent(this, "subscribe-automation-config", details);
-    this._unsub = (details as any).unsub;
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsub) {
-      this._unsub();
-    }
-  }
-
   protected render() {
-    if (!this._triggerIds.length) {
-      return this.hass.localize(
-        "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
-      );
-    }
+    const selectedIds = ensureArray(this.condition.id || []).filter(
+      (id): id is string => typeof id === "string" && id !== ""
+    );
 
-    const schema = this._schema(this._triggerIds);
+    const triggerInfos = this._triggerInfos(
+      this._automationConfig?.triggers,
+      this._entityReg
+    );
+
+    if (!triggerInfos.length && !selectedIds.length) {
+      return html`
+        <ha-alert alert-type="info">
+          ${this.hass.localize(
+            "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
+          )}
+        </ha-alert>
+      `;
+    }
 
     return html`
-      <ha-form
-        .schema=${schema}
-        .data=${this.condition}
-        .hass=${this.hass}
-        .disabled=${this.disabled}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
-      ></ha-form>
+      <ha-list-selectable @ha-list-selected=${this._valueChanged} multi>
+        ${this._renderOptions(selectedIds, triggerInfos)}
+      </ha-list-selectable>
     `;
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string =>
-    this.hass.localize(
-      `ui.panel.config.automation.editor.conditions.type.trigger.${schema.name}`
+  private _renderOptions(selectedIds: string[], triggerInfos: TriggerInfo[]) {
+    const unknownTriggerIds = selectedIds.filter(
+      (id) => !triggerInfos.some((info) => info.id === id)
     );
 
-  private _automationUpdated(config?: AutomationConfig) {
-    this._triggerIds = config?.triggers
-      ? getTriggersIds(ensureArray(config.triggers))
-      : [];
+    const alertIcon = html`<ha-svg-icon
+      slot="start"
+      .path=${mdiAlert}
+    ></ha-svg-icon>`;
+
+    return html`
+      ${unknownTriggerIds.map(
+        (id) => html`
+          <ha-list-item-option
+            .value=${id}
+            .selected=${true}
+            appearance="checkbox"
+          >
+            <div class="option" slot="headline">
+              <ha-trigger-id-chip
+                id=${`trigger-${id}`}
+                warning
+                .triggerId=${id}
+              >
+                ${alertIcon}
+              </ha-trigger-id-chip>
+              ${this.hass.localize("state.default.unavailable")}
+              <ha-tooltip .for=${`trigger-${id}`}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
+                  { id: html`<b>${id}</b>` }
+                )}
+              </ha-tooltip>
+            </div>
+          </ha-list-item-option>
+        `
+      )}
+      ${triggerInfos.map(
+        (info) => html`
+          <ha-list-item-option
+            .value=${info.id}
+            .selected=${selectedIds.includes(info.id)}
+            appearance="checkbox"
+          >
+            <div class="option" slot="headline">
+              <ha-trigger-id-chip
+                id=${`trigger-${info.id}`}
+                .warning=${info.count > 1}
+                .triggerId=${info.id}
+              >
+                ${info.count > 1 ? alertIcon : nothing}
+              </ha-trigger-id-chip>
+              ${info.label}${info.count > 1
+                ? html`<ha-tooltip .for=${`trigger-${info.id}`}
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.conditions.type.trigger.duplicated_info"
+                    )}</ha-tooltip
+                  >`
+                : nothing}
+            </div>
+          </ha-list-item-option>
+        `
+      )}
+    `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: CustomEvent<HaListSelectedDetail>): void {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
+    if (
+      !ev.detail.diff ||
+      (!ev.detail.diff?.added.size && !ev.detail.diff?.removed.size)
+    ) {
+      return;
+    }
 
-    if (typeof newValue.id === "string") {
-      if (!this._triggerIds.some((id) => id === newValue.id)) {
-        newValue.id = "";
-      }
-    } else if (Array.isArray(newValue.id)) {
-      newValue.id = newValue.id.filter((_id) =>
-        this._triggerIds.some((id) => id === _id)
-      );
-      if (!newValue.id.length) {
-        newValue.id = "";
+    const ids = ensureArray(this.condition.id || []);
+
+    const valueSet = ev.detail.diff.added.size
+      ? ev.detail.diff.added
+      : ev.detail.diff.removed;
+
+    const index = valueSet.values().next().value;
+
+    if (index === undefined) {
+      return;
+    }
+    const triggerId = (
+      (ev.currentTarget as HaListSelectable).items[index] as HaListItemOption
+    ).value;
+    if (triggerId === undefined || triggerId === "") {
+      return;
+    }
+
+    if (ev.detail.diff.added.size) {
+      ids.push(triggerId);
+    } else {
+      const removeIndex = ids.indexOf(triggerId);
+      if (removeIndex > -1) {
+        ids.splice(removeIndex, 1);
       }
     }
 
-    fireEvent(this, "value-changed", { value: newValue });
+    fireEvent(this, "value-changed", { value: { ...this.condition, id: ids } });
   }
+
+  static styles = css`
+    .option {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-1);
+      color: var(--ha-color-on-neutral-normal);
+    }
+  `;
 }
 
 declare global {

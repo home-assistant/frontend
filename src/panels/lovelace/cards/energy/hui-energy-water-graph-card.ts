@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import type {
   EnergyData,
@@ -63,6 +64,8 @@ export class HuiEnergyWaterGraphCard
   }
 
   @state() private _chartData: BarSeriesOption[] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _start = startOfToday();
 
@@ -139,7 +142,8 @@ export class HuiEnergyWaterGraphCard
               this.hass.config,
               this._unit,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -169,9 +173,10 @@ export class HuiEnergyWaterGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      unit?: string,
-      compareStart?: Date,
-      compareEnd?: Date
+      unit: string | undefined,
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
     ): ECOption =>
       getCommonOptions(
         start,
@@ -181,7 +186,9 @@ export class HuiEnergyWaterGraphCard
         unit,
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       )
   );
 
@@ -203,6 +210,13 @@ export class HuiEnergyWaterGraphCard
 
     const computedStyles = getComputedStyle(this);
 
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
+
     if (energyData.statsCompare) {
       datasets.push(
         ...this._processDataSet(
@@ -210,6 +224,7 @@ export class HuiEnergyWaterGraphCard
           energyData.statsMetadata,
           waterSources,
           computedStyles,
+          trackY,
           true
         )
       );
@@ -230,11 +245,13 @@ export class HuiEnergyWaterGraphCard
         energyData.stats,
         energyData.statsMetadata,
         waterSources,
-        computedStyles
+        computedStyles,
+        trackY
       )
     );
 
     fillDataGapsAndRoundCaps(datasets);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, waterSources);
   }
@@ -261,6 +278,7 @@ export class HuiEnergyWaterGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     waterSources: WaterSourceTypeEnergyPreference[],
     computedStyles: CSSStyleDeclaration,
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -300,6 +318,7 @@ export class HuiEnergyWaterGraphCard
             point.start,
           ];
           waterConsumptionData.push(dataPoint);
+          trackY(point.change);
           prevStart = point.start;
         }
       }

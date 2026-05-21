@@ -1,7 +1,8 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
+  array,
   assert,
   boolean,
   literal,
@@ -10,10 +11,9 @@ import {
   optional,
   string,
   union,
-  array,
 } from "superstruct";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { ensureArray } from "../../../../../common/array/ensure-array";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
@@ -25,6 +25,7 @@ import type { ConditionElement } from "../ha-automation-condition-row";
 
 const stateConditionStruct = object({
   alias: optional(string()),
+  comment: optional(string()),
   condition: literal("state"),
   entity_id: optional(string()),
   attribute: optional(string()),
@@ -142,6 +143,13 @@ export class HaStateCondition extends LitElement implements ConditionElement {
         );
     }
   };
+
+  static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
+  `;
 }
 
 declare global {

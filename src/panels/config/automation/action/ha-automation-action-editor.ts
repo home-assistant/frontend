@@ -107,6 +107,7 @@ export default class HaAutomationActionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...(this.action.alias ? { alias: this.action.alias } : {}),
+      ...(this.action.comment ? { comment: this.action.comment } : {}),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

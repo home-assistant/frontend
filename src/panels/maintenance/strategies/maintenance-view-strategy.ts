@@ -12,6 +12,8 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../../lovelace/cards/types";
+import { BINARY_STATE_ON } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
@@ -36,7 +38,11 @@ export const filterLowBatteryEntities = (
   entityIds: string[]
 ): string[] =>
   entityIds.filter((entityId) => {
-    const stateValue = parseFloat(hass.states[entityId]?.state ?? "");
+    const state = hass.states[entityId]?.state ?? "";
+    if (computeDomain(entityId) === "binary_sensor") {
+      return state === BINARY_STATE_ON;
+    }
+    const stateValue = parseFloat(state);
     return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
   });
 

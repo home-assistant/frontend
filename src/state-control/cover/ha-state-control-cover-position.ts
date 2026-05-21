@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
 import type { CoverEntity } from "../../data/cover";
@@ -26,9 +27,9 @@ export class HaStateControlCoverPosition extends LitElement {
     }
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
 
     this.hass.callService("cover", "set_cover_position", {
       entity_id: this.stateObj!.entity_id,

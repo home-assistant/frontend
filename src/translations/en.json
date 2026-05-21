@@ -1675,7 +1675,6 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
-        "add_entity_to": "Add to",
         "attributes": "Attributes",
         "history": "History",
         "aggregate": "5-minute aggregated",
@@ -1694,6 +1693,15 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
+          "title": "Add to",
+          "actions": {
+            "automation_trigger": "Create new automation using {target} as a trigger",
+            "automation_condition": "Create new automation using {target} as a condition",
+            "automation_action": "Create new automation using {target} in an action",
+            "script_action": "Create new script using {target} in an action",
+            "scene": "Create new scene using {target}"
+          },
+          "app_actions": "App actions",
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
         },
@@ -1751,7 +1759,7 @@
           "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
-          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum.",
+          "clean_areas_order_hint": "The order in which areas are cleaned may not be supported by your vacuum.",
           "other_areas": "Other areas"
         },
         "person": {
@@ -2818,6 +2826,7 @@
           },
           "state": {
             "update_available": "Update available",
+            "updating": "Updating...",
             "installed": "Installed",
             "not_installed": "Not installed",
             "not_available": "Not available"
@@ -2873,6 +2882,7 @@
           "dashboard": {
             "cpu_usage": "CPU usage",
             "ram_usage": "RAM usage",
+            "controls": "Controls",
             "app_running": "App is running",
             "app_stopped": "App is stopped",
             "current_version": "Current version: {version}",
@@ -2889,6 +2899,7 @@
             "failed_to_save": "Failed to save: {error}",
             "failed_to_reset": "Failed to reset: {error}",
             "failed_to_restart": "Failed to restart {name}",
+            "uninstalling": "Uninstalling...",
             "protection_mode": {
               "title": "Protection mode disabled!",
               "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
@@ -3165,7 +3176,7 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area.",
+            "no_linked_entities": "There are no entities directly linked to this area.",
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
@@ -4115,6 +4126,7 @@
               "energy_from_helper": "Pick a sensor which measures grid import in either of {unit}.",
               "energy_to_grid": "Energy exported to grid",
               "energy_to_helper": "Pick a sensor which measures grid export in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "import_cost": "Cost tracking",
               "import_cost_para": "Select how Home Assistant should keep track of the costs of the imported energy.",
               "no_cost_tracking": "Do not track costs",
@@ -4172,6 +4184,7 @@
             "dialog": {
               "header": "Configure solar panels",
               "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
@@ -4195,6 +4208,7 @@
               "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
               "power": "Battery power",
@@ -5043,6 +5057,11 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "comment": {
+              "label": "Comment",
+              "edit": "Edit comment",
+              "add": "Add comment"
+            },
             "leave": {
               "unsaved_new_title": "Save new automation?",
               "unsaved_new_text": "You can save your changes, or delete this automation. You can't undo this action.",
@@ -5147,6 +5166,7 @@
               "optional": "Optional",
               "edit_id": "Edit ID",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "duplicate_id_warning": "This trigger ID is used multiple times in this automation. Trigger IDs should be unique.",
               "re_order": "Re-order",
               "rename": "Rename",
               "cut": "Cut",
@@ -5572,10 +5592,13 @@
                 "trigger": {
                   "label": "Triggered by",
                   "no_triggers": "There are no triggers with ID's set in this automation. Edit a trigger and give it a Trigger ID name.",
+                  "duplicated_info": "This ID is used by multiple triggers. Trigger IDs should be unique.",
+                  "unavailable_info": "No trigger has the ID {id}. Set this ID on a trigger to use it.",
                   "id": "Trigger",
                   "description": {
                     "picker": "Tests if the automation has been triggered by a specific trigger.",
-                    "full": "If triggered by {id}"
+                    "full": "If triggered by {id}",
+                    "no_trigger": "No trigger selected"
                   }
                 },
                 "zone": {
@@ -6477,6 +6500,8 @@
             "service": "service"
           },
           "automation": {
+            "related_heading": "Related",
+            "automations_scripts_or_scenes": "automations, scripts or scenes",
             "automations_heading": "Automations",
             "automations": "automations",
             "no_automations": "No automations",
@@ -6488,24 +6513,18 @@
               "description": "Start with an empty automation from scratch"
             },
             "triggers": {
-              "title": "Use device as trigger",
-              "description": "When something happens to the device",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "title": "Use device as condition",
-              "description": "Only if a condition is met for the device",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "title": "Use device as action",
-              "description": "Do something on the device",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
-            "no_device_automations": "There are no automations available for this device."
+            "no_device_automations": "There are no automations, scripts or scenes available for this device."
           },
           "script": {
             "scripts_heading": "Scripts",
@@ -6516,10 +6535,6 @@
             "new": {
               "title": "Create new script",
               "description": "Start with an empty script from scratch"
-            },
-            "actions": {
-              "title": "Use device as action",
-              "description": "Do something on this device."
             }
           },
           "scene": {
@@ -6556,6 +6571,7 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
@@ -7913,6 +7929,78 @@
           "picker": {
             "title": "Select Z-Wave network",
             "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
+          },
+          "credentials": {
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
+            "users": {
+              "title": "Users",
+              "add": "Add user",
+              "edit": "Edit user",
+              "delete": "Delete user",
+              "delete_all": "Delete all users",
+              "name": "Name",
+              "type": "Type",
+              "no_users": "No users configured",
+              "unnamed_user": "User {index}",
+              "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
+              "user_types": {
+                "general": {
+                  "label": "General",
+                  "description": "Can operate the lock"
+                },
+                "programming": {
+                  "label": "Programming",
+                  "description": "Can program the device, manage users, and can operate the lock"
+                },
+                "non_access": {
+                  "label": "Non-access",
+                  "description": "Is recognized, but cannot open the lock (only sends events)"
+                },
+                "duress": {
+                  "label": "Duress",
+                  "description": "Can open the lock, but sends an alarm to the hub"
+                },
+                "disposable": {
+                  "label": "Disposable",
+                  "description": "Can open the lock once, disabled after first use"
+                },
+                "expiring": {
+                  "label": "Expiring",
+                  "description": "Can operate the lock. Access gets disabled after a certain time when first used."
+                },
+                "remote_only": {
+                  "label": "Remote only",
+                  "description": "Can only operate the lock remotely"
+                }
+              }
+            },
+            "credential_types": {
+              "pin_code": "PIN code",
+              "password": "Password"
+            },
+            "credential_data": {
+              "type": "Credential type",
+              "pin_code": "PIN code",
+              "password": "Password",
+              "placeholder": "{min}-{max} characters",
+              "placeholder_pin": "{min}-{max} digits"
+            },
+            "errors": {
+              "load_failed": "Failed to load credential information",
+              "save_failed": "Failed to save changes",
+              "empty_response": "The device did not return a response. Please try again.",
+              "no_user_management": "This device does not support user management. Users and credentials cannot be managed here.",
+              "no_compatible_credential_types": "This device does not support any credential types that can be managed here.",
+              "no_compatible_user_types": "This device has no user types that can be managed here. New users cannot be added.",
+              "name_required": "Please enter a name for this user.",
+              "credential_required": "Please enter a credential value.",
+              "credential_length": "Credential must be {min}-{max} characters.",
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "add_user_failed": "Could not add user. {message}."
+            },
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_delete_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone."
           }
         },
         "matter": {
@@ -8570,7 +8658,10 @@
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
-              "consumed_battery": "Consumed battery"
+              "consumed_battery": "Consumed battery",
+              "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
+              "named_grid_consumed": "Consumed {name}",
+              "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
@@ -8583,7 +8674,11 @@
               "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
-              "total_costs": "Total costs"
+              "total_costs": "Total costs",
+              "named_battery_charged": "{name} charged",
+              "named_battery_discharged": "{name} discharged",
+              "named_grid_imported": "{name} imported",
+              "named_grid_exported": "{name} exported"
             },
             "energy_solar_graph": {
               "production": "Production {name}",
@@ -8929,9 +9024,6 @@
             "tab_visibility": "Visibility",
             "tab_layout": "Layout",
             "paste_condition": "Paste condition",
-            "visibility": {
-              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
             "layout": {
               "full_width": "Full width",
               "full_width_helper": "Take up the full width of the section whatever its size",
@@ -8962,10 +9054,7 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
-            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]",
-            "visibility": {
-              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
-            }
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
           },
           "suggest_badge": {
             "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
@@ -9037,9 +9126,6 @@
               "background_opacity": "Opacity",
               "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
-            },
-            "visibility": {
-              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
             }
           },
           "suggest_card": {
@@ -9081,11 +9167,31 @@
             }
           },
           "condition-editor": {
-            "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
             "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
             "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+            "live_test_state": {
+              "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+              "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+              "invalid": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::invalid%]",
+              "unknown": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::unknown%]"
+            },
+            "visibility_status": {
+              "visible": {
+                "headline": "Current visibility: Visible",
+                "supporting": "All visibility conditions are met",
+                "supporting_empty": "No visibility conditions are set"
+              },
+              "hidden": {
+                "headline": "Current visibility: Hidden",
+                "supporting": "Not all visibility conditions are met"
+              },
+              "invalid": {
+                "headline": "Visibility status unknown",
+                "supporting": "One or more conditions have an invalid configuration"
+              }
+            },
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
@@ -9991,7 +10097,8 @@
                 "controls": "Controls"
               },
               "media-player-sound-mode": {
-                "label": "Media player sound mode"
+                "label": "Media player sound mode",
+                "sound_modes": "Sound modes"
               },
               "media-player-source": {
                 "label": "Media player source",
@@ -10191,6 +10298,37 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "temperature-forecast": {
+                "label": "Temperature forecast",
+                "no_forecast": "No forecast data available",
+                "failed_to_load": "Failed to load forecast: {error}",
+                "forecast_type": "Forecast type",
+                "forecast_type_options": {
+                  "daily": "Daily",
+                  "twice_daily": "Twice daily",
+                  "hourly": "Hourly"
+                },
+                "color": "Color",
+                "show_labels": "Show labels"
+              },
+              "precipitation-forecast": {
+                "label": "Precipitation forecast",
+                "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::no_forecast%]",
+                "failed_to_load": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::failed_to_load%]",
+                "forecast_type": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type%]",
+                "forecast_type_options": {
+                  "daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::daily%]",
+                  "twice_daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::twice_daily%]",
+                  "hourly": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::hourly%]"
+                },
+                "precipitation_type": "Precipitation type",
+                "precipitation_type_options": {
+                  "amount": "Amount",
+                  "probability": "Probability"
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::color%]",
+                "show_labels": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::show_labels%]"
               }
             }
           },
@@ -10237,7 +10375,54 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_card": "By card"
+            "by_card": "By card",
+            "search_entities": "Search entities",
+            "home": "[%key:ui::panel::config::automation::editor::home%]",
+            "unassigned": "[%key:ui::panel::config::automation::editor::unassigned%]",
+            "other_areas": "[%key:ui::panel::config::automation::editor::other_areas%]",
+            "entities": "Entities",
+            "helpers": "[%key:ui::panel::config::automation::editor::helpers%]",
+            "devices": "Devices",
+            "services": "[%key:ui::panel::config::automation::editor::services%]",
+            "browse_cards": "Browse all cards",
+            "more_cards": "+{count} more",
+            "content_empty_title": "Pick an entity to see suggestions",
+            "content_empty_description": "Or browse all card types.",
+            "no_search_results_title": "No entity matches your search",
+            "no_search_results_description": "Try a different keyword.",
+            "selected_entity": "Selected entity",
+            "suggestions_title": "Suggestions",
+            "not_found": "Can't find the card you want?",
+            "suggestions": {
+              "tile": "Tile",
+              "tile_toggle": "Tile - toggle",
+              "tile_brightness": "Tile - brightness",
+              "tile_color_temperature": "Tile - color temperature",
+              "tile_favorite_colors": "Tile - favorite colors",
+              "tile_open_close": "Tile - open/close",
+              "tile_position": "Tile - position",
+              "tile_tilt": "Tile - tilt",
+              "tile_hvac_modes": "Tile - HVAC modes",
+              "tile_playback_controls": "Tile - playback controls",
+              "tile_volume_slider": "Tile - volume slider",
+              "tile_speed": "Tile - speed",
+              "tile_preset_modes": "Tile - preset modes",
+              "tile_options": "Tile - options",
+              "tile_numeric_input": "Tile - numeric input",
+              "tile_date_picker": "Tile - date picker",
+              "tile_trend_graph": "Tile - trend graph",
+              "tile_lock_commands": "Tile - lock commands",
+              "tile_humidifier_toggle": "Tile - humidifier toggle",
+              "tile_humidifier_modes": "Tile - humidifier modes",
+              "tile_vacuum_commands": "Tile - vacuum commands",
+              "tile_mower_commands": "Tile - mower commands",
+              "tile_alarm_modes": "Tile - alarm modes",
+              "tile_counter_actions": "Tile - counter actions",
+              "tile_update_actions": "Tile - update actions",
+              "tile_operation_modes": "Tile - operation modes",
+              "calendar": "Calendar",
+              "todo_list": "To-do list"
+            }
           },
           "badge_picker": {
             "no_description": "No description available.",

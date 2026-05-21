@@ -161,7 +161,7 @@ class HaConfigAppDashboard extends LitElement {
     }
 
     try {
-      this._addon = await fetchHassioAddonInfo(this.hass, slug);
+      this._addon = await fetchHassioAddonInfo(this.hass.callWS, slug);
     } catch (err: any) {
       if (repositoryUrl) {
         try {
@@ -210,7 +210,7 @@ class HaConfigAppDashboard extends LitElement {
     }
 
     await addStoreRepository(this.hass, repositoryUrl);
-    this._addon = await fetchHassioAddonInfo(this.hass, slug);
+    this._addon = await fetchHassioAddonInfo(this.hass.callWS, slug);
   }
 
   private async _apiCalled(ev): Promise<void> {

@@ -21,7 +21,7 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-state-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -173,9 +173,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const entityState = stateObj.state;
 
     const isOffState =
-      !stateActive(stateObj) && !isUnavailableState(entityState);
+      !stateActive(stateObj) &&
+      entityState !== UNAVAILABLE &&
+      entityState !== UNKNOWN;
     const isUnavailable =
-      isUnavailableState(entityState) ||
+      entityState === UNAVAILABLE ||
+      entityState === UNKNOWN ||
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;

@@ -203,8 +203,14 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         : "") ||
       getStatisticLabel(this.hass, this._config.entity, this._metadata);
 
+    const interactive = !isExternalStatistic(this._config.entity);
+
     return html`
-      <ha-card @click=${this._handleClick} tabindex="0">
+      <ha-card
+        @click=${interactive ? this._handleClick : nothing}
+        .tabIndex=${interactive ? 0 : -1}
+        ?interactive=${interactive}
+      >
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
           <div class="icon">
@@ -398,8 +404,10 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          cursor: pointer;
           outline: none;
+        }
+        ha-card[interactive] {
+          cursor: pointer;
         }
 
         .header {

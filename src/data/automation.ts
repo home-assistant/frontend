@@ -1,3 +1,4 @@
+import { createContext } from "@lit/context";
 import type {
   Connection,
   HassEntityAttributeBase,
@@ -95,6 +96,7 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
+  comment?: string;
   /** @deprecated Use `trigger` instead */
   platform?: string;
   trigger: string;
@@ -240,6 +242,7 @@ export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 interface BaseCondition {
   condition: string;
   alias?: string;
+  comment?: string;
   enabled?: boolean;
   options?: Record<string, unknown>;
 }
@@ -488,12 +491,12 @@ export const migrateAutomationTrigger = (
 
 export const flattenTriggers = (
   triggers: undefined | Trigger | Trigger[]
-): Trigger[] => {
+): Exclude<Trigger, TriggerList>[] => {
   if (!triggers) {
     return [];
   }
 
-  const flatTriggers: Trigger[] = [];
+  const flatTriggers: Exclude<Trigger, TriggerList>[] = [];
 
   ensureArray(triggers).forEach((t) => {
     if ("triggers" in t) {
@@ -607,6 +610,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   delete: () => void;
   close: (focus?: boolean) => void;
+  editComment: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
@@ -668,6 +672,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
+  comment?: string;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
@@ -693,3 +698,7 @@ export interface ShowAutomationEditorParams {
   data?: Partial<AutomationConfig>;
   expanded?: boolean;
 }
+
+export const automationConfigContext = createContext<
+  AutomationConfig | undefined
+>("automationConfig");

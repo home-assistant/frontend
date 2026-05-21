@@ -111,7 +111,7 @@ export abstract class HuiElementEditor<
 
     this.updateComplete.then(() => {
       fireEvent(this, "config-changed", {
-        config: this.value! as any,
+        config: this.value!,
         error: this._errors?.join(", "),
         guiModeAvailable: !(
           this.hasWarning ||

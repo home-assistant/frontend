@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
   mdiDelete,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
@@ -14,6 +15,7 @@ import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import "../ha-automation-comment";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -72,6 +74,22 @@ export default class HaAutomationSidebarOption extends LitElement {
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
             </ha-dropdown-item>
+            <ha-dropdown-item
+              slot="menu-items"
+              value="edit_comment"
+              .disabled=${!!disabled}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiCommentEditOutline}
+              ></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.comment.${this.config.comment ? "edit" : "add"}`
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-dropdown-item>
 
             <ha-dropdown-item
               slot="menu-items"
@@ -126,6 +144,12 @@ export default class HaAutomationSidebarOption extends LitElement {
           `}
 
       <div class="description">${description}</div>
+      ${!this.config.defaultOption && this.config.comment?.trim()
+        ? html`<ha-automation-comment
+            @edit-comment=${this.config.editComment}
+            .comment=${this.config.comment}
+          ></ha-automation-comment>`
+        : nothing}
     </ha-automation-sidebar-card>`;
   }
 
@@ -139,6 +163,9 @@ export default class HaAutomationSidebarOption extends LitElement {
     switch (action) {
       case "rename":
         this.config.rename();
+        break;
+      case "edit_comment":
+        this.config.editComment();
         break;
       case "duplicate":
         this.config.duplicate();

@@ -2,7 +2,7 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import type { ColorTempSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
@@ -94,10 +94,10 @@ export class HaColorTempSelector extends LitElement {
     }
   );
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: Number((ev.detail as any).value),
+      value: Number(ev.detail.value),
     });
   }
 }

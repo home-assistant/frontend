@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateValue } from "../../../data/date";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 
 @customElement("more-info-date")
@@ -21,10 +21,9 @@ class MoreInfoDate extends LitElement {
     return html`
       <ha-date-input
         .locale=${this.hass.locale}
-        .value=${isUnavailableState(this.stateObj.state)
+        .value=${this.stateObj.state === UNKNOWN
           ? undefined
           : this.stateObj.state}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
         @value-changed=${this._dateChanged}
       >
       </ha-date-input>

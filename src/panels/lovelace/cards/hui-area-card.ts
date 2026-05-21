@@ -32,7 +32,7 @@ import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
@@ -419,7 +419,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           const stateObj = this.hass.states[area.temperature_entity_id] as
             | HassEntity
             | undefined;
-          return !stateObj || isUnavailableState(stateObj.state)
+          return !stateObj ||
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN
             ? ""
             : this.hass.formatEntityState(stateObj);
         }
@@ -427,7 +429,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           const stateObj = this.hass.states[area.humidity_entity_id] as
             | HassEntity
             | undefined;
-          return !stateObj || isUnavailableState(stateObj.state)
+          return !stateObj ||
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN
             ? ""
             : this.hass.formatEntityState(stateObj);
         }
@@ -444,7 +448,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           const stateObj = this.hass.states[entityId];
           if (
             stateObj &&
-            !isUnavailableState(stateObj.state) &&
+            stateObj.state !== UNAVAILABLE &&
+            stateObj.state !== UNKNOWN &&
             isNumericState(stateObj) &&
             !isNaN(Number(stateObj.state))
           ) {
