@@ -2,7 +2,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface AreaAddToDialogParams {
   areaId: string;
-  mode: "automation" | "script" | "scene";
   entityIds: string[];
 }
 

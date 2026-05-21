@@ -1,4 +1,7 @@
+import type { CSSResultGroup } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { consume, type ContextType } from "@lit/context";
+import { customElement, state } from "lit/decorators";
 import {
   mdiPalette,
   mdiPlayCircleOutline,
@@ -6,9 +9,6 @@ import {
   mdiRobotOutline,
   mdiScriptTextOutline,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-adaptive-dialog";
@@ -82,75 +82,70 @@ class DialogAreaAddTo extends LitElement {
     const area = this._areas[this._params.areaId];
     const areaName = computeAreaName(area) || this._params.areaId;
 
-    switch (this._params.mode) {
-      case "automation":
-        return html`
-          <h3 class="section-header">
-            ${this._i18n.localize(
-              "ui.panel.config.devices.automation.automations_heading"
-            )}
-          </h3>
-          <ha-list>
-            ${this._renderActionItem(
-              "automation_trigger",
-              mdiRobotOutline,
-              "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-              areaName
-            )}
-            ${this._renderActionItem(
-              "automation_condition",
-              mdiPlaylistCheck,
-              "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-              areaName
-            )}
-            ${this._renderActionItem(
-              "automation_action",
-              mdiPlayCircleOutline,
-              "ui.dialogs.more_info_control.add_to.actions.automation_action",
-              areaName
-            )}
-          </ha-list>
-        `;
-      case "script":
-        return html`
-          <h3 class="section-header">
-            ${this._i18n.localize(
-              "ui.panel.config.devices.script.scripts_heading"
-            )}
-          </h3>
-          <ha-list>
-            ${this._renderActionItem(
-              "script_action",
-              mdiScriptTextOutline,
-              "ui.dialogs.more_info_control.add_to.actions.script_action",
-              areaName
-            )}
-          </ha-list>
-        `;
-      case "scene":
-        return html`
-          <h3 class="section-header">
-            ${this._i18n.localize(
-              "ui.panel.config.devices.scene.scenes_heading"
-            )}
-          </h3>
-          <ha-list>
-            <ha-list-item
-              graphic="icon"
-              @click=${this._handleCreateScene}
-              data-dialog="close"
-            >
-              <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
-              ${this._i18n.localize(
-                "ui.dialogs.more_info_control.add_to.actions.scene",
-                { target: areaName }
-              )}
-            </ha-list-item>
-          </ha-list>
-        `;
-      default:
-        return nothing;
+    return html`
+      <h3 class="section-header">
+        ${this._i18n.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        )}
+      </h3>
+      <ha-list>
+        ${this._renderActionItem(
+          "automation_trigger",
+          mdiRobotOutline,
+          "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
+          areaName
+        )}
+        ${this._renderActionItem(
+          "automation_condition",
+          mdiPlaylistCheck,
+          "ui.dialogs.more_info_control.add_to.actions.automation_condition",
+          areaName
+        )}
+        ${this._renderActionItem(
+          "automation_action",
+          mdiPlayCircleOutline,
+          "ui.dialogs.more_info_control.add_to.actions.automation_action",
+          areaName
+        )}
+      </ha-list>
+      <h3 class="section-header">
+        ${this._i18n.localize("ui.panel.config.devices.script.scripts_heading")}
+      </h3>
+      <ha-list>
+        ${this._renderActionItem(
+          "script_action",
+          mdiScriptTextOutline,
+          "ui.dialogs.more_info_control.add_to.actions.script_action",
+          areaName
+        )}
+      </ha-list>
+      ${this._renderSceneSection(areaName)}
+    `;
+  }
+
+  private _renderSceneSection(areaName: string) {
+    if (!this._params?.entityIds.length) {
+      return nothing;
     }
+
+    return html`
+      <h3 class="section-header">
+        ${this._i18n.localize("ui.panel.config.devices.scene.scenes_heading")}
+      </h3>
+      <ha-list>
+        <ha-list-item
+          graphic="icon"
+          @click=${this._handleCreateScene}
+          data-dialog="close"
+        >
+          <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
+          ${this._i18n.localize(
+            "ui.dialogs.more_info_control.add_to.actions.scene",
+            { target: areaName }
+          )}
+        </ha-list-item>
+      </ha-list>
+    `;
   }
 
   private _renderActionItem(
