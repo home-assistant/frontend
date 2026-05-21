@@ -400,33 +400,40 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                   ></ha-icon-button>
                 </div>`
               : nothing}
-            <div class="action-buttons">
-              ${area.picture
-                ? nothing
-                : html`<ha-button
-                    appearance="filled"
-                    .entry=${area}
-                    @click=${this._showSettings}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiImagePlus}
-                      slot="start"
-                    ></ha-svg-icon>
-                    ${this.hass.localize("ui.panel.config.areas.add_picture")}
-                  </ha-button>`}
-              ${this._newTriggersConditions
-                ? html`<ha-button
-                    appearance="filled"
-                    variant="brand"
-                    @click=${this._showAddToDialog}
-                  >
-                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.dialogs.more_info_control.add_to.title"
-                    )}
-                  </ha-button>`
-                : nothing}
-            </div>
+            ${area.picture && !this._newTriggersConditions
+              ? nothing
+              : html`<div class="action-buttons">
+                  ${area.picture
+                    ? nothing
+                    : html`<ha-button
+                        appearance="filled"
+                        .entry=${area}
+                        @click=${this._showSettings}
+                      >
+                        <ha-svg-icon
+                          .path=${mdiImagePlus}
+                          slot="start"
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.areas.add_picture"
+                        )}
+                      </ha-button>`}
+                  ${this._newTriggersConditions
+                    ? html`<ha-button
+                        appearance="filled"
+                        variant="brand"
+                        @click=${this._showAddToDialog}
+                      >
+                        <ha-svg-icon
+                          slot="start"
+                          .path=${mdiPlus}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.more_info_control.add_to.title"
+                        )}
+                      </ha-button>`
+                    : nothing}
+                </div>`}
             <ha-card
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
