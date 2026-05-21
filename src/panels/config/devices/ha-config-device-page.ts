@@ -396,6 +396,8 @@ export class HaConfigDevicePage extends LitElement {
             )}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
+            width="24"
+            height="24"
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
