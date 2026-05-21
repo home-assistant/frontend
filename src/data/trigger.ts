@@ -8,6 +8,7 @@ import type {
   Trigger,
   TriggerList,
 } from "./automation";
+import { flattenTriggers } from "./automation";
 import type { Selector, TargetSelector } from "./selector";
 
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
@@ -56,22 +57,10 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
 export const isTriggerList = (trigger: Trigger): trigger is TriggerList =>
   "triggers" in trigger;
 
-export const getTriggerIds = (triggers: Trigger[]): string[] => {
-  const ids: string[] = [];
-  for (const trigger of triggers) {
-    if (isTriggerList(trigger)) {
-      if (trigger.triggers) {
-        const nested = Array.isArray(trigger.triggers)
-          ? trigger.triggers
-          : [trigger.triggers];
-        ids.push(...getTriggerIds(nested));
-      }
-    } else if (trigger.id) {
-      ids.push(trigger.id);
-    }
-  }
-  return ids;
-};
+export const getTriggerIds = (triggers: Trigger[]): string[] =>
+  flattenTriggers(triggers)
+    .map((trigger) => trigger.id)
+    .filter((id): id is string => !!id);
 
 export const getNextNumericTriggerId = (triggers: Trigger[]): string => {
   let max = 0;

@@ -58,9 +58,7 @@ import type {
   Condition,
   ConditionSidebarConfig,
   PlatformCondition,
-  Trigger,
   TriggerCondition,
-  TriggerList,
 } from "../../../../data/automation";
 import {
   automationConfigContext,
@@ -618,10 +616,7 @@ export default class HaAutomationConditionRow extends LitElement {
         .trigger=${info.triggerType}
       ></ha-trigger-icon>`;
 
-      const isDuplicateId =
-        ensureArray(this._automationConfig?.triggers || []).filter(
-          (trigger) => (trigger as Exclude<Trigger, TriggerList>).id === id
-        ).length > 1;
+      const isDuplicateId = info.count > 1;
 
       return html`
         <div class="trigger">

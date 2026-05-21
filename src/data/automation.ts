@@ -489,12 +489,12 @@ export const migrateAutomationTrigger = (
 
 export const flattenTriggers = (
   triggers: undefined | Trigger | Trigger[]
-): Trigger[] => {
+): Exclude<Trigger, TriggerList>[] => {
   if (!triggers) {
     return [];
   }
 
-  const flatTriggers: Trigger[] = [];
+  const flatTriggers: Exclude<Trigger, TriggerList>[] = [];
 
   ensureArray(triggers).forEach((t) => {
     if ("triggers" in t) {

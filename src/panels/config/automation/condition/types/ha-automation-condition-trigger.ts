@@ -201,16 +201,6 @@ export class HaTriggerCondition extends LitElement {
       gap: var(--ha-space-1);
       color: var(--ha-color-on-neutral-normal);
     }
-    .option .duplicated {
-      color: var(--ha-color-on-primary-normal);
-      font-weight: var(--ha-font-weight-medium);
-      background-color: var(--ha-color-fill-primary-normal-resting);
-      border-radius: var(--ha-border-radius-lg);
-      padding: 0 var(--ha-space-1);
-    }
-    .option .duplicated:hover {
-      background-color: var(--ha-color-fill-primary-normal-hover);
-    }
   `;
 }
 
