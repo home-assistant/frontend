@@ -15,7 +15,7 @@ import {
   type FuseWeightedKey,
 } from "../resources/fuseMultiTerm";
 import { DEFAULT_SEARCH_KEYS } from "./ha-picker-combo-box";
-import type { PickerListItem } from "./ha-picker-list";
+import type { HaPickerList, PickerListItem } from "./ha-picker-list";
 import "./ha-picker-list";
 import "./ha-picker-search";
 import type { HaPickerSearch } from "./ha-picker-search";
@@ -66,13 +66,14 @@ export class HaPickerSearchList<
 
   @query("ha-picker-search") private _searchEl?: HaPickerSearch;
 
-  public async focus() {
-    await this.updateComplete;
+  @query("ha-picker-list") private _listEl?: HaPickerList;
+
+  public focus() {
     this._searchEl?.focus();
   }
 
-  public refreshItems() {
-    this.requestUpdate();
+  public reset() {
+    this._search = "";
   }
 
   protected render() {
@@ -89,6 +90,7 @@ export class HaPickerSearchList<
         .value=${this._search}
         .placeholder=${this.searchPlaceholder ?? ""}
         @search-changed=${this._handleSearchChanged}
+        @keydown=${this._handleSearchKeydown}
       ></ha-picker-search>
       <ha-picker-list
         .items=${displayItems}
@@ -100,6 +102,35 @@ export class HaPickerSearchList<
       ></ha-picker-list>
     `;
   }
+
+  // Forward nav keys from search input to list (focus stays in search).
+  private _handleSearchKeydown = (ev: KeyboardEvent) => {
+    const list = this._listEl;
+    if (!list) return;
+    switch (ev.key) {
+      case "ArrowDown":
+        ev.preventDefault();
+        list.selectNext(ev);
+        break;
+      case "ArrowUp":
+        ev.preventDefault();
+        list.selectPrev(ev);
+        break;
+      case "Home":
+        ev.preventDefault();
+        list.selectFirst(ev);
+        break;
+      case "End":
+        ev.preventDefault();
+        list.selectLast(ev);
+        break;
+      case "Enter":
+        ev.preventDefault();
+        list.commitHighlighted(ev.ctrlKey || ev.metaKey);
+        break;
+      default:
+    }
+  };
 
   private _fuseIndex = memoizeOne(
     (items: T[], searchKeys?: FuseWeightedKey[]) =>

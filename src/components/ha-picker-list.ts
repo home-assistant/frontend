@@ -38,9 +38,7 @@ export type PickerListEntry = PickerListItem | string;
 
 interface PickerListRowElement extends HTMLDivElement {
   index: number;
-  value: string;
-  disabled?: boolean;
-  onSelect?: PickerListItem["onSelect"];
+  item: PickerListItem;
 }
 
 const DEFAULT_ROW: RenderItemFunction<PickerListItem> = (item) =>
@@ -76,7 +74,7 @@ export class HaPickerList extends LitElement {
 
   @state() private _valuePinned = true;
 
-  @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
+  @query("lit-virtualizer") private _virtualizer?: LitVirtualizer;
 
   private _unsubscribeKeys?: () => void;
 
@@ -95,10 +93,16 @@ export class HaPickerList extends LitElement {
     this._unsubscribeKeys?.();
   }
 
-  public async focus() {
-    await this.updateComplete;
-    this.virtualizerElement?.focus();
-  }
+  public selectNext = (ev?: KeyboardEvent) => this._next(ev);
+
+  public selectPrev = (ev?: KeyboardEvent) => this._prev(ev);
+
+  public selectFirst = (ev?: KeyboardEvent) => this._first(ev);
+
+  public selectLast = (ev?: KeyboardEvent) => this._last(ev);
+
+  public commitHighlighted = (newTab = false) =>
+    this._commitAt(this._highlightedIndex, newTab);
 
   protected render() {
     const items = this.items.length
@@ -140,10 +144,8 @@ export class HaPickerList extends LitElement {
     return html`<div
       id=${`list-item-${index}`}
       class="row ${this.value === item.id ? "current-value" : ""}"
-      .value=${item.id}
+      .item=${item}
       .index=${index}
-      .disabled=${item.disabled}
-      .onSelect=${item.onSelect}
       @click=${this._handleClick}
     >
       ${renderer(item as PickerListItem, index)}
@@ -175,12 +177,8 @@ export class HaPickerList extends LitElement {
   ) => {
     ev.stopPropagation();
     const row = ev.currentTarget;
-    if (row.disabled) return;
-    this._dispatchSelection(
-      { id: row.value, onSelect: row.onSelect } as PickerListItem,
-      row.index,
-      ev.ctrlKey || ev.metaKey
-    );
+    if (row.item.disabled) return;
+    this._dispatchSelection(row.item, row.index, ev.ctrlKey || ev.metaKey);
   };
 
   private _dispatchSelection(
@@ -218,15 +216,13 @@ export class HaPickerList extends LitElement {
   };
 
   private _resetHighlight = () => {
-    this.virtualizerElement
-      ?.querySelector(".selected")
-      ?.classList.remove("selected");
+    this._virtualizer?.querySelector(".selected")?.classList.remove("selected");
     this._highlightedIndex = -1;
   };
 
   private _initializeHighlight() {
-    if (!this.virtualizerElement) return;
-    const items = this.virtualizerElement.items as PickerListEntry[];
+    if (!this._virtualizer) return;
+    const items = this._virtualizer.items as PickerListEntry[];
     if (this.value) {
       const i = items.findIndex(
         (item) => typeof item !== "string" && item.id === this.value
@@ -242,9 +238,10 @@ export class HaPickerList extends LitElement {
 
   private _initialPinIndex(): number {
     if (!this.value) return 0;
-    return this.items.findIndex(
+    const i = this.items.findIndex(
       (item) => typeof item !== "string" && item.id === this.value
     );
+    return i === -1 ? 0 : i;
   }
 
   private _isPickable(item: PickerListEntry | undefined): boolean {
@@ -252,8 +249,8 @@ export class HaPickerList extends LitElement {
   }
 
   private _step(direction: 1 | -1) {
-    if (!this.virtualizerElement) return;
-    const items = this.virtualizerElement.items as PickerListEntry[];
+    if (!this._virtualizer) return;
+    const items = this._virtualizer.items as PickerListEntry[];
     if (!items.length) return;
     let i = this._highlightedIndex + direction;
     const guard = items.length;
@@ -288,29 +285,26 @@ export class HaPickerList extends LitElement {
 
   private _first = (ev?: KeyboardEvent) => {
     ev?.preventDefault();
-    if (!this.virtualizerElement) return;
-    const items = this.virtualizerElement.items as PickerListEntry[];
-    for (let i = 0; i < items.length; i++) {
-      if (this._isPickable(items[i])) {
-        this._highlightedIndex = i;
-        this._scrollToHighlight();
-        return;
-      }
-    }
+    this._jumpTo(0, 1);
   };
 
   private _last = (ev?: KeyboardEvent) => {
     ev?.preventDefault();
-    if (!this.virtualizerElement) return;
-    const items = this.virtualizerElement.items as PickerListEntry[];
-    for (let i = items.length - 1; i >= 0; i--) {
+    if (!this._virtualizer) return;
+    this._jumpTo(this._virtualizer.items.length - 1, -1);
+  };
+
+  private _jumpTo(start: number, direction: 1 | -1) {
+    if (!this._virtualizer) return;
+    const items = this._virtualizer.items as PickerListEntry[];
+    for (let i = start; i >= 0 && i < items.length; i += direction) {
       if (this._isPickable(items[i])) {
         this._highlightedIndex = i;
         this._scrollToHighlight();
         return;
       }
     }
-  };
+  }
 
   private _commitHighlight = (ev: KeyboardEvent) => {
     this._commitAt(this._highlightedIndex, ev.ctrlKey || ev.metaKey);
@@ -321,25 +315,19 @@ export class HaPickerList extends LitElement {
   };
 
   private _commitAt(index: number, newTab: boolean) {
-    if (index === -1 || !this.virtualizerElement) return;
-    const item = this.virtualizerElement.items[index] as PickerListEntry;
-    if (typeof item === "string") return;
-    const row = this.virtualizerElement.element(
-      index
-    ) as PickerListRowElement | null;
-    if (!row || row.disabled) return;
+    if (index === -1 || !this._virtualizer) return;
+    const item = this._virtualizer.items[index] as PickerListEntry;
+    if (typeof item === "string" || item.disabled) return;
     this._dispatchSelection(item, index, newTab);
   }
 
   private _scrollToHighlight() {
-    this.virtualizerElement
-      ?.querySelector(".selected")
-      ?.classList.remove("selected");
-    this.virtualizerElement
+    this._virtualizer?.querySelector(".selected")?.classList.remove("selected");
+    this._virtualizer
       ?.element(this._highlightedIndex)
       ?.scrollIntoView({ block: "nearest" });
     requestAnimationFrame(() => {
-      this.virtualizerElement
+      this._virtualizer
         ?.querySelector(`#list-item-${this._highlightedIndex}`)
         ?.classList.add("selected");
     });

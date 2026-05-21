@@ -27,7 +27,10 @@ import "../ha-picker-field";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-picker-popover";
 import "../ha-picker-search-list";
-import type { PickerSearchFn } from "../ha-picker-search-list";
+import type {
+  HaPickerSearchList,
+  PickerSearchFn,
+} from "../ha-picker-search-list";
 import "../ha-svg-icon";
 import "./state-badge";
 
@@ -124,6 +127,8 @@ export class HaEntityPicker extends LitElement {
 
   @query(".trigger") private _trigger?: HTMLElement;
 
+  @query("ha-picker-search-list") private _searchList?: HaPickerSearchList;
+
   @state() private _pickerOpen = false;
 
   @state() private _pendingEntityId?: string;
@@ -145,7 +150,7 @@ export class HaEntityPicker extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
-    // Load title translations so it is available when the combo-box opens
+    // Preload title translations so they're ready when the dropdown opens.
     this.hass.loadBackendTranslation("title");
   }
 
@@ -432,6 +437,7 @@ export class HaEntityPicker extends LitElement {
       this._setValue(pending);
     }
     this._pickerOpen = false;
+    this._searchList?.reset();
   };
 
   private _handleItemSelected = (

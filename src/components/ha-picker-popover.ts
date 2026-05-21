@@ -8,6 +8,7 @@ import {
   type PropertyValues,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-bottom-sheet";
 
@@ -132,6 +133,14 @@ export class HaPickerPopover extends LitElement {
   private _handleShown = () => {
     this._contentReady = true;
     fireEvent(this, "opened");
+    // Native [autofocus] fires before the popover is visible; refocus
+    // a slotted search component after projection.
+    requestAnimationFrame(() => {
+      const focusable = this.querySelector(
+        "ha-picker-search-list, ha-picker-search"
+      ) as (HTMLElement & { focus?: () => void }) | null;
+      focusable?.focus?.();
+    });
   };
 
   private _handleHidden = (ev: Event) => {
@@ -166,7 +175,7 @@ export class HaPickerPopover extends LitElement {
     return html`
       <wa-popover
         .open=${this._showing}
-        style="--body-width: ${this._bodyWidth}px;"
+        style=${styleMap({ "--body-width": `${this._bodyWidth}px` })}
         without-arrow
         distance="-4"
         .placement=${this.placement}

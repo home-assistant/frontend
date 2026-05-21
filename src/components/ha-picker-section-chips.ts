@@ -38,9 +38,9 @@ export class HaPickerSectionChips extends LitElement {
     `;
   }
 
-  private _preventBlur(ev: Event) {
+  private _preventBlur = (ev: Event) => {
     ev.preventDefault();
-  }
+  };
 
   private _handleClick = (ev: Event) => {
     const id = (ev.currentTarget as HTMLElement).dataset.sectionId;
@@ -62,6 +62,9 @@ export class HaPickerSectionChips extends LitElement {
       overflow-x: auto;
       overflow-y: hidden;
       scrollbar-width: none;
+      /* Room for the chip's focus ring (clipped by overflow-y: hidden). */
+      padding: var(--ha-space-1) 0;
+      margin: calc(-1 * var(--ha-space-1)) 0;
     }
     ha-chip-set::-webkit-scrollbar {
       display: none;

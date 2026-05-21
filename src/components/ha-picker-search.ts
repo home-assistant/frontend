@@ -16,9 +16,9 @@ export class HaPickerSearch extends LitElement {
 
   @query("ha-input-search") private _input?: HaInputSearch;
 
-  public async focus() {
-    await this.updateComplete;
-    this._input?.focus();
+  public focus() {
+    // ha-input doesn't expose focus(); reach the wa-input it wraps.
+    this._input?.shadowRoot?.querySelector<HTMLElement>("wa-input")?.focus();
   }
 
   protected render() {
