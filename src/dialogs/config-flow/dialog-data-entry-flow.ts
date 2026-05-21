@@ -629,31 +629,33 @@ class DataEntryFlowDialog extends LitElement {
           carryOverDevices: this._devices(
             this._params!.flowConfig.showDevices,
             Object.values(this.hass.devices),
-            _step.type === "create_entry"
-              ? (_step.result as ConfigEntry)?.entry_id
-              : undefined,
+            _step.type === "create_entry" ? _step.result?.entry_id : undefined,
             this._params!.carryOverDevices
           ).map((device) => device.id),
           dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "options_flow") {
-        showOptionsFlowDialog(this, (_step.result as ConfigEntry)!, {
+        showOptionsFlowDialog(this, _step.result!, {
           continueFlowId: _step.next_flow[1],
           navigateToResult: this._params!.navigateToResult,
           dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "config_subentries_flow") {
-        showSubConfigFlowDialog(this, (_step.result as ConfigEntry)!, "", {
+        showSubConfigFlowDialog(this, _step.result!, "", {
           continueFlowId: _step.next_flow[1],
           navigateToResult: this._params!.navigateToResult,
           dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "repair_flow") {
-        showRepairsFlowDialog(this, (_step.result as RepairsIssue)!, {
-          continueFlowId: _step.next_flow[1],
-          navigateToResult: this._params!.navigateToResult,
-          dialogClosedCallback: this._params!.dialogClosedCallback,
-        });
+        showRepairsFlowDialog(
+          this,
+          (_step.result as unknown as RepairsIssue)!,
+          {
+            continueFlowId: _step.next_flow[1],
+            navigateToResult: this._params!.navigateToResult,
+            dialogClosedCallback: this._params!.dialogClosedCallback,
+          }
+        );
       } else {
         this.closeDialog();
         showAlertDialog(this, {

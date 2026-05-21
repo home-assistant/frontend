@@ -60,27 +60,31 @@ export interface DataEntryFlowStepExternal {
   translation_domain?: string;
 }
 
-export interface DataEntryFlowStepCreateEntry {
+export interface DataEntryFlowStepCreateEntry<
+  Tresult extends ConfigEntry | RepairsIssue = ConfigEntry,
+> {
   type: "create_entry";
   version: number;
   flow_id: string;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
-  result?: ConfigEntry | RepairsIssue;
+  result?: Tresult;
   description: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }
 
-export interface DataEntryFlowStepAbort {
+export interface DataEntryFlowStepAbort<
+  Tresult extends ConfigEntry | RepairsIssue = ConfigEntry,
+> {
   type: "abort";
   flow_id: string;
   handler: string;
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
-  result?: ConfigEntry | RepairsIssue;
+  result?: Tresult;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
 }
 

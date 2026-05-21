@@ -15,6 +15,7 @@ import type { HaInput } from "../../components/input/ha-input";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
+import type { ConfigEntry } from "../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
@@ -40,7 +41,8 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
+  @property({ attribute: false })
+  public step!: DataEntryFlowStepCreateEntry<ConfigEntry>;
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
@@ -79,7 +81,7 @@ class StepFlowCreateEntry extends LitElement {
     if (
       this.devices.length !== 1 ||
       this.devices[0].primary_config_entry !== this.step.result?.entry_id ||
-      this.step.result.domain === "voip"
+      this.step.result?.domain === "voip"
     ) {
       return;
     }
