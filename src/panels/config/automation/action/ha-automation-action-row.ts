@@ -7,6 +7,8 @@ import {
   mdiArrowUp,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -34,6 +36,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/automation/ha-automation-row";
@@ -294,6 +297,11 @@ export default class HaAutomationActionRow extends LitElement {
             ?.target
         : undefined;
 
+    const commentTooltipText = truncateWithEllipsis(
+      this.action.comment?.trim() || "",
+      250
+    );
+
     return html`
       ${type === "service" && "action" in this.action && this.action.action
         ? html`
@@ -328,6 +336,21 @@ export default class HaAutomationActionRow extends LitElement {
               actionHasTarget && !this._isNew,
               serviceTargetSpec
             )
+          : nothing}
+        ${commentTooltipText
+          ? html`
+              <ha-svg-icon
+                id="comment-icon"
+                .path=${mdiCommentTextOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.comment.label"
+                )}
+                class="comment-indicator"
+              ></ha-svg-icon
+              ><ha-tooltip for="comment-icon"
+                ><p>${commentTooltipText}</p></ha-tooltip
+              >
+            `
           : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
@@ -381,6 +404,14 @@ export default class HaAutomationActionRow extends LitElement {
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.rename"
+            )
+          )}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="edit_comment">
+          <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+          ${this._renderOverflowLabel(
+            this.hass.localize(
+              `ui.panel.config.automation.editor.comment.${this.action.comment ? "edit" : "add"}`
             )
           )}
         </ha-dropdown-item>
@@ -910,6 +941,38 @@ export default class HaAutomationActionRow extends LitElement {
     }
   };
 
+  private _editCommentAction = async (): Promise<void> => {
+    const comment = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.comment.${this.action.comment ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.comment.label"
+      ),
+      inputType: "string",
+      defaultValue: this.action.comment,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (comment !== null) {
+      const value = { ...this.action };
+      if (comment === "") {
+        delete value.comment;
+      } else {
+        value.comment = comment;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this._actionEditor?.yamlEditor?.setValue(value);
+      }
+    }
+  };
+
   private _duplicateAction = () => {
     fireEvent(this, "duplicate");
   };
@@ -1026,6 +1089,7 @@ export default class HaAutomationActionRow extends LitElement {
       rename: () => {
         this._renameAction();
       },
+      editComment: this._editCommentAction,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -1120,6 +1184,9 @@ export default class HaAutomationActionRow extends LitElement {
         break;
       case "rename":
         this._renameAction();
+        break;
+      case "edit_comment":
+        this._editCommentAction();
         break;
       case "duplicate":
         this._duplicateAction();

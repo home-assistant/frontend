@@ -3,6 +3,7 @@ import {
   mdiAppleKeyboardCommand,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
+  mdiCommentEditOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -26,8 +27,8 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
-import { domainToName } from "../../../../data/integration";
 import type { DomainManifestLookup } from "../../../../data/integration";
+import { domainToName } from "../../../../data/integration";
 import type {
   NonConditionAction,
   RepeatAction,
@@ -38,6 +39,7 @@ import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
+import "../ha-automation-comment";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
@@ -171,6 +173,15 @@ export default class HaAutomationSidebarAction extends LitElement {
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.rename"
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
+      </ha-dropdown-item>
+      <ha-dropdown-item slot="menu-items" value="edit_comment">
+        <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.comment.${this.config.config.action.comment ? "edit" : "add"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
@@ -377,6 +388,12 @@ export default class HaAutomationSidebarAction extends LitElement {
               @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-action-editor>`
           )}
+      ${this.config.config.action.comment?.trim() && !this.yamlMode
+        ? html`<ha-automation-comment
+            @edit-comment=${this.config.editComment}
+            .comment=${this.config.config.action.comment}
+          ></ha-automation-comment>`
+        : nothing}
     </ha-automation-sidebar-card>`;
   }
 
@@ -424,6 +441,9 @@ export default class HaAutomationSidebarAction extends LitElement {
     switch (action) {
       case "rename":
         this.config.rename();
+        break;
+      case "edit_comment":
+        this.config.editComment();
         break;
       case "run":
         this.config.run();

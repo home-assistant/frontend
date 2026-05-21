@@ -1,18 +1,24 @@
-import { mdiAppleKeyboardCommand, mdiDelete, mdiPlaylistEdit } from "@mdi/js";
+import {
+  mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
+  mdiDelete,
+  mdiPlaylistEdit,
+} from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import "../ha-automation-comment";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-script-field")
 export default class HaAutomationSidebarScriptField extends LitElement {
@@ -62,6 +68,15 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
+      <ha-dropdown-item slot="menu-items" value="edit_comment">
+        <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.comment.${this.config.config.field.description ? "edit" : "add"}`
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
+      </ha-dropdown-item>
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -121,6 +136,12 @@ export default class HaAutomationSidebarScriptField extends LitElement {
           @yaml-changed=${this._yamlChangedSidebar}
         ></ha-script-field-editor>`
       )}
+      ${this.config.config.field.description?.trim() && !this.yamlMode
+        ? html`<ha-automation-comment
+            @edit-comment=${this.config.editComment}
+            .comment=${this.config.config.field.description}
+          ></ha-automation-comment>`
+        : nothing}
     </ha-automation-sidebar-card>`;
   }
 
@@ -167,6 +188,9 @@ export default class HaAutomationSidebarScriptField extends LitElement {
     switch (action) {
       case "toggle_yaml_mode":
         this._toggleYamlMode();
+        break;
+      case "edit_comment":
+        this.config.editComment();
         break;
       case "delete":
         this.config.delete();

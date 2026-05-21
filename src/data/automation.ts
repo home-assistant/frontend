@@ -95,6 +95,7 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
+  comment?: string;
   /** @deprecated Use `trigger` instead */
   platform?: string;
   trigger: string;
@@ -240,6 +241,7 @@ export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 interface BaseCondition {
   condition: string;
   alias?: string;
+  comment?: string;
   enabled?: boolean;
   options?: Record<string, unknown>;
 }
@@ -607,6 +609,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   delete: () => void;
   close: (focus?: boolean) => void;
+  editComment: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
@@ -668,6 +671,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
+  comment?: string;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {

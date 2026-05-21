@@ -33,6 +33,7 @@ export interface PromptDialogParams extends BaseDialogBoxParams {
   inputMin?: number | string;
   inputMax?: number | string;
   action?: (value?: string) => Promise<void>;
+  multiline?: boolean;
 }
 
 export interface DialogBoxParams

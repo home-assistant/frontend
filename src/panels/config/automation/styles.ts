@@ -52,6 +52,18 @@ export const rowStyles = css`
   ha-automation-row-event-chip.event-chip {
     position: absolute;
   }
+
+  .comment-indicator {
+    color: var(--ha-color-on-neutral-normal);
+  }
+  .comment-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .comment-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
+  }
 `;
 
 export const editorStyles = css`

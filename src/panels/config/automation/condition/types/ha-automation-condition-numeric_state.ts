@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
@@ -22,6 +22,7 @@ import type { HomeAssistant } from "../../../../../types";
 
 const numericStateConditionStruct = object({
   alias: optional(string()),
+  comment: optional(string()),
   condition: literal("numeric_state"),
   entity_id: optional(string()),
   attribute: optional(string()),
@@ -255,6 +256,13 @@ export default class HaNumericStateCondition extends LitElement {
         );
     }
   };
+
+  static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
+  `;
 }
 
 declare global {

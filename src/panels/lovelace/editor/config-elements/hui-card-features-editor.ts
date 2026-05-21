@@ -24,20 +24,121 @@ import {
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
+import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
+import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
+import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
+import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
+import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
+import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
+import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
+import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
+import { supportsCoverPositionFavoriteCardFeature } from "../../card-features/hui-cover-position-favorite-card-feature";
+import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
+import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
+import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-cover-tilt-favorite-card-feature";
+import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
+import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsPrecipitationForecastCardFeature } from "../../card-features/hui-precipitation-forecast-card-feature";
+import { supportsTemperatureForecastCardFeature } from "../../card-features/hui-temperature-forecast-card-feature";
+import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
+import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
+import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
+import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
+import { supportsHumidifierToggleCardFeature } from "../../card-features/hui-humidifier-toggle-card-feature";
+import { supportsLawnMowerCommandCardFeature } from "../../card-features/hui-lawn-mower-commands-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
+import { supportsLightColorTempCardFeature } from "../../card-features/hui-light-color-temp-card-feature";
+import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
+import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
+import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerSoundModeCardFeature } from "../../card-features/hui-media-player-sound-mode-card-feature";
+import { supportsMediaPlayerSourceCardFeature } from "../../card-features/hui-media-player-source-card-feature";
+import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
+import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
+import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
+import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
+import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
+import { supportsTrendGraphCardFeature } from "../../card-features/hui-trend-graph-card-feature";
+import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
+import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
+import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
+import { supportsValvePositionFavoriteCardFeature } from "../../card-features/hui-valve-position-favorite-card-feature";
+import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
+import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import type { UiFeatureType } from "../../card-features/registry";
-import {
-  SUPPORTS_FEATURE_TYPES,
-  UI_FEATURE_TYPES,
-} from "../../card-features/registry";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
+import { supportsLightColorFavoritesCardFeature } from "../../card-features/hui-light-color-favorites-card-feature";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
 
-const EDITABLES_FEATURE_TYPES = new Set<UiFeatureType>([
+type SupportsFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => boolean;
+
+const UI_FEATURE_TYPES = [
+  "alarm-modes",
+  "area-controls",
+  "bar-gauge",
+  "button",
+  "climate-fan-modes",
+  "climate-hvac-modes",
+  "climate-preset-modes",
+  "climate-swing-modes",
+  "climate-swing-horizontal-modes",
+  "counter-actions",
+  "cover-open-close",
+  "cover-position-favorite",
+  "cover-position",
+  "cover-tilt-favorite",
+  "cover-tilt-position",
+  "cover-tilt",
+  "date-set",
+  "fan-direction",
+  "fan-oscillate",
+  "fan-preset-modes",
+  "fan-speed",
+  "humidifier-modes",
+  "humidifier-toggle",
+  "lawn-mower-commands",
+  "light-brightness",
+  "light-color-temp",
+  "light-color-favorites",
+  "lock-commands",
+  "lock-open-door",
+  "media-player-playback",
+  "media-player-sound-mode",
+  "media-player-source",
+  "media-player-volume-buttons",
+  "media-player-volume-slider",
+  "numeric-input",
+  "precipitation-forecast",
+  "select-options",
+  "trend-graph",
+  "target-humidity",
+  "target-temperature",
+  "temperature-forecast",
+  "toggle",
+  "update-actions",
+  "vacuum-commands",
+  "valve-open-close",
+  "valve-position-favorite",
+  "valve-position",
+  "water-heater-operation-modes",
+] as const satisfies readonly FeatureType[];
+
+type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
+
+const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "area-controls",
   "bar-gauge",
@@ -52,6 +153,8 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureType>([
   "cover-tilt-favorite",
   "fan-preset-modes",
   "humidifier-modes",
+  "precipitation-forecast",
+  "temperature-forecast",
   "lawn-mower-commands",
   "media-player-playback",
   "light-color-favorites",
@@ -67,6 +170,61 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureType>([
   "valve-position-favorite",
   "water-heater-operation-modes",
 ]);
+
+const SUPPORTS_FEATURE_TYPES: Record<
+  UiFeatureTypes,
+  SupportsFeature | undefined
+> = {
+  "alarm-modes": supportsAlarmModesCardFeature,
+  "area-controls": supportsAreaControlsCardFeature,
+  "bar-gauge": supportsBarGaugeCardFeature,
+  button: supportsButtonCardFeature,
+  "climate-fan-modes": supportsClimateFanModesCardFeature,
+  "climate-swing-modes": supportsClimateSwingModesCardFeature,
+  "climate-swing-horizontal-modes":
+    supportsClimateSwingHorizontalModesCardFeature,
+  "climate-hvac-modes": supportsClimateHvacModesCardFeature,
+  "climate-preset-modes": supportsClimatePresetModesCardFeature,
+  "counter-actions": supportsCounterActionsCardFeature,
+  "cover-open-close": supportsCoverOpenCloseCardFeature,
+  "cover-position-favorite": supportsCoverPositionFavoriteCardFeature,
+  "cover-position": supportsCoverPositionCardFeature,
+  "cover-tilt-favorite": supportsCoverTiltFavoriteCardFeature,
+  "cover-tilt-position": supportsCoverTiltPositionCardFeature,
+  "cover-tilt": supportsCoverTiltCardFeature,
+  "date-set": supportsDateSetCardFeature,
+  "fan-direction": supportsFanDirectionCardFeature,
+  "fan-oscillate": supportsFanOscilatteCardFeature,
+  "fan-preset-modes": supportsFanPresetModesCardFeature,
+  "fan-speed": supportsFanSpeedCardFeature,
+  "humidifier-modes": supportsHumidifierModesCardFeature,
+  "humidifier-toggle": supportsHumidifierToggleCardFeature,
+  "lawn-mower-commands": supportsLawnMowerCommandCardFeature,
+  "light-brightness": supportsLightBrightnessCardFeature,
+  "light-color-temp": supportsLightColorTempCardFeature,
+  "light-color-favorites": supportsLightColorFavoritesCardFeature,
+  "lock-commands": supportsLockCommandsCardFeature,
+  "lock-open-door": supportsLockOpenDoorCardFeature,
+  "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-sound-mode": supportsMediaPlayerSoundModeCardFeature,
+  "media-player-source": supportsMediaPlayerSourceCardFeature,
+  "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
+  "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
+  "numeric-input": supportsNumericInputCardFeature,
+  "precipitation-forecast": supportsPrecipitationForecastCardFeature,
+  "select-options": supportsSelectOptionsCardFeature,
+  "trend-graph": supportsTrendGraphCardFeature,
+  "target-humidity": supportsTargetHumidityCardFeature,
+  "target-temperature": supportsTargetTemperatureCardFeature,
+  "temperature-forecast": supportsTemperatureForecastCardFeature,
+  toggle: supportsToggleCardFeature,
+  "update-actions": supportsUpdateActionsCardFeature,
+  "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "valve-open-close": supportsValveOpenCloseCardFeature,
+  "valve-position-favorite": supportsValvePositionFavoriteCardFeature,
+  "valve-position": supportsValvePositionCardFeature,
+  "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
+};
 
 const customCardFeatures = getCustomCardFeatures();
 
@@ -125,7 +283,7 @@ export const supportsFeaturesType = (
     }
   }
 
-  const supportsFeature = SUPPORTS_FEATURE_TYPES[type as UiFeatureType];
+  const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
   return !supportsFeature || supportsFeature(hass, context);
 };
 

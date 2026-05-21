@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -34,6 +35,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
+import "../ha-automation-comment";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
@@ -145,6 +147,19 @@ export default class HaAutomationSidebarCondition extends LitElement {
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.rename"
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
+      </ha-dropdown-item>
+      <ha-dropdown-item
+        slot="menu-items"
+        value="edit_comment"
+        .disabled=${this.disabled}
+      >
+        <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.comment.${this.config.config.comment ? "edit" : "add"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
@@ -332,6 +347,12 @@ export default class HaAutomationSidebarCondition extends LitElement {
               sidebar
             ></ha-automation-condition-editor>`
           )}
+      ${this.config.config.comment?.trim() && !this.yamlMode
+        ? html`<ha-automation-comment
+            @edit-comment=${this.config.editComment}
+            .comment=${this.config.config.comment}
+          ></ha-automation-comment>`
+        : nothing}
       <div class="testing-wrapper">
         <div
           class="testing ${classMap({
@@ -395,6 +416,9 @@ export default class HaAutomationSidebarCondition extends LitElement {
     switch (action) {
       case "rename":
         this.config.rename();
+        break;
+      case "edit_comment":
+        this.config.editComment();
         break;
       case "test":
         this.config.test();

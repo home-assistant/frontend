@@ -29,6 +29,7 @@ const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
   "trigger",
   "target",
   "alias",
+  "comment",
   "id",
   "variables",
   "enabled",

@@ -188,6 +188,10 @@ export class HaDeviceCondition extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;
