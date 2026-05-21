@@ -231,9 +231,10 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     ev: ValueChangedEvent<string | undefined>
   ): void {
     ev.stopPropagation();
-    const theme = ev.detail.value; // undefined = "use default"
+    const theme = ev.detail.value;
 
     if (theme === undefined) {
+      // undefined = "use default"
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
           theme: "",

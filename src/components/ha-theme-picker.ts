@@ -35,15 +35,9 @@ export class HaThemePicker extends LitElement {
     (
       themes: Record<string, unknown>,
       locale: string,
-      includeDefault: boolean,
-      required: boolean,
-      noThemeLabel: string | undefined
+      includeDefault: boolean
     ): PickerComboBoxItem[] => {
       const items: PickerComboBoxItem[] = [];
-
-      if (!required) {
-        items.push({ id: "remove", primary: noThemeLabel ?? "" });
-      }
 
       if (includeDefault) {
         items.push({ id: DEFAULT_THEME, primary: "Home Assistant" });
@@ -64,10 +58,7 @@ export class HaThemePicker extends LitElement {
     this._getThemeOptions(
       this.hass?.themes.themes || {},
       this.hass?.locale.language || "en",
-      this.includeDefault,
-      this.required,
-      this.noThemeLabel ??
-        this.hass?.localize("ui.components.theme-picker.no_theme")
+      this.includeDefault
     );
 
   private _valueRenderer = (value: string): TemplateResult =>
@@ -76,22 +67,20 @@ export class HaThemePicker extends LitElement {
     >`;
 
   protected render(): TemplateResult {
-    const pickerValue = this.value === undefined ? "remove" : this.value;
-
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .label=${this.label ??
         this.hass?.localize("ui.components.theme-picker.theme") ??
         "Theme"}
+        .placeholder=${this.noThemeLabel ??
+        this.hass?.localize("ui.components.theme-picker.no_theme")}
         .helper=${this.helper}
-        .value=${pickerValue}
+        .value=${this.value}
         .valueRenderer=${this._valueRenderer}
         .getItems=${this._getItems}
         .searchKeys=${SEARCH_KEYS}
         .disabled=${this.disabled}
-        popover-placement="bottom-end"
-        hide-clear-icon
+        .required=${this.required}
         @value-changed=${this._changed}
       ></ha-generic-picker>
     `;
@@ -104,11 +93,10 @@ export class HaThemePicker extends LitElement {
     }
   `;
 
-  private _changed(ev: ValueChangedEvent<string>): void {
+  private _changed(ev: ValueChangedEvent<string | undefined>): void {
     ev.stopPropagation();
-    const value = ev.detail.value === "remove" ? undefined : ev.detail.value;
-    this.value = value;
-    fireEvent(this, "value-changed", { value });
+    this.value = ev.detail.value;
+    fireEvent(this, "value-changed", { value: this.value });
   }
 }
 
