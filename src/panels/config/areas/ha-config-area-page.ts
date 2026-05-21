@@ -1,5 +1,15 @@
 import { consume } from "@lit/context";
-import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDevices,
+  mdiDotsVertical,
+  mdiImagePlus,
+  mdiPalette,
+  mdiPencil,
+  mdiRobot,
+  mdiScriptText,
+  mdiShape,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -10,9 +20,10 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { goBack } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import type { FlattenObjectKeys } from "../../../common/translations/localize";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -47,7 +58,7 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, TranslationDict } from "../../../types";
 import "../../logbook/ha-logbook";
 import {
   loadAreaRegistryDetailDialog,
@@ -58,6 +69,48 @@ declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
   entity: EntityType;
 }
+
+type ConfigTranslationKey = FlattenObjectKeys<
+  TranslationDict["ui"]["panel"]["config"]
+>;
+
+const NAVIGATION_ACTIONS: {
+  value: string;
+  path: string;
+  icon: string;
+  translationKey: ConfigTranslationKey;
+}[] = [
+  {
+    value: "navigate-devices",
+    path: "/config/devices/dashboard",
+    icon: mdiDevices,
+    translationKey: "devices.caption",
+  },
+  {
+    value: "navigate-entities",
+    path: "/config/entities",
+    icon: mdiShape,
+    translationKey: "entities.caption",
+  },
+  {
+    value: "navigate-automations",
+    path: "/config/automation/dashboard",
+    icon: mdiRobot,
+    translationKey: "automation.caption",
+  },
+  {
+    value: "navigate-scenes",
+    path: "/config/scene/dashboard",
+    icon: mdiPalette,
+    translationKey: "scene.caption",
+  },
+  {
+    value: "navigate-scripts",
+    path: "/config/script/dashboard",
+    icon: mdiScriptText,
+    translationKey: "script.caption",
+  },
+] as const;
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -237,6 +290,20 @@ class HaConfigAreaPage extends LitElement {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+
+          ${NAVIGATION_ACTIONS.map(
+            (action) => html`
+              <ha-dropdown-item value=${action.value}>
+                <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.panel.config.${action.translationKey}`
+                )}
+                <ha-icon-next slot="details"></ha-icon-next>
+              </ha-dropdown-item>
+            `
+          )}
+
+          <wa-divider></wa-divider>
 
           <ha-dropdown-item value="edit" .data=${area}>
             <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
@@ -612,6 +679,13 @@ class HaConfigAreaPage extends LitElement {
   private _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
     const entry = (ev.detail?.item as any)?.data as AreaRegistryEntry;
+
+    const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
+    if (navAction) {
+      navigate(`${navAction.path}?historyBack=1&area=${this.areaId}`);
+      return;
+    }
+
     switch (action) {
       case "edit":
         this._openDialog(entry);
