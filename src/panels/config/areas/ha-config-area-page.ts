@@ -24,7 +24,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
-import type { FlattenObjectKeys } from "../../../common/translations/localize";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -60,7 +59,8 @@ import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, TranslationDict } from "../../../types";
+import type { HomeAssistant } from "../../../types";
+import { isHelperDomain } from "../helpers/const";
 import "../../logbook/ha-logbook";
 import {
   loadAreaRegistryDetailDialog,
@@ -72,51 +72,55 @@ declare interface NameAndEntity<EntityType extends HassEntity> {
   entity: EntityType;
 }
 
-type ConfigTranslationKey = FlattenObjectKeys<
-  TranslationDict["ui"]["panel"]["config"]
->;
+type AreaQuickLinkKey =
+  | "devices"
+  | "entities"
+  | "helpers"
+  | "automations"
+  | "scenes"
+  | "scripts";
 
 const NAVIGATION_ACTIONS: {
   value: string;
   path: string;
   icon: string;
-  translationKey: ConfigTranslationKey;
+  countKey: AreaQuickLinkKey;
 }[] = [
   {
     value: "navigate-devices",
     path: "/config/devices/dashboard",
     icon: mdiDevices,
-    translationKey: "devices.caption",
+    countKey: "devices",
   },
   {
     value: "navigate-entities",
     path: "/config/entities",
     icon: mdiShape,
-    translationKey: "entities.caption",
+    countKey: "entities",
   },
   {
     value: "navigate-helpers",
     path: "/config/helpers",
     icon: mdiTools,
-    translationKey: "helpers.caption",
+    countKey: "helpers",
   },
   {
     value: "navigate-automations",
     path: "/config/automation/dashboard",
     icon: mdiRobot,
-    translationKey: "automation.caption",
+    countKey: "automations",
   },
   {
     value: "navigate-scenes",
     path: "/config/scene/dashboard",
     icon: mdiPalette,
-    translationKey: "scene.caption",
+    countKey: "scenes",
   },
   {
     value: "navigate-scripts",
     path: "/config/script/dashboard",
     icon: mdiScriptText,
-    translationKey: "script.caption",
+    countKey: "scripts",
   },
 ] as const;
 
@@ -189,6 +193,31 @@ class HaConfigAreaPage extends LitElement {
         .concat(memberships.indirectEntities.map((entry) => entry.entity_id))
   );
 
+  private _getQuickLinkCounts = memoizeOne(
+    (
+      memberships: {
+        devices: DeviceRegistryEntry[];
+        entities: EntityRegistryEntry[];
+        indirectEntities: EntityRegistryEntry[];
+      },
+      related?: RelatedResult
+    ) => {
+      const allEntityIds = this._allEntities(memberships);
+      const entityIds = related?.entity ?? allEntityIds;
+
+      return {
+        devices: related?.device?.length ?? memberships.devices.length,
+        entities: entityIds.length,
+        helpers: entityIds.filter((entityId) =>
+          isHelperDomain(computeDomain(entityId))
+        ).length,
+        automations: related?.automation?.length ?? 0,
+        scenes: related?.scene?.length ?? 0,
+        scripts: related?.script?.length ?? 0,
+      };
+    }
+  );
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
@@ -223,6 +252,10 @@ class HaConfigAreaPage extends LitElement {
       this._entityReg
     );
     const { devices, entities } = memberships;
+    const quickLinkCounts = this._getQuickLinkCounts(
+      memberships,
+      this._related
+    );
 
     // Pre-compute the entity and device names, so we can sort by them
     if (devices) {
@@ -304,7 +337,8 @@ class HaConfigAreaPage extends LitElement {
               <ha-dropdown-item value=${action.value}>
                 <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
                 ${this.hass.localize(
-                  `ui.panel.config.${action.translationKey}`
+                  `ui.panel.config.areas.quick_links.${action.countKey}`,
+                  { count: quickLinkCounts[action.countKey] }
                 )}
                 <ha-icon-next slot="details"></ha-icon-next>
               </ha-dropdown-item>
