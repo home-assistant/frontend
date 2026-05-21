@@ -1,17 +1,16 @@
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
-import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
+import "../../../../../components/ha-svg-icon";
+import type { ZHAGroup } from "../../../../../data/zha";
 import {
-  addMembersToGroup,
   fetchGroup,
-  fetchGroupableDevices,
   removeGroups,
   removeMembersFromGroup,
 } from "../../../../../data/zha";
@@ -24,6 +23,7 @@ import type {
   DeviceEndpointSelectionChangedEvent,
   ZHADeviceEndpointList,
 } from "./zha-device-endpoint-list";
+import { showZHAAddGroupMembersDialog } from "./show-dialog-zha-add-group-members";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -37,22 +37,9 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false })
-  public deviceEndpoints: ZHADeviceEndpoint[] = [];
-
-  @state() private _processingAdd = false;
-
   @state() private _processingRemove = false;
 
-  @state()
-  private _filteredDeviceEndpoints: ZHADeviceEndpoint[] = [];
-
-  @state() private _selectedDevicesToAdd: string[] = [];
-
   @state() private _selectedDevicesToRemove: string[] = [];
-
-  @query("#addMembers", true)
-  private _zhaAddMembersList!: ZHADeviceEndpointList;
 
   @query("#removeMembers")
   private _zhaRemoveMembersList!: ZHADeviceEndpointList;
@@ -68,12 +55,8 @@ export class ZHAGroupPage extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._processingAdd = false;
     this._processingRemove = false;
     this._selectedDevicesToRemove = [];
-    this._selectedDevicesToAdd = [];
-    this.deviceEndpoints = [];
-    this._filteredDeviceEndpoints = [];
   }
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -142,134 +125,81 @@ export class ZHAGroupPage extends LitElement {
             </div>
           </ha-card>
 
-          <div class="device-sections">
-            <section>
-              <h2>
-                ${this.hass.localize("ui.panel.config.zha.groups.members")}
-              </h2>
+          <div class="members-section">
+            <h2>${this.hass.localize("ui.panel.config.zha.groups.members")}</h2>
+            ${this.group.members.length
+              ? html`
+                  <zha-device-endpoint-list
+                    id="removeMembers"
+                    scrollable
+                    show-device-link
+                    selectable
+                    .hass=${this.hass}
+                    .deviceEndpoints=${this.group.members}
+                    .narrow=${this.narrow}
+                    .emptyText=${this.hass.localize(
+                      "ui.panel.config.zha.groups.no_members"
+                    )}
+                    @selection-changed=${this._handleRemoveSelectionChanged}
+                  ></zha-device-endpoint-list>
+                `
+              : html`
+                  <ha-card class="empty-card">
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.groups.no_members"
+                    )}
+                  </ha-card>
+                `}
+            <div class="buttons">
               ${this.group.members.length
                 ? html`
-                    <zha-device-endpoint-list
-                      id="removeMembers"
-                      scrollable
-                      show-device-link
-                      selectable
-                      .hass=${this.hass}
-                      .deviceEndpoints=${this.group.members}
-                      .narrow=${this.narrow}
-                      .emptyText=${this.hass.localize(
-                        "ui.panel.config.zha.groups.no_members"
-                      )}
-                      @selection-changed=${this._handleRemoveSelectionChanged}
-                    ></zha-device-endpoint-list>
-
-                    <div class="buttons">
-                      <ha-button
-                        appearance="plain"
-                        size="small"
-                        variant="danger"
-                        .disabled=${!this._selectedDevicesToRemove.length ||
-                        this._processingRemove}
-                        @click=${this._removeMembersFromGroup}
-                        .loading=${this._processingRemove}
-                      >
-                        ${this.hass!.localize(
-                          "ui.panel.config.zha.groups.remove_members"
-                        )}</ha-button
-                      >
-                    </div>
-                  `
-                : html`
-                    <ha-card class="empty-card">
+                    <ha-button
+                      appearance="plain"
+                      variant="danger"
+                      .disabled=${!this._selectedDevicesToRemove.length ||
+                      this._processingRemove}
+                      @click=${this._removeMembersFromGroup}
+                      .loading=${this._processingRemove}
+                    >
                       ${this.hass.localize(
-                        "ui.panel.config.zha.groups.no_members"
+                        "ui.panel.config.zha.groups.remove_members"
                       )}
-                    </ha-card>
-                  `}
-            </section>
-
-            <section>
-              <h2>
+                    </ha-button>
+                  `
+                : nothing}
+              <ha-button @click=${this._showAddMembersDialog}>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
-              </h2>
-
-              <zha-device-endpoint-list
-                id="addMembers"
-                scrollable
-                show-device-link
-                selectable
-                .hass=${this.hass}
-                .deviceEndpoints=${this._filteredDeviceEndpoints}
-                .narrow=${this.narrow}
-                .emptyText=${this.hass.localize(
-                  "ui.panel.config.zha.groups.no_devices_to_add"
-                )}
-                @selection-changed=${this._handleAddSelectionChanged}
-              ></zha-device-endpoint-list>
-
-              <div class="buttons">
-                <ha-button
-                  .disabled=${!this._selectedDevicesToAdd.length ||
-                  this._processingAdd}
-                  @click=${this._addMembersToGroup}
-                  .loading=${this._processingAdd}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.groups.add_members"
-                  )}</ha-button
-                >
-              </div>
-            </section>
+              </ha-button>
+            </div>
           </div>
         </div>
       </hass-subpage>
     `;
   }
 
+  private _showAddMembersDialog(): void {
+    showZHAAddGroupMembersDialog(this, {
+      groupId: this.groupId,
+      groupName: this.group!.name,
+      devicesAddedCallback: (group) => {
+        this.group = group;
+        this._selectedDevicesToRemove = [];
+        this._zhaRemoveMembersList?.clearSelection();
+      },
+    });
+  }
+
   private async _fetchData() {
     if (this.groupId !== null && this.groupId !== undefined) {
-      this.group = await fetchGroup(this.hass!, this.groupId);
+      this.group = await fetchGroup(this.hass, this.groupId);
     }
-    this.deviceEndpoints = await fetchGroupableDevices(this.hass!);
-    // filter the groupable devices so we only show devices that aren't already in the group
-    this._filterDevices();
-  }
-
-  private _filterDevices() {
-    // filter the groupable devices so we only show devices that aren't already in the group
-    this._filteredDeviceEndpoints = this.deviceEndpoints.filter(
-      (deviceEndpoint) =>
-        !this.group!.members.some(
-          (member) =>
-            member.device.ieee === deviceEndpoint.device.ieee &&
-            member.endpoint_id === deviceEndpoint.endpoint_id
-        )
-    );
-  }
-
-  private _handleAddSelectionChanged(
-    ev: HASSDomEvent<DeviceEndpointSelectionChangedEvent>
-  ): void {
-    this._selectedDevicesToAdd = ev.detail.value;
   }
 
   private _handleRemoveSelectionChanged(
     ev: HASSDomEvent<DeviceEndpointSelectionChangedEvent>
   ): void {
     this._selectedDevicesToRemove = ev.detail.value;
-  }
-
-  private async _addMembersToGroup(): Promise<void> {
-    this._processingAdd = true;
-    const members = this._selectedDevicesToAdd.map((member) => {
-      const memberParts = member.split("_");
-      return { ieee: memberParts[0], endpoint_id: memberParts[1] };
-    });
-    this.group = await addMembersToGroup(this.hass, this.groupId, members);
-    this._filterDevices();
-    this._selectedDevicesToAdd = [];
-    this._zhaAddMembersList.clearSelection();
-    this._processingAdd = false;
   }
 
   private async _removeMembersFromGroup(): Promise<void> {
@@ -279,7 +209,6 @@ export class ZHAGroupPage extends LitElement {
       return { ieee: memberParts[0], endpoint_id: memberParts[1] };
     });
     this.group = await removeMembersFromGroup(this.hass, this.groupId, members);
-    this._filterDevices();
     this._selectedDevicesToRemove = [];
     this._zhaRemoveMembersList.clearSelection();
     this._processingRemove = false;
@@ -299,7 +228,7 @@ export class ZHAGroupPage extends LitElement {
 
         .container {
           box-sizing: border-box;
-          max-width: 1120px;
+          max-width: 720px;
           margin: 0 auto;
           padding: var(--ha-space-4) var(--ha-space-4)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
@@ -339,20 +268,8 @@ export class ZHAGroupPage extends LitElement {
           line-height: var(--ha-line-height-condensed);
         }
 
-        zha-device-endpoint-list {
-          display: block;
-          min-width: 0;
-        }
-
-        .device-sections {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: var(--ha-space-6);
-          margin-top: var(--ha-space-8);
-        }
-
-        .device-sections section {
-          min-width: 0;
+        .members-section {
+          margin-top: var(--ha-space-6);
         }
 
         h2 {
@@ -364,6 +281,7 @@ export class ZHAGroupPage extends LitElement {
 
         .buttons {
           display: flex;
+          gap: var(--ha-space-2);
           justify-content: flex-end;
           padding: var(--ha-space-4) 0 0;
         }
@@ -375,16 +293,6 @@ export class ZHAGroupPage extends LitElement {
         }
 
         @media (max-width: 600px) {
-          .container {
-            padding-inline: var(--ha-space-2);
-          }
-
-          .device-sections {
-            grid-template-columns: 1fr;
-            gap: var(--ha-space-6);
-            margin-top: var(--ha-space-6);
-          }
-
           .summary-grid {
             grid-template-columns: 1fr;
             gap: var(--ha-space-2);
