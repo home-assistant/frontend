@@ -41,7 +41,6 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-nav";
@@ -379,32 +378,29 @@ export class HaConfigDevicePage extends LitElement {
 
     const deviceInfo: TemplateResult[] = integrations.map(
       (integration) =>
-        html`<a
+        html`<ha-list-item-button
           slot="actions"
           href=${`/config/integrations/integration/${integration.domain}#config_entry=${integration.entry_id}`}
+          .headline=${domainToName(this.hass.localize, integration.domain)}
         >
-          <ha-list-item graphic="icon" hasMeta>
-            <img
-              slot="graphic"
-              alt=${domainToName(this.hass.localize, integration.domain)}
-              src=${brandsUrl(
-                {
-                  domain: integration.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-              @error=${this._onImageError}
-              @load=${this._onImageLoad}
-            />
-
-            ${domainToName(this.hass.localize, integration.domain)}
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
-        </a>`
+          <img
+            slot="start"
+            alt=${domainToName(this.hass.localize, integration.domain)}
+            src=${brandsUrl(
+              {
+                domain: integration.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              },
+              this.hass.auth.data.hassUrl
+            )}
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+            @error=${this._onImageError}
+            @load=${this._onImageLoad}
+          />
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>`
     );
 
     const actions = [...(this._deviceActions || [])];
