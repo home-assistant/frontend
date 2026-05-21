@@ -206,8 +206,6 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
 
   static styles = css`
     ha-header-bar {
-      --mdc-theme-on-primary: var(--primary-text-color);
-      --mdc-theme-primary: var(--primary-background-color);
       --header-bar-padding: var(--safe-area-inset-top, 0px) 0 0
         var(--safe-area-inset-left, 0px);
       border-bottom: 1px solid var(--divider-color);

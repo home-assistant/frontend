@@ -1,64 +1,230 @@
-import { TopAppBarFixedBase } from "@material/mwc-top-app-bar-fixed/mwc-top-app-bar-fixed-base";
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
-import { css } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+const PASSIVE_EVENT_OPTIONS = { passive: true } as const;
+
+export const haTopAppBarFixedStyles = css`
+  :host {
+    display: block;
+  }
+
+  .top-app-bar {
+    box-sizing: border-box;
+    color: var(--app-header-text-color, #fff);
+    background-color: var(--app-header-background-color, var(--primary-color));
+    position: fixed;
+    top: 0;
+    inset-inline-end: 0;
+    width: var(--ha-top-app-bar-width, 100%);
+    z-index: 4;
+    padding-top: var(--safe-area-inset-top);
+    padding-right: var(--safe-area-inset-right);
+    transition:
+      width var(--ha-animation-duration-normal) ease,
+      padding-left var(--ha-animation-duration-normal) ease,
+      padding-right var(--ha-animation-duration-normal) ease;
+  }
+
+  :host([narrow]) .top-app-bar {
+    padding-left: var(--safe-area-inset-left);
+  }
+
+  .top-app-bar--scrolled:not(.top-app-bar--pane) {
+    box-shadow: var(
+      --bar-box-shadow,
+      0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+      0px 1px 10px 0px rgba(0, 0, 0, 0.12)
+    );
+  }
+
+  .top-app-bar__row {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--header-height);
+    border-bottom: var(--app-header-border-bottom);
+  }
+
+  .top-app-bar__section {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    min-width: 0;
+    height: 100%;
+    padding: 0 var(--ha-space-3);
+  }
+
+  #navigation {
+    flex: 1 1 auto;
+  }
+
+  .top-app-bar__section--center {
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .top-app-bar__section--end {
+    flex: none;
+    justify-content: flex-end;
+  }
+
+  .top-app-bar__title {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--ha-font-size-xl);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--header-height);
+    padding-inline-start: var(--ha-space-6);
+  }
+
+  :host([narrow]) .top-app-bar__title {
+    padding-inline-start: var(--ha-space-2);
+  }
+
+  .top-app-bar-fixed-adjust {
+    padding-top: calc(
+      var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
+    );
+    padding-bottom: var(--safe-area-inset-bottom);
+    padding-right: var(--safe-area-inset-right);
+  }
+
+  :host([narrow]) .top-app-bar-fixed-adjust {
+    padding-left: var(--safe-area-inset-left);
+  }
+`;
 
 @customElement("ha-top-app-bar-fixed")
-export class HaTopAppBarFixed extends TopAppBarFixedBase {
+export class HaTopAppBarFixed extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  static override styles = [
-    styles,
-    css`
-      header {
-        padding-top: var(--safe-area-inset-top);
-      }
-      .mdc-top-app-bar__row {
-        height: var(--header-height);
-        border-bottom: var(--app-header-border-bottom);
-      }
-      .mdc-top-app-bar--fixed-adjust {
-        padding-top: calc(
-          var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
-        );
-        padding-bottom: var(--safe-area-inset-bottom);
-        padding-right: var(--safe-area-inset-right);
-      }
-      :host([narrow]) .mdc-top-app-bar--fixed-adjust {
-        padding-left: var(--safe-area-inset-left);
-      }
-      .mdc-top-app-bar {
-        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
-        color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
-        background-color: var(
-          --app-header-background-color,
-          var(--mdc-theme-primary)
-        );
-        padding-top: var(--safe-area-inset-top);
-        padding-right: var(--safe-area-inset-right);
-        transition:
-          width var(--ha-animation-duration-normal) ease,
-          padding-left var(--ha-animation-duration-normal) ease,
-          padding-right var(--ha-animation-duration-normal) ease;
-      }
-      :host([narrow]) .mdc-top-app-bar {
-        padding-left: var(--safe-area-inset-left);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .mdc-top-app-bar {
-          transition: 1ms;
-        }
-      }
-      .mdc-top-app-bar__title {
-        font-size: var(--ha-font-size-xl);
-        padding-inline-start: var(--ha-space-6);
-        padding-inline-end: initial;
-      }
-      :host([narrow]) .mdc-top-app-bar__title {
-        padding-inline-start: var(--ha-space-2);
-      }
-    `,
-  ];
+  @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
+
+  @query(".top-app-bar") protected _barElement!: HTMLElement;
+
+  private _scrollTarget?: HTMLElement | Window;
+
+  @property({ attribute: false })
+  public get scrollTarget(): HTMLElement | Window {
+    return this._scrollTarget || window;
+  }
+
+  public set scrollTarget(value: HTMLElement | Window) {
+    const old = this.scrollTarget;
+    this._unregisterListeners();
+    this._scrollTarget = value;
+    this._updateBarPosition();
+    this.requestUpdate("scrollTarget", old);
+    this._registerListeners();
+  }
+
+  protected _isPaneHeader(): boolean {
+    return false;
+  }
+
+  protected render() {
+    return html`${this._renderHeader()}${this._renderContent()}`;
+  }
+
+  protected _renderHeader() {
+    const title = html`<span class="top-app-bar__title">
+      <slot name="title"></slot>
+    </span>`;
+    const paneHeader = this._isPaneHeader();
+
+    return html`
+      <header
+        class="top-app-bar ${classMap({
+          "top-app-bar--pane": paneHeader,
+        })}"
+      >
+        <div class="top-app-bar__row">
+          ${paneHeader
+            ? html`<section class="top-app-bar__section" id="title">
+                <slot name="navigationIcon"></slot>
+                ${title}
+              </section>`
+            : nothing}
+          <section class="top-app-bar__section" id="navigation">
+            ${paneHeader
+              ? nothing
+              : html`<slot name="navigationIcon"></slot> ${this.centerTitle
+                    ? nothing
+                    : title}`}
+          </section>
+          ${!paneHeader && this.centerTitle
+            ? html`<section
+                class="top-app-bar__section top-app-bar__section--center"
+              >
+                ${title}
+              </section>`
+            : nothing}
+          <section
+            class="top-app-bar__section top-app-bar__section--end"
+            id="actions"
+            role="toolbar"
+          >
+            <slot name="actionItems"></slot>
+          </section>
+        </div>
+      </header>
+    `;
+  }
+
+  protected _renderContent() {
+    return html`<div class="top-app-bar-fixed-adjust">
+      <slot></slot>
+    </div>`;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    this._updateBarPosition();
+    this._registerListeners();
+    this._handleTargetScroll();
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unregisterListeners();
+  }
+
+  protected _updateBarPosition() {
+    if (this._barElement) {
+      this._barElement.style.position =
+        this.scrollTarget === window ? "" : "absolute";
+    }
+  }
+
+  protected _handleTargetScroll = () => {
+    const scrollTop =
+      this.scrollTarget instanceof Window
+        ? this.scrollTarget.pageYOffset
+        : this.scrollTarget.scrollTop;
+    this._barElement?.classList.toggle("top-app-bar--scrolled", scrollTop > 0);
+  };
+
+  protected _registerListeners() {
+    this.scrollTarget.addEventListener(
+      "scroll",
+      this._handleTargetScroll,
+      PASSIVE_EVENT_OPTIONS
+    );
+  }
+
+  protected _unregisterListeners() {
+    this.scrollTarget.removeEventListener("scroll", this._handleTargetScroll);
+  }
+
+  static override styles: CSSResultGroup = haTopAppBarFixedStyles;
 }
 
 declare global {

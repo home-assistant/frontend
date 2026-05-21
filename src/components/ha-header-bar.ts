@@ -1,24 +1,19 @@
-// @ts-ignore
-import topAppBarStyles from "@material/top-app-bar/dist/mdc.top-app-bar.min.css";
-import { css, html, LitElement, unsafeCSS } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-header-bar")
 export class HaHeaderBar extends LitElement {
   protected render() {
-    return html`<header class="mdc-top-app-bar">
-      <div class="mdc-top-app-bar__row">
-        <section
-          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
-          id="navigation"
-        >
+    return html`<header class="header-bar">
+      <div class="header-bar__row">
+        <section class="header-bar__section" id="navigation">
           <slot name="navigationIcon"></slot>
-          <span class="mdc-top-app-bar__title">
+          <span class="header-bar__title">
             <slot name="title"></slot>
           </span>
         </section>
         <section
-          class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
+          class="header-bar__section header-bar__section--end"
           id="actions"
           role="toolbar"
         >
@@ -28,32 +23,59 @@ export class HaHeaderBar extends LitElement {
     </header>`;
   }
 
-  static get styles() {
-    return [
-      unsafeCSS(topAppBarStyles),
-      css`
-        .mdc-top-app-bar__row {
-          height: var(--header-height);
-        }
-        .mdc-top-app-bar {
-          position: static;
-          color: var(--mdc-theme-on-primary, #fff);
-          padding: var(--header-bar-padding);
-        }
-        .mdc-top-app-bar__section.mdc-top-app-bar__section--align-start {
-          flex: 1;
-        }
-        .mdc-top-app-bar__section.mdc-top-app-bar__section--align-end {
-          flex: none;
-        }
-        .mdc-top-app-bar__title {
-          font-size: var(--ha-font-size-xl);
-          padding-inline-start: 24px;
-          padding-inline-end: initial;
-        }
-      `,
-    ];
-  }
+  static override styles = css`
+    :host {
+      display: block;
+    }
+
+    .header-bar {
+      box-sizing: border-box;
+      color: var(--app-header-text-color, var(--primary-text-color));
+      background-color: var(
+        --app-header-background-color,
+        var(--primary-background-color)
+      );
+      padding: var(--header-bar-padding);
+    }
+
+    .header-bar__row {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      width: 100%;
+      height: var(--header-height);
+    }
+
+    .header-bar__section {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      min-width: 0;
+      height: 100%;
+      padding: 0 var(--ha-space-3);
+    }
+
+    #navigation {
+      flex: 1 1 auto;
+    }
+
+    .header-bar__section--end {
+      flex: none;
+      justify-content: flex-end;
+    }
+
+    .header-bar__title {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--header-height);
+      padding-inline-start: var(--ha-space-6);
+    }
+  `;
 }
 
 declare global {

@@ -1,136 +1,37 @@
-import {
-  addHasRemoveClass,
-  BaseElement,
-} from "@material/mwc-base/base-element";
-import { supportsPassiveEventListener } from "@material/mwc-base/utils";
-import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
-import { strings } from "@material/top-app-bar/constants";
-// eslint-disable-next-line import-x/no-named-as-default
-import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import type { PropertyValues } from "lit";
 import { html, css, nothing } from "lit";
 import { property, query, customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
 import { haStyleScrollbar } from "../resources/styles";
+import {
+  HaTopAppBarFixed,
+  haTopAppBarFixedStyles,
+} from "./ha-top-app-bar-fixed";
 
-export const passiveEventOptionsIfSupported = supportsPassiveEventListener
-  ? { passive: true }
-  : undefined;
+const PASSIVE_EVENT_OPTIONS = { passive: true } as const;
 
 @customElement("ha-two-pane-top-app-bar-fixed")
-export class TopAppBarBaseBase extends BaseElement {
-  protected override mdcFoundation!: MDCFixedTopAppBarFoundation;
-
-  protected override mdcFoundationClass = MDCFixedTopAppBarFoundation;
-
-  @query(".mdc-top-app-bar") protected mdcRoot!: HTMLElement;
-
-  // _actionItemsSlot should have type HTMLSlotElement, but when TypeScript's
-  // emitDecoratorMetadata is enabled, the HTMLSlotElement constructor will
-  // be emitted into the runtime, which will cause an "HTMLSlotElement is
-  // undefined" error in browsers that don't define it (e.g. IE11).
-  @query('slot[name="actionItems"]') protected _actionItemsSlot!: HTMLElement;
-
-  protected _scrollTarget!: HTMLElement | Window;
-
-  @property({ type: Boolean, reflect: true }) public narrow = false;
-
-  @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
-
-  @property({ type: Boolean, reflect: true }) prominent = false;
-
-  @property({ type: Boolean, reflect: true }) dense = false;
-
+export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
   @property({ type: Boolean }) pane = false;
 
   @property({ type: Boolean }) footer = false;
 
-  @query(".content") private _contentElement!: HTMLElement;
+  @query(".content") private _contentElement?: HTMLElement;
 
   @query(".pane .ha-scrollbar") private _paneElement?: HTMLElement;
 
-  @property({ attribute: false })
-  get scrollTarget() {
-    return this._scrollTarget || window;
+  protected override _isPaneHeader(): boolean {
+    return this.pane;
   }
 
-  set scrollTarget(value) {
-    this.unregisterListeners();
-    const old = this.scrollTarget;
-    this._scrollTarget = value;
-    this.updateRootPosition();
-    this.requestUpdate("scrollTarget", old);
-    this.registerListeners();
-  }
-
-  protected updateRootPosition() {
-    if (this.mdcRoot) {
-      const windowScroller = this.scrollTarget === window;
-      // we add support for top-app-bar's tied to an element scroller.
-      this.mdcRoot.style.position = windowScroller ? "" : "absolute";
-    }
-  }
-
-  protected barClasses() {
-    return {
-      "mdc-top-app-bar--dense": this.dense,
-      "mdc-top-app-bar--prominent": this.prominent,
-      "center-title": this.centerTitle,
-      "mdc-top-app-bar--fixed": true,
-      "mdc-top-app-bar--pane": this.pane,
-    };
-  }
-
-  protected contentClasses() {
-    return {
-      "mdc-top-app-bar--fixed-adjust": !this.dense && !this.prominent,
-      "mdc-top-app-bar--dense-fixed-adjust": this.dense && !this.prominent,
-      "mdc-top-app-bar--prominent-fixed-adjust": !this.dense && this.prominent,
-      "mdc-top-app-bar--dense-prominent-fixed-adjust":
-        this.dense && this.prominent,
-      "mdc-top-app-bar--pane": this.pane,
-    };
-  }
-
-  protected override render() {
-    const title = html`<span class="mdc-top-app-bar__title"
-      ><slot name="title"></slot
-    ></span>`;
+  protected override _renderContent() {
     return html`
-      <header class="mdc-top-app-bar ${classMap(this.barClasses())}">
-        <div class="mdc-top-app-bar__row">
-          ${this.pane
-            ? html`<section
-                class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
-                id="title"
-              >
-                <slot
-                  name="navigationIcon"
-                  @click=${this.handleNavigationClick}
-                ></slot>
-                ${title}
-              </section>`
-            : nothing}
-          <section class="mdc-top-app-bar__section" id="navigation">
-            ${this.pane
-              ? nothing
-              : html`<slot
-                    name="navigationIcon"
-                    @click=${this.handleNavigationClick}
-                  ></slot
-                  >${title}`}
-          </section>
-          <section
-            class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end"
-            id="actions"
-            role="toolbar"
-          >
-            <slot name="actionItems"></slot>
-          </section>
-        </div>
-      </header>
-      <div class=${classMap(this.contentClasses())}>
+      <div
+        class=${classMap({
+          "top-app-bar-fixed-adjust": true,
+          "top-app-bar-fixed-adjust--pane": this.pane,
+        })}
+      >
         ${this.pane
           ? html`<div class="pane">
               <div class="shadow-container"></div>
@@ -154,117 +55,57 @@ export class TopAppBarBaseBase extends BaseElement {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues<this>) {
+  protected override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("pane") && this.hasUpdated) {
+      this._unregisterListeners();
+    }
+  }
+
+  protected override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (
       changedProperties.has("pane") &&
       changedProperties.get("pane") !== undefined
     ) {
-      this.unregisterListeners();
-      this.registerListeners();
+      this._registerListeners();
+      this._handleTargetScroll();
     }
   }
 
-  protected createAdapter(): MDCTopAppBarAdapter {
-    return {
-      ...addHasRemoveClass(this.mdcRoot),
-      setStyle: (prprty: string, value: string) =>
-        this.mdcRoot.style.setProperty(prprty, value),
-      getTopAppBarHeight: () => this.mdcRoot.clientHeight,
-      notifyNavigationIconClicked: () => {
-        this.dispatchEvent(
-          new Event(strings.NAVIGATION_EVENT, {
-            bubbles: true,
-            cancelable: true,
-          })
-        );
-      },
-      getViewportScrollY: () =>
-        this.scrollTarget instanceof Window
-          ? this.scrollTarget.pageYOffset
-          : this.scrollTarget.scrollTop,
-      getTotalActionItems: () =>
-        (this._actionItemsSlot as HTMLSlotElement).assignedNodes({
-          flatten: true,
-        }).length,
-    };
-  }
-
-  protected handleTargetScroll = () => {
-    this.mdcFoundation.handleTargetScroll();
+  private _handlePaneScroll = (ev: Event) => {
+    const target = ev.currentTarget as HTMLElement;
+    target.parentElement?.classList.toggle("scrolled", target.scrollTop > 0);
   };
 
-  protected handlePaneScroll = (ev) => {
-    if (ev.target.scrollTop > 0) {
-      ev.target.parentElement.classList.add("scrolled");
-    } else {
-      ev.target.parentElement.classList.remove("scrolled");
-    }
-  };
-
-  protected handleNavigationClick = () => {
-    this.mdcFoundation.handleNavigationClick();
-  };
-
-  protected registerListeners() {
+  protected override _registerListeners() {
     if (this.pane) {
-      this._paneElement!.addEventListener(
+      this._paneElement?.addEventListener(
         "scroll",
-        this.handlePaneScroll,
-        passiveEventOptionsIfSupported
+        this._handlePaneScroll,
+        PASSIVE_EVENT_OPTIONS
       );
-      this._contentElement.addEventListener(
+      this._contentElement?.addEventListener(
         "scroll",
-        this.handlePaneScroll,
-        passiveEventOptionsIfSupported
+        this._handlePaneScroll,
+        PASSIVE_EVENT_OPTIONS
       );
       return;
     }
-    this.scrollTarget.addEventListener(
-      "scroll",
-      this.handleTargetScroll,
-      passiveEventOptionsIfSupported
-    );
+
+    super._registerListeners();
   }
 
-  protected unregisterListeners() {
-    this._paneElement?.removeEventListener("scroll", this.handlePaneScroll);
-    this._contentElement.removeEventListener("scroll", this.handlePaneScroll);
-    this.scrollTarget.removeEventListener("scroll", this.handleTargetScroll);
-  }
-
-  protected override firstUpdated() {
-    super.firstUpdated();
-    this.updateRootPosition();
-    this.registerListeners();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.unregisterListeners();
+  protected override _unregisterListeners() {
+    this._paneElement?.removeEventListener("scroll", this._handlePaneScroll);
+    this._contentElement?.removeEventListener("scroll", this._handlePaneScroll);
+    super._unregisterListeners();
   }
 
   static override styles = [
-    styles,
+    haTopAppBarFixedStyles,
     haStyleScrollbar,
     css`
-      header {
-        padding-top: var(--safe-area-inset-top);
-      }
-      .mdc-top-app-bar__row {
-        height: var(--header-height);
-        border-bottom: var(--app-header-border-bottom);
-      }
-      .mdc-top-app-bar--fixed-adjust {
-        padding-top: calc(
-          var(--header-height, 0px) + var(--safe-area-inset-top, 0px)
-        );
-        padding-bottom: var(--safe-area-inset-bottom);
-        padding-right: var(--safe-area-inset-right);
-      }
-      :host([narrow]) .mdc-top-app-bar--fixed-adjust {
-        padding-left: var(--safe-area-inset-left);
-      }
       .shadow-container {
         position: absolute;
         top: calc(-1 * var(--header-height));
@@ -273,39 +114,16 @@ export class TopAppBarBaseBase extends BaseElement {
         z-index: 1;
         transition: box-shadow 200ms linear;
       }
+
       .scrolled .shadow-container {
         box-shadow: var(
-          --mdc-top-app-bar-fixed-box-shadow,
+          --bar-box-shadow,
           0px 2px 4px -1px rgba(0, 0, 0, 0.2),
           0px 4px 5px 0px rgba(0, 0, 0, 0.14),
           0px 1px 10px 0px rgba(0, 0, 0, 0.12)
         );
       }
-      .mdc-top-app-bar {
-        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
-        color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
-        background-color: var(
-          --app-header-background-color,
-          var(--mdc-theme-primary)
-        );
-        padding-top: var(--safe-area-inset-top);
-        padding-right: var(--safe-area-inset-right);
-        transition:
-          width var(--ha-animation-duration-normal) ease,
-          padding-left var(--ha-animation-duration-normal) ease,
-          padding-right var(--ha-animation-duration-normal) ease;
-      }
-      :host([narrow]) .mdc-top-app-bar {
-        padding-left: var(--safe-area-inset-left);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .mdc-top-app-bar {
-          transition: 1ms;
-        }
-      }
-      .mdc-top-app-bar--pane.mdc-top-app-bar--fixed-scrolled {
-        box-shadow: none;
-      }
+
       #title {
         border-right: 1px solid rgba(255, 255, 255, 0.12);
         border-inline-end: 1px solid rgba(255, 255, 255, 0.12);
@@ -314,7 +132,8 @@ export class TopAppBarBaseBase extends BaseElement {
         flex: 0 0 var(--sidepane-width, 250px);
         width: var(--sidepane-width, 250px);
       }
-      div.mdc-top-app-bar--pane {
+
+      .top-app-bar-fixed-adjust--pane {
         display: flex;
         height: calc(
           100vh - var(--header-height, 0px) - var(
@@ -323,6 +142,7 @@ export class TopAppBarBaseBase extends BaseElement {
             ) - var(--safe-area-inset-bottom, 0px)
         );
       }
+
       .pane {
         border-right: 1px solid var(--divider-color);
         border-inline-end: 1px solid var(--divider-color);
@@ -334,29 +154,29 @@ export class TopAppBarBaseBase extends BaseElement {
         flex-direction: column;
         position: relative;
       }
+
       .pane .ha-scrollbar {
         flex: 1;
       }
+
       .pane .footer {
         border-top: 1px solid var(--divider-color);
         padding-bottom: 8px;
       }
+
       .main {
         min-height: 100%;
       }
-      .mdc-top-app-bar--pane .main {
+
+      .top-app-bar-fixed-adjust--pane .main {
         position: relative;
         flex: 1;
         height: 100%;
       }
-      .mdc-top-app-bar--pane .content {
+
+      .top-app-bar-fixed-adjust--pane .content {
         height: 100%;
         overflow: auto;
-      }
-      .mdc-top-app-bar__title {
-        font-size: var(--ha-font-size-xl);
-        padding-inline-start: 24px;
-        padding-inline-end: initial;
       }
     `,
   ];
@@ -364,6 +184,6 @@ export class TopAppBarBaseBase extends BaseElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-two-pane-top-app-bar-fixed": TopAppBarBaseBase;
+    "ha-two-pane-top-app-bar-fixed": HaTwoPaneTopAppBarFixed;
   }
 }
