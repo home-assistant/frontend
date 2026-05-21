@@ -345,7 +345,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           <ha-button
             appearance="filled"
             variant="brand"
-            size="small"
             @click=${this._showAddToDialog}
           >
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
@@ -417,7 +416,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                   <div class="action-buttons">
                     <ha-button
                       appearance="filled"
-                      size="small"
                       .entry=${area}
                       @click=${this._showSettings}
                     >
@@ -434,7 +432,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                   <div class="action-buttons">
                     <ha-button
                       appearance="filled"
-                      size="small"
                       .entry=${area}
                       @click=${this._showSettings}
                     >
