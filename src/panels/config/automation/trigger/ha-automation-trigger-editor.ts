@@ -6,7 +6,6 @@ import { dynamicElement } from "../../../../common/dom/dynamic-element-directive
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import "../../../../components/input/ha-input";
 import type { Trigger } from "../../../../data/automation";
 import { migrateAutomationTrigger } from "../../../../data/automation";
 import type { TriggerDescription } from "../../../../data/trigger";
@@ -31,8 +30,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
-  @property({ type: Boolean, attribute: "show-id" }) public showId = false;
-
   @property({ attribute: false }) public description?: TriggerDescription;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
@@ -41,8 +38,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
 
     const yamlMode = this.yamlMode || !this.uiSupported;
-
-    const showId = "id" in this.trigger || this.showId;
 
     return html`
       <div
@@ -77,18 +72,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
               ></ha-yaml-editor>
             `
           : html`
-              ${showId && !isTriggerList(this.trigger)
-                ? html`
-                    <ha-input
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.id"
-                      )}
-                      .value=${this.trigger.id || ""}
-                      .disabled=${this.disabled}
-                      @change=${this._idChanged}
-                    ></ha-input>
-                  `
-                : nothing}
               <div @value-changed=${this._onUiChanged}>
                 ${this.description
                   ? html`<ha-automation-trigger-platform
@@ -106,24 +89,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
             `}
       </div>
     `;
-  }
-
-  private _idChanged(ev: CustomEvent) {
-    if (isTriggerList(this.trigger)) return;
-    const newId = (ev.target as any).value;
-
-    if (newId === (this.trigger.id ?? "")) {
-      return;
-    }
-    const value = { ...this.trigger };
-    if (!newId) {
-      delete value.id;
-    } else {
-      value.id = newId;
-    }
-    fireEvent(this, "value-changed", {
-      value,
-    });
   }
 
   private _onYamlChange(ev: CustomEvent) {
@@ -159,9 +124,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
           padding: 0 1px;
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
-        }
-        ha-input {
-          margin-bottom: var(--ha-space-3);
         }
       `,
     ];

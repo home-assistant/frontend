@@ -1,5 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
+  mdiAlert,
   mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
   mdiContentCopy,
@@ -14,27 +16,35 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
+import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
-import type {
-  LegacyTrigger,
-  Trigger,
-  TriggerList,
-  TriggerSidebarConfig,
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
+import {
+  automationConfigContext,
+  type AutomationConfig,
+  type LegacyTrigger,
+  type Trigger,
+  type TriggerList,
+  type TriggerSidebarConfig,
 } from "../../../../data/automation";
 import {
   getTriggerDomain,
+  getTriggerIds,
   getTriggerObjectId,
   isTriggerList,
 } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../ha-automation-comment";
+import "../ha-trigger-id-chip";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
@@ -57,7 +67,9 @@ export default class HaAutomationSidebarTrigger extends LitElement {
   @property({ type: Number, attribute: "sidebar-key" })
   public sidebarKey?: number;
 
-  @state() private _requestShowId = false;
+  @state()
+  @consume({ context: automationConfigContext, subscribe: true })
+  private _automationConfig?: AutomationConfig;
 
   @state() private _warnings?: string[];
 
@@ -66,7 +78,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("config")) {
-      this._requestShowId = false;
       this._warnings = undefined;
       if (this.config) {
         this.yamlMode = this.config.yamlMode;
@@ -101,6 +112,11 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       ) ||
       this.hass.localize(`component.${domain}.triggers.${triggerName}.name`);
 
+    const duplicatedId = this._isDuplicateId(
+      "id" in this.config.config ? this.config.config.id : undefined,
+      this._automationConfig?.triggers
+    );
+
     return html`
       <ha-automation-sidebar-card
         .hass=${this.hass}
@@ -111,11 +127,35 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         @wa-select=${this._handleDropdownSelect}
       >
         <span slot="title">${title}</span>
-        <span slot="subtitle"
-          >${subtitle}${rowDisabled
-            ? ` (${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
-            : ""}</span
-        >
+        <div slot="subtitle" class="subtitle">
+          ${subtitle}
+          ${"id" in this.config.config
+            ? html`<ha-trigger-id-chip
+                  id="trigger-id-chip"
+                  .warning=${duplicatedId}
+                  .triggerId=${(
+                    this.config.config as Exclude<Trigger, TriggerList>
+                  ).id}
+                >
+                  ${duplicatedId
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${mdiAlert}
+                      ></ha-svg-icon>`
+                    : nothing}
+                </ha-trigger-id-chip>
+                ${duplicatedId
+                  ? html`<ha-tooltip for="trigger-id-chip">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
+                      )}
+                    </ha-tooltip>`
+                  : nothing} `
+            : nothing}
+          ${rowDisabled
+            ? `(${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
+            : nothing}
+        </div>
         <ha-dropdown-item
           slot="menu-items"
           value="rename"
@@ -147,18 +187,16 @@ export default class HaAutomationSidebarTrigger extends LitElement {
               </div>
             </ha-dropdown-item>`
           : nothing}
-        ${!this.yamlMode &&
-        !("id" in this.config.config) &&
-        !this._requestShowId
-          ? html`<ha-dropdown-item
+        ${type !== "list"
+          ? html` <ha-dropdown-item
               slot="menu-items"
-              value="show_id"
+              value="edit_id"
               .disabled=${this.disabled || type === "list"}
             >
               <ha-svg-icon slot="icon" .path=${mdiIdentifier}></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.edit_id"
+                  `ui.panel.config.automation.editor.triggers.${"id" in this.config.config ? "edit" : "add"}_id`
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
@@ -335,7 +373,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             @value-changed=${this._valueChangedSidebar}
             @yaml-changed=${this._yamlChangedSidebar}
             .uiSupported=${this.config.uiSupported}
-            .showId=${this._requestShowId}
             .yamlMode=${this.yamlMode}
             .disabled=${this.disabled}
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
@@ -360,6 +397,16 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       this.yamlMode = true;
     }
   }
+
+  private _isDuplicateId = memoizeOne(
+    (id: string | undefined, triggers: Trigger | Trigger[] | undefined) => {
+      if (!id || !triggers) {
+        return false;
+      }
+      const triggerIds = getTriggerIds(ensureArray(triggers));
+      return triggerIds.filter((triggerId) => triggerId === id).length > 1;
+    }
+  );
 
   private _valueChangedSidebar(ev: CustomEvent) {
     ev.stopPropagation();
@@ -386,10 +433,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  private _showTriggerId = () => {
-    this._requestShowId = true;
-  };
-
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
 
@@ -404,8 +447,8 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       case "edit_comment":
         this.config.editComment();
         break;
-      case "show_id":
-        this._showTriggerId();
+      case "edit_id":
+        this.config.editId();
         break;
       case "duplicate":
         this.config.duplicate();
@@ -431,7 +474,16 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     }
   }
 
-  static styles = [sidebarEditorStyles, overflowStyles];
+  static styles = [
+    sidebarEditorStyles,
+    overflowStyles,
+    css`
+      .subtitle {
+        display: flex;
+        gap: var(--ha-space-1);
+      }
+    `,
+  ];
 }
 
 declare global {
