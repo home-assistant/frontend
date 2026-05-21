@@ -502,41 +502,37 @@ export class HaConfigDevicePage extends LitElement {
                                 "ui.panel.config.devices.automation.automations_heading"
                               )}
                             </h3>
-                            ${this._related.automation?.length
-                              ? html`
-                                  <div class="items">
-                                    ${this._getRelated(
-                                      this._related
-                                    ).automation.map((automation) =>
-                                      automation
-                                        ? html`<a
-                                            href=${ifDefined(
-                                              automation.attributes.id
-                                                ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
-                                                : `/config/automation/show/${automation.entity_id}`
-                                            )}
+                            <ha-list>
+                              ${this._related.automation?.length
+                                ? this._getRelated(
+                                    this._related
+                                  ).automation.map((automation) =>
+                                    automation
+                                      ? html`<a
+                                          href=${ifDefined(
+                                            automation.attributes.id
+                                              ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
+                                              : `/config/automation/show/${automation.entity_id}`
+                                          )}
+                                        >
+                                          <ha-list-item
+                                            hasMeta
+                                            .automation=${automation}
                                           >
-                                            <ha-list-item
-                                              hasMeta
-                                              .automation=${automation}
-                                            >
-                                              ${computeStateName(automation)}
-                                              <ha-icon-next
-                                                slot="meta"
-                                              ></ha-icon-next>
-                                            </ha-list-item>
-                                          </a>`
-                                        : nothing
-                                    )}
-                                  </div>
-                                `
-                              : html`
-                                  <ha-list-item noninteractive>
+                                            ${computeStateName(automation)}
+                                            <ha-icon-next
+                                              slot="meta"
+                                            ></ha-icon-next>
+                                          </ha-list-item>
+                                        </a>`
+                                      : nothing
+                                  )
+                                : html`<ha-list-item noninteractive>
                                     ${this.hass.localize(
                                       "ui.panel.config.devices.automation.no_automations"
                                     )}
-                                  </ha-list-item>
-                                `}
+                                  </ha-list-item>`}
+                            </ha-list>
                           `
                         : nothing}
                       ${isComponentLoaded(this.hass.config, "script")
@@ -546,12 +542,10 @@ export class HaConfigDevicePage extends LitElement {
                                 "ui.panel.config.devices.script.scripts_heading"
                               )}
                             </h3>
-                            ${this._related.script?.length
-                              ? html`
-                                  <div class="items">
-                                    ${this._getRelated(
-                                      this._related
-                                    ).script.map((script) => {
+                            <ha-list>
+                              ${this._related.script?.length
+                                ? this._getRelated(this._related).script.map(
+                                    (script) => {
                                       if (!script) {
                                         return nothing;
                                       }
@@ -574,16 +568,14 @@ export class HaConfigDevicePage extends LitElement {
                                           </ha-list-item>
                                         </a>
                                       `;
-                                    })}
-                                  </div>
-                                `
-                              : html`
-                                  <ha-list-item noninteractive>
+                                    }
+                                  )
+                                : html`<ha-list-item noninteractive>
                                     ${this.hass.localize(
                                       "ui.panel.config.devices.script.no_scripts"
                                     )}
-                                  </ha-list-item>
-                                `}
+                                  </ha-list-item>`}
+                            </ha-list>
                           `
                         : nothing}
                       ${hasSceneSupport
@@ -593,32 +585,16 @@ export class HaConfigDevicePage extends LitElement {
                                 "ui.panel.config.devices.scene.scenes_heading"
                               )}
                             </h3>
-                            ${this._related.scene?.length
-                              ? html`
-                                  <div class="items">
-                                    ${this._getRelated(this._related).scene.map(
-                                      (scene) =>
-                                        scene?.attributes.id
-                                          ? html`
-                                              <a
-                                                href=${`/config/scene/edit/${scene.attributes.id}`}
-                                              >
-                                                <ha-list-item
-                                                  hasMeta
-                                                  .scene=${scene}
-                                                >
-                                                  ${computeStateName(scene)}
-                                                  <ha-icon-next
-                                                    slot="meta"
-                                                  ></ha-icon-next>
-                                                </ha-list-item>
-                                              </a>
-                                            `
-                                          : html`
+                            <ha-list>
+                              ${this._related.scene?.length
+                                ? this._getRelated(this._related).scene.map(
+                                    (scene) =>
+                                      scene?.attributes.id
+                                        ? html`
+                                            <a
+                                              href=${`/config/scene/edit/${scene.attributes.id}`}
+                                            >
                                               <ha-list-item
-                                                .id="scene-${slugify(
-                                                  scene.entity_id
-                                                )}"
                                                 hasMeta
                                                 .scene=${scene}
                                               >
@@ -627,33 +603,45 @@ export class HaConfigDevicePage extends LitElement {
                                                   slot="meta"
                                                 ></ha-icon-next>
                                               </ha-list-item>
-                                              <ha-tooltip
-                                                .for="scene-${slugify(
-                                                  scene.entity_id
-                                                )}"
-                                                placement=${computeRTL(
-                                                  this.hass.language,
-                                                  this.hass.translationMetadata
-                                                    .translations
-                                                )
-                                                  ? "left"
-                                                  : "right"}
-                                              >
-                                                ${this.hass.localize(
-                                                  "ui.panel.config.devices.cant_edit"
-                                                )}
-                                              </ha-tooltip>
-                                            `
-                                    )}
-                                  </div>
-                                `
-                              : html`
-                                  <ha-list-item noninteractive>
+                                            </a>
+                                          `
+                                        : html`
+                                            <ha-list-item
+                                              .id="scene-${slugify(
+                                                scene.entity_id
+                                              )}"
+                                              hasMeta
+                                              .scene=${scene}
+                                            >
+                                              ${computeStateName(scene)}
+                                              <ha-icon-next
+                                                slot="meta"
+                                              ></ha-icon-next>
+                                            </ha-list-item>
+                                            <ha-tooltip
+                                              .for="scene-${slugify(
+                                                scene.entity_id
+                                              )}"
+                                              placement=${computeRTL(
+                                                this.hass.language,
+                                                this.hass.translationMetadata
+                                                  .translations
+                                              )
+                                                ? "left"
+                                                : "right"}
+                                            >
+                                              ${this.hass.localize(
+                                                "ui.panel.config.devices.cant_edit"
+                                              )}
+                                            </ha-tooltip>
+                                          `
+                                  )
+                                : html`<ha-list-item noninteractive>
                                     ${this.hass.localize(
                                       "ui.panel.config.devices.scene.no_scenes"
                                     )}
-                                  </ha-list-item>
-                                `}
+                                  </ha-list-item>`}
+                            </ha-list>
                           `
                         : nothing}
                     `
@@ -1678,10 +1666,6 @@ export class HaConfigDevicePage extends LitElement {
         ha-svg-icon[slot="meta"] {
           width: 18px;
           height: 18px;
-        }
-
-        .items {
-          padding-bottom: var(--ha-space-4);
         }
 
         ha-card:has(ha-logbook) {
