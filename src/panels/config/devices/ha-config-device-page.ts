@@ -1698,6 +1698,10 @@ export class HaConfigDevicePage extends LitElement {
           height: 235px;
         }
 
+        .card-content {
+          padding-top: var(--ha-space-2);
+        }
+
         .card-content.loading {
           display: flex;
           justify-content: center;
