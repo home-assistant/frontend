@@ -340,19 +340,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         )
     );
 
-    const addToButton = this._newTriggersConditions
-      ? html`
-          <ha-button
-            appearance="filled"
-            variant="brand"
-            @click=${this._showAddToDialog}
-          >
-            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.dialogs.more_info_control.add_to.title")}
-          </ha-button>
-        `
-      : nothing;
-
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -400,50 +387,46 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         <div class="container">
           <div class="column">
             ${area.picture
-              ? html`
-                  <div class="img-container">
-                    <img alt=${area.name} src=${area.picture} />
-                    <ha-icon-button
-                      .path=${mdiPencil}
-                      .entry=${area}
-                      @click=${this._showSettings}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.areas.edit_settings"
-                      )}
-                      class="img-edit-btn"
-                    ></ha-icon-button>
-                  </div>
-                  <div class="action-buttons">
-                    <ha-button
-                      appearance="filled"
-                      .entry=${area}
-                      @click=${this._showSettings}
-                    >
-                      <ha-svg-icon
-                        .path=${mdiImagePlus}
-                        slot="start"
-                      ></ha-svg-icon>
-                      ${this.hass.localize("ui.panel.config.areas.add_picture")}
-                    </ha-button>
-                    ${addToButton}
-                  </div>
-                `
-              : html`
-                  <div class="action-buttons">
-                    <ha-button
-                      appearance="filled"
-                      .entry=${area}
-                      @click=${this._showSettings}
-                    >
-                      <ha-svg-icon
-                        .path=${mdiImagePlus}
-                        slot="start"
-                      ></ha-svg-icon>
-                      ${this.hass.localize("ui.panel.config.areas.add_picture")}
-                    </ha-button>
-                    ${addToButton}
-                  </div>
-                `}
+              ? html`<div class="img-container">
+                  <img alt=${area.name} src=${area.picture} />
+                  <ha-icon-button
+                    .path=${mdiPencil}
+                    .entry=${area}
+                    @click=${this._showSettings}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.areas.edit_settings"
+                    )}
+                    class="img-edit-btn"
+                  ></ha-icon-button>
+                </div>`
+              : nothing}
+            <div class="action-buttons">
+              ${area.picture
+                ? nothing
+                : html`<ha-button
+                    appearance="filled"
+                    .entry=${area}
+                    @click=${this._showSettings}
+                  >
+                    <ha-svg-icon
+                      .path=${mdiImagePlus}
+                      slot="start"
+                    ></ha-svg-icon>
+                    ${this.hass.localize("ui.panel.config.areas.add_picture")}
+                  </ha-button>`}
+              ${this._newTriggersConditions
+                ? html`<ha-button
+                    appearance="filled"
+                    variant="brand"
+                    @click=${this._showAddToDialog}
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.add_to.title"
+                    )}
+                  </ha-button>`
+                : nothing}
+            </div>
             <ha-card
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
@@ -879,6 +862,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           display: flex;
           gap: var(--ha-space-2);
           flex-wrap: wrap;
+          justify-content: space-around;
         }
 
         img {
