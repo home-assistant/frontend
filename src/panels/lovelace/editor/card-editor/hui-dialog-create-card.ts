@@ -5,12 +5,11 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-spinner";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
-import "../../../../components/ha-dialog";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -43,8 +42,6 @@ export class HuiCreateDialogCard
 
   @state() private _narrow = false;
 
-  @state() private _saving = false;
-
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
 
@@ -74,7 +71,6 @@ export class HuiCreateDialogCard
     this._open = false;
     this._params = undefined;
     this._currTab = "entity";
-    this._saving = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -153,13 +149,6 @@ export class HuiCreateDialogCard
                   ></hui-card-picker>
                 `
           )}
-          ${this._saving
-            ? html`
-                <div class="saving-overlay" aria-live="polite">
-                  <ha-spinner></ha-spinner>
-                </div>
-              `
-            : nothing}
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -186,8 +175,13 @@ export class HuiCreateDialogCard
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
-          --ha-dialog-min-height: min(900px, 80vh);
-          --ha-dialog-max-height: var(--ha-dialog-min-height);
+        }
+
+        @media (min-width: 451px) and (min-height: 501px) {
+          ha-dialog {
+            --ha-dialog-min-height: min(900px, 80vh);
+            --ha-dialog-max-height: var(--ha-dialog-min-height);
+          }
         }
 
         ha-dialog::part(body) {
@@ -205,7 +199,6 @@ export class HuiCreateDialogCard
           justify-content: center;
         }
         .body {
-          position: relative;
           display: flex;
           flex-direction: column;
           flex: 1;
@@ -215,15 +208,6 @@ export class HuiCreateDialogCard
         hui-suggestion-picker {
           flex: 1;
           min-height: 0;
-        }
-        .saving-overlay {
-          position: absolute;
-          inset: 0;
-          z-index: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: rgba(var(--rgb-card-background-color), 0.75);
         }
       `,
     ];
@@ -236,24 +220,17 @@ export class HuiCreateDialogCard
   private async _handleSuggestionPicked(
     ev: CustomEvent<{ config: LovelaceCardConfig }>
   ): Promise<void> {
-    if (this._saving) return;
-    this._saving = true;
     const config = ev.detail.config;
-    try {
-      if (this._params!.saveCard) {
-        await this._params!.saveCard(config);
-      } else {
-        const lovelaceConfig = this._params!.lovelaceConfig;
-        const containerPath = this._params!.path;
-        const saveConfig = this._params!.saveConfig;
-        const newConfig = addCard(lovelaceConfig, containerPath, config);
-        await saveConfig(newConfig);
-      }
-      this.closeDialog();
-    } catch (err) {
-      this._saving = false;
-      throw err;
+    if (this._params!.saveCard) {
+      await this._params!.saveCard(config);
+    } else {
+      const lovelaceConfig = this._params!.lovelaceConfig;
+      const containerPath = this._params!.path;
+      const saveConfig = this._params!.saveConfig;
+      const newConfig = addCard(lovelaceConfig, containerPath, config);
+      await saveConfig(newConfig);
     }
+    this.closeDialog();
   }
 
   private _handleCardPicked(ev) {
