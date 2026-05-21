@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { provide } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiCog,
@@ -20,10 +21,9 @@ import {
   mdiTransitConnection,
   mdiUndo,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -31,6 +31,7 @@ import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -45,6 +46,7 @@ import type {
   Trigger,
 } from "../../../data/automation";
 import {
+  automationConfigContext,
   deleteAutomation,
   fetchAutomationFileConfig,
   getAutomationEditorInitData,
@@ -72,13 +74,12 @@ import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { showEditorToast } from "./editor-toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "./automation-save-timeout-dialog/show-dialog-automation-save-timeout";
-import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 import "./blueprint-automation-editor";
+import { showEditorToast } from "./editor-toast";
 import type { EditorDomainHooks } from "./ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
@@ -86,7 +87,7 @@ import {
 } from "./ha-automation-script-editor-mixin";
 import "./manual-automation-editor";
 import type { HaManualAutomationEditor } from "./manual-automation-editor";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { ADD_AUTOMATION_ELEMENT_QUERY_PARAM } from "./show-add-automation-element-dialog";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -94,10 +95,6 @@ declare global {
   }
   // for fire event
   interface HASSDomEvents {
-    "subscribe-automation-config": {
-      callback: (config: AutomationConfig) => void;
-      unsub?: UnsubscribeFunc;
-    };
     "ui-mode-not-available": Error;
     "move-down": undefined;
     "move-up": undefined;
@@ -125,12 +122,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  private _configSubscriptions: Record<
-    string,
-    (config?: AutomationConfig) => void
-  > = {};
-
-  private _configSubscriptionsId = 1;
+  @provide({ context: automationConfigContext })
+  @state()
+  protected config?: AutomationConfig;
 
   private _newAutomationId?: string;
 
@@ -404,10 +398,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
             </ha-svg-icon>
           </ha-dropdown-item>
         </ha-dropdown>
-        <div
-          class=${this.mode === "yaml" ? "yaml-mode" : ""}
-          @subscribe-automation-config=${this._subscribeAutomationConfig}
-        >
+        <div class=${this.mode === "yaml" ? "yaml-mode" : ""}>
           ${this.mode === "gui"
             ? html`
                 <div>
@@ -637,12 +628,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       !this.currentEntityId
     ) {
       this._setEntityId();
-    }
-
-    if (changedProps.has("config")) {
-      Object.values(this._configSubscriptions).forEach((sub) =>
-        sub(this.config)
-      );
     }
   }
 
@@ -1019,15 +1004,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     } finally {
       this.saving = false;
     }
-  }
-
-  private _subscribeAutomationConfig(ev) {
-    const id = this._configSubscriptionsId++;
-    this._configSubscriptions[id] = ev.detail.callback;
-    ev.detail.unsub = () => {
-      delete this._configSubscriptions[id];
-    };
-    ev.detail.callback(this.config);
   }
 
   protected supportedShortcuts(): SupportedShortcuts {

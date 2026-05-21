@@ -1,3 +1,4 @@
+import { createContext } from "@lit/context";
 import type {
   Connection,
   HassEntityAttributeBase,
@@ -693,3 +694,7 @@ export interface ShowAutomationEditorParams {
   data?: Partial<AutomationConfig>;
   expanded?: boolean;
 }
+
+export const automationConfigContext = createContext<
+  AutomationConfig | undefined
+>("automationConfig");

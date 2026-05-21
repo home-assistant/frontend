@@ -27,6 +27,7 @@ import type {
   LegacyTrigger,
   Trigger,
 } from "./automation";
+import { flattenTriggers } from "./automation";
 import { getConditionDomain, getConditionObjectId } from "./condition";
 import type {
   DeviceCondition,
@@ -105,6 +106,41 @@ const formatNumericLimitValue = (
   return hass.states[value]
     ? computeStateName(hass.states[value]) || value
     : value;
+};
+
+export interface TriggerInfo {
+  id: string;
+  label: string;
+  triggerType: string;
+  count: number;
+}
+
+export const getTriggerInfos = (
+  triggers: Trigger[] | undefined,
+  hass: HomeAssistant,
+  entityRegistry: EntityRegistryEntry[]
+): TriggerInfo[] => {
+  if (!triggers) {
+    return [];
+  }
+  const map = new Map<string, TriggerInfo>();
+  for (const t of flattenTriggers(triggers)) {
+    if (isTriggerList(t) || !t.id) {
+      continue;
+    }
+    const existing = map.get(t.id);
+    if (existing) {
+      existing.count++;
+    } else {
+      map.set(t.id, {
+        id: t.id,
+        label: describeTrigger(t, hass, entityRegistry),
+        triggerType: t.trigger,
+        count: 1,
+      });
+    }
+  }
+  return Array.from(map.values());
 };
 
 export const describeTrigger = (

@@ -8,6 +8,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
@@ -21,15 +22,21 @@ import {
 } from "../../../../data/automation";
 import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
-import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
+import {
+  dedupeTriggerIds,
+  getNextNumericTriggerId,
+  getUniqueTriggerId,
+  isTriggerList,
+  subscribeTriggers,
+} from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
+import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import {
   getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
@@ -65,6 +72,44 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   protected setHighlightedItems(items: Trigger[]) {
     this.highlightedTriggers = items;
+  }
+
+  protected override pasteItem(ev: CustomEvent) {
+    if (this.root && ev.detail.item) {
+      const [deduped] = dedupeTriggerIds(
+        [deepClone(ev.detail.item) as Trigger],
+        this.triggers
+      );
+      ev.detail.item = deduped;
+    }
+    super.pasteItem(ev);
+  }
+
+  protected override insertAfter(ev: CustomEvent) {
+    if (this.root) {
+      ev.detail.value = dedupeTriggerIds(
+        ensureArray(ev.detail.value) as Trigger[],
+        this.triggers
+      );
+    }
+    super.insertAfter(ev);
+  }
+
+  protected override duplicateItem(ev: CustomEvent) {
+    if (this.root) {
+      const index = (ev.target as any).index;
+      const [deduped] = dedupeTriggerIds(
+        [deepClone(this.triggers[index])],
+        this.triggers
+      );
+      fireEvent(this, "value-changed", {
+        // @ts-expect-error Requires library bump to ES2023
+        value: this.triggers.toSpliced(index + 1, 0, deduped),
+      });
+      ev.stopPropagation();
+      return;
+    }
+    super.duplicateItem(ev);
   }
 
   public disconnectedCallback() {
@@ -213,23 +258,34 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(deepClone(this._clipboard!.trigger!));
-    } else if (isDynamic(value)) {
-      triggers = this.triggers.concat({
-        trigger: getValueFromDynamic(value),
-        target,
-      });
+      const pasted = deepClone(this._clipboard!.trigger!);
+      if (this.root && !isTriggerList(pasted) && pasted.id) {
+        pasted.id = getUniqueTriggerId(pasted.id, this.triggers);
+      }
+      triggers = this.triggers.concat(pasted);
     } else {
-      const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
-      const elClass = customElements.get(
-        `ha-automation-trigger-${trigger}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Trigger;
-      };
-      triggers = this.triggers.concat({
-        ...elClass.defaultConfig,
-        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
-      });
+      let newTrigger: Trigger;
+      if (isDynamic(value)) {
+        newTrigger = {
+          trigger: getValueFromDynamic(value),
+          target,
+        };
+      } else {
+        const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
+        const elClass = customElements.get(
+          `ha-automation-trigger-${trigger}`
+        ) as CustomElementConstructor & {
+          defaultConfig: Trigger;
+        };
+        newTrigger = {
+          ...elClass.defaultConfig,
+          ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
+        };
+      }
+      if (this.root && !isTriggerList(newTrigger)) {
+        newTrigger.id = getNextNumericTriggerId(this.triggers);
+      }
+      triggers = this.triggers.concat(newTrigger);
     }
     this.focusLastItemOnChange = true;
     fireEvent(this, "value-changed", { value: triggers });
