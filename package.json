@@ -86,7 +86,7 @@
     "core-js": "3.49.0",
     "cropperjs": "1.6.2",
     "culori": "4.0.2",
-    "date-fns": "4.2.0",
+    "date-fns": "4.2.1",
     "deep-clone-simple": "1.1.1",
     "deep-freeze": "0.0.1",
     "dialog-polyfill": "0.5.6",

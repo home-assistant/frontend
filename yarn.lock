@@ -6666,10 +6666,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:4.2.0":
-  version: 4.2.0
-  resolution: "date-fns@npm:4.2.0"
-  checksum: 10/6f50c3da98286a93807ad7c1b790ba753d6ea17d028cf0ffe39aa208693d940100a9069ec444f9436dc010de6a94242b8cb459e86e92e8d1948c553f4d141f71
+"date-fns@npm:4.2.1":
+  version: 4.2.1
+  resolution: "date-fns@npm:4.2.1"
+  checksum: 10/c2731946a2d022935b3641062cd64bcdd62a65066115fee3490ba360a17fbf42134918493c43acb2c5c995b9ea4a2c7f505f0d9c02e73351cd2899b13e081729
   languageName: node
   linkType: hard
 
@@ -8635,7 +8635,7 @@ __metadata:
     core-js: "npm:3.49.0"
     cropperjs: "npm:1.6.2"
     culori: "npm:4.0.2"
-    date-fns: "npm:4.2.0"
+    date-fns: "npm:4.2.1"
     deep-clone-simple: "npm:1.1.1"
     deep-freeze: "npm:0.0.1"
     del: "npm:8.0.1"
