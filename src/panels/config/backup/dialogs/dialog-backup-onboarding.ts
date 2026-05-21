@@ -11,9 +11,10 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/item/ha-row-item";
+import "../../../../components/list/ha-list-base";
 import type {
   BackupConfig,
   BackupMutableConfig,
@@ -366,36 +367,34 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               @click=${this._copyKeyToClipboard}
             ></ha-icon-button>
           </div>
-          <ha-md-list>
-            <ha-md-list-item>
-              <span slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.encryption_key.download_emergency_kit"
-                )}
-              </span>
-              <span slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
-                )}
-              </span>
-              <ha-button
-                size="small"
-                appearance="plain"
-                slot="end"
-                @click=${this._downloadKey}
-              >
-                <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
-                )}
-              </ha-button>
-            </ha-md-list-item>
-          </ha-md-list>
+          <ha-row-item>
+            <span slot="headline">
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.download_emergency_kit"
+              )}
+            </span>
+            <span slot="supporting-text">
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
+              )}
+            </span>
+            <ha-button
+              size="small"
+              appearance="plain"
+              slot="end"
+              @click=${this._downloadKey}
+            >
+              <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
+              )}
+            </ha-button>
+          </ha-row-item>
         `;
       case "setup":
         return html`
-          <ha-md-list class="full">
-            <ha-md-list-item type="button" @click=${this._useRecommended}>
+          <ha-list-base class="full">
+            <ha-list-item-button @click=${this._useRecommended}>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.backup.dialogs.onboarding.setup.recommended_heading"
@@ -407,8 +406,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                 )}
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item type="button" @click=${this._nextStep}>
+            </ha-list-item-button>
+            <ha-list-item-button @click=${this._nextStep}>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.backup.dialogs.onboarding.setup.custom_heading"
@@ -420,8 +419,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
                 )}
               </span>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-base>
         `;
       case "schedule":
         return html`
@@ -547,16 +546,12 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
           --ha-dialog-max-height: min(605px, 100% - 48px);
         }
-        ha-md-list {
-          background: none;
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
-        ha-md-list.full {
-          --md-list-item-leading-space: 24px;
-          --md-list-item-trailing-space: 24px;
-          margin-left: -24px;
-          margin-right: -24px;
+        ha-list-base.full {
+          --ha-row-item-padding-inline: var(--ha-space-6);
+          margin: 0 calc(-1 * var(--ha-space-6));
         }
         p {
           margin-top: 0;

@@ -13,9 +13,9 @@ import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { BackupConfig, BackupContent } from "../../../../../data/backup";
 import {
   BackupScheduleRecurrence,
@@ -65,15 +65,15 @@ class HaBackupOverviewBackups extends LitElement {
   ) {
     return html`
       <ha-backup-summary-card .heading=${heading} .status=${status}>
-        <ha-md-list>
-          <ha-md-list-item>
+        <ha-list-base>
+          <ha-list-item-base>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
             <span slot="headline" class=${headline === null ? "skeleton" : ""}
               >${headline}</span
             >
-          </ha-md-list-item>
+          </ha-list-item-base>
           ${description || description === null
-            ? html`<ha-md-list-item>
+            ? html`<ha-list-item-base>
                 <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
                 <span
                   slot="headline"
@@ -90,9 +90,9 @@ class HaBackupOverviewBackups extends LitElement {
                       .path=${mdiInformationOutline}
                     ></ha-icon-button>`
                   : nothing}
-              </ha-md-list-item>`
+              </ha-list-item-base>`
             : nothing}
-        </ha-md-list>
+        </ha-list-base>
       </ha-backup-summary-card>
     `;
   }
@@ -347,13 +347,12 @@ class HaBackupOverviewBackups extends LitElement {
           justify-content: flex-end;
           border-top: none;
         }
-        ha-md-list {
-          background: none;
+        ha-list-item-base {
+          --ha-row-item-padding-block: var(--ha-space-2);
+          --ha-row-item-min-height: 40x;
         }
-        ha-md-list-item {
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
-          --md-list-item-one-line-container-height: 40x;
+        ha-list-item-base::part(start) {
+          color: var(--ha-color-text-secondary);
         }
         span.skeleton {
           position: relative;

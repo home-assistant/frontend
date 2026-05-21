@@ -2,15 +2,14 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import type {
   BackupAgent,
   BackupAgentConfig,
@@ -143,10 +142,36 @@ class HaConfigBackupDetails extends LitElement {
                           "ui.panel.config.backup.location.encryption.description"
                         )}
                       </p>
-                      <ha-md-list>
-                        ${CLOUD_AGENT === this.agentId
+                      ${CLOUD_AGENT === this.agentId
+                        ? html`
+                            <ha-row-item>
+                              <span slot="headline">
+                                ${this.hass.localize(
+                                  "ui.panel.config.backup.location.encryption.location_encrypted"
+                                )}
+                              </span>
+                              <span slot="supporting-text">
+                                ${this.hass.localize(
+                                  "ui.panel.config.backup.location.encryption.location_encrypted_cloud_description"
+                                )}
+                              </span>
+                              <ha-button
+                                href="https://www.nabucasa.com/config/backups/"
+                                target="_blank"
+                                slot="end"
+                                rel="noreferrer noopener"
+                                appearance="plain"
+                                size="small"
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.backup.location.encryption.location_encrypted_cloud_learn_more"
+                                )}
+                              </ha-button>
+                            </ha-row-item>
+                          `
+                        : encrypted
                           ? html`
-                              <ha-md-list-item>
+                              <ha-row-item>
                                 <span slot="headline">
                                   ${this.hass.localize(
                                     "ui.panel.config.backup.location.encryption.location_encrypted"
@@ -154,82 +179,54 @@ class HaConfigBackupDetails extends LitElement {
                                 </span>
                                 <span slot="supporting-text">
                                   ${this.hass.localize(
-                                    "ui.panel.config.backup.location.encryption.location_encrypted_cloud_description"
+                                    `ui.panel.config.backup.location.encryption.location_encrypted_description`
                                   )}
                                 </span>
+
                                 <ha-button
-                                  href="https://www.nabucasa.com/config/backups/"
-                                  target="_blank"
                                   slot="end"
-                                  rel="noreferrer noopener"
-                                  appearance="plain"
-                                  size="small"
+                                  @click=${this._turnOffEncryption}
+                                  variant="danger"
                                 >
                                   ${this.hass.localize(
-                                    "ui.panel.config.backup.location.encryption.location_encrypted_cloud_learn_more"
+                                    "ui.panel.config.backup.location.encryption.encryption_turn_off"
                                   )}
                                 </ha-button>
-                              </ha-md-list-item>
+                              </ha-row-item>
                             `
-                          : encrypted
-                            ? html`
-                                <ha-md-list-item>
-                                  <span slot="headline">
-                                    ${this.hass.localize(
-                                      "ui.panel.config.backup.location.encryption.location_encrypted"
-                                    )}
-                                  </span>
-                                  <span slot="supporting-text">
-                                    ${this.hass.localize(
-                                      `ui.panel.config.backup.location.encryption.location_encrypted_description`
-                                    )}
-                                  </span>
-
-                                  <ha-button
-                                    slot="end"
-                                    @click=${this._turnOffEncryption}
-                                    variant="danger"
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.panel.config.backup.location.encryption.encryption_turn_off"
-                                    )}
-                                  </ha-button>
-                                </ha-md-list-item>
-                              `
-                            : html`
-                                <ha-alert
-                                  alert-type="warning"
-                                  .title=${this.hass.localize(
-                                    "ui.panel.config.backup.location.encryption.warning_encryption_turn_off"
+                          : html`
+                              <ha-alert
+                                alert-type="warning"
+                                .title=${this.hass.localize(
+                                  "ui.panel.config.backup.location.encryption.warning_encryption_turn_off"
+                                )}
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.backup.location.encryption.warning_encryption_turn_off_description"
+                                )}
+                              </ha-alert>
+                              <ha-row-item>
+                                <span slot="headline">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.backup.location.encryption.location_unencrypted"
                                   )}
+                                </span>
+                                <span slot="supporting-text">
+                                  ${this.hass.localize(
+                                    `ui.panel.config.backup.location.encryption.location_unencrypted_description`
+                                  )}
+                                </span>
+
+                                <ha-button
+                                  slot="end"
+                                  @click=${this._turnOnEncryption}
                                 >
                                   ${this.hass.localize(
-                                    "ui.panel.config.backup.location.encryption.warning_encryption_turn_off_description"
+                                    "ui.panel.config.backup.location.encryption.encryption_turn_on"
                                   )}
-                                </ha-alert>
-                                <ha-md-list-item>
-                                  <span slot="headline">
-                                    ${this.hass.localize(
-                                      "ui.panel.config.backup.location.encryption.location_unencrypted"
-                                    )}
-                                  </span>
-                                  <span slot="supporting-text">
-                                    ${this.hass.localize(
-                                      `ui.panel.config.backup.location.encryption.location_unencrypted_description`
-                                    )}
-                                  </span>
-
-                                  <ha-button
-                                    slot="end"
-                                    @click=${this._turnOnEncryption}
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.panel.config.backup.location.encryption.encryption_turn_on"
-                                    )}
-                                  </ha-button>
-                                </ha-md-list-item>
-                              `}
-                      </ha-md-list>
+                                </ha-button>
+                              </ha-row-item>
+                            `}
                     </div>
                   </ha-card>
                 `}
@@ -336,28 +333,15 @@ class HaConfigBackupDetails extends LitElement {
       display: flex;
       justify-content: flex-end;
     }
-    ha-md-list {
-      background: none;
-      padding: 0;
+    ha-row-item {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-list-item-two-line-container-height: 64px;
-    }
-    ha-md-list-item img {
+    ha-row-item img {
       width: 48px;
     }
-    ha-md-list-item ha-svg-icon[slot="start"] {
+    ha-row-item ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
-    }
-    ha-md-list.summary ha-md-list-item {
-      --md-list-item-supporting-text-size: 1rem;
-      --md-list-item-label-text-size: 0.875rem;
-
-      --md-list-item-label-text-color: var(--secondary-text-color);
-      --md-list-item-supporting-text-color: var(--primary-text-color);
     }
     .warning {
       color: var(--error-color);
@@ -371,12 +355,8 @@ class HaConfigBackupDetails extends LitElement {
     ha-backup-data-picker {
       display: block;
     }
-    ha-md-list-item [slot="supporting-text"] {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      gap: var(--ha-space-2);
-      line-height: var(--ha-line-height-condensed);
+    ha-row-item::part(supporting-text) {
+      white-space: wrap;
     }
     .dot {
       display: block;
