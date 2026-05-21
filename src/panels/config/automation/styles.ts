@@ -61,7 +61,7 @@ export const rowStyles = css`
     max-width: 300px;
   }
   .comment-indicator + ha-tooltip p {
-    white-space: pre;
+    white-space: pre-wrap;
     margin: 0;
   }
 `;

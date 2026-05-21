@@ -1,4 +1,3 @@
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -61,7 +60,7 @@ export class HaAutomationComment extends LitElement {
       padding: var(--ha-space-1) var(--ha-space-3);
       border-radius: var(--ha-border-radius-lg);
       background-color: var(--ha-color-fill-neutral-quiet-resting);
-      white-space: pre;
+      white-space: pre-wrap;
     }
     ha-button {
       margin-inline-end: calc(-1 * var(--ha-space-3));

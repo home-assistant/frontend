@@ -10,6 +10,7 @@ import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
 import "../../components/ha-textarea";
+import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
 import type { HomeAssistant } from "../../types";
@@ -29,7 +30,7 @@ class DialogBox extends LitElement {
 
   @state() private _validInput = true;
 
-  @query("ha-input, ha-textarea") private _textField?: HaInput;
+  @query("ha-input, ha-textarea") private _textField?: HaInput | HaTextArea;
 
   private _closePromise?: Promise<void>;
 
