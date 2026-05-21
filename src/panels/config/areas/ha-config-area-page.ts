@@ -29,6 +29,7 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
@@ -676,9 +677,11 @@ class HaConfigAreaPage extends LitElement {
     this._related = await findRelated(this.hass, "area", this.areaId);
   }
 
-  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+  private _handleMenuAction(
+    ev: HaDropdownSelectEvent<string, AreaRegistryEntry>
+  ) {
     const action = ev.detail?.item?.value;
-    const entry = (ev.detail?.item as any)?.data as AreaRegistryEntry;
+    const entry = ev.detail?.item?.data;
 
     const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
     if (navAction) {
@@ -696,15 +699,19 @@ class HaConfigAreaPage extends LitElement {
     }
   }
 
-  private _showSettings(ev: MouseEvent) {
-    const entry: AreaRegistryEntry = (ev.currentTarget! as any).entry;
-    this._openDialog(entry);
+  private _showSettings(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLButtonElement & { entry: AreaRegistryEntry }
+    >
+  ) {
+    this._openDialog(ev.currentTarget.entry);
   }
 
-  private _openEntity(ev) {
-    const entry: EntityRegistryEntry = (ev.currentTarget as any).entity;
+  private _openEntity(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entity: EntityRegistryEntry }>
+  ) {
     showMoreInfoDialog(this, {
-      entityId: entry.entity_id,
+      entityId: ev.currentTarget.entity.entity_id,
     });
   }
 
