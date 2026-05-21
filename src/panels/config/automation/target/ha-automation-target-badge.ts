@@ -19,10 +19,15 @@ import type { TargetType } from "../../../../data/target";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
+const TARGET_TYPES = ["entity", "device", "area", "label", "floor"] as const;
+
+const isTargetType = (targetType: string): targetType is TargetType =>
+  TARGET_TYPES.includes(targetType as TargetType);
+
 @customElement("ha-automation-target-badge")
 export class HaAutomationTargetBadge extends LitElement {
   @property({ attribute: "target-type" })
-  public targetType!: TargetType;
+  public targetType!: string;
 
   @property({ attribute: "target-id" })
   public targetId?: string;
@@ -102,6 +107,14 @@ export class HaAutomationTargetBadge extends LitElement {
     let iconPath: string | undefined;
     let label = this.label;
     let warning = this.warning;
+
+    if (!isTargetType(this.targetType)) {
+      return {
+        icon: nothing,
+        label: label || targetId,
+        warning,
+      };
+    }
 
     if (this.targetType === "entity" && ["all", "none"].includes(targetId)) {
       iconPath = mdiShape;

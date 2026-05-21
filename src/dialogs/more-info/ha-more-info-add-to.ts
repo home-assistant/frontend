@@ -6,15 +6,12 @@ import "../../components/ha-spinner";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
 import "../../panels/config/automation/target/ha-automation-target-badge";
-import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import { showToast } from "../../util/toast";
 
-import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
 import {
   type AddToActionKey,
-  type EntityAddToAction,
   type EntityAddToActions,
   addToActionHandler,
   getDefaultAddToActions,
@@ -68,14 +65,18 @@ export class HaMoreInfoAddTo extends LitElement {
     }
   }
 
-  private async _actionSelected(
-    ev: HASSDomCurrentTargetEvent<
-      HaListItemButton & {
-        action: EntityAddToAction;
-      }
-    >
-  ) {
-    const action = ev.currentTarget.action;
+  private async _actionSelected(ev: Event) {
+    const item = ev.currentTarget as HTMLElement;
+    const actions =
+      item.dataset.actionSource === "external"
+        ? this._externalActions
+        : this._defaultActions;
+    const action = actions[Number(item.dataset.actionIndex)];
+
+    if (!action) {
+      return;
+    }
+
     if (!action.enabled) {
       return;
     }
@@ -113,13 +114,17 @@ export class HaMoreInfoAddTo extends LitElement {
     addToActionHandler(action.key, { entity_id: this.entityId });
   }
 
-  private _renderActionItems(actions: EntityAddToActions) {
+  private _renderActionItems(
+    actions: EntityAddToActions,
+    source: "default" | "external"
+  ) {
     return actions.map(
-      (action) => html`
+      (action, index) => html`
         <ha-list-item-button
           aria-label=${action.name}
+          data-action-index=${index}
+          data-action-source=${source}
           .disabled=${!action.enabled}
-          .action=${action}
           @click=${this._actionSelected}
         >
           <ha-icon slot="start" .icon=${action.icon}></ha-icon>
@@ -186,7 +191,7 @@ export class HaMoreInfoAddTo extends LitElement {
 
     return html`
       <ha-list-base>
-        ${this._renderActionItems(this._defaultActions)}
+        ${this._renderActionItems(this._defaultActions, "default")}
       </ha-list-base>
       ${this._externalActions.length
         ? html`
@@ -196,7 +201,7 @@ export class HaMoreInfoAddTo extends LitElement {
               )}
             </h2>
             <ha-list-base>
-              ${this._renderActionItems(this._externalActions)}
+              ${this._renderActionItems(this._externalActions, "external")}
             </ha-list-base>
           `
         : nothing}

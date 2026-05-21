@@ -17,13 +17,12 @@ import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import type { TargetType } from "../../../../data/target";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import "../target/ha-automation-target-badge";
 
-type Target = [TargetType, string | undefined, string | undefined];
+type Target = [string, string | undefined, string | undefined];
 
 @customElement("ha-automation-add-items")
 export class HaAutomationAddItems extends LitElement {
