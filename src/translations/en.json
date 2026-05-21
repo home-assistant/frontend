@@ -3175,7 +3175,7 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area.",
+            "no_linked_entities": "There are no entities directly linked to this area.",
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",

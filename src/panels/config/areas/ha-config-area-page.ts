@@ -220,6 +220,13 @@ class HaConfigAreaPage extends LitElement {
         ));
     }
 
+    const nonAutomatedEntities = entities.filter(
+      (entity) =>
+        !["scene", "script", "automation"].includes(
+          computeDomain(entity.entity_id)
+        )
+    );
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -303,23 +310,19 @@ class HaConfigAreaPage extends LitElement {
                 "ui.panel.config.areas.editor.linked_entities_caption"
               )}
             >
-              ${entities.length
+              ${nonAutomatedEntities.length
                 ? html`<ha-list>
-                    ${entities.map((entity) =>
-                      ["scene", "script", "automation"].includes(
-                        computeDomain(entity.entity_id)
-                      )
-                        ? ""
-                        : html`
-                            <ha-list-item
-                              @click=${this._openEntity}
-                              .entity=${entity}
-                              hasMeta
-                            >
-                              <span>${entity.name}</span>
-                              <ha-icon-next slot="meta"></ha-icon-next>
-                            </ha-list-item>
-                          `
+                    ${nonAutomatedEntities.map(
+                      (entity) => html`
+                        <ha-list-item
+                          @click=${this._openEntity}
+                          .entity=${entity}
+                          hasMeta
+                        >
+                          <span>${entity.name}</span>
+                          <ha-icon-next slot="meta"></ha-icon-next>
+                        </ha-list-item>
+                      `
                     )}</ha-list
                   >`
                 : html`
