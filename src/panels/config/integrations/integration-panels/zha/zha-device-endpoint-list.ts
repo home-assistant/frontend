@@ -1,19 +1,27 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-list";
 import "../../../../../components/input/ha-input-search";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectedDetail } from "../../../../../components/list/types";
+import {
+  areasContext,
+  internationalizationContext,
+} from "../../../../../data/context";
 import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
 } from "../../../../../data/zha";
-import type { HomeAssistant } from "../../../../../types";
 
 export interface DeviceEndpointRowData {
   id: string;
@@ -33,8 +41,6 @@ export interface DeviceEndpointSelectionChangedEvent {
 
 @customElement("zha-device-endpoint-list")
 export class ZHADeviceEndpointList extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public selectable = false;
@@ -53,8 +59,19 @@ export class ZHADeviceEndpointList extends LitElement {
 
   @state() private _selectedDeviceIds: string[] = [];
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @query("ha-list-selectable") private _list?: HaListSelectable;
+
   public clearSelection() {
     this._selectedDeviceIds = [];
+    this._list?.clearSelection();
     this._fireSelectionChanged();
   }
 
@@ -82,20 +99,39 @@ export class ZHADeviceEndpointList extends LitElement {
           : ""}
         ${deviceEndpoints.length
           ? html`
-              <ha-md-list>
-                ${deviceEndpoints.map((deviceEndpoint) =>
-                  this._renderListRow(deviceEndpoint)
-                )}
-              </ha-md-list>
+              ${this.selectable
+                ? html`
+                    <ha-list-selectable
+                      multi
+                      @ha-list-selected=${this._handleListSelectionChanged}
+                    >
+                      ${repeat(
+                        deviceEndpoints,
+                        (deviceEndpoint) => deviceEndpoint.id,
+                        (deviceEndpoint) =>
+                          this._renderSelectableListRow(deviceEndpoint)
+                      )}
+                    </ha-list-selectable>
+                  `
+                : html`
+                    <ha-list>
+                      ${repeat(
+                        deviceEndpoints,
+                        (deviceEndpoint) => deviceEndpoint.id,
+                        (deviceEndpoint) =>
+                          this._renderReadonlyListRow(deviceEndpoint)
+                      )}
+                    </ha-list>
+                  `}
             `
           : html`
               <div class="empty-list">
                 ${this._filter
-                  ? this.hass.localize(
+                  ? this._i18n.localize(
                       "ui.panel.config.zha.groups.no_devices_found"
                     )
                   : this.emptyText ||
-                    this.hass.localize("ui.components.data-table.no-data")}
+                    this._i18n.localize("ui.components.data-table.no-data")}
               </div>
             `}
       </ha-card>
@@ -106,7 +142,7 @@ export class ZHADeviceEndpointList extends LitElement {
     return this.deviceEndpoints.map((deviceEndpoint) => ({
       name: deviceEndpoint.device.user_given_name || deviceEndpoint.device.name,
       area: deviceEndpoint.device.area_id
-        ? this.hass.areas[deviceEndpoint.device.area_id]?.name
+        ? this._areas[deviceEndpoint.device.area_id]?.name
         : undefined,
       model: deviceEndpoint.device.model,
       manufacturer: deviceEndpoint.device.manufacturer,
@@ -118,30 +154,18 @@ export class ZHADeviceEndpointList extends LitElement {
     }));
   }
 
-  private _renderListRow(
+  private _renderSelectableListRow(
     deviceEndpoint: DeviceEndpointRowData
   ): TemplateResult {
     const selected = this._selectedDeviceIds.includes(deviceEndpoint.id);
 
     return html`
-      <ha-md-list-item
-        type=${this.selectable ? "button" : "text"}
-        class=${selected ? "device-row selected" : "device-row"}
-        data-id=${deviceEndpoint.id}
-        @click=${this._toggleListRow}
+      <ha-list-item-option
+        appearance="checkbox"
+        class="device-row"
+        .value=${deviceEndpoint.id}
+        .selected=${selected}
       >
-        ${this.selectable
-          ? html`
-              <ha-checkbox
-                slot="start"
-                aria-label=${deviceEndpoint.name}
-                .checked=${selected}
-                .value=${deviceEndpoint.id}
-                @click=${this._stopPropagation}
-                @change=${this._handleCheckedChanged}
-              ></ha-checkbox>
-            `
-          : nothing}
         <span slot="headline">${deviceEndpoint.name}</span>
         <span slot="supporting-text">
           ${this._deviceEndpointDetails(deviceEndpoint)}
@@ -152,14 +176,39 @@ export class ZHADeviceEndpointList extends LitElement {
                 slot="end"
                 .path=${mdiOpenInNew}
                 .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
-                .label=${this.hass.localize(
+                .label=${this._i18n.localize(
                   "ui.panel.config.zha.groups.open_device"
                 )}
                 @click=${this._stopPropagation}
               ></ha-icon-button>
             `
           : nothing}
-      </ha-md-list-item>
+      </ha-list-item-option>
+    `;
+  }
+
+  private _renderReadonlyListRow(
+    deviceEndpoint: DeviceEndpointRowData
+  ): TemplateResult {
+    return html`
+      <ha-list-item-base class="device-row">
+        <span slot="headline">${deviceEndpoint.name}</span>
+        <span slot="supporting-text">
+          ${this._deviceEndpointDetails(deviceEndpoint)}
+        </span>
+        ${this.showDeviceLink
+          ? html`
+              <ha-icon-button
+                slot="end"
+                .path=${mdiOpenInNew}
+                .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
+                .label=${this._i18n.localize(
+                  "ui.panel.config.zha.groups.open_device"
+                )}
+              ></ha-icon-button>
+            `
+          : nothing}
+      </ha-list-item-base>
     `;
   }
 
@@ -195,11 +244,11 @@ export class ZHADeviceEndpointList extends LitElement {
       ? entityNames.length > 2
         ? `${entityNames.slice(0, 2).join(", ")} +${entityNames.length - 2}`
         : entityNames.join(", ")
-      : this.hass.localize("ui.panel.config.zha.groups.no_entities");
+      : this._i18n.localize("ui.panel.config.zha.groups.no_entities");
 
     return [
       deviceEndpoint.area,
-      `${this.hass.localize("ui.panel.config.zha.groups.endpoint")} ${
+      `${this._i18n.localize("ui.panel.config.zha.groups.endpoint")} ${
         deviceEndpoint.endpoint_id
       }`,
       entitySummary,
@@ -212,27 +261,35 @@ export class ZHADeviceEndpointList extends LitElement {
     this._filter = (ev.currentTarget as HTMLInputElement).value;
   }
 
-  private _handleCheckedChanged(ev: Event): void {
-    const checkbox = ev.currentTarget as HaCheckbox;
-    this._selectedDeviceIds = this._setSelectedDeviceId(
-      this._selectedDeviceIds,
-      checkbox.value!,
-      checkbox.checked
-    );
-    this._fireSelectionChanged();
-  }
+  private _handleListSelectionChanged(
+    ev: CustomEvent<HaListSelectedDetail>
+  ): void {
+    const list = ev.currentTarget as HaListSelectable;
+    let selectedDeviceIds = this._selectedDeviceIds;
 
-  private _toggleListRow(ev: Event): void {
-    if (!this.selectable) {
-      return;
-    }
+    ev.detail.diff?.added.forEach((index) => {
+      const item = list.items[index] as HaListItemOption | undefined;
+      if (item?.value) {
+        selectedDeviceIds = this._setSelectedDeviceId(
+          selectedDeviceIds,
+          item.value,
+          true
+        );
+      }
+    });
 
-    const deviceId = (ev.currentTarget as HTMLElement).dataset.id!;
-    this._selectedDeviceIds = this._setSelectedDeviceId(
-      this._selectedDeviceIds,
-      deviceId,
-      !this._selectedDeviceIds.includes(deviceId)
-    );
+    ev.detail.diff?.removed.forEach((index) => {
+      const item = list.items[index] as HaListItemOption | undefined;
+      if (item?.value) {
+        selectedDeviceIds = this._setSelectedDeviceId(
+          selectedDeviceIds,
+          item.value,
+          false
+        );
+      }
+    });
+
+    this._selectedDeviceIds = selectedDeviceIds;
     this._fireSelectionChanged();
   }
 
@@ -286,26 +343,27 @@ export class ZHADeviceEndpointList extends LitElement {
           padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
         }
 
-        ha-md-list {
+        ha-list,
+        ha-list-selectable {
+          display: block;
+          width: 100%;
           background: none;
           padding: 0;
         }
 
-        ha-card.scrollable ha-md-list {
+        ha-list-selectable::part(base) {
+          width: 100%;
+        }
+
+        ha-card.scrollable ha-list,
+        ha-card.scrollable ha-list-selectable {
           overflow-y: auto;
         }
 
-        ha-md-list-item.device-row {
-          --md-list-item-two-line-container-height: 64px;
-          --ha-md-list-item-gap: var(--ha-space-3);
-        }
-
-        ha-md-list-item.device-row.selected {
-          background-color: rgba(var(--rgb-primary-color), 0.08);
-        }
-
-        ha-checkbox {
-          margin-inline-start: var(--ha-space-1);
+        .device-row {
+          width: 100%;
+          --ha-row-item-min-height: 64px;
+          --ha-row-item-gap: var(--ha-space-3);
         }
 
         [slot="headline"],

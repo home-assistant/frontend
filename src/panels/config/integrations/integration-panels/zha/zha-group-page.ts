@@ -134,7 +134,6 @@ export class ZHAGroupPage extends LitElement {
                     scrollable
                     show-device-link
                     selectable
-                    .hass=${this.hass}
                     .deviceEndpoints=${this.group.members}
                     .narrow=${this.narrow}
                     .emptyText=${this.hass.localize(

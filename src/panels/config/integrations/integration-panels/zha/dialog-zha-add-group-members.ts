@@ -1,15 +1,19 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/input/ha-input-search";
-import "../../../../../components/ha-list";
+import "../../../../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectedDetail } from "../../../../../components/list/types";
 import "../../../../../components/ha-spinner";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
@@ -18,6 +22,8 @@ import {
   fetchGroupableDevices,
 } from "../../../../../data/zha";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import { haStyleScrollbar } from "../../../../../resources/styles";
+import { loadVirtualizer } from "../../../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZHAAddGroupMembersDialogParams } from "./show-dialog-zha-add-group-members";
 
@@ -43,6 +49,8 @@ class DialogZHAAddGroupMembers
   @state() private _processingAdd = false;
 
   @state() private _selectedDevicesToAdd: string[] = [];
+
+  @state() private _virtualizerReady = false;
 
   private _fetchDataToken = 0;
 
@@ -72,6 +80,7 @@ class DialogZHAAddGroupMembers
     this._loading = false;
     this._processingAdd = false;
     this._selectedDevicesToAdd = [];
+    this._virtualizerReady = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -90,7 +99,8 @@ class DialogZHAAddGroupMembers
         header-title=${this.hass.localize(
           "ui.panel.config.zha.groups.add_members"
         )}
-        prevent-scrim-close
+        ?prevent-scrim-close=${this._selectedDevicesToAdd.length > 0}
+        @after-show=${this._loadVirtualizer}
         @closed=${this._dialogClosed}
       >
         <ha-icon-button
@@ -102,7 +112,7 @@ class DialogZHAAddGroupMembers
         ></ha-icon-button>
         <div class="content">
           ${this._loading
-            ? html`<ha-spinner size="large"></ha-spinner>`
+            ? this._renderLoadingSpinner()
             : html`
                 ${showSearch
                   ? html`
@@ -116,31 +126,22 @@ class DialogZHAAddGroupMembers
                 <div class="list-container">
                   ${deviceEndpoints.length
                     ? html`
-                        <ha-list multi>
-                          ${deviceEndpoints.map((deviceEndpoint) => {
-                            const id = this._deviceEndpointId(deviceEndpoint);
-                            return html`
-                              <ha-check-list-item
-                                left
-                                twoline
-                                .value=${id}
-                                .selected=${this._selectedDevicesToAdd.includes(
-                                  id
-                                )}
-                                @request-selected=${this._handleSelected}
+                        ${this._virtualizerReady
+                          ? html`
+                              <ha-list-selectable
+                                multi
+                                @ha-list-selected=${this._handleSelected}
                               >
-                                <span
-                                  >${this._deviceEndpointName(
-                                    deviceEndpoint
-                                  )}</span
-                                >
-                                <span slot="secondary">
-                                  ${this._deviceEndpointDetails(deviceEndpoint)}
-                                </span>
-                              </ha-check-list-item>
-                            `;
-                          })}
-                        </ha-list>
+                                <lit-virtualizer
+                                  scroller
+                                  class="ha-scrollbar"
+                                  .items=${deviceEndpoints}
+                                  .renderItem=${this._renderDeviceEndpoint}
+                                  .keyFunction=${this._keyFunction}
+                                ></lit-virtualizer>
+                              </ha-list-selectable>
+                            `
+                          : this._renderLoadingSpinner()}
                       `
                     : html`
                         <div class="empty-list">
@@ -181,6 +182,14 @@ class DialogZHAAddGroupMembers
     `;
   }
 
+  private _renderLoadingSpinner(): TemplateResult {
+    return html`
+      <div class="spinner-container">
+        <ha-spinner size="medium"></ha-spinner>
+      </div>
+    `;
+  }
+
   private get _availableDeviceEndpoints(): ZHADeviceEndpoint[] {
     if (!this._group) {
       return [];
@@ -216,6 +225,33 @@ class DialogZHAAddGroupMembers
         .some((value) => value!.toLowerCase().includes(normalizedFilter))
     );
   }
+
+  private async _loadVirtualizer(): Promise<void> {
+    await loadVirtualizer();
+    this._virtualizerReady = true;
+  }
+
+  private _keyFunction = (deviceEndpoint: unknown): string =>
+    this._deviceEndpointId(deviceEndpoint as ZHADeviceEndpoint);
+
+  private _renderDeviceEndpoint: RenderItemFunction<ZHADeviceEndpoint> = (
+    deviceEndpoint
+  ) => {
+    const id = this._deviceEndpointId(deviceEndpoint);
+
+    return html`
+      <ha-list-item-option
+        appearance="checkbox"
+        .value=${id}
+        .selected=${this._selectedDevicesToAdd.includes(id)}
+      >
+        <span slot="headline">${this._deviceEndpointName(deviceEndpoint)}</span>
+        <span slot="supporting-text">
+          ${this._deviceEndpointDetails(deviceEndpoint)}
+        </span>
+      </ha-list-item-option>
+    `;
+  };
 
   private _deviceEndpointId(deviceEndpoint: ZHADeviceEndpoint): string {
     return `${deviceEndpoint.device.ieee}_${deviceEndpoint.endpoint_id}`;
@@ -269,18 +305,27 @@ class DialogZHAAddGroupMembers
     this._filter = (ev.currentTarget as HTMLInputElement).value;
   }
 
-  private _handleSelected(ev): void {
-    const deviceId = ev.currentTarget.value;
-    if (ev.detail.selected) {
-      if (this._selectedDevicesToAdd.includes(deviceId)) {
-        return;
+  private _handleSelected(ev: CustomEvent<HaListSelectedDetail>): void {
+    const list = ev.currentTarget as HaListSelectable;
+    let selectedDevicesToAdd = this._selectedDevicesToAdd;
+
+    ev.detail.diff?.added.forEach((index) => {
+      const item = list.items[index] as HaListItemOption | undefined;
+      if (item?.value && !selectedDevicesToAdd.includes(item.value)) {
+        selectedDevicesToAdd = [...selectedDevicesToAdd, item.value];
       }
-      this._selectedDevicesToAdd = [...this._selectedDevicesToAdd, deviceId];
-      return;
-    }
-    this._selectedDevicesToAdd = this._selectedDevicesToAdd.filter(
-      (selectedDeviceId) => selectedDeviceId !== deviceId
-    );
+    });
+
+    ev.detail.diff?.removed.forEach((index) => {
+      const item = list.items[index] as HaListItemOption | undefined;
+      if (item?.value) {
+        selectedDevicesToAdd = selectedDevicesToAdd.filter(
+          (selectedDeviceId) => selectedDeviceId !== item.value
+        );
+      }
+    });
+
+    this._selectedDevicesToAdd = selectedDevicesToAdd;
   }
 
   private async _addMembersToGroup(): Promise<void> {
@@ -305,6 +350,7 @@ class DialogZHAAddGroupMembers
 
   static get styles(): CSSResultGroup {
     return [
+      haStyleScrollbar,
       css`
         ha-dialog {
           --dialog-content-padding: 0;
@@ -321,25 +367,49 @@ class DialogZHAAddGroupMembers
           margin: 0 var(--ha-space-4) var(--ha-space-2);
         }
 
-        ha-list {
+        ha-list-selectable {
           display: block;
+          width: 100%;
+          height: 100%;
+        }
+
+        ha-list-selectable::part(base) {
+          width: 100%;
+          height: 100%;
         }
 
         .list-container {
           flex: 1 1 auto;
+          width: 100%;
           min-height: 0;
-          overflow-y: auto;
+          overflow: hidden;
         }
 
-        ha-check-list-item {
-          --mdc-list-item-meta-size: 40px;
-          --mdc-list-item-secondary-text-color: var(--secondary-text-color);
+        lit-virtualizer {
+          display: block;
+          width: 100%;
+          height: 100%;
+          contain: size layout !important;
+        }
+
+        ha-list-item-option {
+          display: block;
+          width: 100%;
+          height: 64px;
+          box-sizing: border-box;
+          --ha-row-item-min-height: 64px;
+        }
+
+        .spinner-container {
+          display: flex;
+          flex: 1 1 auto;
+          align-items: center;
+          justify-content: center;
+          min-height: 160px;
         }
 
         ha-spinner {
-          display: flex;
-          justify-content: center;
-          margin: var(--ha-space-8) 0;
+          display: block;
         }
 
         .empty-list {

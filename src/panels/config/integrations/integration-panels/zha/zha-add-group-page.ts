@@ -68,7 +68,7 @@ export class ZHAAddGroupPage extends LitElement {
             </div>
             <div class="card-content">
               <ha-input
-                type="string"
+                type="text"
                 .value=${this._groupName}
                 @change=${this._handleNameChange}
                 .placeholder=${this.hass!.localize(
@@ -95,7 +95,6 @@ export class ZHAAddGroupPage extends LitElement {
             <zha-device-endpoint-list
               scrollable
               show-device-link
-              .hass=${this.hass}
               .deviceEndpoints=${this.deviceEndpoints}
               .narrow=${this.narrow}
               .emptyText=${this.hass.localize(
