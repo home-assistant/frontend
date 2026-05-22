@@ -1677,8 +1677,7 @@ export class HaConfigDevicePage extends LitElement {
         ha-list-item-base ha-icon-next,
         ha-list-item-button ha-icon-next {
           color: var(--secondary-text-color);
-          width: 24px;
-          height: 24px;
+          --mdc-icon-size: 24px;
           display: block;
         }
 
