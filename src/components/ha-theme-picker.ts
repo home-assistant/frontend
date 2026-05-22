@@ -82,6 +82,7 @@ export class HaThemePicker extends LitElement {
         .disabled=${this.disabled}
         .required=${this.required}
         @value-changed=${this._changed}
+        popover-placement="bottom"
       ></ha-generic-picker>
     `;
   }
