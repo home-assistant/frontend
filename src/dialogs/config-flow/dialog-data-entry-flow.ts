@@ -30,7 +30,7 @@ import type {
 } from "./show-dialog-data-entry-flow";
 import { showOptionsFlowDialog } from "./show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "./show-dialog-sub-config-flow";
-import { showRepairsFlowDialog } from "../../panels/config/repairs/show-dialog-repair-flow";
+import { showRepairsFlowDialog } from "../repairs-flow/show-dialog-repair-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import "./step-flow-external";

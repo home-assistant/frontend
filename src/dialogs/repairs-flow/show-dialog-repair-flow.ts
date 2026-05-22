@@ -1,19 +1,19 @@
 import { html, nothing } from "lit";
-import type { DataEntryFlowStep } from "../../../data/data_entry_flow";
-import { domainToName } from "../../../data/integration";
-import type { RepairsIssue } from "../../../data/repairs";
+import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import { domainToName } from "../../data/integration";
+import type { RepairsIssue } from "../../data/repairs";
 import {
   createRepairsFlow,
   deleteRepairsFlow,
   fetchRepairsFlow,
   handleRepairsFlowStep,
-} from "../../../data/repairs";
-import type { DataEntryFlowDialogParams } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
+} from "../../data/repairs";
+import type { DataEntryFlowDialogParams } from "../config-flow/show-dialog-data-entry-flow";
 import {
   loadDataEntryFlowDialog,
   showFlowDialog,
-} from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
-import type { HomeAssistant } from "../../../types";
+} from "../config-flow/show-dialog-data-entry-flow";
+import type { HomeAssistant } from "../../types";
 import "./dialog-repairs-issue-subtitle";
 
 const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
