@@ -1,5 +1,11 @@
 import { consume } from "@lit/context";
-import { mdiPlus } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiImagePlus,
+  mdiPencil,
+  mdiPlus,
+} from "@mdi/js";
 import type {
   HassEntity,
   UnsubscribeFunc,
@@ -765,7 +771,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   private async _findRelated() {
     this._related = await findRelated(this.hass, "area", this.areaId);
   }
-
 
   private _showAddToDialog() {
     const area = this.hass.areas[this.areaId];
