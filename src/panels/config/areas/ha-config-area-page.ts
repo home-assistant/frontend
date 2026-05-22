@@ -1,10 +1,16 @@
 import { consume } from "@lit/context";
 import {
   mdiDelete,
+  mdiDevices,
   mdiDotsVertical,
   mdiImagePlus,
+  mdiPalette,
   mdiPencil,
   mdiPlus,
+  mdiRobot,
+  mdiScriptText,
+  mdiShape,
+  mdiTools,
 } from "@mdi/js";
 import type {
   HassEntity,
