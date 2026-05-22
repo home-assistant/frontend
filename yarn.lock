@@ -1867,9 +1867,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.3.1-ha.3":
-  version: 3.3.1-ha.3
-  resolution: "@home-assistant/webawesome@npm:3.3.1-ha.3"
+"@home-assistant/webawesome@npm:3.3.1":
+  version: 3.3.1
+  resolution: "@home-assistant/webawesome@npm:3.3.1"
   dependencies:
     "@ctrl/tinycolor": "npm:4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
@@ -1880,7 +1880,7 @@ __metadata:
     lit: "npm:^3.2.1"
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
-  checksum: 10/9ee0f8eb2b350fdc5ba44096f9b304f5c6764b6c0108c68406c14c575a2fd86fa2d713560f9817a8a3c7f0969dce3b680c7d04eec23e4d71e5c69fcbdbcd1774
+  checksum: 10/e0a1b94258db55e58df4a6da430239265fe11f65e52ecda116e9116dece6ac070952946e3535b8cc58452cd675af133dae00605d1faf502659cbe8915a1e19ba
   languageName: node
   linkType: hard
 
@@ -8585,7 +8585,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.20"
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
-    "@home-assistant/webawesome": "npm:3.3.1-ha.3"
+    "@home-assistant/webawesome": "npm:3.3.1"
     "@html-eslint/eslint-plugin": "npm:0.60.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
