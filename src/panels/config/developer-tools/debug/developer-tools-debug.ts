@@ -1,24 +1,24 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-card";
-import "../../../../components/ha-button";
-import "../../../../components/ha-md-list";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/entity/ha-entity-picker";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import "./ha-debug-connection-row";
-import "./ha-debug-disable-view-transition-row";
-import "./ha-debug-viewport-environment-card";
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/list/ha-list-base";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import {
   getStatisticMetadata,
   validateStatistics,
 } from "../../../../data/recorder";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { getExtendedEntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import "./ha-debug-connection-row";
+import "./ha-debug-disable-view-transition-row";
+import "./ha-debug-viewport-environment-card";
 
 @customElement("developer-tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
@@ -34,14 +34,14 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
             "ui.panel.config.developer-tools.tabs.debug.title"
           )}
         >
-          <ha-md-list>
+          <ha-list-base>
             <ha-debug-connection-row
               .hass=${this.hass}
             ></ha-debug-connection-row>
             <ha-debug-disable-view-transition-row
               .hass=${this.hass}
             ></ha-debug-disable-view-transition-row>
-          </ha-md-list>
+          </ha-list-base>
         </ha-card>
         <ha-card
           .header=${this.hass.localize(
@@ -130,11 +130,6 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         display: block;
         max-width: 600px;
         margin: 0 auto;
-      }
-      ha-md-list {
-        padding-top: 0;
-        padding-bottom: 0;
-        background: none;
       }
     `,
   ];
