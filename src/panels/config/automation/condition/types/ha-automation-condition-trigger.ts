@@ -63,8 +63,8 @@ export class HaTriggerCondition extends LitElement {
   }
 
   protected render() {
-    const selectedIds = ensureArray(this.condition.id || []).filter(
-      (id): id is string => typeof id === "string" && id !== ""
+    const selectedIds: (string | number)[] = ensureArray(
+      this.condition.id || []
     );
 
     const triggerInfos = this._triggerInfos(
@@ -89,7 +89,10 @@ export class HaTriggerCondition extends LitElement {
     `;
   }
 
-  private _renderOptions(selectedIds: string[], triggerInfos: TriggerInfo[]) {
+  private _renderOptions(
+    selectedIds: (string | number)[],
+    triggerInfos: TriggerInfo[]
+  ) {
     const unknownTriggerIds = selectedIds.filter(
       (id) => !triggerInfos.some((info) => info.id === id)
     );
@@ -111,16 +114,28 @@ export class HaTriggerCondition extends LitElement {
               <ha-trigger-id-chip
                 id=${`trigger-${id}`}
                 warning
-                .triggerId=${id}
+                .triggerId=${`${
+                  typeof id === "number"
+                    ? `${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.position_reference"
+                      )}: `
+                    : ""
+                }${id}`}
               >
                 ${alertIcon}
               </ha-trigger-id-chip>
-              ${this.hass.localize("state.default.unavailable")}
+              ${typeof id === "string"
+                ? this.hass.localize("state.default.unavailable")
+                : nothing}
               <ha-tooltip .for=${`trigger-${id}`}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
-                  { id: html`<b>${id}</b>` }
-                )}
+                ${typeof id === "string"
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
+                      { id: html`<b>${id}</b>` }
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.position_reference_warning"
+                    )}
               </ha-tooltip>
             </div>
           </ha-list-item-option>
