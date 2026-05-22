@@ -3,6 +3,7 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import { createSearchParam } from "../../common/url/search-params";
 import type { SingleHassServiceTarget } from "../../data/target";
 import {
+  ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
   ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
@@ -105,6 +106,8 @@ export function addToActionHandler(
     searchParams[ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM] = target.entity_id;
   } else if (target.device_id) {
     searchParams[ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM] = target.device_id;
+  } else if (target.area_id) {
+    searchParams[ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM] = target.area_id;
   }
 
   const params = (addElement: string) =>

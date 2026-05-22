@@ -6,12 +6,16 @@ import {
   mdiImagePlus,
   mdiPalette,
   mdiPencil,
+  mdiPlus,
   mdiRobot,
   mdiScriptText,
   mdiShape,
   mdiTools,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket/dist/types";
+import type {
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -35,6 +39,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
@@ -50,6 +55,7 @@ import {
   computeEntityRegistryName,
   sortEntityRegistryByName,
 } from "../../../data/entity/entity_registry";
+import { subscribeLabFeature } from "../../../data/labs";
 import type { SceneEntity } from "../../../data/scene";
 import type { ScriptEntity } from "../../../data/script";
 import type { RelatedResult } from "../../../data/search";
@@ -58,10 +64,15 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
 import "../../logbook/ha-logbook";
+import {
+  loadAreaAddToDialog,
+  showAreaAddToDialog,
+} from "./show-dialog-area-add-to";
 import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
@@ -125,7 +136,7 @@ const NAVIGATION_ACTIONS: {
 ] as const;
 
 @customElement("ha-config-area-page")
-class HaConfigAreaPage extends LitElement {
+class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public areaId!: string;
@@ -141,6 +152,8 @@ class HaConfigAreaPage extends LitElement {
   _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _related?: RelatedResult;
+
+  @state() private _newTriggersConditions = false;
 
   private _logbookTime = { recent: 86400 };
 
@@ -221,6 +234,7 @@ class HaConfigAreaPage extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
+    loadAreaAddToDialog();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -228,6 +242,23 @@ class HaConfigAreaPage extends LitElement {
     if (changedProps.has("areaId")) {
       this._findRelated();
     }
+  }
+
+  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
+  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
+    if (!isComponentLoaded(this.hass!.config, "automation")) {
+      return [];
+    }
+    return [
+      subscribeLabFeature(
+        this.hass!.connection,
+        "automation",
+        "new_triggers_conditions",
+        (feature) => {
+          this._newTriggersConditions = feature.enabled;
+        }
+      ),
+    ];
   }
 
   protected render() {
@@ -380,15 +411,41 @@ class HaConfigAreaPage extends LitElement {
                     class="img-edit-btn"
                   ></ha-icon-button>
                 </div>`
-              : html`<ha-button
-                  appearance="filled"
-                  size="small"
-                  .entry=${area}
-                  @click=${this._showSettings}
-                >
-                  <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.config.areas.add_picture")}
-                </ha-button>`}
+              : nothing}
+            ${area.picture && !this._newTriggersConditions
+              ? nothing
+              : html`<div class="action-buttons">
+                  ${area.picture
+                    ? nothing
+                    : html`<ha-button
+                        appearance="filled"
+                        .entry=${area}
+                        @click=${this._showSettings}
+                      >
+                        <ha-svg-icon
+                          .path=${mdiImagePlus}
+                          slot="start"
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.areas.add_picture"
+                        )}
+                      </ha-button>`}
+                  ${this._newTriggersConditions
+                    ? html`<ha-button
+                        appearance="filled"
+                        variant="brand"
+                        @click=${this._showAddToDialog}
+                      >
+                        <ha-svg-icon
+                          slot="start"
+                          .path=${mdiPlus}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.dialogs.more_info_control.add_to.title"
+                        )}
+                      </ha-button>`
+                    : nothing}
+                </div>`}
             <ha-card
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
@@ -721,6 +778,27 @@ class HaConfigAreaPage extends LitElement {
     this._related = await findRelated(this.hass, "area", this.areaId);
   }
 
+  private _showAddToDialog() {
+    const area = this.hass.areas[this.areaId];
+    if (!area) {
+      return;
+    }
+    showAreaAddToDialog(this, {
+      areaId: area.area_id,
+      entityIds: this._areaEntityIds,
+    });
+  }
+
+  private get _areaEntityIds(): string[] {
+    const memberships = this._memberships(
+      this.areaId,
+      Object.values(this.hass.devices),
+      this._entityReg
+    );
+
+    return this._allEntities(memberships);
+  }
+
   private _handleMenuAction(
     ev: HaDropdownSelectEvent<string, AreaRegistryEntry>
   ) {
@@ -797,6 +875,14 @@ class HaConfigAreaPage extends LitElement {
           font-weight: var(--ha-font-weight-medium);
           color: var(--secondary-text-color);
         }
+
+        .action-buttons {
+          display: flex;
+          gap: var(--ha-space-2);
+          flex-wrap: wrap;
+          justify-content: space-around;
+        }
+
         img {
           border-radius: var(
             --ha-card-border-radius,

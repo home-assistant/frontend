@@ -8,6 +8,7 @@ export const PASTE_VALUE = "__paste__";
 export const ADD_AUTOMATION_ELEMENT_QUERY_PARAM = "add_automation_element";
 export const ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM = "target_entity_id";
 export const ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM = "target_device_id";
+export const ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM = "target_area_id";
 
 /** Parameters for the add automation element dialog. */
 export interface AddAutomationElementDialogParams {
@@ -21,6 +22,7 @@ export interface AddAutomationElementDialogParams {
 export const getAddAutomationElementTargetFromQuery = (
   states: HomeAssistant["states"],
   devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
   type: AddAutomationElementDialogParams["type"]
 ): SingleHassServiceTarget | undefined => {
   const params = new URLSearchParams(window.location.search);
@@ -37,6 +39,11 @@ export const getAddAutomationElementTargetFromQuery = (
   const deviceId = params.get(ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM);
   if (deviceId && devices[deviceId]) {
     return { device_id: deviceId };
+  }
+
+  const areaId = params.get(ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM);
+  if (areaId && areas[areaId]) {
+    return { area_id: areaId };
   }
 
   return undefined;
