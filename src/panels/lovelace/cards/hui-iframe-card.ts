@@ -13,7 +13,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { IframeCardConfig } from "./types";
-import { IFRAME_SANDBOX } from "../../../util/iframe";
+import { IFRAME_SANDBOX_SAME_ORIGIN } from "../../../util/iframe";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -95,7 +95,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     }
     const sandbox_params = this._config.disable_sandbox
       ? undefined
-      : `${sandbox_user_params} ${IFRAME_SANDBOX}`;
+      : `${sandbox_user_params} ${IFRAME_SANDBOX_SAME_ORIGIN}`;
 
     return html`
       <ha-card
