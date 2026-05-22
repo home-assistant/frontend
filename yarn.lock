@@ -1867,20 +1867,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@home-assistant/webawesome@npm:3.3.1-ha.3":
-  version: 3.3.1-ha.3
-  resolution: "@home-assistant/webawesome@npm:3.3.1-ha.3"
+"@home-assistant/webawesome@npm:3.7.0":
+  version: 3.7.0
+  resolution: "@home-assistant/webawesome@npm:3.7.0"
   dependencies:
     "@ctrl/tinycolor": "npm:4.1.0"
     "@floating-ui/dom": "npm:^1.6.13"
     "@lit/react": "npm:^1.0.8"
     "@shoelace-style/animations": "npm:^1.2.0"
-    "@shoelace-style/localize": "npm:^3.2.1"
+    "@shoelace-style/localize": "npm:^3.2.2"
     composed-offset-position: "npm:^0.0.6"
     lit: "npm:^3.2.1"
+    marked: "npm:^11.2.0"
     nanoid: "npm:^5.1.5"
     qr-creator: "npm:^1.0.0"
-  checksum: 10/9ee0f8eb2b350fdc5ba44096f9b304f5c6764b6c0108c68406c14c575a2fd86fa2d713560f9817a8a3c7f0969dce3b680c7d04eec23e4d71e5c69fcbdbcd1774
+  checksum: 10/74fcadf307d093afad5a4f9b8d6170ba1c0df7e192697793c33b2f918a1167a9bac6981a39e6ce302ddeb7a8a8d771fd7258138031ed509a37c306c10f4f6969
   languageName: node
   linkType: hard
 
@@ -3964,7 +3965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@shoelace-style/localize@npm:^3.2.1":
+"@shoelace-style/localize@npm:^3.2.2":
   version: 3.2.2
   resolution: "@shoelace-style/localize@npm:3.2.2"
   checksum: 10/8d709b5723ab779fef9826e4a568c1e6dbcf2721a874fa58b32667ea2c4a57fb93f86740cefa82fdfe73e07711afa90e2abeb02b7d50e2469f449025767d5044
@@ -8585,7 +8586,7 @@ __metadata:
     "@fullcalendar/list": "npm:6.1.20"
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
-    "@home-assistant/webawesome": "npm:3.3.1-ha.3"
+    "@home-assistant/webawesome": "npm:3.7.0"
     "@html-eslint/eslint-plugin": "npm:0.60.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
@@ -10397,6 +10398,15 @@ __metadata:
   bin:
     marked: bin/marked.js
   checksum: 10/87d8e309690c9b8e1a5c41487262f19c811e876b8351fbb24432ab348e79c59ee7c68745ec47bfc91c1306a1756077717ff564454e7a68a58a5bd064d732d5dd
+  languageName: node
+  linkType: hard
+
+"marked@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "marked@npm:11.2.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 10/0c8c0d263617a04f066db6f5adfed811a8eb78a685850d4d0b8b9ef351e416fb871813ea7ee7f94f4d5f67da98c3a2a4259b8684e4f93a6a673733fe9d9f2868
   languageName: node
   linkType: hard
 
