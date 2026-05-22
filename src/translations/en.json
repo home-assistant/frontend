@@ -2717,6 +2717,14 @@
           }
         },
         "common": {
+          "quick_links": {
+            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "helpers": "{count} {count, plural,\n  one {helper}\n  other {helpers}\n}",
+            "automations": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
+            "scenes": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}",
+            "scripts": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}"
+          },
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
@@ -3128,12 +3136,12 @@
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
           "quick_links": {
-            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
-            "helpers": "{count} {count, plural,\n  one {helper}\n  other {helpers}\n}",
-            "automations": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
-            "scenes": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}",
-            "scripts": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}"
+            "devices": "[%key:ui::panel::config::common::quick_links::devices%]",
+            "entities": "[%key:ui::panel::config::common::quick_links::entities%]",
+            "helpers": "[%key:ui::panel::config::common::quick_links::helpers%]",
+            "automations": "[%key:ui::panel::config::common::quick_links::automations%]",
+            "scenes": "[%key:ui::panel::config::common::quick_links::scenes%]",
+            "scripts": "[%key:ui::panel::config::common::quick_links::scripts%]"
           },
           "add_picture": "Add a picture",
           "assigned_to_area": "Assigned to this area",
@@ -6478,6 +6486,13 @@
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
+          "quick_links": {
+            "entities": "[%key:ui::panel::config::common::quick_links::entities%]",
+            "helpers": "[%key:ui::panel::config::common::quick_links::helpers%]",
+            "automations": "[%key:ui::panel::config::common::quick_links::automations%]",
+            "scenes": "[%key:ui::panel::config::common::quick_links::scenes%]",
+            "scripts": "[%key:ui::panel::config::common::quick_links::scripts%]"
+          },
           "unnamed_device": "Unnamed {type}",
           "unknown_error": "Unknown error",
           "name": "Name",

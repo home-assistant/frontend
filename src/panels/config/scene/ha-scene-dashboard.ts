@@ -410,10 +410,15 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      if (!this._searchParms.has("area") && !this._searchParms.has("label")) {
+      if (
+        !this._searchParms.has("area") &&
+        !this._searchParms.has("device") &&
+        !this._searchParms.has("label")
+      ) {
         this._filters = this._storageFilters;
       }
       this._filterArea();
+      this._filterDevice();
       this._filterLabel();
     }
   }
@@ -455,7 +460,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.automations}
         .searchLabel=${this.hass.localize(
@@ -796,6 +803,22 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       ...this._filters,
       "ha-filter-floor-areas": {
         value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
+  private _filterDevice() {
+    const device = this._searchParms.get("device");
+    if (!device) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-devices": {
+        value: [device],
         items: undefined,
       },
     };

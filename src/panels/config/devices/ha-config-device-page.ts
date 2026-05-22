@@ -7,10 +7,14 @@ import {
   mdiDownload,
   mdiMicrophone,
   mdiOpenInNew,
+  mdiPalette,
   mdiPencil,
   mdiPlus,
   mdiRestore,
+  mdiRobot,
+  mdiScriptText,
   mdiShapeOutline,
+  mdiTools,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -29,6 +33,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -90,6 +95,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { isHelperDomain } from "../helpers/const";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
@@ -101,6 +107,51 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+
+type DeviceQuickLinkKey =
+  | "entities"
+  | "helpers"
+  | "automations"
+  | "scenes"
+  | "scripts";
+
+const NAVIGATION_ACTIONS: {
+  value: string;
+  path: string;
+  icon: string;
+  countKey: DeviceQuickLinkKey;
+}[] = [
+  {
+    value: "navigate-entities",
+    path: "/config/entities",
+    icon: mdiShapeOutline,
+    countKey: "entities",
+  },
+  {
+    value: "navigate-helpers",
+    path: "/config/helpers",
+    icon: mdiTools,
+    countKey: "helpers",
+  },
+  {
+    value: "navigate-automations",
+    path: "/config/automation/dashboard",
+    icon: mdiRobot,
+    countKey: "automations",
+  },
+  {
+    value: "navigate-scenes",
+    path: "/config/scene/dashboard",
+    icon: mdiPalette,
+    countKey: "scenes",
+  },
+  {
+    value: "navigate-scripts",
+    path: "/config/script/dashboard",
+    icon: mdiScriptText,
+    countKey: "scripts",
+  },
+] as const;
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -224,6 +275,18 @@ export class HaConfigDevicePage extends LitElement {
       (related?.script ?? []).map((entityId) => this.hass.states[entityId])
     ),
   }));
+
+  private _getQuickLinkCounts = memoizeOne(
+    (entities: EntityRegistryEntry[], related?: RelatedResult) => ({
+      entities: entities.length,
+      helpers: entities.filter((entity) =>
+        isHelperDomain(computeDomain(entity.entity_id))
+      ).length,
+      automations: related?.automation?.length ?? 0,
+      scenes: related?.scene?.length ?? 0,
+      scripts: related?.script?.length ?? 0,
+    })
+  );
 
   private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
 
@@ -364,6 +427,7 @@ export class HaConfigDevicePage extends LitElement {
       this.hass.devices
     );
     const entitiesByCategory = this._entitiesByCategory(entities);
+    const quickLinkCounts = this._getQuickLinkCounts(entities, this._related);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
     const battery = batteryEntity
@@ -707,16 +771,18 @@ export class HaConfigDevicePage extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
 
-        <a href=${`/config/entities?historyBack=1&device=${this.deviceId}`}>
-          <ha-dropdown-item>
-            <ha-svg-icon .path=${mdiShapeOutline} slot="icon"></ha-svg-icon>
-            ${this.hass.localize(
-              `ui.panel.config.integrations.config_entry.entities`,
-              { count: entities.length }
-            )}
-            <ha-icon-next slot="details"></ha-icon-next>
-          </ha-dropdown-item>
-        </a>
+        ${NAVIGATION_ACTIONS.map(
+          (action) => html`
+            <ha-dropdown-item value=${action.value}>
+              <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
+              ${this.hass.localize(
+                `ui.panel.config.devices.quick_links.${action.countKey}`,
+                { count: quickLinkCounts[action.countKey] }
+              )}
+              <ha-icon-next slot="details"></ha-icon-next>
+            </ha-dropdown-item>
+          `
+        )}
 
         <wa-divider></wa-divider>
 
@@ -1363,6 +1429,11 @@ export class HaConfigDevicePage extends LitElement {
 
   private _handleToolbarMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
+    const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
+    if (navAction) {
+      navigate(`${navAction.path}?historyBack=1&device=${this.deviceId}`);
+      return;
+    }
     if (action === "reset_entity_ids") {
       this._resetEntityIds();
     }
