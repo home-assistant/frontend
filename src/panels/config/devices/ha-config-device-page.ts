@@ -376,34 +376,42 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = device.area_id ? this.hass.areas[device.area_id] : undefined;
 
-    const deviceInfo: TemplateResult[] = integrations.map(
-      (integration) =>
-        html`<ha-list-item-button
-          slot="actions"
-          href=${`/config/integrations/integration/${integration.domain}#config_entry=${integration.entry_id}`}
-          .headline=${domainToName(this.hass.localize, integration.domain)}
-        >
-          <img
-            slot="start"
-            alt=${domainToName(this.hass.localize, integration.domain)}
-            src=${brandsUrl(
-              {
-                domain: integration.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              },
-              this.hass.auth.data.hassUrl
+    const deviceInfo: TemplateResult[] = integrations.length
+      ? [
+          html`<ha-list-nav slot="actions">
+            ${integrations.map(
+              (integration) =>
+                html`<ha-list-item-button
+                  href=${`/config/integrations/integration/${integration.domain}#config_entry=${integration.entry_id}`}
+                  .headline=${domainToName(
+                    this.hass.localize,
+                    integration.domain
+                  )}
+                >
+                  <img
+                    slot="start"
+                    alt=${domainToName(this.hass.localize, integration.domain)}
+                    src=${brandsUrl(
+                      {
+                        domain: integration.domain,
+                        type: "icon",
+                        darkOptimized: this.hass.themes?.darkMode,
+                      },
+                      this.hass.auth.data.hassUrl
+                    )}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    width="24"
+                    height="24"
+                    @error=${this._onImageError}
+                    @load=${this._onImageLoad}
+                  />
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-list-item-button>`
             )}
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-            width="24"
-            height="24"
-            @error=${this._onImageError}
-            @load=${this._onImageLoad}
-          />
-          <ha-icon-next slot="end"></ha-icon-next>
-        </ha-list-item-button>`
-    );
+          </ha-list-nav>`,
+        ]
+      : [];
 
     const actions = [...(this._deviceActions || [])];
     if (Array.isArray(this._diagnosticDownloadLinks)) {
