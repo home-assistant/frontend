@@ -5,10 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { BackupAgent } from "../../../../../data/backup";
 import {
   computeBackupAgentName,
@@ -332,7 +332,7 @@ export class HaBackupOverviewProgress extends LitElement {
           ? this._handleAgentCollapseEnd
           : undefined}
       >
-        <ha-md-list class="agent-list">
+        <ha-list-base class="agent-list">
           ${this.agents.map((agent) => {
             const name = computeBackupAgentName(
               this.hass.localize,
@@ -344,7 +344,7 @@ export class HaBackupOverviewProgress extends LitElement {
             if (agentPercent !== undefined) {
               if (agentPercent >= 100) {
                 return html`
-                  <ha-md-list-item>
+                  <ha-list-item-base>
                     ${this._renderAgentIcon(agent.agent_id)}
                     <div slot="headline">${name}</div>
                     <div slot="supporting-text">
@@ -357,11 +357,11 @@ export class HaBackupOverviewProgress extends LitElement {
                       class="agent-complete"
                       .path=${mdiCheck}
                     ></ha-svg-icon>
-                  </ha-md-list-item>
+                  </ha-list-item-base>
                 `;
               }
               return html`
-                <ha-md-list-item>
+                <ha-list-item-base>
                   ${this._renderAgentIcon(agent.agent_id)}
                   <div slot="headline">${name}</div>
                   <div slot="supporting-text">
@@ -373,12 +373,12 @@ export class HaBackupOverviewProgress extends LitElement {
                     ${agentPercent}%
                   </span>
                   <ha-spinner slot="end" size="tiny"></ha-spinner>
-                </ha-md-list-item>
+                </ha-list-item-base>
               `;
             }
 
             return html`
-              <ha-md-list-item>
+              <ha-list-item-base>
                 ${this._renderAgentIcon(agent.agent_id)}
                 <div slot="headline">${name}</div>
                 <div slot="supporting-text">
@@ -387,10 +387,10 @@ export class HaBackupOverviewProgress extends LitElement {
                   )}
                 </div>
                 <ha-spinner slot="end" size="tiny"></ha-spinner>
-              </ha-md-list-item>
+              </ha-list-item-base>
             `;
           })}
-        </ha-md-list>
+        </ha-list-base>
       </div>
     `;
   }
@@ -506,14 +506,13 @@ export class HaBackupOverviewProgress extends LitElement {
           margin-top: var(--ha-space-4);
           overflow: hidden;
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
+        ha-list-item-base {
+          --ha-row-item-padding-inline: 0;
         }
-        ha-md-list-item img {
+        ha-list-item-base img {
           width: 48px;
         }
-        ha-md-list-item ha-svg-icon[slot="start"] {
+        ha-list-item-base ha-svg-icon[slot="start"] {
           --mdc-icon-size: 48px;
           color: var(--primary-text-color);
         }
@@ -521,7 +520,7 @@ export class HaBackupOverviewProgress extends LitElement {
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
         }
-        ha-md-list-item [slot="supporting-text"] {
+        ha-list-item-base::part(supporting-text) {
           display: flex;
           align-items: center;
         }

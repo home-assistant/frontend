@@ -7,8 +7,8 @@ import { isComponentLoaded } from "../../../../../common/config/is_component_loa
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import type { BackupContent, BackupType } from "../../../../../data/backup";
 import {
   computeBackupSize,
@@ -69,13 +69,10 @@ class HaBackupOverviewBackups extends LitElement {
           ${this.hass.localize("ui.panel.config.backup.overview.backups.title")}
         </div>
         <div class="card-content">
-          <ha-md-list>
+          <ha-list-nav>
             ${stats.map(
               ([type, { count, size }]) => html`
-                <ha-md-list-item
-                  type="link"
-                  href="/config/backup/backups?type=${type}"
-                >
+                <ha-list-item-button href="/config/backup/backups?type=${type}">
                   <ha-svg-icon
                     slot="start"
                     .path=${TYPE_ICONS[type]}
@@ -93,10 +90,10 @@ class HaBackupOverviewBackups extends LitElement {
                     )}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
+                </ha-list-item-button>
               `
             )}
-          </ha-md-list>
+          </ha-list-nav>
         </div>
         <div class="card-actions">
           <ha-button appearance="filled" href="/config/backup/backups?type=all">
@@ -133,6 +130,9 @@ class HaBackupOverviewBackups extends LitElement {
           padding-left: 0;
           padding-right: 0;
           padding-bottom: 0;
+        }
+        ha-list-item-button::part(start) {
+          color: var(--ha-color-text-secondary);
         }
       `,
     ];

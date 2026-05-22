@@ -2,7 +2,7 @@ import {
   mdiPause,
   mdiPlay,
   mdiPlayPause,
-  mdiPower,
+  mdiPowerStandby,
   mdiPowerOff,
   mdiPowerOn,
   mdiRepeat,
@@ -225,7 +225,7 @@ class HuiMediaPlayerPlaybackCardFeature
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)
           ) {
             buttons.push({
-              icon: assumedState ? mdiPowerOff : mdiPower,
+              icon: assumedState ? mdiPowerOff : mdiPowerStandby,
               action: "turn_off",
             });
           }
@@ -237,7 +237,7 @@ class HuiMediaPlayerPlaybackCardFeature
             supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
           ) {
             buttons.push({
-              icon: assumedState ? mdiPowerOn : mdiPower,
+              icon: assumedState ? mdiPowerOn : mdiPowerStandby,
               action: "turn_on",
             });
           }

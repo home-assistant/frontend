@@ -5,7 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { formatNumber } from "../../../common/number/format_number";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
@@ -226,7 +229,14 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
               ? ""
               : this._value === null
                 ? "?"
-                : formatNumber(this._value, this.hass.locale)}</span
+                : formatNumber(
+                    this._value,
+                    this.hass.locale,
+                    getNumberFormatOptions(
+                      undefined,
+                      this.hass.entities[this._config.entity]
+                    )
+                  )}</span
           >
           <span class="measurement"
             >${this._config.unit ||

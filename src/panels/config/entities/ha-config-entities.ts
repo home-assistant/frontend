@@ -1092,6 +1092,7 @@ export class HaConfigEntities extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
@@ -1099,7 +1100,7 @@ export class HaConfigEntities extends LitElement {
     const label = this._searchParms.get("label");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!domain && !configEntry && !label && !device) {
+    if (!area && !domain && !configEntry && !label && !device) {
       return;
     }
 
@@ -1108,6 +1109,7 @@ export class HaConfigEntities extends LitElement {
 
     this._filters = {
       "ha-filter-states": [],
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
       "ha-filter-integrations": domain ? [domain] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],

@@ -12,11 +12,10 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
+import "../../../../components/item/ha-row-item";
 import type {
   BackupAgent,
   BackupConfig,
@@ -296,41 +295,39 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         @change=${this._nameChanged}
       >
       </ha-input>
-      <ha-md-list>
-        <ha-md-list-item>
-          <span slot="headline">
-            ${this.hass.localize(
-              "ui.panel.config.backup.dialogs.generate.sync.locations"
-            )}
-          </span>
-          <span slot="supporting-text">
-            ${this.hass.localize(
-              "ui.panel.config.backup.dialogs.generate.sync.locations_description"
-            )}
-          </span>
-          <ha-select
-            slot="end"
-            @selected=${this._selectChanged}
-            .value=${this._formData.agents_mode}
-            .options=${[
-              {
-                value: "all",
-                label: this.hass.localize(
-                  "ui.panel.config.backup.dialogs.generate.sync.locations_options.all",
-                  { count: this._allAgentIds.length }
-                ),
-                disabled: !!disabledAgentIds.length,
-              },
-              {
-                value: "custom",
-                label: this.hass.localize(
-                  "ui.panel.config.backup.dialogs.generate.sync.locations_options.custom"
-                ),
-              },
-            ]}
-          ></ha-select>
-        </ha-md-list-item>
-      </ha-md-list>
+      <ha-row-item>
+        <span slot="headline">
+          ${this.hass.localize(
+            "ui.panel.config.backup.dialogs.generate.sync.locations"
+          )}
+        </span>
+        <span slot="supporting-text">
+          ${this.hass.localize(
+            "ui.panel.config.backup.dialogs.generate.sync.locations_description"
+          )}
+        </span>
+        <ha-select
+          slot="end"
+          @selected=${this._selectChanged}
+          .value=${this._formData.agents_mode}
+          .options=${[
+            {
+              value: "all",
+              label: this.hass.localize(
+                "ui.panel.config.backup.dialogs.generate.sync.locations_options.all",
+                { count: this._allAgentIds.length }
+              ),
+              disabled: !!disabledAgentIds.length,
+            },
+            {
+              value: "custom",
+              label: this.hass.localize(
+                "ui.panel.config.backup.dialogs.generate.sync.locations_options.custom"
+              ),
+            },
+          ]}
+        ></ha-select>
+      </ha-row-item>
       ${disabledAgentIds.length
         ? html`
             <ha-alert
@@ -443,24 +440,19 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         ha-dialog {
           --dialog-content-padding: 24px;
         }
-        ha-md-list {
-          background: none;
-          padding: 0;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-        }
-        ha-md-list-item ha-select {
+        ha-row-item ha-select {
           min-width: 210px;
         }
         @media all and (max-width: 450px) {
-          ha-md-list-item ha-select {
+          ha-row-item ha-select {
             min-width: 160px;
             width: 160px;
           }
         }
-        ha-md-list-item ha-select > span {
+        ha-row-item ha-select > span {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;

@@ -251,12 +251,13 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!area && !domain && !configEntry && !label) {
       return;
     }
 
@@ -269,6 +270,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           ...((this._filters["ha-filter-states"]?.value as string[]) || []),
           "disabled",
         ],
+        items: undefined,
+      },
+      "ha-filter-floor-areas": {
+        value: area ? { areas: [area] } : undefined,
         items: undefined,
       },
       "ha-filter-integrations": {

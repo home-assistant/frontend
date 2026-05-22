@@ -1,5 +1,16 @@
 import { consume } from "@lit/context";
-import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
+import {
+  mdiDelete,
+  mdiDevices,
+  mdiDotsVertical,
+  mdiImagePlus,
+  mdiPalette,
+  mdiPencil,
+  mdiRobot,
+  mdiScriptText,
+  mdiShape,
+  mdiTools,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -10,7 +21,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { goBack } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
@@ -18,6 +29,7 @@ import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
@@ -48,6 +60,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { isHelperDomain } from "../helpers/const";
 import "../../logbook/ha-logbook";
 import {
   loadAreaRegistryDetailDialog,
@@ -58,6 +71,58 @@ declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
   entity: EntityType;
 }
+
+type AreaQuickLinkKey =
+  | "devices"
+  | "entities"
+  | "helpers"
+  | "automations"
+  | "scenes"
+  | "scripts";
+
+const NAVIGATION_ACTIONS: {
+  value: string;
+  path: string;
+  icon: string;
+  countKey: AreaQuickLinkKey;
+}[] = [
+  {
+    value: "navigate-devices",
+    path: "/config/devices/dashboard",
+    icon: mdiDevices,
+    countKey: "devices",
+  },
+  {
+    value: "navigate-entities",
+    path: "/config/entities",
+    icon: mdiShape,
+    countKey: "entities",
+  },
+  {
+    value: "navigate-helpers",
+    path: "/config/helpers",
+    icon: mdiTools,
+    countKey: "helpers",
+  },
+  {
+    value: "navigate-automations",
+    path: "/config/automation/dashboard",
+    icon: mdiRobot,
+    countKey: "automations",
+  },
+  {
+    value: "navigate-scenes",
+    path: "/config/scene/dashboard",
+    icon: mdiPalette,
+    countKey: "scenes",
+  },
+  {
+    value: "navigate-scripts",
+    path: "/config/script/dashboard",
+    icon: mdiScriptText,
+    countKey: "scripts",
+  },
+] as const;
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -128,6 +193,31 @@ class HaConfigAreaPage extends LitElement {
         .concat(memberships.indirectEntities.map((entry) => entry.entity_id))
   );
 
+  private _getQuickLinkCounts = memoizeOne(
+    (
+      memberships: {
+        devices: DeviceRegistryEntry[];
+        entities: EntityRegistryEntry[];
+        indirectEntities: EntityRegistryEntry[];
+      },
+      related?: RelatedResult
+    ) => {
+      const allEntityIds = this._allEntities(memberships);
+      const entityIds = related?.entity ?? allEntityIds;
+
+      return {
+        devices: related?.device?.length ?? memberships.devices.length,
+        entities: entityIds.length,
+        helpers: entityIds.filter((entityId) =>
+          isHelperDomain(computeDomain(entityId))
+        ).length,
+        automations: related?.automation?.length ?? 0,
+        scenes: related?.scene?.length ?? 0,
+        scripts: related?.script?.length ?? 0,
+      };
+    }
+  );
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
@@ -162,6 +252,10 @@ class HaConfigAreaPage extends LitElement {
       this._entityReg
     );
     const { devices, entities } = memberships;
+    const quickLinkCounts = this._getQuickLinkCounts(
+      memberships,
+      this._related
+    );
 
     // Pre-compute the entity and device names, so we can sort by them
     if (devices) {
@@ -244,6 +338,21 @@ class HaConfigAreaPage extends LitElement {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+
+          ${NAVIGATION_ACTIONS.map(
+            (action) => html`
+              <ha-dropdown-item value=${action.value}>
+                <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.panel.config.areas.quick_links.${action.countKey}`,
+                  { count: quickLinkCounts[action.countKey] }
+                )}
+                <ha-icon-next slot="details"></ha-icon-next>
+              </ha-dropdown-item>
+            `
+          )}
+
+          <wa-divider></wa-divider>
 
           <ha-dropdown-item value="edit" .data=${area}>
             <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
@@ -612,9 +721,18 @@ class HaConfigAreaPage extends LitElement {
     this._related = await findRelated(this.hass, "area", this.areaId);
   }
 
-  private _handleMenuAction(ev: HaDropdownSelectEvent) {
+  private _handleMenuAction(
+    ev: HaDropdownSelectEvent<string, AreaRegistryEntry>
+  ) {
     const action = ev.detail?.item?.value;
-    const entry = (ev.detail?.item as any)?.data as AreaRegistryEntry;
+    const entry = ev.detail?.item?.data;
+
+    const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
+    if (navAction) {
+      navigate(`${navAction.path}?historyBack=1&area=${this.areaId}`);
+      return;
+    }
+
     switch (action) {
       case "edit":
         this._openDialog(entry);
@@ -625,15 +743,19 @@ class HaConfigAreaPage extends LitElement {
     }
   }
 
-  private _showSettings(ev: MouseEvent) {
-    const entry: AreaRegistryEntry = (ev.currentTarget! as any).entry;
-    this._openDialog(entry);
+  private _showSettings(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLButtonElement & { entry: AreaRegistryEntry }
+    >
+  ) {
+    this._openDialog(ev.currentTarget.entry);
   }
 
-  private _openEntity(ev) {
-    const entry: EntityRegistryEntry = (ev.currentTarget as any).entity;
+  private _openEntity(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { entity: EntityRegistryEntry }>
+  ) {
     showMoreInfoDialog(this, {
-      entityId: entry.entity_id,
+      entityId: ev.currentTarget.entity.entity_id,
     });
   }
 
