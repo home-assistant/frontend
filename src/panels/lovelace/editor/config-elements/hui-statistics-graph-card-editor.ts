@@ -35,7 +35,7 @@ import {
   isExternalStatistic,
   statisticsMetaHasType,
 } from "../../../../data/recorder";
-import type { EntityConfig } from "../entity-rows/types";
+import type { EntityConfig } from "../../entity-rows/types";
 import type { HomeAssistant } from "../../../../types";
 import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
 import type {
