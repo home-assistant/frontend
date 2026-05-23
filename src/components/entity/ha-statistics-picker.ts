@@ -1,9 +1,10 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../common/dom/fire_event";
+import { type HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "./ha-statistic-picker";
+import { type StatisticElementChangedEvent } from "./ha-statistic-picker";
 
 @customElement("ha-statistics-picker")
 class HaStatisticsPicker extends LitElement {
@@ -59,6 +60,8 @@ class HaStatisticsPicker extends LitElement {
   })
   public ignoreRestrictionsOnFirstStatistic = false;
 
+  @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -99,7 +102,9 @@ class HaStatisticsPicker extends LitElement {
               .statisticIds=${this.statisticIds}
               .excludeStatistics=${this.value}
               .allowCustomEntity=${this.allowCustomEntity}
+              .canEdit=${this.canEdit}
               @value-changed=${this._statisticChanged}
+              @edit-statistics-element=${this._editItem}
             ></ha-statistic-picker>
           </div>
         `
@@ -120,6 +125,17 @@ class HaStatisticsPicker extends LitElement {
         ></ha-statistic-picker>
       </div>
     `;
+  }
+
+  private _editItem(ev: HASSDomEvent<StatisticElementChangedEvent>) {
+    const statisticId = ev.detail.statisticId;
+    const index = this._currentStatistics!.findIndex((e) => e === statisticId);
+    fireEvent(this, "edit-detail-element", {
+      subElementConfig: {
+        index,
+        type: "row",
+      },
+    });
   }
 
   private get _currentStatistics() {
