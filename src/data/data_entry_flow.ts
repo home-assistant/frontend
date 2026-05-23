@@ -69,14 +69,14 @@ export interface DataEntryFlowStepCreateEntry<
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
   handler: string;
   title: string;
-  result?: Tresult;
+  result?: TResult;
   description: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
 }
 
 export interface DataEntryFlowStepAbort<
-  Tresult extends ConfigEntry | RepairsIssue = ConfigEntry,
+  TResult extends ConfigEntry | RepairsIssue = ConfigEntry,
 > {
   type: "abort";
   flow_id: string;
@@ -84,7 +84,7 @@ export interface DataEntryFlowStepAbort<
   reason: string;
   description_placeholders?: Record<string, string>;
   translation_domain?: string;
-  result?: Tresult;
+  result?: TResult;
   next_flow?: [FlowType, string]; // [flow_type, flow_id]
 }
 
