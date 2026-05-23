@@ -61,7 +61,7 @@ export interface DataEntryFlowStepExternal {
 }
 
 export interface DataEntryFlowStepCreateEntry<
-  Tresult extends ConfigEntry | RepairsIssue = ConfigEntry,
+  TResult extends ConfigEntry | RepairsIssue = ConfigEntry,
 > {
   type: "create_entry";
   version: number;
