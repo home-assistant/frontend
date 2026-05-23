@@ -8713,7 +8713,7 @@ __metadata:
     superstruct: "npm:2.0.2"
     tar: "npm:7.5.15"
     terser-webpack-plugin: "npm:5.6.0"
-    tinykeys: "npm:3.1.0"
+    tinykeys: "npm:4.0.0"
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.59.4"
@@ -13434,10 +13434,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinykeys@npm:3.1.0":
-  version: 3.1.0
-  resolution: "tinykeys@npm:3.1.0"
-  checksum: 10/472c1350b71ff4043acbe158b72431aaf4cecf879a85b4372fdd36871cfd3eb9dbc1e4a7976380a3239066551c027f13d6c6ac5b620f183d61a53707bae9be4c
+"tinykeys@npm:4.0.0":
+  version: 4.0.0
+  resolution: "tinykeys@npm:4.0.0"
+  checksum: 10/e31dd0345098bffc87c4df2469f9dcc9cf9a519c592f0d774592f1eeee46798adc66e40058dcaad0c2697eec0f3212c09876c480f3b0ae32e938cb080e664651
   languageName: node
   linkType: hard
 
