@@ -1,13 +1,17 @@
+import { consume } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { internationalizationContext } from "../../data/context";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantInternationalization } from "../../types";
 import "../ha-button";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
@@ -24,7 +28,12 @@ import type { DataTableSettingsDialogParams } from "./show-dialog-data-table-set
 
 @customElement("dialog-data-table-settings")
 export class DialogDataTableSettings extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, LocalizeFunc>({
+    transformer: ({ localize }) => localize,
+  })
+  private _localize!: LocalizeFunc;
 
   @state() private _params?: DataTableSettingsDialogParams;
 
@@ -117,7 +126,7 @@ export class DialogDataTableSettings extends LitElement {
       return nothing;
     }
 
-    const localize = this._params.localizeFunc || this.hass.localize;
+    const localize = this._params.localizeFunc || this._localize;
 
     const columns = this._sortedColumns(
       this._params.columns,
@@ -172,7 +181,7 @@ export class DialogDataTableSettings extends LitElement {
                     .hidden=${!isVisible}
                     .path=${isVisible ? mdiEye : mdiEyeOff}
                     slot="meta"
-                    .label=${this.hass!.localize(
+                    .label=${localize(
                       `ui.components.data-table.settings.${isVisible ? "hide" : "show"}`,
                       { title: typeof col.title === "string" ? col.title : "" }
                     )}

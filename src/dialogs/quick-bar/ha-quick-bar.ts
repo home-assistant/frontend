@@ -267,7 +267,7 @@ export class QuickBar extends LitElement {
             ></ha-picker-combo-box>`
           : nothing}
         ${this._showHint
-          ? html`<ha-tip slot="footer" .hass=${this.hass}
+          ? html`<ha-tip slot="footer"
               >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
                 keyboard_shortcut: html`<button
                   class="link"

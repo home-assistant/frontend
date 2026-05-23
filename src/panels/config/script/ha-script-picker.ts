@@ -326,7 +326,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           showNarrow: true,
           template: (script) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {

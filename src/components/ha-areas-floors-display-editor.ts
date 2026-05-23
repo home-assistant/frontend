@@ -107,7 +107,6 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                       ></ha-svg-icon>
                     `}
                 <ha-items-display-editor
-                  .hass=${this.hass}
                   .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}
                   .floorId=${floor.floor_id}

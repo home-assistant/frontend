@@ -270,7 +270,7 @@ class DialogNewAutomation extends LitElement {
                         : nothing}
                     ${processedBlueprints.length > 0
                       ? html`
-                          <ha-tip .hass=${this.hass}>
+                          <ha-tip>
                             <a
                               href=${documentationUrl(
                                 this.hass,

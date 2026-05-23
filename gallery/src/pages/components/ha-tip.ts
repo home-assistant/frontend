@@ -1,10 +1,11 @@
+import { ContextProvider } from "@lit/context";
 import type { TemplateResult, PropertyValues } from "lit";
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-tip";
 import "../../../../src/components/ha-card";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
-import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { internationalizationContext } from "../../../../src/data/context";
 
 const tips: (string | TemplateResult)[] = [
   "Test tip",
@@ -14,16 +15,29 @@ const tips: (string | TemplateResult)[] = [
 
 @customElement("demo-components-ha-tip")
 export class DemoHaTip extends LitElement {
+  constructor() {
+    super();
+    new ContextProvider(this, {
+      context: internationalizationContext,
+      initialValue: {
+        localize: ((key: string) => key) as any,
+        language: "en",
+        selectedLanguage: null,
+        locale: {} as any,
+        translationMetadata: {} as any,
+        loadBackendTranslation: (async () => (key: string) => key) as any,
+        loadFragmentTranslation: (async () => (key: string) => key) as any,
+      },
+    });
+  }
+
   protected render(): TemplateResult {
     return html` ${["light", "dark"].map(
       (mode) => html`
         <div class=${mode}>
           <ha-card header="ha-tip ${mode} demo">
             <div class="card-content">
-              ${tips.map(
-                (tip) =>
-                  html`<ha-tip .hass=${provideHass(this)}>${tip}</ha-tip>`
-              )}
+              ${tips.map((tip) => html`<ha-tip>${tip}</ha-tip>`)}
             </div>
           </ha-card>
         </div>

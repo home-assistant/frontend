@@ -354,7 +354,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                   </ha-card>
                 `
           )}
-          <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
+          <ha-tip>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-top-app-bar-fixed>
     `;

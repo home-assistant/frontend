@@ -54,7 +54,6 @@ export class HaEntitiesDisplayEditor extends LitElement {
 
     return html`
       <ha-items-display-editor
-        .hass=${this.hass}
         .items=${items}
         .value=${value}
         @value-changed=${this._itemDisplayChanged}

@@ -61,7 +61,6 @@ export class HaAreasDisplayEditor extends LitElement {
       >
         <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
         <ha-items-display-editor
-          .hass=${this.hass}
           .items=${items}
           .value=${value}
           @value-changed=${this._areaDisplayChanged}
