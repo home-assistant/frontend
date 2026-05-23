@@ -647,15 +647,11 @@ class DataEntryFlowDialog extends LitElement {
           dialogClosedCallback: this._params!.dialogClosedCallback,
         });
       } else if (_step.next_flow[0] === "repair_flow") {
-        showRepairsFlowDialog(
-          this,
-          (_step.result as unknown as RepairsIssue),
-          {
-            continueFlowId: _step.next_flow[1],
-            navigateToResult: this._params!.navigateToResult,
-            dialogClosedCallback: this._params!.dialogClosedCallback,
-          }
-        );
+        showRepairsFlowDialog(this, _step.result as unknown as RepairsIssue, {
+          continueFlowId: _step.next_flow[1],
+          navigateToResult: this._params!.navigateToResult,
+          dialogClosedCallback: this._params!.dialogClosedCallback,
+        });
       } else {
         this.closeDialog();
         showAlertDialog(this, {
