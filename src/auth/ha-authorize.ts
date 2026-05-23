@@ -13,14 +13,10 @@ import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
 import { fetchAuthProviders } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
+import { appNames } from "./app-names";
 import "./ha-auth-flow";
 
 import("./ha-pick-auth-provider");
-
-const appNames = {
-  "https://home-assistant.io/iOS": "iOS",
-  "https://home-assistant.io/android": "Android",
-};
 
 @customElement("ha-authorize")
 export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
