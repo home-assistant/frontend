@@ -109,6 +109,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @property({ attribute: "custom-value-label" })
   public customValueLabel?: string;
 
+  @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -271,6 +273,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
+        .noSort=${this.noSort}
       ></ha-picker-combo-box>
     `;
   }
