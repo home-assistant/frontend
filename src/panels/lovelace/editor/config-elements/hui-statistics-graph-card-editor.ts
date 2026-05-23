@@ -498,7 +498,7 @@ export class HuiStatisticsGraphCardEditor
     ev.stopPropagation();
 
     // get updated entity config
-    let newEntityConfig = ev.detail.config as GraphEntityConfig;
+    const newEntityConfig = ev.detail.config as GraphEntityConfig;
 
     // update card config with updated entity config
     const index = this._subElementEditorConfig!.index!;
