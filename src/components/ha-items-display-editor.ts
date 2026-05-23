@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { consume } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -9,13 +8,11 @@ import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
-import { transform } from "../common/decorators/transform";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { internationalizationContext } from "../data/context";
-import type { HomeAssistantInternationalization } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
@@ -51,10 +48,7 @@ declare global {
 @customElement("ha-items-display-editor")
 export class HaItemDisplayEditor extends LitElement {
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, LocalizeFunc>({
-    transformer: ({ localize }) => localize,
-  })
+  @consumeLocalize()
   private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public items: DisplayItem[] = [];

@@ -1,15 +1,12 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import { mdiDotsVertical } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import { transform } from "../common/decorators/transform";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { internationalizationContext } from "../data/context";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistantInternationalization } from "../types";
 import "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-icon-button";
@@ -31,10 +28,7 @@ export interface IconOverflowMenuItem {
 @customElement("ha-icon-overflow-menu")
 export class HaIconOverflowMenu extends LitElement {
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, LocalizeFunc>({
-    transformer: ({ localize }) => localize,
-  })
+  @consumeLocalize()
   private _localize!: LocalizeFunc;
 
   @property({ type: Array }) public items: IconOverflowMenuItem[] = [];

@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiEye, mdiEyeOff } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -6,12 +5,10 @@ import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { transform } from "../../common/decorators/transform";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import { internationalizationContext } from "../../data/context";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistantInternationalization } from "../../types";
 import "../ha-button";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
@@ -29,10 +26,7 @@ import type { DataTableSettingsDialogParams } from "./show-dialog-data-table-set
 @customElement("dialog-data-table-settings")
 export class DialogDataTableSettings extends LitElement {
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, LocalizeFunc>({
-    transformer: ({ localize }) => localize,
-  })
+  @consumeLocalize()
   private _localize!: LocalizeFunc;
 
   @state() private _params?: DataTableSettingsDialogParams;

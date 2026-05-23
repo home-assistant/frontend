@@ -1,21 +1,15 @@
-import { consume } from "@lit/context";
 import { mdiLightbulbOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import { transform } from "../common/decorators/transform";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { internationalizationContext } from "../data/context";
-import type { HomeAssistantInternationalization } from "../types";
 
 import "./ha-svg-icon";
 
 @customElement("ha-tip")
 class HaTip extends LitElement {
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, LocalizeFunc>({
-    transformer: ({ localize }) => localize,
-  })
+  @consumeLocalize()
   private _localize!: LocalizeFunc;
 
   public render() {
