@@ -4,7 +4,7 @@ import { repeat } from "lit/directives/repeat";
 import { type HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import type { ValueChangedEvent, HomeAssistant } from "../../types";
 import "./ha-statistic-picker";
-import { type StatisticElementChangedEvent } from "./ha-statistic-picker";
+import type { StatisticElementChangedEvent } from "./ha-statistic-picker";
 
 @customElement("ha-statistics-picker")
 class HaStatisticsPicker extends LitElement {
