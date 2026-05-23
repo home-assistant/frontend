@@ -199,6 +199,7 @@ export class HaSelectSelector extends LitElement {
           : nothing}
 
         <ha-generic-picker
+          no-sort
           .hass=${this.hass}
           .helper=${this.helper}
           .disabled=${this.disabled}
@@ -215,6 +216,7 @@ export class HaSelectSelector extends LitElement {
     if (this.selector.select?.custom_value) {
       return html`
         <ha-generic-picker
+          no-sort
           .hass=${this.hass}
           .label=${this.label}
           .helper=${this.helper}
