@@ -361,15 +361,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       clearBrandsTokenRefresh();
     }
 
-    private _refreshBrandsAccessToken() {
+    private async _refreshBrandsAccessToken() {
       // The brands WS handler may not be registered yet after a server restart;
       // fetchAndScheduleBrandsAccessToken retries internally. If the token
       // changed, re-render so any brand <img> elements that rendered against a
       // different (or missing) token recompute their src and re-fetch.
-      fetchAndScheduleBrandsAccessToken(this.hass!).then((changed) => {
-        if (changed) {
-          this._updateHass({});
-        }
-      });
+      const changed = await fetchAndScheduleBrandsAccessToken(this.hass!);
+      if (changed) {
+        this._updateHass({});
+      }
     }
   };
