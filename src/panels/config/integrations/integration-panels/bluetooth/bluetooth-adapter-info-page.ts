@@ -404,10 +404,6 @@ export class BluetoothAdapterInfoPage extends LitElement {
         return this.hass.localize(
           "ui.panel.config.bluetooth.scanning_mode_passive"
         );
-      case "auto":
-        return this.hass.localize(
-          "ui.panel.config.bluetooth.scanning_mode_auto"
-        );
       default:
         return mode;
     }
@@ -426,10 +422,6 @@ export class BluetoothAdapterInfoPage extends LitElement {
       case "passive":
         return this.hass.localize(
           "ui.panel.config.bluetooth.scanning_mode_passive_label"
-        );
-      case "auto":
-        return this.hass.localize(
-          "ui.panel.config.bluetooth.scanning_mode_auto_label"
         );
       default:
         return mode;
