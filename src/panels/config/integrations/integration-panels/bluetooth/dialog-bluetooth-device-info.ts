@@ -129,9 +129,9 @@ class DialogBluetoothDeviceInfo extends LitElement {
                   "ui.panel.config.bluetooth.raw_advertisement"
                 )}
               </h4>
-              <pre class="raw">
-${this.showDataAsHex(this._params.entry.raw)}</pre
-              >
+              <div class="raw">
+                ${this.showDataAsHex(this._params.entry.raw)}
+              </div>
             `
           : nothing}
         <ha-dialog-footer slot="footer">
@@ -148,12 +148,10 @@ ${this.showDataAsHex(this._params.entry.raw)}</pre
   }
 
   static readonly styles: CSSResultGroup = css`
-    pre.raw {
-      white-space: pre-wrap;
+    .raw {
       word-break: break-all;
       font-family: var(--ha-font-family-code);
       font-size: var(--ha-font-size-s);
-      margin: 0;
     }
   `;
 }
