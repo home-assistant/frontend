@@ -7149,6 +7149,7 @@
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
           "service_uuids": "Service UUIDs",
+          "raw_advertisement": "Raw advertisement",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
           "area": "Area",
           "scanners": "Scanners",
