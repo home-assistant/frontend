@@ -69,7 +69,7 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
       changedProperties.get("pane") !== undefined
     ) {
       this._registerListeners();
-      this._handleTargetScroll();
+      this._syncScrollState();
     }
   }
 

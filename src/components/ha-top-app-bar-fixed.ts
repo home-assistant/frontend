@@ -123,7 +123,10 @@ export class HaTopAppBarFixed extends LitElement {
     this._scrollTarget = value;
     this._updateBarPosition();
     this.requestUpdate("scrollTarget", old);
-    this._registerListeners();
+    if (this.isConnected) {
+      this._registerListeners();
+      this._syncScrollState();
+    }
   }
 
   protected _isPaneHeader(): boolean {
@@ -132,6 +135,16 @@ export class HaTopAppBarFixed extends LitElement {
 
   protected render() {
     return html`${this._renderHeader()}${this._renderContent()}`;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (this.hasUpdated) {
+      this._updateBarPosition();
+      this._registerListeners();
+      this._syncScrollState();
+    }
   }
 
   protected _renderHeader() {
@@ -189,7 +202,7 @@ export class HaTopAppBarFixed extends LitElement {
     super.firstUpdated(changedProperties);
     this._updateBarPosition();
     this._registerListeners();
-    this._handleTargetScroll();
+    this._syncScrollState();
   }
 
   override disconnectedCallback() {
@@ -204,7 +217,7 @@ export class HaTopAppBarFixed extends LitElement {
     }
   }
 
-  protected _handleTargetScroll = () => {
+  protected _syncScrollState = () => {
     const scrollTop =
       this.scrollTarget instanceof Window
         ? this.scrollTarget.pageYOffset
@@ -215,13 +228,13 @@ export class HaTopAppBarFixed extends LitElement {
   protected _registerListeners() {
     this.scrollTarget.addEventListener(
       "scroll",
-      this._handleTargetScroll,
+      this._syncScrollState,
       PASSIVE_EVENT_OPTIONS
     );
   }
 
   protected _unregisterListeners() {
-    this.scrollTarget.removeEventListener("scroll", this._handleTargetScroll);
+    this.scrollTarget.removeEventListener("scroll", this._syncScrollState);
   }
 
   static override styles: CSSResultGroup = haTopAppBarFixedStyles;
