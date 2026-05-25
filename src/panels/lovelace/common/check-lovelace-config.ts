@@ -1,5 +1,8 @@
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
+import {
+  isSectionRef,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
@@ -46,6 +49,11 @@ export const checkViewConfig = (
 export const checkSectionConfig = (
   section: LovelaceSectionRawConfig
 ): LovelaceSectionRawConfig => {
+  // Note Erwin: if I understand correctly, ref sections don't need migration, as they defer all content to the shared definition. So we can skip them :)
+  if (isSectionRef(section)) {
+    return section;
+  }
+
   const updatedSection = { ...section };
 
   // Move title to a heading card

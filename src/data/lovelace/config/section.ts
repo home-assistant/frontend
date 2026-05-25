@@ -31,9 +31,28 @@ export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig
   strategy: LovelaceStrategyConfig;
 }
 
+export interface LovelaceSharedSectionConfig extends LovelaceBaseSectionConfig {
+  id: string;
+  type?: string;
+  cards?: LovelaceCardConfig[];
+}
+
+export interface LovelaceSectionRefConfig {
+  section_ref: string;
+  column_span?: number;
+  row_span?: number;
+}
+
 export type LovelaceSectionRawConfig =
   | LovelaceSectionConfig
-  | LovelaceStrategySectionConfig;
+  | LovelaceStrategySectionConfig
+  | LovelaceSectionRefConfig;
+
+export function isSectionRef(
+  section: LovelaceSectionRawConfig
+): section is LovelaceSectionRefConfig {
+  return "section_ref" in section;
+}
 
 export function resolveSectionBackground(
   background: boolean | LovelaceSectionBackgroundConfig | undefined

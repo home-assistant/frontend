@@ -12,8 +12,15 @@ import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
   LovelaceSectionRawConfig,
+  LovelaceSectionRefConfig,
 } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
+import {
+  isSectionRef,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import "../cards/hui-card";
@@ -22,7 +29,12 @@ import { checkConditionsMet } from "../common/validate-condition";
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { addCard, replaceCard } from "../editor/config-util";
+import {
+  addCard,
+  getSharedSection,
+  replaceCard,
+  updateSharedSection,
+} from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
@@ -100,10 +112,12 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
 
     const oldConfig = changedProperties.get("config");
 
-    // If config has changed, create element if necessary and set all values.
+    // Re-initialize when config changes, or when the lovelace context changes
+    // for a ref section (shared_sections update won't change this.config itself).
     if (
-      changedProperties.has("config") &&
-      (!oldConfig || this.config !== oldConfig)
+      (changedProperties.has("config") &&
+        (!oldConfig || this.config !== oldConfig)) ||
+      (changedProperties.has("lovelace") && isSectionRef(this.config))
     ) {
       this._initializeConfig();
     }
@@ -180,7 +194,28 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     let sectionConfig = { ...this.config };
     let isStrategy = false;
 
-    if (isStrategySection(sectionConfig)) {
+    if (isSectionRef(sectionConfig)) {
+      // Resolve the ref to its shared definition from the dashboard config
+      const sharedDef = getSharedSection(
+        this.lovelace!.config,
+        sectionConfig.section_ref
+      );
+      if (sharedDef) {
+        sectionConfig = {
+          ...sharedDef,
+          // Layout overrides on the ref take precedence over the shared definition
+          ...(sectionConfig.column_span !== undefined && {
+            column_span: sectionConfig.column_span,
+          }),
+          ...(sectionConfig.row_span !== undefined && {
+            row_span: sectionConfig.row_span,
+          }),
+        } as LovelaceSectionConfig;
+      } else {
+        // Broken ref — render an empty grid section so the view doesn't crash
+        sectionConfig = { type: "grid", cards: [] } as LovelaceSectionConfig;
+      }
+    } else if (isStrategySection(sectionConfig)) {
       isStrategy = true;
       sectionConfig = await generateLovelaceSectionStrategy(
         sectionConfig,
@@ -286,6 +321,50 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     }
   }
 
+  /**
+   * For a ref section, return a "virtual" lovelace config where the ref at
+   * [viewIndex, sectionIndex] is temporarily replaced by the resolved concrete
+   * section. Card dialogs can operate on the virtual config, then we extract
+   * the modified cards array and persist via updateSharedSection.
+   */
+  private _virtualConfigForRef(): LovelaceConfig | null {
+    if (!isSectionRef(this.config) || !this._config || !this.lovelace) {
+      return null;
+    }
+    const views = this.lovelace.config.views.map((v, vi) => {
+      if (vi !== this.viewIndex || isStrategyView(v)) return v;
+      const view = v as LovelaceViewConfig;
+      return {
+        ...view,
+        sections: view.sections!.map((s, si) =>
+          si === this.index ? this._config! : s
+        ),
+      };
+    });
+    return { ...this.lovelace.config, views };
+  }
+
+  /**
+   * Save a virtual config (produced by _virtualConfigForRef) by extracting
+   * the modified section cards and persisting them in shared_sections.
+   */
+  private _saveVirtualRefConfig = async (
+    virtualConfig: LovelaceConfig
+  ): Promise<void> => {
+    if (!isSectionRef(this.config) || !this.lovelace) return;
+    const refId = (this.config as LovelaceSectionRefConfig).section_ref;
+    const virtualView = virtualConfig.views[
+      this.viewIndex
+    ] as LovelaceViewConfig;
+    const updatedSection = virtualView.sections?.[
+      this.index
+    ] as LovelaceSectionConfig;
+    const newRealConfig = updateSharedSection(this.lovelace.config, refId, {
+      cards: updatedSection?.cards ?? [],
+    });
+    await this.lovelace.saveConfig(newRealConfig);
+  };
+
   private _createLayoutElement(config: LovelaceSectionConfig): void {
     this._layoutElement = createSectionElement(
       config
@@ -294,9 +373,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       ev.stopPropagation();
       if (!this.lovelace) return;
+      const isRef = isSectionRef(this.config);
+      const lovelaceConfig = isRef
+        ? (this._virtualConfigForRef() ?? this.lovelace.config)
+        : this.lovelace.config;
       showCreateCardDialog(this, {
-        lovelaceConfig: this.lovelace.config,
-        saveConfig: this.lovelace.saveConfig,
+        lovelaceConfig,
+        saveConfig: isRef
+          ? this._saveVirtualRefConfig
+          : this.lovelace.saveConfig,
         path: [this.viewIndex, this.index],
         suggestedCards: ev.detail?.suggested,
       });
@@ -306,27 +391,66 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
       const sectionConfig = this.config;
-      if (isStrategySection(sectionConfig)) {
-        return;
+      if (isStrategySection(sectionConfig)) return;
+
+      // For ref sections use the resolved _config for card data
+      const resolvedConfig = isSectionRef(sectionConfig)
+        ? this._config
+        : sectionConfig;
+      if (!resolvedConfig) return;
+      const cardConfig = resolvedConfig.cards?.[cardIndex];
+      if (!cardConfig) return;
+
+      if (isSectionRef(sectionConfig)) {
+        showEditCardDialog(this, {
+          lovelaceConfig: this._virtualConfigForRef() ?? this.lovelace.config,
+          saveCardConfig: async (newCardConfig) => {
+            const refId = (sectionConfig as LovelaceSectionRefConfig)
+              .section_ref;
+            const currentCards = [...(this._config?.cards ?? [])];
+            currentCards[cardIndex] = newCardConfig;
+            const newRealConfig = updateSharedSection(
+              this.lovelace!.config,
+              refId,
+              { cards: currentCards }
+            );
+            await this.lovelace!.saveConfig(newRealConfig);
+          },
+          sectionConfig: resolvedConfig,
+          cardConfig,
+        });
+      } else {
+        showEditCardDialog(this, {
+          lovelaceConfig: this.lovelace.config,
+          saveCardConfig: async (newCardConfig) => {
+            const newConfig = replaceCard(
+              this.lovelace!.config,
+              [this.viewIndex, this.index, cardIndex],
+              newCardConfig
+            );
+            await this.lovelace!.saveConfig(newConfig);
+          },
+          sectionConfig,
+          cardConfig,
+        });
       }
-      const cardConfig = sectionConfig.cards![cardIndex];
-      showEditCardDialog(this, {
-        lovelaceConfig: this.lovelace.config,
-        saveCardConfig: async (newCardConfig) => {
-          const newConfig = replaceCard(
-            this.lovelace!.config,
-            [this.viewIndex, this.index, cardIndex],
-            newCardConfig
-          );
-          await this.lovelace!.saveConfig(newConfig);
-        },
-        sectionConfig,
-        cardConfig,
-      });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       ev.stopPropagation();
       if (!this.lovelace) return;
+      if (isSectionRef(this.config)) {
+        // For ref sections, delete from the shared definition cards array
+        const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+        const refId = (this.config as LovelaceSectionRefConfig).section_ref;
+        const newCards = (this._config?.cards ?? []).filter(
+          (_, i) => i !== cardIndex
+        );
+        const newConfig = updateSharedSection(this.lovelace.config, refId, {
+          cards: newCards,
+        });
+        this.lovelace.saveConfig(newConfig);
+        return;
+      }
       performDeleteCard(this.hass, this.lovelace, ev.detail);
     });
     this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {
@@ -334,25 +458,49 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
       const sectionConfig = this.config;
-      if (isStrategySection(sectionConfig)) {
-        return;
-      }
-      const cardConfig = sectionConfig.cards![cardIndex];
+      if (isStrategySection(sectionConfig)) return;
 
-      showEditCardDialog(this, {
-        lovelaceConfig: this.lovelace!.config,
-        saveCardConfig: async (newCardConfig) => {
-          const newConfig = addCard(
-            this.lovelace!.config,
-            [this.viewIndex, this.index],
-            newCardConfig
-          );
-          await this.lovelace!.saveConfig(newConfig);
-        },
-        cardConfig,
-        sectionConfig,
-        isNew: true,
-      });
+      const resolvedConfig = isSectionRef(sectionConfig)
+        ? this._config
+        : sectionConfig;
+      if (!resolvedConfig) return;
+      const cardConfig = resolvedConfig.cards?.[cardIndex];
+      if (!cardConfig) return;
+
+      if (isSectionRef(sectionConfig)) {
+        showEditCardDialog(this, {
+          lovelaceConfig: this._virtualConfigForRef() ?? this.lovelace.config,
+          saveCardConfig: async (newCardConfig) => {
+            const refId = (sectionConfig as LovelaceSectionRefConfig)
+              .section_ref;
+            const newCards = [...(this._config?.cards ?? []), newCardConfig];
+            const newRealConfig = updateSharedSection(
+              this.lovelace!.config,
+              refId,
+              { cards: newCards }
+            );
+            await this.lovelace!.saveConfig(newRealConfig);
+          },
+          cardConfig,
+          sectionConfig: resolvedConfig,
+          isNew: true,
+        });
+      } else {
+        showEditCardDialog(this, {
+          lovelaceConfig: this.lovelace!.config,
+          saveCardConfig: async (newCardConfig) => {
+            const newConfig = addCard(
+              this.lovelace!.config,
+              [this.viewIndex, this.index],
+              newCardConfig
+            );
+            await this.lovelace!.saveConfig(newConfig);
+          },
+          cardConfig,
+          sectionConfig,
+          isNew: true,
+        });
+      }
     });
     this._layoutElement.addEventListener("ll-copy-card", (ev) => {
       ev.stopPropagation();
@@ -360,10 +508,15 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
       const sectionConfig = this.config;
 
-      if (isStrategySection(sectionConfig)) {
-        return;
-      }
-      const cardConfig = sectionConfig.cards![cardIndex];
+      if (isStrategySection(sectionConfig)) return;
+
+      // For ref sections use the resolved _config for card data
+      const resolvedConfig = isSectionRef(sectionConfig)
+        ? this._config
+        : sectionConfig;
+      if (!resolvedConfig) return;
+      const cardConfig = resolvedConfig.cards?.[cardIndex];
+      if (!cardConfig) return;
       this._clipboard = deepClone(cardConfig);
     });
   }

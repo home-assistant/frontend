@@ -1,7 +1,10 @@
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
+import {
+  isSectionRef,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
@@ -157,6 +160,11 @@ export const updateLovelaceItems = <T extends keyof LovelaceItemKeys>(
       if (isStrategySection(section)) {
         throw new Error(`Can not update ${key} in a strategy section`);
       }
+      if (isSectionRef(section)) {
+        throw new Error(
+          `Can't update ${key} in a shared section ref - edit the shared section definition instead`
+        );
+      }
       updated = true;
       return {
         ...section,
@@ -204,6 +212,11 @@ export const findLovelaceItems = <T extends keyof LovelaceItemKeys>(
   }
   if (isStrategySection(section)) {
     throw new Error("Can not find cards in a strategy section");
+  }
+  if (isSectionRef(section)) {
+    throw new Error(
+      "Can not find cards in a shared section ref — edit the shared section definition instead"
+    );
   }
   if (key === "cards") {
     return section[key as "cards"] as LovelaceItemKeys[T] | undefined;

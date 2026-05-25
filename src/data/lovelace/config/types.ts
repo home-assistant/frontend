@@ -1,6 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceResource } from "../resource";
+import type { LovelaceSharedSectionConfig } from "./section";
 import type { LovelaceStrategyConfig } from "./strategy";
 import type { LovelaceViewRawConfig } from "./view";
 
@@ -9,6 +10,7 @@ export interface LovelaceDashboardBaseConfig {}
 export interface LovelaceConfig extends LovelaceDashboardBaseConfig {
   background?: string;
   views: LovelaceViewRawConfig[];
+  shared_sections?: LovelaceSharedSectionConfig[];
 }
 
 export interface LovelaceDashboardStrategyConfig extends LovelaceDashboardBaseConfig {
