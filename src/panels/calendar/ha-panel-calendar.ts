@@ -190,16 +190,20 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        ${showPane && this.hass.user?.is_admin
-          ? html`<ha-list slot="pane" multi}>${calendarItems}</ha-list>
-              <ha-list-item
-                graphic="icon"
-                slot="pane-footer"
-                @click=${this._addCalendar}
-              >
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                ${this.hass.localize("ui.components.calendar.create_calendar")}
-              </ha-list-item>`
+        ${showPane
+          ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${this
+                .hass.user?.is_admin
+                ? html`<ha-list-item
+                    graphic="icon"
+                    slot="pane-footer"
+                    @click=${this._addCalendar}
+                  >
+                    <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.components.calendar.create_calendar"
+                    )}
+                  </ha-list-item>`
+                : nothing}`
           : nothing}
         <ha-full-calendar
           add-fab
