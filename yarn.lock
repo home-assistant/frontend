@@ -8070,9 +8070,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"generate-license-file@npm:4.1.1":
-  version: 4.1.1
-  resolution: "generate-license-file@npm:4.1.1"
+"generate-license-file@npm:4.2.1":
+  version: 4.2.1
+  resolution: "generate-license-file@npm:4.2.1"
   dependencies:
     "@commander-js/extra-typings": "npm:^14.0.0"
     "@npmcli/arborist": "npm:^9.0.0"
@@ -8080,14 +8080,14 @@ __metadata:
     commander: "npm:^14.0.2"
     cosmiconfig: "npm:^9.0.0"
     enquirer: "npm:^2.3.6"
-    glob: "npm:^11.0.0"
+    glob: "npm:^13.0.0"
     json5: "npm:^2.2.3"
     ora: "npm:^5.4.1"
     tslib: "npm:^2.3.0"
-    zod: "npm:^3.21.4"
+    zod: "npm:^4.0.0"
   bin:
     generate-license-file: bin/generate-license-file
-  checksum: 10/8a9ed962a5cc8f4851d79df7cd8babbc7dec8fbcc2fe25b6a85babfb497572d933ef5189d6bffc204e31e74aa131760ca0b8a90039997cb9a11df7e948b3edf8
+  checksum: 10/03876abeba28efea39a0fbd4d048e2c0fe1f59477c14e3a5e9f7022235f9197a3f451b7f26124dc09da5cc63140376f53b4ee9167f238eee58241ab954e62efd
   languageName: node
   linkType: hard
 
@@ -8272,7 +8272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^11.0.0, glob@npm:^11.0.1":
+"glob@npm:^11.0.1":
   version: 11.1.0
   resolution: "glob@npm:11.1.0"
   dependencies:
@@ -8664,7 +8664,7 @@ __metadata:
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.5"
     fuse.js: "npm:7.3.0"
-    generate-license-file: "npm:4.1.1"
+    generate-license-file: "npm:4.2.1"
     glob: "npm:13.0.6"
     globals: "npm:17.6.0"
     google-timezones-json: "npm:1.2.0"
@@ -15099,10 +15099,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.21.4":
-  version: 3.25.76
-  resolution: "zod@npm:3.25.76"
-  checksum: 10/f0c963ec40cd96858451d1690404d603d36507c1fc9682f2dae59ab38b578687d542708a7fdbf645f77926f78c9ed558f57c3d3aa226c285f798df0c4da16995
+"zod@npm:^4.0.0":
+  version: 4.4.3
+  resolution: "zod@npm:4.4.3"
+  checksum: 10/804b9a42aa8f35f2b3c5a8dff906291cb749115f83ee2afe3576d70b5b5c53c965365c7f4967690647a9c54af9838ff232a85ff9577a0a36c44b68bc6cdefe36
   languageName: node
   linkType: hard
 
