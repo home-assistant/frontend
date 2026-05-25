@@ -313,8 +313,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       clearInterval(this.__backendPingInterval);
 
-      // Fetch the brands access token on initial connect and schedule refresh
-      fetchAndScheduleBrandsAccessToken(this.hass!);
+      this._refreshBrandsAccessToken();
 
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
@@ -340,8 +339,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
 
-      // Refresh the brands access token on reconnect and restart refresh schedule
-      fetchAndScheduleBrandsAccessToken(this.hass!);
+      this._refreshBrandsAccessToken();
 
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
@@ -361,5 +359,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       broadcastConnectionStatus("disconnected");
       clearInterval(this.__backendPingInterval);
       clearBrandsTokenRefresh();
+    }
+
+    private async _refreshBrandsAccessToken() {
+      // The brands WS handler may not be registered yet after a server restart;
+      // fetchAndScheduleBrandsAccessToken retries internally. If the token
+      // changed, re-render so any brand <img> elements that rendered against a
+      // different (or missing) token recompute their src and re-fetch.
+      const changed = await fetchAndScheduleBrandsAccessToken(this.hass!);
+      if (changed) {
+        this._updateHass({});
+      }
     }
   };
