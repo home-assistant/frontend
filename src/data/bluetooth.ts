@@ -17,6 +17,7 @@ export interface BluetoothDeviceData extends DataTableRowData {
   source: string;
   time: number;
   tx_power: number;
+  raw: string | null;
 }
 
 export interface BluetoothConnectionData extends DataTableRowData {
