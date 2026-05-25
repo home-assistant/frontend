@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import {
   mdiChevronDown,
   mdiChevronRight,
+  mdiChevronLeft,
   mdiMagnify,
   mdiTextureBox,
 } from "@mdi/js";
@@ -16,6 +17,7 @@ import { computeEntityName } from "../../../../common/entity/compute_entity_name
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
+import { mainWindow } from "../../../../common/dom/get_main_window";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-domain-icon";
@@ -294,7 +296,11 @@ export class HuiSuggestionEntityTree extends LitElement {
   private _renderChevron(expanded: boolean): TemplateResult {
     return html`<ha-svg-icon
       class="chevron"
-      .path=${expanded ? mdiChevronDown : mdiChevronRight}
+      .path=${expanded
+        ? mdiChevronDown
+        : mainWindow.document.dir === "rtl"
+          ? mdiChevronLeft
+          : mdiChevronRight}
     ></ha-svg-icon>`;
   }
 
