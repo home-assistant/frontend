@@ -11,10 +11,13 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import type { EntitySources } from "../../../data/entity/entity_sources";
+import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   HassioSupervisorInfo,
@@ -25,6 +28,8 @@ import {
   reloadSupervisor,
   setSupervisorOption,
 } from "../../../data/hassio/supervisor";
+import { domainToName } from "../../../data/integration";
+import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
   filterUpdateEntitiesParameterized,
@@ -34,6 +39,17 @@ import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
+
+interface UpdateGroup {
+  key: string;
+  title: string;
+  entities: UpdateEntity[];
+  showUpdateAll: boolean;
+}
+
+const SYSTEM_KEY = "__system__";
+const APPS_KEY = "__apps__";
+const INTEGRATIONS_KEY = "__integrations__";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -47,16 +63,22 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _supervisorInfo?: HassioSupervisorInfo;
 
+  @state() private _entitySources?: EntitySources;
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (isComponentLoaded(this.hass.config, "hassio")) {
       this._refreshSupervisorInfo();
     }
+
+    fetchEntitySourcesWithCache(this.hass).then((sources) => {
+      this._entitySources = sources;
+    });
   }
 
   protected render(): TemplateResult {
-    const canInstallUpdates = this._filterInstallableUpdateEntities(
+    const installableUpdates = this._filterInstallableUpdateEntities(
       this.hass.states,
       this._showSkipped
     );
@@ -64,6 +86,8 @@ class HaConfigSectionUpdates extends LitElement {
       this.hass.states,
       this._showSkipped
     );
+
+    const groups = this._groupUpdates(installableUpdates, this._entitySources);
 
     return html`
       <hass-subpage
@@ -118,36 +142,51 @@ class HaConfigSectionUpdates extends LitElement {
           </ha-dropdown>
         </div>
         <div class="content">
-          ${canInstallUpdates.length
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
+          ${groups.map(
+            (group) => html`
+              <ha-card outlined>
+                <div class="card-content">
+                  <div class="card-header">
                     <div class="title" role="heading" aria-level="2">
-                      ${this.hass.localize("ui.panel.config.updates.title", {
-                        count: canInstallUpdates.length,
-                      })}
+                      ${group.title}
                     </div>
-                    <ha-config-updates
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .updateEntities=${canInstallUpdates}
-                      showAll
-                    ></ha-config-updates>
+                    ${group.showUpdateAll
+                      ? html`
+                          <button
+                            class="update-all"
+                            .group=${group}
+                            @click=${this._updateAll}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.updates.update_all"
+                            )}
+                          </button>
+                        `
+                      : nothing}
                   </div>
-                </ha-card>
-              `
-            : nothing}
+                  <ha-config-updates
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .updateEntities=${group.entities}
+                    showAll
+                  ></ha-config-updates>
+                </div>
+              </ha-card>
+            `
+          )}
           ${notInstallableUpdates.length
             ? html`
                 <ha-card outlined>
                   <div class="card-content">
-                    <div class="title" role="heading" aria-level="2">
-                      ${this.hass.localize(
-                        "ui.panel.config.updates.title_not_installable",
-                        {
-                          count: notInstallableUpdates.length,
-                        }
-                      )}
+                    <div class="card-header">
+                      <div class="title" role="heading" aria-level="2">
+                        ${this.hass.localize(
+                          "ui.panel.config.updates.title_not_installable",
+                          {
+                            count: notInstallableUpdates.length,
+                          }
+                        )}
+                      </div>
                     </div>
                     <ha-config-updates
                       .hass=${this.hass}
@@ -159,7 +198,7 @@ class HaConfigSectionUpdates extends LitElement {
                 </ha-card>
               `
             : nothing}
-          ${canInstallUpdates.length + notInstallableUpdates.length
+          ${groups.length + notInstallableUpdates.length
             ? nothing
             : html`
                 <ha-card outlined>
@@ -211,6 +250,13 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
+  private _updateAll(ev: Event) {
+    const group = (ev.currentTarget as any).group as UpdateGroup;
+    this.hass.callService("update", "install", {
+      entity_id: group.entities.map((entity) => entity.entity_id),
+    });
+  }
+
   private _filterInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
       filterUpdateEntitiesParameterized(entities, showSkipped, false)
@@ -219,6 +265,106 @@ class HaConfigSectionUpdates extends LitElement {
   private _filterNotInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
       filterUpdateEntitiesParameterized(entities, showSkipped, true)
+  );
+
+  private _groupUpdates = memoizeOne(
+    (
+      entities: UpdateEntity[],
+      entitySources: EntitySources | undefined
+    ): UpdateGroup[] => {
+      if (!entities.length) {
+        return [];
+      }
+
+      const localize = this.hass.localize;
+
+      const systemEntities: UpdateEntity[] = [];
+      const appEntities: UpdateEntity[] = [];
+      const byDomain = new Map<string, UpdateEntity[]>();
+      const otherIntegrationEntities: UpdateEntity[] = [];
+
+      for (const entity of entities) {
+        const title = entity.attributes.title || "";
+        if (
+          title === "Home Assistant Core" ||
+          title === "Home Assistant Operating System" ||
+          title === "Home Assistant Supervisor"
+        ) {
+          systemEntities.push(entity);
+          continue;
+        }
+        const sourceDomain = entitySources?.[entity.entity_id]?.domain;
+        const domain =
+          sourceDomain ?? this.hass.entities[entity.entity_id]?.platform;
+        if (domain === "hassio") {
+          appEntities.push(entity);
+          continue;
+        }
+        if (!domain) {
+          otherIntegrationEntities.push(entity);
+          continue;
+        }
+        if (!byDomain.has(domain)) {
+          byDomain.set(domain, []);
+        }
+        byDomain.get(domain)!.push(entity);
+      }
+
+      const multiInstanceGroups: UpdateGroup[] = [];
+      byDomain.forEach((entries, domain) => {
+        if (entries.length >= 2) {
+          multiInstanceGroups.push({
+            key: domain,
+            title: domainToName(localize, domain),
+            entities: entries,
+            showUpdateAll: true,
+          });
+        } else {
+          otherIntegrationEntities.push(...entries);
+        }
+      });
+
+      multiInstanceGroups.sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.title,
+          b.title,
+          this.hass.locale.language
+        )
+      );
+
+      const groups: UpdateGroup[] = [];
+
+      if (systemEntities.length) {
+        groups.push({
+          key: SYSTEM_KEY,
+          title: localize("ui.panel.config.updates.group_system"),
+          entities: systemEntities,
+          showUpdateAll: false,
+        });
+      }
+
+      groups.push(...multiInstanceGroups);
+
+      if (otherIntegrationEntities.length) {
+        groups.push({
+          key: INTEGRATIONS_KEY,
+          title: localize("ui.panel.config.updates.group_integrations"),
+          entities: otherIntegrationEntities,
+          showUpdateAll: true,
+        });
+      }
+
+      if (appEntities.length) {
+        groups.push({
+          key: APPS_KEY,
+          title: localize("ui.panel.config.updates.group_apps"),
+          entities: appEntities,
+          showUpdateAll: true,
+        });
+      }
+
+      return groups;
+    }
   );
 
   static styles = css`
@@ -247,9 +393,31 @@ class HaConfigSectionUpdates extends LitElement {
       padding: 0;
     }
 
-    .title {
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ha-space-2);
       padding: var(--ha-space-4) var(--ha-space-4) 0;
+    }
+
+    .title {
       font-size: var(--ha-font-size-l);
+    }
+
+    .update-all {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      cursor: pointer;
+      font: inherit;
+      font-size: var(--ha-font-size-m);
+      padding: var(--ha-space-1) var(--ha-space-2);
+    }
+    .update-all:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: 4px;
     }
 
     .no-updates {
