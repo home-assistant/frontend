@@ -51,8 +51,6 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
@@ -207,7 +205,6 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
     pageEl.configEntriesInProgress = this._configEntriesInProgress;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
-    pageEl.showAdvanced = this.showAdvanced;
   }
 }
 

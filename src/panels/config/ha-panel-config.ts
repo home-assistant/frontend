@@ -819,7 +819,6 @@ class HaPanelConfig extends HassRouterPage {
 
     el.route = this.routeTail;
     el.hass = this.hass;
-    el.showAdvanced = Boolean(this.hass.userData?.showAdvanced);
     el.isWide = isWide;
     el.narrow = this.narrow;
     el.cloudStatus = this._cloudStatus;

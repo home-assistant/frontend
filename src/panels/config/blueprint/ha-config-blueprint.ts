@@ -22,8 +22,6 @@ class HaConfigBlueprint extends HassRouterPage {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false })
   public blueprints: Record<string, Blueprints> = {};
 
@@ -61,7 +59,6 @@ class HaConfigBlueprint extends HassRouterPage {
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
-    pageEl.showAdvanced = this.showAdvanced;
     pageEl.blueprints = this.blueprints;
 
     if (

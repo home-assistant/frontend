@@ -1214,7 +1214,6 @@ ${rejected
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
       manifest: await fetchIntegrationManifest(this.hass, domain),
-      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 

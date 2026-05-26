@@ -10703,11 +10703,6 @@
           "close": "Close",
           "submit": "Submit"
         },
-        "advanced_mode": {
-          "title": "Advanced mode",
-          "description": "Unlocks advanced features.",
-          "link_promo": "Learn more"
-        },
         "entity_id_picker": {
           "title": "Display entity IDs in picker",
           "description": "Shows the full entity IDs when selecting entities from a menu list."
