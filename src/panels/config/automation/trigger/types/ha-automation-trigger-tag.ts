@@ -35,6 +35,9 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     if (!this._tags) {
       return nothing;
     }
+
+    const deviceIds = this.trigger.device_id ? [this.trigger.device_id] : [];
+    
     return html`
       <ha-select
         .label=${this.hass.localize(
