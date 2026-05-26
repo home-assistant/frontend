@@ -1,8 +1,8 @@
 import { type LitElement, css } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { Constructor } from "../../types";
 import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
+import type { Constructor } from "../../types";
 
 /**
  * Minimal interface for the inner wa-input / wa-textarea element.
@@ -339,7 +339,7 @@ export const waInputStyles = css`
     min-height: var(--ha-space-5);
     margin-block-start: 0;
     margin-inline-start: var(--ha-space-3);
-    font-size: var(--ha-font-size-xs);
+    font-size: var(--ha-font-size-s);
     display: flex;
     align-items: center;
     color: var(--ha-color-text-secondary);

@@ -296,7 +296,7 @@ class HaBackupConfigSchedule extends LitElement {
           .retention=${data.retention}
           @value-changed=${this._retentionChanged}
         ></ha-backup-config-retention>
-        <ha-tip .hass=${this.hass}
+        <ha-tip
           >${this.hass.localize("ui.panel.config.backup.schedule.tip", {
             backup_create: html`<a
               href=${documentationUrl(
