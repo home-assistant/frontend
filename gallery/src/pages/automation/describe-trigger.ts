@@ -99,7 +99,17 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         <div class="trigger">
           <span>
             ${this._trigger
-              ? describeTrigger(this._trigger, this.hass, [])
+              ? describeTrigger(
+                  this._trigger,
+                  this.hass.localize,
+                  this.hass.locale,
+                  [],
+                  this.hass.states,
+                  this.hass.entities,
+                  this.hass.config,
+                  this.hass.formatEntityState,
+                  this.hass.formatEntityAttributeValue
+                )
               : "<invalid YAML>"}
           </span>
           <ha-yaml-editor
@@ -111,7 +121,19 @@ export class DemoAutomationDescribeTrigger extends LitElement {
         ${triggers.map(
           (conf) => html`
             <div class="trigger">
-              <span>${describeTrigger(conf as any, this.hass, [])}</span>
+              <span
+                >${describeTrigger(
+                  conf as any,
+                  this.hass.localize,
+                  this.hass.locale,
+                  [],
+                  this.hass.states,
+                  this.hass.entities,
+                  this.hass.config,
+                  this.hass.formatEntityState,
+                  this.hass.formatEntityAttributeValue
+                )}</span
+              >
               <pre>${dump(conf)}</pre>
             </div>
           `

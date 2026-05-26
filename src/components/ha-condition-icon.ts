@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiAmpersand,
   mdiClockOutline,
@@ -12,11 +13,11 @@ import {
   mdiWeatherSunny,
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { computeDomain } from "../common/entity/compute_domain";
+import { configContext, connectionContext } from "../data/context";
 import { conditionIcon, FALLBACK_DOMAIN_ICONS } from "../data/icons";
-import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
 
@@ -36,11 +37,17 @@ export const CONDITION_ICONS = {
 
 @customElement("ha-condition-icon")
 export class HaConditionIcon extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public condition?: string;
 
   @property() public icon?: string;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  protected _connection?: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  protected _config?: ContextType<typeof configContext>;
 
   protected render() {
     if (this.icon) {
@@ -51,13 +58,13 @@ export class HaConditionIcon extends LitElement {
       return nothing;
     }
 
-    if (!this.hass) {
+    if (!this._connection || !this._config) {
       return this._renderFallback();
     }
 
     const icon = conditionIcon(
-      this.hass.connection,
-      this.hass.config,
+      this._connection.connection,
+      this._config.config,
       this.condition
     ).then((icn) => {
       if (icn) {

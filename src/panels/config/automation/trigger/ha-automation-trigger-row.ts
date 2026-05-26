@@ -273,7 +273,6 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-svg-icon>`
         : html`<ha-trigger-icon
             slot="leading-icon"
-            .hass=${this.hass}
             .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
           ></ha-trigger-icon>`}
       <h3 slot="header">
@@ -299,7 +298,17 @@ export default class HaAutomationTriggerRow extends LitElement {
                   </ha-tooltip>`
                 : nothing} `
           : nothing}
-        ${describeTrigger(this.trigger, this.hass, this._entityReg)}
+        ${describeTrigger(
+          this.trigger,
+          this.hass.localize,
+          this.hass.locale,
+          this._entityReg,
+          this.hass.states,
+          this.hass.entities,
+          this.hass.config,
+          this.hass.formatEntityState,
+          this.hass.formatEntityAttributeValue
+        )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
           ? this._renderTargets(
               target,
@@ -675,7 +684,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       this._triggerUnsub = undefined;
     }
 
-    const validateResult = await validateConfig(this.hass, {
+    const validateResult = await validateConfig(this.hass.callWS, {
       triggers: trigger,
     });
 
@@ -871,7 +880,18 @@ export default class HaAutomationTriggerRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeTrigger(this.trigger, this.hass, this._entityReg, true)
+        describeTrigger(
+          this.trigger,
+          this.hass.localize,
+          this.hass.locale,
+          this._entityReg,
+          this.hass.states,
+          this.hass.entities,
+          this.hass.config,
+          this.hass.formatEntityState,
+          this.hass.formatEntityAttributeValue,
+          true
+        )
       ),
       defaultValue: this.trigger.alias,
       confirmText: this.hass.localize("ui.common.submit"),

@@ -117,7 +117,18 @@ export default class HaAutomationOptionRow extends LitElement {
     if (typeof conditions[0] === "string") {
       str += conditions[0];
     } else {
-      str += describeCondition(conditions[0], this.hass, this._entityReg);
+      str += describeCondition(
+        conditions[0],
+        this.hass.localize,
+        this.hass.locale,
+        this._entityReg,
+        this.hass.states,
+        this.hass.entities,
+        this.hass.config,
+        this.hass.formatEntityState,
+        this.hass.formatEntityAttributeValue,
+        true
+      );
     }
     if (conditions.length > 1) {
       str += this.hass.localize(

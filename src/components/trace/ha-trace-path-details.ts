@@ -171,16 +171,28 @@ export class HaTracePathDetails extends LitElement {
                         migrateAutomationTrigger({
                           ...currentDetail,
                         }) as Trigger,
-                        this.hass,
-                        this._entityReg
+                        this.hass.localize,
+                        this.hass.locale,
+                        this._entityReg,
+                        this.hass.states,
+                        this.hass.entities,
+                        this.hass.config,
+                        this.hass.formatEntityState,
+                        this.hass.formatEntityAttributeValue
                       )}
                     </h2>`
                   : selectedType === "condition"
                     ? html`<h2>
                         ${describeCondition(
                           currentDetail,
-                          this.hass,
-                          this._entityReg
+                          this.hass.localize,
+                          this.hass.locale,
+                          this._entityReg,
+                          this.hass.states,
+                          this.hass.entities,
+                          this.hass.config,
+                          this.hass.formatEntityState,
+                          this.hass.formatEntityAttributeValue
                         )}
                       </h2>`
                     : selectedType === "action"
@@ -215,8 +227,14 @@ export class HaTracePathDetails extends LitElement {
               .includes("condition")
               ? html`[${describeCondition(
                     currentDetail,
-                    this.hass,
-                    this._entityReg
+                    this.hass.localize,
+                    this.hass.locale,
+                    this._entityReg,
+                    this.hass.states,
+                    this.hass.entities,
+                    this.hass.config,
+                    this.hass.formatEntityState,
+                    this.hass.formatEntityAttributeValue
                   )}]<br />`
               : nothing}
             ${this.hass!.localize(

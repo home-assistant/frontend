@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { CallWS } from "../types";
 
 export interface ValidConfig {
   valid: true;
@@ -13,10 +13,10 @@ export interface InvalidConfig {
 type ValidKeys = "triggers" | "actions" | "conditions";
 
 export const validateConfig = <T extends Partial<Record<ValidKeys, unknown>>>(
-  hass: HomeAssistant,
+  callWS: CallWS,
   config: T
 ): Promise<Record<keyof T, ValidConfig | InvalidConfig>> =>
-  hass.callWS({
+  callWS({
     type: "validate_config",
     ...config,
   });

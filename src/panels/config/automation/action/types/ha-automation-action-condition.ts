@@ -156,7 +156,6 @@ export class HaConditionAction
 
     return html`<ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${condition}
       ></ha-condition-icon
       ><span slot="headline">${label}</span>`;
@@ -166,7 +165,6 @@ export class HaConditionAction
     <ha-combo-box-item type="button">
       <ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${item.search_labels!.condition || undefined}
       ></ha-condition-icon>
       <span slot="headline">${item.primary}</span>

@@ -233,7 +233,17 @@ export default class HaAutomationConditionRow extends LitElement {
               this.condition as TriggerCondition
             )
           : capitalizeFirstLetter(
-              describeCondition(this.condition, this.hass, this._entityReg)
+              describeCondition(
+                this.condition,
+                this.hass.localize,
+                this.hass.locale,
+                this._entityReg,
+                this.hass.states,
+                this.hass.entities,
+                this.hass.config,
+                this.hass.formatEntityState,
+                this.hass.formatEntityAttributeValue
+              )
             )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
           ? this._renderTargets(
@@ -610,8 +620,14 @@ export default class HaAutomationConditionRow extends LitElement {
 
     const triggerInfos = this._getTriggerInfos(
       ensureArray(this._automationConfig?.triggers || []),
-      this.hass,
-      this._entityReg
+      this.hass.localize,
+      this.hass.locale,
+      this._entityReg,
+      this.hass.states,
+      this.hass.entities,
+      this.hass.config,
+      this.hass.formatEntityState,
+      this.hass.formatEntityAttributeValue
     );
     const infoById = new Map(triggerInfos.map((info) => [info.id, info]));
     return html`${prefix}
@@ -858,7 +874,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
     let validateResult: Record<"conditions", InvalidConfig | ValidConfig>;
     try {
-      validateResult = await validateConfig(this.hass, {
+      validateResult = await validateConfig(this.hass.callWS, {
         conditions: condition,
       });
     } catch (err: any) {
@@ -889,7 +905,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
     let result: { result: boolean };
     try {
-      result = await testCondition(this.hass, condition);
+      result = await testCondition(this.hass.callWS, condition);
     } catch (err: any) {
       if (this.condition !== condition) {
         return;
@@ -921,7 +937,18 @@ export default class HaAutomationConditionRow extends LitElement {
       ),
       inputType: "string",
       placeholder: capitalizeFirstLetter(
-        describeCondition(this.condition, this.hass, this._entityReg, true)
+        describeCondition(
+          this.condition,
+          this.hass.localize,
+          this.hass.locale,
+          this._entityReg,
+          this.hass.states,
+          this.hass.entities,
+          this.hass.config,
+          this.hass.formatEntityState,
+          this.hass.formatEntityAttributeValue,
+          true
+        )
       ),
       defaultValue: this.condition.alias,
       confirmText: this.hass.localize("ui.common.submit"),

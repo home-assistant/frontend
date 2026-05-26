@@ -19,7 +19,8 @@ import {
   formatListWithOrs,
 } from "../common/string/format-list";
 import { hasTemplate } from "../common/string/has-template";
-import type { HomeAssistant } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant, HomeAssistantFormatters } from "../types";
 import type {
   Condition,
   ForDict,
@@ -96,16 +97,14 @@ const localizeTimeString = (
 };
 
 const formatNumericLimitValue = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   value?: number | string
 ) => {
   if (typeof value !== "string" || !isValidEntityId(value)) {
     return value;
   }
 
-  return hass.states[value]
-    ? computeStateName(hass.states[value]) || value
-    : value;
+  return states[value] ? computeStateName(states[value]) || value : value;
 };
 
 export interface TriggerInfo {
@@ -117,8 +116,14 @@ export interface TriggerInfo {
 
 export const getTriggerInfos = (
   triggers: Trigger[] | undefined,
-  hass: HomeAssistant,
-  entityRegistry: EntityRegistryEntry[]
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
+  entityRegistry: EntityRegistryEntry[],
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  config: HomeAssistant["config"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"]
 ): TriggerInfo[] => {
   if (!triggers) {
     return [];
@@ -134,7 +139,17 @@ export const getTriggerInfos = (
     } else {
       map.set(t.id, {
         id: t.id,
-        label: describeTrigger(t, hass, entityRegistry),
+        label: describeTrigger(
+          t,
+          localize,
+          locale,
+          entityRegistry,
+          states,
+          entities,
+          config,
+          formatEntityState,
+          formatEntityAttributeValue
+        ),
         triggerType: t.trigger,
         count: 1,
       });
@@ -145,15 +160,27 @@ export const getTriggerInfos = (
 
 export const describeTrigger = (
   trigger: Trigger,
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
   entityRegistry: EntityRegistryEntry[],
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  config: HomeAssistant["config"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   ignoreAlias = false
 ): string => {
   try {
     const description = tryDescribeTrigger(
       trigger,
-      hass,
+      localize,
+      locale,
       entityRegistry,
+      states,
+      entities,
+      config,
+      formatEntityState,
+      formatEntityAttributeValue,
       ignoreAlias
     );
     if (typeof description !== "string") {
@@ -174,20 +201,26 @@ export const describeTrigger = (
 
 const tryDescribeTrigger = (
   trigger: Trigger,
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
   entityRegistry: EntityRegistryEntry[],
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  config: HomeAssistant["config"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   ignoreAlias = false
 ) => {
   if (isTriggerList(trigger)) {
     const triggers = ensureArray(trigger.triggers);
 
     if (!triggers || triggers.length === 0) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.list.description.no_trigger`
       );
     }
     const count = triggers.length;
-    return hass.localize(`${triggerTranslationBaseKey}.list.description.full`, {
+    return localize(`${triggerTranslationBaseKey}.list.description.full`, {
       count: count,
     });
   }
@@ -198,8 +231,14 @@ const tryDescribeTrigger = (
 
   const description = describeLegacyTrigger(
     trigger as LegacyTrigger,
-    hass,
-    entityRegistry
+    locale,
+    localize,
+    config,
+    entityRegistry,
+    states,
+    entities,
+    formatEntityState,
+    formatEntityAttributeValue
   );
 
   if (description) {
@@ -212,18 +251,24 @@ const tryDescribeTrigger = (
   const type = getTriggerObjectId(trigger.trigger);
 
   return (
-    hass.localize(`component.${domain}.triggers.${type}.name`) ||
-    hass.localize(
+    localize(`component.${domain}.triggers.${type}.name`) ||
+    localize(
       `ui.panel.config.automation.editor.triggers.type.${triggerType as LegacyTrigger["trigger"]}.label`
     ) ||
-    hass.localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
+    localize(`ui.panel.config.automation.editor.triggers.unknown_trigger`)
   );
 };
 
 const describeLegacyTrigger = (
   trigger: LegacyTrigger,
-  hass: HomeAssistant,
-  entityRegistry: EntityRegistryEntry[]
+  locale: FrontendLocaleData,
+  localize: LocalizeFunc,
+  hassConfig: HomeAssistant["config"],
+  entityRegistry: EntityRegistryEntry[],
+  states: HomeAssistant["states"],
+  hassEntities: HomeAssistant["entities"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"]
 ) => {
   // Event Trigger
   if (trigger.trigger === "event" && trigger.event_type) {
@@ -237,16 +282,15 @@ const describeLegacyTrigger = (
       eventTypes.push(trigger.event_type);
     }
 
-    const eventTypesString = formatListWithOrs(hass.locale, eventTypes);
-    return hass.localize(
-      `${triggerTranslationBaseKey}.event.description.full`,
-      { eventTypes: eventTypesString }
-    );
+    const eventTypesString = formatListWithOrs(locale, eventTypes);
+    return localize(`${triggerTranslationBaseKey}.event.description.full`, {
+      eventTypes: eventTypesString,
+    });
   }
 
   // Home Assistant Trigger
   if (trigger.trigger === "homeassistant" && trigger.event) {
-    return hass.localize(
+    return localize(
       trigger.event === "start"
         ? `${triggerTranslationBaseKey}.homeassistant.description.started`
         : `${triggerTranslationBaseKey}.homeassistant.description.shutdown`
@@ -256,11 +300,10 @@ const describeLegacyTrigger = (
   // Numeric State Trigger
   if (trigger.trigger === "numeric_state" && trigger.entity_id) {
     const entities: string[] = [];
-    const states = hass.states;
 
     const stateObj = Array.isArray(trigger.entity_id)
-      ? hass.states[trigger.entity_id[0]]
-      : (hass.states[trigger.entity_id] as HassEntity | undefined);
+      ? states[trigger.entity_id[0]]
+      : (states[trigger.entity_id] as HassEntity | undefined);
 
     if (Array.isArray(trigger.entity_id)) {
       for (const entity of trigger.entity_id.values()) {
@@ -279,51 +322,51 @@ const describeLegacyTrigger = (
     const attribute = trigger.attribute
       ? stateObj
         ? computeAttributeNameDisplay(
-            hass.localize,
+            localize,
             stateObj,
-            hass.entities,
+            hassEntities,
             trigger.attribute
           )
         : trigger.attribute
       : undefined;
 
     const duration = trigger.for
-      ? describeDuration(hass.locale, trigger.for)
+      ? describeDuration(locale, trigger.for)
       : undefined;
 
     if (trigger.above !== undefined && trigger.below !== undefined) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
         {
           attribute: attribute,
-          entity: formatListWithOrs(hass.locale, entities),
+          entity: formatListWithOrs(locale, entities),
           numberOfEntities: entities.length,
-          above: formatNumericLimitValue(hass, trigger.above),
-          below: formatNumericLimitValue(hass, trigger.below),
+          above: formatNumericLimitValue(states, trigger.above),
+          below: formatNumericLimitValue(states, trigger.below),
           duration: duration,
         }
       );
     }
     if (trigger.above !== undefined) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above`,
         {
           attribute: attribute,
-          entity: formatListWithOrs(hass.locale, entities),
+          entity: formatListWithOrs(locale, entities),
           numberOfEntities: entities.length,
-          above: formatNumericLimitValue(hass, trigger.above),
+          above: formatNumericLimitValue(states, trigger.above),
           duration: duration,
         }
       );
     }
     if (trigger.below !== undefined) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.numeric_state.description.below`,
         {
           attribute: attribute,
-          entity: formatListWithOrs(hass.locale, entities),
+          entity: formatListWithOrs(locale, entities),
           numberOfEntities: entities.length,
-          below: formatNumericLimitValue(hass, trigger.below),
+          below: formatNumericLimitValue(states, trigger.below),
           duration: duration,
         }
       );
@@ -333,18 +376,17 @@ const describeLegacyTrigger = (
   // State Trigger
   if (trigger.trigger === "state") {
     const entities: string[] = [];
-    const states = hass.states;
 
     let attribute = "";
     if (trigger.attribute) {
       const stateObj = Array.isArray(trigger.entity_id)
-        ? hass.states[trigger.entity_id[0]]
-        : (hass.states[trigger.entity_id] as HassEntity | undefined);
+        ? states[trigger.entity_id[0]]
+        : (states[trigger.entity_id] as HassEntity | undefined);
       attribute = stateObj
         ? computeAttributeNameDisplay(
-            hass.localize,
+            localize,
             stateObj,
-            hass.entities,
+            hassEntities,
             trigger.attribute
           )
         : trigger.attribute;
@@ -359,7 +401,7 @@ const describeLegacyTrigger = (
       }
     }
 
-    const stateObj = hass.states[entityArray[0]] as HassEntity | undefined;
+    const stateObj = states[entityArray[0]] as HassEntity | undefined;
 
     let fromChoice = "other";
     let fromString = "";
@@ -376,19 +418,17 @@ const describeLegacyTrigger = (
           from.push(
             stateObj
               ? trigger.attribute
-                ? hass
-                    .formatEntityAttributeValue(
-                      stateObj,
-                      trigger.attribute,
-                      state
-                    )
-                    .toString()
-                : hass.formatEntityState(stateObj, state)
+                ? formatEntityAttributeValue(
+                    stateObj,
+                    trigger.attribute,
+                    state
+                  ).toString()
+                : formatEntityState(stateObj, state)
               : state
           );
         }
         if (from.length !== 0) {
-          fromString = formatListWithOrs(hass.locale, from);
+          fromString = formatListWithOrs(locale, from);
           fromChoice = "fromUsed";
         }
       }
@@ -409,19 +449,17 @@ const describeLegacyTrigger = (
           to.push(
             stateObj
               ? trigger.attribute
-                ? hass
-                    .formatEntityAttributeValue(
-                      stateObj,
-                      trigger.attribute,
-                      state
-                    )
-                    .toString()
-                : hass.formatEntityState(stateObj, state).toString()
+                ? formatEntityAttributeValue(
+                    stateObj,
+                    trigger.attribute,
+                    state
+                  ).toString()
+                : formatEntityState(stateObj, state).toString()
               : state
           );
         }
         if (to.length !== 0) {
-          toString = formatListWithOrs(hass.locale, to);
+          toString = formatListWithOrs(locale, to);
           toChoice = "toUsed";
         }
       }
@@ -437,24 +475,21 @@ const describeLegacyTrigger = (
 
     let duration = "";
     if (trigger.for) {
-      duration = describeDuration(hass.locale, trigger.for) ?? "";
+      duration = describeDuration(locale, trigger.for) ?? "";
     }
 
-    return hass.localize(
-      `${triggerTranslationBaseKey}.state.description.full`,
-      {
-        hasAttribute: attribute !== "" ? "true" : "false",
-        attribute: attribute,
-        hasEntity: entities.length !== 0 ? "true" : "false",
-        entity: formatListWithOrs(hass.locale, entities),
-        fromChoice: fromChoice,
-        fromString: fromString,
-        toChoice: toChoice,
-        toString: toString,
-        hasDuration: duration !== "" ? "true" : "false",
-        duration: duration,
-      }
-    );
+    return localize(`${triggerTranslationBaseKey}.state.description.full`, {
+      hasAttribute: attribute !== "" ? "true" : "false",
+      attribute: attribute,
+      hasEntity: entities.length !== 0 ? "true" : "false",
+      entity: formatListWithOrs(locale, entities),
+      fromChoice: fromChoice,
+      fromString: fromString,
+      toChoice: toChoice,
+      toString: toString,
+      hasDuration: duration !== "" ? "true" : "false",
+      duration: duration,
+    });
   }
 
   // Sun Trigger
@@ -470,7 +505,7 @@ const describeLegacyTrigger = (
       }
     }
 
-    return hass.localize(
+    return localize(
       trigger.event === "sunset"
         ? `${triggerTranslationBaseKey}.sun.description.sets`
         : `${triggerTranslationBaseKey}.sun.description.rises`,
@@ -480,17 +515,16 @@ const describeLegacyTrigger = (
 
   // Tag Trigger
   if (trigger.trigger === "tag") {
-    const entity = Object.values(hass.states).find(
+    const entity = Object.values(states).find(
       (state) =>
         state.entity_id.startsWith("tag.") &&
         state.attributes.tag_id === trigger.tag_id
     );
     return entity
-      ? hass.localize(
-          `${triggerTranslationBaseKey}.tag.description.known_tag`,
-          { tag_name: computeStateName(entity) }
-        )
-      : hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
+      ? localize(`${triggerTranslationBaseKey}.tag.description.known_tag`, {
+          tag_name: computeStateName(entity),
+        })
+      : localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger
@@ -498,15 +532,15 @@ const describeLegacyTrigger = (
     const result = ensureArray(trigger.at).map((at) => {
       if (typeof at === "string") {
         if (isValidEntityId(at)) {
-          return `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`;
+          return `entity ${states[at] ? computeStateName(states[at]) : at}`;
         }
-        return localizeTimeString(at, hass.locale, hass.config);
+        return localizeTimeString(at, locale, hassConfig);
       }
-      const entityStr = `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id}`;
+      const entityStr = `entity ${states[at.entity_id] ? computeStateName(states[at.entity_id]) : at.entity_id}`;
       const offsetStr = at.offset
         ? " " +
-          hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, {
-            offset: describeDuration(hass.locale, at.offset),
+          localize(`${triggerTranslationBaseKey}.time.offset_by`, {
+            offset: describeDuration(locale, at.offset),
           })
         : "";
       return `${entityStr}${offsetStr}`;
@@ -518,24 +552,24 @@ const describeLegacyTrigger = (
       const weekdayArray = ensureArray(trigger.weekday);
       if (weekdayArray.length > 0) {
         weekdays = weekdayArray.map((day) =>
-          hass.localize(
+          localize(
             `ui.panel.config.automation.editor.triggers.type.time.weekdays.${day}` as any
           )
         );
       }
     }
 
-    return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
-      time: formatListWithOrs(hass.locale, result),
+    return localize(`${triggerTranslationBaseKey}.time.description.full`, {
+      time: formatListWithOrs(locale, result),
       hasWeekdays: weekdays.length > 0 ? "true" : "false",
-      weekdays: formatListWithOrs(hass.locale, weekdays),
+      weekdays: formatListWithOrs(locale, weekdays),
     });
   }
 
   // Time Pattern Trigger
   if (trigger.trigger === "time_pattern") {
     if (!trigger.seconds && !trigger.minutes && !trigger.hours) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.time_pattern.description.initial`
       );
     }
@@ -663,13 +697,13 @@ const describeLegacyTrigger = (
     }
 
     if (invalidParts.length !== 0) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.time_pattern.description.invalid`,
         {
           parts: formatListWithAnds(
-            hass.locale,
+            locale,
             invalidParts.map((invalidPart) =>
-              hass.localize(
+              localize(
                 `${triggerTranslationBaseKey}.time_pattern.${invalidPart}`
               )
             )
@@ -678,7 +712,7 @@ const describeLegacyTrigger = (
       );
     }
 
-    return hass.localize(
+    return localize(
       `${triggerTranslationBaseKey}.time_pattern.description.full`,
       {
         secondsChoice: secondsChoice,
@@ -687,19 +721,19 @@ const describeLegacyTrigger = (
         seconds: seconds,
         minutes: minutes,
         hours: hours,
-        secondsWithOrdinal: hass.localize(
+        secondsWithOrdinal: localize(
           `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
           {
             part: seconds,
           }
         ),
-        minutesWithOrdinal: hass.localize(
+        minutesWithOrdinal: localize(
           `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
           {
             part: minutes,
           }
         ),
-        hoursWithOrdinal: hass.localize(
+        hoursWithOrdinal: localize(
           `${triggerTranslationBaseKey}.time_pattern.description.ordinal`,
           {
             part: hours,
@@ -713,8 +747,6 @@ const describeLegacyTrigger = (
   if (trigger.trigger === "zone" && trigger.entity_id && trigger.zone) {
     const entities: string[] = [];
     const zones: string[] = [];
-
-    const states = hass.states;
 
     if (Array.isArray(trigger.entity_id)) {
       for (const entity of trigger.entity_id.values()) {
@@ -744,10 +776,10 @@ const describeLegacyTrigger = (
       );
     }
 
-    return hass.localize(`${triggerTranslationBaseKey}.zone.description.full`, {
-      entity: formatListWithOrs(hass.locale, entities),
+    return localize(`${triggerTranslationBaseKey}.zone.description.full`, {
+      entity: formatListWithOrs(locale, entities),
       event: trigger.event.toString(),
-      zone: formatListWithOrs(hass.locale, zones),
+      zone: formatListWithOrs(locale, zones),
       numberOfZones: zones.length,
     });
   }
@@ -756,7 +788,6 @@ const describeLegacyTrigger = (
   if (trigger.trigger === "geo_location" && trigger.source && trigger.zone) {
     const sources: string[] = [];
     const zones: string[] = [];
-    const states = hass.states;
 
     if (Array.isArray(trigger.source)) {
       for (const source of trigger.source.values()) {
@@ -780,12 +811,12 @@ const describeLegacyTrigger = (
       );
     }
 
-    return hass.localize(
+    return localize(
       `${triggerTranslationBaseKey}.geo_location.description.full`,
       {
-        source: formatListWithOrs(hass.locale, sources),
+        source: formatListWithOrs(locale, sources),
         event: trigger.event.toString(),
-        zone: formatListWithOrs(hass.locale, zones),
+        zone: formatListWithOrs(locale, zones),
         numberOfZones: zones.length,
       }
     );
@@ -793,33 +824,31 @@ const describeLegacyTrigger = (
 
   // MQTT Trigger
   if (trigger.trigger === "mqtt") {
-    return hass.localize(`${triggerTranslationBaseKey}.mqtt.description.full`);
+    return localize(`${triggerTranslationBaseKey}.mqtt.description.full`);
   }
 
   // Template Trigger
   if (trigger.trigger === "template") {
     let duration = "";
     if (trigger.for) {
-      duration = describeDuration(hass.locale, trigger.for) ?? "";
+      duration = describeDuration(locale, trigger.for) ?? "";
     }
 
-    return hass.localize(
-      `${triggerTranslationBaseKey}.template.description.full`,
-      { hasDuration: duration !== "" ? "true" : "false", duration: duration }
-    );
+    return localize(`${triggerTranslationBaseKey}.template.description.full`, {
+      hasDuration: duration !== "" ? "true" : "false",
+      duration: duration,
+    });
   }
 
   // Webhook Trigger
   if (trigger.trigger === "webhook") {
-    return hass.localize(
-      `${triggerTranslationBaseKey}.webhook.description.full`
-    );
+    return localize(`${triggerTranslationBaseKey}.webhook.description.full`);
   }
 
   // Conversation Trigger
   if (trigger.trigger === "conversation") {
     if (!trigger.command || !trigger.command.length) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.conversation.description.empty`
       );
     }
@@ -827,14 +856,14 @@ const describeLegacyTrigger = (
     const commands = ensureArray(trigger.command);
 
     if (commands.length === 1) {
-      return hass.localize(
+      return localize(
         `${triggerTranslationBaseKey}.conversation.description.single`,
         {
           sentence: commands[0],
         }
       );
     }
-    return hass.localize(
+    return localize(
       `${triggerTranslationBaseKey}.conversation.description.multiple`,
       {
         sentence: commands[0],
@@ -845,7 +874,7 @@ const describeLegacyTrigger = (
 
   // Persistent Notification Trigger
   if (trigger.trigger === "persistent_notification") {
-    return hass.localize(
+    return localize(
       `${triggerTranslationBaseKey}.persistent_notification.description.full`
     );
   }
@@ -854,15 +883,15 @@ const describeLegacyTrigger = (
   if (trigger.trigger === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
-      hass.localize,
-      hass.states,
+      localize,
+      states,
       entityRegistry,
       config
     );
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id as string] as
+    const stateObj = states[config.entity_id as string] as
       | HassEntity
       | undefined;
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
@@ -872,8 +901,8 @@ const describeLegacyTrigger = (
 
   // Calendar Trigger
   if (trigger.trigger === "calendar") {
-    const calendarEntity = hass.states[trigger.entity_id]
-      ? computeStateName(hass.states[trigger.entity_id])
+    const calendarEntity = states[trigger.entity_id]
+      ? computeStateName(states[trigger.entity_id])
       : trigger.entity_id;
 
     let offsetChoice = "other";
@@ -888,28 +917,25 @@ const describeLegacyTrigger = (
         minutes: parts.length > 1 ? +parts[1] : 0,
         seconds: parts.length > 2 ? +parts[2] : 0,
       };
-      offset = formatDurationLong(hass.locale, duration);
+      offset = formatDurationLong(locale, duration);
       if (offset === "") {
         offsetChoice = "other";
       }
     }
 
-    return hass.localize(
-      `${triggerTranslationBaseKey}.calendar.description.full`,
-      {
-        eventChoice: trigger.event,
-        offsetChoice: offsetChoice,
-        offset: offset,
-        hasCalendar: trigger.entity_id ? "true" : "false",
-        calendar: calendarEntity,
-      }
-    );
+    return localize(`${triggerTranslationBaseKey}.calendar.description.full`, {
+      eventChoice: trigger.event,
+      offsetChoice: offsetChoice,
+      offset: offset,
+      hasCalendar: trigger.entity_id ? "true" : "false",
+      calendar: calendarEntity,
+    });
   }
   return undefined;
 };
 
 const formatSunOffset = (
-  hass: HomeAssistant,
+  locale: FrontendLocaleData,
   offset?: number | string | ForDict
 ): string => {
   if (!offset) {
@@ -922,7 +948,7 @@ const formatSunOffset = (
     return offset;
   }
   try {
-    const formatted = formatDurationDigital(hass.locale, offset);
+    const formatted = formatDurationDigital(locale, offset);
     return formatted.startsWith("-") ? formatted : `+${formatted}`;
   } catch (_e) {
     return JSON.stringify(offset);
@@ -931,15 +957,27 @@ const formatSunOffset = (
 
 export const describeCondition = (
   condition: Condition,
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
   entityRegistry: EntityRegistryEntry[],
+  hassStates: HomeAssistant["states"],
+  hassEntities: HomeAssistant["entities"],
+  hassConfig: HomeAssistant["config"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   ignoreAlias = false
 ): string => {
   try {
     const description = tryDescribeCondition(
       condition,
-      hass,
+      localize,
+      locale,
       entityRegistry,
+      hassStates,
+      hassEntities,
+      hassConfig,
+      formatEntityState,
+      formatEntityAttributeValue,
       ignoreAlias
     );
     if (typeof description !== "string") {
@@ -960,12 +998,18 @@ export const describeCondition = (
 
 const tryDescribeCondition = (
   condition: Condition,
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
   entityRegistry: EntityRegistryEntry[],
+  hassStates: HomeAssistant["states"],
+  hassEntities: HomeAssistant["entities"],
+  hassConfig: HomeAssistant["config"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   ignoreAlias = false
 ) => {
   if (typeof condition === "string" && hasTemplate(condition)) {
-    return hass.localize(
+    return localize(
       `${conditionsTranslationBaseKey}.template.description.full`
     );
   }
@@ -991,8 +1035,14 @@ const tryDescribeCondition = (
 
   const description = describeLegacyCondition(
     condition as LegacyCondition,
-    hass,
-    entityRegistry
+    localize,
+    locale,
+    entityRegistry,
+    hassStates,
+    hassEntities,
+    hassConfig,
+    formatEntityState,
+    formatEntityAttributeValue
   );
 
   if (description) {
@@ -1005,78 +1055,75 @@ const tryDescribeCondition = (
   const type = getConditionObjectId(condition.condition);
 
   return (
-    hass.localize(`component.${domain}.conditions.${type}.name`) ||
-    hass.localize(
+    localize(`component.${domain}.conditions.${type}.name`) ||
+    localize(
       `ui.panel.config.automation.editor.conditions.type.${conditionType as LegacyCondition["condition"]}.label`
     ) ||
-    hass.localize(
-      `ui.panel.config.automation.editor.conditions.unknown_condition`
-    )
+    localize(`ui.panel.config.automation.editor.conditions.unknown_condition`)
   );
 };
 
 const describeLegacyCondition = (
   condition: LegacyCondition,
-  hass: HomeAssistant,
-  entityRegistry: EntityRegistryEntry[]
+  localize: LocalizeFunc,
+  locale: FrontendLocaleData,
+  entityRegistry: EntityRegistryEntry[],
+  hassStates: HomeAssistant["states"],
+  hassEntities: HomeAssistant["entities"],
+  hassConfig: HomeAssistant["config"],
+  formatEntityState: HomeAssistantFormatters["formatEntityState"],
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"]
 ) => {
   if (condition.condition === "or") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.or.description.no_conditions`
       );
     }
     const count = conditions.length;
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.or.description.full`,
-      {
-        count: count,
-      }
-    );
+    return localize(`${conditionsTranslationBaseKey}.or.description.full`, {
+      count: count,
+    });
   }
 
   if (condition.condition === "and") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.and.description.no_conditions`
       );
     }
     const count = conditions.length;
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.and.description.full`,
-      {
-        count: count,
-      }
-    );
+    return localize(`${conditionsTranslationBaseKey}.and.description.full`, {
+      count: count,
+    });
   }
 
   if (condition.condition === "not") {
     const conditions = ensureArray(condition.conditions);
 
     if (!conditions || conditions.length === 0) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.not.description.no_conditions`
       );
     }
     if (conditions.length === 1) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.not.description.one_condition`
       );
     }
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.not.description.full`,
-      { count: conditions.length }
-    );
+    return localize(`${conditionsTranslationBaseKey}.not.description.full`, {
+      count: conditions.length,
+    });
   }
 
   // State Condition
   if (condition.condition === "state") {
     if (!condition.entity_id) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.state.description.no_entity`
       );
     }
@@ -1084,13 +1131,13 @@ const describeLegacyCondition = (
     let attribute = "";
     if (condition.attribute) {
       const stateObj = Array.isArray(condition.entity_id)
-        ? hass.states[condition.entity_id[0]]
-        : (hass.states[condition.entity_id] as HassEntity | undefined);
+        ? hassStates[condition.entity_id[0]]
+        : (hassStates[condition.entity_id] as HassEntity | undefined);
       attribute = stateObj
         ? computeAttributeNameDisplay(
-            hass.localize,
+            localize,
             stateObj,
-            hass.entities,
+            hassEntities,
             condition.attribute
           )
         : condition.attribute;
@@ -1099,20 +1146,20 @@ const describeLegacyCondition = (
     const entities: string[] = [];
     if (Array.isArray(condition.entity_id)) {
       for (const entity of condition.entity_id.values()) {
-        if (hass.states[entity]) {
-          entities.push(computeStateName(hass.states[entity]) || entity);
+        if (hassStates[entity]) {
+          entities.push(computeStateName(hassStates[entity]) || entity);
         }
       }
     } else if (condition.entity_id) {
       entities.push(
-        hass.states[condition.entity_id]
-          ? computeStateName(hass.states[condition.entity_id])
+        hassStates[condition.entity_id]
+          ? computeStateName(hassStates[condition.entity_id])
           : condition.entity_id
       );
     }
 
     const states: string[] = [];
-    const stateObj = hass.states[
+    const stateObj = hassStates[
       Array.isArray(condition.entity_id)
         ? condition.entity_id[0]
         : condition.entity_id
@@ -1122,14 +1169,12 @@ const describeLegacyCondition = (
         states.push(
           stateObj
             ? condition.attribute
-              ? hass
-                  .formatEntityAttributeValue(
-                    stateObj,
-                    condition.attribute,
-                    state
-                  )
-                  .toString()
-              : hass.formatEntityState(stateObj, state)
+              ? formatEntityAttributeValue(
+                  stateObj,
+                  condition.attribute,
+                  state
+                ).toString()
+              : formatEntityState(stateObj, state)
             : state
         );
       }
@@ -1137,94 +1182,89 @@ const describeLegacyCondition = (
       states.push(
         stateObj
           ? condition.attribute
-            ? hass
-                .formatEntityAttributeValue(
-                  stateObj,
-                  condition.attribute,
-                  condition.state
-                )
-                .toString()
-            : hass.formatEntityState(stateObj, condition.state.toString())
+            ? formatEntityAttributeValue(
+                stateObj,
+                condition.attribute,
+                condition.state
+              ).toString()
+            : formatEntityState(stateObj, condition.state.toString())
           : condition.state.toString()
       );
     }
 
     let duration = "";
     if (condition.for) {
-      duration = describeDuration(hass.locale, condition.for) || "";
+      duration = describeDuration(locale, condition.for) || "";
     }
 
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.state.description.full`,
-      {
-        hasAttribute: attribute !== "" ? "true" : "false",
-        attribute: attribute,
-        numberOfEntities: entities.length,
-        entities:
-          condition.match === "any"
-            ? formatListWithOrs(hass.locale, entities)
-            : formatListWithAnds(hass.locale, entities),
-        numberOfStates: states.length,
-        states: formatListWithOrs(hass.locale, states),
-        hasDuration: duration !== "" ? "true" : "false",
-        duration: duration,
-      }
-    );
+    return localize(`${conditionsTranslationBaseKey}.state.description.full`, {
+      hasAttribute: attribute !== "" ? "true" : "false",
+      attribute: attribute,
+      numberOfEntities: entities.length,
+      entities:
+        condition.match === "any"
+          ? formatListWithOrs(locale, entities)
+          : formatListWithAnds(locale, entities),
+      numberOfStates: states.length,
+      states: formatListWithOrs(locale, states),
+      hasDuration: duration !== "" ? "true" : "false",
+      duration: duration,
+    });
   }
 
   // Numeric State Condition
   if (condition.condition === "numeric_state" && condition.entity_id) {
     const entity_ids = ensureArray(condition.entity_id);
-    const stateObj = hass.states[entity_ids[0]] as HassEntity | undefined;
+    const stateObj = hassStates[entity_ids[0]] as HassEntity | undefined;
     const entity = formatListWithAnds(
-      hass.locale,
+      locale,
       entity_ids.map((id) =>
-        hass.states[id] ? computeStateName(hass.states[id]) : id || ""
+        hassStates[id] ? computeStateName(hassStates[id]) : id || ""
       )
     );
 
     const attribute = condition.attribute
       ? stateObj
         ? computeAttributeNameDisplay(
-            hass.localize,
+            localize,
             stateObj,
-            hass.entities,
+            hassEntities,
             condition.attribute
           )
         : condition.attribute
       : undefined;
 
     if (condition.above !== undefined && condition.below !== undefined) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above-below`,
         {
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          above: formatNumericLimitValue(hass, condition.above),
-          below: formatNumericLimitValue(hass, condition.below),
+          above: formatNumericLimitValue(hassStates, condition.above),
+          below: formatNumericLimitValue(hassStates, condition.below),
         }
       );
     }
     if (condition.above !== undefined) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.above`,
         {
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          above: formatNumericLimitValue(hass, condition.above),
+          above: formatNumericLimitValue(hassStates, condition.above),
         }
       );
     }
     if (condition.below !== undefined) {
-      return hass.localize(
+      return localize(
         `${conditionsTranslationBaseKey}.numeric_state.description.below`,
         {
           attribute,
           entity,
           numberOfEntities: entity_ids.length,
-          below: formatNumericLimitValue(hass, condition.below),
+          below: formatNumericLimitValue(hassStates, condition.below),
         }
       );
     }
@@ -1241,27 +1281,27 @@ const describeLegacyCondition = (
           ? condition.before
           : condition.before.includes(".")
             ? `entity ${
-                hass.states[condition.before]
-                  ? computeStateName(hass.states[condition.before])
+                hassStates[condition.before]
+                  ? computeStateName(hassStates[condition.before])
                   : condition.before
               }`
-            : localizeTimeString(condition.before, hass.locale, hass.config);
+            : localizeTimeString(condition.before, locale, hassConfig);
 
       const after =
         typeof condition.after !== "string"
           ? condition.after
           : condition.after.includes(".")
             ? `entity ${
-                hass.states[condition.after]
-                  ? computeStateName(hass.states[condition.after])
+                hassStates[condition.after]
+                  ? computeStateName(hassStates[condition.after])
                   : condition.after
               }`
-            : localizeTimeString(condition.after, hass.locale, hass.config);
+            : localizeTimeString(condition.after, locale, hassConfig);
 
       let localizedDays: string[] = [];
       if (validWeekdays) {
         localizedDays = weekdaysArray.map((d) =>
-          hass.localize(
+          localize(
             `ui.panel.config.automation.editor.conditions.type.time.weekdays.${d}`
           )
         );
@@ -1286,30 +1326,27 @@ const describeLegacyCondition = (
         hasTime = "before";
       }
 
-      return hass.localize(
-        `${conditionsTranslationBaseKey}.time.description.full`,
-        {
-          hasTime: hasTime,
-          hasTimeAndDay: (after || before) && validWeekdays ? "true" : "false",
-          hasDay: validWeekdays ? "true" : "false",
-          time_before: before,
-          time_after: after,
-          day: formatListWithOrs(hass.locale, localizedDays),
-        }
-      );
+      return localize(`${conditionsTranslationBaseKey}.time.description.full`, {
+        hasTime: hasTime,
+        hasTimeAndDay: (after || before) && validWeekdays ? "true" : "false",
+        hasDay: validWeekdays ? "true" : "false",
+        time_before: before,
+        time_after: after,
+        day: formatListWithOrs(locale, localizedDays),
+      });
     }
   }
 
   // Sun condition
   if (condition.condition === "sun" && (condition.before || condition.after)) {
     const afterDuration = condition.after
-      ? formatSunOffset(hass, condition.after_offset)
+      ? formatSunOffset(locale, condition.after_offset)
       : "";
     const beforeDuration = condition.before
-      ? formatSunOffset(hass, condition.before_offset)
+      ? formatSunOffset(locale, condition.before_offset)
       : "";
 
-    return hass.localize(
+    return localize(
       `${conditionsTranslationBaseKey}.sun.description.${condition.before && condition.after ? "between" : condition.before ? "before" : "after"}`,
       {
         afterChoice: condition.after ?? "other",
@@ -1327,61 +1364,56 @@ const describeLegacyCondition = (
     const entities: string[] = [];
     const zones: string[] = [];
 
-    const states = hass.states;
-
     if (Array.isArray(condition.entity_id)) {
       for (const entity of condition.entity_id.values()) {
-        if (states[entity]) {
-          entities.push(computeStateName(states[entity]) || entity);
+        if (hassStates[entity]) {
+          entities.push(computeStateName(hassStates[entity]) || entity);
         }
       }
     } else {
       entities.push(
-        states[condition.entity_id]
-          ? computeStateName(states[condition.entity_id])
+        hassStates[condition.entity_id]
+          ? computeStateName(hassStates[condition.entity_id])
           : condition.entity_id
       );
     }
 
     if (Array.isArray(condition.zone)) {
       for (const zone of condition.zone.values()) {
-        if (states[zone]) {
-          zones.push(computeStateName(states[zone]) || zone);
+        if (hassStates[zone]) {
+          zones.push(computeStateName(hassStates[zone]) || zone);
         }
       }
     } else {
       zones.push(
-        states[condition.zone]
-          ? computeStateName(states[condition.zone])
+        hassStates[condition.zone]
+          ? computeStateName(hassStates[condition.zone])
           : condition.zone
       );
     }
 
-    const entitiesString = formatListWithOrs(hass.locale, entities);
-    const zonesString = formatListWithOrs(hass.locale, zones);
-    return hass.localize(
-      `${conditionsTranslationBaseKey}.zone.description.full`,
-      {
-        entity: entitiesString,
-        numberOfEntities: entities.length,
-        zone: zonesString,
-        numberOfZones: zones.length,
-      }
-    );
+    const entitiesString = formatListWithOrs(locale, entities);
+    const zonesString = formatListWithOrs(locale, zones);
+    return localize(`${conditionsTranslationBaseKey}.zone.description.full`, {
+      entity: entitiesString,
+      numberOfEntities: entities.length,
+      zone: zonesString,
+      numberOfZones: zones.length,
+    });
   }
 
   if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
-      hass.localize,
-      hass.states,
+      localize,
+      hassStates,
       entityRegistry,
       config
     );
     if (localized) {
       return localized;
     }
-    const stateObj = hass.states[config.entity_id as string] as
+    const stateObj = hassStates[config.entity_id as string] as
       | HassEntity
       | undefined;
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
@@ -1390,17 +1422,17 @@ const describeLegacyCondition = (
   }
 
   if (condition.condition === "template") {
-    return hass.localize(
+    return localize(
       `${conditionsTranslationBaseKey}.template.description.full`
     );
   }
 
   if (condition.condition === "trigger" && condition.id != null) {
-    return hass.localize(
+    return localize(
       `${conditionsTranslationBaseKey}.trigger.description.full`,
       {
         id: formatListWithOrs(
-          hass.locale,
+          locale,
           ensureArray(condition.id).map((id) => id.toString())
         ),
       }

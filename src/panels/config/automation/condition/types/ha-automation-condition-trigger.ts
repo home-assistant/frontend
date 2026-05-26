@@ -1,4 +1,4 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import { mdiAlert } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -22,15 +22,19 @@ import {
   getTriggerInfos,
   type TriggerInfo,
 } from "../../../../../data/automation_i18n";
-import { fullEntitiesContext } from "../../../../../data/context";
+import {
+  configContext,
+  entitiesContext,
+  formattersContext,
+  fullEntitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../../../../types";
 import "../../ha-trigger-id-chip";
 
 @customElement("ha-automation-condition-trigger")
 export class HaTriggerCondition extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public condition!: TriggerCondition;
 
   @property({ type: Boolean }) public disabled = false;
@@ -43,6 +47,22 @@ export class HaTriggerCondition extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityReg: EntityRegistryEntry[] = [];
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  protected _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  protected _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  protected _config!: ContextType<typeof configContext>;
+
+  @consume({ context: formattersContext, subscribe: true })
+  protected _formatters!: ContextType<typeof formattersContext>;
+
   private _triggerInfos = memoizeOne(
     (
       triggers: AutomationConfig["triggers"] | undefined,
@@ -50,8 +70,14 @@ export class HaTriggerCondition extends LitElement {
     ): TriggerInfo[] =>
       getTriggerInfos(
         triggers ? ensureArray(triggers) : undefined,
-        this.hass,
-        entityReg
+        this._i18n?.localize,
+        this._i18n?.locale,
+        entityReg,
+        this._states,
+        this._entities,
+        this._config?.config,
+        this._formatters?.formatEntityState,
+        this._formatters?.formatEntityAttributeValue
       )
   );
 
@@ -75,7 +101,7 @@ export class HaTriggerCondition extends LitElement {
     if (!triggerInfos.length && !selectedIds.length) {
       return html`
         <ha-alert alert-type="info">
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
           )}
         </ha-alert>
@@ -115,9 +141,9 @@ export class HaTriggerCondition extends LitElement {
               >
                 ${alertIcon}
               </ha-trigger-id-chip>
-              ${this.hass.localize("state.default.unavailable")}
+              ${this._i18n.localize("state.default.unavailable")}
               <ha-tooltip .for=${`trigger-${id}`}>
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
                   { id: html`<b>${id}</b>` }
                 )}
@@ -143,7 +169,7 @@ export class HaTriggerCondition extends LitElement {
               </ha-trigger-id-chip>
               ${info.label}${info.count > 1
                 ? html`<ha-tooltip .for=${`trigger-${info.id}`}
-                    >${this.hass.localize(
+                    >${this._i18n.localize(
                       "ui.panel.config.automation.editor.conditions.type.trigger.duplicated_info"
                     )}</ha-tooltip
                   >`

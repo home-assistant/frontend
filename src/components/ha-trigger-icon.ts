@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiAvTimer,
   mdiCalendar,
@@ -18,9 +19,10 @@ import {
   mdiWebhook,
 } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { computeDomain } from "../common/entity/compute_domain";
+import { configContext, connectionContext } from "../data/context";
 import { FALLBACK_DOMAIN_ICONS, triggerIcon } from "../data/icons";
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import type { HomeAssistant } from "../types";
@@ -56,6 +58,14 @@ export class HaTriggerIcon extends LitElement {
 
   @property() public icon?: string;
 
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  protected _connection?: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  protected _config?: ContextType<typeof configContext>;
+
   protected render() {
     if (this.icon) {
       return html`<ha-icon .icon=${this.icon}></ha-icon>`;
@@ -65,13 +75,13 @@ export class HaTriggerIcon extends LitElement {
       return nothing;
     }
 
-    if (!this.hass) {
+    if (!this._connection || !this._config) {
       return this._renderFallback();
     }
 
     const icon = triggerIcon(
-      this.hass.connection,
-      this.hass.config,
+      this._connection.connection,
+      this._config.config,
       this.trigger
     ).then((icn) => {
       if (icn) {

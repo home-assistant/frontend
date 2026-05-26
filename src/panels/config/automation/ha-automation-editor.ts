@@ -647,7 +647,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
-    const validation = await validateConfig(this.hass, {
+    const validation = await validateConfig(this.hass.callWS, {
       triggers: this.config.triggers,
       conditions: this.config.conditions,
       actions: this.config.actions,

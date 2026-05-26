@@ -9,8 +9,8 @@ import type { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device/device_automation";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
-import { domainToName } from "./integration";
 import type { DomainManifestLookup } from "./integration";
+import { domainToName } from "./integration";
 import type {
   ActionType,
   ActionTypes,
@@ -322,7 +322,17 @@ const tryDescribeAction = <T extends ActionType>(
     return hass.localize(
       `${actionTranslationBaseKey}.check_condition.description.full`,
       {
-        condition: describeCondition(action as Condition, hass, entityRegistry),
+        condition: describeCondition(
+          action as Condition,
+          hass.localize,
+          hass.locale,
+          entityRegistry,
+          hass.states,
+          hass.entities,
+          hass.config,
+          hass.formatEntityState,
+          hass.formatEntityAttributeValue
+        ),
       }
     );
   }

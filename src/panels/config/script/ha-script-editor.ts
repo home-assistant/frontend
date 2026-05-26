@@ -560,7 +560,7 @@ export class HaScriptEditor extends SubscribeMixin(
     if (stateObj?.state !== UNAVAILABLE) {
       return;
     }
-    const validation = await validateConfig(this.hass, {
+    const validation = await validateConfig(this.hass.callWS, {
       actions: this.config.sequence,
     });
     this.validationErrors = (

@@ -10,7 +10,7 @@ import type { WeekdayShort } from "../common/datetime/weekday";
 import { navigate } from "../common/navigate";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
-import type { Context, HomeAssistant } from "../types";
+import type { CallWS, Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
 import type { ConditionDescription } from "./condition";
 import { CONDITION_BUILDING_BLOCKS } from "./condition";
@@ -578,11 +578,11 @@ export const subscribeTrigger = (
   });
 
 export const testCondition = (
-  hass: HomeAssistant,
+  callWS: CallWS,
   condition: Condition | Condition[],
   variables?: Record<string, unknown>
 ) =>
-  hass.callWS<{ result: boolean }>({
+  callWS<{ result: boolean }>({
     type: "test_condition",
     condition,
     variables,

@@ -801,7 +801,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._running = false;
     this._runResult = undefined;
 
-    const validated = await validateConfig(this.hass, {
+    const validated = await validateConfig(this.hass.callWS, {
       actions: this.action,
     });
 
