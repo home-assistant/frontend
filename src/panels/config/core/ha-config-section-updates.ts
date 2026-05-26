@@ -12,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -65,6 +66,8 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _entitySources?: EntitySources;
 
+  @state() private _loadedIntegrationTitles = new Set<string>();
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -75,6 +78,27 @@ class HaConfigSectionUpdates extends LitElement {
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    this._loadIntegrationTitles();
+  }
+
+  private async _loadIntegrationTitles() {
+    const domains = new Set<string>();
+    for (const entity of Object.values(this.hass.states)) {
+      if (!entity.entity_id.startsWith("update.")) continue;
+      const platform = this.hass.entities[entity.entity_id]?.platform;
+      if (platform && !this._loadedIntegrationTitles.has(platform)) {
+        domains.add(platform);
+      }
+    }
+    if (!domains.size) return;
+    const toLoad = Array.from(domains);
+    toLoad.forEach((d) => this._loadedIntegrationTitles.add(d));
+    await this.hass.loadBackendTranslation("title", toLoad);
+    this.requestUpdate();
   }
 
   protected render(): TemplateResult {
@@ -152,15 +176,16 @@ class HaConfigSectionUpdates extends LitElement {
                     </div>
                     ${group.showUpdateAll
                       ? html`
-                          <button
-                            class="update-all"
+                          <ha-button
+                            appearance="plain"
+                            size="small"
                             .group=${group}
                             @click=${this._updateAll}
                           >
                             ${this.hass.localize(
                               "ui.panel.config.updates.update_all"
                             )}
-                          </button>
+                          </ha-button>
                         `
                       : nothing}
                   </div>
@@ -398,26 +423,11 @@ class HaConfigSectionUpdates extends LitElement {
       align-items: center;
       justify-content: space-between;
       gap: var(--ha-space-2);
-      padding: var(--ha-space-4) var(--ha-space-4) 0;
+      padding: var(--ha-space-4) var(--ha-space-2) 0 var(--ha-space-4);
     }
 
     .title {
       font-size: var(--ha-font-size-l);
-    }
-
-    .update-all {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      cursor: pointer;
-      font: inherit;
-      font-size: var(--ha-font-size-m);
-      padding: var(--ha-space-1) var(--ha-space-2);
-    }
-    .update-all:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-      border-radius: 4px;
     }
 
     .no-updates {
