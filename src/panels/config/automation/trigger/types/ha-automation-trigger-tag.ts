@@ -51,26 +51,32 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
           .disabled=${this.disabled || this._tags.length === 0}
           .value=${this.trigger.tag_id}
           @selected=${this._tagChanged}
-          .options=${this._tags.map((tag) => ({
-            value: tag.id,
-            label: tag.name || tag.id,
-          }))}
+          fixedMenuPosition
+          naturalMenuWidth
         >
+          ${this._tags.map(
+            (tag) => html`
+              <mwc-list-item .value=${tag.id}>
+                ${tag.name || tag.id}
+              </mwc-list-item>
+            `
+          )}
         </ha-select>
         
         <ha-devices-picker
-            .hass=${this.hass}
-            .label=${"Scanned at Devices (Optional)"}
-            .disabled=${this.disabled}
-            .value=${deviceIds}
-            @value-changed=${this._devicesChanged}
-          ></ha-devices-picker>
+          .hass=${this.hass}
+          .label=${"Scanned at Devices (Optional)"}
+          .disabled=${this.disabled}
+          .value=${deviceIds}
+          @value-changed=${this._devicesChanged}
+        ></ha-devices-picker>
       </div>
     `;
   }
 
   private async _fetchTags() {
-    this._tags = (await fetchTags(this.hass)).sort((a, b) =>
+    const tags = await fetchTags(this.hass);
+    this._tags = [...tags].sort((a, b) =>
       caseInsensitiveStringCompare(
         a.name || a.id,
         b.name || b.id,
@@ -80,17 +86,19 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
   }
 
   private _tagChanged(ev: HaSelectSelectEvent) {
-    if (
-      !ev.detail.value ||
-      !this._tags ||
-      this.trigger.tag_id === ev.detail.value
-    ) {
+    if (!this._tags) {
       return;
     }
+    
+    const value = ev.detail.value;
+    if (!value || this.trigger.tag_id === value) {
+      return;
+    }
+
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        tag_id: ev.detail.value,
+        tag_id: value,
       },
     });
   }
@@ -101,7 +109,6 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
     const newTrigger = { ...this.trigger };
 
-    // Clean up empty configurations or save the device array
     if (!currentValues || currentValues.length === 0) {
       delete newTrigger.device_id;
     } else {
