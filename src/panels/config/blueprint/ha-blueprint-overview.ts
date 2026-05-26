@@ -244,7 +244,6 @@ class HaBlueprintOverview extends LitElement {
               ></ha-svg-icon>`
             : html`
                 <ha-icon-overflow-menu
-                  .hass=${this.hass}
                   narrow
                   .items=${[
                     {
