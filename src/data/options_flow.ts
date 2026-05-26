@@ -7,7 +7,6 @@ export const createOptionsFlow = (hass: HomeAssistant, handler: string) =>
     "config/config_entries/options/flow",
     {
       handler,
-      show_advanced_options: true,
     }
   );
 

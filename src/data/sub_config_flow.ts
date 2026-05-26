@@ -16,7 +16,6 @@ export const createSubConfigFlow = (
     "config/config_entries/subentries/flow",
     {
       handler: [configEntryId, subFlowType],
-      show_advanced_options: true,
       subentry_id,
     },
     HEADERS

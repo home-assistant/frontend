@@ -40,7 +40,6 @@ export const createConfigFlow = (
     "config/config_entries/flow",
     {
       handler,
-      show_advanced_options: true,
       entry_id,
     },
     HEADERS
