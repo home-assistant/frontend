@@ -61,7 +61,7 @@ describe("generateCardSuggestions", () => {
       makeState("light.a", "on", { supported_color_modes: ["onoff"] }),
     ]);
     const suggestions = generateCardSuggestions(hass, "light.a");
-    expect(suggestions.some((s) => s.id === "tile")).toBe(true);
+    expect(suggestions.some((s) => s.config.type === "tile")).toBe(true);
   });
 
   it("accepts null, a single suggestion, or a list from each provider", () => {
@@ -69,7 +69,6 @@ describe("generateCardSuggestions", () => {
       "test-null": { getEntitySuggestion: () => null },
       "test-single": {
         getEntitySuggestion: (_hass, entityId) => ({
-          id: "single",
           label: "Single",
           config: { type: "custom:test-single", entity: entityId },
         }),
@@ -77,25 +76,25 @@ describe("generateCardSuggestions", () => {
       "test-array": {
         getEntitySuggestion: (_hass, entityId) => [
           {
-            id: "array-a",
             label: "Array A",
-            config: { type: "custom:test-array", entity: entityId },
+            config: { type: "custom:test-array-a", entity: entityId },
           },
           {
-            id: "array-b",
             label: "Array B",
-            config: { type: "custom:test-array", entity: entityId },
+            config: { type: "custom:test-array-b", entity: entityId },
           },
         ],
       },
     });
 
     const hass = makeHass([makeState("sensor.a", "1")]);
-    const ids = generateCardSuggestions(hass, "sensor.a").map((s) => s.id);
+    const types = generateCardSuggestions(hass, "sensor.a").map(
+      (s) => s.config.type
+    );
 
-    expect(ids).toContain("single");
-    expect(ids).toContain("array-a");
-    expect(ids).toContain("array-b");
+    expect(types).toContain("custom:test-single");
+    expect(types).toContain("custom:test-array-a");
+    expect(types).toContain("custom:test-array-b");
   });
 
   it("keeps working when a provider throws", () => {
@@ -108,7 +107,9 @@ describe("generateCardSuggestions", () => {
     });
 
     const hass = makeHass([makeState("sensor.a", "1")]);
-    const ids = generateCardSuggestions(hass, "sensor.a").map((s) => s.id);
-    expect(ids).toContain("tile");
+    const types = generateCardSuggestions(hass, "sensor.a").map(
+      (s) => s.config.type
+    );
+    expect(types).toContain("tile");
   });
 });

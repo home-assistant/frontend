@@ -4,8 +4,7 @@ import type { HomeAssistant } from "../../../types";
 export interface CardSuggestion<
   T extends LovelaceCardConfig = LovelaceCardConfig,
 > {
-  id: string;
-  label: string;
+  label?: string;
   config: T;
 }
 
