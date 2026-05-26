@@ -280,7 +280,6 @@ class HaProfileSectionGeneral extends LitElement {
           display: block;
           margin: 24px 0;
         }
-
       `,
     ];
   }
