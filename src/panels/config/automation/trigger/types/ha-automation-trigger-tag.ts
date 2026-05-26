@@ -5,6 +5,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import "../../../../../components/device/ha-devices-picker";
 import type { TagTrigger } from "../../../../../data/automation";
 import type { Tag } from "../../../../../data/tag";
 import { fetchTags } from "../../../../../data/tag";
@@ -34,52 +35,105 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
     if (!this._tags) {
       return nothing;
     }
+
+    // Ensure deviceIds passes a clean array to the picker
+    const deviceIds = Array.isArray(this.trigger.device_id)
+      ? this.trigger.device_id
+      : this.trigger.device_id
+        ? [this.trigger.device_id]
+        : [];
+    
     return html`
-      <ha-select
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.tag.label"
-        )}
-        .disabled=${this.disabled || this._tags.length === 0}
-        .value=${this.trigger.tag_id}
-        @selected=${this._tagChanged}
-        .options=${this._tags.map((tag) => ({
-          value: tag.id,
-          label: tag.name || tag.id,
-        }))}
-      >
-      </ha-select>
+      <div class="row">
+        <ha-select
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.tag.label"
+          )}
+          .disabled=${this.disabled || this._tags.length === 0}
+          .value=${this.trigger.tag_id}
+          @selected=${this._tagChanged}
+          fixedMenuPosition
+          naturalMenuWidth
+        >
+          ${this._tags.map(
+            (tag) => html`
+              <mwc-list-item .value=${tag.id}>
+                ${tag.name || tag.id}
+              </mwc-list-item>
+            `
+          )}
+        </ha-select>
+        
+        <ha-devices-picker
+          .hass=${this.hass}
+          .label=${"Scanned at Devices (Optional)"}
+          .disabled=${this.disabled}
+          .value=${deviceIds}
+          @value-changed=${this._devicesChanged}
+        ></ha-devices-picker>
+      </div>
     `;
   }
 
   private async _fetchTags() {
-    this._tags = (await fetchTags(this.hass)).sort((a, b) =>
+    const tags = await fetchTags(this.hass);
+    this._tags = [...tags].sort((a, b) =>
       caseInsensitiveStringCompare(
         a.name || a.id,
         b.name || b.id,
-        this.hass.locale.language
+        this.hass.locale?.language || "en" // Added fallback to prevent crash if locale is undefined
       )
     );
   }
 
   private _tagChanged(ev: HaSelectSelectEvent) {
-    if (
-      !ev.detail.value ||
-      !this._tags ||
-      this.trigger.tag_id === ev.detail.value
-    ) {
+    if (!this._tags) {
       return;
     }
+    
+    const value = ev.detail.value;
+    if (!value || this.trigger.tag_id === value) {
+      return;
+    }
+
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        tag_id: ev.detail.value,
+        tag_id: value,
       },
     });
   }
 
+  private _devicesChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    const currentValues = ev.detail.value as string[] | string | undefined;
+
+    const newTrigger = { ...this.trigger };
+
+    // Clean up empty configurations or format array/string properly
+    if (!currentValues || currentValues.length === 0) {
+      delete newTrigger.device_id;
+    } else if (Array.isArray(currentValues)) {
+      // If it is a single item array, store it cleanly as a string if preferred by schema,
+      // or match the exact Home Assistant trigger schema requirements.
+      newTrigger.device_id = currentValues.length === 1 ? currentValues[0] : currentValues;
+    } else {
+      newTrigger.device_id = currentValues;
+    }
+
+    fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
   static styles = css`
-    ha-select {
+    .row {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    ha-select,
+    ha-devices-picker {
       display: block;
+      width: 100%;
     }
   `;
 }
