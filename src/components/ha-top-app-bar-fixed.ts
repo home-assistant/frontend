@@ -31,7 +31,7 @@ export const haTopAppBarFixedStyles = css`
     padding-left: var(--safe-area-inset-left);
   }
 
-  .scrolled:not(.pane) {
+  .top-app-bar.scrolled:not(.pane-header) {
     box-shadow: var(--ha-box-shadow-s);
   }
 
@@ -151,7 +151,7 @@ export class HaTopAppBarFixed extends LitElement {
     return html`
       <header
         class="top-app-bar ${classMap({
-          pane: paneHeader,
+          "pane-header": paneHeader,
         })}"
       >
         <div class="row">
