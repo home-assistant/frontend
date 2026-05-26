@@ -34,6 +34,7 @@ import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
   filterUpdateEntitiesParameterized,
+  getUpdateType,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
@@ -317,22 +318,18 @@ class HaConfigSectionUpdates extends LitElement {
       const otherIntegrationEntities: UpdateEntity[] = [];
 
       for (const entity of entities) {
-        const title = entity.attributes.title || "";
-        if (
-          title === "Home Assistant Core" ||
-          title === "Home Assistant Operating System" ||
-          title === "Home Assistant Supervisor"
-        ) {
-          systemEntities.push(entity);
-          continue;
+        if (entitySources) {
+          const type = getUpdateType(entity, entitySources);
+          if (type === "home_assistant" || type === "home_assistant_os") {
+            systemEntities.push(entity);
+            continue;
+          }
+          if (type === "addon") {
+            appEntities.push(entity);
+            continue;
+          }
         }
-        const sourceDomain = entitySources?.[entity.entity_id]?.domain;
-        const domain =
-          sourceDomain ?? this.hass.entities[entity.entity_id]?.platform;
-        if (domain === "hassio") {
-          appEntities.push(entity);
-          continue;
-        }
+        const domain = this.hass.entities[entity.entity_id]?.platform;
         if (!domain) {
           otherIntegrationEntities.push(entity);
           continue;
