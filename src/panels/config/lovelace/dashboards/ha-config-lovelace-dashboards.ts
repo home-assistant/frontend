@@ -281,7 +281,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hideable: false,
         template: (dashboard) => html`
           <ha-icon-overflow-menu
-            .hass=${this.hass}
             narrow
             .items=${[
               {

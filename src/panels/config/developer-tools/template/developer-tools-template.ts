@@ -180,7 +180,7 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
-          <ha-tip .hass=${this.hass}>
+          <ha-tip>
             ${this.hass.localize(
               "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
               {

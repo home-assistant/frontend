@@ -112,7 +112,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           showNarrow: true,
           template: (credential) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {
