@@ -36,6 +36,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
       return nothing;
     }
 
+    // Ensure deviceIds passes a clean array to the picker
     const deviceIds = Array.isArray(this.trigger.device_id)
       ? this.trigger.device_id
       : this.trigger.device_id
@@ -80,7 +81,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
       caseInsensitiveStringCompare(
         a.name || a.id,
         b.name || b.id,
-        this.hass.locale.language
+        this.hass.locale?.language || "en" // Added fallback to prevent crash if locale is undefined
       )
     );
   }
@@ -105,12 +106,17 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   private _devicesChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const currentValues = ev.detail.value as string[];
+    const currentValues = ev.detail.value as string[] | string | undefined;
 
     const newTrigger = { ...this.trigger };
 
+    // Clean up empty configurations or format array/string properly
     if (!currentValues || currentValues.length === 0) {
       delete newTrigger.device_id;
+    } else if (Array.isArray(currentValues)) {
+      // If it is a single item array, store it cleanly as a string if preferred by schema,
+      // or match the exact Home Assistant trigger schema requirements.
+      newTrigger.device_id = currentValues.length === 1 ? currentValues[0] : currentValues;
     } else {
       newTrigger.device_id = currentValues;
     }
