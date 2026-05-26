@@ -98,6 +98,15 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
+    prefs.energy_sources.forEach((source) => {
+      if (source.type === "battery" && source.stat_soc) {
+        badges.push({
+          type: "entity",
+          entity: source.stat_soc,
+        });
+      }
+    });
+
     if (hasPowerDevices) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption,
