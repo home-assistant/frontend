@@ -5,18 +5,14 @@ import { customElement } from "lit/decorators";
 export class HaHeaderBar extends LitElement {
   protected render() {
     return html`<header class="header-bar">
-      <div class="header-bar__row">
-        <section class="header-bar__section" id="navigation">
+      <div class="row">
+        <section class="section" id="navigation">
           <slot name="navigationIcon"></slot>
-          <span class="header-bar__title">
+          <span class="title">
             <slot name="title"></slot>
           </span>
         </section>
-        <section
-          class="header-bar__section header-bar__section--end"
-          id="actions"
-          role="toolbar"
-        >
+        <section class="section end" id="actions" role="toolbar">
           <slot name="actionItems"></slot>
         </section>
       </div>
@@ -38,7 +34,7 @@ export class HaHeaderBar extends LitElement {
       padding: var(--header-bar-padding);
     }
 
-    .header-bar__row {
+    .row {
       display: flex;
       align-items: center;
       box-sizing: border-box;
@@ -46,7 +42,7 @@ export class HaHeaderBar extends LitElement {
       height: var(--header-height);
     }
 
-    .header-bar__section {
+    .section {
       display: flex;
       align-items: center;
       box-sizing: border-box;
@@ -59,12 +55,12 @@ export class HaHeaderBar extends LitElement {
       flex: 1 1 auto;
     }
 
-    .header-bar__section--end {
+    .section.end {
       flex: none;
       justify-content: flex-end;
     }
 
-    .header-bar__title {
+    .title {
       display: block;
       min-width: 0;
       overflow: hidden;

@@ -31,16 +31,11 @@ export const haTopAppBarFixedStyles = css`
     padding-left: var(--safe-area-inset-left);
   }
 
-  .top-app-bar--scrolled:not(.top-app-bar--pane) {
-    box-shadow: var(
-      --bar-box-shadow,
-      0px 2px 4px -1px rgba(0, 0, 0, 0.2),
-      0px 4px 5px 0px rgba(0, 0, 0, 0.14),
-      0px 1px 10px 0px rgba(0, 0, 0, 0.12)
-    );
+  .scrolled:not(.pane) {
+    box-shadow: var(--ha-box-shadow-s);
   }
 
-  .top-app-bar__row {
+  .row {
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -49,7 +44,7 @@ export const haTopAppBarFixedStyles = css`
     border-bottom: var(--app-header-border-bottom);
   }
 
-  .top-app-bar__section {
+  .section {
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -62,18 +57,18 @@ export const haTopAppBarFixedStyles = css`
     flex: 1 1 auto;
   }
 
-  .top-app-bar__section--center {
+  .section.center {
     flex: 1 1 auto;
     justify-content: center;
     text-align: center;
   }
 
-  .top-app-bar__section--end {
+  .section.end {
     flex: none;
     justify-content: flex-end;
   }
 
-  .top-app-bar__title {
+  .title {
     display: block;
     min-width: 0;
     overflow: hidden;
@@ -85,7 +80,7 @@ export const haTopAppBarFixedStyles = css`
     padding-inline-start: var(--ha-space-6);
   }
 
-  :host([narrow]) .top-app-bar__title {
+  :host([narrow]) .title {
     padding-inline-start: var(--ha-space-2);
   }
 
@@ -148,7 +143,7 @@ export class HaTopAppBarFixed extends LitElement {
   }
 
   protected _renderHeader() {
-    const title = html`<span class="top-app-bar__title">
+    const title = html`<span class="title">
       <slot name="title"></slot>
     </span>`;
     const paneHeader = this._isPaneHeader();
@@ -156,17 +151,17 @@ export class HaTopAppBarFixed extends LitElement {
     return html`
       <header
         class="top-app-bar ${classMap({
-          "top-app-bar--pane": paneHeader,
+          pane: paneHeader,
         })}"
       >
-        <div class="top-app-bar__row">
+        <div class="row">
           ${paneHeader
-            ? html`<section class="top-app-bar__section" id="title">
+            ? html`<section class="section" id="title">
                 <slot name="navigationIcon"></slot>
                 ${title}
               </section>`
             : nothing}
-          <section class="top-app-bar__section" id="navigation">
+          <section class="section" id="navigation">
             ${paneHeader
               ? nothing
               : html`<slot name="navigationIcon"></slot> ${this.centerTitle
@@ -174,17 +169,9 @@ export class HaTopAppBarFixed extends LitElement {
                     : title}`}
           </section>
           ${!paneHeader && this.centerTitle
-            ? html`<section
-                class="top-app-bar__section top-app-bar__section--center"
-              >
-                ${title}
-              </section>`
+            ? html`<section class="section center">${title}</section>`
             : nothing}
-          <section
-            class="top-app-bar__section top-app-bar__section--end"
-            id="actions"
-            role="toolbar"
-          >
+          <section class="section end" id="actions" role="toolbar">
             <slot name="actionItems"></slot>
           </section>
         </div>
@@ -222,7 +209,7 @@ export class HaTopAppBarFixed extends LitElement {
       this.scrollTarget instanceof Window
         ? this.scrollTarget.pageYOffset
         : this.scrollTarget.scrollTop;
-    this._barElement?.classList.toggle("top-app-bar--scrolled", scrollTop > 0);
+    this._barElement?.classList.toggle("scrolled", scrollTop > 0);
   };
 
   protected _registerListeners() {
