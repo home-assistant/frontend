@@ -1,11 +1,12 @@
-import { ContextProvider } from "@lit/context";
-import type { TemplateResult, PropertyValues } from "lit";
-import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-tip";
-import "../../../../src/components/ha-card";
+import { provide } from "@lit/context";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-tip";
 import { internationalizationContext } from "../../../../src/data/context";
+import type { HomeAssistantInternationalization } from "../../../../src/types";
 
 const tips: (string | TemplateResult)[] = [
   "Test tip",
@@ -15,21 +16,17 @@ const tips: (string | TemplateResult)[] = [
 
 @customElement("demo-components-ha-tip")
 export class DemoHaTip extends LitElement {
-  constructor() {
-    super();
-    new ContextProvider(this, {
-      context: internationalizationContext,
-      initialValue: {
-        localize: ((key: string) => key) as any,
-        language: "en",
-        selectedLanguage: null,
-        locale: {} as any,
-        translationMetadata: {} as any,
-        loadBackendTranslation: (async () => (key: string) => key) as any,
-        loadFragmentTranslation: (async () => (key: string) => key) as any,
-      },
-    });
-  }
+  @provide({ context: internationalizationContext })
+  @state()
+  protected _i18n: HomeAssistantInternationalization = {
+    localize: ((key: string) => key) as any,
+    language: "en",
+    selectedLanguage: null,
+    locale: {} as any,
+    translationMetadata: {} as any,
+    loadBackendTranslation: (async () => (key: string) => key) as any,
+    loadFragmentTranslation: (async () => (key: string) => key) as any,
+  };
 
   protected render(): TemplateResult {
     return html` ${["light", "dark"].map(
