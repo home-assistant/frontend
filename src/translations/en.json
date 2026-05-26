@@ -2422,6 +2422,11 @@
           "header": "Enter setup code",
           "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
+        },
+        "device_added": {
+          "header": "Device added",
+          "finish": "Finish",
+          "skip": "Skip and finish"
         }
       },
       "shortcuts": {

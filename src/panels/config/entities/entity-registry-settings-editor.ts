@@ -97,7 +97,7 @@ import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
-const OVERRIDE_DEVICE_CLASSES = {
+export const OVERRIDE_DEVICE_CLASSES = {
   cover: [
     [
       "awning",
