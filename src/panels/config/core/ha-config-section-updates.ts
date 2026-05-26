@@ -275,11 +275,19 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private _updateAll(ev: Event) {
+  private async _updateAll(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
-    this.hass.callService("update", "install", {
-      entity_id: group.entities.map((entity) => entity.entity_id),
-    });
+    try {
+      await this.hass.callService("update", "install", {
+        entity_id: group.entities.map((entity) => entity.entity_id),
+      });
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.updates.update_all_failed"),
+        text: err.message,
+        warning: true,
+      });
+    }
   }
 
   private _filterInstallableUpdateEntities = memoizeOne(

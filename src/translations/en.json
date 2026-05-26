@@ -2748,6 +2748,7 @@
           "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
+          "update_all_failed": "Failed to start updates",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
