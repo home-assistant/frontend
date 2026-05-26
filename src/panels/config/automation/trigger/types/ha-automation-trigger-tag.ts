@@ -36,30 +36,35 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
       return nothing;
     }
 
-    const deviceIds = this.trigger.device_id ? [this.trigger.device_id] : [];
+    const deviceIds = Array.isArray(this.trigger.device_id)
+      ? this.trigger.device_id
+      : this.trigger.device_id
+        ? [this.trigger.device_id]
+        : [];
     
     return html`
-      <ha-select
-        .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.tag.label"
-        )}
-        .disabled=${this.disabled || this._tags.length === 0}
-        .value=${this.trigger.tag_id}
-        @selected=${this._tagChanged}
-        .options=${this._tags.map((tag) => ({
-          value: tag.id,
-          label: tag.name || tag.id,
-        }))}
-      >
-      </ha-select>
-      
-      <ha-devices-picker
-          .hass=${this.hass}
-          .label=${"Scanned at Devices (Optional)"}
-          .disabled=${this.disabled}
-          .value=${deviceIds}
-          @value-changed=${this._devicesChanged}
-        ></ha-devices-picker>
+      <div class="row">
+        <ha-select
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.tag.label"
+          )}
+          .disabled=${this.disabled || this._tags.length === 0}
+          .value=${this.trigger.tag_id}
+          @selected=${this._tagChanged}
+          .options=${this._tags.map((tag) => ({
+            value: tag.id,
+            label: tag.name || tag.id,
+          }))}
+        >
+        </ha-select>
+        
+        <ha-devices-picker
+            .hass=${this.hass}
+            .label=${"Scanned at Devices (Optional)"}
+            .disabled=${this.disabled}
+            .value=${deviceIds}
+            @value-changed=${this._devicesChanged}
+          ></ha-devices-picker>
       </div>
     `;
   }
@@ -89,6 +94,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
       },
     });
   }
+
   private _devicesChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const currentValues = ev.detail.value as string[];
@@ -104,6 +110,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
     fireEvent(this, "value-changed", { value: newTrigger });
   }
+
   static styles = css`
     .row {
       display: flex;
