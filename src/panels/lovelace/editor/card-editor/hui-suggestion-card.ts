@@ -52,11 +52,12 @@ export class HuiSuggestionCard extends LitElement {
   protected render(): TemplateResult {
     const { suggestion } = this;
     const hiddenCount = this._preview?.hiddenCount ?? 0;
-    const label =
-      suggestion.label ??
-      this.hass.localize(
-        `ui.panel.lovelace.editor.card.${suggestion.config.type}.name` as any
-      );
+    const cardName = this.hass.localize(
+      `ui.panel.lovelace.editor.card.${suggestion.config.type}.name` as any
+    );
+    const label = suggestion.label
+      ? `${cardName} - ${suggestion.label}`
+      : cardName;
 
     return html`
       <div

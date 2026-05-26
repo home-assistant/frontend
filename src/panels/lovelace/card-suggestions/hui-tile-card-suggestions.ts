@@ -19,6 +19,8 @@ const NUMERIC_INPUT_VARIANTS: TileVariant[] = [TILE_VARIANT, ["numeric-input"]];
 
 const DATE_VARIANTS: TileVariant[] = [TILE_VARIANT, ["date-set"]];
 
+const BUTTON_VARIANTS: TileVariant[] = [TILE_VARIANT, ["button"]];
+
 const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   light: [
     TILE_VARIANT,
@@ -32,18 +34,41 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     ["cover-open-close"],
     ["cover-position"],
     ["cover-tilt"],
+    ["cover-tilt-position"],
   ],
-  climate: [TILE_VARIANT, ["climate-hvac-modes"]],
+  climate: [
+    TILE_VARIANT,
+    ["climate-hvac-modes"],
+    ["climate-preset-modes"],
+    ["climate-fan-modes"],
+    ["climate-swing-modes"],
+    ["climate-swing-horizontal-modes"],
+    ["target-temperature"],
+  ],
   media_player: [
     TILE_VARIANT,
     ["media-player-playback"],
     ["media-player-volume-slider"],
+    ["media-player-volume-buttons"],
+    ["media-player-source"],
+    ["media-player-sound-mode"],
   ],
-  fan: [TILE_VARIANT, ["fan-speed"], ["fan-preset-modes"]],
+  fan: [
+    TILE_VARIANT,
+    ["fan-speed"],
+    ["fan-preset-modes"],
+    ["fan-direction"],
+    ["fan-oscillate"],
+  ],
   switch: [TILE_VARIANT, TILE_TOGGLE_VARIANT],
   input_boolean: [TILE_VARIANT, TILE_TOGGLE_VARIANT],
-  lock: [TILE_VARIANT, ["lock-commands"]],
-  humidifier: [TILE_VARIANT, ["humidifier-toggle"], ["humidifier-modes"]],
+  lock: [TILE_VARIANT, ["lock-commands"], ["lock-open-door"]],
+  humidifier: [
+    TILE_VARIANT,
+    ["humidifier-toggle"],
+    ["humidifier-modes"],
+    ["target-humidity"],
+  ],
   vacuum: [TILE_VARIANT, ["vacuum-commands"]],
   lawn_mower: [TILE_VARIANT, ["lawn-mower-commands"]],
   valve: [TILE_VARIANT, ["valve-open-close"], ["valve-position"]],
@@ -56,7 +81,21 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   input_datetime: DATE_VARIANTS,
   date: DATE_VARIANTS,
   update: [TILE_VARIANT, ["update-actions"]],
-  water_heater: [TILE_VARIANT, ["water-heater-operation-modes"]],
+  water_heater: [
+    TILE_VARIANT,
+    ["water-heater-operation-modes"],
+    ["target-temperature"],
+  ],
+  datetime: DATE_VARIANTS,
+  button: BUTTON_VARIANTS,
+  input_button: BUTTON_VARIANTS,
+  scene: BUTTON_VARIANTS,
+  script: BUTTON_VARIANTS,
+  weather: [
+    TILE_VARIANT,
+    ["temperature-forecast"],
+    ["precipitation-forecast"],
+  ],
 };
 
 const DEFAULT_VARIANT: TileVariant = TILE_VARIANT;
@@ -77,11 +116,9 @@ const SENSOR_TREND_DEVICE_CLASSES = new Set<string>([
   "wind_speed",
 ]);
 
-const SENSOR_TREND_VARIANTS: TileVariant[] = [TILE_VARIANT, ["trend-graph"]];
-
 // Domains with a dedicated card-suggestions provider; skip the tile
 // fallback so the dedicated card wins.
-const EXCLUDED_DOMAINS = new Set(["calendar", "todo"]);
+const EXCLUDED_DOMAINS = new Set(["calendar", "todo", "camera"]);
 
 const getVariants = (
   states: HomeAssistant["states"],
@@ -89,11 +126,17 @@ const getVariants = (
 ): TileVariant[] | undefined => {
   const domain = computeDomain(entityId);
   if (domain === "sensor") {
-    const deviceClass = states[entityId]?.attributes.device_class;
+    const stateObj = states[entityId];
+    const deviceClass = stateObj?.attributes.device_class;
+    const isPercentage = stateObj?.attributes.unit_of_measurement === "%";
+    const variants: TileVariant[] = [TILE_VARIANT];
     if (deviceClass && SENSOR_TREND_DEVICE_CLASSES.has(deviceClass)) {
-      return SENSOR_TREND_VARIANTS;
+      variants.push(["trend-graph"]);
     }
-    return undefined;
+    if (isPercentage) {
+      variants.push(["bar-gauge"]);
+    }
+    return variants;
   }
   return DOMAIN_VARIANTS[domain];
 };
@@ -131,11 +174,11 @@ const buildLabel = (
   features: UiFeatureType[]
 ): string | undefined => {
   if (!features.length) return undefined;
-  const cardName = hass.localize("ui.panel.lovelace.editor.card.tile.name");
-  const featureLabels = features.map((type) =>
-    hass.localize(`ui.panel.lovelace.editor.features.types.${type}.label`)
-  );
-  return `${cardName} - ${featureLabels.join(", ")}`;
+  return features
+    .map((type) =>
+      hass.localize(`ui.panel.lovelace.editor.features.types.${type}.label`)
+    )
+    .join(", ");
 };
 
 export const tileCardSuggestions: CardSuggestionProvider<TileCardConfig> = {
