@@ -125,20 +125,15 @@ export const getTriggerInfos = (
   }
   const map = new Map<string, TriggerInfo>();
   for (const t of flattenTriggers(triggers)) {
-    if (isTriggerList(t) || !t.id) {
+    if (isTriggerList(t) || !t.id || map.get(t.id)) {
       continue;
     }
-    const existing = map.get(t.id);
-    if (existing) {
-      existing.count++;
-    } else {
-      map.set(t.id, {
-        id: t.id,
-        label: describeTrigger(t, hass, entityRegistry),
-        triggerType: t.trigger,
-        count: 1,
-      });
-    }
+    map.set(t.id, {
+      id: t.id,
+      label: describeTrigger(t, hass, entityRegistry),
+      triggerType: t.trigger,
+      count: 1,
+    });
   }
   return Array.from(map.values());
 };

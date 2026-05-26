@@ -1,7 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAlert,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
@@ -606,93 +605,44 @@ export default class HaAutomationConditionRow extends LitElement {
         </div>`;
     }
 
+    const triggers = ensureArray(this._automationConfig?.triggers || []);
+
     const triggerInfos = this._getTriggerInfos(
-      ensureArray(this._automationConfig?.triggers || []),
+      triggers,
       this.hass,
       this._entityReg
     );
     const infoById = new Map(triggerInfos.map((info) => [info.id, info]));
     return html`${prefix}
-    ${ids.map((id) => {
-      const info = infoById.get(id);
-      const isTriggerPositionReference = typeof id === "number";
+    ${ids
+      .filter((id) => infoById.get(id))
+      .map((id) => {
+        const info = infoById.get(id)!;
 
-      if (!info || isTriggerPositionReference) {
-        return html`<div class="trigger">
-          <ha-trigger-id-chip
-            id=${`trigger-${id}`}
-            warning
-            .triggerId=${`${
-              typeof id === "number"
-                ? `${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.position_reference"
-                  )}: `
-                : ""
-            }${id}`}
-          >
-            <ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>
-          </ha-trigger-id-chip>
-          ${ids.length < 4 && !isTriggerPositionReference
-            ? html`<span
-                >${this.hass.localize("state.default.unavailable")}</span
-              >`
-            : nothing}
+        const triggerIcon = html`<ha-trigger-icon
+          .slot=${ids.length < 4 ? "start" : ""}
+          .hass=${this.hass}
+          .trigger=${info.triggerType}
+        ></ha-trigger-icon>`;
 
-          <ha-tooltip .for=${`trigger-${id}`}>
-            ${ids.length >= 4 && !isTriggerPositionReference
-              ? html`<div>
-                  ${this.hass.localize("state.default.unavailable")}
-                </div>`
+        return html`
+          <div class="trigger">
+            ${ids.length < 4 ? triggerIcon : nothing}
+            <ha-trigger-id-chip id=${`trigger-${id}`} .triggerId=${id}>
+            </ha-trigger-id-chip>
+            ${ids.length < 4
+              ? html`<span>${info.label}</span>`
+              : html`<ha-tooltip .for=${`trigger-${id}`}></ha-tooltip>`}
+            ${ids.length >= 4
+              ? html`<ha-tooltip .for=${`trigger-${id}`}>
+                  ${ids.length >= 4
+                    ? html`<div>${triggerIcon}${info.label}</div>`
+                    : nothing}
+                </ha-tooltip>`
               : nothing}
-            ${isTriggerPositionReference
-              ? this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.position_reference_warning"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
-                  { id: html`<b>${id}</b>` }
-                )}
-          </ha-tooltip>
-        </div>`;
-      }
-      const triggerIcon = html`<ha-trigger-icon
-        .slot=${ids.length < 4 ? "start" : ""}
-        .hass=${this.hass}
-        .trigger=${info.triggerType}
-      ></ha-trigger-icon>`;
-
-      const isDuplicateId = info.count > 1;
-
-      return html`
-        <div class="trigger">
-          ${ids.length < 4 ? triggerIcon : nothing}
-          <ha-trigger-id-chip
-            id=${`trigger-${id}`}
-            .triggerId=${id}
-            .warning=${isDuplicateId}
-          >
-            ${isDuplicateId
-              ? html`<ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>`
-              : nothing}
-          </ha-trigger-id-chip>
-          ${ids.length < 4
-            ? html`<span>${info.label}</span>`
-            : html`<ha-tooltip .for=${`trigger-${id}`}></ha-tooltip>`}
-          ${isDuplicateId || ids.length >= 4
-            ? html`<ha-tooltip .for=${`trigger-${id}`}>
-                ${ids.length >= 4
-                  ? html`<div>${triggerIcon}${info.label}</div>`
-                  : nothing}
-                ${isDuplicateId
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
-                    )
-                  : nothing}
-              </ha-tooltip>`
-            : nothing}
-        </div>
-      `;
-    })}`;
+          </div>
+        `;
+      })}`;
   }
 
   private _renderTargets = memoizeOne(

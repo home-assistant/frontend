@@ -1,6 +1,5 @@
 import { consume } from "@lit/context";
-import { mdiAlert } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../../common/array/ensure-array";
@@ -93,54 +92,7 @@ export class HaTriggerCondition extends LitElement {
     selectedIds: (string | number)[],
     triggerInfos: TriggerInfo[]
   ) {
-    const unknownTriggerIds = selectedIds.filter(
-      (id) => !triggerInfos.some((info) => info.id === id)
-    );
-
-    const alertIcon = html`<ha-svg-icon
-      slot="start"
-      .path=${mdiAlert}
-    ></ha-svg-icon>`;
-
     return html`
-      ${unknownTriggerIds.map(
-        (id) => html`
-          <ha-list-item-option
-            .value=${id}
-            .selected=${true}
-            appearance="checkbox"
-          >
-            <div class="option" slot="headline">
-              <ha-trigger-id-chip
-                id=${`trigger-${id}`}
-                warning
-                .triggerId=${`${
-                  typeof id === "number"
-                    ? `${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.position_reference"
-                      )}: `
-                    : ""
-                }${id}`}
-              >
-                ${alertIcon}
-              </ha-trigger-id-chip>
-              ${typeof id === "string"
-                ? this.hass.localize("state.default.unavailable")
-                : nothing}
-              <ha-tooltip .for=${`trigger-${id}`}>
-                ${typeof id === "string"
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
-                      { id: html`<b>${id}</b>` }
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.position_reference_warning"
-                    )}
-              </ha-tooltip>
-            </div>
-          </ha-list-item-option>
-        `
-      )}
       ${triggerInfos.map(
         (info) => html`
           <ha-list-item-option
@@ -151,18 +103,10 @@ export class HaTriggerCondition extends LitElement {
             <div class="option" slot="headline">
               <ha-trigger-id-chip
                 id=${`trigger-${info.id}`}
-                .warning=${info.count > 1}
                 .triggerId=${info.id}
               >
-                ${info.count > 1 ? alertIcon : nothing}
               </ha-trigger-id-chip>
-              ${info.label}${info.count > 1
-                ? html`<ha-tooltip .for=${`trigger-${info.id}`}
-                    >${this.hass.localize(
-                      "ui.panel.config.automation.editor.conditions.type.trigger.duplicated_info"
-                    )}</ha-tooltip
-                  >`
-                : nothing}
+              ${info.label}
             </div>
           </ha-list-item-option>
         `

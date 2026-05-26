@@ -16,10 +16,7 @@ import {
   type Trigger,
 } from "../../../../data/automation";
 import { internationalizationContext } from "../../../../data/context";
-import {
-  getNextNumericTriggerId,
-  getTriggerIds,
-} from "../../../../data/trigger";
+import { getTriggerIds } from "../../../../data/trigger";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { EditTriggerIdDialogParams } from "./show-edit-trigger-id";
@@ -34,8 +31,6 @@ class HaAutomationEditTriggerIdDialog extends DialogMixin<EditTriggerIdDialogPar
   @consume({ context: internationalizationContext, subscribe: true })
   protected _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _duplicateWarning = false;
-
   @consume({ context: automationConfigContext, subscribe: true })
   private _automationConfig?: AutomationConfig;
 
@@ -47,13 +42,6 @@ class HaAutomationEditTriggerIdDialog extends DialogMixin<EditTriggerIdDialogPar
   private _setInitialId() {
     if (this.params?.id) {
       this._newId = this.params.id;
-      return;
-    }
-
-    if (this._automationConfig?.triggers) {
-      this._newId = getNextNumericTriggerId(
-        ensureArray(this._automationConfig.triggers)
-      );
     }
   }
 
@@ -79,9 +67,9 @@ class HaAutomationEditTriggerIdDialog extends DialogMixin<EditTriggerIdDialogPar
           @input=${this._idChanged}
           @keydown=${this._handleKeyDown}
         ></ha-input>
-        <ha-alert .alertType=${this._duplicateWarning ? "warning" : "info"}>
+        <ha-alert alert-type="info">
           ${this._i18n.localize(
-            `ui.panel.config.automation.editor.triggers.${this._duplicateWarning ? "duplicate_id_warning" : "id_description"}`
+            "ui.panel.config.automation.editor.triggers.id_description"
           )}
         </ha-alert>
         <ha-dialog-footer slot="footer">

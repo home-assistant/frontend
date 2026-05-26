@@ -1,7 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAlert,
   mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
   mdiContentCopy,
@@ -19,8 +18,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
-import memoizeOne from "memoize-one";
-import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -37,7 +34,6 @@ import {
 } from "../../../../data/automation";
 import {
   getTriggerDomain,
-  getTriggerIds,
   getTriggerObjectId,
   isTriggerList,
 } from "../../../../data/trigger";
@@ -112,11 +108,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       ) ||
       this.hass.localize(`component.${domain}.triggers.${triggerName}.name`);
 
-    const duplicatedId = this._isDuplicateId(
-      "id" in this.config.config ? this.config.config.id : undefined,
-      this._automationConfig?.triggers
-    );
-
     return html`
       <ha-automation-sidebar-card
         .hass=${this.hass}
@@ -131,26 +122,12 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           ${subtitle}
           ${"id" in this.config.config
             ? html`<ha-trigger-id-chip
-                  id="trigger-id-chip"
-                  .warning=${duplicatedId}
-                  .triggerId=${(
-                    this.config.config as Exclude<Trigger, TriggerList>
-                  ).id}
-                >
-                  ${duplicatedId
-                    ? html`<ha-svg-icon
-                        slot="start"
-                        .path=${mdiAlert}
-                      ></ha-svg-icon>`
-                    : nothing}
-                </ha-trigger-id-chip>
-                ${duplicatedId
-                  ? html`<ha-tooltip for="trigger-id-chip">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
-                      )}
-                    </ha-tooltip>`
-                  : nothing} `
+                id="trigger-id-chip"
+                .triggerId=${(
+                  this.config.config as Exclude<Trigger, TriggerList>
+                ).id}
+              >
+              </ha-trigger-id-chip>`
             : nothing}
           ${rowDisabled
             ? `(${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
@@ -397,16 +374,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       this.yamlMode = true;
     }
   }
-
-  private _isDuplicateId = memoizeOne(
-    (id: string | undefined, triggers: Trigger | Trigger[] | undefined) => {
-      if (!id || !triggers) {
-        return false;
-      }
-      const triggerIds = getTriggerIds(ensureArray(triggers));
-      return triggerIds.filter((triggerId) => triggerId === id).length > 1;
-    }
-  );
 
   private _valueChangedSidebar(ev: CustomEvent) {
     ev.stopPropagation();

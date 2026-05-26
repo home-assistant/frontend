@@ -22,12 +22,7 @@ import {
 } from "../../../../data/automation";
 import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
-import {
-  getNextNumericTriggerId,
-  getUniqueTriggerId,
-  isTriggerList,
-  subscribeTriggers,
-} from "../../../../data/trigger";
+import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixin";
@@ -76,11 +71,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   protected override pasteItem(ev: CustomEvent) {
     if (this.root && ev.detail.item) {
       const pasted = deepClone(ev.detail.item) as Trigger;
-      if (!isTriggerList(pasted)) {
-        pasted.id = pasted.id
-          ? getUniqueTriggerId(pasted.id, this.triggers)
-          : getNextNumericTriggerId(this.triggers);
-      }
       ev.detail.item = pasted;
     }
     super.pasteItem(ev);
@@ -91,11 +81,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     const incoming = ensureArray(ev.detail.value) as Trigger[];
     if (this.root && incoming.length === 1) {
       const trigger = deepClone(incoming[0]);
-      if (!isTriggerList(trigger)) {
-        trigger.id = trigger.id
-          ? getUniqueTriggerId(trigger.id, this.triggers)
-          : getNextNumericTriggerId(this.triggers);
-      }
       ev.detail.value = trigger;
     }
     super.insertAfter(ev);
@@ -105,11 +90,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     if (this.root) {
       const index = (ev.target as any).index;
       const duplicated = deepClone(this.triggers[index]);
-      if (!isTriggerList(duplicated)) {
-        duplicated.id = duplicated.id
-          ? getUniqueTriggerId(duplicated.id, this.triggers)
-          : getNextNumericTriggerId(this.triggers);
-      }
       fireEvent(this, "value-changed", {
         // @ts-expect-error Requires library bump to ES2023
         value: this.triggers.toSpliced(index + 1, 0, duplicated),
@@ -267,11 +247,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
     let triggers: Trigger[];
     if (value === PASTE_VALUE) {
       const pasted = deepClone(this._clipboard!.trigger!);
-      if (this.root && !isTriggerList(pasted)) {
-        pasted.id = pasted.id
-          ? getUniqueTriggerId(pasted.id, this.triggers)
-          : getNextNumericTriggerId(this.triggers);
-      }
       triggers = this.triggers.concat(pasted);
     } else {
       let newTrigger: Trigger;
@@ -291,9 +266,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
           ...elClass.defaultConfig,
           ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
         };
-      }
-      if (this.root && !isTriggerList(newTrigger)) {
-        newTrigger.id = getNextNumericTriggerId(this.triggers);
       }
       triggers = this.triggers.concat(newTrigger);
     }
