@@ -3,10 +3,10 @@ import type { SunburstSeriesOption } from "echarts/types/dist/echarts";
 import type { CallbackDataParams } from "echarts/types/src/util/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
-import { filterXSS } from "../../common/util/xss";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
@@ -50,13 +50,13 @@ export class HaSunburstChart extends LitElement {
       return nothing;
     }
 
-    const options = {
+    const options: HaECOption = {
       tooltip: {
         trigger: "item",
         formatter: this._renderTooltip,
         appendTo: document.body,
       },
-    } as ECOption;
+    };
 
     return html`<ha-chart-base
       .data=${this._createData(this.data)}
@@ -71,7 +71,8 @@ export class HaSunburstChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
-    return `${params.marker} ${filterXSS(data.name)}<br>${value}`;
+    // params.marker is echarts-generated styled markup, not user input.
+    return html`${unsafeHTML(params.marker as string)} ${data.name}<br />${value}`;
   };
 
   private _createData = memoizeOne(

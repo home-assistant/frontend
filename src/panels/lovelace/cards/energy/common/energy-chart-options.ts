@@ -1,4 +1,7 @@
 import type { HassConfig } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+import { html, nothing } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import {
   subHours,
   differenceInDays,
@@ -31,8 +34,7 @@ import {
   formatDateWeekdayVeryShortDate,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import type { ECOption } from "../../../../../resources/echarts/echarts";
-import { filterXSS } from "../../../../../common/util/xss";
+import type { HaECOption } from "../../../../../resources/echarts/echarts";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
 import { getSuggestedPeriod } from "../../../../../data/energy";
@@ -110,7 +112,7 @@ export function getCommonOptions(
   formatTotal?: (total: number) => string,
   detailedDailyData = false,
   yAxisFractionDigits = 1
-): ECOption {
+): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
   const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
@@ -118,7 +120,7 @@ export function getCommonOptions(
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const monthTimeAxis: ECOption = {
+  const monthTimeAxis: HaECOption = {
     xAxis: {
       type: "time",
       min: subDays(start, MONTH_TIME_AXIS_PADDING),
@@ -130,7 +132,7 @@ export function getCommonOptions(
       splitNumber: Math.min(differenceInCalendarMonths(end, start), 5),
     },
   };
-  const normalTimeAxis: ECOption = {
+  const normalTimeAxis: HaECOption = {
     xAxis: {
       type: "time",
       min: start,
@@ -138,7 +140,7 @@ export function getCommonOptions(
     },
   };
 
-  const options: ECOption = {
+  const options: HaECOption = {
     ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
     yAxis: {
       type: "value",
@@ -163,7 +165,7 @@ export function getCommonOptions(
     },
     tooltip: {
       trigger: "axis",
-      formatter: (params: TopLevelFormatterParams): string => {
+      formatter: (params: TopLevelFormatterParams) => {
         // trigger: "axis" gives an array of params, but "item" gives a single param
         if (Array.isArray(params)) {
           const mainItems: CallbackDataParams[] = [];
@@ -175,7 +177,7 @@ export function getCommonOptions(
               mainItems.push(param);
             }
           });
-          return [mainItems, compareItems]
+          const sections = [mainItems, compareItems]
             .map((items) =>
               formatTooltip(
                 items,
@@ -188,8 +190,12 @@ export function getCommonOptions(
                 formatTotal
               )
             )
-            .filter(Boolean)
-            .join("<br><br>");
+            .filter((s): s is TemplateResult => s !== nothing);
+          if (sections.length === 0) return nothing;
+          return html`${sections.map(
+            (section, i) =>
+              html`${i > 0 ? html`<br /><br />` : nothing}${section}`
+          )}`;
         }
         return formatTooltip(
           [params],
@@ -216,9 +222,9 @@ function formatTooltip(
   showCompareYear: boolean,
   unit?: string,
   formatTotal?: (total: number) => string
-) {
+): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
-    return "";
+    return nothing;
   }
   // displayX may be shifted from the period start (see EnergyDataPoint);
   // originalStart has the real date for display. Gap-filled entries lack it.
@@ -242,43 +248,48 @@ function formatTooltip(
       period += ` – ${formatTime(addHours(date, 1), locale, config)}`;
     }
   }
-  const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
 
   let sumPositive = 0;
   let countPositive = 0;
   let sumNegative = 0;
   let countNegative = 0;
-  const values = params
-    .map((param) => {
-      const y = param.value?.[1] as number;
-      const value = formatNumber(
-        y,
-        locale,
-        y < 0.1 ? { maximumFractionDigits: 3 } : undefined
-      );
-      if (value === "0") {
-        return false;
+  const rows: TemplateResult[] = [];
+  for (const param of params) {
+    const y = param.value?.[1] as number;
+    const value = formatNumber(
+      y,
+      locale,
+      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+    );
+    if (value === "0") {
+      continue;
+    }
+    if (param.componentSubType === "bar") {
+      if (y > 0) {
+        sumPositive += y;
+        countPositive++;
+      } else {
+        sumNegative += y;
+        countNegative++;
       }
-      if (param.componentSubType === "bar") {
-        if (y > 0) {
-          sumPositive += y;
-          countPositive++;
-        } else {
-          sumNegative += y;
-          countNegative++;
-        }
-      }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
-    })
-    .filter(Boolean);
-  let footer = "";
-  if (sumPositive !== 0 && countPositive > 1 && formatTotal) {
-    footer += `<br><b>${formatTotal(sumPositive)}</b>`;
+    }
+    // param.marker is echarts-generated styled markup, not user input.
+    rows.push(
+      html`${unsafeHTML(param.marker as string)} ${param.seriesName}:
+        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+    );
   }
-  if (sumNegative !== 0 && countNegative > 1 && formatTotal) {
-    footer += `<br><b>${formatTotal(sumNegative)}</b>`;
+  if (rows.length === 0) {
+    return nothing;
   }
-  return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
+  return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
+    ${rows.map(
+      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
+    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
+      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+      : nothing}${sumNegative !== 0 && countNegative > 1 && formatTotal
+      ? html`<br /><b>${formatTotal(sumNegative)}</b>`
+      : nothing}`;
 }
 
 function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {

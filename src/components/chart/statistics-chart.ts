@@ -4,9 +4,10 @@ import type {
   ZRColor,
 } from "echarts/types/dist/shared";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -34,7 +35,7 @@ import {
   isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
@@ -126,7 +127,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _statisticIds: string[] = [];
 
-  @state() private _chartOptions?: ECOption;
+  @state() private _chartOptions?: HaECOption;
 
   @state() private _hiddenStats = new Set<string>();
 
@@ -251,91 +252,102 @@ export class StatisticsChart extends LitElement {
     const unit = this.unit
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
-    return params
-      .map((param, index: number) => {
-        if (rendered[param.seriesIndex]) return "";
-        rendered[param.seriesIndex] = true;
+    const rows: {
+      time?: string;
+      marker: string;
+      seriesName?: string;
+      value: string;
+    }[] = [];
+    for (const param of params) {
+      if (rendered[param.seriesIndex]) continue;
+      rendered[param.seriesIndex] = true;
 
-        const statisticId = this._statisticIds[param.seriesIndex];
-        const stateObj = this.hass.states[statisticId];
-        const entry = this.hass.entities[statisticId];
-        let rawValue: string;
-        let rawTime: string;
-        if (chartIsBar) {
-          // For bar charts value is always second value.
-          rawValue = String(param.value[1]);
-          // Time value is third value (un-shifted date) if given, otherwise first value
-          let startTime: Date;
-          let endTime: Date | undefined;
-          if (param.value[2]) {
-            startTime = new Date(param.value[2]);
-            if (param.value[3]) {
-              endTime = new Date(param.value[3]);
-            }
-          } else {
-            startTime = new Date(param.value[0]);
-          }
-          if (
-            period === "year" ||
-            period === "month" ||
-            period === "week" ||
-            period === "day"
-          ) {
-            // For year/month/day periods, show only the date
-            rawTime =
-              formatDate(startTime, this.hass.locale, this.hass.config) +
-              (endTime && period !== "day"
-                ? ` – ${formatDate(
-                    endTime,
-                    this.hass.locale,
-                    this.hass.config
-                  )}`
-                : "") +
-              "<br>";
-          } else {
-            // For other time periods, include time in render, and optionally show range
-            // if we have an end time.
-            rawTime =
-              formatDateTimeWithSeconds(
-                startTime,
-                this.hass.locale,
-                this.hass.config
-              ) +
-              (endTime
-                ? ` – ${formatTimeWithSeconds(
-                    endTime,
-                    this.hass.locale,
-                    this.hass.config
-                  )}`
-                : "") +
-              "<br>";
+      const statisticId = this._statisticIds[param.seriesIndex];
+      const stateObj = this.hass.states[statisticId];
+      const entry = this.hass.entities[statisticId];
+      let rawValue: string;
+      let rawTime: string;
+      if (chartIsBar) {
+        // For bar charts value is always second value.
+        rawValue = String(param.value[1]);
+        // Time value is third value (un-shifted date) if given, otherwise first value
+        let startTime: Date;
+        let endTime: Date | undefined;
+        if (param.value[2]) {
+          startTime = new Date(param.value[2]);
+          if (param.value[3]) {
+            endTime = new Date(param.value[3]);
           }
         } else {
-          // For lines max series can have 3 values, as the second value is the max-min to form a band
-          rawValue = String(param.value[2] ?? param.value[1]);
-          // Time value is always first value
-          rawTime = `${formatDateTimeWithSeconds(
-            new Date(param.value[0]),
-            this.hass.locale,
-            this.hass.config
-          )} <br>`;
+          startTime = new Date(param.value[0]);
         }
-
-        const options = getNumberFormatOptions(stateObj, entry) ?? {
-          maximumFractionDigits: 2,
-        };
-
-        const value = `${formatNumber(
-          rawValue,
+        if (
+          period === "year" ||
+          period === "month" ||
+          period === "week" ||
+          period === "day"
+        ) {
+          // For year/month/day periods, show only the date
+          rawTime =
+            formatDate(startTime, this.hass.locale, this.hass.config) +
+            (endTime && period !== "day"
+              ? ` – ${formatDate(endTime, this.hass.locale, this.hass.config)}`
+              : "");
+        } else {
+          // For other time periods, include time in render, and optionally show range
+          // if we have an end time.
+          rawTime =
+            formatDateTimeWithSeconds(
+              startTime,
+              this.hass.locale,
+              this.hass.config
+            ) +
+            (endTime
+              ? ` – ${formatTimeWithSeconds(
+                  endTime,
+                  this.hass.locale,
+                  this.hass.config
+                )}`
+              : "");
+        }
+      } else {
+        // For lines max series can have 3 values, as the second value is the max-min to form a band
+        rawValue = String(param.value[2] ?? param.value[1]);
+        // Time value is always first value
+        rawTime = formatDateTimeWithSeconds(
+          new Date(param.value[0]),
           this.hass.locale,
-          options
-        )}${unit}`;
+          this.hass.config
+        );
+      }
 
-        const time = index === 0 ? rawTime : "";
-        return `${time}${param.marker} ${param.seriesName}: ${value}`;
-      })
-      .filter(Boolean)
-      .join("<br>");
+      const options = getNumberFormatOptions(stateObj, entry) ?? {
+        maximumFractionDigits: 2,
+      };
+
+      const value = `${formatNumber(rawValue, this.hass.locale, options)}${unit}`;
+
+      rows.push({
+        time: rows.length === 0 ? rawTime : undefined,
+        marker: param.marker,
+        seriesName: param.seriesName,
+        value,
+      });
+    }
+
+    if (rows.length === 0) return nothing;
+
+    // param.marker is echarts-generated styled <span> markup (a colored dot),
+    // not user-controlled — safe to unsafeHTML. seriesName comes from the entity
+    // friendly_name and is rendered as a Lit text expression, so it is escaped.
+    return html`${rows.map(
+      (row, i) =>
+        html`${row.time ? html`${row.time}<br />` : nothing}${unsafeHTML(
+          row.marker
+        )}
+        ${row.seriesName}:
+        ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
+    )}`;
   };
 
   private _createOptions() {

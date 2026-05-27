@@ -1,5 +1,6 @@
 import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css } from "lit";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { EChartsType } from "echarts/core";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
 import type {
@@ -11,9 +12,8 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
-import { filterXSS } from "../../common/util/xss";
 import "./ha-chart-base";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
@@ -71,7 +71,7 @@ export class HaSankeyChart extends LitElement {
   });
 
   render() {
-    const options = {
+    const options: HaECOption = {
       grid: {
         top: 0,
         bottom: 0,
@@ -83,7 +83,7 @@ export class HaSankeyChart extends LitElement {
         formatter: this._renderTooltip,
         appendTo: document.body,
       },
-    } as ECOption;
+    };
 
     return html`<ha-chart-base
       .hass=${this.hass}
@@ -103,12 +103,15 @@ export class HaSankeyChart extends LitElement {
       : data.value;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return `${params.marker} ${filterXSS(node?.label ?? data.id)}<br>${value}`;
+      // params.marker is echarts-generated styled markup, not user input.
+      return html`${unsafeHTML(params.marker as string)}
+        ${node?.label ?? data.id}<br />${value}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
-      return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
+      return html`${source?.label ?? data.source} →
+        ${target?.label ?? data.target}<br />${value}`;
     }
     return null;
   };

@@ -1,6 +1,7 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -13,7 +14,7 @@ import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
@@ -24,7 +25,6 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { filterXSS } from "../../common/util/xss";
 import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 const safeParseFloat = (value) => {
@@ -108,7 +108,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _datasetToDataIndex: number[] = [];
 
-  @state() private _chartOptions?: ECOption;
+  @state() private _chartOptions?: HaECOption;
 
   private _hiddenStats = new Set<string>();
 
@@ -141,12 +141,11 @@ export class StateHistoryChartLine extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const time = params[0].axisValue;
-    const title =
-      formatDateTimeWithSeconds(
-        new Date(time),
-        this.hass.locale,
-        this.hass.config
-      ) + "<br>";
+    const title = formatDateTimeWithSeconds(
+      new Date(time),
+      this.hass.locale,
+      this.hass.config
+    );
     const datapoints: Record<string, any>[] = [];
     this._chartData.forEach((dataset, index) => {
       if (
@@ -185,44 +184,39 @@ export class StateHistoryChartLine extends LitElement {
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
 
-    return (
-      title +
-      datapoints
-        .map((param) => {
-          const entityId = this._entityIds[param.seriesIndex];
-          const stateObj = this.hass.states[entityId];
-          const entry = this.hass.entities[entityId];
-          const stateValue = String(param.value[1]);
-          let value = stateObj
-            ? this.hass.formatEntityState(stateObj, stateValue)
-            : `${formatNumber(
-                stateValue,
-                this.hass.locale,
-                getNumberFormatOptions(undefined, entry)
-              )}${unit}`;
-          const dataIndex = this._datasetToDataIndex[param.seriesIndex];
-          const data = this.data[dataIndex];
-          if (data.statistics && data.statistics.length > 0) {
-            value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-            const source =
-              data.states.length === 0 ||
-              param.value[0] < data.states[0].last_changed
-                ? `${this.hass.localize(
-                    "ui.components.history_charts.source_stats"
-                  )}`
-                : `${this.hass.localize(
-                    "ui.components.history_charts.source_history"
-                  )}`;
-            value += source;
-          }
-
-          if (param.seriesName) {
-            return `${param.marker} ${filterXSS(param.seriesName)}: ${value}`;
-          }
-          return `${param.marker} ${value}`;
-        })
-        .join("<br>")
-    );
+    // Pre-diff this returned `title + <br>` even with zero datapoints \u2014 show
+    // the timestamp by itself when every dataset is hidden, not an empty box.
+    return html`${title}${datapoints.map((param) => {
+      const entityId = this._entityIds[param.seriesIndex];
+      const stateObj = this.hass.states[entityId];
+      const entry = this.hass.entities[entityId];
+      const stateValue = String(param.value[1]);
+      const value = stateObj
+        ? this.hass.formatEntityState(stateObj, stateValue)
+        : `${formatNumber(
+            stateValue,
+            this.hass.locale,
+            getNumberFormatOptions(undefined, entry)
+          )}${unit}`;
+      const dataIndex = this._datasetToDataIndex[param.seriesIndex];
+      const data = this.data[dataIndex];
+      let statSuffix: TemplateResult | typeof nothing = nothing;
+      if (data.statistics && data.statistics.length > 0) {
+        const source =
+          data.states.length === 0 ||
+          param.value[0] < data.states[0].last_changed
+            ? this.hass.localize("ui.components.history_charts.source_stats")
+            : this.hass.localize("ui.components.history_charts.source_history");
+        // Five non-breaking spaces indent the source label.
+        statSuffix = html`<br />${"\u00a0".repeat(5)}${source}`;
+      }
+      // param.marker is echarts-generated styled markup (or hardcoded fallback
+      // span with the dataset color above), not user input.
+      return html`<br />${unsafeHTML(param.marker)}
+        ${param.seriesName
+          ? html`${param.seriesName}: `
+          : nothing}${value}${statSuffix}`;
+    })}`;
   };
 
   private _datasetHidden(ev: CustomEvent) {

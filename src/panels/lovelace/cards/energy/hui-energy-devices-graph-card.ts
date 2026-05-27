@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { mdiChartDonut, mdiChartBar } from "@mdi/js";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -9,7 +10,6 @@ import type { BarSeriesOption, PieSeriesOption } from "echarts/charts";
 import { PieChart } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
-import { filterXSS } from "../../../../common/util/xss";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
@@ -30,7 +30,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDevicesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
@@ -198,24 +198,26 @@ export class HuiEnergyDevicesGraphCard
     `;
   }
 
-  private _renderTooltip(params: any) {
-    const deviceName = filterXSS(this._getDeviceName(params.name));
-    const title = `<h4 style="text-align: center; margin: 0;">${deviceName}</h4>`;
+  private _renderTooltip = (params: any) => {
+    const deviceName = this._getDeviceName(params.name);
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
-    return `${title}${params.marker} ${params.seriesName}: <div style="direction:ltr; display: inline;">${value}</div>`;
-  }
+    // params.marker is echarts-generated styled markup, not user input.
+    return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
+      ${unsafeHTML(params.marker)} ${params.seriesName}:
+      <div style="direction:ltr; display: inline;">${value}</div>`;
+  };
 
   private _createOptions = memoizeOne(
     (
       data: (BarSeriesOption | PieSeriesOption)[],
       chartType: "bar" | "pie",
       legendData: typeof this._legendData
-    ): ECOption => {
-      const options: ECOption = {
+    ): HaECOption => {
+      const options: HaECOption = {
         grid: {
           top: 5,
           left: 5,
@@ -225,7 +227,7 @@ export class HuiEnergyDevicesGraphCard
         },
         tooltip: {
           show: true,
-          formatter: this._renderTooltip.bind(this),
+          formatter: this._renderTooltip,
         },
         xAxis: { show: false },
         yAxis: { show: false },

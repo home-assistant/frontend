@@ -37,7 +37,7 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
 
@@ -65,7 +65,7 @@ export class HuiEnergySolarGraphCard
     };
   }
 
-  @state() private _chartData: ECOption["series"][] = [];
+  @state() private _chartData: (BarSeriesOption | LineSeriesOption)[] = [];
 
   @state() private _yAxisFractionDigits = 1;
 
@@ -175,7 +175,7 @@ export class HuiEnergySolarGraphCard
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
       yAxisFractionDigits: number
-    ): ECOption =>
+    ): HaECOption =>
       getCommonOptions(
         start,
         end,
@@ -213,7 +213,7 @@ export class HuiEnergySolarGraphCard
       }
     }
 
-    const datasets: ECOption["series"] = [];
+    const datasets: (BarSeriesOption | LineSeriesOption)[] = [];
 
     const computedStyles = getComputedStyle(this);
 

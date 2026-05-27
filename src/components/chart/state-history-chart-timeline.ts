@@ -1,11 +1,11 @@
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
   ECElementEvent,
-  TooltipFormatterCallback,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -16,7 +16,7 @@ import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import { computeTimelineColor } from "./timeline-color";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
 import echarts from "../../resources/echarts/echarts";
 import { luminosity } from "../../common/color/rgb";
 import { hex2rgb } from "../../common/color/convert-color";
@@ -57,7 +57,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @state() private _chartData: CustomSeriesOption[] = [];
 
-  @state() private _chartOptions?: ECOption;
+  @state() private _chartOptions?: HaECOption;
 
   @state() private _yWidth = 0;
 
@@ -69,7 +69,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .hass=${this.hass}
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
-        .data=${this._chartData as ECOption["series"]}
+        .data=${this._chartData as HaECSeries}
         small-controls
         @chart-click=${this._handleChartClick}
         @chart-zoom=${this._handleDataZoom}
@@ -132,42 +132,39 @@ export class StateHistoryChartTimeline extends LitElement {
     return rect;
   };
 
-  private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
-    (params: TooltipPositionCallbackParams) => {
-      const { value, name, marker, seriesName, color } = Array.isArray(params)
-        ? params[0]
-        : params;
-      const title = seriesName
-        ? `<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
-        : "";
-      const durationInMs = value![2] - value![1];
-      const formattedDuration = `${this.hass.localize(
-        "ui.components.history_charts.duration"
-      )}: ${millisecondsToDuration(durationInMs)}`;
+  private _renderTooltip = (params: TooltipPositionCallbackParams) => {
+    const { value, name, marker, seriesName, color } = Array.isArray(params)
+      ? params[0]
+      : params;
+    const durationInMs = value![2] - value![1];
+    const formattedDuration = `${this.hass.localize(
+      "ui.components.history_charts.duration"
+    )}: ${millisecondsToDuration(durationInMs)}`;
 
-      const markerLocalized = !computeRTL(
-        this.hass.language,
-        this.hass.translationMetadata.translations
-      )
-        ? marker
-        : `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+    // marker is echarts-generated styled markup, not user input. The RTL fallback
+    // is a hardcoded styled span with the echarts-provided color, also not user input.
+    const markerMarkup = rtl
+      ? `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`
+      : (marker as string);
 
-      const lines = [
-        markerLocalized + name,
-        formatDateTimeWithSeconds(
-          new Date(value![1]),
-          this.hass.locale,
-          this.hass.config
-        ),
-        formatDateTimeWithSeconds(
-          new Date(value![2]),
-          this.hass.locale,
-          this.hass.config
-        ),
-        formattedDuration,
-      ].join("<br>");
-      return [title, lines].join("");
-    };
+    return html`${seriesName
+        ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
+        : nothing}${unsafeHTML(
+        markerMarkup
+      )}${name}<br />${formatDateTimeWithSeconds(
+        new Date(value![1]),
+        this.hass.locale,
+        this.hass.config
+      )}<br />${formatDateTimeWithSeconds(
+        new Date(value![2]),
+        this.hass.locale,
+        this.hass.config
+      )}<br />${formattedDuration}`;
+  };
 
   public willUpdate(changedProps: PropertyValues) {
     if (

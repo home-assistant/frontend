@@ -14,11 +14,12 @@ import type {
   ECElementEvent,
   LegendComponentOption,
   LineSeriesOption,
+  TooltipOption,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, render } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -32,7 +33,14 @@ import { afterNextRender } from "../../common/util/render-status";
 import { filterXSS } from "../../common/util/xss";
 import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type {
+  ECOption,
+  HaECOption,
+  HaECSeries,
+  HaECSeriesItem,
+  HaTooltipOption,
+  LitTooltipFormatter,
+} from "../../resources/echarts/echarts";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
@@ -44,6 +52,77 @@ export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+
+export type { LitTooltipFormatter };
+
+// What the wrapper returns to echarts: an HTMLElement when there is content to
+// show, or null to suppress. echarts' TooltipFormatterCallback accepts these at
+// runtime; the upstream type is narrower but doesn't model the null-hide path.
+type WrappedTooltipFormatter = (
+  params: any,
+  ticket?: string
+) => HTMLElement | null;
+
+// Maps original-fn → wrapped-fn AND wrapped-fn → wrapped-fn, so re-wrapping
+// an already-wrapped formatter is a no-op without needing a separate WeakSet.
+const litTooltipFormatterCache = new WeakMap<
+  LitTooltipFormatter | WrappedTooltipFormatter,
+  WrappedTooltipFormatter
+>();
+
+const wrapLitTooltipFormatter = (
+  fn: LitTooltipFormatter
+): WrappedTooltipFormatter => {
+  const cached = litTooltipFormatterCache.get(fn);
+  if (cached) return cached;
+  const container = document.createElement("div");
+  // display:contents keeps the wrapper layout-invisible so its children act as
+  // direct children of echarts' tooltip box, matching the prior innerHTML behavior.
+  container.style.display = "contents";
+  const wrapped: WrappedTooltipFormatter = (params, ticket) => {
+    const result = fn(params, ticket);
+    // `nothing` and null/undefined must all suppress the tooltip. Returning
+    // `nothing` to echarts via `render(nothing, container)` leaves a Lit
+    // comment marker behind so echarts would show an empty box; convert it to
+    // null instead so `setContent(null)` clears innerHTML and `show()` hides.
+    if (result === null || result === undefined || result === nothing) {
+      return null;
+    }
+    render(result, container);
+    return container;
+  };
+  litTooltipFormatterCache.set(fn, wrapped);
+  // Idempotent re-wrap: looking up the wrapped fn returns itself.
+  litTooltipFormatterCache.set(wrapped, wrapped);
+  return wrapped;
+};
+
+const toEChartsFormatter = (
+  fn: WrappedTooltipFormatter
+): NonNullable<TooltipOption["formatter"]> =>
+  fn as NonNullable<TooltipOption["formatter"]>;
+
+// Walks a single series and shallow-copies it + its tooltip when there's a
+// function `formatter` to wrap, so series-level overrides get the same
+// Lit-rendering treatment as top-level tooltips. Returns the input unchanged
+// when there's nothing to wrap, avoiding allocation in the common case.
+const processSeriesTooltipFormatter = (s: HaECSeriesItem): ECSeriesElement => {
+  const tooltip = s.tooltip;
+  if (tooltip && typeof tooltip.formatter === "function") {
+    const formatter = tooltip.formatter;
+    const { formatter: _removed, ...rest } = tooltip;
+    return {
+      ...s,
+      tooltip: {
+        ...rest,
+        formatter: toEChartsFormatter(
+          wrapLitTooltipFormatter(formatter as LitTooltipFormatter)
+        ),
+      },
+    } as ECSeriesElement;
+  }
+  return s as ECSeriesElement;
+};
 
 export type CustomLegendOption = ECOption["legend"] & {
   type: "custom";
@@ -66,9 +145,9 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public data: ECOption["series"] = [];
+  @property({ attribute: false }) public data: HaECSeries = [];
 
-  @property({ attribute: false }) public options?: ECOption;
+  @property({ attribute: false }) public options?: HaECOption;
 
   @property({ type: String }) public height?: string;
 
@@ -614,7 +693,7 @@ export class HaChartBase extends LitElement {
 
   // Return an array of all IDs associated with the legend item of the primaryId
   private _getAllIdsFromLegend(
-    options: ECOption | undefined,
+    options: HaECOption | undefined,
     primaryId: string
   ): string[] {
     if (!options) return [primaryId];
@@ -634,7 +713,7 @@ export class HaChartBase extends LitElement {
 
   // Parses the options structure and adds all ids of unselected legend items to hiddenDatasets.
   // No known need to remove items at this time.
-  private _updateHiddenStatsFromOptions(options: ECOption | undefined) {
+  private _updateHiddenStatsFromOptions(options: HaECOption | undefined) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       | LegendComponentOption
@@ -757,22 +836,44 @@ export class HaChartBase extends LitElement {
       xAxis,
     };
 
-    const isMobile = window.matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
-    if (isMobile && options.tooltip) {
-      // mobile charts are full width so we need to confine the tooltip to the chart
-      const tooltips = Array.isArray(options.tooltip)
-        ? options.tooltip
-        : [options.tooltip];
-      tooltips.forEach((tooltip) => {
-        tooltip.confine = true;
-        tooltip.appendTo = undefined;
-        tooltip.triggerOn = "click";
-      });
-      options.tooltip = tooltips;
+    if (options.tooltip) {
+      const isMobile = window.matchMedia(
+        "all and (max-width: 450px), all and (max-height: 500px)"
+      ).matches;
+      // Shallow-copy each tooltip object so wrap/mobile mutations don't leak
+      // back into the caller's options.tooltip reference (callers may cache the
+      // options object via memoizeOne, in which case in-place mutation would
+      // pollute that cache across chart instances).
+      const processTooltip = (tooltip: HaTooltipOption): TooltipOption => {
+        const { formatter, ...rest } = tooltip;
+        const next: TooltipOption = { ...rest };
+        if (typeof formatter === "function") {
+          // Wrap function formatters so they can return Lit TemplateResults; the
+          // wrapper handles the rendering and returns the HTMLElement echarts expects.
+          next.formatter = toEChartsFormatter(
+            wrapLitTooltipFormatter(formatter)
+          );
+        } else if (formatter !== undefined) {
+          next.formatter = formatter;
+        }
+        if (isMobile) {
+          // mobile charts are full width so we need to confine the tooltip to the chart
+          next.confine = true;
+          next.appendTo = undefined;
+          next.triggerOn = "click";
+        }
+        return next;
+      };
+      const haTooltip = this.options!.tooltip!;
+      const processedTooltip = Array.isArray(haTooltip)
+        ? haTooltip.map(processTooltip)
+        : processTooltip(haTooltip);
+      return {
+        ...options,
+        tooltip: processedTooltip,
+      } as ECOption;
     }
-    return options;
+    return options as ECOption;
   }
 
   private _createTheme(style: CSSStyleDeclaration) {
@@ -964,6 +1065,7 @@ export class HaChartBase extends LitElement {
         ? undefined
         : s.data;
       if (data && s.type === "line") {
+        const lineSeries = s as LineSeriesOption;
         if (yAxis?.type === "log") {
           // set <=0 values to null so they render as gaps on a log graph
           return {
@@ -979,7 +1081,7 @@ export class HaChartBase extends LitElement {
             ),
           };
         }
-        if (s.sampling === "minmax") {
+        if (lineSeries.sampling === "minmax") {
           const minX = xAxis?.min
             ? xAxis.min instanceof Date
               ? xAxis.min.getTime()
@@ -1007,7 +1109,11 @@ export class HaChartBase extends LitElement {
         }
       }
       const name = filterXSS(String(s.name ?? s.id ?? ""));
-      return { ...s, name, data };
+      return processSeriesTooltipFormatter({
+        ...s,
+        name,
+        data,
+      } as HaECSeriesItem);
     });
     return series as ECOption["series"];
   }
@@ -1344,8 +1450,8 @@ export class HaChartBase extends LitElement {
   }
 
   private _compareCustomLegendOptions(
-    oldOptions: ECOption | undefined,
-    newOptions: ECOption | undefined
+    oldOptions: HaECOption | undefined,
+    newOptions: HaECOption | undefined
   ): boolean {
     const oldLegends = ensureArray(
       oldOptions?.legend || []
