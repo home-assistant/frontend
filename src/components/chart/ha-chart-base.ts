@@ -956,29 +956,11 @@ export class HaChartBase extends LitElement {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
       | XAXisOption
       | undefined;
-    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
-      | YAXisOption
-      | undefined;
     const series = ensureArray(this.data).map((s) => {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined
         : s.data;
       if (data && s.type === "line") {
-        if (yAxis?.type === "log") {
-          // set <=0 values to null so they render as gaps on a log graph
-          return {
-            ...s,
-            data: (data as LineSeriesOption["data"])!.map((v) =>
-              Array.isArray(v)
-                ? [
-                    v[0],
-                    typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
-                    ...v.slice(2),
-                  ]
-                : v
-            ),
-          };
-        }
         if (s.sampling === "minmax") {
           const minX = xAxis?.min
             ? xAxis.min instanceof Date
