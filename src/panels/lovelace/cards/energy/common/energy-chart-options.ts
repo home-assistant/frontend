@@ -273,7 +273,6 @@ function formatTooltip(
         countNegative++;
       }
     }
-    // param.marker is echarts-generated styled markup, not user input.
     rows.push(
       html`${unsafeHTML(param.marker as string)} ${param.seriesName}:
         <div style="direction:ltr; display: inline;">${value} ${unit}</div>`

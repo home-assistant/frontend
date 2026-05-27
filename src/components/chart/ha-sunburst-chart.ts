@@ -71,7 +71,6 @@ export class HaSunburstChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
-    // params.marker is echarts-generated styled markup, not user input.
     return html`${unsafeHTML(params.marker as string)} ${data.name}<br />${value}`;
   };
 

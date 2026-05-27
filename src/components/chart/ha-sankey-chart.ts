@@ -103,7 +103,6 @@ export class HaSankeyChart extends LitElement {
       : data.value;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      // params.marker is echarts-generated styled markup, not user input.
       return html`${unsafeHTML(params.marker as string)}
         ${node?.label ?? data.id}<br />${value}`;
     }

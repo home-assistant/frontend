@@ -205,7 +205,6 @@ export class HuiEnergyDevicesGraphCard
       this.hass.locale,
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
-    // params.marker is echarts-generated styled markup, not user input.
     return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
       ${unsafeHTML(params.marker)} ${params.seriesName}:
       <div style="direction:ltr; display: inline;">${value}</div>`;

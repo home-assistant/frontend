@@ -337,9 +337,8 @@ export class StatisticsChart extends LitElement {
 
     if (rows.length === 0) return nothing;
 
-    // param.marker is echarts-generated styled <span> markup (a colored dot),
-    // not user-controlled — safe to unsafeHTML. seriesName comes from the entity
-    // friendly_name and is rendered as a Lit text expression, so it is escaped.
+    // param.marker is echarts-generated styled markup (or hardcoded fallback
+    // span with the dataset color above), not user input.
     return html`${rows.map(
       (row, i) =>
         html`${row.time ? html`${row.time}<br />` : nothing}${unsafeHTML(

@@ -53,7 +53,10 @@ const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
 
-export type { LitTooltipFormatter };
+type RawSeriesOption = Exclude<
+  NonNullable<ECOption["series"]>,
+  readonly unknown[]
+>;
 
 // What the wrapper returns to echarts: an HTMLElement when there is content to
 // show, or null to suppress. echarts' TooltipFormatterCallback accepts these at
@@ -102,26 +105,25 @@ const toEChartsFormatter = (
 ): NonNullable<TooltipOption["formatter"]> =>
   fn as NonNullable<TooltipOption["formatter"]>;
 
-// Walks a single series and shallow-copies it + its tooltip when there's a
-// function `formatter` to wrap, so series-level overrides get the same
-// Lit-rendering treatment as top-level tooltips. Returns the input unchanged
-// when there's nothing to wrap, avoiding allocation in the common case.
-const processSeriesTooltipFormatter = (s: HaECSeriesItem): ECSeriesElement => {
-  const tooltip = s.tooltip;
-  if (tooltip && typeof tooltip.formatter === "function") {
-    const formatter = tooltip.formatter;
-    const { formatter: _removed, ...rest } = tooltip;
+const convertHaTooltipFormatter = (tooltip: HaTooltipOption): TooltipOption => {
+  const { formatter, ...rest } = tooltip;
+  const next: TooltipOption = { ...rest };
+  if (typeof formatter === "function") {
+    next.formatter = toEChartsFormatter(wrapLitTooltipFormatter(formatter));
+  } else if (formatter !== undefined) {
+    next.formatter = formatter;
+  }
+  return next;
+};
+
+const processSeriesTooltipFormatter = (s: HaECSeriesItem): RawSeriesOption => {
+  if (s.tooltip && typeof s.tooltip.formatter === "function") {
     return {
       ...s,
-      tooltip: {
-        ...rest,
-        formatter: toEChartsFormatter(
-          wrapLitTooltipFormatter(formatter as LitTooltipFormatter)
-        ),
-      },
-    } as ECSeriesElement;
+      tooltip: convertHaTooltipFormatter(s.tooltip),
+    } as RawSeriesOption;
   }
-  return s as ECSeriesElement;
+  return s as RawSeriesOption;
 };
 
 export type CustomLegendOption = ECOption["legend"] & {
@@ -845,17 +847,7 @@ export class HaChartBase extends LitElement {
       // options object via memoizeOne, in which case in-place mutation would
       // pollute that cache across chart instances).
       const processTooltip = (tooltip: HaTooltipOption): TooltipOption => {
-        const { formatter, ...rest } = tooltip;
-        const next: TooltipOption = { ...rest };
-        if (typeof formatter === "function") {
-          // Wrap function formatters so they can return Lit TemplateResults; the
-          // wrapper handles the rendering and returns the HTMLElement echarts expects.
-          next.formatter = toEChartsFormatter(
-            wrapLitTooltipFormatter(formatter)
-          );
-        } else if (formatter !== undefined) {
-          next.formatter = formatter;
-        }
+        const next = convertHaTooltipFormatter(tooltip);
         if (isMobile) {
           // mobile charts are full width so we need to confine the tooltip to the chart
           next.confine = true;

@@ -179,7 +179,6 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
     const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
-    // (params as any).marker is echarts-generated styled markup, not user input.
     return html`${unsafeHTML((params as any).marker)} ${name}<br /><b
         >${this.hass.localize(
           "ui.panel.config.zwave_js.visualization.node_id"

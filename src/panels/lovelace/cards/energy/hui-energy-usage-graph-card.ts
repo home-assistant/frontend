@@ -40,10 +40,7 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import {
-  callLitTooltipFormatter,
-  type HaECOption,
-} from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 
 const colorPropertyMap = {
   to_grid: "--energy-grid-return-color",
@@ -209,6 +206,13 @@ export class HuiEnergyUsageGraphCard
         false,
         yAxisFractionDigits
       );
+      const tooltip = commonOptions.tooltip;
+      const baseFormatter =
+        tooltip &&
+        !Array.isArray(tooltip) &&
+        typeof tooltip.formatter === "function"
+          ? tooltip.formatter
+          : undefined;
       const options: HaECOption = {
         ...commonOptions,
         tooltip: {
@@ -217,7 +221,7 @@ export class HuiEnergyUsageGraphCard
             if (!Array.isArray(params)) {
               return nothing;
             }
-            params.sort((a, b) => {
+            const sorted = [...params].sort((a, b) => {
               const aValue = (a.value as number[])?.[1];
               const bValue = (b.value as number[])?.[1];
               if (aValue > 0 && bValue < 0) {
@@ -231,14 +235,7 @@ export class HuiEnergyUsageGraphCard
               }
               return a.componentIndex - b.componentIndex;
             });
-            return callLitTooltipFormatter(
-              commonOptions.tooltip
-                ? Array.isArray(commonOptions.tooltip)
-                  ? commonOptions.tooltip[0]?.formatter
-                  : commonOptions.tooltip.formatter
-                : undefined,
-              params
-            );
+            return baseFormatter ? baseFormatter(sorted) : nothing;
           },
         },
       };
