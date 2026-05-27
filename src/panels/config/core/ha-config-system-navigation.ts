@@ -42,8 +42,6 @@ class HaConfigSystemNavigation extends LitElement {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _latestBackupDate?: Date;
 
   @state() private _boardName?: string;

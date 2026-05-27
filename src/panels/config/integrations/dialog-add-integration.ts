@@ -761,7 +761,6 @@ class AddIntegrationDialog extends LitElement {
 
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
       navigateToResult: this._navigateToResult,
     });

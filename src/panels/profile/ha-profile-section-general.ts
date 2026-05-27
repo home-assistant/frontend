@@ -17,7 +17,6 @@ import "../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import { isMobileClient } from "../../util/is_mobile";
-import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
 import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
@@ -168,14 +167,6 @@ class HaProfileSectionGeneral extends LitElement {
             </ha-row-item>
             ${this.hass.user!.is_admin
               ? html`
-                  <ha-advanced-mode-row
-                    .hass=${this.hass}
-                    .coreUserData=${this._coreUserData}
-                  ></ha-advanced-mode-row>
-                `
-              : nothing}
-            ${this.hass.user!.is_admin
-              ? html`
                   <ha-entity-id-picker-row
                     .hass=${this.hass}
                     .coreUserData=${this._coreUserData}
@@ -288,11 +279,6 @@ class HaProfileSectionGeneral extends LitElement {
         .content > * {
           display: block;
           margin: 24px 0;
-        }
-
-        .promo-advanced {
-          text-align: center;
-          color: var(--secondary-text-color);
         }
       `,
     ];

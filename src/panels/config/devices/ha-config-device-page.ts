@@ -188,8 +188,6 @@ export class HaConfigDevicePage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _related?: RelatedResult;
 
   @state() private _diagnosticDownloadLinks: DeviceAction[] = [];

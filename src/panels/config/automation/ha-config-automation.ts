@@ -27,8 +27,6 @@ class HaConfigAutomation extends HassRouterPage {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public automations: AutomationEntity[] = [];
@@ -79,7 +77,6 @@ class HaConfigAutomation extends HassRouterPage {
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.route = this.routeTail;
-    pageEl.showAdvanced = this.showAdvanced;
     pageEl.cloudStatus = this.cloudStatus;
 
     if (this.hass) {

@@ -92,8 +92,6 @@ class HaConfigInfo extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false }) public route!: Route;
 
   @state() private _osInfo?: HassioHassOSInfo;

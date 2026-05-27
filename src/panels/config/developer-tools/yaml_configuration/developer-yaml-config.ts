@@ -35,8 +35,6 @@ export class DeveloperYamlConfig extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _validating = false;
 
   @state() private _reloadableDomains: TranslatedReloadableDomain[] = [];

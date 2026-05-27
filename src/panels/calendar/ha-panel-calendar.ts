@@ -342,7 +342,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   private _addCalendar = async (): Promise<void> => {
     showConfigFlowDialog(this, {
       startFlowHandler: "local_calendar",
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {

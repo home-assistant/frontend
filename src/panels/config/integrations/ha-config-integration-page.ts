@@ -138,8 +138,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false }) public configEntries?: ConfigEntry[];
 
   @property({ attribute: false })
