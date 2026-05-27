@@ -91,11 +91,7 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
   input_button: BUTTON_VARIANTS,
   scene: BUTTON_VARIANTS,
   script: BUTTON_VARIANTS,
-  weather: [
-    TILE_VARIANT,
-    ["temperature-forecast"],
-    ["precipitation-forecast"],
-  ],
+  weather: [TILE_VARIANT, ["temperature-forecast"], ["precipitation-forecast"]],
 };
 
 const DEFAULT_VARIANT: TileVariant = TILE_VARIANT;
