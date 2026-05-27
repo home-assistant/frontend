@@ -125,7 +125,7 @@ export interface BooleanSelector {
   boolean: {} | null;
 }
 
-export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
 
 export type AutomationBehaviorConditionMode = "all" | "any";
 
