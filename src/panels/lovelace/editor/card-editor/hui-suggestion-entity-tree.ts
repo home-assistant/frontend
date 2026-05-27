@@ -246,10 +246,16 @@ export class HuiSuggestionEntityTree extends LitElement {
         class="search-results ha-scrollbar"
         .items=${results}
         .keyFunction=${this._searchKeyFunction}
-        .renderItem=${this._renderSearchRow}
+        .renderItem=${this._getSearchRowRenderer(this.selectedEntityId)}
       ></lit-virtualizer>
     `;
   }
+
+  private _getSearchRowRenderer = memoizeOne(
+    (_selectedEntityId: string | undefined) =>
+      (item: SearchableEntity, index: number) =>
+        this._renderSearchRow(item, index)
+  );
 
   private _renderSearchRow = (
     item: SearchableEntity,
