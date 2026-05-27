@@ -92,14 +92,15 @@ import {
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../../../dialogs/more-info/show-ha-more-info-dialog";
+import { MobileAwareMixin } from "../../../../../mixins/mobile-aware-mixin";
 import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../../resources/styles";
 import type { Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import { getAppDisplayName } from "../../common/app";
-import "../components/supervisor-app-metric";
-import "../../components/supervisor-apps-tag";
 import "../../components/supervisor-apps-state";
+import "../../components/supervisor-apps-tag";
+import "../components/supervisor-app-metric";
 import { extractChangelog } from "../util/supervisor-app";
 import "./supervisor-app-system-managed";
 
@@ -123,7 +124,7 @@ const RATING_ICON = {
 const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
-class SupervisorAppInfo extends LitElement {
+class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
@@ -162,6 +163,9 @@ class SupervisorAppInfo extends LitElement {
   private _updateState?: HassEntity;
 
   private _pollInterval?: number;
+
+  protected mobileSizeQuery =
+    "all and (max-width: 1120px), all and (max-height: 500px)";
 
   private get _currentAddon(): HassioAddonDetails | StoreAddonDetails {
     return this._addon || this.addon;
@@ -863,11 +867,11 @@ class SupervisorAppInfo extends LitElement {
           `
         : nothing}
       <div
-        class="app ${this.narrow || !this._currentAddon.version
+        class="app ${this._isMobileSize || !this._currentAddon.version
           ? "column"
           : ""}"
       >
-        ${this.narrow || !this._currentAddon.version
+        ${this._isMobileSize || !this._currentAddon.version
           ? html`
               ${this._renderInfoCard()}
               ${this._currentAddon.version
