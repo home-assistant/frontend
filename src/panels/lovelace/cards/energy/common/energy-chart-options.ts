@@ -112,11 +112,27 @@ export function getCommonOptions(
   yAxisFractionDigits = 1
 ): ECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
-  const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
+  let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
+
+  // Extend suggestedMax so compare bars that land past the main end
+  // (e.g. Feb compared to Jan) stay visible instead of being clipped.
+  if (compare) {
+    const transformedCompareEnd = getCompareTransform(
+      start,
+      compareStart
+    )(compareEnd);
+    if (transformedCompareEnd.getTime() > suggestedMax.getTime()) {
+      suggestedMax = getSuggestedMax(
+        suggestedPeriod,
+        transformedCompareEnd,
+        detailedDailyData
+      );
+    }
+  }
 
   const monthTimeAxis: ECOption = {
     xAxis: {
@@ -351,21 +367,35 @@ export function getCompareTransform(start: Date, compareStart?: Date) {
   if (!compareStart) {
     return (ts: Date) => ts;
   }
+  const compareDayDiff = differenceInDays(start, compareStart);
   const compareYearDiff = differenceInYears(start, compareStart);
   if (
     compareYearDiff !== 0 &&
     start.getTime() === startOfYear(start).getTime()
   ) {
-    return (ts: Date) => addYears(ts, compareYearDiff);
+    // addYears clamps Feb 29 -> Feb 28 across leap-year boundaries; fall back
+    // to a day-shift so each compare day keeps a unique x position.
+    return (ts: Date) => {
+      const shifted = addYears(ts, compareYearDiff);
+      return shifted.getDate() === ts.getDate()
+        ? shifted
+        : addDays(ts, compareDayDiff);
+    };
   }
   const compareMonthDiff = differenceInMonths(start, compareStart);
   if (
     compareMonthDiff !== 0 &&
     start.getTime() === startOfMonth(start).getTime()
   ) {
-    return (ts: Date) => addMonths(ts, compareMonthDiff);
+    // addMonths clamps Jan 31 -> Feb 28 when shifting between unequal-length
+    // months; fall back to a day-shift so each compare day keeps a unique x.
+    return (ts: Date) => {
+      const shifted = addMonths(ts, compareMonthDiff);
+      return shifted.getDate() === ts.getDate()
+        ? shifted
+        : addDays(ts, compareDayDiff);
+    };
   }
-  const compareDayDiff = differenceInDays(start, compareStart);
   if (compareDayDiff !== 0 && start.getTime() === startOfDay(start).getTime()) {
     return (ts: Date) => addDays(ts, compareDayDiff);
   }
