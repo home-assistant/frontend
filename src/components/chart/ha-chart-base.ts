@@ -855,7 +855,7 @@ export class HaChartBase extends LitElement {
         }
         return next;
       };
-      const haTooltip = this.options!.tooltip!;
+      const haTooltip = options.tooltip;
       const processedTooltip = Array.isArray(haTooltip)
         ? haTooltip.map(processTooltip)
         : processTooltip(haTooltip);
