@@ -82,9 +82,7 @@ describe("generateCardSuggestions", () => {
       makeState("light.a", "on", { supported_color_modes: ["onoff"] }),
     ]);
     const suggestions = generateCardSuggestions(hass, "light.a");
-    expect(suggestions.core.some((s) => s.config.type === "tile")).toBe(
-      true
-    );
+    expect(suggestions.core.some((s) => s.config.type === "tile")).toBe(true);
   });
 
   it("accepts null, a single suggestion, or a list from each provider", () => {
@@ -151,8 +149,9 @@ describe("generateCardSuggestions", () => {
     expect(result.custom.map((s) => s.config.type)).toContain(
       "custom:my-custom-card"
     );
-    expect(result.core.every((s) => s.config.type !== "custom:my-custom-card"))
-      .toBe(true);
+    expect(
+      result.core.every((s) => s.config.type !== "custom:my-custom-card")
+    ).toBe(true);
   });
 
   it("keeps working when a custom card throws", () => {

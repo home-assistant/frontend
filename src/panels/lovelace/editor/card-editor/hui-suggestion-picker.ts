@@ -134,9 +134,7 @@ export class HuiSuggestionPicker extends LitElement {
     return html`
       <div class="browse-card">
         <p>
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.cardpicker.not_found"
-          )}
+          ${this.hass.localize("ui.panel.lovelace.editor.cardpicker.not_found")}
         </p>
         <ha-button appearance="plain" @click=${this._browseCards}>
           <ha-svg-icon slot="start" .path=${mdiViewGridPlus}></ha-svg-icon>
