@@ -1,7 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAlert,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
@@ -26,7 +25,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -44,6 +43,7 @@ import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
+import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
@@ -52,26 +52,18 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-tooltip";
-import "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
-  AutomationConfig,
   Condition,
   ConditionSidebarConfig,
   PlatformCondition,
-  TriggerCondition,
 } from "../../../../data/automation";
 import {
-  automationConfigContext,
   isCondition,
   subscribeCondition,
   testCondition,
 } from "../../../../data/automation";
-import {
-  describeCondition,
-  getTriggerInfos,
-} from "../../../../data/automation_i18n";
+import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import {
@@ -91,7 +83,6 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
-import "../ha-trigger-id-chip";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-condition-editor";
@@ -107,7 +98,6 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
-import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -170,10 +160,6 @@ export default class HaAutomationConditionRow extends LitElement {
   } = { state: "unknown" };
 
   @state()
-  @consume({ context: automationConfigContext, subscribe: true })
-  private _automationConfig?: AutomationConfig;
-
-  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
 
@@ -231,13 +217,9 @@ export default class HaAutomationConditionRow extends LitElement {
         .condition=${this.condition.condition}
       ></ha-condition-icon>
       <h3 slot="header">
-        ${this.condition.condition === "trigger"
-          ? this._renderTriggerConditionDescription(
-              this.condition as TriggerCondition
-            )
-          : capitalizeFirstLetter(
-              describeCondition(this.condition, this.hass, this._entityReg)
-            )}
+        ${capitalizeFirstLetter(
+          describeCondition(this.condition, this.hass, this._entityReg)
+        )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
           ? this._renderTargets(
               target,
@@ -587,102 +569,6 @@ export default class HaAutomationConditionRow extends LitElement {
           ></ha-automation-condition-editor>`
         : nothing}
     `;
-  }
-
-  private _getTriggerInfos = memoizeOne(getTriggerInfos);
-
-  private _renderTriggerConditionDescription(condition: TriggerCondition) {
-    const ids = ensureArray(condition.id ?? [])
-      .map((id) => (typeof id === "string" ? id : String(id)))
-      .filter((id) => id !== "");
-    const prefix = capitalizeFirstLetter(
-      this.hass
-        .localize(
-          "ui.panel.config.automation.editor.conditions.type.trigger.description.full",
-          { id: "" }
-        )
-        .trim()
-    );
-    if (!ids.length) {
-      return html`${prefix}
-        <div class="trigger warning">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.trigger.description.no_trigger"
-          )}
-        </div>`;
-    }
-
-    const triggerInfos = this._getTriggerInfos(
-      ensureArray(this._automationConfig?.triggers || []),
-      this.hass,
-      this._entityReg
-    );
-    const infoById = new Map(triggerInfos.map((info) => [info.id, info]));
-    return html`${prefix}
-    ${ids.map((id) => {
-      const info = infoById.get(id);
-      if (!info) {
-        return html`<div class="trigger">
-          <ha-trigger-id-chip id=${`trigger-${id}`} warning .triggerId=${id}>
-            <ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>
-          </ha-trigger-id-chip>
-          ${ids.length < 4
-            ? html`<span
-                >${this.hass.localize("state.default.unavailable")}</span
-              >`
-            : nothing}
-
-          <ha-tooltip .for=${`trigger-${id}`}>
-            ${ids.length >= 4
-              ? html`<div>
-                  ${this.hass.localize("state.default.unavailable")}
-                </div>`
-              : nothing}
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
-              { id: html`<b>${id}</b>` }
-            )}
-          </ha-tooltip>
-        </div>`;
-      }
-      const triggerIcon = html`<ha-trigger-icon
-        .slot=${ids.length < 4 ? "start" : ""}
-        .hass=${this.hass}
-        .trigger=${info.triggerType}
-      ></ha-trigger-icon>`;
-
-      const isDuplicateId = info.count > 1;
-
-      return html`
-        <div class="trigger">
-          ${ids.length < 4 ? triggerIcon : nothing}
-          <ha-trigger-id-chip
-            id=${`trigger-${id}`}
-            .triggerId=${id}
-            .warning=${isDuplicateId}
-          >
-            ${isDuplicateId
-              ? html`<ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>`
-              : nothing}
-          </ha-trigger-id-chip>
-          ${ids.length < 4
-            ? html`<span>${info.label}</span>`
-            : html`<ha-tooltip .for=${`trigger-${id}`}></ha-tooltip>`}
-          ${isDuplicateId || ids.length >= 4
-            ? html`<ha-tooltip .for=${`trigger-${id}`}>
-                ${ids.length >= 4
-                  ? html`<div>${triggerIcon}${info.label}</div>`
-                  : nothing}
-                ${isDuplicateId
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
-                    )
-                  : nothing}
-              </ha-tooltip>`
-            : nothing}
-        </div>
-      `;
-    })}`;
   }
 
   private _renderTargets = memoizeOne(
@@ -1243,26 +1129,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      rowStyles,
-      overflowStyles,
-      css`
-        .trigger {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-2);
-          background-color: var(--ha-color-fill-neutral-normal-resting);
-          border-radius: var(--ha-border-radius-md);
-          padding-inline: var(--ha-space-2);
-          color: var(--ha-color-on-neutral-normal);
-          height: 32px;
-        }
-        .trigger.warning {
-          background-color: var(--ha-color-fill-warning-normal-resting);
-          color: var(--ha-color-on-warning-normal);
-        }
-      `,
-    ];
+    return [rowStyles, overflowStyles];
   }
 }
 

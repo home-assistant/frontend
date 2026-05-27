@@ -6,7 +6,6 @@ import { classMap } from "lit/directives/class-map";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { IFRAME_SANDBOX } from "../../util/iframe";
 import { navigate } from "../../common/navigate";
 import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
@@ -137,8 +136,6 @@ class HaPanelApp extends LitElement {
         })}
         title=${this._addon.name}
         src=${this._addon.ingress_url!}
-        .sandbox=${IFRAME_SANDBOX}
-        allow="microphone; camera; clipboard-write"
         @load=${this._checkLoaded}
         ${ref(this._iframeRef)}
       >

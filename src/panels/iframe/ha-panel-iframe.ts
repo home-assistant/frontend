@@ -4,7 +4,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-subpage";
 import type { HomeAssistant, PanelInfo } from "../../types";
-import { IFRAME_SANDBOX_SAME_ORIGIN } from "../../util/iframe";
+import { IFRAME_SANDBOX } from "../../util/iframe";
 
 @customElement("ha-panel-iframe")
 class HaPanelIframe extends LitElement {
@@ -41,7 +41,7 @@ class HaPanelIframe extends LitElement {
             this.panel.title === null ? undefined : this.panel.title
           )}
           src=${this.panel.config.url}
-          .sandbox=${IFRAME_SANDBOX_SAME_ORIGIN}
+          .sandbox=${IFRAME_SANDBOX}
           allow="fullscreen"
         ></iframe>
       </hass-subpage>

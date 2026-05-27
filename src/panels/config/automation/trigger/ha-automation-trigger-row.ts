@@ -1,7 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAlert,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
@@ -29,7 +28,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
-import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -50,21 +48,15 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
-  AutomationConfig,
   PlatformTrigger,
   Trigger,
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import {
-  automationConfigContext,
-  isTrigger,
-  subscribeTrigger,
-} from "../../../../data/automation";
+import { isTrigger, subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -81,7 +73,6 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
-import "../ha-trigger-id-chip";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-trigger-editor";
@@ -187,30 +178,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
 
-  @state()
-  @consume({ context: automationConfigContext, subscribe: true })
-  @transform<AutomationConfig, boolean>({
-    transformer: function (this: HaAutomationTriggerRow, value) {
-      if (
-        !this.trigger ||
-        isTriggerList(this.trigger) ||
-        !(this.trigger as Exclude<Trigger, TriggerList>).id
-      ) {
-        return false;
-      }
-      const triggerId = (this.trigger as Exclude<Trigger, TriggerList>).id;
-      // count how often this trigger id is used in the automation, if more than once, show warning
-      return (
-        ensureArray(value?.triggers || []).filter(
-          (trigger) =>
-            (trigger as Exclude<Trigger, TriggerList>).id === triggerId
-        ).length > 1
-      );
-    },
-    watch: ["trigger"],
-  })
-  private _duplicateTriggerId = false;
-
   get selected() {
     return this._selected;
   }
@@ -277,28 +244,6 @@ export default class HaAutomationTriggerRow extends LitElement {
             .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
           ></ha-trigger-icon>`}
       <h3 slot="header">
-        ${type !== "list" && (this.trigger as Exclude<Trigger, TriggerList>).id
-          ? html`<ha-trigger-id-chip
-                id="trigger-id-chip"
-                .warning=${this._duplicateTriggerId}
-                slot="leading-icon"
-                .triggerId=${(this.trigger as Exclude<Trigger, TriggerList>).id}
-              >
-                ${this._duplicateTriggerId
-                  ? html`<ha-svg-icon
-                      slot="start"
-                      .path=${mdiAlert}
-                    ></ha-svg-icon>`
-                  : nothing}
-              </ha-trigger-id-chip>
-              ${this._duplicateTriggerId
-                ? html`<ha-tooltip for="trigger-id-chip">
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
-                    )}
-                  </ha-tooltip>`
-                : nothing} `
-          : nothing}
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
           ? this._renderTargets(
