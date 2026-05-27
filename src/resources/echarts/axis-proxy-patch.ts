@@ -23,11 +23,11 @@ const origFilterData = (AxisProxy as any).prototype.filterData;
     origFilterData.call(this, dataZoomModel, api);
     return;
   }
-  if (dataZoomModel !== this._dataZoomModel) {
+  if (!this.hostedBy(dataZoomModel)) {
     return;
   }
   const axisDim = this._dimName;
-  const valueWindow = this._valueWindow;
+  const valueWindow = this._window.value;
   const seriesModels = this.getTargetSeriesModels();
   for (const seriesModel of seriesModels) {
     const seriesData = seriesModel.getData();
