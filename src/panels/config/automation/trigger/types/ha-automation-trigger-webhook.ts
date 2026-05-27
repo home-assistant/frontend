@@ -1,6 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import { mdiCog, mdiContentCopy } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,10 +13,9 @@ import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
-import {
-  automationConfigContext,
-  type AutomationConfig,
-  type WebhookTrigger,
+import type {
+  AutomationConfig,
+  WebhookTrigger,
 } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { showEditorToast } from "../../editor-toast";
@@ -34,9 +33,9 @@ export class HaWebhookTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @consume({ context: automationConfigContext, subscribe: true })
-  @state()
-  private _config?: AutomationConfig;
+  @state() private _config?: AutomationConfig;
+
+  private _unsub?: UnsubscribeFunc;
 
   public static get defaultConfig(): WebhookTrigger {
     return {
@@ -45,6 +44,24 @@ export class HaWebhookTrigger extends LitElement {
       local_only: true,
       webhook_id: DEFAULT_WEBHOOK_ID,
     };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    const details = {
+      callback: (config) => {
+        this._config = config;
+      },
+    };
+    fireEvent(this, "subscribe-automation-config", details);
+    this._unsub = (details as any).unsub;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsub) {
+      this._unsub();
+    }
   }
 
   private _generateWebhookId(): string {

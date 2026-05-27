@@ -1,4 +1,3 @@
-import { createContext } from "@lit/context";
 import type {
   Connection,
   HassEntityAttributeBase,
@@ -491,12 +490,12 @@ export const migrateAutomationTrigger = (
 
 export const flattenTriggers = (
   triggers: undefined | Trigger | Trigger[]
-): Exclude<Trigger, TriggerList>[] => {
+): Trigger[] => {
   if (!triggers) {
     return [];
   }
 
-  const flatTriggers: Exclude<Trigger, TriggerList>[] = [];
+  const flatTriggers: Trigger[] = [];
 
   ensureArray(triggers).forEach((t) => {
     if ("triggers" in t) {
@@ -698,7 +697,3 @@ export interface ShowAutomationEditorParams {
   data?: Partial<AutomationConfig>;
   expanded?: boolean;
 }
-
-export const automationConfigContext = createContext<
-  AutomationConfig | undefined
->("automationConfig");
