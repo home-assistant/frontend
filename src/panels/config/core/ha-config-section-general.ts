@@ -211,7 +211,6 @@ class HaConfigSectionGeneral extends LitElement {
             <div class="unit-system-options">
               <ha-select-box
                 name="unit_system"
-                .hass=${this.hass}
                 .value=${this._unitSystem}
                 .disabled=${disabled}
                 @value-changed=${this._unitSystemChanged}

@@ -1,11 +1,12 @@
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTL } from "../common/util/compute_rtl";
-import type { HomeAssistant } from "../types";
+import { internationalizationContext, uiContext } from "../data/context";
 import "./radio/ha-radio-group";
 import type { HaRadioGroup } from "./radio/ha-radio-group";
 import "./radio/ha-radio-option";
@@ -26,8 +27,6 @@ export interface SelectBoxOption {
 
 @customElement("ha-select-box")
 export class HaSelectBox extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public options: SelectBoxOption[] = [];
 
   @property({ attribute: false }) public value?: string;
@@ -39,6 +38,14 @@ export class HaSelectBox extends LitElement {
 
   @property({ type: Boolean, attribute: "stacked_image" })
   public stackedImage = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected _i18n?: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  protected _ui?: ContextType<typeof uiContext>;
 
   render() {
     const maxColumns = this.maxColumns ?? 3;
@@ -62,11 +69,11 @@ export class HaSelectBox extends LitElement {
     const disabled = option.disabled || this.disabled || false;
     const selected = option.value === this.value;
 
-    const isDark = this.hass?.themes.darkMode || false;
-    const isRTL = this.hass
+    const isDark = this._ui?.themes.darkMode || false;
+    const isRTL = this._i18n
       ? computeRTL(
-          this.hass.language,
-          this.hass.translationMetadata.translations
+          this._i18n.language,
+          this._i18n.translationMetadata.translations
         )
       : false;
 

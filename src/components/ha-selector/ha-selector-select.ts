@@ -96,7 +96,6 @@ export class HaSelectSelector extends LitElement {
           .value=${this.value as string | undefined}
           @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
-          .hass=${this.hass}
         ></ha-select-box>
         ${this._renderHelper()}
       `;

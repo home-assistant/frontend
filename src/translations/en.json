@@ -638,7 +638,7 @@
         "automation_behavior": {
           "trigger": {
             "options": {
-              "any": {
+              "each": {
                 "label": "Each",
                 "description": "Triggers once for every target that changes"
               },
@@ -646,7 +646,7 @@
                 "label": "First",
                 "description": "Triggers the first time any target changes"
               },
-              "last": {
+              "all": {
                 "label": "All",
                 "description": "Triggers once all targets have changed"
               }

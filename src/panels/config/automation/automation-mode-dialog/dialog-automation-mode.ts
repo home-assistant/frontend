@@ -95,7 +95,6 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           .value=${this._newMode}
           @value-changed=${this._modeChanged}
           .maxColumns=${1}
-          .hass=${this.hass}
         ></ha-select-box>
 
         ${isMaxMode(this._newMode)
