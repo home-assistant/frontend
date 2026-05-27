@@ -9,7 +9,10 @@ import {
   isBrandUrl,
 } from "../../util/brands-url";
 
-const SMALL_THUMBNAIL_THRESHOLD = 32;
+const SMALL_THUMBNAIL_THRESHOLD = 16;
+
+const isSvgUrl = (url: string): boolean =>
+  /\.svg(\?|#|$)/i.test(url) || url.startsWith("data:image/svg+xml");
 
 const resolveThumbnailURL = (
   hass: HomeAssistant,
@@ -84,6 +87,8 @@ export class HaMediaBrowserThumbnail extends LitElement {
   }
 
   private _probeSize(url: string): void {
+    // SVGs scale natively; pixelated rendering would break vector output.
+    if (isSvgUrl(url)) return;
     const img = new Image();
     img.addEventListener("load", () => {
       if (this._resolvedUrl !== url) return;
