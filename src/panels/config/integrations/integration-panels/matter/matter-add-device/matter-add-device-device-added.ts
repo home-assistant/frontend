@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../../../../common/entity/compute_domain";
@@ -44,14 +44,23 @@ class MatterAddDeviceDeviceAdded extends LitElement {
 
   private _initialized = false;
 
-  protected willUpdate() {
+  private _deviceClassInitialized = false;
+
+  protected willUpdate(changedProps: PropertyValues) {
     if (!this._initialized && this.device) {
       this._initialized = true;
       this._deviceName = computeDeviceName(this.device) ?? "";
       this._area = this.device.area_id ?? undefined;
+    }
+    if (
+      !this._deviceClassInitialized &&
+      (changedProps.has("mainEntity") || this._initialized) &&
+      this.mainEntity
+    ) {
+      this._deviceClassInitialized = true;
       this._deviceClass =
-        this.mainEntity?.device_class ??
-        this.mainEntity?.original_device_class ??
+        this.mainEntity.device_class ??
+        this.mainEntity.original_device_class ??
         undefined;
     }
   }
