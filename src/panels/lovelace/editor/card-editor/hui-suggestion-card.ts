@@ -3,6 +3,11 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-ripple";
+import {
+  getCustomCardEntry,
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../../data/lovelace_custom_cards";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import "../../cards/hui-card";
@@ -52,9 +57,16 @@ export class HuiSuggestionCard extends LitElement {
   protected render(): TemplateResult {
     const { suggestion } = this;
     const hiddenCount = this._preview?.hiddenCount ?? 0;
-    const cardName = this.hass.localize(
-      `ui.panel.lovelace.editor.card.${suggestion.config.type}.name` as any
-    );
+    const type = suggestion.config.type;
+    let cardName: string;
+    if (isCustomType(type)) {
+      const customType = stripCustomPrefix(type);
+      cardName = getCustomCardEntry(customType)?.name ?? customType;
+    } else {
+      cardName = this.hass.localize(
+        `ui.panel.lovelace.editor.card.${type}.name` as any
+      );
+    }
     const label = suggestion.label
       ? `${cardName} - ${suggestion.label}`
       : cardName;

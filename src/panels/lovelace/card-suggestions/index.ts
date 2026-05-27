@@ -1,3 +1,4 @@
+import { customCards } from "../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../types";
 import { CARD_SUGGESTION_PROVIDERS } from "./registry";
 import type { CardSuggestion } from "./types";
@@ -5,18 +6,43 @@ import type { CardSuggestion } from "./types";
 export type { CardSuggestion, CardSuggestionProvider } from "./types";
 export { CARD_SUGGESTION_PROVIDERS } from "./registry";
 
+export interface CardSuggestions {
+  core: CardSuggestion[];
+  custom: CardSuggestion[];
+}
+
+const collect = (
+  result: CardSuggestion | CardSuggestion[] | null | undefined
+): CardSuggestion[] => {
+  if (!result) return [];
+  return Array.isArray(result) ? result : [result];
+};
+
 export const generateCardSuggestions = (
   hass: HomeAssistant,
   entityId: string | undefined
-): CardSuggestion[] => {
-  if (!entityId || hass.states[entityId] === undefined) return [];
-  return Object.values(CARD_SUGGESTION_PROVIDERS).flatMap((provider) => {
+): CardSuggestions => {
+  if (!entityId || hass.states[entityId] === undefined) {
+    return { core: [], custom: [] };
+  }
+  const core = Object.values(CARD_SUGGESTION_PROVIDERS).flatMap((provider) => {
     try {
-      const result = provider.getEntitySuggestion(hass, entityId);
-      if (!result) return [];
-      return Array.isArray(result) ? result : [result];
-    } catch {
+      return collect(provider.getEntitySuggestion(hass, entityId));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Card suggestion provider threw:", err);
       return [];
     }
   });
+  const custom = customCards.flatMap((card) => {
+    if (!card.getSuggestion) return [];
+    try {
+      return collect(card.getSuggestion(hass, entityId));
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`Custom card "${card.type}" getSuggestion threw:`, err);
+      return [];
+    }
+  });
+  return { core, custom };
 };
