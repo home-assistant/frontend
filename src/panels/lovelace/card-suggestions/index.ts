@@ -1,3 +1,4 @@
+import { ensureArray } from "../../../common/array/ensure-array";
 import { customCards } from "../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../types";
 import { CARD_SUGGESTION_PROVIDERS } from "./registry";
@@ -11,13 +12,6 @@ export interface CardSuggestions {
   custom: CardSuggestion[];
 }
 
-const collect = (
-  result: CardSuggestion | CardSuggestion[] | null | undefined
-): CardSuggestion[] => {
-  if (!result) return [];
-  return Array.isArray(result) ? result : [result];
-};
-
 export const generateCardSuggestions = (
   hass: HomeAssistant,
   entityId: string | undefined
@@ -27,7 +21,7 @@ export const generateCardSuggestions = (
   }
   const core = Object.values(CARD_SUGGESTION_PROVIDERS).flatMap((provider) => {
     try {
-      return collect(provider.getEntitySuggestion(hass, entityId));
+      return ensureArray(provider.getEntitySuggestion(hass, entityId)) ?? [];
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Card suggestion provider threw:", err);
@@ -37,7 +31,7 @@ export const generateCardSuggestions = (
   const custom = customCards.flatMap((card) => {
     if (!card.getEntitySuggestion) return [];
     try {
-      return collect(card.getEntitySuggestion(hass, entityId));
+      return ensureArray(card.getEntitySuggestion(hass, entityId)) ?? [];
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(
