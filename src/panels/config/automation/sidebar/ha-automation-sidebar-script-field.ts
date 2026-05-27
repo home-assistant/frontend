@@ -16,7 +16,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import "../ha-automation-comment";
+import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
@@ -68,11 +68,11 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
-      <ha-dropdown-item slot="menu-items" value="edit_comment">
+      <ha-dropdown-item slot="menu-items" value="edit_note">
         <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
         <div class="overflow-label">
           ${this.hass.localize(
-            `ui.panel.config.automation.editor.comment.${this.config.config.field.description ? "edit" : "add"}`
+            `ui.panel.config.automation.editor.note.${this.config.config.field.description ? "edit" : "add"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
@@ -137,10 +137,10 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         ></ha-script-field-editor>`
       )}
       ${this.config.config.field.description?.trim() && !this.yamlMode
-        ? html`<ha-automation-comment
-            @edit-comment=${this.config.editComment}
-            .comment=${this.config.config.field.description}
-          ></ha-automation-comment>`
+        ? html`<ha-automation-note
+            @edit-note=${this.config.editNote}
+            .note=${this.config.config.field.description}
+          ></ha-automation-note>`
         : nothing}
     </ha-automation-sidebar-card>`;
   }
@@ -189,8 +189,8 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       case "toggle_yaml_mode":
         this._toggleYamlMode();
         break;
-      case "edit_comment":
-        this.config.editComment();
+      case "edit_note":
+        this.config.editNote();
         break;
       case "delete":
         this.config.delete();

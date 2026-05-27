@@ -141,7 +141,7 @@ export default class HaAutomationTriggerEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...(this.trigger.alias ? { alias: this.trigger.alias } : {}),
-      ...(this.trigger.comment ? { comment: this.trigger.comment } : {}),
+      ...(this.trigger.note ? { note: this.trigger.note } : {}),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

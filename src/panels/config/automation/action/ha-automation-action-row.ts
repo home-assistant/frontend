@@ -297,8 +297,8 @@ export default class HaAutomationActionRow extends LitElement {
             ?.target
         : undefined;
 
-    const commentTooltipText = truncateWithEllipsis(
-      this.action.comment?.trim() || "",
+    const noteTooltipText = truncateWithEllipsis(
+      this.action.note?.trim() || "",
       250
     );
 
@@ -337,18 +337,18 @@ export default class HaAutomationActionRow extends LitElement {
               serviceTargetSpec
             )
           : nothing}
-        ${commentTooltipText
+        ${noteTooltipText
           ? html`
               <ha-svg-icon
-                id="comment-icon"
+                id="note-icon"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.comment.label"
+                  "ui.panel.config.automation.editor.note.label"
                 )}
-                class="comment-indicator"
+                class="note-indicator"
               ></ha-svg-icon
-              ><ha-tooltip for="comment-icon"
-                ><p>${commentTooltipText}</p></ha-tooltip
+              ><ha-tooltip for="note-icon"
+                ><p>${noteTooltipText}</p></ha-tooltip
               >
             `
           : nothing}
@@ -407,11 +407,11 @@ export default class HaAutomationActionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
-        <ha-dropdown-item value="edit_comment">
+        <ha-dropdown-item value="edit_note">
           <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
-              `ui.panel.config.automation.editor.comment.${this.action.comment ? "edit" : "add"}`
+              `ui.panel.config.automation.editor.note.${this.action.note ? "edit" : "add"}`
             )
           )}
         </ha-dropdown-item>
@@ -941,25 +941,25 @@ export default class HaAutomationActionRow extends LitElement {
     }
   };
 
-  private _editCommentAction = async (): Promise<void> => {
-    const comment = await showPromptDialog(this, {
+  private _editNoteAction = async (): Promise<void> => {
+    const note = await showPromptDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.automation.editor.comment.${this.action.comment ? "edit" : "add"}`
+        `ui.panel.config.automation.editor.note.${this.action.note ? "edit" : "add"}`
       ),
       inputLabel: this.hass.localize(
-        "ui.panel.config.automation.editor.comment.label"
+        "ui.panel.config.automation.editor.note.label"
       ),
       inputType: "string",
-      defaultValue: this.action.comment,
+      defaultValue: this.action.note,
       confirmText: this.hass.localize("ui.common.submit"),
       multiline: true,
     });
-    if (comment !== null) {
+    if (note !== null) {
       const value = { ...this.action };
-      if (comment === "") {
-        delete value.comment;
+      if (note === "") {
+        delete value.note;
       } else {
-        value.comment = comment;
+        value.note = note;
       }
       fireEvent(this, "value-changed", {
         value,
@@ -1089,7 +1089,7 @@ export default class HaAutomationActionRow extends LitElement {
       rename: () => {
         this._renameAction();
       },
-      editComment: this._editCommentAction,
+      editNote: this._editNoteAction,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -1185,8 +1185,8 @@ export default class HaAutomationActionRow extends LitElement {
       case "rename":
         this._renameAction();
         break;
-      case "edit_comment":
-        this._editCommentAction();
+      case "edit_note":
+        this._editNoteAction();
         break;
       case "duplicate":
         this._duplicateAction();

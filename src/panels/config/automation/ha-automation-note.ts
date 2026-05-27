@@ -6,9 +6,9 @@ import "../../../components/ha-button";
 import "../../../components/ha-settings-row";
 import { internationalizationContext } from "../../../data/context";
 
-@customElement("ha-automation-comment")
-export class HaAutomationComment extends LitElement {
-  @property() public comment!: string;
+@customElement("ha-automation-note")
+export class HaAutomationNote extends LitElement {
+  @property() public note!: string;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -18,9 +18,9 @@ export class HaAutomationComment extends LitElement {
     return html`
       <ha-settings-row narrow>
         <div class="heading" slot="heading">
-          <span class="title" id="comment-label">
+          <span class="title" id="note-label">
             ${this._i18n.localize(
-              "ui.panel.config.automation.editor.comment.label"
+              "ui.panel.config.automation.editor.note.label"
             )}
           </span>
           <ha-button
@@ -31,13 +31,13 @@ export class HaAutomationComment extends LitElement {
             ${this._i18n.localize("ui.common.edit")}
           </ha-button>
         </div>
-        <p aria-labelledby="comment-label">${this.comment}</p>
+        <p aria-labelledby="note-label">${this.note}</p>
       </ha-settings-row>
     `;
   }
 
   private _handleClick() {
-    fireEvent(this, "edit-comment");
+    fireEvent(this, "edit-note");
   }
 
   static styles = css`
@@ -70,10 +70,10 @@ export class HaAutomationComment extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-comment": HaAutomationComment;
+    "ha-automation-note": HaAutomationNote;
   }
 
   interface HASSDomEvents {
-    "edit-comment": undefined;
+    "edit-note": undefined;
   }
 }

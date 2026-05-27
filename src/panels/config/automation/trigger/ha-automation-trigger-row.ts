@@ -224,9 +224,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
-    const commentTooltipText = truncateWithEllipsis(
+    const noteTooltipText = truncateWithEllipsis(
       (type !== "list" &&
-        (this.trigger as Exclude<Trigger, TriggerList>).comment?.trim()) ||
+        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()) ||
         "",
       250
     );
@@ -253,19 +253,17 @@ export default class HaAutomationTriggerRow extends LitElement {
             )
           : nothing}
         ${type !== "list" &&
-        (this.trigger as Exclude<Trigger, TriggerList>).comment?.trim()
+        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
           ? html`
               <ha-svg-icon
-                id="comment-icon"
+                id="note-icon"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.comment.label"
+                  "ui.panel.config.automation.editor.note.label"
                 )}
-                class="comment-indicator"
+                class="note-indicator"
               ></ha-svg-icon>
-              <ha-tooltip for="comment-icon"
-                ><p>${commentTooltipText}</p></ha-tooltip
-              >
+              <ha-tooltip for="note-icon"><p>${noteTooltipText}</p></ha-tooltip>
             `
           : nothing}
       </h3>
@@ -309,14 +307,14 @@ export default class HaAutomationTriggerRow extends LitElement {
           )}
         </ha-dropdown-item>
         ${type !== "list"
-          ? html`<ha-dropdown-item value="edit_comment">
+          ? html`<ha-dropdown-item value="edit_note">
               <ha-svg-icon
                 slot="icon"
                 .path=${mdiCommentEditOutline}
               ></ha-svg-icon>
               ${this._renderOverflowLabel(
                 this.hass.localize(
-                  `ui.panel.config.automation.editor.comment.${(this.trigger as Exclude<Trigger, TriggerList>).comment ? "edit" : "add"}`
+                  `ui.panel.config.automation.editor.note.${(this.trigger as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
                 )
               )}
             </ha-dropdown-item>`
@@ -697,7 +695,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       rename: () => {
         this._renameTrigger();
       },
-      editComment: this._editCommentTrigger,
+      editNote: this._editNoteTrigger,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -841,27 +839,27 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   };
 
-  private _editCommentTrigger = async (): Promise<void> => {
+  private _editNoteTrigger = async (): Promise<void> => {
     if (isTriggerList(this.trigger)) return;
     const trigger = this.trigger;
-    const comment = await showPromptDialog(this, {
+    const note = await showPromptDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.automation.editor.comment.${trigger.comment ? "edit" : "add"}`
+        `ui.panel.config.automation.editor.note.${trigger.note ? "edit" : "add"}`
       ),
       inputLabel: this.hass.localize(
-        "ui.panel.config.automation.editor.comment.label"
+        "ui.panel.config.automation.editor.note.label"
       ),
       inputType: "string",
-      defaultValue: trigger.comment,
+      defaultValue: trigger.note,
       confirmText: this.hass.localize("ui.common.submit"),
       multiline: true,
     });
-    if (comment !== null) {
+    if (note !== null) {
       const value = { ...trigger };
-      if (comment === "") {
-        delete value.comment;
+      if (note === "") {
+        delete value.note;
       } else {
-        value.comment = comment;
+        value.note = note;
       }
       fireEvent(this, "value-changed", {
         value,
@@ -986,8 +984,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       case "rename":
         this._renameTrigger();
         break;
-      case "edit_comment":
-        this._editCommentTrigger();
+      case "edit_note":
+        this._editNoteTrigger();
         break;
       case "duplicate":
         this._duplicateTrigger();

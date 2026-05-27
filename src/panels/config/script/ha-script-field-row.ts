@@ -71,7 +71,7 @@ export default class HaScriptFieldRow extends LitElement {
     const hasSelector =
       this.field.selector && typeof this.field.selector === "object";
 
-    const commentTooltipText = truncateWithEllipsis(
+    const noteTooltipText = truncateWithEllipsis(
       this.field.description?.trim() || "",
       250
     );
@@ -101,13 +101,13 @@ export default class HaScriptFieldRow extends LitElement {
               .path=${mdiDotsVertical}
             ></ha-icon-button>
 
-            <ha-dropdown-item value="edit_comment">
+            <ha-dropdown-item value="edit_note">
               <ha-svg-icon
                 slot="icon"
                 .path=${mdiCommentEditOutline}
               ></ha-svg-icon>
               ${this.hass.localize(
-                `ui.panel.config.automation.editor.comment.${this.field.description ? "edit" : "add"}`
+                `ui.panel.config.automation.editor.note.${this.field.description ? "edit" : "add"}`
               )}
             </ha-dropdown-item>
             <ha-dropdown-item value="toggle_yaml_mode">
@@ -157,15 +157,15 @@ export default class HaScriptFieldRow extends LitElement {
             ${this.field.description?.trim()
               ? html`
                   <ha-svg-icon
-                    id="comment-icon"
+                    id="note-icon"
                     .path=${mdiCommentTextOutline}
                     .label=${this.hass.localize(
-                      "ui.panel.config.automation.editor.comment.label"
+                      "ui.panel.config.automation.editor.note.label"
                     )}
-                    class="comment-indicator"
+                    class="note-indicator"
                   ></ha-svg-icon>
-                  <ha-tooltip for="comment-icon"
-                    ><p>${commentTooltipText}</p></ha-tooltip
+                  <ha-tooltip for="note-icon"
+                    ><p>${noteTooltipText}</p></ha-tooltip
                   >
                 `
               : nothing}
@@ -361,25 +361,25 @@ export default class HaScriptFieldRow extends LitElement {
     });
   }
 
-  private _editComment = async (): Promise<void> => {
-    const comment = await showPromptDialog(this, {
+  private _editNote = async (): Promise<void> => {
+    const note = await showPromptDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.automation.editor.comment.${this.field.description ? "edit" : "add"}`
+        `ui.panel.config.automation.editor.note.${this.field.description ? "edit" : "add"}`
       ),
       inputLabel: this.hass.localize(
-        "ui.panel.config.automation.editor.comment.label"
+        "ui.panel.config.automation.editor.note.label"
       ),
       inputType: "string",
       defaultValue: this.field.description,
       confirmText: this.hass.localize("ui.common.submit"),
       multiline: true,
     });
-    if (comment !== null) {
+    if (note !== null) {
       const value = { ...this.field };
-      if (comment === "") {
+      if (note === "") {
         delete value.description;
       } else {
-        value.description = comment;
+        value.description = note;
       }
       fireEvent(this, "value-changed", {
         value,
@@ -431,7 +431,7 @@ export default class HaScriptFieldRow extends LitElement {
         excludeKeys: this.excludeKeys,
       },
       yamlMode: this._yamlMode,
-      editComment: this._editComment,
+      editNote: this._editNote,
     } satisfies ScriptFieldSidebarConfig);
 
     if (this.narrow) {
@@ -492,8 +492,8 @@ export default class HaScriptFieldRow extends LitElement {
       case "delete":
         this._onDelete();
         break;
-      case "edit_comment":
-        this._editComment();
+      case "edit_note":
+        this._editNote();
         break;
     }
   }

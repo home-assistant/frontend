@@ -142,8 +142,8 @@ export default class HaAutomationOptionRow extends LitElement {
     `;
   }
   private _renderRow() {
-    const commentTooltipText = truncateWithEllipsis(
-      this.option?.comment?.trim() || "",
+    const noteTooltipText = truncateWithEllipsis(
+      this.option?.note?.trim() || "",
       250
     );
 
@@ -157,19 +157,17 @@ export default class HaAutomationOptionRow extends LitElement {
           : this.hass.localize(
               "ui.panel.config.automation.editor.actions.type.choose.default"
             )}
-        ${this.option?.comment?.trim()
+        ${this.option?.note?.trim()
           ? html`
               <ha-svg-icon
-                id="comment-icon"
+                id="note-icon"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.comment.label"
+                  "ui.panel.config.automation.editor.note.label"
                 )}
-                class="comment-indicator"
+                class="note-indicator"
               ></ha-svg-icon>
-              <ha-tooltip for="comment-icon"
-                ><p>${commentTooltipText}</p></ha-tooltip
-              >
+              <ha-tooltip for="note-icon"><p>${noteTooltipText}</p></ha-tooltip>
             `
           : nothing}
       </h3>
@@ -199,14 +197,14 @@ export default class HaAutomationOptionRow extends LitElement {
                   )
                 )}
               </ha-dropdown-item>
-              <ha-dropdown-item value="edit_comment">
+              <ha-dropdown-item value="edit_note">
                 <ha-svg-icon
                   slot="icon"
                   .path=${mdiCommentEditOutline}
                 ></ha-svg-icon>
                 ${this._renderOverflowLabel(
                   this.hass.localize(
-                    `ui.panel.config.automation.editor.comment.${this.option?.comment ? "edit" : "add"}`
+                    `ui.panel.config.automation.editor.note.${this.option?.note ? "edit" : "add"}`
                   )
                 )}
               </ha-dropdown-item>
@@ -394,8 +392,8 @@ export default class HaAutomationOptionRow extends LitElement {
       case "rename":
         this._renameOption();
         break;
-      case "edit_comment":
-        this._editCommentOption();
+      case "edit_note":
+        this._editNoteOption();
         break;
       case "delete":
         this._removeOption();
@@ -460,28 +458,28 @@ export default class HaAutomationOptionRow extends LitElement {
     }
   };
 
-  private _editCommentOption = async (): Promise<void> => {
+  private _editNoteOption = async (): Promise<void> => {
     if (!this.option) {
       return;
     }
-    const comment = await showPromptDialog(this, {
+    const note = await showPromptDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.automation.editor.comment.${this.option.comment ? "edit" : "add"}`
+        `ui.panel.config.automation.editor.note.${this.option.note ? "edit" : "add"}`
       ),
       inputLabel: this.hass.localize(
-        "ui.panel.config.automation.editor.comment.label"
+        "ui.panel.config.automation.editor.note.label"
       ),
       inputType: "string",
-      defaultValue: this.option.comment,
+      defaultValue: this.option.note,
       confirmText: this.hass.localize("ui.common.submit"),
       multiline: true,
     });
-    if (comment !== null) {
+    if (note !== null) {
       const value: Option = { ...this.option };
-      if (comment === "") {
-        delete value.comment;
+      if (note === "") {
+        delete value.note;
       } else {
-        value.comment = comment;
+        value.note = note;
       }
       fireEvent(this, "value-changed", {
         value,
@@ -537,11 +535,11 @@ export default class HaAutomationOptionRow extends LitElement {
       rename: () => {
         this._renameOption();
       },
-      editComment: this._editCommentOption,
+      editNote: this._editNoteOption,
       delete: this._removeOption,
       duplicate: this._duplicateOption,
       defaultOption: !!this.defaultActions,
-      comment: sidebarOption?.comment,
+      note: sidebarOption?.note,
     } satisfies OptionSidebarConfig);
     this._selected = true;
     this._collapsed = false;
