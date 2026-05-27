@@ -89,7 +89,12 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
-  private _countCache = new Map<string, Promise<number | undefined>>();
+  private _countCache = new Map<
+    string,
+    Promise<number | undefined> | number | undefined
+  >();
+
+  private _rerenderCount = true;
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -98,8 +103,13 @@ export class HaAutomationRowTargets extends LitElement {
       changedProps.has("selector") ||
       changedProps.has("_registries")
     ) {
-      this._countCache.clear();
+      this._rerenderCount = true;
     }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    this._rerenderCount = false;
   }
 
   private _countMatchingEntities(referencedEntities: string[]): number {
@@ -148,7 +158,11 @@ export class HaAutomationRowTargets extends LitElement {
     targetId: string
   ) {
     const key = `${targetType}:${targetId}`;
-    if (!this._countCache.has(key)) {
+    let fallback = " (-)";
+    if (!this._countCache.has(key) || this._rerenderCount) {
+      if (typeof this._countCache.get(key) === "number") {
+        fallback = ` (${this._countCache.get(key)})`;
+      }
       this._countCache.set(
         key,
         extractFromTarget(
@@ -162,15 +176,30 @@ export class HaAutomationRowTargets extends LitElement {
           .then((result) =>
             this._countMatchingEntities(result.referenced_entities)
           )
-          .catch(() => undefined)
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error("Error counting target entities", err);
+            return undefined;
+          })
       );
     }
-    return until(
-      this._countCache
-        .get(key)!
-        .then((count) => (count === undefined ? nothing : html` (${count})`)),
-      "(-)"
-    );
+
+    if (this._countCache.get(key) instanceof Promise) {
+      return until(
+        (this._countCache.get(key) as Promise<number | undefined>)!.then(
+          (count) => {
+            this._countCache.set(key, count);
+            return count === undefined ? nothing : html` (${count})`;
+          }
+        ),
+        fallback
+      );
+    }
+
+    if (typeof this._countCache.get(key) === "number") {
+      return ` (${this._countCache.get(key)})`;
+    }
+    return nothing;
   }
 
   protected render() {
