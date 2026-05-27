@@ -1,6 +1,14 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import type { LovelaceCardFeatureContext } from "../panels/lovelace/card-features/types";
+import type { LovelaceCardConfig } from "./lovelace/config/card";
+
+export interface CustomCardSuggestion<
+  T extends LovelaceCardConfig = LovelaceCardConfig,
+> {
+  label?: string;
+  config: T;
+}
 
 export interface CustomCardEntry {
   type: string;
@@ -8,6 +16,10 @@ export interface CustomCardEntry {
   description?: string;
   preview?: boolean;
   documentationURL?: string;
+  getEntitySuggestion?: (
+    hass: HomeAssistant,
+    entityId: string
+  ) => CustomCardSuggestion | CustomCardSuggestion[] | null;
 }
 
 export interface CustomBadgeEntry {

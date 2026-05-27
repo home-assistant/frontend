@@ -1060,7 +1060,6 @@ export class HaChartBase extends LitElement {
         data,
       } as HaECSeriesItem;
       if (data && s.type === "line") {
-        const lineSeries = s as LineSeriesOption;
         if (yAxis?.type === "log") {
           // set <=0 values to null so they render as gaps on a log graph
           result = {
@@ -1075,7 +1074,7 @@ export class HaChartBase extends LitElement {
                 : v
             ),
           } as HaECSeriesItem;
-        } else if (lineSeries.sampling === "minmax") {
+        } else if ((s as LineSeriesOption).sampling === "minmax") {
           const minX = xAxis?.min
             ? xAxis.min instanceof Date
               ? xAxis.min.getTime()

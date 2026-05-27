@@ -1,7 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
-  mdiAlert,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
@@ -26,7 +25,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -53,26 +52,18 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-tooltip";
-import "../../../../components/ha-trigger-icon";
 import type {
   AutomationClipboard,
-  AutomationConfig,
   Condition,
   ConditionSidebarConfig,
   PlatformCondition,
-  TriggerCondition,
 } from "../../../../data/automation";
 import {
-  automationConfigContext,
   isCondition,
   subscribeCondition,
   testCondition,
 } from "../../../../data/automation";
-import {
-  describeCondition,
-  getTriggerInfos,
-} from "../../../../data/automation_i18n";
+import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import {
@@ -92,7 +83,6 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
-import "../ha-trigger-id-chip";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
 import "./ha-automation-condition-editor";
@@ -164,11 +154,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _liveTestResult: LiveTestState = "unknown";
-
-  @state()
-  @consume({ context: automationConfigContext, subscribe: true })
-  private _automationConfig?: AutomationConfig;
+  @state() private _liveTestResult: {
+    state: LiveTestState;
+    message?: string;
+  } = { state: "unknown" };
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -228,13 +217,9 @@ export default class HaAutomationConditionRow extends LitElement {
         .condition=${this.condition.condition}
       ></ha-condition-icon>
       <h3 slot="header">
-        ${this.condition.condition === "trigger"
-          ? this._renderTriggerConditionDescription(
-              this.condition as TriggerCondition
-            )
-          : capitalizeFirstLetter(
-              describeCondition(this.condition, this.hass, this._entityReg)
-            )}
+        ${capitalizeFirstLetter(
+          describeCondition(this.condition, this.hass, this._entityReg)
+        )}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
           ? this._renderTargets(
               target,
@@ -549,11 +534,12 @@ export default class HaAutomationConditionRow extends LitElement {
               <ha-automation-row-live-test
                 slot="icons"
                 .state=${this.condition.condition !== "trigger"
-                  ? this._liveTestResult
+                  ? this._liveTestResult.state
                   : "unknown"}
                 .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.conditions.live_test_state.${this.condition.condition !== "trigger" ? this._liveTestResult : "unknown"}`
+                  `ui.panel.config.automation.editor.conditions.live_test_state.${this.condition.condition !== "trigger" ? this._liveTestResult.state : "unknown"}`
                 )}
+                .message=${this._liveTestResult.message}
               ></ha-automation-row-live-test
             ></ha-automation-row>`
           : html`
@@ -583,102 +569,6 @@ export default class HaAutomationConditionRow extends LitElement {
           ></ha-automation-condition-editor>`
         : nothing}
     `;
-  }
-
-  private _getTriggerInfos = memoizeOne(getTriggerInfos);
-
-  private _renderTriggerConditionDescription(condition: TriggerCondition) {
-    const ids = ensureArray(condition.id ?? [])
-      .map((id) => (typeof id === "string" ? id : String(id)))
-      .filter((id) => id !== "");
-    const prefix = capitalizeFirstLetter(
-      this.hass
-        .localize(
-          "ui.panel.config.automation.editor.conditions.type.trigger.description.full",
-          { id: "" }
-        )
-        .trim()
-    );
-    if (!ids.length) {
-      return html`${prefix}
-        <div class="trigger warning">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.type.trigger.description.no_trigger"
-          )}
-        </div>`;
-    }
-
-    const triggerInfos = this._getTriggerInfos(
-      ensureArray(this._automationConfig?.triggers || []),
-      this.hass,
-      this._entityReg
-    );
-    const infoById = new Map(triggerInfos.map((info) => [info.id, info]));
-    return html`${prefix}
-    ${ids.map((id) => {
-      const info = infoById.get(id);
-      if (!info) {
-        return html`<div class="trigger">
-          <ha-trigger-id-chip id=${`trigger-${id}`} warning .triggerId=${id}>
-            <ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>
-          </ha-trigger-id-chip>
-          ${ids.length < 4
-            ? html`<span
-                >${this.hass.localize("state.default.unavailable")}</span
-              >`
-            : nothing}
-
-          <ha-tooltip .for=${`trigger-${id}`}>
-            ${ids.length >= 4
-              ? html`<div>
-                  ${this.hass.localize("state.default.unavailable")}
-                </div>`
-              : nothing}
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.type.trigger.unavailable_info",
-              { id: html`<b>${id}</b>` }
-            )}
-          </ha-tooltip>
-        </div>`;
-      }
-      const triggerIcon = html`<ha-trigger-icon
-        .slot=${ids.length < 4 ? "start" : ""}
-        .hass=${this.hass}
-        .trigger=${info.triggerType}
-      ></ha-trigger-icon>`;
-
-      const isDuplicateId = info.count > 1;
-
-      return html`
-        <div class="trigger">
-          ${ids.length < 4 ? triggerIcon : nothing}
-          <ha-trigger-id-chip
-            id=${`trigger-${id}`}
-            .triggerId=${id}
-            .warning=${isDuplicateId}
-          >
-            ${isDuplicateId
-              ? html`<ha-svg-icon slot="start" .path=${mdiAlert}></ha-svg-icon>`
-              : nothing}
-          </ha-trigger-id-chip>
-          ${ids.length < 4
-            ? html`<span>${info.label}</span>`
-            : html`<ha-tooltip .for=${`trigger-${id}`}></ha-tooltip>`}
-          ${isDuplicateId || ids.length >= 4
-            ? html`<ha-tooltip .for=${`trigger-${id}`}>
-                ${ids.length >= 4
-                  ? html`<div>${triggerIcon}${info.label}</div>`
-                  : nothing}
-                ${isDuplicateId
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.duplicate_id_warning"
-                    )
-                  : nothing}
-              </ha-tooltip>`
-            : nothing}
-        </div>
-      `;
-    })}`;
   }
 
   private _renderTargets = memoizeOne(
@@ -736,7 +626,12 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _resetSubscription() {
-    this._liveTestResult = "unknown";
+    this._liveTestResult = {
+      state: "unknown",
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.live_test_state.unknown"
+      ),
+    };
     if (this._conditionUnsub) {
       this._conditionUnsub.then((unsub) => unsub());
       this._conditionUnsub = undefined;
@@ -761,7 +656,12 @@ export default class HaAutomationConditionRow extends LitElement {
         if (result.error) {
           this._handleLiveTestError(result.error);
         } else {
-          this._liveTestResult = result.result ? "pass" : "fail";
+          this._liveTestResult = {
+            state: result.result ? "pass" : "fail",
+            message: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.testing_${result.result ? "pass" : "error"}`
+            ),
+          };
         }
       },
       this.condition
@@ -778,7 +678,12 @@ export default class HaAutomationConditionRow extends LitElement {
   private _handleLiveTestError(error: any) {
     const invalid =
       typeof error !== "string" && error.code === "invalid_format";
-    this._liveTestResult = invalid ? "invalid" : "unknown";
+    this._liveTestResult = {
+      state: invalid ? "invalid" : "unknown",
+      message: this.hass.localize(
+        `ui.panel.config.automation.editor.conditions.${invalid ? "invalid_condition" : "live_test_state.unknown"}`
+      ),
+    };
   }
 
   private _onValueChange(event: CustomEvent) {
@@ -1224,26 +1129,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      rowStyles,
-      overflowStyles,
-      css`
-        .trigger {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-2);
-          background-color: var(--ha-color-fill-neutral-normal-resting);
-          border-radius: var(--ha-border-radius-md);
-          padding-inline: var(--ha-space-2);
-          color: var(--ha-color-on-neutral-normal);
-          height: 32px;
-        }
-        .trigger.warning {
-          background-color: var(--ha-color-fill-warning-normal-resting);
-          color: var(--ha-color-on-warning-normal);
-        }
-      `,
-    ];
+    return [rowStyles, overflowStyles];
   }
 }
 
