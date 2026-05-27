@@ -1,5 +1,6 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../ha-tooltip";
 
 export type LiveTestState = "pass" | "fail" | "invalid" | "unknown";
 
@@ -12,12 +13,15 @@ export type LiveTestState = "pass" | "fail" | "invalid" | "unknown";
  *
  * @attr {"pass"|"fail"|"invalid"|"unknown"} state - The current live-test state. Defaults to `unknown`.
  * @attr {string} label - Accessible label announced by assistive technology.
+ * @attr {string} message - Optional tooltip body shown on hover/focus.
  */
 @customElement("ha-automation-row-live-test")
 export class HaAutomationRowLiveTest extends LitElement {
   @property({ reflect: true }) public state: LiveTestState = "unknown";
 
   @property() public label = "";
+
+  @property() public message?: string;
 
   protected render() {
     return html`
@@ -27,6 +31,9 @@ export class HaAutomationRowLiveTest extends LitElement {
         tabindex="0"
         aria-label=${this.label}
       ></div>
+      ${this.message
+        ? html`<ha-tooltip for="indicator">${this.message}</ha-tooltip>`
+        : nothing}
     `;
   }
 
