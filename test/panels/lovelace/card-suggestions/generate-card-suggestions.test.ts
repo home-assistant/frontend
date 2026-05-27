@@ -1,5 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { afterEach, describe, expect, it } from "vitest";
+import { customCards } from "../../../../src/data/lovelace_custom_cards";
+import type { CustomCardEntry } from "../../../../src/data/lovelace_custom_cards";
 import {
   CARD_SUGGESTION_PROVIDERS,
   generateCardSuggestions,
@@ -40,20 +42,39 @@ const registerTestProviders = (
   };
 };
 
+const registerCustomCards = (entries: CustomCardEntry[]): (() => void) => {
+  customCards.push(...entries);
+  return () => {
+    const types = new Set(entries.map((e) => e.type));
+    for (let i = customCards.length - 1; i >= 0; i--) {
+      if (types.has(customCards[i].type)) customCards.splice(i, 1);
+    }
+  };
+};
+
 describe("generateCardSuggestions", () => {
   let cleanupProviders: (() => void) | undefined;
+  let cleanupCustom: (() => void) | undefined;
 
   afterEach(() => {
     cleanupProviders?.();
     cleanupProviders = undefined;
+    cleanupCustom?.();
+    cleanupCustom = undefined;
   });
 
   it("suggests nothing when no entity is picked", () => {
-    expect(generateCardSuggestions(makeHass([]), undefined)).toEqual([]);
+    expect(generateCardSuggestions(makeHass([]), undefined)).toEqual({
+      core: [],
+      custom: [],
+    });
   });
 
   it("suggests nothing when the picked entity doesn't exist", () => {
-    expect(generateCardSuggestions(makeHass([]), "light.ghost")).toEqual([]);
+    expect(generateCardSuggestions(makeHass([]), "light.ghost")).toEqual({
+      core: [],
+      custom: [],
+    });
   });
 
   it("returns the entity-specific suggestions for a known entity", () => {
@@ -61,7 +82,7 @@ describe("generateCardSuggestions", () => {
       makeState("light.a", "on", { supported_color_modes: ["onoff"] }),
     ]);
     const suggestions = generateCardSuggestions(hass, "light.a");
-    expect(suggestions.some((s) => s.config.type === "tile")).toBe(true);
+    expect(suggestions.core.some((s) => s.config.type === "tile")).toBe(true);
   });
 
   it("accepts null, a single suggestion, or a list from each provider", () => {
@@ -88,7 +109,7 @@ describe("generateCardSuggestions", () => {
     });
 
     const hass = makeHass([makeState("sensor.a", "1")]);
-    const types = generateCardSuggestions(hass, "sensor.a").map(
+    const types = generateCardSuggestions(hass, "sensor.a").core.map(
       (s) => s.config.type
     );
 
@@ -107,9 +128,45 @@ describe("generateCardSuggestions", () => {
     });
 
     const hass = makeHass([makeState("sensor.a", "1")]);
-    const types = generateCardSuggestions(hass, "sensor.a").map(
+    const types = generateCardSuggestions(hass, "sensor.a").core.map(
       (s) => s.config.type
     );
     expect(types).toContain("tile");
+  });
+
+  it("collects suggestions from custom cards into the custom bucket", () => {
+    cleanupCustom = registerCustomCards([
+      {
+        type: "my-custom-card",
+        name: "My Custom Card",
+        getEntitySuggestion: (_hass, entityId) => ({
+          config: { type: "custom:my-custom-card", entity: entityId },
+        }),
+      },
+    ]);
+    const hass = makeHass([makeState("light.a")]);
+    const result = generateCardSuggestions(hass, "light.a");
+    expect(result.custom.map((s) => s.config.type)).toContain(
+      "custom:my-custom-card"
+    );
+    expect(
+      result.core.every((s) => s.config.type !== "custom:my-custom-card")
+    ).toBe(true);
+  });
+
+  it("keeps working when a custom card throws", () => {
+    cleanupCustom = registerCustomCards([
+      {
+        type: "broken-card",
+        getEntitySuggestion: () => {
+          throw new Error("boom");
+        },
+      },
+    ]);
+    const hass = makeHass([makeState("light.a")]);
+    const result = generateCardSuggestions(hass, "light.a");
+    expect(result.custom).toEqual([]);
+    // core path still produces tile suggestions
+    expect(result.core.some((s) => s.config.type === "tile")).toBe(true);
   });
 });
