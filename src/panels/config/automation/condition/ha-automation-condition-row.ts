@@ -44,6 +44,7 @@ import type { HaAutomationRow } from "../../../../components/automation/ha-autom
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -153,7 +154,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _liveTestResult: LiveTestState = "unknown";
+  @state() private _liveTestResult: {
+    state: LiveTestState;
+    message?: string;
+  } = { state: "unknown" };
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -529,10 +533,13 @@ export default class HaAutomationConditionRow extends LitElement {
               >${this._renderRow()}
               <ha-automation-row-live-test
                 slot="icons"
-                .state=${this._liveTestResult}
+                .state=${this.condition.condition !== "trigger"
+                  ? this._liveTestResult.state
+                  : "unknown"}
                 .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult}`
+                  `ui.panel.config.automation.editor.conditions.live_test_state.${this.condition.condition !== "trigger" ? this._liveTestResult.state : "unknown"}`
                 )}
+                .message=${this._liveTestResult.message}
               ></ha-automation-row-live-test
             ></ha-automation-row>`
           : html`
@@ -619,7 +626,12 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _resetSubscription() {
-    this._liveTestResult = "unknown";
+    this._liveTestResult = {
+      state: "unknown",
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.live_test_state.unknown"
+      ),
+    };
     if (this._conditionUnsub) {
       this._conditionUnsub.then((unsub) => unsub());
       this._conditionUnsub = undefined;
@@ -644,7 +656,12 @@ export default class HaAutomationConditionRow extends LitElement {
         if (result.error) {
           this._handleLiveTestError(result.error);
         } else {
-          this._liveTestResult = result.result ? "pass" : "fail";
+          this._liveTestResult = {
+            state: result.result ? "pass" : "fail",
+            message: this.hass.localize(
+              `ui.panel.config.automation.editor.conditions.testing_${result.result ? "pass" : "error"}`
+            ),
+          };
         }
       },
       this.condition
@@ -661,7 +678,12 @@ export default class HaAutomationConditionRow extends LitElement {
   private _handleLiveTestError(error: any) {
     const invalid =
       typeof error !== "string" && error.code === "invalid_format";
-    this._liveTestResult = invalid ? "invalid" : "unknown";
+    this._liveTestResult = {
+      state: invalid ? "invalid" : "unknown",
+      message: this.hass.localize(
+        `ui.panel.config.automation.editor.conditions.${invalid ? "invalid_condition" : "live_test_state.unknown"}`
+      ),
+    };
   }
 
   private _onValueChange(event: CustomEvent) {
