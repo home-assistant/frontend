@@ -30,7 +30,6 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
-import { filterXSS } from "../../common/util/xss";
 import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type {
@@ -1056,12 +1055,16 @@ export class HaChartBase extends LitElement {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined
         : s.data;
+      let result = {
+        ...s,
+        data,
+      } as HaECSeriesItem;
       if (data && s.type === "line") {
         const lineSeries = s as LineSeriesOption;
         if (yAxis?.type === "log") {
           // set <=0 values to null so they render as gaps on a log graph
-          return {
-            ...s,
+          result = {
+            ...result,
             data: (data as LineSeriesOption["data"])!.map((v) =>
               Array.isArray(v)
                 ? [
@@ -1071,9 +1074,8 @@ export class HaChartBase extends LitElement {
                   ]
                 : v
             ),
-          };
-        }
-        if (lineSeries.sampling === "minmax") {
+          } as HaECSeriesItem;
+        } else if (lineSeries.sampling === "minmax") {
           const minX = xAxis?.min
             ? xAxis.min instanceof Date
               ? xAxis.min.getTime()
@@ -1088,8 +1090,8 @@ export class HaChartBase extends LitElement {
                 ? xAxis.max
                 : undefined
             : undefined;
-          return {
-            ...s,
+          result = {
+            ...result,
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
@@ -1097,15 +1099,10 @@ export class HaChartBase extends LitElement {
               minX,
               maxX
             ),
-          };
+          } as HaECSeriesItem;
         }
       }
-      const name = filterXSS(String(s.name ?? s.id ?? ""));
-      return processSeriesTooltipFormatter({
-        ...s,
-        name,
-        data,
-      } as HaECSeriesItem);
+      return processSeriesTooltipFormatter(result);
     });
     return series as ECOption["series"];
   }
