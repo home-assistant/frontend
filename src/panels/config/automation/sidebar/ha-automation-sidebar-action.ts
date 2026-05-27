@@ -14,6 +14,7 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
@@ -27,6 +28,7 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
+import { isBuildingBlockAction } from "../action/convert-action";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import { domainToName } from "../../../../data/integration";
 import type {
@@ -285,6 +287,22 @@ export default class HaAutomationSidebarAction extends LitElement {
             </ha-dropdown-item>
           `
         : nothing}
+      ${!isBuildingBlockAction(this.config.config.action)
+        ? html`<ha-dropdown-item
+            slot="menu-items"
+            value="convert"
+            .disabled=${this.disabled}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiSwapHorizontal}></ha-svg-icon>
+            <div class="overflow-label">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.convert"
+              )}
+              <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+            </div>
+          </ha-dropdown-item>`
+        : nothing}
+
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -450,6 +468,9 @@ export default class HaAutomationSidebarAction extends LitElement {
         break;
       case "duplicate":
         this.config.duplicate();
+        break;
+      case "convert":
+        this.config.convert();
         break;
       case "copy":
         this.config.copy();

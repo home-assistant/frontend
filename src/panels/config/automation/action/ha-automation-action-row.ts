@@ -20,6 +20,7 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
@@ -90,8 +91,10 @@ import { showEditorToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
 import "../target/ha-automation-row-targets";
+import { isBuildingBlockAction } from "./convert-action";
 import "./ha-automation-action-editor";
 import type HaAutomationActionEditor from "./ha-automation-action-editor";
+import { showConvertActionDialog } from "./show-dialog-convert-action";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -308,7 +311,6 @@ export default class HaAutomationActionRow extends LitElement {
             <ha-service-icon
               slot="leading-icon"
               class="action-icon"
-              .hass=${this.hass}
               .service=${this.action.action}
             ></ha-service-icon>
           `
@@ -519,6 +521,16 @@ export default class HaAutomationActionRow extends LitElement {
                 <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
               ></ha-dropdown-item>
             `
+          : nothing}
+        ${!isBuildingBlockAction(this.action)
+          ? html`<ha-dropdown-item value="convert" .disabled=${this.disabled}>
+              <ha-svg-icon slot="icon" .path=${mdiSwapHorizontal}></ha-svg-icon>
+              ${this._renderOverflowLabel(
+                this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.convert"
+                )
+              )}
+            </ha-dropdown-item>`
           : nothing}
 
         <ha-dropdown-item
@@ -977,6 +989,24 @@ export default class HaAutomationActionRow extends LitElement {
     fireEvent(this, "duplicate");
   };
 
+  private _convertAction = () => {
+    showConvertActionDialog(this, {
+      currentAction: this.action,
+      convert: (newAction) => {
+        fireEvent(this, "value-changed", { value: newAction });
+
+        if (this._selected && this.optionsInSidebar) {
+          this.openSidebar(newAction);
+        } else if (this._yamlMode) {
+          this._actionEditor?.yamlEditor?.setValue(newAction);
+        }
+      },
+      duplicateConvert: (newAction) => {
+        this._insertAfter(newAction);
+      },
+    });
+  };
+
   private _insertAfter = (value: Action | Action[]) => {
     if (ensureArray(value).some((val) => !isAction(val))) {
       return false;
@@ -1102,6 +1132,7 @@ export default class HaAutomationActionRow extends LitElement {
       paste: this._pasteAction,
       pasteAvailable: this._pasteAvailable,
       duplicate: this._duplicateAction,
+      convert: this._convertAction,
       insertAfter: this._insertAfter,
       run: this._runAction,
       config: {
@@ -1205,6 +1236,9 @@ export default class HaAutomationActionRow extends LitElement {
         break;
       case "move_down":
         this._moveDown();
+        break;
+      case "convert":
+        this._convertAction();
         break;
       case "toggle_yaml_mode":
         this._toggleYamlMode(ev.target as HTMLElement);

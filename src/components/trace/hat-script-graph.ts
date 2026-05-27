@@ -451,7 +451,6 @@ export class HatScriptGraph extends LitElement {
         ${node.action
           ? html`<ha-service-icon
               slot="icon"
-              .hass=${this.hass}
               .service=${node.action}
             ></ha-service-icon>`
           : nothing}

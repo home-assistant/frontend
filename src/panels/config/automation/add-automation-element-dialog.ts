@@ -1638,7 +1638,6 @@ class DialogAddAutomationElement
           result.push({
             icon: html`
               <ha-service-icon
-                .hass=${this.hass}
                 .service=${`${dmn}.${service}`}
               ></ha-service-icon>
             `,
@@ -1957,7 +1956,6 @@ class DialogAddAutomationElement
       items[domain].items.push({
         icon: html`
           <ha-service-icon
-            .hass=${this.hass}
             .service=${`${domain}.${serviceName}`}
           ></ha-service-icon>
         `,

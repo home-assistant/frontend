@@ -62,11 +62,7 @@ class HaServicePicker extends LitElement {
     index
   ) => html`
     <ha-combo-box-item type="button" .borderTop=${index !== 0}>
-      <ha-service-icon
-        slot="start"
-        .hass=${this.hass}
-        .service=${item.id}
-      ></ha-service-icon>
+      <ha-service-icon slot="start" .service=${item.id}></ha-service-icon>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
       ${item.service_id && this.showServiceId
@@ -112,11 +108,7 @@ class HaServicePicker extends LitElement {
           service;
 
         return html`
-          <ha-service-icon
-            slot="start"
-            .hass=${this.hass}
-            .service=${serviceId}
-          ></ha-service-icon>
+          <ha-service-icon slot="start" .service=${serviceId}></ha-service-icon>
           <span slot="headline">${serviceName}</span>
           ${this.showServiceId
             ? html`<span slot="supporting-text" class="code"

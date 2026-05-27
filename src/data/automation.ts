@@ -653,6 +653,7 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   disable: () => void;
   continueOnError: () => void;
   duplicate: () => void;
+  convert: () => void;
   cut: () => void;
   copy: () => void;
   insertAfter: (value: Action | Action[]) => boolean;

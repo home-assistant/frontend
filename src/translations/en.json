@@ -5648,6 +5648,15 @@
               "run_action_error": "Error running action",
               "run_action_success": "Action ran successfully",
               "duplicate": "[%key:ui::common::duplicate%]",
+              "convert": "Convert to…",
+              "convert_dialog": {
+                "title": "Convert action",
+                "warning": "Compatible settings are carried over; anything else is removed. You can undo if you change your mind.",
+                "convert": "Convert",
+                "mode_current": "Convert current action",
+                "mode_new": "Convert into a new action",
+                "no_matches": "No matching actions"
+              },
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
