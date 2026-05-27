@@ -87,7 +87,9 @@ export class HaMediaBrowserThumbnail extends LitElement {
   }
 
   private _probeSize(url: string): void {
-    // SVGs scale natively; pixelated rendering would break vector output.
+    // SVGs (including brand icons) scale natively; pixelated rendering would
+    // break vector output.
+    if (this.url && isBrandUrl(this.url)) return;
     if (isSvgUrl(url)) return;
     const img = new Image();
     img.addEventListener("load", () => {
