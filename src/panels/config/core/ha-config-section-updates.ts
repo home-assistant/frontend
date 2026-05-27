@@ -35,6 +35,8 @@ import {
   checkForEntityUpdates,
   filterUpdateEntitiesParameterized,
   getUpdateType,
+  installUpdates,
+  updateIsInstalling,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
@@ -69,6 +71,8 @@ class HaConfigSectionUpdates extends LitElement {
 
   @state() private _loadedIntegrationTitles = new Set<string>();
 
+  @state() private _loadingGroups = new Set<string>();
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
@@ -76,9 +80,15 @@ class HaConfigSectionUpdates extends LitElement {
       this._refreshSupervisorInfo();
     }
 
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
+    this._loadEntitySources();
+  }
+
+  private async _loadEntitySources() {
+    try {
+      this._entitySources = await fetchEntitySourcesWithCache(this.hass);
+    } catch (_err) {
+      // Non-fatal: grouping falls back to entity registry platform lookup.
+    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -180,6 +190,7 @@ class HaConfigSectionUpdates extends LitElement {
                           <ha-button
                             appearance="plain"
                             size="small"
+                            ?loading=${this._isGroupLoading(group)}
                             .group=${group}
                             @click=${this._updateAll}
                           >
@@ -276,18 +287,31 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
+  private _isGroupLoading(group: UpdateGroup): boolean {
+    return (
+      this._loadingGroups.has(group.key) ||
+      group.entities.every(updateIsInstalling)
+    );
+  }
+
   private async _updateAll(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
+    this._loadingGroups = new Set(this._loadingGroups).add(group.key);
     try {
-      await this.hass.callService("update", "install", {
-        entity_id: group.entities.map((entity) => entity.entity_id),
-      });
+      await installUpdates(
+        this.hass,
+        group.entities.map((entity) => entity.entity_id)
+      );
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.updates.update_all_failed"),
         text: err.message,
         warning: true,
       });
+    } finally {
+      const next = new Set(this._loadingGroups);
+      next.delete(group.key);
+      this._loadingGroups = next;
     }
   }
 
