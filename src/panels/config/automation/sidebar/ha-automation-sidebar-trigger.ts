@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
@@ -24,13 +23,11 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
-import {
-  automationConfigContext,
-  type AutomationConfig,
-  type LegacyTrigger,
-  type Trigger,
-  type TriggerList,
-  type TriggerSidebarConfig,
+import type {
+  LegacyTrigger,
+  Trigger,
+  TriggerList,
+  TriggerSidebarConfig,
 } from "../../../../data/automation";
 import {
   getTriggerDomain,
@@ -62,10 +59,6 @@ export default class HaAutomationSidebarTrigger extends LitElement {
 
   @property({ type: Number, attribute: "sidebar-key" })
   public sidebarKey?: number;
-
-  @state()
-  @consume({ context: automationConfigContext, subscribe: true })
-  private _automationConfig?: AutomationConfig;
 
   @state() private _warnings?: string[];
 

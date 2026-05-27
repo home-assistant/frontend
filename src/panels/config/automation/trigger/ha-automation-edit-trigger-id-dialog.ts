@@ -2,21 +2,13 @@ import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { ensureArray } from "../../../../common/array/ensure-array";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
-import {
-  automationConfigContext,
-  type AutomationConfig,
-  type Trigger,
-} from "../../../../data/automation";
 import { internationalizationContext } from "../../../../data/context";
-import { getTriggerIds } from "../../../../data/trigger";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { EditTriggerIdDialogParams } from "./show-edit-trigger-id";
@@ -30,9 +22,6 @@ class HaAutomationEditTriggerIdDialog extends DialogMixin<EditTriggerIdDialogPar
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   protected _i18n!: ContextType<typeof internationalizationContext>;
-
-  @consume({ context: automationConfigContext, subscribe: true })
-  private _automationConfig?: AutomationConfig;
 
   connectedCallback() {
     super.connectedCallback();
@@ -88,20 +77,9 @@ class HaAutomationEditTriggerIdDialog extends DialogMixin<EditTriggerIdDialogPar
     `;
   }
 
-  private _getTriggerIds = memoizeOne((triggers: Trigger | Trigger[]) =>
-    getTriggerIds(ensureArray(triggers))
-  );
-
   private _idChanged(ev: InputEvent) {
     const target = ev.target as HaInput;
     this._newId = target.value ?? "";
-
-    if (this._automationConfig?.triggers) {
-      const existingTriggerIds = this._getTriggerIds(
-        this._automationConfig.triggers
-      );
-      this._duplicateWarning = existingTriggerIds.includes(this._newId);
-    }
   }
 
   private _handleKeyDown(ev: KeyboardEvent) {
