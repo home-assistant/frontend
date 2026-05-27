@@ -184,8 +184,6 @@ export class StateHistoryChartLine extends LitElement {
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
 
-    // Pre-diff this returned `title + <br>` even with zero datapoints \u2014 show
-    // the timestamp by itself when every dataset is hidden, not an empty box.
     return html`${title}${datapoints.map((param) => {
       const entityId = this._entityIds[param.seriesIndex];
       const stateObj = this.hass.states[entityId];
