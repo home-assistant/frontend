@@ -216,8 +216,8 @@ export default class HaAutomationConditionRow extends LitElement {
     const conditionTargetSpec =
       this.conditionDescriptions[this.condition.condition]?.target;
 
-    const commentTooltipText = truncateWithEllipsis(
-      this.condition.comment?.trim() || "",
+    const noteTooltipText = truncateWithEllipsis(
+      this.condition.note?.trim() || "",
       250
     );
 
@@ -242,19 +242,17 @@ export default class HaAutomationConditionRow extends LitElement {
               conditionTargetSpec
             )
           : nothing}
-        ${this.condition.comment?.trim()
+        ${this.condition.note?.trim()
           ? html`
               <ha-svg-icon
-                id="comment-icon"
+                id="note-icon"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.comment.label"
+                  "ui.panel.config.automation.editor.note.label"
                 )}
-                class="comment-indicator"
+                class="note-indicator"
               ></ha-svg-icon>
-              <ha-tooltip for="comment-icon"
-                ><p>${commentTooltipText}</p></ha-tooltip
-              >
+              <ha-tooltip for="note-icon"><p>${noteTooltipText}</p></ha-tooltip>
             `
           : nothing}
       </h3>
@@ -304,11 +302,11 @@ export default class HaAutomationConditionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
-        <ha-dropdown-item value="edit_comment">
+        <ha-dropdown-item value="edit_note">
           <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
           ${this._renderOverflowLabel(
             this.hass.localize(
-              `ui.panel.config.automation.editor.comment.${this.condition.comment ? "edit" : "add"}`
+              `ui.panel.config.automation.editor.note.${this.condition.note ? "edit" : "add"}`
             )
           )}
         </ha-dropdown-item>
@@ -945,25 +943,25 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   };
 
-  private _editCommentCondition = async (): Promise<void> => {
-    const comment = await showPromptDialog(this, {
+  private _editNoteCondition = async (): Promise<void> => {
+    const note = await showPromptDialog(this, {
       title: this.hass.localize(
-        `ui.panel.config.automation.editor.comment.${this.condition.comment ? "edit" : "add"}`
+        `ui.panel.config.automation.editor.note.${this.condition.note ? "edit" : "add"}`
       ),
       inputLabel: this.hass.localize(
-        "ui.panel.config.automation.editor.comment.label"
+        "ui.panel.config.automation.editor.note.label"
       ),
       inputType: "string",
-      defaultValue: this.condition.comment,
+      defaultValue: this.condition.note,
       confirmText: this.hass.localize("ui.common.submit"),
       multiline: true,
     });
-    if (comment !== null) {
+    if (note !== null) {
       const value = { ...this.condition };
-      if (comment === "") {
-        delete value.comment;
+      if (note === "") {
+        delete value.note;
       } else {
-        value.comment = comment;
+        value.note = note;
       }
       fireEvent(this, "value-changed", {
         value,
@@ -1118,7 +1116,7 @@ export default class HaAutomationConditionRow extends LitElement {
       rename: () => {
         this._renameCondition();
       },
-      editComment: this._editCommentCondition,
+      editNote: this._editNoteCondition,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -1190,8 +1188,8 @@ export default class HaAutomationConditionRow extends LitElement {
       case "rename":
         this._renameCondition();
         break;
-      case "edit_comment":
-        this._editCommentCondition();
+      case "edit_note":
+        this._editNoteCondition();
         break;
       case "duplicate":
         this._duplicateCondition();

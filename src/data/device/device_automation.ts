@@ -13,7 +13,7 @@ import {
 
 export interface DeviceAutomation {
   alias?: string;
-  comment?: string;
+  note?: string;
   device_id: string;
   domain: string;
   entity_id?: string;

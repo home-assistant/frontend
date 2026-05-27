@@ -9,16 +9,16 @@ import {
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
-import "../ha-automation-comment";
+import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-option")
 export default class HaAutomationSidebarOption extends LitElement {
@@ -76,7 +76,7 @@ export default class HaAutomationSidebarOption extends LitElement {
             </ha-dropdown-item>
             <ha-dropdown-item
               slot="menu-items"
-              value="edit_comment"
+              value="edit_note"
               .disabled=${!!disabled}
             >
               <ha-svg-icon
@@ -85,7 +85,7 @@ export default class HaAutomationSidebarOption extends LitElement {
               ></ha-svg-icon>
               <div class="overflow-label">
                 ${this.hass.localize(
-                  `ui.panel.config.automation.editor.comment.${this.config.comment ? "edit" : "add"}`
+                  `ui.panel.config.automation.editor.note.${this.config.note ? "edit" : "add"}`
                 )}
                 <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
               </div>
@@ -144,11 +144,11 @@ export default class HaAutomationSidebarOption extends LitElement {
           `}
 
       <div class="description">${description}</div>
-      ${!this.config.defaultOption && this.config.comment?.trim()
-        ? html`<ha-automation-comment
-            @edit-comment=${this.config.editComment}
-            .comment=${this.config.comment}
-          ></ha-automation-comment>`
+      ${!this.config.defaultOption && this.config.note?.trim()
+        ? html`<ha-automation-note
+            @edit-note=${this.config.editNote}
+            .note=${this.config.note}
+          ></ha-automation-note>`
         : nothing}
     </ha-automation-sidebar-card>`;
   }
@@ -164,8 +164,8 @@ export default class HaAutomationSidebarOption extends LitElement {
       case "rename":
         this.config.rename();
         break;
-      case "edit_comment":
-        this.config.editComment();
+      case "edit_note":
+        this.config.editNote();
         break;
       case "duplicate":
         this.config.duplicate();

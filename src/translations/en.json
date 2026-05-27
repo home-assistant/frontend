@@ -5074,10 +5074,10 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
-            "comment": {
-              "label": "Comment",
-              "edit": "Edit comment",
-              "add": "Add comment"
+            "note": {
+              "label": "Note",
+              "edit": "Edit note",
+              "add": "Add note"
             },
             "leave": {
               "unsaved_new_title": "Save new automation?",
