@@ -35,12 +35,15 @@ export const generateCardSuggestions = (
     }
   });
   const custom = customCards.flatMap((card) => {
-    if (!card.getSuggestion) return [];
+    if (!card.getEntitySuggestion) return [];
     try {
-      return collect(card.getSuggestion(hass, entityId));
+      return collect(card.getEntitySuggestion(hass, entityId));
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`Custom card "${card.type}" getSuggestion threw:`, err);
+      console.error(
+        `Custom card "${card.type}" getEntitySuggestion threw:`,
+        err
+      );
       return [];
     }
   });

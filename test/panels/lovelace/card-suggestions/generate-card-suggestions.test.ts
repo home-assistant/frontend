@@ -139,7 +139,7 @@ describe("generateCardSuggestions", () => {
       {
         type: "my-custom-card",
         name: "My Custom Card",
-        getSuggestion: (_hass, entityId) => ({
+        getEntitySuggestion: (_hass, entityId) => ({
           config: { type: "custom:my-custom-card", entity: entityId },
         }),
       },
@@ -158,7 +158,7 @@ describe("generateCardSuggestions", () => {
     cleanupCustom = registerCustomCards([
       {
         type: "broken-card",
-        getSuggestion: () => {
+        getEntitySuggestion: () => {
           throw new Error("boom");
         },
       },

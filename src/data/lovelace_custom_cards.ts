@@ -16,7 +16,7 @@ export interface CustomCardEntry {
   description?: string;
   preview?: boolean;
   documentationURL?: string;
-  getSuggestion?: (
+  getEntitySuggestion?: (
     hass: HomeAssistant,
     entityId: string
   ) => CustomCardSuggestion | CustomCardSuggestion[] | null;
