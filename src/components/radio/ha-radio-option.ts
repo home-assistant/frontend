@@ -99,6 +99,8 @@ export class HaRadioOption extends Radio {
             --ha-radio-option-checked-background-color,
             var(--ha-color-fill-primary-normal-resting)
           );
+          color: var(--ha-color-fill-primary-loud-resting);
+          border-color: var(--ha-color-fill-primary-loud-resting);
         }
 
         [part~="label"] {
