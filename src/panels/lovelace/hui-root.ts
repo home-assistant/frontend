@@ -1291,7 +1291,7 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -1304,7 +1304,7 @@ class HUIRoot extends LitElement {
         }
         .narrow .header {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)
@@ -1313,7 +1313,7 @@ class HUIRoot extends LitElement {
         }
         :host([scrolled]) .header {
           box-shadow: var(
-            --mdc-top-app-bar-fixed-box-shadow,
+            --bar-box-shadow,
             0px 2px 4px -1px rgba(0, 0, 0, 0.2),
             0px 4px 5px 0px rgba(0, 0, 0, 0.14),
             0px 1px 10px 0px rgba(0, 0, 0, 0.12)

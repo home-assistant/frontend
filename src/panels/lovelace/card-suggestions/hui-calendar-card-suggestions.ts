@@ -4,13 +4,9 @@ import type { CardSuggestionProvider } from "./types";
 
 export const calendarCardSuggestions: CardSuggestionProvider<CalendarCardConfig> =
   {
-    getEntitySuggestion(hass, entityId) {
+    getEntitySuggestion(_hass, entityId) {
       if (computeDomain(entityId) !== "calendar") return null;
       return {
-        id: "calendar",
-        label: hass.localize(
-          "ui.panel.lovelace.editor.cardpicker.suggestions.calendar"
-        ),
         config: { type: "calendar", entities: [entityId] },
       };
     },

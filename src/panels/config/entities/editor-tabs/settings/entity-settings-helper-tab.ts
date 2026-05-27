@@ -39,10 +39,14 @@ export class EntitySettingsHelperTab extends LitElement {
 
   @state() private _submitting = false;
 
+  @state() private _dirty = false;
+
   @state() private _componentLoaded?: boolean;
 
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
+
+  private _originalItemJson?: string;
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -120,7 +124,9 @@ export class EntitySettingsHelperTab extends LitElement {
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${!!this._submitting || !!(this._item && !this._item.name)}
+          .disabled=${!this._dirty ||
+          !!this._submitting ||
+          !!(this._item && !this._item.name)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
@@ -128,8 +134,18 @@ export class EntitySettingsHelperTab extends LitElement {
     `;
   }
 
+  private get _isHelperDirty(): boolean {
+    if (!this._item || !this._originalItemJson) return false;
+    return JSON.stringify(this._item) !== this._originalItemJson;
+  }
+
+  private _updateDirty() {
+    this._dirty = (this._registryEditor?.dirty ?? false) || this._isHelperDirty;
+  }
+
   private _entityRegistryChanged() {
     this._error = undefined;
+    this._updateDirty();
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -138,11 +154,15 @@ export class EntitySettingsHelperTab extends LitElement {
     }
     this._error = undefined;
     this._item = ev.detail.value;
+    this._updateDirty();
   }
 
   private async _getItem() {
     const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
     this._item = items.find((item) => item.id === this.entry.unique_id) || null;
+    this._originalItemJson = this._item
+      ? JSON.stringify(this._item)
+      : undefined;
   }
 
   private async _updateItem(): Promise<void> {

@@ -52,17 +52,23 @@ export class HuiSuggestionCard extends LitElement {
   protected render(): TemplateResult {
     const { suggestion } = this;
     const hiddenCount = this._preview?.hiddenCount ?? 0;
+    const cardName = this.hass.localize(
+      `ui.panel.lovelace.editor.card.${suggestion.config.type}.name` as any
+    );
+    const label = suggestion.label
+      ? `${cardName} - ${suggestion.label}`
+      : cardName;
 
     return html`
       <div
         class="card"
         tabindex="0"
         role="button"
-        aria-label=${suggestion.label}
+        aria-label=${label}
         @keydown=${this._handleKeyDown}
       >
         <div class="overlay" @click=${this._handleClick}></div>
-        <div class="card-header">${suggestion.label}</div>
+        <div class="card-header">${label}</div>
         <div class="preview">
           ${this._preview
             ? html`

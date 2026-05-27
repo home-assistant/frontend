@@ -178,7 +178,7 @@ export class HuiSuggestionPicker extends LitElement {
       <div class="suggestions" @pick-suggestion=${this._pickSuggestion}>
         ${repeat(
           suggestions,
-          (s: CardSuggestion) => s.id,
+          (s: CardSuggestion) => JSON.stringify(s.config),
           (s: CardSuggestion) => html`
             <hui-suggestion-card
               .hass=${this.hass}

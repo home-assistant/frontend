@@ -1969,6 +1969,7 @@
           "entity_disabled": "This entity is disabled.",
           "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
+          "device_name_tip": "Consider renaming the device instead to update all its entities at once. {link}",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
           "switch_as_x_remove_confirm": "This {domain} will be removed and the original switch will be visible again. Your existing configurations using the {domain} will no longer work!",
           "switch_as_x_change_confirm": "This {domain_1} will be removed and will be replaced by a new {domain_2}. Your existing configurations using the {domain_1} will no longer work!",
@@ -10426,34 +10427,12 @@
             "suggestions_title": "Suggestions",
             "not_found": "Can't find the card you want?",
             "suggestions": {
-              "tile": "Tile",
-              "tile_toggle": "Tile - toggle",
-              "tile_brightness": "Tile - brightness",
-              "tile_color_temperature": "Tile - color temperature",
-              "tile_favorite_colors": "Tile - favorite colors",
-              "tile_open_close": "Tile - open/close",
-              "tile_position": "Tile - position",
-              "tile_tilt": "Tile - tilt",
-              "tile_hvac_modes": "Tile - HVAC modes",
-              "tile_playback_controls": "Tile - playback controls",
-              "tile_volume_slider": "Tile - volume slider",
-              "tile_speed": "Tile - speed",
-              "tile_preset_modes": "Tile - preset modes",
-              "tile_options": "Tile - options",
-              "tile_numeric_input": "Tile - numeric input",
-              "tile_date_picker": "Tile - date picker",
-              "tile_trend_graph": "Tile - trend graph",
-              "tile_lock_commands": "Tile - lock commands",
-              "tile_humidifier_toggle": "Tile - humidifier toggle",
-              "tile_humidifier_modes": "Tile - humidifier modes",
-              "tile_vacuum_commands": "Tile - vacuum commands",
-              "tile_mower_commands": "Tile - mower commands",
-              "tile_alarm_modes": "Tile - alarm modes",
-              "tile_counter_actions": "Tile - counter actions",
-              "tile_update_actions": "Tile - update actions",
-              "tile_operation_modes": "Tile - operation modes",
-              "calendar": "Calendar",
-              "todo_list": "To-do list"
+              "periods": {
+                "last_24h": "Last 24 hours",
+                "last_7d": "Last 7 days",
+                "last_30d": "Last 30 days",
+                "last_year": "Last year"
+              }
             }
           },
           "badge_picker": {

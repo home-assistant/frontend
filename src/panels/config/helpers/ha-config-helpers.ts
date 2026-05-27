@@ -382,7 +382,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         showNarrow: true,
         template: (helper) => html`
           <ha-icon-overflow-menu
-            .hass=${this.hass}
             narrow
             .items=${[
               ...(helper.configEntry &&

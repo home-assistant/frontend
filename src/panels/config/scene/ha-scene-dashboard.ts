@@ -331,7 +331,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           showNarrow: true,
           template: (scene) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {

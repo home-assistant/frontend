@@ -34,7 +34,9 @@ import { supportsMediaPlayerSourceCardFeature } from "./hui-media-player-source-
 import { supportsMediaPlayerVolumeButtonsCardFeature } from "./hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "./hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "./hui-numeric-input-card-feature";
+import { supportsPrecipitationForecastCardFeature } from "./hui-precipitation-forecast-card-feature";
 import { supportsSelectOptionsCardFeature } from "./hui-select-options-card-feature";
+import { supportsTemperatureForecastCardFeature } from "./hui-temperature-forecast-card-feature";
 import { supportsTargetHumidityCardFeature } from "./hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "./hui-target-temperature-card-feature";
 import { supportsToggleCardFeature } from "./hui-toggle-card-feature";
@@ -93,7 +95,9 @@ export const UI_FEATURE_TYPES = [
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
+  "precipitation-forecast",
   "select-options",
+  "temperature-forecast",
   "trend-graph",
   "target-humidity",
   "target-temperature",
@@ -145,10 +149,12 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "precipitation-forecast": supportsPrecipitationForecastCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  "temperature-forecast": supportsTemperatureForecastCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,

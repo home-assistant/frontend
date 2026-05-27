@@ -1,8 +1,16 @@
 import { consume } from "@lit/context";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import type { HomeAssistant } from "../../types";
-import { entitiesContext, statesContext } from "../../data/context";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../types";
+import {
+  entitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
+import type { LocalizeFunc } from "../translations/localize";
 import { transform } from "./transform";
 
 interface ConsumeEntryConfig {
@@ -90,4 +98,16 @@ export const consumeEntityRegistryEntry = (config: ConsumeEntryConfig) =>
       const id = resolveAtPath(this, config.entityIdPath);
       return typeof id === "string" ? entities?.[id] : undefined;
     }
+  );
+
+/**
+ * Consumes `internationalizationContext` and narrows it to the `localize`
+ * function. No host watching is needed — the decorated property updates
+ * whenever the i18n context changes.
+ */
+export const consumeLocalize = () =>
+  composeDecorator<HomeAssistantInternationalization, LocalizeFunc>(
+    internationalizationContext,
+    undefined,
+    ({ localize }) => localize
   );

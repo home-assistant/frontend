@@ -1885,73 +1885,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@html-eslint/core@npm:^0.60.0":
-  version: 0.60.0
-  resolution: "@html-eslint/core@npm:0.60.0"
+"@html-eslint/core@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "@html-eslint/core@npm:0.61.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.60.0"
+    "@html-eslint/types": "npm:^0.61.0"
     html-standard: "npm:^0.0.13"
-  checksum: 10/774feb216f81f9a7e41d023a9a2e4a28e5ba9a2d6077d23cfe0c3511728e60dd0943f0a1ec1ab5eaf33e59ece71ddfbe9bf8b217cc24d887fa0b623bb0723065
+  checksum: 10/a464a9d06c808dd13bfb6a5b050d7bd0d51e6d43b239337036296ab01a4e45fac2a98bc8bb0b47894333b57ec35f970d07a5ecafc1be7d116a88801899cac301
   languageName: node
   linkType: hard
 
-"@html-eslint/eslint-plugin@npm:0.60.0":
-  version: 0.60.0
-  resolution: "@html-eslint/eslint-plugin@npm:0.60.0"
+"@html-eslint/eslint-plugin@npm:0.61.0":
+  version: 0.61.0
+  resolution: "@html-eslint/eslint-plugin@npm:0.61.0"
   dependencies:
     "@eslint/plugin-kit": "npm:^0.4.1"
-    "@html-eslint/core": "npm:^0.60.0"
-    "@html-eslint/parser": "npm:^0.60.0"
-    "@html-eslint/template-parser": "npm:^0.60.0"
-    "@html-eslint/template-syntax-parser": "npm:^0.60.0"
-    "@html-eslint/types": "npm:^0.60.0"
+    "@html-eslint/core": "npm:^0.61.0"
+    "@html-eslint/parser": "npm:^0.61.0"
+    "@html-eslint/template-parser": "npm:^0.61.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.61.0"
+    "@html-eslint/types": "npm:^0.61.0"
     "@rviscomi/capo.js": "npm:^2.1.0"
     html-standard: "npm:^0.0.13"
   peerDependencies:
     eslint: ">=8.0.0 || ^10.0.0-0"
-  checksum: 10/0a0e8fb92975dab7ae96fc8df42ab7be56508bb746041303bcfc4a8b6cba0497079ac244b1ae1dc8649edefe0f4ab4c02bd81998bbeed7a0f3d1942eba2c9f73
+  checksum: 10/ef2a4e550ecea2d8dea786a09a68ffbd3cd7fae0d9bed05e012e37dcffaa358aaeba5e61ecae2029e7522e14d709971511d065ada3fd1dd1c0caed8496f4bc3d
   languageName: node
   linkType: hard
 
-"@html-eslint/parser@npm:^0.60.0":
-  version: 0.60.0
-  resolution: "@html-eslint/parser@npm:0.60.0"
+"@html-eslint/parser@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "@html-eslint/parser@npm:0.61.0"
   dependencies:
-    "@html-eslint/template-syntax-parser": "npm:^0.60.0"
-    "@html-eslint/types": "npm:^0.60.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.61.0"
+    "@html-eslint/types": "npm:^0.61.0"
     css-tree: "npm:^3.1.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/55f9203ae9d51188a21ea5f39533cb3b3b1ea280a2de048f611dd350ec13fae0632eba8060ec27166a074e1825c4cfe3ce5ea4bc51cfdca98c3cdf092b6a15b4
+  checksum: 10/d0b864b159e2b69ed602a00e1cdfd842b1a67bbc85d5105376090a146da313f47107fb6a265219a9be1e60bcf97f5500637c91aac9abd4b25a873c0d69a5e237
   languageName: node
   linkType: hard
 
-"@html-eslint/template-parser@npm:^0.60.0":
-  version: 0.60.0
-  resolution: "@html-eslint/template-parser@npm:0.60.0"
+"@html-eslint/template-parser@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "@html-eslint/template-parser@npm:0.61.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.60.0"
+    "@html-eslint/types": "npm:^0.61.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/f4e153408c256fda2c930e7ef41a651b4a4e16ba5cb4bb9b528d59aec100cfb8ec866c9ac754bc8d2b080ae15ccdcdcb89e12b90b660499c438953e7a5ad5ad4
+  checksum: 10/f44c7e9903366fc0f02c89fdc096e66f26f61d3be5fb88f582d39a5f3d6d831c33a60162005e5fbd643c70368929c6b568c97c5bc2fece5e789c9c2ab7aa9c27
   languageName: node
   linkType: hard
 
-"@html-eslint/template-syntax-parser@npm:^0.60.0":
-  version: 0.60.0
-  resolution: "@html-eslint/template-syntax-parser@npm:0.60.0"
+"@html-eslint/template-syntax-parser@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "@html-eslint/template-syntax-parser@npm:0.61.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.60.0"
-  checksum: 10/7b79b62414b35e37aa917261ce9e2184d5867af53aac9884d8992aa09da1cbd44e46f50113610c5311ce51a779e125db32c44cf29db2e2f213f73e53dbeee6a0
+    "@html-eslint/types": "npm:^0.61.0"
+  checksum: 10/d0b5c3fea0906e23c5cf98efcaee36933cfb2a436a6f3a09aa07854cced4616166827a83853b7f7f6dede0b398cb73dc290086ed0d030781fb68324f0ebcc7d4
   languageName: node
   linkType: hard
 
-"@html-eslint/types@npm:^0.60.0":
-  version: 0.60.0
-  resolution: "@html-eslint/types@npm:0.60.0"
+"@html-eslint/types@npm:^0.61.0":
+  version: 0.61.0
+  resolution: "@html-eslint/types@npm:0.61.0"
   dependencies:
     "@types/css-tree": "npm:^2.3.11"
     "@types/estree": "npm:^1.0.6"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/c2228ee9b47fcd519c2d7f98b49bf4135d9f003ad507bb61171593a9f11bac72ed55660bc44b9c66fbc3affddb8ff8c98c8748e191c4a8f63e1a6b3c52293d3c
+  checksum: 10/6c57f3363dc938ecd0cdfce4bd0f38c29aa05a4f80449af9450f2514f8692739af3c4e82a5764707aa2fb92b8442efdc80b2cebfec96060e8957ef5ac72d1aee
   languageName: node
   linkType: hard
 
@@ -2391,20 +2391,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/elevation@npm:14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/elevation@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/47369382ffe85b2d7799514db931cc0edff322c9c2fb8f4b032d27b94c34511390cf34aabeebf713f7a1555b6842754737d0d3ba9f320d2f783532b945015883
-  languageName: node
-  linkType: hard
-
 "@material/feature-targeting@npm:14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/feature-targeting@npm:14.0.0-canary.53b3cad2f.0"
@@ -2566,30 +2552,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-top-app-bar-fixed@npm:0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-top-app-bar-fixed@npm:0.27.0"
-  dependencies:
-    "@material/mwc-top-app-bar": "npm:^0.27.0"
-    "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/1f1a6cba55edbbfd1bcde3c2de9bd6548b7d6bf12255762a856fa6c60e67fcb77c428d285e898c6e4044c80f35c30a6eff11c09771272d5fc7a65f168fe7e2ad
-  languageName: node
-  linkType: hard
-
-"@material/mwc-top-app-bar@npm:0.27.0, @material/mwc-top-app-bar@npm:^0.27.0":
-  version: 0.27.0
-  resolution: "@material/mwc-top-app-bar@npm:0.27.0"
-  dependencies:
-    "@material/mwc-base": "npm:^0.27.0"
-    "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
-    lit: "npm:^2.0.0"
-    tslib: "npm:^2.0.1"
-  checksum: 10/041e0c47ef8656d24f3053ab38f52380cadf9b6dbc15872dd0574c12e05755a85f13f42ecfa29c91cec3cb54cf55d9ce0b1435de44a552d9c77fdb3aae23f356
-  languageName: node
-  linkType: hard
-
 "@material/radio@npm:=14.0.0-canary.53b3cad2f.0":
   version: 14.0.0-canary.53b3cad2f.0
   resolution: "@material/radio@npm:14.0.0-canary.53b3cad2f.0"
@@ -2652,23 +2614,6 @@ __metadata:
     "@material/feature-targeting": "npm:14.0.0-canary.53b3cad2f.0"
     tslib: "npm:^2.1.0"
   checksum: 10/ade333c4a14e2ac1977705c522ed2beea07a7703cf06a13b8e57d46f4eb7672fe460744b328faa37e04846eb48d10235a2fdec380b986b5b4ad67d00c8428c6d
-  languageName: node
-  linkType: hard
-
-"@material/top-app-bar@npm:=14.0.0-canary.53b3cad2f.0":
-  version: 14.0.0-canary.53b3cad2f.0
-  resolution: "@material/top-app-bar@npm:14.0.0-canary.53b3cad2f.0"
-  dependencies:
-    "@material/animation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/base": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/elevation": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/ripple": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/rtl": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/shape": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/theme": "npm:14.0.0-canary.53b3cad2f.0"
-    "@material/typography": "npm:14.0.0-canary.53b3cad2f.0"
-    tslib: "npm:^2.1.0"
-  checksum: 10/e25a0a8cad1bca1b4373eb551a9a6a0e71186fdb4e6d7fc5501ba0272dd7f521a88a8cf9f62b0018c5e70c597d33ab86372986b04d1c04fe51f93fa3e989a95c
   languageName: node
   linkType: hard
 
@@ -6999,13 +6944,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"echarts@npm:6.0.0":
-  version: 6.0.0
-  resolution: "echarts@npm:6.0.0"
+"echarts@npm:6.1.0":
+  version: 6.1.0
+  resolution: "echarts@npm:6.1.0"
   dependencies:
     tslib: "npm:2.3.0"
-    zrender: "npm:6.0.0"
-  checksum: 10/8dbb160cf22e99a2bce04174db756b73e52ba5c00048901c5dbda0c10e6e7b514e5344daa49aa2cdd9c620c9dcc2f4eb15c0614bb2d8a97d9d33e17552ae3655
+    zrender: "npm:6.1.0"
+  checksum: 10/ae294b6050a2d7eb377609ae392f76a2db9463b322d12a861c017f5bbab192d59c2b7d618fa2b683cadafd3f37616bb65c5de8ed220421c648bbdb7b4b4c32ea
   languageName: node
   linkType: hard
 
@@ -8587,7 +8532,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.7.0-ha.0"
-    "@html-eslint/eslint-plugin": "npm:0.60.0"
+    "@html-eslint/eslint-plugin": "npm:0.61.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
@@ -8598,9 +8543,6 @@ __metadata:
     "@material/mwc-base": "npm:0.27.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
-    "@material/mwc-top-app-bar": "npm:0.27.0"
-    "@material/mwc-top-app-bar-fixed": "npm:0.27.0"
-    "@material/top-app-bar": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/web": "npm:2.4.1"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
@@ -8651,7 +8593,7 @@ __metadata:
     deep-freeze: "npm:0.0.1"
     del: "npm:8.0.1"
     dialog-polyfill: "npm:0.5.6"
-    echarts: "npm:6.0.0"
+    echarts: "npm:6.1.0"
     element-internals-polyfill: "npm:3.0.2"
     eslint: "npm:10.4.0"
     eslint-config-prettier: "npm:10.1.8"
@@ -15106,12 +15048,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zrender@npm:6.0.0":
-  version: 6.0.0
-  resolution: "zrender@npm:6.0.0"
+"zrender@npm:6.1.0":
+  version: 6.1.0
+  resolution: "zrender@npm:6.1.0"
   dependencies:
     tslib: "npm:2.3.0"
-  checksum: 10/d7b6572ebe400d40d9dc6e066a3a5841d4da1fdea3a9c1fd605239e116ffe05553002a351cbb236bcfbf516a41d3bd67f85ef39a43ccc7ffdc5b70a0ceec6aa8
+  checksum: 10/c6bc87252127ef430cbbd47aa8476b0f8ecec1abade26928c2a46b2b01b0be93818b8741cfe0cfd7a48ffd82816dd9b5169801d6e6f98d1d5f0e08ce9e67d875
   languageName: node
   linkType: hard
 
