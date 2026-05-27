@@ -23,6 +23,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
+import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
@@ -56,6 +57,7 @@ import { updateDeviceRegistryEntry } from "../../../data/device/device_registry"
 import type {
   AlarmControlPanelEntityOptions,
   CalendarEntityOptions,
+  DeviceTrackerEntityOptions,
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
@@ -138,6 +140,10 @@ const SWITCH_AS_DOMAINS_INVERT = ["cover", "lock", "valve"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
 
+const SCANNER_SOURCE_TYPES = ["router", "bluetooth", "bluetooth_le"];
+
+const ZONE_DOMAINS = ["zone"];
+
 @customElement("entity-registry-settings-editor")
 export class EntityRegistrySettingsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -201,6 +207,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
   @state() private _defaultCode?: string | null;
 
   @state() private _calendarColor?: string | null;
+
+  @state() private _associatedZone?: string;
 
   @state() private _noDeviceArea?: boolean;
 
@@ -290,6 +298,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
     if (domain === "calendar") {
       this._calendarColor = this.entry.options?.calendar?.color;
+    }
+
+    if (domain === "device_tracker") {
+      this._associatedZone =
+        this.entry.options?.device_tracker?.associated_zone ?? "zone.home";
     }
 
     if (domain === "weather") {
@@ -711,6 +724,21 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .disabled=${this.disabled}
               @value-changed=${this._calendarColorChanged}
             ></ha-color-picker>
+          `
+        : nothing}
+      ${domain === "device_tracker" &&
+      SCANNER_SOURCE_TYPES.includes(stateObj?.attributes?.source_type)
+        ? html`
+            <ha-entity-picker
+              .hass=${this.hass}
+              .value=${this._associatedZone}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.associated_zone"
+              )}
+              .includeDomains=${ZONE_DOMAINS}
+              .disabled=${this.disabled}
+              @value-changed=${this._associatedZoneChanged}
+            ></ha-entity-picker>
           `
         : nothing}
       ${domain === "sensor" &&
@@ -1209,6 +1237,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
       }
     }
     if (
+      domain === "device_tracker" &&
+      this._associatedZone !== undefined &&
+      (this.entry.options?.device_tracker?.associated_zone ?? "zone.home") !==
+        this._associatedZone
+    ) {
+      params.options_domain = "device_tracker";
+      params.options = {
+        associated_zone: this._associatedZone,
+      } as DeviceTrackerEntityOptions;
+    }
+    if (
       domain === "weather" &&
       (stateObj?.attributes?.precipitation_unit !== this._precipitation_unit ||
         stateObj?.attributes?.pressure_unit !== this._pressure_unit ||
@@ -1445,6 +1484,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _calendarColorChanged(ev: CustomEvent): void {
     fireEvent(this, "change");
     this._calendarColor = ev.detail.value || null;
+  }
+
+  private _associatedZoneChanged(ev: CustomEvent): void {
+    fireEvent(this, "change");
+    this._associatedZone = ev.detail.value || "zone.home";
   }
 
   private _precipitationUnitChanged(ev: HaSelectSelectEvent): void {

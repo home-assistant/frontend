@@ -1891,6 +1891,7 @@
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
           "calendar_color": "Calendar color",
+          "associated_zone": "Associated zone",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of measurement",
           "precipitation_unit": "Precipitation unit",
