@@ -378,7 +378,7 @@ class PanelMediaBrowser extends LitElement {
           position: fixed;
           bottom: var(--safe-area-inset-bottom, 0px);
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -386,7 +386,7 @@ class PanelMediaBrowser extends LitElement {
         }
         :host([narrow]) ha-bar-media-player {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)
