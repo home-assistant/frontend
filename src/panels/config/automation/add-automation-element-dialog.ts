@@ -750,6 +750,7 @@ class DialogAddAutomationElement
       >
         ${this._filter
           ? html`<ha-automation-add-search
+              .hass=${this.hass}
               .filter=${this._filter}
               .configEntryLookup=${this._configEntryLookup}
               .manifests=${this._manifests}
@@ -768,6 +769,7 @@ class DialogAddAutomationElement
             </ha-automation-add-search>`
           : this._tab === "targets"
             ? html`<ha-automation-add-from-target
+                .hass=${this.hass}
                 .value=${this._selectedTarget}
                 @value-changed=${this._handleTargetSelected}
                 .narrow=${this._narrow}
@@ -877,6 +879,7 @@ class DialogAddAutomationElement
         ${!this._filter
           ? html`
               <ha-automation-add-items
+                .hass=${this.hass}
                 .items=${this._getItems()}
                 .scrollable=${!this._narrow}
                 .error=${this._tab === "targets" && this._loadItemsError
@@ -1635,6 +1638,7 @@ class DialogAddAutomationElement
           result.push({
             icon: html`
               <ha-service-icon
+                .hass=${this.hass}
                 .service=${`${dmn}.${service}`}
               ></ha-service-icon>
             `,
@@ -1893,7 +1897,12 @@ class DialogAddAutomationElement
   ): AddAutomationElementListItem {
     const triggerName = getTriggerObjectId(trigger);
     return {
-      icon: html` <ha-trigger-icon .trigger=${trigger}></ha-trigger-icon> `,
+      icon: html`
+        <ha-trigger-icon
+          .hass=${this.hass}
+          .trigger=${trigger}
+        ></ha-trigger-icon>
+      `,
       key: `${DYNAMIC_PREFIX}${trigger}`,
       name:
         localize(`component.${domain}.triggers.${triggerName}.name`) || trigger,
@@ -1911,7 +1920,10 @@ class DialogAddAutomationElement
     const conditionName = getConditionObjectId(condition);
     return {
       icon: html`
-        <ha-condition-icon .condition=${condition}></ha-condition-icon>
+        <ha-condition-icon
+          .hass=${this.hass}
+          .condition=${condition}
+        ></ha-condition-icon>
       `,
       key: `${DYNAMIC_PREFIX}${condition}`,
       name:
@@ -1945,6 +1957,7 @@ class DialogAddAutomationElement
       items[domain].items.push({
         icon: html`
           <ha-service-icon
+            .hass=${this.hass}
             .service=${`${domain}.${serviceName}`}
           ></ha-service-icon>
         `,

@@ -308,6 +308,7 @@ export default class HaAutomationActionRow extends LitElement {
             <ha-service-icon
               slot="leading-icon"
               class="action-icon"
+              .hass=${this.hass}
               .service=${this.action.action}
             ></ha-service-icon>
           `
@@ -340,6 +341,7 @@ export default class HaAutomationActionRow extends LitElement {
           ? html`
               <ha-svg-icon
                 id="note-icon"
+                tabindex="0"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.note.label"
@@ -614,6 +616,7 @@ export default class HaAutomationActionRow extends LitElement {
                 </ha-automation-editor-warning>`
               : nothing}
             <ha-automation-action-editor
+              .hass=${this.hass}
               .action=${this.action}
               .disabled=${this.disabled}
               .yamlMode=${this._yamlMode}
@@ -690,6 +693,7 @@ export default class HaAutomationActionRow extends LitElement {
           )))
         ? html`<ha-automation-action-editor
             class=${this._collapsed ? "hidden" : ""}
+            .hass=${this.hass}
             .action=${this.action}
             .narrow=${this.narrow}
             .disabled=${this.disabled}
@@ -721,6 +725,7 @@ export default class HaAutomationActionRow extends LitElement {
       targetSpec?: TargetSelector["target"]
     ) =>
       html`<ha-automation-row-targets
+        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}

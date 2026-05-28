@@ -240,6 +240,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-svg-icon>`
         : html`<ha-trigger-icon
             slot="leading-icon"
+            .hass=${this.hass}
             .trigger=${(this.trigger as Exclude<Trigger, TriggerList>).trigger}
           ></ha-trigger-icon>`}
       <h3 slot="header">
@@ -255,6 +256,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
           ? html`
               <ha-svg-icon
+                tabindex="0"
                 id="note-icon"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
@@ -499,6 +501,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                 </ha-automation-editor-warning>`
               : nothing}
             <ha-automation-trigger-editor
+              .hass=${this.hass}
               .trigger=${this.trigger}
               .description=${"trigger" in this.trigger
                 ? this.triggerDescriptions[this.trigger.trigger]
@@ -558,6 +561,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       targetSpec?: TargetSelector["target"]
     ) =>
       html`<ha-automation-row-targets
+        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}

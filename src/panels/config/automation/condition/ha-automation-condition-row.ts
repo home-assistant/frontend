@@ -213,6 +213,7 @@ export default class HaAutomationConditionRow extends LitElement {
     return html`
       <ha-condition-icon
         slot="leading-icon"
+        .hass=${this.hass}
         .condition=${this.condition.condition}
       ></ha-condition-icon>
       <h3 slot="header">
@@ -230,6 +231,7 @@ export default class HaAutomationConditionRow extends LitElement {
           ? html`
               <ha-svg-icon
                 id="note-icon"
+                tabindex="0"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.note.label"
@@ -469,6 +471,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 </ha-automation-editor-warning>`
               : nothing}
             <ha-automation-condition-editor
+              .hass=${this.hass}
               .condition=${this.condition}
               .description=${this.conditionDescriptions[
                 this.condition.condition
@@ -552,6 +555,7 @@ export default class HaAutomationConditionRow extends LitElement {
       CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
         ? html`<ha-automation-condition-editor
             class=${this._collapsed ? "hidden" : ""}
+            .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
             .uiSupported=${this._uiSupported(
@@ -573,6 +577,7 @@ export default class HaAutomationConditionRow extends LitElement {
       targetSpec?: TargetSelector["target"]
     ) =>
       html`<ha-automation-row-targets
+        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
