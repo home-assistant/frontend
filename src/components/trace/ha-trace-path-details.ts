@@ -374,10 +374,7 @@ export class HaTracePathDetails extends LitElement {
             .entries=${entries}
             .narrow=${this.narrow}
           ></ha-logbook-renderer>
-          <hat-logbook-note
-            .hass=${this.hass}
-            .domain=${this.trace.domain}
-          ></hat-logbook-note>
+          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
           ${this.hass!.localize(
