@@ -24,7 +24,7 @@ import type { LovelaceCard } from "../../types";
 import type { PowerSourcesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions, fillLineGaps } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import { hex2rgb } from "../../../../common/color/convert-color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
@@ -148,7 +148,7 @@ export class HuiPowerSourcesGraphCard
       compareEnd: Date | undefined,
       legendData: CustomLegendOption["data"] | undefined,
       yAxisFractionDigits: number
-    ): ECOption => ({
+    ): HaECOption => ({
       ...getCommonOptions(
         start,
         end,
