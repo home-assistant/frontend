@@ -46,7 +46,7 @@ export class RelatedContextProvider {
    */
   public connect(): void {
     this._host.addEventListener(
-      "hass-related-context" as any,
+      "hass-related-context",
       this._onRelatedContext
     );
     mainWindow.addEventListener("location-changed", this._clearRelatedContext);
@@ -57,6 +57,10 @@ export class RelatedContextProvider {
    * Clean up event listeners. Call from `disconnectedCallback`.
    */
   public disconnect(): void {
+    this._host.removeEventListener(
+      "hass-related-context",
+      this._onRelatedContext
+    );
     mainWindow.removeEventListener(
       "location-changed",
       this._clearRelatedContext
@@ -84,7 +88,7 @@ export class RelatedContextProvider {
     context?: RelatedContextItem
   ): Promise<void> => {
     this._provider.setValue(undefined);
-    if (!context) {
+    if (!context || !this._hassGetter()) {
       return;
     }
 
