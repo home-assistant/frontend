@@ -3,6 +3,7 @@ import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state, property } from "lit/decorators";
+import { preserveUnchangedEntityStatesRecord } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
@@ -31,14 +32,13 @@ export class HuiButtonsBase extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   @transform<HassEntities, Record<string, HassEntity | undefined>>({
     transformer: function (this: HuiButtonsBase, states) {
-      if (!states) {
-        return {};
+      const next: Record<string, HassEntity | undefined> = {};
+      if (states) {
+        for (const entityConf of this.configEntities || []) {
+          next[entityConf.entity] = states[entityConf.entity];
+        }
       }
-      const result: Record<string, HassEntity | undefined> = {};
-      for (const entityConf of this.configEntities || []) {
-        result[entityConf.entity] = states[entityConf.entity];
-      }
-      return result;
+      return preserveUnchangedEntityStatesRecord(this._entityStates, next);
     },
     watch: ["configEntities"],
   })
