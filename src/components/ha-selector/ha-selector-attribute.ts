@@ -1,12 +1,10 @@
-import { consume } from "@lit/context";
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { transform } from "../../common/decorators/transform";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consumeEntityStates } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
-import { statesContext } from "../../data/context";
 import type { AttributeSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
@@ -32,27 +30,22 @@ export class HaSelectorAttribute extends LitElement {
   };
 
   @state()
-  @consume({ context: statesContext, subscribe: true })
-  @transform<HassEntities, HassEntity[] | undefined>({
-    transformer: function (this: HaSelectorAttribute, states) {
-      if (!states) {
-        return undefined;
-      }
-      const entityId =
-        this.selector.attribute?.entity_id || this.context?.filter_entity;
-      if (!entityId) {
-        return undefined;
-      }
-      const ids = ensureArray(entityId);
-      return ids
-        .map((id) => states[id])
-        .filter(
-          (entityState): entityState is HassEntity => entityState !== undefined
-        );
-    },
-    watch: ["selector", "context"],
-  })
+  private _entityIds?: string[];
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
   private _filterEntityStates?: HassEntity[];
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("selector") && !changedProps.has("context")) {
+      return;
+    }
+
+    const entityId =
+      this.selector.attribute?.entity_id || this.context?.filter_entity;
+    this._entityIds = entityId ? ensureArray(entityId) : undefined;
+  }
 
   protected render() {
     return html`
