@@ -30,10 +30,10 @@ import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-bottom-sheet";
 import "../../../components/ha-button";
@@ -134,8 +134,8 @@ import {
   ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
-  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
+  getAddAutomationElementTargetFromQuery,
 } from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
 
@@ -795,37 +795,33 @@ class DialogAddAutomationElement
                           class="paste"
                           @click=${this._paste}
                         >
-                          <div class="shortcut-label">
-                            <div class="label">
-                              <div>
-                                ${this.hass.localize(
-                                  `ui.panel.config.automation.editor.${automationElementType}s.paste`
-                                )}
-                              </div>
-                              <div class="supporting-text">
-                                ${this.hass.localize(
-                                  // @ts-ignore
-                                  `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
-                                )}
-                              </div>
-                            </div>
-                            ${!this._narrow
-                              ? html`<span class="shortcut">
-                                  <span
-                                    >${isMac
-                                      ? html`<ha-svg-icon
-                                          slot="start"
-                                          .path=${mdiAppleKeyboardCommand}
-                                        ></ha-svg-icon>`
-                                      : this.hass.localize(
-                                          "ui.panel.config.automation.editor.ctrl"
-                                        )}</span
-                                  >
-                                  <span>+</span>
-                                  <span>V</span>
-                                </span>`
-                              : nothing}
+                          <div slot="headline" class="label">
+                            ${this.hass.localize(
+                              `ui.panel.config.automation.editor.${automationElementType}s.paste`
+                            )}
                           </div>
+                          <div slot="supporting-text">
+                            ${this.hass.localize(
+                              // @ts-ignore
+                              `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
+                            )}
+                          </div>
+                          ${!this._narrow
+                            ? html`<span slot="end" class="shortcut">
+                                <span
+                                  >${isMac
+                                    ? html`<ha-svg-icon
+                                        slot="start"
+                                        .path=${mdiAppleKeyboardCommand}
+                                      ></ha-svg-icon>`
+                                    : this.hass.localize(
+                                        "ui.panel.config.automation.editor.ctrl"
+                                      )}</span
+                                >
+                                <span>+</span>
+                                <span>V</span>
+                              </span>`
+                            : nothing}
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiContentPaste}
@@ -2546,23 +2542,16 @@ class DialogAddAutomationElement
         ha-svg-icon.plus {
           color: var(--primary-color);
         }
-        .shortcut-label {
-          display: flex;
-          gap: var(--ha-space-3);
-          justify-content: space-between;
-        }
-        .shortcut-label .supporting-text {
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-s);
-        }
-        .shortcut-label .shortcut {
+
+        .shortcut {
           --mdc-icon-size: var(--ha-space-3);
           display: inline-flex;
           flex-direction: row;
           align-items: center;
           gap: 2px;
+          margin-right: var(--ha-space-4);
         }
-        .shortcut-label .shortcut span {
+        .shortcut span {
           font-size: var(--ha-font-size-s);
           font-family: var(--ha-font-family-code);
           color: var(--ha-color-text-secondary);
