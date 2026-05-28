@@ -60,8 +60,8 @@ export class HaAutomationRowTargets extends LitElement {
   @property({ attribute: false })
   public selector?: TargetSelector;
 
-  @property({ type: Boolean, attribute: "non-interactive" })
-  public nonInteractive = false;
+  @property({ type: Boolean })
+  public interactive = false;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -349,7 +349,7 @@ export class HaAutomationRowTargets extends LitElement {
     targetType?: string,
     countTemplate: unknown = nothing
   ) {
-    if (this.nonInteractive || !targetId || !targetType) {
+    if (!this.interactive || !targetId || !targetType) {
       return html`<div
         class=${classMap({
           target: true,
@@ -433,7 +433,7 @@ export class HaAutomationRowTargets extends LitElement {
           targetId,
           this._getLabel
         );
-        if (targetType !== "entity" && !this.nonInteractive) {
+        if (targetType !== "entity" && this.interactive) {
           countTemplate = this._renderCount(targetType, targetId);
         }
       }

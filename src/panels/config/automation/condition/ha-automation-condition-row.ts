@@ -225,7 +225,7 @@ export default class HaAutomationConditionRow extends LitElement {
               target,
               descriptionHasTarget && !this._isNew,
               conditionTargetSpec,
-              this.condition.condition === "device"
+              this.condition.condition !== "device"
             )
           : nothing}
         ${this.condition.note?.trim()
@@ -575,13 +575,13 @@ export default class HaAutomationConditionRow extends LitElement {
       target?: HassServiceTarget,
       targetRequired = false,
       targetSpec?: TargetSelector["target"],
-      nonInteractive = false
+      interactive = false
     ) =>
       html`<ha-automation-row-targets
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
-        .nonInteractive=${nonInteractive}
+        .interactive=${interactive}
       ></ha-automation-row-targets>`
   );
 
