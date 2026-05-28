@@ -185,20 +185,20 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   private _renderInfoCard() {
     const systemManaged = this._isSystemManaged(this._currentAddon);
 
-    return html`<ha-card outlined>
+    return html` <ha-card outlined>
       <div class="card-content">
         <div class="addon-header">
-          ${this._currentAddon.logo
-            ? html`
-                <img
-                  class="logo"
-                  alt=""
-                  src="https://ha.woodlan.de/api/hassio/addons/${this
-                    ._currentAddon.slug}/icon"
-                />
-              `
-            : nothing}
           <div class="title">
+            ${this._currentAddon.logo
+              ? html`
+                  <img
+                    class="logo"
+                    alt=""
+                    src="https://ha.woodlan.de/api/hassio/addons/${this
+                      ._currentAddon.slug}/logo"
+                  />
+                `
+              : nothing}
             ${getAppDisplayName(
               this._currentAddon.name,
               this._currentAddon.stage
@@ -1502,8 +1502,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         }
         .addon-header {
           display: flex;
-          padding-inline-start: var(--ha-space-2);
-          padding-inline-end: initial;
           font-size: var(--ha-font-size-2xl);
           color: var(--ha-card-header-color, var(--primary-text-color));
           align-items: center;
@@ -1514,6 +1512,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
         .addon-header .title {
           flex: 1;
+          margin-inline-end: var(--ha-space-4);
         }
 
         .addon-header .title .description {
@@ -1538,9 +1537,9 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
         img.logo {
           max-width: 100%;
-          max-height: 60px;
+          max-height: 40px;
           display: block;
-          margin-right: var(--ha-space-2);
+          margin-bottom: var(--ha-space-2);
         }
         ha-assist-chip {
           --md-sys-color-primary: var(--text-primary-color);
