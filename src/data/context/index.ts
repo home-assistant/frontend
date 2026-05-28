@@ -174,7 +174,7 @@ export interface RelatedContextItem {
 
 /**
  * Resolved related entities/devices/areas for the current page context.
- * Set by the quick-bar mixin when a page fires `hass-related-context`.
+ * Set by `RelatedContextProvider` when a page fires `hass-related-context`.
  * Cleared on navigation.
  */
 export const relatedContext = createContext<RelatedIdSets | undefined>(

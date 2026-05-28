@@ -701,10 +701,13 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _sortBySortingLabel = (entityA, entityB) =>
+  private _sortBySortingLabel = (
+    entityA: PickerComboBoxItem,
+    entityB: PickerComboBoxItem
+  ) =>
     caseInsensitiveStringCompare(
-      (entityA as PickerComboBoxItem).sorting_label!,
-      (entityB as PickerComboBoxItem).sorting_label!,
+      entityA.sorting_label!,
+      entityB.sorting_label!,
       this.hass.locale.language
     );
 

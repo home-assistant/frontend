@@ -74,8 +74,8 @@ export class RelatedContextProvider {
   private _resolveRelatedContext = async (
     context?: RelatedContextItem
   ): Promise<void> => {
-    this._provider.setValue(undefined);
     if (!context || !this._host.hass) {
+      this._provider.setValue(undefined);
       return;
     }
 
