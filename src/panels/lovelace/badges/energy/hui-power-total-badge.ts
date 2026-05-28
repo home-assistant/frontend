@@ -1,3 +1,5 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiHomeLightningBolt } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -6,13 +8,20 @@ import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
+import {
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
   getPowerFromState,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../../../types";
 import type { LovelaceBadge } from "../../types";
 import type { PowerTotalBadgeConfig } from "../types";
 
@@ -22,6 +31,14 @@ export class HuiPowerTotalBadge
   implements LovelaceBadge
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: HomeAssistantInternationalization;
 
   @state() private _config?: PowerTotalBadgeConfig;
 
@@ -50,14 +67,16 @@ export class HuiPowerTotalBadge
       return true;
     }
 
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || !this._entities.size) {
+    if (changedProps.has("_states")) {
+      const oldStates = changedProps.get("_states") as
+        | ContextType<typeof statesContext>
+        | undefined;
+      if (!oldStates || !this._entities.size) {
         return true;
       }
 
       for (const entityId of this._entities) {
-        if (oldHass.states[entityId] !== this.hass?.states[entityId]) {
+        if (oldStates[entityId] !== this._states?.[entityId]) {
           return true;
         }
       }
@@ -68,7 +87,7 @@ export class HuiPowerTotalBadge
 
   private _getCurrentPower(entityId: string): number {
     this._entities.add(entityId);
-    return getPowerFromState(this.hass.states[entityId]) ?? 0;
+    return getPowerFromState(this._states[entityId]) ?? 0;
   }
 
   private _computeTotalPower(prefs: EnergyPreferences): number {
@@ -100,7 +119,7 @@ export class HuiPowerTotalBadge
   }
 
   protected render() {
-    if (!this._config || !this._data) {
+    if (!this._config || !this._data || !this._i18n) {
       return nothing;
     }
 
@@ -108,18 +127,18 @@ export class HuiPowerTotalBadge
 
     let displayValue: string;
     if (power >= 1000) {
-      displayValue = `${formatNumber(power / 1000, this.hass.locale, {
+      displayValue = `${formatNumber(power / 1000, this._i18n.locale, {
         maximumFractionDigits: 2,
       })} kW`;
     } else {
-      displayValue = `${formatNumber(power, this.hass.locale, {
+      displayValue = `${formatNumber(power, this._i18n.locale, {
         maximumFractionDigits: 0,
       })} W`;
     }
 
     const name =
       this._config.title ||
-      this.hass.localize("ui.panel.lovelace.cards.energy.power_total_title");
+      this._i18n.localize("ui.panel.lovelace.cards.energy.power_total_title");
 
     return html`
       <ha-badge .label=${name}>
