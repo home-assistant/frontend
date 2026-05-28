@@ -13,7 +13,8 @@ import type { HassBaseEl } from "./hass-base-mixin";
  * resolves the related entities/devices/areas via `findRelated`, and
  * provides the resolved `RelatedIdSets` to context consumers.
  *
- * Clears on navigation (`location-changed` / `popstate`).
+ * Clears on actual page navigation (pathname change), not on dialog
+ * history manipulation (`popstate` from dialog close).
  *
  * Instantiated from `context-mixin.ts` alongside other providers.
  */
@@ -21,6 +22,8 @@ export class RelatedContextProvider {
   private _relatedContext?: RelatedContextItem;
 
   private _provider: ContextProvider<typeof relatedContext>;
+
+  private _contextPathname?: string;
 
   private _fetchRelatedMemoized = memoizeOne(
     (itemType: RelatedContextItem["itemType"], itemId: string) =>
@@ -36,8 +39,11 @@ export class RelatedContextProvider {
    */
   public connect(): void {
     this._host.addEventListener("hass-related-context", this._onRelatedContext);
-    mainWindow.addEventListener("location-changed", this._clearRelatedContext);
-    mainWindow.addEventListener("popstate", this._clearRelatedContext);
+    mainWindow.addEventListener(
+      "location-changed",
+      this._maybeClearRelatedContext
+    );
+    mainWindow.addEventListener("popstate", this._maybeClearRelatedContext);
   }
 
   /**
@@ -50,20 +56,33 @@ export class RelatedContextProvider {
     );
     mainWindow.removeEventListener(
       "location-changed",
-      this._clearRelatedContext
+      this._maybeClearRelatedContext
     );
-    mainWindow.removeEventListener("popstate", this._clearRelatedContext);
+    mainWindow.removeEventListener("popstate", this._maybeClearRelatedContext);
   }
 
   private _onRelatedContext = (ev: Event): void => {
     const detail = (ev as CustomEvent).detail;
     this._relatedContext =
       detail && "itemType" in detail && "itemId" in detail ? detail : undefined;
+    this._contextPathname = mainWindow.location.pathname;
     this._resolveRelatedContext(this._relatedContext);
   };
 
-  private _clearRelatedContext = (): void => {
+  /**
+   * Only clear context when the actual page pathname changes.
+   * Dialog open/close manipulates history state without changing the URL,
+   * so we ignore those popstate/location-changed events.
+   */
+  private _maybeClearRelatedContext = (): void => {
+    if (
+      this._contextPathname &&
+      mainWindow.location.pathname === this._contextPathname
+    ) {
+      return;
+    }
     this._relatedContext = undefined;
+    this._contextPathname = undefined;
     this._provider.setValue(undefined);
   };
 
