@@ -40,37 +40,6 @@ export class HaSunCondition extends LitElement implements ConditionElement {
   private _schema = memoizeOne(
     (localize: LocalizeFunc, formType: FormType) =>
       [
-        ...(["between", "before"].includes(formType)
-          ? [
-              {
-                name: "before",
-                type: "select",
-                default: BEFORE_DEFAULT,
-                options: [
-                  [
-                    "sunrise",
-                    localize(
-                      "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
-                    ),
-                  ],
-                  [
-                    "sunset",
-                    localize(
-                      "ui.panel.config.automation.editor.conditions.type.sun.sunset"
-                    ),
-                  ],
-                ],
-              },
-              {
-                name: "before_offset",
-                selector: {
-                  duration: {
-                    allow_negative: true,
-                  },
-                },
-              },
-            ]
-          : []),
         ...(["between", "after"].includes(formType)
           ? [
               {
@@ -94,6 +63,37 @@ export class HaSunCondition extends LitElement implements ConditionElement {
               },
               {
                 name: "after_offset",
+                selector: {
+                  duration: {
+                    allow_negative: true,
+                  },
+                },
+              },
+            ]
+          : []),
+        ...(["between", "before"].includes(formType)
+          ? [
+              {
+                name: "before",
+                type: "select",
+                default: BEFORE_DEFAULT,
+                options: [
+                  [
+                    "sunrise",
+                    localize(
+                      "ui.panel.config.automation.editor.conditions.type.sun.sunrise"
+                    ),
+                  ],
+                  [
+                    "sunset",
+                    localize(
+                      "ui.panel.config.automation.editor.conditions.type.sun.sunset"
+                    ),
+                  ],
+                ],
+              },
+              {
+                name: "before_offset",
                 selector: {
                   duration: {
                     allow_negative: true,

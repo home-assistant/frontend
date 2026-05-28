@@ -5575,7 +5575,7 @@
                   "sunset": "Sunset",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
-                    "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
+                    "between": "Between {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n} and {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
                     "before": "Before {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
                     "after": "After {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}"
                   }
