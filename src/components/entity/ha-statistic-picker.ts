@@ -145,7 +145,7 @@ export class HaStatisticPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
+  @property({ attribute: "can-edit", type: Boolean }) public canEdit?: boolean;
 
   public willUpdate(changedProps: PropertyValues<this>) {
     if (
