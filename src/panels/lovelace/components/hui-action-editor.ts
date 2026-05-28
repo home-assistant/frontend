@@ -155,7 +155,7 @@ export class HuiActionEditor extends LitElement {
         this.defaultAction
           ? ` (${this.hass!.localize(
               `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
-            ).toLowerCase()})`
+            )})`
           : ""
       }`,
     };
