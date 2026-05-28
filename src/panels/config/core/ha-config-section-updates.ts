@@ -36,7 +36,6 @@ import {
   filterUpdateEntitiesParameterized,
   getUpdateType,
   installUpdates,
-  updateIsInstalling,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
@@ -70,8 +69,6 @@ class HaConfigSectionUpdates extends LitElement {
   @state() private _entitySources?: EntitySources;
 
   @state() private _loadedIntegrationTitles = new Set<string>();
-
-  @state() private _loadingGroups = new Set<string>();
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
@@ -190,7 +187,6 @@ class HaConfigSectionUpdates extends LitElement {
                           <ha-button
                             appearance="plain"
                             size="small"
-                            ?loading=${this._isGroupLoading(group)}
                             .group=${group}
                             @click=${this._updateAll}
                           >
@@ -287,16 +283,8 @@ class HaConfigSectionUpdates extends LitElement {
     checkForEntityUpdates(this, this.hass);
   }
 
-  private _isGroupLoading(group: UpdateGroup): boolean {
-    return (
-      this._loadingGroups.has(group.key) ||
-      group.entities.every(updateIsInstalling)
-    );
-  }
-
   private async _updateAll(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
-    this._loadingGroups = new Set(this._loadingGroups).add(group.key);
     try {
       await installUpdates(
         this.hass,
@@ -308,10 +296,6 @@ class HaConfigSectionUpdates extends LitElement {
         text: err.message,
         warning: true,
       });
-    } finally {
-      const next = new Set(this._loadingGroups);
-      next.delete(group.key);
-      this._loadingGroups = next;
     }
   }
 
