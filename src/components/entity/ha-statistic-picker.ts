@@ -376,7 +376,7 @@ export class HaStatisticPicker extends LitElement {
 
   private _valueRenderer: PickerValueRenderer = this._makeValueRenderer();
 
-  private _editItem(ev) {
+  private _editItem(ev: HASSDomEvent<StatisticElementChangedEvent>) {
     ev.stopPropagation();
     const statisticId = (ev.currentTarget as any).value;
     fireEvent(this, "edit-statistics-element", { statisticId });
