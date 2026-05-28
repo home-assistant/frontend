@@ -66,7 +66,8 @@ export class HaChooseSelector extends LitElement {
           size="small"
           .buttons=${this._toggleButtons(
             this.selector.choose.choices,
-            this.selector.choose.translation_key
+            this.selector.choose.translation_key,
+            this._localize
           )}
           .active=${this._activeChoice}
           @value-changed=${this._choiceChanged}
@@ -84,7 +85,11 @@ export class HaChooseSelector extends LitElement {
   }
 
   private _toggleButtons = memoizeOne(
-    (choices: ChooseSelector["choose"]["choices"], translationKey?: string) =>
+    (
+      choices: ChooseSelector["choose"]["choices"],
+      translationKey?: string,
+      _localize?: LocalizeFunc
+    ) =>
       Object.keys(choices).map((choice) => ({
         label:
           this.localizeValue && translationKey
