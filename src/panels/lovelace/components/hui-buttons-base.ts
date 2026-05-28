@@ -1,8 +1,13 @@
+import { consume } from "@lit/context";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state, property } from "lit/decorators";
+import { preserveUnchangedEntityStatesRecord } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
+import { statesContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
@@ -17,21 +22,38 @@ import { haStyleScrollbar } from "../../../resources/styles";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {
-  @state() public hass!: HomeAssistant;
+  @property({ attribute: false })
+  public hass!: HomeAssistant;
 
   @property({ attribute: false })
   public configEntities?: EntitiesCardEntityConfig[];
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, HassEntity | undefined>>({
+    transformer: function (this: HuiButtonsBase, states) {
+      const next: Record<string, HassEntity | undefined> = {};
+      if (states) {
+        for (const entityConf of this.configEntities || []) {
+          next[entityConf.entity] = states[entityConf.entity];
+        }
+      }
+      return preserveUnchangedEntityStatesRecord(this._entityStates, next);
+    },
+    watch: ["configEntities"],
+  })
+  private _entityStates: Record<string, HassEntity | undefined> = {};
 
   protected render(): TemplateResult {
     return html`
       <ha-chip-set class="ha-scrollbar">
         ${(this.configEntities || []).map((entityConf) => {
-          const stateObj = this.hass.states[entityConf.entity];
+          const stateObj = this._entityStates[entityConf.entity];
 
           const name =
             (entityConf.show_name && stateObj) ||
             (entityConf.name && entityConf.show_name !== false)
-              ? entityConf.name || computeStateName(stateObj)
+              ? entityConf.name || (stateObj ? computeStateName(stateObj) : "")
               : "";
 
           return html`
