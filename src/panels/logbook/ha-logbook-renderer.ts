@@ -238,7 +238,6 @@ class HaLogbookRenderer extends LitElement {
                 >
                 -
                 <ha-relative-time
-                  .hass=${this.hass}
                   .datetime=${item.when * 1000}
                   capitalize
                 ></ha-relative-time>

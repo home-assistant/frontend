@@ -101,7 +101,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         template: (tag) => html`
           ${tag.last_scanned_datetime
             ? html`<ha-relative-time
-                .hass=${this.hass}
                 .datetime=${tag.last_scanned_datetime}
                 capitalize
               ></ha-relative-time>`
