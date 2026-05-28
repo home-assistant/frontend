@@ -1,8 +1,14 @@
 import { consume } from "@lit/context";
-import type { CSSResult, LitElement, TemplateResult } from "lit";
+import type {
+  CSSResult,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
@@ -135,6 +141,19 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected entityRegCreated?: (
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
+
+    protected willUpdate(changedProps: PropertyValues): void {
+      super.willUpdate(changedProps);
+      if (changedProps.has("registryEntry")) {
+        const areaId = this.registryEntry?.area_id;
+        if (areaId) {
+          fireEvent(this, "hass-related-context", {
+            itemType: "area",
+            itemId: areaId,
+          });
+        }
+      }
+    }
 
     protected renderLoading(): TemplateResult {
       return html`

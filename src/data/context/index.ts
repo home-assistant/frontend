@@ -10,10 +10,12 @@ import type {
   HomeAssistantRegistries,
   HomeAssistantUI,
 } from "../../types";
+import type { RelatedIdSets } from "../../common/search/related-context";
 import type { ConfigEntry } from "../config_entries";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
 import type { DomainManifestLookup } from "../integration";
 import type { LabelRegistryEntry } from "../label/label_registry";
+import type { ItemType } from "../search";
 
 /**
  * Entity, device, area, and floor registries
@@ -162,3 +164,27 @@ export const panelsContext = createContext<HomeAssistant["panels"]>("panels");
 export const authContext = createContext<HomeAssistant["auth"]>("auth");
 
 // #endregion deprecated-contexts
+
+// #region related-context
+
+export interface RelatedContextItem {
+  itemType: ItemType;
+  itemId: string;
+}
+
+/**
+ * Resolved related entities/devices/areas for the current page context.
+ * Set by the quick-bar mixin when a page fires `hass-related-context`.
+ * Cleared on navigation.
+ */
+export const relatedContext = createContext<RelatedIdSets | undefined>(
+  "related"
+);
+
+declare global {
+  interface HASSDomEvents {
+    "hass-related-context": RelatedContextItem | undefined;
+  }
+}
+
+// #endregion related-context

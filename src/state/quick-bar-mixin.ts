@@ -1,16 +1,15 @@
+import { ContextProvider } from "@lit/context";
 import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
+import { buildRelatedIdSets } from "../common/search/related-context";
 import { extractSearchParamsObject } from "../common/url/search-params";
-import { findRelated, type RelatedResult } from "../data/search";
-import type {
-  QuickBarContextItem,
-  QuickBarParams,
-  QuickBarSection,
-} from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { relatedContext, type RelatedContextItem } from "../data/context";
+import { findRelated } from "../data/search";
+import type { QuickBarSection } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import {
   closeQuickBar,
   showQuickBar,
@@ -24,10 +23,8 @@ import type { HassElement } from "./hass-element";
 
 declare global {
   interface HASSDomEvents {
-    "hass-quick-bar": QuickBarParams;
     "hass-quick-bar-trigger": KeyboardEvent;
     "hass-enable-shortcuts": HomeAssistant["enableShortcuts"];
-    "hass-quick-bar-context": QuickBarContextItem | undefined;
   }
 }
 
@@ -35,28 +32,28 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     private _quickBarOpen = false;
 
-    private _quickBarContext?: QuickBarContextItem;
+    private _quickBarContext?: RelatedContextItem;
 
-    private _quickBarContextRelated?: RelatedResult;
+    private _relatedContextProvider = new ContextProvider(this, {
+      context: relatedContext,
+    });
 
     private _fetchRelatedMemoized = memoizeOne(
-      (itemType: QuickBarContextItem["itemType"], itemId: string) =>
+      (itemType: RelatedContextItem["itemType"], itemId: string) =>
         findRelated(this.hass!, itemType, itemId)
     );
 
-    private _clearQuickBarContext = () => {
+    private _clearRelatedContext = () => {
       this._quickBarContext = undefined;
-      this._quickBarContextRelated = undefined;
+      this._relatedContextProvider.setValue(undefined);
     };
 
-    private _contextMatches = (context?: QuickBarContextItem) =>
+    private _contextMatches = (context?: RelatedContextItem) =>
       context?.itemType === this._quickBarContext?.itemType &&
       context?.itemId === this._quickBarContext?.itemId;
 
-    private _prefetchQuickBarContext = async (
-      context?: QuickBarContextItem
-    ) => {
-      this._quickBarContextRelated = undefined;
+    private _prefetchRelatedContext = async (context?: RelatedContextItem) => {
+      this._relatedContextProvider.setValue(undefined);
 
       if (!context) {
         return;
@@ -69,14 +66,14 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         );
 
         if (this._contextMatches(context)) {
-          this._quickBarContextRelated = related;
+          this._relatedContextProvider.setValue(buildRelatedIdSets(related));
         }
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.warn("Error prefetching quick bar related items", err);
+        console.warn("Error prefetching related context", err);
 
         if (this._contextMatches(context)) {
-          this._quickBarContextRelated = undefined;
+          this._relatedContextProvider.setValue(undefined);
         }
       }
     };
@@ -111,19 +108,19 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         }
       });
 
-      this.addEventListener("hass-quick-bar-context", (ev) => {
+      this.addEventListener("hass-related-context", (ev) => {
         this._quickBarContext =
           ev.detail && "itemType" in ev.detail && "itemId" in ev.detail
             ? ev.detail
             : undefined;
-        this._prefetchQuickBarContext(this._quickBarContext);
+        this._prefetchRelatedContext(this._quickBarContext);
       });
 
       mainWindow.addEventListener(
         "location-changed",
-        this._clearQuickBarContext
+        this._clearRelatedContext
       );
-      mainWindow.addEventListener("popstate", this._clearQuickBarContext);
+      mainWindow.addEventListener("popstate", this._clearRelatedContext);
 
       mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
         switch (ev.detail.key) {
@@ -165,9 +162,9 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       super.disconnectedCallback();
       mainWindow.removeEventListener(
         "location-changed",
-        this._clearQuickBarContext
+        this._clearRelatedContext
       );
-      mainWindow.removeEventListener("popstate", this._clearQuickBarContext);
+      mainWindow.removeEventListener("popstate", this._clearRelatedContext);
     }
 
     private _registerShortcut() {
@@ -238,11 +235,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       }
       e.preventDefault();
 
-      showQuickBar(this, {
-        mode,
-        contextItem: this._quickBarContext,
-        related: this._quickBarContextRelated,
-      });
+      showQuickBar(this, { mode });
     }
 
     private _toggleQuickBar(e: KeyboardEvent, mode?: QuickBarSection) {
