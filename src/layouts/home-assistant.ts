@@ -11,7 +11,6 @@ import { getRecorderInfo } from "../data/recorder";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
-import { RelatedContextProviderMixin } from "../state/related-context-provider-mixin";
 import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
@@ -35,9 +34,7 @@ const panelUrl = (path: string) => {
 };
 
 @customElement("home-assistant")
-export class HomeAssistantAppEl extends RelatedContextProviderMixin(
-  QuickBarMixin(HassElement)
-) {
+export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _route: Route;
 
   @state() private _databaseMigration?: boolean;
