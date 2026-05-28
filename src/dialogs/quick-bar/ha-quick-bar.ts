@@ -1,4 +1,5 @@
 import { mdiDevices } from "@mdi/js";
+import { consume } from "@lit/context";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -49,6 +50,7 @@ import {
 } from "../../data/quick_bar";
 import type { RelatedIdSets } from "../../common/search/related-context";
 import { sortRelatedFirst } from "../../common/search/related-context";
+import { relatedContext } from "../../data/context";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
@@ -64,13 +66,16 @@ import {
   type QuickBarParams,
   type QuickBarSection,
 } from "./show-dialog-quick-bar";
-import { RelatedContextMixin } from "../../state/related-context-mixin";
 
 const SEPARATOR = "________";
 
 @customElement("ha-quick-bar")
-export class QuickBar extends RelatedContextMixin(LitElement) {
+export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
 
   @state() private _open = false;
 
@@ -430,7 +435,7 @@ export class QuickBar extends RelatedContextMixin(LitElement) {
     this._selectedSection = section as QuickBarSection | undefined;
     return this._getItemsMemoized(
       this._configEntryLookup,
-      this.relatedIdSets,
+      this._relatedIdSets,
       searchString,
       this._selectedSection
     );
