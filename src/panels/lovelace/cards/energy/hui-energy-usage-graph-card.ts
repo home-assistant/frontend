@@ -6,10 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
-import type {
-  TooltipOption,
-  TopLevelFormatterParams,
-} from "echarts/types/dist/shared";
+import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
@@ -43,7 +40,7 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 
 const colorPropertyMap = {
   to_grid: "--energy-grid-return-color",
@@ -196,7 +193,7 @@ export class HuiEnergyUsageGraphCard
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
       yAxisFractionDigits: number
-    ): ECOption => {
+    ): HaECOption => {
       const commonOptions = getCommonOptions(
         start,
         end,
@@ -209,15 +206,22 @@ export class HuiEnergyUsageGraphCard
         false,
         yAxisFractionDigits
       );
-      const options: ECOption = {
+      const tooltip = commonOptions.tooltip;
+      const baseFormatter =
+        tooltip &&
+        !Array.isArray(tooltip) &&
+        typeof tooltip.formatter === "function"
+          ? tooltip.formatter
+          : undefined;
+      const options: HaECOption = {
         ...commonOptions,
         tooltip: {
           ...commonOptions.tooltip,
-          formatter: (params: TopLevelFormatterParams): string => {
+          formatter: (params: TopLevelFormatterParams) => {
             if (!Array.isArray(params)) {
-              return "";
+              return nothing;
             }
-            params.sort((a, b) => {
+            const sorted = [...params].sort((a, b) => {
               const aValue = (a.value as number[])?.[1];
               const bValue = (b.value as number[])?.[1];
               if (aValue > 0 && bValue < 0) {
@@ -231,9 +235,7 @@ export class HuiEnergyUsageGraphCard
               }
               return a.componentIndex - b.componentIndex;
             });
-            return (
-              (commonOptions.tooltip as TooltipOption)?.formatter as any
-            )?.(params);
+            return baseFormatter ? baseFormatter(sorted) : nothing;
           },
         },
       };
