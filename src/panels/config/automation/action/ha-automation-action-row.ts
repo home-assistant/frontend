@@ -334,7 +334,8 @@ export default class HaAutomationActionRow extends LitElement {
           ? this._renderTargets(
               target,
               actionHasTarget && !this._isNew,
-              serviceTargetSpec
+              serviceTargetSpec,
+              type === "device_id"
             )
           : nothing}
         ${noteTooltipText
@@ -721,13 +722,15 @@ export default class HaAutomationActionRow extends LitElement {
     (
       target?: HassServiceTarget,
       targetRequired = false,
-      targetSpec?: TargetSelector["target"]
+      targetSpec?: TargetSelector["target"],
+      nonInteractive = false
     ) =>
       html`<ha-automation-row-targets
         .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
+        .nonInteractive=${nonInteractive}
       ></ha-automation-row-targets>`
   );
 
