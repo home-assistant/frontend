@@ -124,6 +124,15 @@ export class HaInput extends WaInputMixin(LitElement) {
   @property({ type: Boolean, attribute: "inset-label" })
   public insetLabel = false;
 
+  /**
+   * #51620, password manager compatibility
+   *
+   * controls wa-input to rendering its real <input> as a slotted
+   * light-DOM element provided by the consumer
+   */
+  @property({ type: Boolean, attribute: "light-dom-input" })
+  public lightDomInput = false;
+
   @query("wa-input")
   private _input?: WaInput;
 
@@ -183,6 +192,7 @@ export class HaInput extends WaInputMixin(LitElement) {
 
     return html`
       <wa-input
+        .lightDomInput=${this.lightDomInput}
         .type=${this.type}
         .value=${this.value ?? null}
         .withClear=${this.withClear}
@@ -239,6 +249,9 @@ export class HaInput extends WaInputMixin(LitElement) {
           ${this.renderStartDefault()}
         </slot>
         <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
+        <!-- HA #51620: forward consumer-provided light-DOM input to
+             wa-input's "input" slot. Empty when lightDomInput is off. -->
+        <slot name="input" slot="input"></slot>
         <slot name="clear-button" slot="clear-button">
           <ha-icon-button
             @click=${this._handleClearClick}
@@ -404,7 +417,8 @@ export class HaInput extends WaInputMixin(LitElement) {
       :host([type="color"]) wa-input.no-label::part(base) {
         padding: 0;
       }
-      wa-input::part(input)::placeholder {
+      wa-input::part(input)::placeholder,
+      ::slotted(input[slot="input"])::placeholder {
         color: var(--ha-color-neutral-60);
       }
 
