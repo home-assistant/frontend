@@ -24,7 +24,6 @@ class UserBadge extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   private _states?: HassEntities;
 
-  /** Set for {@link consumeEntityState} `entityIdPath`; read by context, not in render. */
   @state() private _personEntityId?: string;
 
   @state()
@@ -33,7 +32,7 @@ class UserBadge extends LitElement {
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
-    if (changedProps.has("user") || changedProps.has("_states" as keyof this)) {
+    if (changedProps.has("user") || "_states" in changedProps) {
       this._updatePersonEntityId();
     }
   }
@@ -42,9 +41,9 @@ class UserBadge extends LitElement {
     if (!this.user) {
       return nothing;
     }
-    const picture = this._personState?.attributes.entity_picture as
-      | string
-      | undefined;
+    const picture =
+      this._personEntityId &&
+      (this._personState?.attributes.entity_picture as string | undefined);
 
     if (picture && this._connection) {
       return html`<div
