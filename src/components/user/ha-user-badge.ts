@@ -32,7 +32,7 @@ class UserBadge extends LitElement {
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
-    if (changedProps.has("user") || "_states" in changedProps) {
+    if (changedProps.has("user") || changedProps.has("_states")) {
       this._updatePersonEntityId();
     }
   }
