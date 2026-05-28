@@ -116,8 +116,10 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
+  getCreatedAtTableColumn,
   getEntityIdHiddenTableColumn,
   getLabelsTableColumn,
+  getModifiedAtTableColumn,
   getTriggeredAtTableColumn,
 } from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
@@ -139,6 +141,8 @@ type AutomationItem = AutomationEntity & {
   labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
+  created_at: number | undefined;
+  modified_at: number | undefined;
 };
 
 @customElement("ha-automation-picker")
@@ -285,6 +289,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
+          created_at: entityRegEntry?.created_at,
+          modified_at: entityRegEntry?.modified_at,
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -335,6 +341,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         category: getCategoryTableColumn(localize),
         labels: getLabelsTableColumn(),
         last_triggered: getTriggeredAtTableColumn(localize, this.hass),
+        created_at: getCreatedAtTableColumn(localize, this.hass),
+        modified_at: getModifiedAtTableColumn(localize, this.hass),
         formatted_state: {
           minWidth: "82px",
           maxWidth: "82px",

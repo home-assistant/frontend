@@ -109,8 +109,10 @@ import { showCategoryRegistryDetailDialog } from "../category/show-dialog-catego
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
+  getCreatedAtTableColumn,
   getEntityIdHiddenTableColumn,
   getLabelsTableColumn,
+  getModifiedAtTableColumn,
   getTriggeredAtTableColumn,
 } from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
@@ -130,6 +132,8 @@ type ScriptItem = ScriptEntity & {
   labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
+  created_at: number | undefined;
+  modified_at: number | undefined;
 };
 
 @customElement("ha-script-picker")
@@ -271,6 +275,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
+          created_at: entityRegEntry?.created_at,
+          modified_at: entityRegEntry?.modified_at,
           selectable: entityRegEntry !== undefined,
         };
       });
@@ -318,6 +324,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         category: getCategoryTableColumn(localize),
         labels: getLabelsTableColumn(),
         last_triggered: getTriggeredAtTableColumn(localize, this.hass),
+        created_at: getCreatedAtTableColumn(localize, this.hass),
+        modified_at: getModifiedAtTableColumn(localize, this.hass),
         actions: {
           lastFixed: true,
           title: "",
