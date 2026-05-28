@@ -1,3 +1,5 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiWater } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -5,14 +7,25 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeTotalFlowRate,
   getEnergyDataCollection,
 } from "../../../../data/energy";
+import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../../../types";
 import type { LovelaceBadge } from "../../types";
 import type { WaterTotalBadgeConfig } from "../types";
 
@@ -22,6 +35,21 @@ export class HuiWaterTotalBadge
   implements LovelaceBadge
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _config?: WaterTotalBadgeConfig;
 
@@ -50,14 +78,16 @@ export class HuiWaterTotalBadge
       return true;
     }
 
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || !this._entities.size) {
+    if (changedProps.has("_states")) {
+      const oldStates = changedProps.get("_states") as
+        | ContextType<typeof statesContext>
+        | undefined;
+      if (!oldStates || !this._entities.size) {
         return true;
       }
 
       for (const entityId of this._entities) {
-        if (oldHass.states[entityId] !== this.hass?.states[entityId]) {
+        if (oldStates[entityId] !== this._states?.[entityId]) {
           return true;
         }
       }
@@ -74,14 +104,14 @@ export class HuiWaterTotalBadge
     const { value, unit } = computeTotalFlowRate(
       "water",
       this._data.prefs,
-      this.hass.states,
+      this._states,
       this._entities
     );
-    const displayValue = `${formatNumber(value, this.hass.locale, { maximumFractionDigits: 1 })} ${unit}`;
+    const displayValue = `${formatNumber(value, this._locale, { maximumFractionDigits: 1 })} ${unit}`;
 
     const name =
       this._config.title ||
-      this.hass.localize("ui.panel.lovelace.cards.energy.water_total_title");
+      this._localize("ui.panel.lovelace.cards.energy.water_total_title");
 
     return html`
       <ha-badge .label=${name}>
