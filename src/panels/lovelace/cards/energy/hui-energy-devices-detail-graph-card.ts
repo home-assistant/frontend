@@ -44,7 +44,7 @@ import {
   getCompareTransform,
 } from "./common/energy-chart-options";
 import { storage } from "../../../../common/decorators/storage";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
@@ -216,7 +216,7 @@ export class HuiEnergyDevicesDetailGraphCard
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
       yAxisFractionDigits: number
-    ): ECOption => {
+    ): HaECOption => {
       const commonOptions = getCommonOptions(
         start,
         end,

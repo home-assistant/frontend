@@ -67,6 +67,14 @@ export type ECOption = ComposeOption<
   | SunburstSeriesOption
 >;
 
+export type {
+  HaECOption,
+  HaECSeries,
+  HaECSeriesItem,
+  HaTooltipOption,
+  LitTooltipFormatter,
+} from "./ha-ec-option";
+
 // Register the required components
 echarts.use([
   BarChart,

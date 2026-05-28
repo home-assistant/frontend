@@ -5,10 +5,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
-import { filterXSS } from "../../common/util/xss";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
+import "./ha-chart-tooltip-marker";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
 let SunburstChart: typeof import("echarts/lib/chart/sunburst/install");
@@ -50,13 +50,13 @@ export class HaSunburstChart extends LitElement {
       return nothing;
     }
 
-    const options = {
+    const options: HaECOption = {
       tooltip: {
         trigger: "item",
         formatter: this._renderTooltip,
         appendTo: document.body,
       },
-    } as ECOption;
+    };
 
     return html`<ha-chart-base
       .data=${this._createData(this.data)}
@@ -71,7 +71,10 @@ export class HaSunburstChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
-    return `${params.marker} ${filterXSS(data.name)}<br>${value}`;
+    return html`<ha-chart-tooltip-marker
+        .color=${String(params.color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${data.name}<br />${value}`;
   };
 
   private _createData = memoizeOne(
