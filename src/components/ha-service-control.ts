@@ -478,7 +478,6 @@ export class HaServiceControl extends LitElement {
     return html`${this.hidePicker
       ? nothing
       : html`<ha-service-picker
-          .hass=${this.hass}
           .value=${this._value?.action}
           .disabled=${this.disabled}
           @value-changed=${this._serviceChanged}
@@ -517,7 +516,6 @@ export class HaServiceControl extends LitElement {
             >${this.hass.localize("ui.components.service-control.target")}</span
           >
           <ha-selector
-            .hass=${this.hass}
             .selector=${this._targetSelector(
               serviceData.target as TargetSelector,
               this._value?.target
@@ -529,7 +527,6 @@ export class HaServiceControl extends LitElement {
         ></ha-settings-row>`
       : entityId
         ? html`<ha-entity-picker
-            .hass=${this.hass}
             .disabled=${this.disabled}
             .value=${this._value?.data?.entity_id}
             .label=${this.hass.localize(
@@ -584,7 +581,6 @@ export class HaServiceControl extends LitElement {
               >
                 <ha-service-section-icon
                   slot="icons"
-                  .hass=${this.hass}
                   .service=${this._value!.action}
                   .section=${dataField.key}
                 ></ha-service-section-icon>
@@ -709,7 +705,6 @@ export class HaServiceControl extends LitElement {
               !this._checkedKeys.has(dataField.key) &&
               (!this._value?.data ||
                 this._value.data[dataField.key] === undefined))}
-            .hass=${this.hass}
             .selector=${selector}
             .key=${dataField.key}
             @value-changed=${this._serviceDataChanged}

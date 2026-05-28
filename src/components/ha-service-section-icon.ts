@@ -1,20 +1,27 @@
+import { consume, type ContextType } from "@lit/context";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
-import type { HomeAssistant } from "../types";
+import { configContext, connectionContext } from "../data/context";
+import { serviceSectionIcon } from "../data/icons";
 import "./ha-icon";
 import "./ha-svg-icon";
-import { serviceSectionIcon } from "../data/icons";
 
 @customElement("ha-service-section-icon")
 export class HaServiceSectionIcon extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public service?: string;
 
   @property() public section?: string;
 
   @property() public icon?: string;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
 
   protected render() {
     if (this.icon) {
@@ -25,13 +32,13 @@ export class HaServiceSectionIcon extends LitElement {
       return nothing;
     }
 
-    if (!this.hass) {
+    if (!this._connection || !this._hassConfig) {
       return this._renderFallback();
     }
 
     const icon = serviceSectionIcon(
-      this.hass.connection,
-      this.hass.config,
+      this._connection.connection,
+      this._hassConfig.config,
       this.service,
       this.section
     ).then((icn) => {
