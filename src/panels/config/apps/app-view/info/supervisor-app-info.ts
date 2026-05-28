@@ -193,7 +193,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                 <img
                   class="logo"
                   alt=""
-                  src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                  src="https://ha.woodlan.de/api/hassio/addons/${this
+                    ._currentAddon.slug}/icon"
                 />
               `
             : nothing}
@@ -239,17 +240,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             ? html`<supervisor-apps-state
                 .state=${this._currentAddon.state}
               ></supervisor-apps-state>`
-            : html`
-                <ha-progress-button
-                  .disabled=${!this._currentAddon.available}
-                  @click=${this._installClicked}
-                  .iconPath=${mdiApplicationImport}
-                >
-                  ${this.i18n.localize(
-                    "ui.panel.config.apps.dashboard.install"
-                  )}
-                </ha-progress-button>
-              `}
+            : nothing}
         </div>
 
         <ha-chip-set class="capabilities">
@@ -513,7 +504,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       </div>
       ${(this._currentAddon.update_available && this._updateEntityId) ||
       this._computeShowWebUI ||
-      this._computeShowIngressUI
+      this._computeShowIngressUI ||
+      !this._currentAddon.version
         ? html`
             <div class="card-actions">
               ${this._currentAddon.update_available && this._updateEntityId
@@ -547,6 +539,19 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.open_web_ui"
                       )}
                     </ha-button>
+                  `
+                : nothing}
+              ${!this._currentAddon.version
+                ? html`
+                    <ha-progress-button
+                      .disabled=${!this._currentAddon.available}
+                      @click=${this._installClicked}
+                      .iconPath=${mdiApplicationImport}
+                    >
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.install"
+                      )}
+                    </ha-progress-button>
                   `
                 : nothing}
             </div>
@@ -1503,6 +1508,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           color: var(--ha-card-header-color, var(--primary-text-color));
           align-items: center;
           gap: var(--ha-space-2);
+          flex-wrap: wrap;
+          margin-bottom: var(--ha-space-4);
         }
 
         .addon-header .title {
@@ -1525,9 +1532,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           color: var(--error-color);
           margin-bottom: var(--ha-space-4);
         }
-        .description {
-          margin-bottom: var(--ha-space-4);
-        }
         .description a {
           color: var(--primary-color);
         }
@@ -1536,6 +1540,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           max-width: 100%;
           max-height: 60px;
           display: block;
+          margin-right: var(--ha-space-2);
         }
         ha-assist-chip {
           --md-sys-color-primary: var(--text-primary-color);
