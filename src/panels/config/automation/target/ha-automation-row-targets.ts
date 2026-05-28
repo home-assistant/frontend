@@ -60,6 +60,9 @@ export class HaAutomationRowTargets extends LitElement {
   @property({ attribute: false })
   public selector?: TargetSelector;
 
+  @property({ type: Boolean, attribute: "non-interactive" })
+  public nonInteractive = false;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -278,8 +281,9 @@ export class HaAutomationRowTargets extends LitElement {
       <ha-dropdown
         @wa-select=${this._handleTargetSelect}
         @click=${stopPropagation}
+        @keydown=${stopPropagation}
       >
-        <span slot="trigger" class="target interactive">
+        <button slot="trigger" class="target">
           <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
           <div class="label">
             ${this._i18n.localize(
@@ -290,7 +294,7 @@ export class HaAutomationRowTargets extends LitElement {
             )}
           </div>
           <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
-        </span>
+        </button>
         ${rows.map(([targetType, targetId]) => {
           const content = html`${lastTargetType !== null &&
           lastTargetType !== targetType
@@ -345,21 +349,37 @@ export class HaAutomationRowTargets extends LitElement {
     targetType?: string,
     countTemplate: unknown = nothing
   ) {
-    return html`<div
+    if (this.nonInteractive || !targetId || !targetType) {
+      return html`<div
+        class=${classMap({
+          target: true,
+          warning,
+          error,
+        })}
+        .targetId=${targetId}
+        .targetType=${targetType}
+        .label=${label}
+      >
+        ${icon}
+        <div class="label">${label}${countTemplate}</div>
+      </div>`;
+    }
+
+    return html`<button
       class=${classMap({
         target: true,
         warning,
         error,
-        interactive: targetId && targetType,
       })}
       .targetId=${targetId}
       .targetType=${targetType}
       .label=${label}
       @click=${this._handleTargetClick}
+      @keydown=${this._handleTargetKeydown}
     >
       ${icon}
       <div class="label">${label}${countTemplate}</div>
-    </div>`;
+    </button>`;
   }
 
   private _renderTarget(
@@ -413,7 +433,7 @@ export class HaAutomationRowTargets extends LitElement {
           targetId,
           this._getLabel
         );
-        if (targetType !== "entity") {
+        if (targetType !== "entity" && !this.nonInteractive) {
           countTemplate = this._renderCount(targetType, targetId);
         }
       }
@@ -471,6 +491,13 @@ export class HaAutomationRowTargets extends LitElement {
     }
 
     this._showTargetInfo(target.targetId, target.targetType, target.label, ev);
+  }
+
+  private _handleTargetKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleTargetClick(ev);
+    }
   }
 
   private _handleTargetSelect(
@@ -562,10 +589,10 @@ export class HaAutomationRowTargets extends LitElement {
       align-items: center;
     }
 
-    .target.interactive {
+    button.target {
       cursor: pointer;
     }
-    .target.interactive:hover {
+    button.target:hover {
       background: var(--ha-color-fill-neutral-normal-hover);
     }
 
