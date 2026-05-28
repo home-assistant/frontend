@@ -8,9 +8,6 @@ import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   internationalizationContext,
   statesContext,
@@ -20,7 +17,6 @@ import {
   getEnergyDataCollection,
   getPowerFromState,
 } from "../../../../data/energy";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type {
   HomeAssistant,
@@ -42,14 +38,7 @@ export class HuiPowerTotalBadge
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
-
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
+  private _i18n?: HomeAssistantInternationalization;
 
   @state() private _config?: PowerTotalBadgeConfig;
 
@@ -130,7 +119,7 @@ export class HuiPowerTotalBadge
   }
 
   protected render() {
-    if (!this._config || !this._data) {
+    if (!this._config || !this._data || !this._i18n) {
       return nothing;
     }
 
@@ -138,18 +127,18 @@ export class HuiPowerTotalBadge
 
     let displayValue: string;
     if (power >= 1000) {
-      displayValue = `${formatNumber(power / 1000, this._locale, {
+      displayValue = `${formatNumber(power / 1000, this._i18n.locale, {
         maximumFractionDigits: 2,
       })} kW`;
     } else {
-      displayValue = `${formatNumber(power, this._locale, {
+      displayValue = `${formatNumber(power, this._i18n.locale, {
         maximumFractionDigits: 0,
       })} W`;
     }
 
     const name =
       this._config.title ||
-      this._localize("ui.panel.lovelace.cards.energy.power_total_title");
+      this._i18n.localize("ui.panel.lovelace.cards.energy.power_total_title");
 
     return html`
       <ha-badge .label=${name}>

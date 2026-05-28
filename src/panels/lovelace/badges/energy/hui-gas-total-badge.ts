@@ -7,10 +7,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
-import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
-import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import {
   internationalizationContext,
   statesContext,
@@ -20,7 +17,6 @@ import {
   computeTotalFlowRate,
   getEnergyDataCollection,
 } from "../../../../data/energy";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type {
   HomeAssistant,
@@ -42,14 +38,7 @@ export class HuiGasTotalBadge
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale!: FrontendLocaleData;
-
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
+  private _i18n?: HomeAssistantInternationalization;
 
   @state() private _config?: GasTotalBadgeConfig;
 
@@ -97,7 +86,7 @@ export class HuiGasTotalBadge
   }
 
   protected render() {
-    if (!this._config || !this._data) {
+    if (!this._config || !this._data || !this._i18n) {
       return nothing;
     }
 
@@ -107,11 +96,11 @@ export class HuiGasTotalBadge
       this._states,
       this._entities
     );
-    const displayValue = `${formatNumber(value, this._locale, { maximumFractionDigits: 1 })} ${unit}`;
+    const displayValue = `${formatNumber(value, this._i18n.locale, { maximumFractionDigits: 1 })} ${unit}`;
 
     const name =
       this._config.title ||
-      this._localize("ui.panel.lovelace.cards.energy.gas_total_title");
+      this._i18n.localize("ui.panel.lovelace.cards.energy.gas_total_title");
 
     return html`
       <ha-badge .label=${name}>
