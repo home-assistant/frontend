@@ -3,13 +3,9 @@ import { parseISO } from "date-fns";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { transform } from "../common/decorators/transform";
 import { relativeTime } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import { internationalizationContext } from "../data/context";
-import type { FrontendLocaleData } from "../data/translation";
-import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistantInternationalization } from "../types";
 
 @customElement("ha-relative-time")
@@ -19,15 +15,8 @@ class HaRelativeTime extends ReactiveElement {
   @property({ type: Boolean }) public capitalize = false;
 
   @state()
-  @consumeLocalize()
-  private _localize?: LocalizeFunc;
-
-  @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale?: FrontendLocaleData;
+  private _i18n?: HomeAssistantInternationalization;
 
   private _interval?: number;
 
@@ -72,19 +61,19 @@ class HaRelativeTime extends ReactiveElement {
   }
 
   private _updateRelative(): void {
-    if (!this._localize || !this._locale) {
+    if (!this._i18n) {
       return;
     }
 
     if (!this.datetime) {
-      this.innerHTML = this._localize("ui.components.relative_time.never");
+      this.innerHTML = this._i18n.localize("ui.components.relative_time.never");
     } else {
       const date =
         typeof this.datetime === "string"
           ? parseISO(this.datetime)
           : this.datetime;
 
-      const relTime = relativeTime(date, this._locale);
+      const relTime = relativeTime(date, this._i18n.locale);
       this.innerHTML = this.capitalize
         ? capitalizeFirstLetter(relTime)
         : relTime;

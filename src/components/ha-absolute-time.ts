@@ -4,12 +4,9 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { transform } from "../common/decorators/transform";
 import { absoluteTime } from "../common/datetime/absolute_time";
 import { configContext, internationalizationContext } from "../data/context";
-import type { FrontendLocaleData } from "../data/translation";
-import type { LocalizeFunc } from "../common/translations/localize";
 import type {
   HomeAssistantConfig,
   HomeAssistantInternationalization,
@@ -22,15 +19,8 @@ class HaAbsoluteTime extends ReactiveElement {
   @property({ attribute: false }) public datetime?: string | Date;
 
   @state()
-  @consumeLocalize()
-  private _localize?: LocalizeFunc;
-
-  @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
-    transformer: ({ locale }) => locale,
-  })
-  private _locale?: FrontendLocaleData;
+  private _i18n?: HomeAssistantInternationalization;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -88,16 +78,16 @@ class HaAbsoluteTime extends ReactiveElement {
   }
 
   private _updateAbsolute(): void {
-    if (!this._localize || !this._locale || !this._config) {
+    if (!this._i18n || !this._config) {
       return;
     }
 
     if (!this.datetime) {
-      this.innerHTML = this._localize("ui.components.absolute_time.never");
+      this.innerHTML = this._i18n.localize("ui.components.absolute_time.never");
     } else {
       this.innerHTML = absoluteTime(
         new Date(this.datetime),
-        this._locale,
+        this._i18n.locale,
         this._config
       );
     }
