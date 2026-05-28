@@ -578,24 +578,26 @@ export class HaAutomationAddSearch extends LitElement {
             `entity${TARGET_SEPARATOR}`
           );
 
-          if (searchTerm) {
-            entityItems = this._filterGroup(
-              "entity",
-              entityItems,
-              searchTerm,
-              entityComboBoxKeys
-            ) as EntityComboBoxItem[];
+          if (relatedIdSets?.entities.size) {
+            entityItems = entityItems.map((item) => ({
+              ...item,
+              isRelated: relatedIdSets.entities.has(
+                (item as EntityComboBoxItem).stateObj?.entity_id || ""
+              ),
+            })) as EntityComboBoxItem[];
           }
 
-          if (relatedIdSets?.entities.size) {
+          if (searchTerm) {
             entityItems = sortRelatedFirst(
-              entityItems.map((item) => ({
-                ...item,
-                isRelated: relatedIdSets.entities.has(
-                  (item as EntityComboBoxItem).stateObj?.entity_id || ""
-                ),
-              }))
+              this._filterGroup(
+                "entity",
+                entityItems,
+                searchTerm,
+                entityComboBoxKeys
+              )
             ) as EntityComboBoxItem[];
+          } else if (relatedIdSets?.entities.size) {
+            entityItems = sortRelatedFirst(entityItems) as EntityComboBoxItem[];
           }
 
           if (!selectedSection && entityItems.length) {
@@ -622,24 +624,26 @@ export class HaAutomationAddSearch extends LitElement {
             `device${TARGET_SEPARATOR}`
           );
 
-          if (searchTerm) {
-            deviceItems = this._filterGroup(
-              "device",
-              deviceItems,
-              searchTerm,
-              deviceComboBoxKeys
-            );
+          if (relatedIdSets?.devices.size) {
+            deviceItems = deviceItems.map((item) => ({
+              ...item,
+              isRelated: relatedIdSets.devices.has(
+                item.id.split(TARGET_SEPARATOR)[1] || ""
+              ),
+            }));
           }
 
-          if (relatedIdSets?.devices.size) {
+          if (searchTerm) {
             deviceItems = sortRelatedFirst(
-              deviceItems.map((item) => ({
-                ...item,
-                isRelated: relatedIdSets.devices.has(
-                  item.id.split(TARGET_SEPARATOR)[1] || ""
-                ),
-              }))
+              this._filterGroup(
+                "device",
+                deviceItems,
+                searchTerm,
+                deviceComboBoxKeys
+              )
             );
+          } else if (relatedIdSets?.devices.size) {
+            deviceItems = sortRelatedFirst(deviceItems);
           }
 
           if (!selectedSection && deviceItems.length) {
@@ -671,27 +675,31 @@ export class HaAutomationAddSearch extends LitElement {
             undefined
           );
 
-          if (searchTerm) {
-            areasAndFloors = this._filterGroup(
-              "area",
-              areasAndFloors,
-              searchTerm,
-              areaFloorComboBoxKeys,
-              false
-            ) as FloorComboBoxItem[];
+          if (relatedIdSets?.areas.size) {
+            areasAndFloors = areasAndFloors.map((item) => ({
+              ...item,
+              isRelated:
+                item.type === "area"
+                  ? relatedIdSets.areas.has(
+                      item.id.split(TARGET_SEPARATOR)[1] || ""
+                    )
+                  : false,
+            })) as FloorComboBoxItem[];
           }
 
-          if (relatedIdSets?.areas.size) {
+          if (searchTerm) {
             areasAndFloors = sortRelatedFirst(
-              areasAndFloors.map((item) => ({
-                ...item,
-                isRelated:
-                  item.type === "area"
-                    ? relatedIdSets.areas.has(
-                        item.id.split(TARGET_SEPARATOR)[1] || ""
-                      )
-                    : false,
-              }))
+              this._filterGroup(
+                "area",
+                areasAndFloors,
+                searchTerm,
+                areaFloorComboBoxKeys,
+                false
+              )
+            ) as FloorComboBoxItem[];
+          } else if (relatedIdSets?.areas.size) {
+            areasAndFloors = sortRelatedFirst(
+              areasAndFloors
             ) as FloorComboBoxItem[];
           }
 
