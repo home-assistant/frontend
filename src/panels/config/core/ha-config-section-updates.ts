@@ -293,7 +293,7 @@ class HaConfigSectionUpdates extends LitElement {
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.updates.update_all_failed"),
-        text: err.message,
+        text: extractApiErrorMessage(err),
         warning: true,
       });
     }
