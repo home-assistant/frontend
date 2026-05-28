@@ -726,7 +726,6 @@ export default class HaAutomationActionRow extends LitElement {
       nonInteractive = false
     ) =>
       html`<ha-automation-row-targets
-        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
