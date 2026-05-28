@@ -4,6 +4,8 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -21,6 +23,10 @@ import "../panels/config/voice-assistants/expose/expose-assistant-icon";
 @customElement("ha-filter-voice-assistants")
 export class HaFilterVoiceAssistants extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   // the list of selected voiceAssistantIds
   @property({ attribute: false }) public value: string[] = [];
@@ -44,9 +50,7 @@ export class HaFilterVoiceAssistants extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize(
-            "ui.panel.config.dashboard.voice_assistants.main"
-          )}
+          ${this._localize("ui.panel.config.dashboard.voice_assistants.main")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
