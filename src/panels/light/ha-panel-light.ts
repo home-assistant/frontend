@@ -173,10 +173,6 @@ class PanelLight extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
         }
-        :host([narrow]) hui-view-container {
-          padding-left: var(--safe-area-inset-left);
-          padding-inline-start: var(--safe-area-inset-left);
-        }
         hui-view {
           flex: 1 1 100%;
           max-width: 100%;
