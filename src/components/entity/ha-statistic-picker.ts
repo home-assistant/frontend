@@ -10,7 +10,7 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import { HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
+import { type HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
