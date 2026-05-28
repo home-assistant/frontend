@@ -11,6 +11,7 @@ import {
 } from "../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { LocalizeFunc } from "../translations/localize";
+import { ensureArray } from "../array/ensure-array";
 import { transform } from "./transform";
 
 interface ConsumeEntryConfig {
@@ -63,18 +64,18 @@ export const consumeEntityState = (config: ConsumeEntryConfig) =>
   );
 
 /**
- * Like {@link consumeEntityState} but for an array of entity IDs at
- * `entityIdPath`. Resolves to a record keyed by entity ID containing the
- * currently-available entities (missing entities and non-string IDs are
- * filtered out).
+ * Like {@link consumeEntityState} but for one or more entity IDs at
+ * `entityIdPath` (a string or string array; wrapped with {@link ensureArray}).
+ * Resolves to a record keyed by entity ID containing the currently-available
+ * entities (missing entities and non-string IDs are filtered out).
  */
 export const consumeEntityStates = (config: ConsumeEntryConfig) =>
   composeDecorator<HassEntities, Record<string, HassEntity>>(
     statesContext,
     config.entityIdPath[0],
     function (states) {
-      const ids = resolveAtPath(this, config.entityIdPath);
-      if (!Array.isArray(ids) || !states) return undefined;
+      const ids = ensureArray(resolveAtPath(this, config.entityIdPath));
+      if (!ids || !states) return undefined;
       const result: Record<string, HassEntity> = {};
       for (const id of ids) {
         if (typeof id !== "string") continue;

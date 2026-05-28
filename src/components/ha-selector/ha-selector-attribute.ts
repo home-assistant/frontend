@@ -30,24 +30,8 @@ export class HaSelectorAttribute extends LitElement {
   };
 
   @state()
-  private _entityIds?: string[];
-
-  @state()
-  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  @consumeEntityStates({ entityIdPath: ["context", "filter_entity"] })
   private _filterEntityStates?: Record<string, HassEntity>;
-
-  protected willUpdate(changedProps: PropertyValues<this>): void {
-    super.willUpdate(changedProps);
-    if (!changedProps.has("selector") && !changedProps.has("context")) {
-      return;
-    }
-
-    const entityId =
-      this.selector.attribute?.entity_id || this.context?.filter_entity;
-    this._entityIds = entityId ? ensureArray(entityId) : undefined;
-    // Used by `@consumeEntityStates` via `entityIdPath`; read to satisfy TS noUnusedLocals.
-    void this._entityIds;
-  }
 
   protected render() {
     return html`
