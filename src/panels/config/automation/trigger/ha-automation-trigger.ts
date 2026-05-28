@@ -23,7 +23,6 @@ import { subscribeLabFeature } from "../../../../data/labs";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { RelatedContextMixin } from "../../../../state/related-context-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -36,8 +35,8 @@ import "./ha-automation-trigger-row";
 import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger")
-export default class HaAutomationTrigger extends RelatedContextMixin(
-  AutomationSortableListMixin<Trigger>(SubscribeMixin(LitElement))
+export default class HaAutomationTrigger extends AutomationSortableListMixin<Trigger>(
+  SubscribeMixin(LitElement)
 ) {
   @property({ attribute: false }) public triggers!: Trigger[];
 
@@ -208,7 +207,6 @@ export default class HaAutomationTrigger extends RelatedContextMixin(
       clipboardPasteToastBottomOffset: this.editorDirty
         ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
-      relatedIdSets: this.relatedIdSets,
     });
   }
 

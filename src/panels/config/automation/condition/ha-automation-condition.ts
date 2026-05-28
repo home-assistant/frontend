@@ -25,7 +25,6 @@ import {
 } from "../../../../data/condition";
 import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { RelatedContextMixin } from "../../../../state/related-context-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -38,8 +37,8 @@ import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
-export default class HaAutomationCondition extends RelatedContextMixin(
-  AutomationSortableListMixin<Condition>(SubscribeMixin(LitElement))
+export default class HaAutomationCondition extends AutomationSortableListMixin<Condition>(
+  SubscribeMixin(LitElement)
 ) {
   @property({ attribute: false }) public conditions!: Condition[];
 
@@ -319,7 +318,6 @@ export default class HaAutomationCondition extends RelatedContextMixin(
       clipboardPasteToastBottomOffset: this.editorDirty
         ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
-      relatedIdSets: this.relatedIdSets,
     });
   }
 

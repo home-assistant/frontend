@@ -16,7 +16,6 @@ import {
 } from "../../../../data/action";
 import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
-import { RelatedContextMixin } from "../../../../state/related-context-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -29,8 +28,8 @@ import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action")
-export default class HaAutomationAction extends RelatedContextMixin(
-  AutomationSortableListMixin<Action>(LitElement)
+export default class HaAutomationAction extends AutomationSortableListMixin<Action>(
+  LitElement
 ) {
   @property({ type: Boolean }) public root = false;
 
@@ -231,7 +230,6 @@ export default class HaAutomationAction extends RelatedContextMixin(
       clipboardPasteToastBottomOffset: this.editorDirty
         ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
         : undefined,
-      relatedIdSets: this.relatedIdSets,
     });
   }
 

@@ -1,6 +1,5 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { RelatedIdSets } from "../../../common/search/related-context";
 import type { SingleHassServiceTarget } from "../../../data/target";
 import type { HomeAssistant } from "../../../types";
 
@@ -17,8 +16,6 @@ export interface AddAutomationElementDialogParams {
   add: (key: string, target?: HassServiceTarget) => void;
   clipboardItem: string | undefined;
   clipboardPasteToastBottomOffset?: number;
-  /** Pre-resolved related context for search boosting. */
-  relatedIdSets?: RelatedIdSets;
 }
 
 /** Get the target from the query parameters. */

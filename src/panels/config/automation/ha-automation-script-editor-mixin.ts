@@ -151,6 +151,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
             itemType: "area",
             itemId: areaId,
           });
+        } else {
+          fireEvent(this, "hass-related-context", undefined);
         }
       }
     }

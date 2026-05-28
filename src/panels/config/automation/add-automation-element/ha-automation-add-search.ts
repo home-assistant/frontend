@@ -44,7 +44,7 @@ import {
 } from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import { labelsContext } from "../../../../data/context";
+import { labelsContext, relatedContext } from "../../../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
@@ -133,7 +133,9 @@ export class HaAutomationAddSearch extends LitElement {
     | "condition"
     | "action";
 
-  @property({ attribute: false }) public relatedIdSets?: RelatedIdSets;
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
 
   @state() private _searchSectionTitle?: string;
 
@@ -201,7 +203,7 @@ export class HaAutomationAddSearch extends LitElement {
       this.items,
       this.newTriggersAndConditions,
       this._selectedSearchSection,
-      this.relatedIdSets
+      this._relatedIdSets
     );
 
     let emptySearchTranslation: string | undefined;

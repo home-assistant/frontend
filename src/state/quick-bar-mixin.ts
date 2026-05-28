@@ -1,14 +1,10 @@
-import { ContextProvider } from "@lit/context";
 import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { mainWindow } from "../common/dom/get_main_window";
 import { ShortcutManager } from "../common/keyboard/shortcuts";
-import { buildRelatedIdSets } from "../common/search/related-context";
 import { extractSearchParamsObject } from "../common/url/search-params";
-import { relatedContext, type RelatedContextItem } from "../data/context";
-import { findRelated } from "../data/search";
 import type { QuickBarSection } from "../dialogs/quick-bar/show-dialog-quick-bar";
 import {
   closeQuickBar,
@@ -31,52 +27,6 @@ declare global {
 export default <T extends Constructor<HassElement>>(superClass: T) =>
   class extends superClass {
     private _quickBarOpen = false;
-
-    private _quickBarContext?: RelatedContextItem;
-
-    private _relatedContextProvider = new ContextProvider(this, {
-      context: relatedContext,
-    });
-
-    private _fetchRelatedMemoized = memoizeOne(
-      (itemType: RelatedContextItem["itemType"], itemId: string) =>
-        findRelated(this.hass!, itemType, itemId)
-    );
-
-    private _clearRelatedContext = () => {
-      this._quickBarContext = undefined;
-      this._relatedContextProvider.setValue(undefined);
-    };
-
-    private _contextMatches = (context?: RelatedContextItem) =>
-      context?.itemType === this._quickBarContext?.itemType &&
-      context?.itemId === this._quickBarContext?.itemId;
-
-    private _prefetchRelatedContext = async (context?: RelatedContextItem) => {
-      this._relatedContextProvider.setValue(undefined);
-
-      if (!context) {
-        return;
-      }
-
-      try {
-        const related = await this._fetchRelatedMemoized(
-          context.itemType,
-          context.itemId
-        );
-
-        if (this._contextMatches(context)) {
-          this._relatedContextProvider.setValue(buildRelatedIdSets(related));
-        }
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.warn("Error prefetching related context", err);
-
-        if (this._contextMatches(context)) {
-          this._relatedContextProvider.setValue(undefined);
-        }
-      }
-    };
 
     protected firstUpdated(changedProps: PropertyValues<this>) {
       super.firstUpdated(changedProps);
@@ -107,20 +57,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           this._quickBarOpen = false;
         }
       });
-
-      this.addEventListener("hass-related-context", (ev) => {
-        this._quickBarContext =
-          ev.detail && "itemType" in ev.detail && "itemId" in ev.detail
-            ? ev.detail
-            : undefined;
-        this._prefetchRelatedContext(this._quickBarContext);
-      });
-
-      mainWindow.addEventListener(
-        "location-changed",
-        this._clearRelatedContext
-      );
-      mainWindow.addEventListener("popstate", this._clearRelatedContext);
 
       mainWindow.addEventListener("hass-quick-bar-trigger", (ev) => {
         switch (ev.detail.key) {
@@ -156,15 +92,6 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       ) {
         this._registerShortcut();
       }
-    }
-
-    public disconnectedCallback() {
-      super.disconnectedCallback();
-      mainWindow.removeEventListener(
-        "location-changed",
-        this._clearRelatedContext
-      );
-      mainWindow.removeEventListener("popstate", this._clearRelatedContext);
     }
 
     private _registerShortcut() {

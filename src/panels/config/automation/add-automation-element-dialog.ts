@@ -764,7 +764,6 @@ class DialogAddAutomationElement
               )}
               .convertToItem=${this._convertToItem}
               .newTriggersAndConditions=${this._newTriggersAndConditions}
-              .relatedIdSets=${this._params?.relatedIdSets}
               @search-element-picked=${this._searchItemSelected}
             >
             </ha-automation-add-search>`
