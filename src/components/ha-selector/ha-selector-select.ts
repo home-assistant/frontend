@@ -1,13 +1,20 @@
 import { mdiDragHorizontalVariant } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit/context";
 import { ensureArray } from "../../common/array/ensure-array";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { internationalizationContext } from "../../data/context";
 import type { SelectOption, SelectSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { FrontendLocaleData } from "../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
@@ -24,6 +31,13 @@ import "../radio/ha-radio-option";
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: SelectSelector;
 
@@ -75,11 +89,7 @@ export class HaSelectSelector extends LitElement {
 
     if (this.selector.select?.sort) {
       options.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.label,
-          b.label,
-          this.hass.locale.language
-        )
+        caseInsensitiveStringCompare(a.label, b.label, this._locale.language)
       );
     }
 
