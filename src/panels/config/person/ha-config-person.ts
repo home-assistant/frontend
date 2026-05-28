@@ -60,7 +60,6 @@ export class HaConfigPerson extends LitElement {
     const hass = this.hass;
     return html`
       <hass-tabs-subpage
-        .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
@@ -102,7 +101,6 @@ export class HaConfigPerson extends LitElement {
                     .entry=${entry}
                   >
                     <ha-person-badge
-                      .hass=${this.hass}
                       .person=${entry}
                       slot="graphic"
                     ></ha-person-badge>
@@ -139,7 +137,6 @@ export class HaConfigPerson extends LitElement {
                       (entry) => html`
                         <ha-list-item graphic="avatar">
                           <ha-person-badge
-                            .hass=${this.hass}
                             .person=${entry}
                             slot="graphic"
                           ></ha-person-badge>

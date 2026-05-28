@@ -70,11 +70,7 @@ export class HuiViewVisibilityEditor extends LitElement {
         ${this._sortedUsers(this._users).map(
           (user) => html`
             <ha-md-list-item>
-              <ha-user-badge
-                slot="start"
-                .hass=${this.hass}
-                .user=${user}
-              ></ha-user-badge>
+              <ha-user-badge slot="start" .user=${user}></ha-user-badge>
               <span slot="headline">${user.name}</span>
               <ha-switch
                 slot="end"
