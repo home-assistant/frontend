@@ -64,22 +64,22 @@ export const consumeEntityState = (config: ConsumeEntryConfig) =>
 
 /**
  * Like {@link consumeEntityState} but for an array of entity IDs at
- * `entityIdPath`. Resolves to a `HassEntity[]` containing one entry per
- * currently-available entity (missing entities and non-string IDs are
- * filtered out; original order is preserved).
+ * `entityIdPath`. Resolves to a record keyed by entity ID containing the
+ * currently-available entities (missing entities and non-string IDs are
+ * filtered out).
  */
 export const consumeEntityStates = (config: ConsumeEntryConfig) =>
-  composeDecorator<HassEntities, HassEntity[]>(
+  composeDecorator<HassEntities, Record<string, HassEntity>>(
     statesContext,
     config.entityIdPath[0],
     function (states) {
       const ids = resolveAtPath(this, config.entityIdPath);
       if (!Array.isArray(ids) || !states) return undefined;
-      const result: HassEntity[] = [];
+      const result: Record<string, HassEntity> = {};
       for (const id of ids) {
         if (typeof id !== "string") continue;
         const state = states[id];
-        if (state !== undefined) result.push(state);
+        if (state !== undefined) result[id] = state;
       }
       return result;
     }

@@ -34,7 +34,7 @@ export class HaSelectorAttribute extends LitElement {
 
   @state()
   @consumeEntityStates({ entityIdPath: ["_entityIds"] })
-  private _filterEntityStates?: HassEntity[];
+  private _filterEntityStates?: Record<string, HassEntity>;
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
@@ -45,6 +45,8 @@ export class HaSelectorAttribute extends LitElement {
     const entityId =
       this.selector.attribute?.entity_id || this.context?.filter_entity;
     this._entityIds = entityId ? ensureArray(entityId) : undefined;
+    // Used by `@consumeEntityStates` via `entityIdPath`; read to satisfy TS noUnusedLocals.
+    void this._entityIds;
   }
 
   protected render() {
@@ -93,9 +95,7 @@ export class HaSelectorAttribute extends LitElement {
       const entityIds = ensureArray(this.context.filter_entity);
 
       invalid = !entityIds.some((entityId) => {
-        const stateObj = this._filterEntityStates?.find(
-          (entityState) => entityState.entity_id === entityId
-        );
+        const stateObj = this._filterEntityStates?.[entityId];
         return (
           stateObj &&
           this.value in stateObj.attributes &&
