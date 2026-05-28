@@ -161,6 +161,7 @@ export default class HaAutomationOptionRow extends LitElement {
           ? html`
               <ha-svg-icon
                 id="note-icon"
+                tabindex="0"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.note.label"
