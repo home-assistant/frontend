@@ -202,10 +202,7 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       }),
     };
 
-    private __relatedContextProvider = new RelatedContextProvider(
-      this,
-      () => this.hass
-    );
+    private __relatedContextProvider = new RelatedContextProvider(this);
 
     protected hassConnected() {
       super.hassConnected();

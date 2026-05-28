@@ -1,11 +1,10 @@
 import { ContextProvider } from "@lit/context";
 import memoizeOne from "memoize-one";
-import type { ReactiveElement } from "lit";
 import { mainWindow } from "../common/dom/get_main_window";
 import { buildRelatedIdSets } from "../common/search/related-context";
 import { relatedContext, type RelatedContextItem } from "../data/context";
 import { findRelated } from "../data/search";
-import type { HomeAssistant } from "../types";
+import type { HassBaseEl } from "./hass-base-mixin";
 
 /**
  * Standalone context provider for `relatedContext`.
@@ -19,36 +18,24 @@ import type { HomeAssistant } from "../types";
  * Instantiated from `context-mixin.ts` alongside other providers.
  */
 export class RelatedContextProvider {
-  private _host: ReactiveElement;
-
-  private _hassGetter: () => HomeAssistant | undefined;
-
   private _relatedContext?: RelatedContextItem;
 
   private _provider: ContextProvider<typeof relatedContext>;
 
   private _fetchRelatedMemoized = memoizeOne(
     (itemType: RelatedContextItem["itemType"], itemId: string) =>
-      findRelated(this._hassGetter()!, itemType, itemId)
+      findRelated(this._host.hass!, itemType, itemId)
   );
 
-  constructor(
-    host: ReactiveElement,
-    hassGetter: () => HomeAssistant | undefined
-  ) {
-    this._host = host;
-    this._hassGetter = hassGetter;
-    this._provider = new ContextProvider(host, { context: relatedContext });
+  constructor(private _host: HassBaseEl) {
+    this._provider = new ContextProvider(_host, { context: relatedContext });
   }
 
   /**
    * Set up event listeners. Call from `firstUpdated` or `hassConnected`.
    */
   public connect(): void {
-    this._host.addEventListener(
-      "hass-related-context",
-      this._onRelatedContext
-    );
+    this._host.addEventListener("hass-related-context", this._onRelatedContext);
     mainWindow.addEventListener("location-changed", this._clearRelatedContext);
     mainWindow.addEventListener("popstate", this._clearRelatedContext);
   }
@@ -88,7 +75,7 @@ export class RelatedContextProvider {
     context?: RelatedContextItem
   ): Promise<void> => {
     this._provider.setValue(undefined);
-    if (!context || !this._hassGetter()) {
+    if (!context || !this._host.hass) {
       return;
     }
 
