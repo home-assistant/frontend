@@ -6319,7 +6319,8 @@
             "resend_confirm_email": "Resend confirmation email",
             "clicked_confirm": "I opened the confirmation link",
             "confirm_email": "Check the email we just sent to {email} and open the confirmation link to continue.",
-            "account_created": "Account created! Check your email for instructions on how to activate your account."
+            "account_created": "Account created! Check your email for instructions on how to activate your account.",
+            "verification_email_sent": "Verification email sent. Check your inbox for instructions on how to activate your account."
           },
           "account": {
             "download_support_package": "Download support package",
