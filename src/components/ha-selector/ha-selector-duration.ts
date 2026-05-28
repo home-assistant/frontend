@@ -2,14 +2,11 @@ import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { DurationSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-duration-input";
 import type { HaDurationData, HaDurationInput } from "../ha-duration-input";
 
 @customElement("ha-selector-duration")
 export class HaTimeDuration extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: DurationSelector;
 
   @property({ attribute: false }) public value?:
