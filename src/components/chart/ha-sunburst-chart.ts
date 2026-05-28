@@ -7,7 +7,6 @@ import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { filterXSS } from "../../common/util/xss";
 import type { ECOption } from "../../resources/echarts/echarts";
-import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
@@ -25,8 +24,6 @@ export interface SunburstNode {
 
 @customElement("ha-sunburst-chart")
 export class HaSunburstChart extends LitElement {
-  public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data?: SunburstNode;
 
   @property({ attribute: false }) public valueFormatter?: (
