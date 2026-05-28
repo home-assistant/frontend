@@ -1,7 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
@@ -13,6 +12,7 @@ import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
+import "./ha-chart-tooltip-marker";
 import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
@@ -176,8 +176,7 @@ export class StateHistoryChartLine extends LitElement {
         seriesName: dataset.name,
         seriesIndex: index,
         value: lastData,
-        // HTML copied from echarts. May change based on options
-        marker: `<span style="display:inline-block;margin-right:4px;margin-inline-end:4px;margin-inline-start:initial;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
+        color: dataset.color,
       });
     });
     const unit = this.unit
@@ -208,9 +207,9 @@ export class StateHistoryChartLine extends LitElement {
         // Five non-breaking spaces indent the source label.
         statSuffix = html`<br />${"\u00a0".repeat(5)}${source}`;
       }
-      // param.marker is echarts-generated styled markup (or hardcoded fallback
-      // span with the dataset color above), not user input.
-      return html`<br />${unsafeHTML(param.marker)}
+      return html`<br /><ha-chart-tooltip-marker
+          .color=${String(param.color ?? "")}
+        ></ha-chart-tooltip-marker>
         ${param.seriesName
           ? html`${param.seriesName}: `
           : nothing}${value}${statSuffix}`;

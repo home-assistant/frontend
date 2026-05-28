@@ -3,12 +3,12 @@ import type { SunburstSeriesOption } from "echarts/types/dist/echarts";
 import type { CallbackDataParams } from "echarts/types/src/util/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
+import "./ha-chart-tooltip-marker";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
 let SunburstChart: typeof import("echarts/lib/chart/sunburst/install");
@@ -71,7 +71,10 @@ export class HaSunburstChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
-    return html`${unsafeHTML(params.marker as string)} ${data.name}<br />${value}`;
+    return html`<ha-chart-tooltip-marker
+        .color=${String(params.color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${data.name}<br />${value}`;
   };
 
   private _createData = memoizeOne(

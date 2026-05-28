@@ -1,7 +1,6 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { html, nothing } from "lit";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import {
   subHours,
   differenceInDays,
@@ -37,6 +36,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { HaECOption } from "../../../../../resources/echarts/echarts";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
 export { fillDataGapsAndRoundCaps } from "../../../../../components/chart/round-caps";
@@ -290,7 +290,10 @@ function formatTooltip(
       }
     }
     rows.push(
-      html`${unsafeHTML(param.marker as string)} ${param.seriesName}:
+      html`<ha-chart-tooltip-marker
+          .color=${String(param.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${param.seriesName}:
         <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
     );
   }

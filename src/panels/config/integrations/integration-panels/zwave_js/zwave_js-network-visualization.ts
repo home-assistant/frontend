@@ -4,12 +4,12 @@ import type {
 } from "echarts/types/dist/shared";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import memoizeOne from "memoize-one";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import type {
   NetworkData,
   NetworkLink,
@@ -179,7 +179,10 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
     const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
-    return html`${unsafeHTML((params as any).marker)} ${name}<br /><b
+    return html`<ha-chart-tooltip-marker
+        .color=${String((params as CallbackDataParams).color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${name}<br /><b
         >${this.hass.localize(
           "ui.panel.config.zwave_js.visualization.node_id"
         )}:</b

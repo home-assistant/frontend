@@ -2,7 +2,6 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { mdiChartDonut, mdiChartBar } from "@mdi/js";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -13,6 +12,7 @@ import type { PieDataItemOption } from "echarts/types/src/chart/pie/PieSeries";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
+import "../../../../components/chart/ha-chart-tooltip-marker";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
@@ -206,7 +206,10 @@ export class HuiEnergyDevicesGraphCard
       params.value < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh ${params.percent ? `(${params.percent} %)` : ""}`;
     return html`<h4 style="text-align: center; margin: 0;">${deviceName}</h4>
-      ${unsafeHTML(params.marker)} ${params.seriesName}:
+      <ha-chart-tooltip-marker
+        .color=${String(params.color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${params.seriesName}:
       <div style="direction:ltr; display: inline;">${value}</div>`;
   };
 

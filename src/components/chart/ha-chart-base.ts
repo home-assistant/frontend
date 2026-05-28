@@ -19,7 +19,7 @@ import type {
   YAXisOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing, render } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -38,7 +38,6 @@ import type {
   HaECSeries,
   HaECSeriesItem,
   HaTooltipOption,
-  LitTooltipFormatter,
 } from "../../resources/echarts/echarts";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { isMac } from "../../util/is_mac";
@@ -46,6 +45,7 @@ import "../chips/ha-assist-chip";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
+import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -57,50 +57,8 @@ type RawSeriesOption = Exclude<
   readonly unknown[]
 >;
 
-// What the wrapper returns to echarts: an HTMLElement when there is content to
-// show, or null to suppress. echarts' TooltipFormatterCallback accepts these at
-// runtime; the upstream type is narrower but doesn't model the null-hide path.
-type WrappedTooltipFormatter = (
-  params: any,
-  ticket?: string
-) => HTMLElement | null;
-
-// Maps original-fn → wrapped-fn AND wrapped-fn → wrapped-fn, so re-wrapping
-// an already-wrapped formatter is a no-op without needing a separate WeakSet.
-const litTooltipFormatterCache = new WeakMap<
-  LitTooltipFormatter | WrappedTooltipFormatter,
-  WrappedTooltipFormatter
->();
-
-const wrapLitTooltipFormatter = (
-  fn: LitTooltipFormatter
-): WrappedTooltipFormatter => {
-  const cached = litTooltipFormatterCache.get(fn);
-  if (cached) return cached;
-  const container = document.createElement("div");
-  // display:contents keeps the wrapper layout-invisible so its children act as
-  // direct children of echarts' tooltip box, matching the prior innerHTML behavior.
-  container.style.display = "contents";
-  const wrapped: WrappedTooltipFormatter = (params, ticket) => {
-    const result = fn(params, ticket);
-    // `nothing` and null/undefined must all suppress the tooltip. Returning
-    // `nothing` to echarts via `render(nothing, container)` leaves a Lit
-    // comment marker behind so echarts would show an empty box; convert it to
-    // null instead so `setContent(null)` clears innerHTML and `show()` hides.
-    if (result === null || result === undefined || result === nothing) {
-      return null;
-    }
-    render(result, container);
-    return container;
-  };
-  litTooltipFormatterCache.set(fn, wrapped);
-  // Idempotent re-wrap: looking up the wrapped fn returns itself.
-  litTooltipFormatterCache.set(wrapped, wrapped);
-  return wrapped;
-};
-
 const toEChartsFormatter = (
-  fn: WrappedTooltipFormatter
+  fn: ReturnType<typeof wrapLitTooltipFormatter>
 ): NonNullable<TooltipOption["formatter"]> =>
   fn as NonNullable<TooltipOption["formatter"]>;
 

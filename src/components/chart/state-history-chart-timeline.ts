@@ -1,7 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
@@ -15,6 +14,7 @@ import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
+import "./ha-chart-tooltip-marker";
 import { computeTimelineColor } from "./timeline-color";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
 import echarts from "../../resources/echarts/echarts";
@@ -133,7 +133,7 @@ export class StateHistoryChartTimeline extends LitElement {
   };
 
   private _renderTooltip = (params: TooltipPositionCallbackParams) => {
-    const { value, name, marker, seriesName, color } = Array.isArray(params)
+    const { value, name, seriesName, color } = Array.isArray(params)
       ? params[0]
       : params;
     const durationInMs = value![2] - value![1];
@@ -145,17 +145,13 @@ export class StateHistoryChartTimeline extends LitElement {
       this.hass.language,
       this.hass.translationMetadata.translations
     );
-    // marker is echarts-generated styled markup, not user input. The RTL fallback
-    // is a hardcoded styled span with the echarts-provided color, also not user input.
-    const markerMarkup = rtl
-      ? `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`
-      : (marker as string);
-
     return html`${seriesName
         ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
-        : nothing}${unsafeHTML(
-        markerMarkup
-      )}${name}<br />${formatDateTimeWithSeconds(
+        : nothing}<ha-chart-tooltip-marker
+        .color=${String(color ?? "")}
+        .rtl=${rtl}
+      ></ha-chart-tooltip-marker
+      >${name}<br />${formatDateTimeWithSeconds(
         new Date(value![1]),
         this.hass.locale,
         this.hass.config

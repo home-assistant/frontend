@@ -7,7 +7,6 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -41,6 +40,7 @@ import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
+import "./ha-chart-tooltip-marker";
 import { fillDataGapsAndRoundCaps } from "./round-caps";
 import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 
@@ -254,7 +254,7 @@ export class StatisticsChart extends LitElement {
       : "";
     const rows: {
       time?: string;
-      marker: string;
+      color: string;
       seriesName?: string;
       value: string;
     }[] = [];
@@ -329,7 +329,7 @@ export class StatisticsChart extends LitElement {
 
       rows.push({
         time: rows.length === 0 ? rawTime : undefined,
-        marker: param.marker,
+        color: String(param.color ?? ""),
         seriesName: param.seriesName,
         value,
       });
@@ -337,15 +337,15 @@ export class StatisticsChart extends LitElement {
 
     if (rows.length === 0) return nothing;
 
-    // param.marker is echarts-generated styled markup (or hardcoded fallback
-    // span with the dataset color above), not user input.
     return html`${rows.map(
       (row, i) =>
-        html`${row.time ? html`${row.time}<br />` : nothing}${unsafeHTML(
-          row.marker
-        )}
-        ${row.seriesName}:
-        ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
+        html`${row.time
+            ? html`${row.time}<br />`
+            : nothing}<ha-chart-tooltip-marker
+            .color=${row.color}
+          ></ha-chart-tooltip-marker>
+          ${row.seriesName}:
+          ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
     )}`;
   };
 

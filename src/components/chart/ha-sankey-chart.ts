@@ -1,6 +1,5 @@
 import { customElement, property, state } from "lit/decorators";
 import { LitElement, html, css } from "lit";
-import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import type { EChartsType } from "echarts/core";
 import type { SankeySeriesOption } from "echarts/types/dist/echarts";
 import type {
@@ -15,6 +14,7 @@ import type { HomeAssistant } from "../../types";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
 import "./ha-chart-base";
+import "./ha-chart-tooltip-marker";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
 
@@ -103,7 +103,9 @@ export class HaSankeyChart extends LitElement {
       : data.value;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return html`${unsafeHTML(params.marker as string)}
+      return html`<ha-chart-tooltip-marker
+          .color=${String(params.color ?? "")}
+        ></ha-chart-tooltip-marker>
         ${node?.label ?? data.id}<br />${value}`;
     }
     if (data.source && data.target) {
