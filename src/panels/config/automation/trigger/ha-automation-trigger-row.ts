@@ -257,6 +257,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
           ? html`
               <ha-svg-icon
+                tabindex="0"
                 id="note-icon"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
