@@ -194,8 +194,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                   <img
                     class="logo"
                     alt=""
-                    src="https://ha.woodlan.de/api/hassio/addons/${this
-                      ._currentAddon.slug}/logo"
+                    src="/api/hassio/addons/${this._currentAddon.slug}/logo"
                   />
                 `
               : nothing}
