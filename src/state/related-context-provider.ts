@@ -1,5 +1,6 @@
 import { ContextProvider } from "@lit/context";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { buildRelatedIdSets } from "../common/search/related-context";
 import { relatedContext, type RelatedContextItem } from "../data/context";
@@ -61,10 +62,10 @@ export class RelatedContextProvider {
     mainWindow.removeEventListener("popstate", this._maybeClearRelatedContext);
   }
 
-  private _onRelatedContext = (ev: Event): void => {
-    const detail = (ev as CustomEvent).detail;
-    this._relatedContext =
-      detail && "itemType" in detail && "itemId" in detail ? detail : undefined;
+  private _onRelatedContext = (
+    ev: HASSDomEvent<RelatedContextItem | undefined>
+  ): void => {
+    this._relatedContext = ev.detail;
     this._contextPathname = mainWindow.location.pathname;
     this._resolveRelatedContext(this._relatedContext);
   };

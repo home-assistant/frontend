@@ -1,5 +1,6 @@
 import { createContext } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import type {
   HomeAssistant,
   HomeAssistantApi,
@@ -184,6 +185,9 @@ export const relatedContext = createContext<RelatedIdSets | undefined>(
 declare global {
   interface HASSDomEvents {
     "hass-related-context": RelatedContextItem | undefined;
+  }
+  interface HTMLElementEventMap {
+    "hass-related-context": HASSDomEvent<RelatedContextItem | undefined>;
   }
 }
 
