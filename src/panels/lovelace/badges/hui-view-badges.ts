@@ -150,7 +150,6 @@ export class HuiViewBadges extends LitElement {
                         ? html`
                             <hui-badge-edit-mode
                               data-sortable
-                              .hass=${this.hass}
                               .lovelace=${this.lovelace}
                               .path=${badgePath}
                               .hiddenOverlay=${this._dragging}
