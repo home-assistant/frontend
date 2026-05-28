@@ -1,11 +1,15 @@
+import { consume } from "@lit/context";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { transform } from "../../common/decorators/transform";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
+import { statesContext } from "../../data/context";
 import type { AttributeSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
-import { ensureArray } from "../../common/array/ensure-array";
 
 @customElement("ha-selector-attribute")
 export class HaSelectorAttribute extends LitElement {
@@ -26,6 +30,29 @@ export class HaSelectorAttribute extends LitElement {
   @property({ attribute: false }) public context?: {
     filter_entity?: string | string[];
   };
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, HassEntity[] | undefined>({
+    transformer: function (this: HaSelectorAttribute, states) {
+      if (!states) {
+        return undefined;
+      }
+      const entityId =
+        this.selector.attribute?.entity_id || this.context?.filter_entity;
+      if (!entityId) {
+        return undefined;
+      }
+      const ids = ensureArray(entityId);
+      return ids
+        .map((id) => states[id])
+        .filter(
+          (entityState): entityState is HassEntity => entityState !== undefined
+        );
+    },
+    watch: ["selector", "context"],
+  })
+  private _filterEntityStates?: HassEntity[];
 
   protected render() {
     return html`
@@ -73,7 +100,9 @@ export class HaSelectorAttribute extends LitElement {
       const entityIds = ensureArray(this.context.filter_entity);
 
       invalid = !entityIds.some((entityId) => {
-        const stateObj = this.hass.states[entityId];
+        const stateObj = this._filterEntityStates?.find(
+          (entityState) => entityState.entity_id === entityId
+        );
         return (
           stateObj &&
           this.value in stateObj.attributes &&
