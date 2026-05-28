@@ -1,9 +1,7 @@
 import { consume, type ContextType } from "@lit/context";
-import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../data/context";
 import type { AddonState } from "../../../../data/hassio/addon";
 
@@ -16,13 +14,14 @@ class SupervisorAppsState extends LitElement {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   protected render(): TemplateResult {
+    // Consider "unknown" state as "stopped" for display purposes
+    // because unknown doesn't add any value to the user
+    const displayState = this.state === "unknown" ? "stopped" : this.state;
     return html`
-      ${this.state === "unknown"
-        ? html`<ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>`
-        : html` <div class="dot state-${this.state}"></div> `}
+      <div class="dot state-${displayState}"></div>
       <span
         >${this._i18n.localize(
-          `ui.panel.config.apps.dashboard.capability.state.${this.state}`
+          `ui.panel.config.apps.dashboard.capability.state.${displayState}`
         )}</span
       >
     `;
