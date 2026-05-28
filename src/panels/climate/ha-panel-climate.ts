@@ -172,7 +172,7 @@ class PanelClimate extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--safe-area-inset-top));
+          padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
