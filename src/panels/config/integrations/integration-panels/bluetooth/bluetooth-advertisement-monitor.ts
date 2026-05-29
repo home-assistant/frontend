@@ -173,7 +173,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           defaultHidden: false,
           template: (ad) =>
             html`<ha-relative-time
-              .hass=${this.hass}
               .datetime=${ad.datetime}
               capitalize
             ></ha-relative-time>`,

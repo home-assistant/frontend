@@ -3,10 +3,12 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { removeFile, uploadFile } from "../../data/file_upload";
 import type { FileSelector } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-file-upload";
 
 @customElement("ha-selector-file")
@@ -25,6 +27,9 @@ export class HaFileSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
+
   @state() private _filename?: { fileId: string; name: string };
 
   @state() private _busy = false;
@@ -42,7 +47,7 @@ export class HaFileSelector extends LitElement {
         .uploading=${this._busy}
         .value=${this.value
           ? this._filename?.name ||
-            this.hass.localize("ui.components.selectors.file.unknown_file")
+            this._localize!("ui.components.selectors.file.unknown_file")
           : undefined}
         @file-picked=${this._uploadFile}
         @change=${this._removeFile}
@@ -72,7 +77,7 @@ export class HaFileSelector extends LitElement {
       fireEvent(this, "value-changed", { value: fileId });
     } catch (err: any) {
       showAlertDialog(this, {
-        text: this.hass.localize("ui.components.selectors.file.upload_failed", {
+        text: this._localize!("ui.components.selectors.file.upload_failed", {
           reason: err.message || err,
         }),
       });

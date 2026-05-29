@@ -54,14 +54,12 @@ export class HaMoreInfoStateHeader extends LitElement {
           ${this._absoluteTime
             ? html`
                 <ha-absolute-time
-                  .hass=${this.hass}
                   .datetime=${this.changedOverride ??
                   this.stateObj.last_changed}
                 ></ha-absolute-time>
               `
             : html`
                 <ha-relative-time
-                  .hass=${this.hass}
                   .datetime=${this.changedOverride ??
                   this.stateObj.last_changed}
                   capitalize

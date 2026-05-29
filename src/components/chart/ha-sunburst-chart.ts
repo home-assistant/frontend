@@ -6,7 +6,6 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import type { HaECOption } from "../../resources/echarts/echarts";
-import type { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 import "./ha-chart-tooltip-marker";
 
@@ -25,8 +24,6 @@ export interface SunburstNode {
 
 @customElement("ha-sunburst-chart")
 export class HaSunburstChart extends LitElement {
-  public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data?: SunburstNode;
 
   @property({ attribute: false }) public valueFormatter?: (
