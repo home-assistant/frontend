@@ -22,6 +22,7 @@ export const haTopAppBarFixedStyles = css`
     padding-top: var(--safe-area-inset-top);
     padding-right: var(--safe-area-inset-right);
     transition:
+      box-shadow var(--ha-animation-duration-short) ease,
       width var(--ha-animation-duration-normal) ease,
       padding-left var(--ha-animation-duration-normal) ease,
       padding-right var(--ha-animation-duration-normal) ease;
