@@ -78,7 +78,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       <hui-view-badges
-        .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
