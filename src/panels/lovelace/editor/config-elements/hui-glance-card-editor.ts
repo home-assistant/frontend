@@ -37,6 +37,7 @@ const cardConfigStruct = assign(
     show_state: optional(boolean()),
     show_icon: optional(boolean()),
     state_color: optional(boolean()),
+    color: optional(string()),
     entities: array(entitiesConfigStruct),
   })
 );
@@ -66,6 +67,16 @@ const SUB_FORM = {
         },
         { name: "show_last_changed", selector: { boolean: {} } },
         { name: "show_state", selector: { boolean: {} }, default: true },
+        {
+          name: "color",
+          selector: {
+            ui_color: {
+              default_color: "state",
+              include_state: true,
+              include_none: true,
+            },
+          },
+        },
       ],
     },
     {
@@ -114,8 +125,55 @@ const SCHEMA = [
       { name: "show_state", selector: { boolean: {} } },
     ],
   },
-  { name: "state_color", selector: { boolean: {} } },
+  {
+    name: "color",
+    selector: {
+      ui_color: {
+        default_color: "state",
+        include_state: true,
+        include_none: true,
+      },
+    },
+  },
 ] as const;
+
+const migrateStateColor = <T extends { state_color?: boolean; color?: string }>(
+  config: T
+): T => {
+  if (config.state_color === undefined || config.color !== undefined) {
+    return config;
+  }
+
+  const migrated = {
+    ...config,
+    color: config.state_color ? "state" : "none",
+  };
+  delete migrated.state_color;
+  return migrated;
+};
+
+const migrateGlanceStateColor = (
+  config: GlanceCardConfig
+): GlanceCardConfig => {
+  let changed = false;
+  let migratedConfig = migrateStateColor(config);
+  changed ||= migratedConfig !== config;
+
+  const entities = migratedConfig.entities.map((entity) => {
+    if (typeof entity === "string") {
+      return entity;
+    }
+    const migratedEntity = migrateStateColor(entity);
+    changed ||= migratedEntity !== entity;
+    return migratedEntity;
+  });
+
+  if (entities !== migratedConfig.entities) {
+    migratedConfig = { ...migratedConfig, entities };
+  }
+
+  return changed ? migratedConfig : config;
+};
 
 @customElement("hui-glance-card-editor")
 export class HuiGlanceCardEditor
@@ -132,6 +190,11 @@ export class HuiGlanceCardEditor
 
   public setConfig(config: GlanceCardConfig): void {
     assert(config, cardConfigStruct);
+    const migratedConfig = migrateGlanceStateColor(config);
+    if (migratedConfig !== config) {
+      fireEvent(this, "config-changed", { config: migratedConfig });
+      return;
+    }
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }

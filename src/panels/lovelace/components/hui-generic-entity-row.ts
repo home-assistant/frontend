@@ -22,6 +22,12 @@ import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
 
+const colorToStateColor = (
+  color: string | undefined,
+  stateColor: boolean | undefined
+): boolean | undefined =>
+  color === undefined ? stateColor : color === "state";
+
 @customElement("hui-generic-entity-row")
 export class HuiGenericEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -86,7 +92,10 @@ export class HuiGenericEntityRow extends LitElement {
           .stateObj=${stateObj}
           .overrideIcon=${this.config.icon}
           .overrideImage=${this.config.image}
-          .stateColor=${this.config.state_color}
+          .stateColor=${colorToStateColor(
+            this.config.color,
+            this.config.state_color
+          )}
         ></state-badge>
         ${!this.hideName
           ? html`<div

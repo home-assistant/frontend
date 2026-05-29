@@ -23,8 +23,14 @@ import type {
   LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
-import type { EntitiesCardConfig } from "./types";
+import type { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { haStyleScrollbar } from "../../../resources/styles";
+
+const colorToStateColor = (
+  color: string | undefined,
+  stateColor: boolean | undefined
+): boolean | undefined =>
+  color === undefined ? stateColor : color === "state";
 
 export const computeShowHeaderToggle = <
   T extends EntityConfig | LovelaceRowConfig,
@@ -327,12 +333,22 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   ];
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
+    const entityCardConfig = entityConf as EntitiesCardEntityConfig;
+    const stateColor =
+      !("type" in entityConf) || entityConf.type === "conditional"
+        ? colorToStateColor(
+            entityCardConfig.color ?? this._config!.color,
+            entityCardConfig.state_color !== undefined
+              ? entityCardConfig.state_color
+              : this._config!.state_color
+          )
+        : undefined;
     const element = createRowElement(
       (!("type" in entityConf) || entityConf.type === "conditional") &&
-        "state_color" in this._config!
+        stateColor !== undefined
         ? ({
-            state_color: this._config.state_color,
             ...(entityConf as EntityConfig),
+            state_color: stateColor,
           } as EntityConfig)
         : entityConf.type === "perform-action"
           ? { ...entityConf, type: "call-service" }

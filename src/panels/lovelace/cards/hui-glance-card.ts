@@ -33,6 +33,12 @@ import "../components/hui-warning-element";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GlanceCardConfig, GlanceConfigEntity } from "./types";
 
+const colorToStateColor = (
+  color: string | undefined,
+  stateColor: boolean | undefined
+): boolean | undefined =>
+  color === undefined ? stateColor : color === "state";
+
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -282,8 +288,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .overrideIcon=${entityConf.icon}
                 .overrideImage=${entityConf.image}
-                .stateColor=${entityConf.state_color ??
-                this._config!.state_color}
+                .stateColor=${colorToStateColor(
+                  entityConf.color ?? this._config!.color,
+                  entityConf.state_color ?? this._config!.state_color
+                )}
               ></state-badge>
             `
           : ""}

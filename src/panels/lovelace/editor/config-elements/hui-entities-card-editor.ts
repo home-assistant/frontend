@@ -187,11 +187,76 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     show_header_toggle: optional(boolean()),
     state_color: optional(boolean()),
+    color: optional(string()),
     entities: array(entitiesRowConfigStruct),
     header: optional(headerFooterConfigStructs),
     footer: optional(headerFooterConfigStructs),
   })
 );
+
+const migrateStateColor = <T extends object>(config: T): T => {
+  const stateColorConfig = config as {
+    state_color?: boolean;
+    color?: string;
+  };
+  if (
+    stateColorConfig.state_color === undefined ||
+    stateColorConfig.color !== undefined
+  ) {
+    return config;
+  }
+
+  const migrated = {
+    ...config,
+    color: stateColorConfig.state_color ? "state" : "none",
+  } as T & { state_color?: boolean };
+  delete migrated.state_color;
+  return migrated;
+};
+
+const migrateEntityRowStateColor = (
+  entity: LovelaceRowConfig
+): LovelaceRowConfig => {
+  if (typeof entity !== "object") {
+    return entity;
+  }
+
+  let migratedEntity = migrateStateColor(entity);
+  if (
+    migratedEntity.type === "conditional" &&
+    "row" in migratedEntity &&
+    typeof migratedEntity.row === "object"
+  ) {
+    const migratedRow = migrateStateColor(migratedEntity.row);
+    if (migratedRow !== migratedEntity.row) {
+      migratedEntity = { ...migratedEntity, row: migratedRow };
+    }
+  }
+  return migratedEntity;
+};
+
+const migrateEntitiesStateColor = (
+  config: EntitiesCardConfig
+): EntitiesCardConfig => {
+  let changed = false;
+  let migratedConfig = migrateStateColor(config);
+  changed ||= migratedConfig !== config;
+
+  const entities = migratedConfig.entities.map((entity) => {
+    if (typeof entity === "string") {
+      return entity;
+    }
+    const migratedEntity = migrateEntityRowStateColor(entity);
+    changed ||= migratedEntity !== entity;
+    return migratedEntity;
+  });
+
+  if (entities !== migratedConfig.entities) {
+    migratedConfig = { ...migratedConfig, entities };
+  }
+
+  return changed ? migratedConfig : config;
+};
 
 @customElement("hui-entities-card-editor")
 export class HuiEntitiesCardEditor
@@ -208,6 +273,11 @@ export class HuiEntitiesCardEditor
 
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
+    const migratedConfig = migrateEntitiesStateColor(config);
+    if (migratedConfig !== config) {
+      fireEvent(this, "config-changed", { config: migratedConfig });
+      return;
+    }
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
@@ -288,8 +358,10 @@ export class HuiEntitiesCardEditor
             )}
           >
             <ha-switch
-              .checked=${this._config!.state_color}
-              .configValue=${"state_color"}
+              .checked=${this._config!.color === "state" ||
+              (this._config!.color === undefined &&
+                this._config!.state_color === true)}
+              .configValue=${"color"}
               @change=${this._valueChanged}
             ></ha-switch>
           </ha-formfield>
@@ -328,9 +400,13 @@ export class HuiEntitiesCardEditor
     const configValue =
       target.configValue || this._subElementEditorConfig?.type;
     const value =
-      target.checked !== undefined
+      configValue === "color"
         ? target.checked
-        : target.value || ev.detail.config || ev.detail.value;
+          ? "state"
+          : "none"
+        : target.checked !== undefined
+          ? target.checked
+          : target.value || ev.detail.config || ev.detail.value;
 
     if (
       (configValue === "title" && target.value === this._title) ||
