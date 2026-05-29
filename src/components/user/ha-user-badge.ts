@@ -30,9 +30,17 @@ class UserBadge extends LitElement {
   @consumeEntityState({ entityIdPath: ["_personEntityId"] })
   private _personState?: HassEntity;
 
-  public willUpdate(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.has("user") || changedProps.has("_states")) {
+    // Re-scan for the user's person entity when the user changes, or when the
+    // states change while we don't have a (still-present) person entity. Once
+    // resolved, `_personState` keeps the picture up to date via
+    // `consumeEntityState`, so there's no need to rescan on every state update.
+    if (
+      changedProps.has("user") ||
+      (changedProps.has("_states") &&
+        (!this._personEntityId || !this._states?.[this._personEntityId]))
+    ) {
       this._updatePersonEntityId();
     }
   }

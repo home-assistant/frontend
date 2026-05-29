@@ -60,6 +60,7 @@ export class HaConfigPerson extends LitElement {
     const hass = this.hass;
     return html`
       <hass-tabs-subpage
+        .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
