@@ -93,7 +93,8 @@ class HaProfileSectionSecurity extends LitElement {
             calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
         }
 
-        ha-card {
+        .container > * {
+          display: block;
           margin: 0 auto var(--ha-space-4);
           max-width: 600px;
         }
