@@ -657,7 +657,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           )
                         : html`<ha-relative-time
                             capitalize
-                            .hass=${this.hass}
                             .datetime=${due}
                           ></ha-relative-time>`}
                     </div>`

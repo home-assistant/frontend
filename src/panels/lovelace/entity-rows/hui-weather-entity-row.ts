@@ -164,7 +164,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                   : this._config.secondary_info === "last-changed"
                     ? html`
                         <ha-relative-time
-                          .hass=${this.hass}
                           .datetime=${stateObj.last_changed}
                           capitalize
                         ></ha-relative-time>
@@ -172,7 +171,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                     : this._config.secondary_info === "last-updated"
                       ? html`
                           <ha-relative-time
-                            .hass=${this.hass}
                             .datetime=${stateObj.last_updated}
                             capitalize
                           ></ha-relative-time>

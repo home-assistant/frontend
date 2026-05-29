@@ -334,13 +334,15 @@ export default class HaAutomationActionRow extends LitElement {
           ? this._renderTargets(
               target,
               actionHasTarget && !this._isNew,
-              serviceTargetSpec
+              serviceTargetSpec,
+              type !== "device_id"
             )
           : nothing}
         ${noteTooltipText
           ? html`
               <ha-svg-icon
                 id="note-icon"
+                tabindex="0"
                 .path=${mdiCommentTextOutline}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.note.label"
@@ -721,13 +723,14 @@ export default class HaAutomationActionRow extends LitElement {
     (
       target?: HassServiceTarget,
       targetRequired = false,
-      targetSpec?: TargetSelector["target"]
+      targetSpec?: TargetSelector["target"],
+      interactive = false
     ) =>
       html`<ha-automation-row-targets
-        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
+        .interactive=${interactive}
       ></ha-automation-row-targets>`
   );
 

@@ -256,6 +256,7 @@ export const normalizeSubscriptionEventData = (
     dtstart: eventStart,
     dtend: eventEnd,
     description: eventData.description ?? undefined,
+    location: eventData.location ?? undefined,
     uid: eventData.uid ?? undefined,
     recurrence_id: eventData.recurrence_id ?? undefined,
     rrule: eventData.rrule ?? undefined,

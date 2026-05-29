@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { PeriodKey, PeriodSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
@@ -41,6 +42,9 @@ export class HaPeriodSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
+
   private _schema = memoizeOne(
     (
       selectedPeriodKey: PeriodKey | undefined,
@@ -78,7 +82,7 @@ export class HaPeriodSelector extends LitElement {
     const schema = this._schema(
       typeof data.period === "string" ? (data.period as PeriodKey) : undefined,
       this.selector,
-      this.hass.localize
+      this._localize!
     );
 
     return html`

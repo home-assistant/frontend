@@ -161,7 +161,6 @@ class StateDisplay extends LitElement {
     if (relativeDateTime) {
       return html`
         <ha-relative-time
-          .hass=${this.hass}
           .datetime=${relativeDateTime}
           capitalize
         ></ha-relative-time>

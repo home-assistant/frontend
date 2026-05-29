@@ -185,19 +185,19 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   private _renderInfoCard() {
     const systemManaged = this._isSystemManaged(this._currentAddon);
 
-    return html`<ha-card outlined>
+    return html` <ha-card outlined>
       <div class="card-content">
         <div class="addon-header">
-          ${this._currentAddon.logo
-            ? html`
-                <img
-                  class="logo"
-                  alt=""
-                  src="/api/hassio/addons/${this._currentAddon.slug}/logo"
-                />
-              `
-            : nothing}
           <div class="title">
+            ${this._currentAddon.logo
+              ? html`
+                  <img
+                    class="logo"
+                    alt=""
+                    src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                  />
+                `
+              : nothing}
             ${getAppDisplayName(
               this._currentAddon.name,
               this._currentAddon.stage
@@ -239,17 +239,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             ? html`<supervisor-apps-state
                 .state=${this._currentAddon.state}
               ></supervisor-apps-state>`
-            : html`
-                <ha-progress-button
-                  .disabled=${!this._currentAddon.available}
-                  @click=${this._installClicked}
-                  .iconPath=${mdiApplicationImport}
-                >
-                  ${this.i18n.localize(
-                    "ui.panel.config.apps.dashboard.install"
-                  )}
-                </ha-progress-button>
-              `}
+            : nothing}
         </div>
 
         <ha-chip-set class="capabilities">
@@ -513,7 +503,8 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       </div>
       ${(this._currentAddon.update_available && this._updateEntityId) ||
       this._computeShowWebUI ||
-      this._computeShowIngressUI
+      this._computeShowIngressUI ||
+      !this._currentAddon.version
         ? html`
             <div class="card-actions">
               ${this._currentAddon.update_available && this._updateEntityId
@@ -547,6 +538,19 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                         "ui.panel.config.apps.dashboard.open_web_ui"
                       )}
                     </ha-button>
+                  `
+                : nothing}
+              ${!this._currentAddon.version
+                ? html`
+                    <ha-progress-button
+                      .disabled=${!this._currentAddon.available}
+                      @click=${this._installClicked}
+                      .iconPath=${mdiApplicationImport}
+                    >
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.install"
+                      )}
+                    </ha-progress-button>
                   `
                 : nothing}
             </div>
@@ -1497,16 +1501,17 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         }
         .addon-header {
           display: flex;
-          padding-inline-start: var(--ha-space-2);
-          padding-inline-end: initial;
           font-size: var(--ha-font-size-2xl);
           color: var(--ha-card-header-color, var(--primary-text-color));
           align-items: center;
           gap: var(--ha-space-2);
+          flex-wrap: wrap;
+          margin-bottom: var(--ha-space-4);
         }
 
         .addon-header .title {
           flex: 1;
+          margin-inline-end: var(--ha-space-4);
         }
 
         .addon-header .title .description {
@@ -1525,17 +1530,15 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           color: var(--error-color);
           margin-bottom: var(--ha-space-4);
         }
-        .description {
-          margin-bottom: var(--ha-space-4);
-        }
         .description a {
           color: var(--primary-color);
         }
 
         img.logo {
           max-width: 100%;
-          max-height: 60px;
+          max-height: 40px;
           display: block;
+          margin-bottom: var(--ha-space-2);
         }
         ha-assist-chip {
           --md-sys-color-primary: var(--text-primary-color);

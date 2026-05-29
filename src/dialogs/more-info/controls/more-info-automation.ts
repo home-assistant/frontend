@@ -23,7 +23,6 @@ class MoreInfoAutomation extends LitElement {
       <div class="flex">
         <div>${this.hass.localize("ui.card.automation.last_triggered")}:</div>
         <ha-relative-time
-          .hass=${this.hass}
           .datetime=${this.stateObj.attributes.last_triggered}
           capitalize
         ></ha-relative-time>

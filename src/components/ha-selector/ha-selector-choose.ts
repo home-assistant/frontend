@@ -2,10 +2,12 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isTemplate } from "../../common/string/has-template";
 import type { ChooseSelector, Selector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-button-toggle-group";
 import "./ha-selector";
 
@@ -27,6 +29,9 @@ export class HaChooseSelector extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
 
   @state() public _activeChoice?: string;
 
@@ -62,7 +67,7 @@ export class HaChooseSelector extends LitElement {
           .buttons=${this._toggleButtons(
             this.selector.choose.choices,
             this.selector.choose.translation_key,
-            this.hass.localize
+            this._localize
           )}
           .active=${this._activeChoice}
           @value-changed=${this._choiceChanged}
@@ -83,7 +88,7 @@ export class HaChooseSelector extends LitElement {
     (
       choices: ChooseSelector["choose"]["choices"],
       translationKey?: string,
-      _localize?: HomeAssistant["localize"]
+      _localize?: LocalizeFunc
     ) =>
       Object.keys(choices).map((choice) => ({
         label:

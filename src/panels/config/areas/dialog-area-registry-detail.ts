@@ -48,8 +48,6 @@ import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry
 
 const cropOptions: CropOptions = {
   round: false,
-  type: "image/jpeg",
-  quality: 0.75,
 };
 
 const SENSOR_DOMAINS = ["sensor"];

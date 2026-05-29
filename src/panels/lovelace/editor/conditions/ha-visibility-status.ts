@@ -1,9 +1,10 @@
 import { consume } from "@lit/context";
 import { mdiAlertCircle, mdiEye, mdiEyeOff } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ConditionListenersController } from "../../../../common/controllers/condition-listeners-controller";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-svg-icon";
 import { HaRowItem } from "../../../../components/item/ha-row-item";
 import type { HomeAssistant } from "../../../../types";
@@ -28,17 +29,15 @@ const STATE_ICONS: Record<VisibilityState, string> = {
 
 /**
  * @element ha-visibility-status
- * @extends {HaRowItem}
  *
  * @summary
- * Row-style banner that surfaces the live visibility result for a set of
- * lovelace conditions. Replaces the static explanation alert at the top of
- * card / section / badge / conditional-card visibility editors.
+ * Alert banner that surfaces the live visibility result for a set of
+ * lovelace conditions.
  *
- * @attr {"visible"|"hidden"|"invalid"} state - Computed visibility state (reflected for styling).
+ * @attr {"visible"|"hidden"|"invalid"} state - Computed visibility state
  */
 @customElement("ha-visibility-status")
-export class HaVisibilityStatus extends HaRowItem {
+export class HaVisibilityStatus extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
@@ -48,7 +47,7 @@ export class HaVisibilityStatus extends HaRowItem {
   @consume({ context: conditionsEntityContext, subscribe: true })
   private _entityContext?: ConditionsEntityContext;
 
-  @property({ reflect: true })
+  @property()
   public state: VisibilityState = "visible";
 
   private _listeners = new ConditionListenersController(this);
@@ -71,23 +70,27 @@ export class HaVisibilityStatus extends HaRowItem {
     }
   }
 
-  protected override _renderInner(): TemplateResult {
+  public render() {
     return html`
-      <div part="start" class="start">
-        <ha-svg-icon .path=${STATE_ICONS[this.state]}></ha-svg-icon>
-      </div>
-      <div part="content" class="content">
-        <div part="headline" class="headline">
+      <ha-alert
+        .alertType=${this.state === "visible"
+          ? "success"
+          : this.state === "hidden"
+            ? "warning"
+            : "error"}
+      >
+        <ha-svg-icon slot="icon" .path=${STATE_ICONS[this.state]}></ha-svg-icon>
+        <div class="headline">
           ${this.hass?.localize(
             `ui.panel.lovelace.editor.condition-editor.visibility_status.${this.state}.headline`
           )}
         </div>
-        <div part="supporting-text" class="supporting">
+        <div class="supporting">
           ${this.hass?.localize(
             `ui.panel.lovelace.editor.condition-editor.visibility_status.${this.state}.supporting${(this.conditions?.length ?? 0) === 0 ? "_empty" : ""}`
           )}
         </div>
-      </div>
+      </ha-alert>
     `;
   }
 
@@ -117,37 +120,13 @@ export class HaVisibilityStatus extends HaRowItem {
   static styles: CSSResultGroup = [
     HaRowItem.styles,
     css`
-      :host {
+      ha-alert {
         display: block;
-        border-radius: var(--ha-border-radius-xl);
-        transition: background-color var(--ha-animation-duration-normal)
-          ease-in-out;
-      }
-      .base {
-        padding: var(--ha-space-4);
-      }
-      :host([state="visible"]) {
-        background-color: var(--ha-color-fill-success-quiet-resting);
-        --visibility-status-color: var(--ha-color-on-success-normal);
-      }
-      :host([state="hidden"]) {
-        background-color: var(--ha-color-fill-warning-quiet-resting);
-        --visibility-status-color: var(--ha-color-on-warning-normal);
-      }
-      :host([state="invalid"]) {
-        background-color: var(--ha-color-fill-danger-quiet-resting);
-        --visibility-status-color: var(--ha-color-on-danger-normal);
-      }
-      .start {
-        align-self: start;
-      }
-      .start ha-svg-icon {
-        color: var(--visibility-status-color);
         --mdc-icon-size: 24px;
       }
       .headline {
         font-weight: var(--ha-font-weight-medium);
-        white-space: normal;
+        margin-bottom: var(--ha-space-1);
       }
     `,
   ];

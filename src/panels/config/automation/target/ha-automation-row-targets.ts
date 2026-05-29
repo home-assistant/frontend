@@ -60,6 +60,9 @@ export class HaAutomationRowTargets extends LitElement {
   @property({ attribute: false })
   public selector?: TargetSelector;
 
+  @property({ type: Boolean })
+  public interactive = false;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -89,7 +92,12 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
-  private _countCache = new Map<string, Promise<number | undefined>>();
+  private _countCache = new Map<
+    string,
+    Promise<number | undefined> | number | undefined
+  >();
+
+  private _rerenderCount = true;
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -98,8 +106,13 @@ export class HaAutomationRowTargets extends LitElement {
       changedProps.has("selector") ||
       changedProps.has("_registries")
     ) {
-      this._countCache.clear();
+      this._rerenderCount = true;
     }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    this._rerenderCount = false;
   }
 
   private _countMatchingEntities(referencedEntities: string[]): number {
@@ -148,7 +161,11 @@ export class HaAutomationRowTargets extends LitElement {
     targetId: string
   ) {
     const key = `${targetType}:${targetId}`;
-    if (!this._countCache.has(key)) {
+    let fallback = " (-)";
+    if (!this._countCache.has(key) || this._rerenderCount) {
+      if (typeof this._countCache.get(key) === "number") {
+        fallback = ` (${this._countCache.get(key)})`;
+      }
       this._countCache.set(
         key,
         extractFromTarget(
@@ -162,15 +179,30 @@ export class HaAutomationRowTargets extends LitElement {
           .then((result) =>
             this._countMatchingEntities(result.referenced_entities)
           )
-          .catch(() => undefined)
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error("Error counting target entities", err);
+            return undefined;
+          })
       );
     }
-    return until(
-      this._countCache
-        .get(key)!
-        .then((count) => (count === undefined ? nothing : html` (${count})`)),
-      "(-)"
-    );
+
+    if (this._countCache.get(key) instanceof Promise) {
+      return until(
+        (this._countCache.get(key) as Promise<number | undefined>)!.then(
+          (count) => {
+            this._countCache.set(key, count);
+            return count === undefined ? nothing : html` (${count})`;
+          }
+        ),
+        fallback
+      );
+    }
+
+    if (typeof this._countCache.get(key) === "number") {
+      return ` (${this._countCache.get(key)})`;
+    }
+    return nothing;
   }
 
   protected render() {
@@ -249,8 +281,9 @@ export class HaAutomationRowTargets extends LitElement {
       <ha-dropdown
         @wa-select=${this._handleTargetSelect}
         @click=${stopPropagation}
+        @keydown=${stopPropagation}
       >
-        <span slot="trigger" class="target interactive">
+        <button slot="trigger" class="target">
           <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
           <div class="label">
             ${this._i18n.localize(
@@ -261,7 +294,7 @@ export class HaAutomationRowTargets extends LitElement {
             )}
           </div>
           <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
-        </span>
+        </button>
         ${rows.map(([targetType, targetId]) => {
           const content = html`${lastTargetType !== null &&
           lastTargetType !== targetType
@@ -316,21 +349,37 @@ export class HaAutomationRowTargets extends LitElement {
     targetType?: string,
     countTemplate: unknown = nothing
   ) {
-    return html`<div
+    if (!this.interactive || !targetId || !targetType) {
+      return html`<div
+        class=${classMap({
+          target: true,
+          warning,
+          error,
+        })}
+        .targetId=${targetId}
+        .targetType=${targetType}
+        .label=${label}
+      >
+        ${icon}
+        <div class="label">${label}${countTemplate}</div>
+      </div>`;
+    }
+
+    return html`<button
       class=${classMap({
         target: true,
         warning,
         error,
-        interactive: targetId && targetType,
       })}
       .targetId=${targetId}
       .targetType=${targetType}
       .label=${label}
       @click=${this._handleTargetClick}
+      @keydown=${this._handleTargetKeydown}
     >
       ${icon}
       <div class="label">${label}${countTemplate}</div>
-    </div>`;
+    </button>`;
   }
 
   private _renderTarget(
@@ -384,7 +433,7 @@ export class HaAutomationRowTargets extends LitElement {
           targetId,
           this._getLabel
         );
-        if (targetType !== "entity") {
+        if (targetType !== "entity" && this.interactive) {
           countTemplate = this._renderCount(targetType, targetId);
         }
       }
@@ -442,6 +491,13 @@ export class HaAutomationRowTargets extends LitElement {
     }
 
     this._showTargetInfo(target.targetId, target.targetType, target.label, ev);
+  }
+
+  private _handleTargetKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleTargetClick(ev);
+    }
   }
 
   private _handleTargetSelect(
@@ -533,10 +589,10 @@ export class HaAutomationRowTargets extends LitElement {
       align-items: center;
     }
 
-    .target.interactive {
+    button.target {
       cursor: pointer;
     }
-    .target.interactive:hover {
+    button.target:hover {
       background: var(--ha-color-fill-neutral-normal-hover);
     }
 
