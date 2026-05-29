@@ -84,6 +84,7 @@ export class HuiBadgePicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        ignoreLocation: true,
       };
       const fuse = new Fuse(badges, options);
       badges = fuse.search(filter).map((result) => result.item);
