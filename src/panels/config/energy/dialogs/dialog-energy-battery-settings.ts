@@ -146,26 +146,6 @@ export class DialogEnergyBatterySettings
           .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
-          .value=${this._source.stat_energy_to}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.energy_into_battery"
-          )}
-          .excludeStatistics=${[
-            ...(this._excludeList || []),
-            this._source.stat_energy_from,
-          ]}
-          @value-changed=${this._statisticToChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.battery.dialog.energy_helper_into",
-            { unit: this._energy_units?.join(", ") || "" }
-          )}
-          autofocus
-        ></ha-statistic-picker>
-
-        <ha-statistic-picker
-          .hass=${this.hass}
-          .helpMissingEntityUrl=${energyStatisticHelpUrl}
-          .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
           .label=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_out_of_battery"
@@ -177,6 +157,26 @@ export class DialogEnergyBatterySettings
           @value-changed=${this._statisticFromChanged}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_out",
+            { unit: this._energy_units?.join(", ") || "" }
+          )}
+          autofocus
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .helpMissingEntityUrl=${energyStatisticHelpUrl}
+          .includeUnitClass=${energyUnitClasses}
+          .value=${this._source.stat_energy_to}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.energy_into_battery"
+          )}
+          .excludeStatistics=${[
+            ...(this._excludeList || []),
+            this._source.stat_energy_from,
+          ]}
+          @value-changed=${this._statisticToChanged}
+          .helper=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
