@@ -161,7 +161,8 @@ export class HuiEnergyDevicesDetailGraphCard
               UNIT,
               this._compareStart,
               this._compareEnd,
-              this._yAxisFractionDigits
+              this._yAxisFractionDigits,
+              this._legendData
             )}
             click-label-for-more-info
             @dataset-hidden=${this._datasetHidden}
@@ -215,7 +216,8 @@ export class HuiEnergyDevicesDetailGraphCard
       unit: string | undefined,
       compareStart: Date | undefined,
       compareEnd: Date | undefined,
-      yAxisFractionDigits: number
+      yAxisFractionDigits: number,
+      legendData: CustomLegendOption["data"]
     ): HaECOption => {
       const commonOptions = getCommonOptions(
         start,
@@ -230,8 +232,8 @@ export class HuiEnergyDevicesDetailGraphCard
         yAxisFractionDigits
       );
 
-      const selected = this._legendData
-        ? this._legendData
+      const selected = legendData
+        ? legendData
             .filter(
               (d) =>
                 d.id && this._hiddenStats.includes(this._getStatIdFromId(d.id))
@@ -247,7 +249,7 @@ export class HuiEnergyDevicesDetailGraphCard
         legend: {
           show: true,
           type: "custom",
-          data: this._legendData,
+          data: legendData,
           selected,
         },
         grid: {
