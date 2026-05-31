@@ -108,10 +108,12 @@ class HuiCounterActionsCardFeature
       return null;
     }
 
+    const actions = this._config?.actions ?? COUNTER_ACTIONS;
+
     return html`
       <ha-control-button-group>
-        ${this._config?.actions
-          ?.filter((action) => COUNTER_ACTIONS.includes(action))
+        ${actions
+          .filter((action) => COUNTER_ACTIONS.includes(action))
           .map((action) => {
             const button = COUNTER_ACTIONS_BUTTON[action](this._stateObj!);
             return html`
