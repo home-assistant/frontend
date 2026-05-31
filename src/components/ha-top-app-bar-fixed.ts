@@ -114,14 +114,13 @@ export const haTopAppBarFixedStyles = css`
 
   .top-app-bar-fixed-adjust {
     height: calc(
-        100vh - var(--total-top-app-bar-height, 0px) - var(
-        --safe-area-inset-top,
-        0px
+      100vh - var(--total-top-app-bar-height, 0px) - var(
+          --safe-area-inset-top,
+          0px
         ) - var(--safe-area-inset-bottom, 0px)
     );
     padding-top: calc(
-      var(--total-top-app-bar-height, 0px) +
-        var(--safe-area-inset-top, 0px)
+      var(--total-top-app-bar-height, 0px) + var(--safe-area-inset-top, 0px)
     );
     padding-bottom: var(--safe-area-inset-bottom);
     padding-right: var(--safe-area-inset-right);
