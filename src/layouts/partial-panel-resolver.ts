@@ -1,12 +1,14 @@
+import { consume } from "@lit/context";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
+import { narrowViewportContext } from "../data/context";
 import { getDefaultPanel } from "../data/panel";
 import type { CustomPanelInfo } from "../data/panel_custom";
 import type { HomeAssistant, Panels } from "../types";
@@ -43,7 +45,9 @@ const COMPONENTS = {
 class PartialPanelResolver extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @state()
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow = false;
 
   private _waitForStart = false;
 
@@ -92,7 +96,7 @@ class PartialPanelResolver extends HassRouterPage {
     const el = super.createLoadingScreen();
     el.rootnav = true;
     el.hass = this.hass;
-    el.narrow = this.narrow;
+    el.narrow = this._narrow;
     return el;
   }
 
@@ -100,7 +104,7 @@ class PartialPanelResolver extends HassRouterPage {
     const hass = this.hass;
 
     el.hass = hass;
-    el.narrow = this.narrow;
+    el.narrow = this._narrow;
     el.route = this.routeTail;
     el.panel = hass.panels[this._currentPage];
   }
