@@ -11,7 +11,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import {consume} from "@lit/context";
+import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
@@ -47,7 +47,7 @@ import "./ha-tooltip";
 import "./item/ha-list-item-button";
 import "./list/ha-list-nav";
 import "./user/ha-user-badge";
-import {narrowViewportContext} from "../data/context";
+import { narrowViewportContext } from "../data/context";
 
 const SORT_VALUE_URL_PATHS = {
   energy: 1,
