@@ -102,7 +102,6 @@ export class HaConfigPerson extends LitElement {
                     .entry=${entry}
                   >
                     <ha-person-badge
-                      .hass=${this.hass}
                       .person=${entry}
                       slot="graphic"
                     ></ha-person-badge>
@@ -139,7 +138,6 @@ export class HaConfigPerson extends LitElement {
                       (entry) => html`
                         <ha-list-item graphic="avatar">
                           <ha-person-badge
-                            .hass=${this.hass}
                             .person=${entry}
                             slot="graphic"
                           ></ha-person-badge>

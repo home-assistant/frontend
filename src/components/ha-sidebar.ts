@@ -539,11 +539,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           rtl: isRTL,
         })}
       >
-        <ha-user-badge
-          slot="start"
-          .user=${this.hass.user}
-          .hass=${this.hass}
-        ></ha-user-badge>
+        <ha-user-badge slot="start" .user=${this.hass.user}></ha-user-badge>
         <span class="item-text" slot="headline"
           >${this.hass.user ? this.hass.user.name : ""}</span
         >
