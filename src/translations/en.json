@@ -3832,6 +3832,7 @@
         "developer-tools": {
           "tabs": {
             "assist": {
+              "tab": "Assist",
               "title": "Sentences parser",
               "description": "Enter sentences and see how they will be parsed by Home Assistant. Each line will be processed as an individual sentence. Intents will not be executed on your instance.",
               "parse_sentences": "Parse sentences",
