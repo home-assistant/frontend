@@ -7,7 +7,8 @@ import "../../components/ha-spinner";
 import { showToast } from "../../util/toast";
 
 import { fireEvent } from "../../common/dom/fire_event";
-import { configContext, internationalizationContext } from "../../data/context";
+import type { internationalizationContext } from "../../data/context";
+import { configContext } from "../../data/context";
 import "../add-to/ha-add-to-action-list";
 import type {
   AddToActionListActionSelectedEvent,
@@ -19,6 +20,7 @@ import {
   addToActionHandler,
   getDefaultAddToActions,
 } from "../add-to/add-to";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -33,7 +35,7 @@ export class HaMoreInfoAddTo extends LitElement {
   private _external?: ContextType<typeof configContext>["auth"]["external"];
 
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
+  @consumeLocalize()
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public entityId!: string;

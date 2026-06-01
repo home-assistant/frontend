@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,7 +14,8 @@ import "../../components/item/ha-list-item-base";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
-import { internationalizationContext } from "../../data/context";
+import type { internationalizationContext } from "../../data/context";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 
 export interface AddToActionListItem {
   name?: string;
@@ -53,7 +54,7 @@ type AddToActionListItemButton = HaListItemButton & {
 @customElement("ha-add-to-action-list")
 class HaAddToActionList extends LitElement {
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
+  @consumeLocalize()
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false })
