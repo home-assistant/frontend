@@ -782,7 +782,7 @@ export class HaConfigEntities extends LitElement {
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
-            <span>${label.name}</span>
+            ${label.name}
           </ha-label>
         </ha-dropdown-item>`;
       })}
@@ -1688,17 +1688,6 @@ ${rejected
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-
-        ha-label {
-          max-width: 100%;
-        }
-        ha-label.text-ellipsis span {
-          flex: 1;
-          min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
         }
       `,
     ];

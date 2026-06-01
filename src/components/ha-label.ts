@@ -50,7 +50,9 @@ class HaLabel extends LitElement {
       <div class="container" .id=${this._elementId}>
         <span class="content">
           <slot name="icon"></slot>
-          <slot></slot>
+          <span class="label-content">
+            <slot></slot>
+          </span>
         </span>
       </div>
     `;
@@ -113,6 +115,10 @@ class HaLabel extends LitElement {
           display: inline-flex;
         }
 
+        .label-content {
+          display: contents;
+        }
+
         :host([dense]) {
           height: 20px;
           border-radius: var(--ha-border-radius-md);
@@ -128,6 +134,7 @@ class HaLabel extends LitElement {
         }
 
         :host(.text-ellipsis) {
+          max-width: 100%;
           min-width: 0;
         }
         :host(.text-ellipsis) .container {
@@ -139,8 +146,14 @@ class HaLabel extends LitElement {
           width: 100%;
           min-width: 0;
         }
-        :host(.text-ellipsis) .content > * {
-          width: 100%;
+        :host(.text-ellipsis) .label-content {
+          display: block;
+          flex: 1;
+          min-width: 0;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `,
     ];
