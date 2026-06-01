@@ -17,9 +17,7 @@ jobs:
         with:
           github-token: ${{ github.token }}
           process-only: "issues, prs"
-          issue-lock-inactive-days: "30"
-          issue-exclude-created-before: "2020-10-01T00:00:00Z"
+          issue-inactive-days: "30"
           issue-lock-reason: ""
-          pr-lock-inactive-days: "1"
-          pr-exclude-created-before: "2020-11-01T00:00:00Z"
+          pr-inactive-days: "1"
           pr-lock-reason: ""
