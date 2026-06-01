@@ -104,9 +104,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
 
           return html`
             <ha-list-item-button
-              class=${ifDefined(
-                entity.attributes.skipped_version ? "skipped" : undefined
-              )}
               .entity_id=${entity.entity_id}
               .hasMeta=${!this.narrow}
               @click=${this._openMoreInfo}
@@ -166,9 +163,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        .skipped {
-          background: var(--secondary-background-color);
-        }
         ha-list-item-button {
           --md-list-item-leading-icon-size: 40px;
         }
