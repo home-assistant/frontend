@@ -1,5 +1,6 @@
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { createSearchParam } from "../../common/url/search-params";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { SCENE_IGNORED_DOMAINS, type SceneEntities } from "../../data/scene";
@@ -12,16 +13,16 @@ import {
 } from "../../panels/config/automation/show-add-automation-element-dialog";
 import type { HomeAssistant, TranslationDict } from "../../types";
 
-/** Add to action keys are the keys of the translation dictionary for the add to actions. */
-export type AddToActionKey =
-  TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["action_options"] extends infer Actions
-    ? keyof Actions
-    : never;
+/** Add to action keys are the keys of the translation dictionary for the add to action options. */
+type AddToActionOptions =
+  TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["action_options"];
+
+export type AddToActionKey = Extract<keyof AddToActionOptions, string>;
 
 export type AddToAutomationScriptActionKey = Exclude<AddToActionKey, "scene">;
 
 /** Fully-qualified localize key for an add to action option label. */
-export type AddToActionOptionLabelKey =
+type AddToActionOptionLabelKey = LocalizeKeys &
   `ui.dialogs.more_info_control.add_to.action_options.${AddToActionKey}`;
 
 interface BaseEntityAddToAction {
