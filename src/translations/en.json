@@ -1693,8 +1693,8 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
-          "title": "Add {target} to..",
-          "menu_item": "Add to..",
+          "title": "Add {target} to…",
+          "menu_item": "Add to…",
           "actions": {
             "automation_trigger": "Create as a new trigger",
             "automation_condition": "Create as a new condition",

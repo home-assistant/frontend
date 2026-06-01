@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { consume, type ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
 import {
@@ -45,11 +45,7 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { DeviceAddToDialogParams } from "./show-dialog-device-add-to";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 
-type LegacyActionKey = "trigger" | "condition" | "automation_action";
-
-type DeviceAddToActionType = AddToActionKey | LegacyActionKey;
-
-type DeviceAddToActionHandler = (ev: Event) => void;
+type DeviceAddToActionType = AddToActionKey | "trigger" | "condition";
 
 @customElement("dialog-device-add-to")
 export class DialogDeviceAddTo extends LitElement {
@@ -245,7 +241,7 @@ export class DialogDeviceAddTo extends LitElement {
     `;
   }
 
-  private _renderActionSection(titleKey: LocalizeKeys, list: unknown) {
+  private _renderActionSection(titleKey: LocalizeKeys, list: TemplateResult) {
     return html`
       <h3 class="section-header">${this._i18n.localize(titleKey)}</h3>
       ${list}
@@ -308,7 +304,7 @@ export class DialogDeviceAddTo extends LitElement {
     ]);
   }
 
-  private _renderActionList(items: unknown[]) {
+  private _renderActionList(items: (TemplateResult | typeof nothing)[]) {
     return html`<ha-list>${items}</ha-list>`;
   }
 
@@ -324,7 +320,7 @@ export class DialogDeviceAddTo extends LitElement {
     type: DeviceAddToActionType | undefined,
     path: string,
     labelKey: LocalizeKeys,
-    handler: DeviceAddToActionHandler
+    handler: (ev: Event) => void
   ) {
     return html`
       <ha-list-item
