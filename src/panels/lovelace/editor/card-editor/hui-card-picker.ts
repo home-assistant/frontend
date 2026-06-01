@@ -91,6 +91,7 @@ export class HuiCardPicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        ignoreLocation: true,
       };
       const fuse = new Fuse(cards, options);
       cards = fuse.search(filter).map((result) => result.item);
