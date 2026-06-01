@@ -439,7 +439,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                           .path=${mdiPlus}
                         ></ha-svg-icon>
                         ${this.hass.localize(
-                          "ui.dialogs.more_info_control.add_to.title"
+                          "ui.dialogs.more_info_control.add_to.menu_item"
                         )}
                       </ha-button>`
                     : nothing}

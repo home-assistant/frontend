@@ -590,9 +590,18 @@ export class MoreInfoDialog extends SubscribeMixin(
       (v): v is string => Boolean(v)
     );
     const defaultTitle = breadcrumb.pop() || entityId;
+    const addToTitle = this.hass.localize(
+      "ui.dialogs.more_info_control.add_to.title",
+      { target: defaultTitle }
+    );
+    const addToMenuItem = this.hass.localize(
+      "ui.dialogs.more_info_control.add_to.menu_item"
+    );
     const title =
       this._currView === "details"
         ? this.hass.localize("ui.dialogs.more_info_control.details")
+        : this._currView === "add_to"
+          ? addToTitle
         : this._childView?.viewTitle || defaultTitle;
 
     const favoritesContext =
@@ -711,9 +720,7 @@ export class MoreInfoDialog extends SubscribeMixin(
                                 slot="icon"
                                 .path=${mdiPlusBoxMultipleOutline}
                               ></ha-svg-icon>
-                              ${this.hass.localize(
-                                "ui.dialogs.more_info_control.add_to.title"
-                              )}
+                              ${addToMenuItem}
                             </ha-dropdown-item>
 
                             <wa-divider></wa-divider>
@@ -814,9 +821,7 @@ export class MoreInfoDialog extends SubscribeMixin(
                   ? html`
                       <ha-icon-button
                         slot="headerActionItems"
-                        .label=${this.hass.localize(
-                          "ui.dialogs.more_info_control.add_to.title"
-                        )}
+                        .label=${addToMenuItem}
                         .path=${mdiPlusBoxMultipleOutline}
                         @click=${this._goToAddEntityTo}
                       ></ha-icon-button>

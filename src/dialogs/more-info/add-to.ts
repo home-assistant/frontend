@@ -8,7 +8,7 @@ import {
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
   ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
 } from "../../panels/config/automation/show-add-automation-element-dialog";
-import type { HomeAssistant, TranslationDict } from "../../types";
+import type { TranslationDict } from "../../types";
 
 /** Add to action keys are the keys of the translation dictionary for the add to actions. */
 export type AddToActionKey =
@@ -72,10 +72,7 @@ export const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
 ];
 
 export const getDefaultAddToActions = (
-  states: HomeAssistant["states"],
-  localize: LocalizeFunc,
-  formatEntityName: HomeAssistant["formatEntityName"],
-  entityId: string
+  localize: LocalizeFunc
 ): EntityAddToActions =>
   DEFAULT_ACTION_DEFS.map(
     (def: ActionDefinition): EntityAddToAction => ({
@@ -83,13 +80,7 @@ export const getDefaultAddToActions = (
       key: def.translation_key,
       enabled: true,
       name: localize(
-        `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
-        {
-          target:
-            states[entityId] !== undefined
-              ? formatEntityName(states[entityId], undefined)
-              : entityId,
-        }
+        `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`
       ),
       icon: def.icon,
     })

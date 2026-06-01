@@ -1693,13 +1693,14 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
-          "title": "Add to",
+          "title": "Add {target} to..",
+          "menu_item": "Add to..",
           "actions": {
-            "automation_trigger": "Create new automation using {target} as a trigger",
-            "automation_condition": "Create new automation using {target} as a condition",
-            "automation_action": "Create new automation using {target} in an action",
-            "script_action": "Create new script using {target} in an action",
-            "scene": "Create new scene using {target}"
+            "automation_trigger": "Create as a new trigger",
+            "automation_condition": "Create as a new condition",
+            "automation_action": "Create as a new action",
+            "script_action": "Create as a new action",
+            "scene": "Create as a new scene"
           },
           "app_actions": "App actions",
           "no_actions": "No actions available",

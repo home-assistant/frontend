@@ -31,12 +31,7 @@ export class HaMoreInfoAddTo extends LitElement {
   @state() private _loading = true;
 
   private async _loadActions() {
-    this._defaultActions = getDefaultAddToActions(
-      this.hass.states,
-      this.hass.localize,
-      this.hass.formatEntityName,
-      this.entityId
-    );
+    this._defaultActions = getDefaultAddToActions(this.hass.localize);
     this._externalActions = [];
 
     if (this.hass.auth.external?.config.hasEntityAddTo) {
@@ -128,6 +123,17 @@ export class HaMoreInfoAddTo extends LitElement {
     );
   }
 
+  private _renderActionSection(title: string, actions: EntityAddToActions) {
+    if (!actions.length) {
+      return nothing;
+    }
+
+    return html`
+      <h3 class="section-header">${title}</h3>
+      <ha-list-base>${this._renderActionItems(actions)}</ha-list-base>
+    `;
+  }
+
   protected async firstUpdated() {
     await this._loadActions();
     this._loading = false;
@@ -152,22 +158,28 @@ export class HaMoreInfoAddTo extends LitElement {
       `;
     }
 
+    const automationActions = this._defaultActions.filter(
+      (action) => action.type === "default" && action.key !== "script_action"
+    );
+    const scriptActions = this._defaultActions.filter(
+      (action) => action.type === "default" && action.key === "script_action"
+    );
+
     return html`
-      <ha-list-base>
-        ${this._renderActionItems(this._defaultActions)}
-      </ha-list-base>
-      ${this._externalActions.length
-        ? html`
-            <h2 class="section-title">
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.add_to.app_actions"
-              )}
-            </h2>
-            <ha-list-base>
-              ${this._renderActionItems(this._externalActions)}
-            </ha-list-base>
-          `
-        : nothing}
+      ${this._renderActionSection(
+        this.hass.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        ),
+        automationActions
+      )}
+      ${this._renderActionSection(
+        this.hass.localize("ui.panel.config.devices.script.scripts_heading"),
+        scriptActions
+      )}
+      ${this._renderActionSection(
+        this.hass.localize("ui.dialogs.more_info_control.add_to.app_actions"),
+        this._externalActions
+      )}
     `;
   }
 
@@ -184,12 +196,11 @@ export class HaMoreInfoAddTo extends LitElement {
       padding: var(--ha-space-8);
     }
 
-    .section-title {
-      padding: 0 var(--ha-space-6);
-      margin: var(--ha-space-4) 0 var(--ha-space-1);
+    .section-header {
+      padding: var(--ha-space-2) var(--ha-space-4) 0;
+      margin: 0;
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-medium);
-      line-height: var(--ha-line-height-normal);
       color: var(--secondary-text-color);
     }
 

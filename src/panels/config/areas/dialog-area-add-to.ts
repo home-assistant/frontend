@@ -65,7 +65,12 @@ class DialogAreaAddTo extends LitElement {
       <ha-adaptive-dialog
         .open=${this._open}
         header-title=${this._i18n.localize(
-          "ui.dialogs.more_info_control.add_to.title"
+          "ui.dialogs.more_info_control.add_to.title",
+          {
+            target:
+              computeAreaName(this._areas[this._params.areaId]) ||
+              this._params.areaId,
+          }
         )}
         @closed=${this._dialogClosed}
       >
@@ -79,9 +84,6 @@ class DialogAreaAddTo extends LitElement {
       return nothing;
     }
 
-    const area = this._areas[this._params.areaId];
-    const areaName = computeAreaName(area) || this._params.areaId;
-
     return html`
       <h3 class="section-header">
         ${this._i18n.localize(
@@ -92,20 +94,17 @@ class DialogAreaAddTo extends LitElement {
         ${this._renderActionItem(
           "automation_trigger",
           mdiRobotOutline,
-          "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-          areaName
+          "ui.dialogs.more_info_control.add_to.actions.automation_trigger"
         )}
         ${this._renderActionItem(
           "automation_condition",
           mdiPlaylistCheck,
-          "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-          areaName
+          "ui.dialogs.more_info_control.add_to.actions.automation_condition"
         )}
         ${this._renderActionItem(
           "automation_action",
           mdiPlayCircleOutline,
-          "ui.dialogs.more_info_control.add_to.actions.automation_action",
-          areaName
+          "ui.dialogs.more_info_control.add_to.actions.automation_action"
         )}
       </ha-list>
       <h3 class="section-header">
@@ -115,15 +114,14 @@ class DialogAreaAddTo extends LitElement {
         ${this._renderActionItem(
           "script_action",
           mdiScriptTextOutline,
-          "ui.dialogs.more_info_control.add_to.actions.script_action",
-          areaName
+          "ui.dialogs.more_info_control.add_to.actions.script_action"
         )}
       </ha-list>
-      ${this._renderSceneSection(areaName)}
+      ${this._renderSceneSection()}
     `;
   }
 
-  private _renderSceneSection(areaName: string) {
+  private _renderSceneSection() {
     if (!this._params?.entityIds.length) {
       return nothing;
     }
@@ -140,8 +138,7 @@ class DialogAreaAddTo extends LitElement {
         >
           <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
           ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.scene",
-            { target: areaName }
+            "ui.dialogs.more_info_control.add_to.actions.scene"
           )}
         </ha-list-item>
       </ha-list>
@@ -155,8 +152,7 @@ class DialogAreaAddTo extends LitElement {
       | "ui.dialogs.more_info_control.add_to.actions.automation_trigger"
       | "ui.dialogs.more_info_control.add_to.actions.automation_condition"
       | "ui.dialogs.more_info_control.add_to.actions.automation_action"
-      | "ui.dialogs.more_info_control.add_to.actions.script_action",
-    areaName: string
+      | "ui.dialogs.more_info_control.add_to.actions.script_action"
   ) {
     return html`
       <ha-list-item
@@ -166,7 +162,7 @@ class DialogAreaAddTo extends LitElement {
         data-dialog="close"
       >
         <ha-svg-icon slot="graphic" .path=${path}></ha-svg-icon>
-        ${this._i18n.localize(translationKey, { target: areaName })}
+        ${this._i18n.localize(translationKey)}
       </ha-list-item>
     `;
   }
