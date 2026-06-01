@@ -5,10 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
-import type {
-  LovelaceCard,
-  LovelaceGridOptions,
-} from "../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { CountdownCardConfig } from "./types";
 
 @customElement("hui-countdown-card")
@@ -142,9 +139,7 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
 
     if (!this._remaining) {
       return html`
-        <ha-card
-          class=${classMap({ "no-background": no_background ?? false })}
-        >
+        <ha-card class=${classMap({ "no-background": no_background ?? false })}>
           <ha-alert alert-type="warning"
             >No valid target date configured</ha-alert
           >
@@ -157,9 +152,7 @@ export class HuiCountdownCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card class=${classMap({ "no-background": no_background ?? false })}>
         <div class="countdown-wrapper">
-          ${title
-            ? html`<div class="countdown-title">${title}</div>`
-            : nothing}
+          ${title ? html`<div class="countdown-title">${title}</div>` : nothing}
           ${expired
             ? html`<div class="expired-label">Reached</div>`
             : html`
