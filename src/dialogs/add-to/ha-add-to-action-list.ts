@@ -1,4 +1,3 @@
-import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,13 +6,15 @@ import type {
   HASSDomEvent,
 } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeKeys } from "../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import "../../components/ha-icon";
 import "../../components/ha-svg-icon";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
-import type { internationalizationContext } from "../../data/context";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 
 export interface AddToActionListItem {
@@ -54,7 +55,7 @@ type AddToActionListItemButton = HaListItemButton & {
 class HaAddToActionList extends LitElement {
   @state()
   @consumeLocalize()
-  private _i18n!: ContextType<typeof internationalizationContext>;
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false })
   public sections: readonly AddToActionListSection[] = [];
@@ -116,9 +117,7 @@ class HaAddToActionList extends LitElement {
     value?: string,
     localizeKey?: LocalizeKeys
   ): string | undefined {
-    return (
-      value ?? (localizeKey ? this._i18n.localize(localizeKey) : undefined)
-    );
+    return value ?? (localizeKey ? this._localize(localizeKey) : undefined);
   }
 
   private _actionSelected(

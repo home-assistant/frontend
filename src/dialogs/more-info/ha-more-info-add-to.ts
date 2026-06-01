@@ -6,7 +6,6 @@ import "../../components/ha-spinner";
 import { showToast } from "../../util/toast";
 
 import { fireEvent } from "../../common/dom/fire_event";
-import type { internationalizationContext } from "../../data/context";
 import { configContext } from "../../data/context";
 import "../add-to/ha-add-to-action-list";
 import type {
@@ -20,6 +19,7 @@ import {
   getDefaultAddToActions,
 } from "../add-to/add-to";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -29,7 +29,7 @@ export class HaMoreInfoAddTo extends LitElement {
 
   @state()
   @consumeLocalize()
-  private _i18n!: ContextType<typeof internationalizationContext>;
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public entityId!: string;
 
@@ -95,7 +95,7 @@ export class HaMoreInfoAddTo extends LitElement {
         fireEvent(this, "add-to-action-selected");
       } catch (err: unknown) {
         showToast(this, {
-          message: this._i18n.localize(
+          message: this._localize(
             "ui.dialogs.more_info_control.add_to.action_failed",
             {
               error: err instanceof Error ? err.message : String(err),
@@ -130,9 +130,7 @@ export class HaMoreInfoAddTo extends LitElement {
     if (!this._defaultActions.length && !this._externalActions.length) {
       return html`
         <ha-alert alert-type="info">
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.no_actions"
-          )}
+          ${this._localize("ui.dialogs.more_info_control.add_to.no_actions")}
         </ha-alert>
       `;
     }
