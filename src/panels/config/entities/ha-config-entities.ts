@@ -774,11 +774,15 @@ export class HaConfigEntities extends LitElement {
             .checked=${selected}
             .indeterminate=${partial}
           ></ha-checkbox>
-          <ha-label .color=${label.color} .description=${label.description}>
+          <ha-label
+            .color=${label.color}
+            .description=${label.description}
+            class="text-ellipsis"
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
-            ${label.name}
+            <span>${label.name}</span>
           </ha-label>
         </ha-dropdown-item>`;
       })}
@@ -1674,12 +1678,27 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-dropdown::part(menu),
-        ha-dropdown::part(submenu) {
+        ha-dropdown::part(menu) {
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
+        }
+        ha-dropdown-item::part(submenu) {
+          max-width: calc(60vw - var(--ha-space-8));
+          max-height: calc(100vh - var(--ha-space-8));
+          overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
+        }
+
+        ha-label {
+          max-width: 100%;
+        }
+        ha-label.text-ellipsis span {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `,
     ];

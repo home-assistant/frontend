@@ -126,6 +126,22 @@ class HaLabel extends LitElement {
           margin-inline-start: -4px;
           margin-inline-end: 4px;
         }
+
+        :host(.text-ellipsis) {
+          min-width: 0;
+        }
+        :host(.text-ellipsis) .container {
+          min-width: 0;
+          overflow: hidden;
+        }
+        :host(.text-ellipsis) span.content {
+          display: flex;
+          width: 100%;
+          min-width: 0;
+        }
+        :host(.text-ellipsis) .content > * {
+          width: 100%;
+        }
       `,
     ];
   }
