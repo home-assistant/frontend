@@ -15,8 +15,6 @@ import "./ha-refresh-tokens-card";
 class HaProfileSectionSecurity extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @state() private _refreshTokens?: RefreshToken[];
 
   @property({ attribute: false }) public route!: Route;
@@ -37,7 +35,6 @@ class HaProfileSectionSecurity extends LitElement {
       <hass-tabs-subpage
         main-page
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .tabs=${profileSections}
         .route=${this.route}
       >
