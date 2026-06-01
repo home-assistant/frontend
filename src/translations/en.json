@@ -10150,6 +10150,7 @@
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",
+                "customize": "Customize commands",
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
@@ -10221,7 +10222,9 @@
               },
               "counter-actions": {
                 "label": "Counter actions",
-                "actions": {
+                "customize": "Customize actions",
+                "actions": "Actions",
+                "actions_list": {
                   "increment": "Increment",
                   "decrement": "Decrement",
                   "reset": "Reset"
@@ -10284,6 +10287,7 @@
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
+                "customize": "Customize commands",
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "Start Pause",
