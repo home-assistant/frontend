@@ -198,10 +198,12 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                   />
                 `
               : nothing}
-            ${getAppDisplayName(
-              this._currentAddon.name,
-              this._currentAddon.stage
-            )}
+            ${!this.narrow
+              ? getAppDisplayName(
+                  this._currentAddon.name,
+                  this._currentAddon.stage
+                )
+              : nothing}
             <div class="description">
               ${this._currentAddon.version
                 ? html`
