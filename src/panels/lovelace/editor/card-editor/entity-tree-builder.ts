@@ -6,6 +6,7 @@ import {
 } from "@mdi/js";
 import type { FuseIndex } from "fuse.js";
 import Fuse from "fuse.js";
+import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -13,7 +14,6 @@ import { computeEntityName } from "../../../../common/entity/compute_entity_name
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../common/string/compare";
 import { entityComboBoxKeys } from "../../../../data/entity/entity_picker";
-import { getFloorAreaLookup } from "../../../../data/floor_registry";
 import { domainToName } from "../../../../data/integration";
 import { multiTermSortedSearch } from "../../../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../../../types";
@@ -206,23 +206,24 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     return stringCompare(an, bn, language);
   };
 
+  const buildDeviceNodes = (source: Map<string, string[]>): DeviceNode[] =>
+    [...source.entries()]
+      .map(([id, ids]) => {
+        const device = deviceReg[id];
+        return {
+          id,
+          name: (device ? computeDeviceName(device) : undefined) ?? id,
+          entityIds: ids.sort(sortByName),
+        };
+      })
+      .sort((a, b) => stringCompare(a.name, b.name, language));
+
   const buildAreaNode = (areaId: string): AreaNode | undefined => {
     const area = areaReg[areaId];
     if (!area) return undefined;
     const directIds = (areaDirectEntities.get(areaId) ?? []).sort(sortByName);
     const byDevice = areaDeviceEntities.get(areaId);
-    const devices: DeviceNode[] = byDevice
-      ? [...byDevice.entries()]
-          .map(([id, ids]) => {
-            const device = deviceReg[id];
-            return {
-              id,
-              name: (device ? computeDeviceName(device) : undefined) ?? id,
-              entityIds: ids.sort(sortByName),
-            };
-          })
-          .sort((a, b) => stringCompare(a.name, b.name, language))
-      : [];
+    const devices = byDevice ? buildDeviceNodes(byDevice) : [];
     if (!directIds.length && !devices.length) return undefined;
     return {
       id: area.area_id,
@@ -235,14 +236,14 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
 
   const areas = Object.values(areaReg);
   const floors = Object.values(floorReg);
-  const floorAreaLookup = getFloorAreaLookup(areas);
+  const hierarchy = getAreasFloorHierarchy(floors, areas);
 
-  const floorNodes: FloorNode[] = floors
-    .map((floor) => {
-      const areaList = (floorAreaLookup[floor.floor_id] ?? [])
-        .map((a) => buildAreaNode(a.area_id))
-        .filter((a): a is AreaNode => !!a)
-        .sort((a, b) => stringCompare(a.name, b.name, language));
+  const floorNodes: FloorNode[] = hierarchy.floors
+    .map(({ id, areas: areaIds }) => {
+      const floor = floorReg[id];
+      const areaList = areaIds
+        .map((areaId) => buildAreaNode(areaId))
+        .filter((a): a is AreaNode => !!a);
       if (!areaList.length) return undefined;
       return {
         id: floor.floor_id,
@@ -252,26 +253,11 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
         areas: areaList,
       };
     })
-    .filter((f): f is FloorNode => !!f)
-    .sort((a, b) => stringCompare(a.name, b.name, language));
+    .filter((f): f is FloorNode => !!f);
 
-  const otherAreas = areas
-    .filter((a) => !a.floor_id || !floorReg[a.floor_id])
-    .map((a) => buildAreaNode(a.area_id))
-    .filter((a): a is AreaNode => !!a)
-    .sort((a, b) => stringCompare(a.name, b.name, language));
-
-  const buildDeviceNodes = (source: Map<string, string[]>): DeviceNode[] =>
-    [...source.entries()]
-      .map(([id, ids]) => {
-        const device = deviceReg[id];
-        return {
-          id,
-          name: (device ? computeDeviceName(device) : undefined) ?? id,
-          entityIds: ids.sort(sortByName),
-        };
-      })
-      .sort((a, b) => stringCompare(a.name, b.name, language));
+  const otherAreas = hierarchy.areas
+    .map((areaId) => buildAreaNode(areaId))
+    .filter((a): a is AreaNode => !!a);
 
   const buildDomainGroups = (source: Map<string, string[]>): DomainGroup[] =>
     [...source.entries()]
