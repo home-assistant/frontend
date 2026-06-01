@@ -143,7 +143,13 @@ class HaConfigSectionUpdates extends LitElement {
       this._showSkipped
     );
 
-    const groups = this._groupUpdates(installableUpdates, this._entitySources);
+    const groups = this._groupUpdates(
+      installableUpdates,
+      this._entitySources,
+      this.hass.localize,
+      this.hass.entities,
+      this.hass.locale.language
+    );
 
     return html`
       <hass-subpage
@@ -373,13 +379,14 @@ class HaConfigSectionUpdates extends LitElement {
   private _groupUpdates = memoizeOne(
     (
       entities: UpdateEntity[],
-      entitySources: EntitySources | undefined
+      entitySources: EntitySources | undefined,
+      localize: HomeAssistant["localize"],
+      entityRegistry: HomeAssistant["entities"],
+      language: string
     ): UpdateGroup[] => {
       if (!entities.length) {
         return [];
       }
-
-      const localize = this.hass.localize;
 
       const systemEntities: UpdateEntity[] = [];
       const appEntities: UpdateEntity[] = [];
@@ -393,7 +400,7 @@ class HaConfigSectionUpdates extends LitElement {
         }
         const domain =
           entitySources?.[entity.entity_id]?.domain ??
-          this.hass.entities[entity.entity_id]?.platform;
+          entityRegistry[entity.entity_id]?.platform;
         if (domain === "hassio") {
           appEntities.push(entity);
           continue;
@@ -423,11 +430,7 @@ class HaConfigSectionUpdates extends LitElement {
       });
 
       multiInstanceGroups.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.title,
-          b.title,
-          this.hass.locale.language
-        )
+        caseInsensitiveStringCompare(a.title, b.title, language)
       );
 
       const groups: UpdateGroup[] = [];
