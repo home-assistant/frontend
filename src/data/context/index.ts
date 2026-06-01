@@ -94,6 +94,11 @@ export const areasContext = createContext<HomeAssistant["areas"]>("areas");
  */
 export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
 
+/**
+ * Whether the main Home Assistant viewport is using the narrow layout.
+ */
+export const narrowViewportContext = createContext<boolean>("narrowViewport");
+
 // #region lazy-contexts
 
 /**
