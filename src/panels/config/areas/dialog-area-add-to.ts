@@ -143,7 +143,7 @@ class DialogAreaAddTo extends LitElement {
       },
     ];
 
-    if (this._params.entityIds.length) {
+    if (this._params.canCreateScene && this._params.entityIds.length) {
       sections.push({
         title: this._i18n.localize(
           "ui.panel.config.devices.scene.scenes_heading"

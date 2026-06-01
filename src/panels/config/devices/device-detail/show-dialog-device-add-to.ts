@@ -5,6 +5,7 @@ export interface DeviceAddToDialogParams {
   device: DeviceRegistryEntry;
   newTriggersConditions: boolean;
   entityIds: string[];
+  canCreateScene: boolean;
 }
 
 export const loadDeviceAddToDialog = () => import("./ha-device-add-to-dialog");

@@ -347,7 +347,7 @@ export class DialogDeviceAddTo extends LitElement {
   private _addSceneSection(
     sections: AddToActionListSection<DeviceAddToAction>[]
   ): void {
-    if (!this._params?.entityIds.length) {
+    if (!this._params?.canCreateScene || !this._params.entityIds.length) {
       return;
     }
 

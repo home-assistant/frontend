@@ -3,6 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export interface AreaAddToDialogParams {
   areaId: string;
   entityIds: string[];
+  canCreateScene: boolean;
 }
 
 export const loadAreaAddToDialog = () => import("./dialog-area-add-to");

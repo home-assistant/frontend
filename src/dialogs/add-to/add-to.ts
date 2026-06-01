@@ -1,6 +1,8 @@
+import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { createSearchParam } from "../../common/url/search-params";
-import type { SceneEntities } from "../../data/scene";
+import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
+import { SCENE_IGNORED_DOMAINS, type SceneEntities } from "../../data/scene";
 import type { SingleHassServiceTarget } from "../../data/target";
 import {
   ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
@@ -8,7 +10,7 @@ import {
   ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
 } from "../../panels/config/automation/show-add-automation-element-dialog";
-import type { TranslationDict } from "../../types";
+import type { HomeAssistant, TranslationDict } from "../../types";
 
 /** Add to action keys are the keys of the translation dictionary for the add to actions. */
 export type AddToActionKey =
@@ -19,7 +21,7 @@ export type AddToActionKey =
 export type AddToAutomationScriptActionKey = Exclude<AddToActionKey, "scene">;
 
 /** Fully-qualified localize key for an add to action name. */
-export type AddToActionNameKey =
+type AddToActionNameKey =
   `ui.dialogs.more_info_control.add_to.actions.${AddToActionKey}`;
 
 interface BaseEntityAddToAction {
@@ -98,6 +100,25 @@ export const createAddToSceneEntities = (
     entities[entityId] = "";
   }
   return entities;
+};
+
+export const filterAddToSceneEntityIds = (
+  entityIds: string[],
+  entityRegistry: readonly EntityRegistryEntry[],
+  states: HomeAssistant["states"]
+): string[] => {
+  const entityIdSet = new Set(entityIds);
+
+  return entityRegistry
+    .filter((entry) => entityIdSet.has(entry.entity_id))
+    .filter(
+      (entry) =>
+        !entry.entity_category &&
+        !entry.hidden_by &&
+        !SCENE_IGNORED_DOMAINS.includes(computeDomain(entry.entity_id)) &&
+        Boolean(states[entry.entity_id])
+    )
+    .map((entry) => entry.entity_id);
 };
 
 /** Handler for adding a target to an automation/script. */
