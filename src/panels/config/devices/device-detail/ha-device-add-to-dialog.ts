@@ -33,7 +33,6 @@ import {
 } from "../../../../data/device/device_automation";
 import type { ScriptConfig } from "../../../../data/script";
 import { showScriptEditor } from "../../../../data/script";
-import type { SceneEntities } from "../../../../data/scene";
 import { showSceneEditor } from "../../../../data/scene";
 import "../../../../dialogs/add-to/ha-add-to-action-list";
 import type {
@@ -43,10 +42,17 @@ import type {
 } from "../../../../dialogs/add-to/ha-add-to-action-list";
 import {
   addToActionHandler,
+  createAddToSceneEntities,
   type AddToAutomationScriptActionKey,
 } from "../../../../dialogs/add-to/add-to";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { DeviceAddToDialogParams } from "./show-dialog-device-add-to";
+
+type DeviceLegacyAddToActionType =
+  | "trigger"
+  | "condition"
+  | "automation_action"
+  | "script_action";
 
 type DeviceAddToAction =
   | (AddToActionListItem & {
@@ -55,11 +61,7 @@ type DeviceAddToAction =
     })
   | (AddToActionListItem & {
       kind: "legacy";
-      legacyType:
-        | "trigger"
-        | "condition"
-        | "automation_action"
-        | "script_action";
+      legacyType: DeviceLegacyAddToActionType;
     })
   | (AddToActionListItem & { kind: "scene" });
 
@@ -231,7 +233,7 @@ export class DialogDeviceAddTo extends LitElement {
     return html`
       <ha-add-to-action-list
         .sections=${sections}
-        @add-to-list-action-selected=${this._handleNewActionSelected}
+        @add-to-list-action-selected=${this._handleActionSelected}
       ></ha-add-to-action-list>
     `;
   }
@@ -337,7 +339,7 @@ export class DialogDeviceAddTo extends LitElement {
     return html`
       <ha-add-to-action-list
         .sections=${sections}
-        @add-to-list-action-selected=${this._handleLegacyActionSelected}
+        @add-to-list-action-selected=${this._handleActionSelected}
       ></ha-add-to-action-list>
     `;
   }
@@ -365,7 +367,7 @@ export class DialogDeviceAddTo extends LitElement {
     });
   }
 
-  private _handleNewActionSelected(
+  private _handleActionSelected(
     ev: AddToActionListActionSelectedEvent<DeviceAddToAction>
   ) {
     if (!this._params) {
@@ -377,68 +379,56 @@ export class DialogDeviceAddTo extends LitElement {
       this._handleCreateScene();
       return;
     }
-    if (action.kind !== "add-to") {
+
+    if (action.kind === "add-to") {
+      this._handleAddToAction(action.key);
+      return;
+    }
+
+    this._handleLegacyAction(action.legacyType);
+  }
+
+  private _handleAddToAction(key: AddToAutomationScriptActionKey) {
+    if (!this._params) {
       return;
     }
 
     this.closeDialog();
-    addToActionHandler(action.key, { device_id: this._params.device.id });
+    addToActionHandler(key, { device_id: this._params.device.id });
   }
 
   // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
-  private _handleLegacyActionSelected(
-    ev: AddToActionListActionSelectedEvent<DeviceAddToAction>
-  ) {
-    if (!this._params) {
-      return;
-    }
-
-    const { action } = ev.detail;
-    if (action.kind === "scene") {
-      this._handleCreateScene();
-      return;
-    }
-    if (action.kind !== "legacy") {
-      return;
-    }
-
+  private _handleLegacyAction(type: DeviceLegacyAddToActionType) {
     this.closeDialog();
 
-    if (action.legacyType === "script_action") {
+    if (type === "script_action") {
       const newScript = {} as ScriptConfig;
       if (this._actions?.length) {
         newScript.sequence = [this._actions[0]];
       }
       showScriptEditor(newScript, true);
-    } else {
-      const newAutomation = {} as AutomationConfig;
-      if (action.legacyType === "trigger" && this._triggers?.length) {
-        newAutomation.triggers = [this._triggers[0]];
-      } else if (
-        action.legacyType === "condition" &&
-        this._conditions?.length
-      ) {
-        newAutomation.conditions = [this._conditions[0]];
-      } else if (
-        action.legacyType === "automation_action" &&
-        this._actions?.length
-      ) {
-        newAutomation.actions = [this._actions[0]];
-      }
-      showAutomationEditor(newAutomation, true);
+      return;
     }
+
+    const newAutomation = {} as AutomationConfig;
+    if (type === "trigger" && this._triggers?.length) {
+      newAutomation.triggers = [this._triggers[0]];
+    } else if (type === "condition" && this._conditions?.length) {
+      newAutomation.conditions = [this._conditions[0]];
+    } else if (type === "automation_action" && this._actions?.length) {
+      newAutomation.actions = [this._actions[0]];
+    }
+    showAutomationEditor(newAutomation, true);
   }
 
   private _handleCreateScene() {
     if (!this._params) {
       return;
     }
-    const entities: SceneEntities = {};
-    for (const entityId of this._params.entityIds) {
-      entities[entityId] = "";
-    }
     this.closeDialog();
-    showSceneEditor({ entities });
+    showSceneEditor({
+      entities: createAddToSceneEntities(this._params.entityIds),
+    });
   }
 
   static get styles(): CSSResultGroup {

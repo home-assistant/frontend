@@ -911,7 +911,6 @@ export class MoreInfoDialog extends SubscribeMixin(
                             : this._currView === "add_to"
                               ? html`
                                   <ha-more-info-add-to
-                                    .hass=${this.hass}
                                     .entityId=${entityId}
                                     @add-to-action-selected=${this._goBack}
                                   ></ha-more-info-add-to>

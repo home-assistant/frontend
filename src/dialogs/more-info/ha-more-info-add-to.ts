@@ -1,11 +1,13 @@
+import { consume, type ContextType } from "@lit/context";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { transform } from "../../common/decorators/transform";
 import "../../components/ha-alert";
 import "../../components/ha-spinner";
 import { showToast } from "../../util/toast";
 
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import { configContext, internationalizationContext } from "../../data/context";
 import "../add-to/ha-add-to-action-list";
 import type {
   AddToActionListActionSelectedEvent,
@@ -20,7 +22,19 @@ import {
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<
+    ContextType<typeof configContext>,
+    ContextType<typeof configContext>["auth"]["external"]
+  >({
+    transformer: ({ auth }) => auth.external,
+  })
+  private _external?: ContextType<typeof configContext>["auth"]["external"];
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public entityId!: string;
 
@@ -31,18 +45,16 @@ export class HaMoreInfoAddTo extends LitElement {
   @state() private _loading = true;
 
   private async _loadActions() {
-    this._defaultActions = getDefaultAddToActions(this.hass.localize);
+    this._defaultActions = getDefaultAddToActions();
     this._externalActions = [];
 
-    if (this.hass.auth.external?.config.hasEntityAddTo) {
+    if (this._external?.config.hasEntityAddTo) {
       try {
         const response =
-          await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
-            {
-              type: "entity/add_to/get_actions",
-              payload: { entity_id: this.entityId },
-            }
-          );
+          await this._external.sendMessage<"entity/add_to/get_actions">({
+            type: "entity/add_to/get_actions",
+            payload: { entity_id: this.entityId },
+          });
         if (response?.actions) {
           this._externalActions = response.actions.map((action) => ({
             type: "external",
@@ -73,7 +85,10 @@ export class HaMoreInfoAddTo extends LitElement {
         if (!action.payload) {
           throw new Error("Missing external action payload");
         }
-        this.hass.auth.external!.fireMessage({
+        if (!this._external) {
+          throw new Error("Missing external app connection");
+        }
+        this._external.fireMessage({
           type: "entity/add_to",
           payload: {
             entity_id: this.entityId,
@@ -83,7 +98,7 @@ export class HaMoreInfoAddTo extends LitElement {
         fireEvent(this, "add-to-action-selected");
       } catch (err: unknown) {
         showToast(this, {
-          message: this.hass.localize(
+          message: this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.action_failed",
             {
               error: err instanceof Error ? err.message : String(err),
@@ -118,7 +133,7 @@ export class HaMoreInfoAddTo extends LitElement {
     if (!this._defaultActions.length && !this._externalActions.length) {
       return html`
         <ha-alert alert-type="info">
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.dialogs.more_info_control.add_to.no_actions"
           )}
         </ha-alert>
@@ -134,21 +149,15 @@ export class HaMoreInfoAddTo extends LitElement {
 
     const sections: AddToActionListSection<EntityAddToAction>[] = [
       {
-        title: this.hass.localize(
-          "ui.panel.config.devices.automation.automations_heading"
-        ),
+        titleKey: "ui.panel.config.devices.automation.automations_heading",
         actions: automationActions,
       },
       {
-        title: this.hass.localize(
-          "ui.panel.config.devices.script.scripts_heading"
-        ),
+        titleKey: "ui.panel.config.devices.script.scripts_heading",
         actions: scriptActions,
       },
       {
-        title: this.hass.localize(
-          "ui.dialogs.more_info_control.add_to.app_actions"
-        ),
+        titleKey: "ui.dialogs.more_info_control.add_to.app_actions",
         actions: this._externalActions,
       },
     ];

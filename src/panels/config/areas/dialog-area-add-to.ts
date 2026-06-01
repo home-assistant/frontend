@@ -16,7 +16,6 @@ import {
   areasContext,
   internationalizationContext,
 } from "../../../data/context";
-import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
 import "../../../dialogs/add-to/ha-add-to-action-list";
 import type {
@@ -26,6 +25,7 @@ import type {
 } from "../../../dialogs/add-to/ha-add-to-action-list";
 import {
   addToActionHandler,
+  createAddToSceneEntities,
   type AddToAutomationScriptActionKey,
 } from "../../../dialogs/add-to/add-to";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -191,13 +191,11 @@ class DialogAreaAddTo extends LitElement {
       return;
     }
 
-    const entities: SceneEntities = {};
-    for (const entityId of this._params.entityIds) {
-      entities[entityId] = "";
-    }
-
     this.closeDialog();
-    showSceneEditor({ entities }, this._params.areaId);
+    showSceneEditor(
+      { entities: createAddToSceneEntities(this._params.entityIds) },
+      this._params.areaId
+    );
   }
 
   static get styles(): CSSResultGroup {

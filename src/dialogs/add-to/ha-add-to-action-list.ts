@@ -1,21 +1,26 @@
+import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-icon";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-base";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
+import { internationalizationContext } from "../../data/context";
 
 export interface AddToActionListItem {
-  name: string;
+  name?: string;
+  nameKey?: LocalizeKeys;
   description?: string;
+  descriptionKey?: LocalizeKeys;
   icon?: string;
   iconPath?: string;
   enabled?: boolean;
@@ -24,9 +29,11 @@ export interface AddToActionListItem {
 export interface AddToActionListSection<
   Item extends AddToActionListItem = AddToActionListItem,
 > {
-  title: string;
+  title?: string;
+  titleKey?: LocalizeKeys;
   actions: readonly Item[];
   empty?: string;
+  emptyKey?: LocalizeKeys;
 }
 
 export interface AddToActionListActionSelectedDetail<
@@ -44,7 +51,11 @@ type AddToActionListItemButton = HaListItemButton & {
 };
 
 @customElement("ha-add-to-action-list")
-export class HaAddToActionList extends LitElement {
+class HaAddToActionList extends LitElement {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
   @property({ attribute: false })
   public sections: readonly AddToActionListSection[] = [];
 
@@ -59,17 +70,19 @@ export class HaAddToActionList extends LitElement {
   private _renderSection(
     section: AddToActionListSection
   ): TemplateResult | typeof nothing {
-    if (!section.actions.length && !section.empty) {
+    if (!section.actions.length && !section.empty && !section.emptyKey) {
       return nothing;
     }
 
     return html`
-      <h3 class="section-header">${section.title}</h3>
+      <h3 class="section-header">
+        ${this._localizeValue(section.title, section.titleKey)}
+      </h3>
       <ha-list-base>
         ${section.actions.length
           ? section.actions.map((action) => this._renderActionItem(action))
           : html`<ha-list-item-base
-              .headline=${section.empty}
+              .headline=${this._localizeValue(section.empty, section.emptyKey)}
             ></ha-list-item-base>`}
       </ha-list-base>
     `;
@@ -80,8 +93,11 @@ export class HaAddToActionList extends LitElement {
       <ha-list-item-button
         .disabled=${action.enabled === false}
         .action=${action}
-        .headline=${action.name}
-        .supportingText=${action.description}
+        .headline=${this._localizeValue(action.name, action.nameKey)}
+        .supportingText=${this._localizeValue(
+          action.description,
+          action.descriptionKey
+        )}
         @click=${this._actionSelected}
       >
         ${action.icon
@@ -94,6 +110,15 @@ export class HaAddToActionList extends LitElement {
             : nothing}
       </ha-list-item-button>
     `;
+  }
+
+  private _localizeValue(
+    value?: string,
+    localizeKey?: LocalizeKeys
+  ): string | undefined {
+    return (
+      value ?? (localizeKey ? this._i18n.localize(localizeKey) : undefined)
+    );
   }
 
   private _actionSelected(
