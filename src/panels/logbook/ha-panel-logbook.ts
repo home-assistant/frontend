@@ -304,24 +304,23 @@ export class HaPanelLogbook extends LitElement {
         :host {
           --ha-generic-picker-max-width: 400px;
         }
-        ha-logbook {
+
+        .content {
+          display: flex;
+          flex-direction: column;
           height: calc(
-            100vh -
-              168px - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
                 0px
-              )
+              ) - var(--safe-area-inset-bottom, 0px)
           );
+          overflow-x: hidden;
+          padding: 0 0 16px;
         }
 
-        :host([narrow]) ha-logbook {
-          height: calc(
-            100vh -
-              250px - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
+        ha-logbook {
+          flex: 1;
+          min-height: 0;
         }
 
         ha-date-range-picker {
