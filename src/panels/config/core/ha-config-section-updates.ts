@@ -94,20 +94,37 @@ class HaConfigSectionUpdates extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
-    this._loadIntegrationTitles();
+    if (changedProps.has("hass")) {
+      this._loadIntegrationTitles();
+    }
   }
 
+  private _collectUpdateDomains = memoizeOne(
+    (states: HassEntities, entities: HomeAssistant["entities"]) => {
+      const domains = new Set<string>();
+      for (const entity of Object.values(states)) {
+        if (!entity.entity_id.startsWith("update.")) continue;
+        const platform = entities[entity.entity_id]?.platform;
+        if (platform) {
+          domains.add(platform);
+        }
+      }
+      return domains;
+    }
+  );
+
   private async _loadIntegrationTitles() {
-    const domains = new Set<string>();
-    for (const entity of Object.values(this.hass.states)) {
-      if (!entity.entity_id.startsWith("update.")) continue;
-      const platform = this.hass.entities[entity.entity_id]?.platform;
-      if (platform && !this._loadedIntegrationTitles.has(platform)) {
-        domains.add(platform);
+    const domains = this._collectUpdateDomains(
+      this.hass.states,
+      this.hass.entities
+    );
+    const toLoad: string[] = [];
+    for (const domain of domains) {
+      if (!this._loadedIntegrationTitles.has(domain)) {
+        toLoad.push(domain);
       }
     }
-    if (!domains.size) return;
-    const toLoad = Array.from(domains);
+    if (!toLoad.length) return;
     toLoad.forEach((d) => this._loadedIntegrationTitles.add(d));
     await this.hass.loadBackendTranslation("title", toLoad);
     this.requestUpdate();
