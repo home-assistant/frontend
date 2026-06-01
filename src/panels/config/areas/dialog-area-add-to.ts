@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { consume, type ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
@@ -12,22 +12,31 @@ import {
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-adaptive-dialog";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
 import {
   areasContext,
   internationalizationContext,
 } from "../../../data/context";
-import type { LocalizeKeys } from "../../../common/translations/localize";
 import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
+import "../../../dialogs/add-to/ha-add-to-action-list";
+import type {
+  AddToActionListActionSelectedEvent,
+  AddToActionListItem,
+  AddToActionListSection,
+} from "../../../dialogs/add-to/ha-add-to-action-list";
 import {
   addToActionHandler,
-  type AddToActionKey,
-} from "../../../dialogs/more-info/add-to";
+  type AddToAutomationScriptActionKey,
+} from "../../../dialogs/add-to/add-to";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { AreaAddToDialogParams } from "./show-dialog-area-add-to";
+
+type AreaAddToAction =
+  | (AddToActionListItem & {
+      type: "automation";
+      key: AddToAutomationScriptActionKey;
+    })
+  | (AddToActionListItem & { type: "scene" });
 
 @customElement("dialog-area-add-to")
 class DialogAreaAddTo extends LitElement {
@@ -85,103 +94,96 @@ class DialogAreaAddTo extends LitElement {
       return nothing;
     }
 
-    return html`
-      ${this._renderActionSection(
-        "ui.panel.config.devices.automation.automations_heading",
-        this._renderActionList([
-          this._renderActionItem(
-            "automation_trigger",
-            mdiRobotOutline,
-            "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-            this._handleAction
-          ),
-          this._renderActionItem(
-            "automation_condition",
-            mdiPlaylistCheck,
-            "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-            this._handleAction
-          ),
-          this._renderActionItem(
-            "automation_action",
-            mdiPlayCircleOutline,
-            "ui.dialogs.more_info_control.add_to.actions.automation_action",
-            this._handleAction
-          ),
-        ])
-      )}
-      ${this._renderActionSection(
-        "ui.panel.config.devices.script.scripts_heading",
-        this._renderActionList([
-          this._renderActionItem(
-            "script_action",
-            mdiScriptTextOutline,
-            "ui.dialogs.more_info_control.add_to.actions.script_action",
-            this._handleAction
-          ),
-        ])
-      )}
-      ${this._renderSceneSection()}
-    `;
-  }
+    const sections: AddToActionListSection<AreaAddToAction>[] = [
+      {
+        title: this._i18n.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        ),
+        actions: [
+          {
+            type: "automation",
+            key: "automation_trigger",
+            iconPath: mdiRobotOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.actions.automation_trigger"
+            ),
+          },
+          {
+            type: "automation",
+            key: "automation_condition",
+            iconPath: mdiPlaylistCheck,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.actions.automation_condition"
+            ),
+          },
+          {
+            type: "automation",
+            key: "automation_action",
+            iconPath: mdiPlayCircleOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.actions.automation_action"
+            ),
+          },
+        ],
+      },
+      {
+        title: this._i18n.localize(
+          "ui.panel.config.devices.script.scripts_heading"
+        ),
+        actions: [
+          {
+            type: "automation",
+            key: "script_action",
+            iconPath: mdiScriptTextOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.actions.script_action"
+            ),
+          },
+        ],
+      },
+    ];
 
-  private _renderActionSection(titleKey: LocalizeKeys, list: TemplateResult) {
-    return html`
-      <h3 class="section-header">${this._i18n.localize(titleKey)}</h3>
-      ${list}
-    `;
-  }
-
-  private _renderActionList(items: TemplateResult[]) {
-    return html`<ha-list>${items}</ha-list>`;
-  }
-
-  private _renderSceneSection() {
-    if (!this._params?.entityIds.length) {
-      return nothing;
+    if (this._params.entityIds.length) {
+      sections.push({
+        title: this._i18n.localize(
+          "ui.panel.config.devices.scene.scenes_heading"
+        ),
+        actions: [
+          {
+            type: "scene",
+            iconPath: mdiPalette,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.actions.scene"
+            ),
+          },
+        ],
+      });
     }
 
-    const sceneAction = this._renderActionItem(
-      undefined,
-      mdiPalette,
-      "ui.dialogs.more_info_control.add_to.actions.scene",
-      this._handleCreateScene
-    );
-
-    return this._renderActionSection(
-      "ui.panel.config.devices.scene.scenes_heading",
-      this._renderActionList([sceneAction])
-    );
-  }
-
-  private _renderActionItem(
-    key: AddToActionKey | undefined,
-    path: string,
-    labelKey: LocalizeKeys,
-    handler: (ev: Event) => void
-  ) {
     return html`
-      <ha-list-item
-        graphic="icon"
-        data-type=${key ?? nothing}
-        @click=${handler}
-        data-dialog="close"
-      >
-        <ha-svg-icon slot="graphic" .path=${path}></ha-svg-icon>
-        ${this._i18n.localize(labelKey)}
-      </ha-list-item>
+      <ha-add-to-action-list
+        .sections=${sections}
+        @add-to-list-action-selected=${this._handleActionSelected}
+      ></ha-add-to-action-list>
     `;
   }
 
-  private _handleAction(ev: Event) {
+  private _handleActionSelected(
+    ev: AddToActionListActionSelectedEvent<AreaAddToAction>
+  ) {
     if (!this._params) {
       return;
     }
 
-    const key = (ev.currentTarget as HTMLElement).dataset
-      .type as AddToActionKey;
+    const { action } = ev.detail;
+
+    if (action.type === "scene") {
+      this._handleCreateScene();
+      return;
+    }
 
     this.closeDialog();
-    addToActionHandler(key, { area_id: this._params.areaId });
+    addToActionHandler(action.key, { area_id: this._params.areaId });
   }
 
   private _handleCreateScene() {
@@ -205,14 +207,6 @@ class DialogAreaAddTo extends LitElement {
       css`
         ha-adaptive-dialog {
           --dialog-content-padding: 0;
-        }
-
-        .section-header {
-          padding: var(--ha-space-2) var(--ha-space-4) 0;
-          margin: 0;
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--secondary-text-color);
         }
       `,
     ];

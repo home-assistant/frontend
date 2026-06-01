@@ -5,8 +5,8 @@ import type { SingleHassServiceTarget } from "../../data/target";
 import {
   ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
   ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
-  ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
   ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
 } from "../../panels/config/automation/show-add-automation-element-dialog";
 import type { TranslationDict } from "../../types";
 
@@ -15,6 +15,8 @@ export type AddToActionKey =
   TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["actions"] extends infer Actions
     ? keyof Actions
     : never;
+
+export type AddToAutomationScriptActionKey = Exclude<AddToActionKey, "scene">;
 
 interface BaseEntityAddToAction {
   /** Whether the action is enabled and can be selected. */
@@ -31,7 +33,7 @@ export interface DefaultEntityAddToAction extends BaseEntityAddToAction {
   /** Type of action handled in the frontend */
   type: "default";
   /** Stable key used to resolve the action handler */
-  key: AddToActionKey;
+  key: AddToAutomationScriptActionKey;
 }
 
 export interface ExternalEntityAddToAction extends BaseEntityAddToAction {
@@ -48,7 +50,7 @@ export type EntityAddToAction =
 export type EntityAddToActions = EntityAddToAction[];
 
 interface ActionDefinition {
-  translation_key: AddToActionKey;
+  translation_key: AddToAutomationScriptActionKey;
   icon: string;
 }
 
@@ -88,7 +90,7 @@ export const getDefaultAddToActions = (
 
 /** Handler for adding a target to an automation/script. */
 export function addToActionHandler(
-  key: AddToActionKey,
+  key: AddToAutomationScriptActionKey,
   target: SingleHassServiceTarget
 ): Promise<boolean> {
   const searchParams: Record<string, string> = {};

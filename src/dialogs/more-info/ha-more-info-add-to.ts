@@ -1,22 +1,22 @@
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
-import "../../components/ha-icon";
 import "../../components/ha-spinner";
-import "../../components/item/ha-list-item-button";
-import "../../components/list/ha-list-base";
-import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import { showToast } from "../../util/toast";
 
-import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
+import "../add-to/ha-add-to-action-list";
+import type {
+  AddToActionListActionSelectedEvent,
+  AddToActionListSection,
+} from "../add-to/ha-add-to-action-list";
 import {
   type EntityAddToAction,
   type EntityAddToActions,
   addToActionHandler,
   getDefaultAddToActions,
-} from "./add-to";
+} from "../add-to/add-to";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
@@ -61,13 +61,9 @@ export class HaMoreInfoAddTo extends LitElement {
   }
 
   private async _actionSelected(
-    ev: HASSDomCurrentTargetEvent<
-      HaListItemButton & {
-        action: EntityAddToAction;
-      }
-    >
+    ev: AddToActionListActionSelectedEvent<EntityAddToAction>
   ) {
-    const action = ev.currentTarget.action;
+    const { action } = ev.detail;
     if (!action.enabled) {
       return;
     }
@@ -105,35 +101,6 @@ export class HaMoreInfoAddTo extends LitElement {
     addToActionHandler(action.key, { entity_id: this.entityId });
   }
 
-  private _renderActionItems(actions: EntityAddToActions) {
-    return actions.map(
-      (action) => html`
-        <ha-list-item-button
-          .disabled=${!action.enabled}
-          .action=${action}
-          @click=${this._actionSelected}
-        >
-          <ha-icon slot="start" .icon=${action.icon}></ha-icon>
-          <span slot="headline">${action.name}</span>
-          ${action.description
-            ? html`<span slot="supporting-text">${action.description}</span>`
-            : nothing}
-        </ha-list-item-button>
-      `
-    );
-  }
-
-  private _renderActionSection(title: string, actions: EntityAddToActions) {
-    if (!actions.length) {
-      return nothing;
-    }
-
-    return html`
-      <h3 class="section-header">${title}</h3>
-      <ha-list-base>${this._renderActionItems(actions)}</ha-list-base>
-    `;
-  }
-
   protected async firstUpdated() {
     await this._loadActions();
     this._loading = false;
@@ -165,21 +132,32 @@ export class HaMoreInfoAddTo extends LitElement {
       (action) => action.type === "default" && action.key === "script_action"
     );
 
-    return html`
-      ${this._renderActionSection(
-        this.hass.localize(
+    const sections: AddToActionListSection<EntityAddToAction>[] = [
+      {
+        title: this.hass.localize(
           "ui.panel.config.devices.automation.automations_heading"
         ),
-        automationActions
-      )}
-      ${this._renderActionSection(
-        this.hass.localize("ui.panel.config.devices.script.scripts_heading"),
-        scriptActions
-      )}
-      ${this._renderActionSection(
-        this.hass.localize("ui.dialogs.more_info_control.add_to.app_actions"),
-        this._externalActions
-      )}
+        actions: automationActions,
+      },
+      {
+        title: this.hass.localize(
+          "ui.panel.config.devices.script.scripts_heading"
+        ),
+        actions: scriptActions,
+      },
+      {
+        title: this.hass.localize(
+          "ui.dialogs.more_info_control.add_to.app_actions"
+        ),
+        actions: this._externalActions,
+      },
+    ];
+
+    return html`
+      <ha-add-to-action-list
+        .sections=${sections}
+        @add-to-list-action-selected=${this._actionSelected}
+      ></ha-add-to-action-list>
     `;
   }
 
@@ -194,19 +172,6 @@ export class HaMoreInfoAddTo extends LitElement {
       justify-content: center;
       align-items: center;
       padding: var(--ha-space-8);
-    }
-
-    .section-header {
-      padding: var(--ha-space-2) var(--ha-space-4) 0;
-      margin: 0;
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-      color: var(--secondary-text-color);
-    }
-
-    ha-icon {
-      display: flex;
-      align-items: center;
     }
   `;
 }
