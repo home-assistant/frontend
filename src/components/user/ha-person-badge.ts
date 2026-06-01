@@ -1,16 +1,19 @@
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import type { BasePerson } from "../../data/person";
 import { computeUserInitials } from "../../data/user";
-import type { HomeAssistant } from "../../types";
+import { connectionContext } from "../../data/context";
 
 @customElement("ha-person-badge")
 class PersonBadge extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public person?: BasePerson;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
 
   protected render() {
     if (!this.person) {
@@ -19,10 +22,10 @@ class PersonBadge extends LitElement {
 
     const picture = this.person.picture;
 
-    if (picture) {
+    if (picture && this._connection) {
       return html`<div
         style=${styleMap({
-          backgroundImage: `url(${this.hass.hassUrl(picture)})`,
+          backgroundImage: `url(${this._connection.hassUrl(picture)})`,
         })}
         class="picture"
       ></div>`;

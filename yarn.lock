@@ -1676,32 +1676,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:7.4.6":
-  version: 7.4.6
-  resolution: "@formatjs/intl-datetimeformat@npm:7.4.6"
+"@formatjs/intl-datetimeformat@npm:7.4.7":
+  version: 7.4.7
+  resolution: "@formatjs/intl-datetimeformat@npm:7.4.7"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.5"
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/80c1603c67a7b95b16c755818328712ba3b9f184ed8d060999cd0205900d50ba3effcd977449eff288ca498655499ec4782de5de3e90ba0c8a04bcd5fe218e17
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/ab3a1806aede409f2eef59abd9657c0281de5b999dc992111fdc0c3d3e7fe3934e951abb934f469514111c262200985963e24a8d6b7bce1945f6d36dbd64f06f
   languageName: node
   linkType: hard
 
-"@formatjs/intl-displaynames@npm:7.3.8":
-  version: 7.3.8
-  resolution: "@formatjs/intl-displaynames@npm:7.3.8"
+"@formatjs/intl-displaynames@npm:7.3.9":
+  version: 7.3.9
+  resolution: "@formatjs/intl-displaynames@npm:7.3.9"
   dependencies:
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/7068950cb5f306c641b6cfa907c72c2d7e1190e7e4eb10e49f2b96bb4a3239fd2dbd3fd1e66c2975a8808ae8cbe6364a0e1a0a2fc276bb5035b047109a51f96d
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/c5c6295be1e89b1ae497aab1df166714580499b67eda86e6504e54b29d434482633ae050c57d6fc06fd7d33b2efc5bf0405ff90933c328ec1f8924f1e349db55
   languageName: node
   linkType: hard
 
-"@formatjs/intl-durationformat@npm:0.10.12":
-  version: 0.10.12
-  resolution: "@formatjs/intl-durationformat@npm:0.10.12"
+"@formatjs/intl-durationformat@npm:0.10.13":
+  version: 0.10.13
+  resolution: "@formatjs/intl-durationformat@npm:0.10.13"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.5"
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/488a88172caf37f838f37c4147a1698e7456266d581c776ed1f155523b2a1546c3947a6993ca52c8f3f1ef2c5f6c941e02f90873e619526981c4238a95074267
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/ae33f714dccd8a0be95b216e07fabfaf44de6dfb1a4de51a266a0f55e6fa510ce77a8da461ed106549ba5cb7f0bf35e3dc019b5e03f57388d9d5b1b8867e2b6f
   languageName: node
   linkType: hard
 
@@ -1712,12 +1712,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-listformat@npm:8.3.8":
-  version: 8.3.8
-  resolution: "@formatjs/intl-listformat@npm:8.3.8"
+"@formatjs/intl-listformat@npm:8.3.9":
+  version: 8.3.9
+  resolution: "@formatjs/intl-listformat@npm:8.3.9"
   dependencies:
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/42d2da9951e721897591fe8fd23e83b1ee7ab3bc4071f26a879b158c639d06ee134e1997572f9aaf4ee5710c711e19a49980596a7f0f9af12869c0250728ec12
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/36bee2f177d3d705ba9b95133b35404263fe08c15f781978d12b2a349d6e570b4ffdfae63a7a9ef233dfe8067e26584cadf6f4e252cd482c1b3a045dcca6bc52
   languageName: node
   linkType: hard
 
@@ -1731,41 +1731,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-localematcher@npm:0.8.8":
-  version: 0.8.8
-  resolution: "@formatjs/intl-localematcher@npm:0.8.8"
+"@formatjs/intl-localematcher@npm:0.8.9":
+  version: 0.8.9
+  resolution: "@formatjs/intl-localematcher@npm:0.8.9"
   dependencies:
     "@formatjs/fast-memoize": "npm:3.1.5"
-  checksum: 10/21b02d3d5e40a9a3530f314e7ac2020c1caccc538baca120be6d37bf47ca3208ecf1a3d1fe1dde89d0d46382ec457c6c2714423dc7322ecbd1a3b60d553572a6
+  checksum: 10/05873efaae86a72b738dc1ce6296d975a74f27f90cd5dd4a27e704acd2389e58f5db84f4735e6b1043723cc65ab5636fb345ec88d1cf9a1dafad57180e4d06b0
   languageName: node
   linkType: hard
 
-"@formatjs/intl-numberformat@npm:9.3.9":
-  version: 9.3.9
-  resolution: "@formatjs/intl-numberformat@npm:9.3.9"
+"@formatjs/intl-numberformat@npm:9.3.10":
+  version: 9.3.10
+  resolution: "@formatjs/intl-numberformat@npm:9.3.10"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.5"
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/2f6be1d77b8dc5d6cad3ff0d0b47934be067555548b74a077389dfeb2ecafcb5ec6f1175ad0fb26ba573bb3223a6d47a01bf4b83e13d82130d75284ec87e0f87
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/ef954ca4b60e46d98ee41514352a8977c8d9cf2ca1df684178f3571ecafa7d4c2a0e7270e45c9ccf54b2f1f43e4560a907fb06d9a70a7920fab5f239fe3a6205
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:6.3.8":
-  version: 6.3.8
-  resolution: "@formatjs/intl-pluralrules@npm:6.3.8"
+"@formatjs/intl-pluralrules@npm:6.3.9":
+  version: 6.3.9
+  resolution: "@formatjs/intl-pluralrules@npm:6.3.9"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.5"
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/ced494400ce98a91a022b293d561c8f31d55e094036fa67b954649c8ca363640fa7f0a8866f3a0515e1ce16608ed64875d0da2d723ff75f48c0b4732e6e78450
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/c35cc1594596d3df557a683c89d5be18ee02150d2f9d2ba946e457e4ad2067e7f4d482487da1855f8f36ff83a773cef3f8aeee8c80ae7660d8c6eb6fe28f5985
   languageName: node
   linkType: hard
 
-"@formatjs/intl-relativetimeformat@npm:12.3.8":
-  version: 12.3.8
-  resolution: "@formatjs/intl-relativetimeformat@npm:12.3.8"
+"@formatjs/intl-relativetimeformat@npm:12.3.9":
+  version: 12.3.9
+  resolution: "@formatjs/intl-relativetimeformat@npm:12.3.9"
   dependencies:
-    "@formatjs/intl-localematcher": "npm:0.8.8"
-  checksum: 10/8eb77ed5451658310a26f14a2b162da970004a587c602e9ce1dcb3bcf620cbbede7d9357c5e05ee3d24606020cf750b1c21ccd7f999250f25558388f17a0f0f5
+    "@formatjs/intl-localematcher": "npm:0.8.9"
+  checksum: 10/cbeaa2d801f09ca6aad66aa15e1827d93997410029fbd1f7e55ae0a1cf56cde1973c8ba724afc0da349e2d30a670b1ec5f207d89f7aa502628d4c3f90a0a5b3c
   languageName: node
   linkType: hard
 
@@ -3474,83 +3474,83 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsdoctor/client@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/client@npm:1.5.11"
-  checksum: 10/2c8f1774a29fb2fad0f91dc26a97508be4c6c97990d4ee1346310bd35a4956d2c8b2b03c87e4919c221e9566f02b8b8ef9fb40f5e840df033a0372653883dff2
+"@rsdoctor/client@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/client@npm:1.5.12"
+  checksum: 10/df3dbabf3629ec8bd98a6eb46ffac1a3b7019c99b24be12bc67e5d9bc2289d0b3a925ee658609257df47187e614fa53ad3123f07e4b90d3fc5b79b009863a19c
   languageName: node
   linkType: hard
 
-"@rsdoctor/core@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/core@npm:1.5.11"
+"@rsdoctor/core@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/core@npm:1.5.12"
   dependencies:
     "@rsbuild/plugin-check-syntax": "npm:1.6.1"
-    "@rsdoctor/graph": "npm:1.5.11"
-    "@rsdoctor/sdk": "npm:1.5.11"
-    "@rsdoctor/types": "npm:1.5.11"
-    "@rsdoctor/utils": "npm:1.5.11"
+    "@rsdoctor/graph": "npm:1.5.12"
+    "@rsdoctor/sdk": "npm:1.5.12"
+    "@rsdoctor/types": "npm:1.5.12"
+    "@rsdoctor/utils": "npm:1.5.12"
     "@rspack/resolver": "npm:0.2.8"
     browserslist-load-config: "npm:^1.0.1"
     es-toolkit: "npm:^1.45.1"
-    filesize: "npm:^10.1.6"
+    filesize: "npm:^11.0.17"
     fs-extra: "npm:^11.1.1"
     semver: "npm:^7.7.4"
     source-map: "npm:^0.7.6"
-  checksum: 10/2545e40bdb394ae20d3743fc7263458737aaad5bc88b090088c83d231daf2c6c6c82895100cc86be2788f77dcac7b849a4523148e05cfbb1bbfb73abc90cc64f
+  checksum: 10/1e767fc250e30d34ca7821498ba66ecf9695db46d14dc050e02fcaf04c3cc74e783ec6298ce98e8eca96ff30ef32f7c166ad0d3ad33bf4d55a6bdcf65ca99dfb
   languageName: node
   linkType: hard
 
-"@rsdoctor/graph@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/graph@npm:1.5.11"
+"@rsdoctor/graph@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/graph@npm:1.5.12"
   dependencies:
-    "@rsdoctor/types": "npm:1.5.11"
-    "@rsdoctor/utils": "npm:1.5.11"
+    "@rsdoctor/types": "npm:1.5.12"
+    "@rsdoctor/utils": "npm:1.5.12"
     es-toolkit: "npm:^1.45.1"
     path-browserify: "npm:1.0.1"
     source-map: "npm:^0.7.6"
-  checksum: 10/ad8edf65aad15a920f82c78cf88e0d0f27198bef9d535695f86a8dd0bad464520efd42aa3e48d8c0d87d6fe190b609e5c89e665a09e4796c31ba5262c5688386
+  checksum: 10/8eddfdb217a36f746e1a5e4dd8e9834b8a5a7b5dd55f8db5e6016ced2dc8bd87928848677315ad5246bd76754cde9703b327f47318d8d6b94c8a21b4d1d5b623
   languageName: node
   linkType: hard
 
-"@rsdoctor/rspack-plugin@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/rspack-plugin@npm:1.5.11"
+"@rsdoctor/rspack-plugin@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/rspack-plugin@npm:1.5.12"
   dependencies:
-    "@rsdoctor/core": "npm:1.5.11"
-    "@rsdoctor/graph": "npm:1.5.11"
-    "@rsdoctor/sdk": "npm:1.5.11"
-    "@rsdoctor/types": "npm:1.5.11"
-    "@rsdoctor/utils": "npm:1.5.11"
+    "@rsdoctor/core": "npm:1.5.12"
+    "@rsdoctor/graph": "npm:1.5.12"
+    "@rsdoctor/sdk": "npm:1.5.12"
+    "@rsdoctor/types": "npm:1.5.12"
+    "@rsdoctor/utils": "npm:1.5.12"
   peerDependencies:
     "@rspack/core": "*"
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/e2fc2ff4c317b98fae6bbbe4db80d9d46c68f654bc9a9493d575dad288571d4eafceb41697cbfdf479b1d35b6b9c7b94ac29c876e5f4a241db10f2cff5d7a703
+  checksum: 10/808d1b06e5016d02f5bbeb0c1883ab88b802ee15c9d6cad5787446c689af8d44ce1950d472b645bbc0e8e45a507f226678f750708c2a65c49fcc6dca21436aa4
   languageName: node
   linkType: hard
 
-"@rsdoctor/sdk@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/sdk@npm:1.5.11"
+"@rsdoctor/sdk@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/sdk@npm:1.5.12"
   dependencies:
-    "@rsdoctor/client": "npm:1.5.11"
-    "@rsdoctor/graph": "npm:1.5.11"
-    "@rsdoctor/types": "npm:1.5.11"
-    "@rsdoctor/utils": "npm:1.5.11"
+    "@rsdoctor/client": "npm:1.5.12"
+    "@rsdoctor/graph": "npm:1.5.12"
+    "@rsdoctor/types": "npm:1.5.12"
+    "@rsdoctor/utils": "npm:1.5.12"
     launch-editor: "npm:^2.13.2"
     safer-buffer: "npm:2.1.2"
     socket.io: "npm:4.8.1"
     tapable: "npm:2.3.3"
-  checksum: 10/ea90e2f58288101a5ca99efe0383437163f1808260e1f5b2c82c3807a4f19e51b4020c8a57b2847aca9485395e62a089099c58526fb72067aa384f29b1242872
+  checksum: 10/c37158ab3c524d095e8844d96273632c5e10516ac93c79f4e5ae09cd9e52a60e34393b40fe5f83c058d08d82757c42eb9ff7080269a40bdef6191e8f19236704
   languageName: node
   linkType: hard
 
-"@rsdoctor/types@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/types@npm:1.5.11"
+"@rsdoctor/types@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/types@npm:1.5.12"
   dependencies:
     "@types/connect": "npm:3.4.38"
     "@types/estree": "npm:1.0.5"
@@ -3564,16 +3564,16 @@ __metadata:
       optional: true
     webpack:
       optional: true
-  checksum: 10/12d15c94778681ce186985494fb28c38bce6c2504dd4a7aeb9424223343b0f3a104b80efaa200b721ed3054606ebaa4cd803fd3808208e79b08c9a6ec869238d
+  checksum: 10/f9a7c5680b349b9341547980c5e70280ea3344299a017b3f03e622003f057ef1c004b34400fad295d7457f866007c83dab9c8f0f03b9f7d95e1800d63c8097f1
   languageName: node
   linkType: hard
 
-"@rsdoctor/utils@npm:1.5.11":
-  version: 1.5.11
-  resolution: "@rsdoctor/utils@npm:1.5.11"
+"@rsdoctor/utils@npm:1.5.12":
+  version: 1.5.12
+  resolution: "@rsdoctor/utils@npm:1.5.12"
   dependencies:
     "@babel/code-frame": "npm:7.26.2"
-    "@rsdoctor/types": "npm:1.5.11"
+    "@rsdoctor/types": "npm:1.5.12"
     "@types/estree": "npm:1.0.5"
     acorn: "npm:^8.10.0"
     acorn-import-attributes: "npm:^1.9.5"
@@ -3585,57 +3585,57 @@ __metadata:
     json-stream-stringify: "npm:3.0.1"
     lines-and-columns: "npm:2.0.4"
     picocolors: "npm:^1.1.1"
-    rslog: "npm:^1.3.2"
+    rslog: "npm:^2.1.1"
     strip-ansi: "npm:^6.0.1"
-  checksum: 10/1411c09e79de2b5c8042e98a0e88a1acbdc417796e6dadc86c506000f218b34ca3022a6d110697860ef83c46fa3881e0ae5357344eaf526e370cc2bc72399749
+  checksum: 10/11dc306eb6e2c325b644f45d57e5afb4e7c7d38924d52a8ebdef4276406074ff700c218b3bf7eb875cd9ceab3e546cb8c664df245076dca065dabceacd378feb
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-darwin-arm64@npm:2.0.4"
+"@rspack/binding-darwin-arm64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-darwin-arm64@npm:2.0.5"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-x64@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-darwin-x64@npm:2.0.4"
+"@rspack/binding-darwin-x64@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-darwin-x64@npm:2.0.5"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:2.0.4"
+"@rspack/binding-linux-arm64-gnu@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-linux-arm64-gnu@npm:2.0.5"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-musl@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-linux-arm64-musl@npm:2.0.4"
+"@rspack/binding-linux-arm64-musl@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-linux-arm64-musl@npm:2.0.5"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-linux-x64-gnu@npm:2.0.4"
+"@rspack/binding-linux-x64-gnu@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-linux-x64-gnu@npm:2.0.5"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-musl@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-linux-x64-musl@npm:2.0.4"
+"@rspack/binding-linux-x64-musl@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-linux-x64-musl@npm:2.0.5"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@rspack/binding-wasm32-wasi@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-wasm32-wasi@npm:2.0.4"
+"@rspack/binding-wasm32-wasi@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-wasm32-wasi@npm:2.0.5"
   dependencies:
     "@emnapi/core": "npm:1.10.0"
     "@emnapi/runtime": "npm:1.10.0"
@@ -3644,41 +3644,41 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-arm64-msvc@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:2.0.4"
+"@rspack/binding-win32-arm64-msvc@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-win32-arm64-msvc@npm:2.0.5"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:2.0.4"
+"@rspack/binding-win32-ia32-msvc@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-win32-ia32-msvc@npm:2.0.5"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-x64-msvc@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding-win32-x64-msvc@npm:2.0.4"
+"@rspack/binding-win32-x64-msvc@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding-win32-x64-msvc@npm:2.0.5"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/binding@npm:2.0.4"
+"@rspack/binding@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/binding@npm:2.0.5"
   dependencies:
-    "@rspack/binding-darwin-arm64": "npm:2.0.4"
-    "@rspack/binding-darwin-x64": "npm:2.0.4"
-    "@rspack/binding-linux-arm64-gnu": "npm:2.0.4"
-    "@rspack/binding-linux-arm64-musl": "npm:2.0.4"
-    "@rspack/binding-linux-x64-gnu": "npm:2.0.4"
-    "@rspack/binding-linux-x64-musl": "npm:2.0.4"
-    "@rspack/binding-wasm32-wasi": "npm:2.0.4"
-    "@rspack/binding-win32-arm64-msvc": "npm:2.0.4"
-    "@rspack/binding-win32-ia32-msvc": "npm:2.0.4"
-    "@rspack/binding-win32-x64-msvc": "npm:2.0.4"
+    "@rspack/binding-darwin-arm64": "npm:2.0.5"
+    "@rspack/binding-darwin-x64": "npm:2.0.5"
+    "@rspack/binding-linux-arm64-gnu": "npm:2.0.5"
+    "@rspack/binding-linux-arm64-musl": "npm:2.0.5"
+    "@rspack/binding-linux-x64-gnu": "npm:2.0.5"
+    "@rspack/binding-linux-x64-musl": "npm:2.0.5"
+    "@rspack/binding-wasm32-wasi": "npm:2.0.5"
+    "@rspack/binding-win32-arm64-msvc": "npm:2.0.5"
+    "@rspack/binding-win32-ia32-msvc": "npm:2.0.5"
+    "@rspack/binding-win32-x64-msvc": "npm:2.0.5"
   dependenciesMeta:
     "@rspack/binding-darwin-arm64":
       optional: true
@@ -3700,24 +3700,24 @@ __metadata:
       optional: true
     "@rspack/binding-win32-x64-msvc":
       optional: true
-  checksum: 10/55832bec03a4c94d6c60a16ebb6484e9c32a6e88cf820874f9873293787d1cbb95ee4276acf5dbf5b6bf6e63d6c9f8e3023efd40f8c2526a52324927b41a9316
+  checksum: 10/95b4fa9daf1935e2ca3d1bd08b12c7f26ef0fffb09d7764bcb11fed1d4ecedc4dd79cbfbb37519121e81c06b97ade27f2d7a33ed0ed51e3b7d650b37b8b33c9e
   languageName: node
   linkType: hard
 
-"@rspack/core@npm:2.0.4":
-  version: 2.0.4
-  resolution: "@rspack/core@npm:2.0.4"
+"@rspack/core@npm:2.0.5":
+  version: 2.0.5
+  resolution: "@rspack/core@npm:2.0.5"
   dependencies:
-    "@rspack/binding": "npm:2.0.4"
+    "@rspack/binding": "npm:2.0.5"
   peerDependencies:
     "@module-federation/runtime-tools": ^0.24.1 || ^2.0.0
-    "@swc/helpers": ">=0.5.1"
+    "@swc/helpers": ^0.5.23
   peerDependenciesMeta:
     "@module-federation/runtime-tools":
       optional: true
     "@swc/helpers":
       optional: true
-  checksum: 10/49249480a403259e5ee862cbd4694920da1b6ca5aba82146b31e4868430954eccb8a81e93fa730514dd3a39b65aa3fd52dbf0583bce1213086e6aec1a23ff9d1
+  checksum: 10/b955a12bd04e1e3bef954f8a3cfd48c7302d114fee4d13dc7c6f46645bb18d377a4df7f86520bbf44519ed7bb315bd119e98768bfd7d851b1329ba9ee51ce1ac
   languageName: node
   linkType: hard
 
@@ -7762,10 +7762,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"filesize@npm:^10.1.6":
-  version: 10.1.6
-  resolution: "filesize@npm:10.1.6"
-  checksum: 10/e800837c4fc02303f1944d5a4c7b706df1c5cd95d745181852604fb00a1c2d55d2d3921252722bd2f0c86b59c94edaba23fa224776bbf977455d4034e7be1f45
+"filesize@npm:^11.0.17":
+  version: 11.0.17
+  resolution: "filesize@npm:11.0.17"
+  checksum: 10/1217a82a719735e9694b339248dfe161eb1d84a009b1e6644b8f9d751c3bfdd9091d6e38501a34f918a815262471532bbabc388911a2e6e65866730b97aabb5c
   languageName: node
   linkType: hard
 
@@ -8470,15 +8470,15 @@ __metadata:
     "@date-fns/tz": "npm:1.5.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
-    "@formatjs/intl-datetimeformat": "npm:7.4.6"
-    "@formatjs/intl-displaynames": "npm:7.3.8"
-    "@formatjs/intl-durationformat": "npm:0.10.12"
+    "@formatjs/intl-datetimeformat": "npm:7.4.7"
+    "@formatjs/intl-displaynames": "npm:7.3.9"
+    "@formatjs/intl-durationformat": "npm:0.10.13"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.9"
-    "@formatjs/intl-listformat": "npm:8.3.8"
+    "@formatjs/intl-listformat": "npm:8.3.9"
     "@formatjs/intl-locale": "npm:5.3.8"
-    "@formatjs/intl-numberformat": "npm:9.3.9"
-    "@formatjs/intl-pluralrules": "npm:6.3.8"
-    "@formatjs/intl-relativetimeformat": "npm:12.3.8"
+    "@formatjs/intl-numberformat": "npm:9.3.10"
+    "@formatjs/intl-pluralrules": "npm:6.3.9"
+    "@formatjs/intl-relativetimeformat": "npm:12.3.9"
     "@fullcalendar/core": "npm:6.1.20"
     "@fullcalendar/daygrid": "npm:6.1.20"
     "@fullcalendar/interaction": "npm:6.1.20"
@@ -8504,8 +8504,8 @@ __metadata:
     "@octokit/plugin-retry": "npm:8.1.0"
     "@octokit/rest": "npm:22.0.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
-    "@rsdoctor/rspack-plugin": "npm:1.5.11"
-    "@rspack/core": "npm:2.0.4"
+    "@rsdoctor/rspack-plugin": "npm:1.5.12"
+    "@rspack/core": "npm:2.0.5"
     "@rspack/dev-server": "npm:2.0.1"
     "@swc/helpers": "npm:0.5.23"
     "@thomasloven/round-slider": "npm:0.6.0"
@@ -12037,10 +12037,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rslog@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "rslog@npm:1.3.2"
-  checksum: 10/69f575564ac93be5e3a7f3b7dd086e93fcca96e25dbb2fbd19ff0db9d0f2ace50b782b06b03c6b3f351252e45a80df85caf0e1ecdcca694c41f937efd67ac6bd
+"rslog@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "rslog@npm:2.1.1"
+  checksum: 10/acdbcca91710a468eff2fc4441ed73991e1c2e234708de2aeda2b6c59469d3c4bce7b10bbad14dc97a52f613c0516e7bfd1049594f84766c9d65cf6ac6aa37e1
   languageName: node
   linkType: hard
 
