@@ -90,28 +90,46 @@ type StrategyConfig<T extends LovelaceStrategyConfigType> = AsyncReturnType<
   Strategies[T]["generate"]
 >;
 
+// Resolves the custom element tag(s) for a strategy. Returns the legacy tag as
+// well for custom strategies. `undefined` means the type is neither built-in
+// nor a custom strategy.
+const getStrategyTags = (
+  configType: LovelaceStrategyConfigType,
+  strategyType: string
+): { tag: string; legacyTag?: string } | undefined => {
+  if (strategyType in STRATEGIES[configType]) {
+    return { tag: `${strategyType}-${configType}-strategy` };
+  }
+  if (strategyType.startsWith(CUSTOM_PREFIX)) {
+    const name = strategyType.slice(CUSTOM_PREFIX.length);
+    return {
+      tag: `ll-strategy-${configType}-${name}`,
+      legacyTag: `ll-strategy-${name}`,
+    };
+  }
+  return undefined;
+};
+
 export const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
   configType: T,
   strategyType: string
 ): Promise<LovelaceStrategy> => {
-  if (strategyType in STRATEGIES[configType]) {
-    await STRATEGIES[configType][strategyType]();
-    const tag = `${strategyType}-${configType}-strategy`;
-    return customElements.get(tag) as unknown as Strategies[T];
-  }
+  const tags = getStrategyTags(configType, strategyType);
 
-  if (!strategyType.startsWith(CUSTOM_PREFIX)) {
+  if (!tags) {
     throw new Error("Unknown strategy");
   }
 
-  const legacyTag = `ll-strategy-${strategyType.slice(CUSTOM_PREFIX.length)}`;
-  const tag = `ll-strategy-${configType}-${strategyType.slice(
-    CUSTOM_PREFIX.length
-  )}`;
+  const { tag, legacyTag } = tags;
+
+  if (strategyType in STRATEGIES[configType]) {
+    await STRATEGIES[configType][strategyType]();
+    return customElements.get(tag) as unknown as Strategies[T];
+  }
 
   if (
     (await Promise.race([
-      customElements.whenDefined(legacyTag),
+      customElements.whenDefined(legacyTag!),
       customElements.whenDefined(tag),
       new Promise((resolve) => {
         setTimeout(() => resolve(true), MAX_WAIT_STRATEGY_LOAD);
@@ -124,7 +142,7 @@ export const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
   }
 
   return (customElements.get(tag) ??
-    customElements.get(legacyTag)) as unknown as Strategies[T];
+    customElements.get(legacyTag!)) as unknown as Strategies[T];
 };
 
 const generateStrategy = async <T extends LovelaceStrategyConfigType>(
@@ -267,20 +285,13 @@ export const checkStrategyShouldRegenerate = (
     return false;
   }
 
-  let strategy: LovelaceStrategy | undefined;
-
-  if (strategyType in STRATEGIES[configType]) {
-    const tag = `${strategyType}-${configType}-strategy`;
-    strategy = customElements.get(tag) as unknown as
-      | LovelaceStrategy
-      | undefined;
-  } else if (strategyType.startsWith(CUSTOM_PREFIX)) {
-    const name = strategyType.slice(CUSTOM_PREFIX.length);
-    const tag = `ll-strategy-${configType}-${name}`;
-    const legacyTag = `ll-strategy-${name}`;
-    strategy = (customElements.get(tag) ??
-      customElements.get(legacyTag)) as unknown as LovelaceStrategy | undefined;
-  }
+  const tags = getStrategyTags(configType, strategyType);
+  const strategy = tags
+    ? ((customElements.get(tags.tag) ??
+        (tags.legacyTag
+          ? customElements.get(tags.legacyTag)
+          : undefined)) as unknown as LovelaceStrategy | undefined)
+    : undefined;
 
   if (strategy?.shouldRegenerate) {
     return strategy.shouldRegenerate(strategyConfig, oldHass, newHass);

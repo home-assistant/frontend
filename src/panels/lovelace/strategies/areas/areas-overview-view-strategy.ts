@@ -10,6 +10,7 @@ import {
   type AreaControlDomain,
 } from "../../card-features/types";
 import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
+import type { LovelaceStrategyRegistryKey } from "../types";
 import type { EntitiesDisplay } from "./area-view-strategy";
 import {
   computeAreaPath,
@@ -38,6 +39,13 @@ export interface AreasViewStrategyConfig {
 
 @customElement("areas-overview-view-strategy")
 export class AreasOverviewViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+  ];
+
   static async generate(
     config: AreasViewStrategyConfig,
     hass: HomeAssistant
