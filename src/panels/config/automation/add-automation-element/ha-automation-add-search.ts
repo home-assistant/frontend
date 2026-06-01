@@ -159,7 +159,9 @@ export class HaAutomationAddSearch extends LitElement {
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getEntitiesMemoized = memoizeOne(getEntities);
+  private _getEntitiesMemoized = memoizeOne(
+    (hass: HomeAssistant, idPrefix: string) => getEntities(hass, { idPrefix })
+  );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
@@ -573,14 +575,6 @@ export class HaAutomationAddSearch extends LitElement {
         if (!selectedSection || selectedSection === "entity") {
           let entityItems = this._getEntitiesMemoized(
             this.hass,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
             `entity${TARGET_SEPARATOR}`
           );
 

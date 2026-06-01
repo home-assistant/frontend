@@ -155,7 +155,31 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getEntitiesMemoized = memoizeOne(getEntities);
+  private _getEntitiesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      includeDeviceClasses?: string[],
+      includeUnitOfMeasurement?: string[],
+      includeEntities?: string[],
+      excludeEntities?: string[],
+      value?: string,
+      idPrefix?: string
+    ) =>
+      getEntities(hass, {
+        includeDomains,
+        excludeDomains,
+        entityFilter,
+        includeDeviceClasses,
+        includeUnitOfMeasurement,
+        includeEntities,
+        excludeEntities,
+        value,
+        idPrefix,
+      })
+  );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 

@@ -604,18 +604,7 @@ export class QuickBar extends LitElement {
   );
 
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
-    getEntities(
-      hass,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `entity${SEPARATOR}`
-    )
+    getEntities(hass, { idPrefix: `entity${SEPARATOR}` })
   );
 
   private _getDevicesMemoized = memoizeOne(
@@ -630,13 +619,9 @@ export class QuickBar extends LitElement {
       hass.devices,
       hass.entities,
       hass.states,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `area${SEPARATOR}`
+      {
+        idPrefix: `area${SEPARATOR}`,
+      }
     )
   );
 
