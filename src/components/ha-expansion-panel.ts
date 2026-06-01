@@ -19,6 +19,9 @@ export class HaExpansionPanel extends LitElement {
   @property({ attribute: "no-collapse", type: Boolean, reflect: true })
   public noCollapse = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "flexcontent" })
+  public flexContent = false;
+
   @property() header?: string;
 
   @property() secondary?: string;
@@ -107,6 +110,14 @@ export class HaExpansionPanel extends LitElement {
     }
     const newExpanded = !this.expanded;
     fireEvent(this, "expanded-will-change", { expanded: newExpanded });
+
+    if (this.flexContent) {
+      this._showContent = newExpanded;
+      this.expanded = newExpanded;
+      fireEvent(this, "expanded-changed", { expanded: this.expanded });
+      return;
+    }
+
     this._container.style.overflow = "hidden";
 
     if (newExpanded) {
@@ -222,6 +233,21 @@ export class HaExpansionPanel extends LitElement {
 
     .container.expanded {
       height: auto;
+    }
+
+    :host([flexcontent]) {
+      display: flex;
+      flex-direction: column;
+    }
+    :host([flexcontent]) .container {
+      transition: none;
+    }
+    :host([flexcontent]) .container.expanded {
+      flex: 1;
+      min-height: 0;
+      height: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .secondary {

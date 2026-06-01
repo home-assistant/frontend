@@ -6,6 +6,12 @@ export interface HaListSelectedDetail {
   value?: string | string[];
 }
 
+export interface HaListValueChangedDetail {
+  value: string[];
+  added: string[];
+  removed: string[];
+}
+
 export interface HaListActivatedDetail {
   index: number;
   item: HaListItemBase;
@@ -18,6 +24,7 @@ export interface HaListItemRegistrationDetail {
 declare global {
   interface HASSDomEvents {
     "ha-list-selected": HaListSelectedDetail;
+    "ha-list-value-changed": HaListValueChangedDetail;
     "ha-list-activated": HaListActivatedDetail;
     "ha-list-item-register": HaListItemRegistrationDetail;
     "ha-list-item-unregister": HaListItemRegistrationDetail;

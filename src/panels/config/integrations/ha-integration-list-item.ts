@@ -1,196 +1,127 @@
-import type { GraphicType } from "@material/mwc-list/mwc-list-item-base";
-import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
-import { styles } from "@material/mwc-list/mwc-list-item.css";
 import {
   mdiDevices,
   mdiFileCodeOutline,
   mdiPackageVariant,
   mdiWeb,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { domainToName } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
-import type { IntegrationListItem } from "./dialog-add-integration";
-import "../../../components/ha-svg-icon";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import { HaListItemButton } from "../../../components/item/ha-list-item-button";
+import { domainToName } from "../../../data/integration";
+import type { IntegrationListItem } from "./dialog-add-integration";
 
 @customElement("ha-integration-list-item")
-export class HaIntegrationListItem extends ListItemBase {
-  public hass!: HomeAssistant;
+export class HaIntegrationListItem extends HaListItemButton {
+  @property({ attribute: false }) public integration!: IntegrationListItem;
 
-  @property({ attribute: false }) public integration?: IntegrationListItem;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
-  @property({ type: String, reflect: true }) graphic: GraphicType = "medium";
-
-  // eslint-disable-next-line lit/attribute-names
-  @property({ type: Boolean }) hasMeta = true;
-
-  // @ts-expect-error
-  protected override renderSingleLine() {
-    if (!this.integration) {
-      return nothing;
-    }
-    return html`${this.integration.name ||
-    domainToName(this.hass.localize, this.integration.domain)}
-    ${this.integration.is_helper ? " (helper)" : ""}`;
+  protected override _renderInner(): TemplateResult {
+    const integration = this.integration;
+    const yamlOnly =
+      !integration.config_flow &&
+      !integration.integrations &&
+      !integration.iot_standards;
+    return html`
+      <div part="start" class="start">
+        ${integration.is_discovered
+          ? html`<ha-svg-icon
+              class="discovered-icon"
+              .path=${mdiDevices}
+            ></ha-svg-icon>`
+          : html`<ha-domain-icon
+              brand-fallback
+              .domain=${integration.domain}
+            ></ha-domain-icon>`}
+      </div>
+      <div part="content" class="content">
+        <div part="headline" class="headline">
+          ${integration.name ||
+          domainToName(this._localize, integration.domain)}
+          ${integration.is_helper
+            ? // @ts-expect-error translation key not yet defined
+              ` (${this._localize("ui.panel.config.integrations.config_entry.helper")})`
+            : nothing}
+        </div>
+      </div>
+      <div part="end" class="end">
+        ${integration.cloud
+          ? html`<ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+              <ha-tooltip for="icon-cloud" placement="left">
+                ${this._localize(
+                  "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                )}
+              </ha-tooltip>`
+          : nothing}
+        ${!integration.is_built_in
+          ? html`<ha-svg-icon
+                id="icon-custom"
+                class=${integration.overwrites_built_in
+                  ? "overwrites"
+                  : "custom"}
+                .path=${mdiPackageVariant}
+              ></ha-svg-icon>
+              <ha-tooltip for="icon-custom" placement="left">
+                ${this._localize(
+                  integration.overwrites_built_in
+                    ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                    : "ui.panel.config.integrations.config_entry.custom_integration"
+                )}
+              </ha-tooltip>`
+          : nothing}
+        ${yamlOnly
+          ? html`<ha-svg-icon
+                id="icon-yaml"
+                .path=${mdiFileCodeOutline}
+                class="open-in-new"
+              ></ha-svg-icon>
+              <ha-tooltip for="icon-yaml" placement="left">
+                ${this._localize(
+                  "ui.panel.config.integrations.config_entry.yaml_only"
+                )}
+              </ha-tooltip>`
+          : html`<ha-icon-next></ha-icon-next>`}
+      </div>
+    `;
   }
 
-  // @ts-expect-error
-  protected override renderGraphic() {
-    if (!this.integration) {
-      return nothing;
-    }
-    const graphicClasses = {
-      multi: this.multipleGraphics,
-    };
-
-    return html` <span
-      class="mdc-deprecated-list-item__graphic material-icons ${classMap(
-        graphicClasses
-      )}"
-    >
-      ${this.integration.is_discovered
-        ? html`<ha-svg-icon
-            class="discovered-icon"
-            .path=${mdiDevices}
-          ></ha-svg-icon>`
-        : html`<img
-            alt=""
-            loading="lazy"
-            src=${brandsUrl(
-              {
-                domain: this.integration.domain,
-                type: "icon",
-                darkOptimized: this.hass.themes?.darkMode,
-              },
-              this.hass.auth.data.hassUrl
-            )}
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-          />`}
-    </span>`;
-  }
-
-  // @ts-expect-error
-  protected override renderMeta() {
-    if (!this.integration) {
-      return nothing;
-    }
-    return html`<span class="mdc-deprecated-list-item__meta material-icons">
-      ${this.integration.cloud
-        ? html` <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
-            <ha-tooltip for="icon-cloud" placement="left"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.depends_on_cloud"
-              )}
-            </ha-tooltip>`
-        : nothing}
-      ${!this.integration.is_built_in
-        ? html`<span
-            class=${this.integration.overwrites_built_in
-              ? "overwrites"
-              : "custom"}
-          >
-            <ha-svg-icon
-              id="icon-custom"
-              .path=${mdiPackageVariant}
-            ></ha-svg-icon>
-            <ha-tooltip for="icon-custom" placement="left"
-              >${this.hass.localize(
-                this.integration.overwrites_built_in
-                  ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                  : "ui.panel.config.integrations.config_entry.custom_integration"
-              )}</ha-tooltip
-            ></span
-          >`
-        : nothing}
-      ${!this.integration.config_flow &&
-      !this.integration.integrations &&
-      !this.integration.iot_standards
-        ? html` <ha-svg-icon
-              id="icon-yaml"
-              .path=${mdiFileCodeOutline}
-              class="open-in-new"
-            ></ha-svg-icon>
-            <ha-tooltip for="icon-yaml" placement="left">
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.yaml_only"
-              )}
-            </ha-tooltip>`
-        : html`<ha-icon-next></ha-icon-next>`}
-    </span>`;
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      styles,
-      css`
-        :host {
-          --mdc-list-side-padding: 24px;
-          --mdc-list-item-graphic-size: 40px;
-        }
-        :host([graphic="avatar"]:not([twoLine])),
-        :host([graphic="icon"]:not([twoLine])) {
-          height: 48px;
-        }
-        span.material-icons:first-of-type {
-          margin-inline-start: 0px !important;
-          margin-inline-end: var(
-            --mdc-list-item-graphic-margin,
-            16px
-          ) !important;
-          direction: var(--direction);
-        }
-        span.material-icons:last-of-type {
-          margin-inline-start: auto !important;
-          margin-inline-end: 0px !important;
-          direction: var(--direction);
-        }
-        img {
-          width: 40px;
-          height: 40px;
-        }
-        .discovered-icon {
-          --mdc-icon-size: 40px;
-          color: var(--primary-color);
-        }
-        .mdc-deprecated-list-item__meta {
-          width: auto;
-          white-space: nowrap;
-        }
-        .mdc-deprecated-list-item__meta > * {
-          margin-right: 8px;
-          margin-inline-end: 8px;
-          margin-inline-start: initial;
-        }
-        .mdc-deprecated-list-item__meta > *:last-child {
-          margin-right: 0px;
-          margin-inline-end: 0px;
-          margin-inline-start: initial;
-        }
-        ha-icon-next {
-          margin-right: 8px;
-          margin-inline-end: 8px;
-          margin-inline-start: initial;
-        }
-        .open-in-new {
-          --mdc-icon-size: 22px;
-          padding: 1px;
-        }
-        .custom {
-          color: var(--warning-color);
-        }
-        .overwrites {
-          color: var(--error-color);
-        }
-      `,
-    ];
-  }
+  static styles: CSSResultGroup = [
+    HaListItemButton.styles,
+    css`
+      .start {
+        --mdc-icon-size: 32px;
+        height: 32px;
+      }
+      .end {
+        color: var(--ha-color-text-secondary);
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-2);
+      }
+      .discovered-icon {
+        color: var(--primary-color);
+      }
+      .open-in-new {
+        --mdc-icon-size: 22px;
+        padding: 1px;
+      }
+      .end .custom {
+        color: var(--warning-color);
+      }
+      .end .overwrites {
+        color: var(--error-color);
+      }
+    `,
+  ];
 }
 
 declare global {
