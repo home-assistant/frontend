@@ -388,21 +388,21 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="panels-list">
       <div class="wrapper">
         ${renderList(
-            this._renderPanels(beforeSpacer, selectedPanel),
-            "before-spacer",
-            true
-        )}
+      this._renderPanels(beforeSpacer, selectedPanel),
+      "before-spacer",
+      true
+    )}
         ${this.renderScrollableFades()}
       </div>
       ${this._renderSpacer()}
       ${renderList(
-          html`
-            ${this._renderPanels(afterSpacer, selectedPanel)}
-            ${this._renderFixedPanels(selectedPanel)}
-          `,
-          "after-spacer",
-          false
-      )}
+      html`
+          ${this._renderPanels(afterSpacer, selectedPanel)}
+          ${this._renderFixedPanels(selectedPanel)}
+        `,
+      "after-spacer",
+      false
+    )}
     </div>`;
   }
 
@@ -410,8 +410,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     // prettier-ignore
     return html`
       ${this.hass.user?.is_admin
-          ? this._renderConfiguration(selectedPanel)
-          : this._renderExternalConfiguration()}
+        ? this._renderConfiguration(selectedPanel)
+        : this._renderExternalConfiguration()}
       ${this._renderNotifications()}
       ${this._renderUserItem(selectedPanel)}
     `;
