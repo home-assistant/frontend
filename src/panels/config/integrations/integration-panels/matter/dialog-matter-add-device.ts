@@ -5,7 +5,7 @@ import { dynamicElement } from "../../../../../common/dom/dynamic-element-direct
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
-import { navigate } from "../../../../../common/navigate";
+import { navigate, setRefreshUrl } from "../../../../../common/navigate";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-button";
@@ -100,6 +100,8 @@ class DialogMatterAddDevice extends LitElement {
   public showDialog(): void {
     this._open = true;
     this._unsub = watchForNewMatterDevice(this.hass, (device) => {
+      // make sure a refresh of the page will navigate to the device page, old iOS apps will refresh the webview when commissioning is done
+      setRefreshUrl(`/config/devices/device/${device.id}`);
       this._newDevice = device;
       this._step = "device_added";
       this._fetchMainEntity();

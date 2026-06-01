@@ -18,6 +18,19 @@ export interface NavigateOptions {
 const DIALOG_WAIT_TIMEOUT = 500;
 
 /**
+ * Stash a destination URL in the current history entry's state. If the page
+ * is refreshed while a dialog is open, urlSyncMixin will navigate to this URL
+ * on load instead of cleaning up the stale dialog state by going back.
+ * The current URL is not changed.
+ */
+export const setRefreshUrl = (path: string) => {
+  mainWindow.history.replaceState(
+    { ...mainWindow.history.state, refreshUrl: path },
+    ""
+  );
+};
+
+/**
  * Ensures all dialogs are closed before navigation.
  * Returns true if navigation can proceed, false if a dialog refused to close.
  */
