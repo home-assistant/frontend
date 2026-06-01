@@ -6,11 +6,11 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceStrategyRegistryKey } from "../../lovelace/strategies/types";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     _config: LovelaceStrategyConfig,

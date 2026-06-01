@@ -6,7 +6,7 @@ import { getCommonControlsUsagePrediction } from "../../../../data/usage_predict
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 
 const DEFAULT_LIMIT = 8;
 
@@ -34,7 +34,7 @@ const toTileCard = (entity: string): TileCardConfig => ({
 
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     config: CommonControlsSectionStrategyConfig,

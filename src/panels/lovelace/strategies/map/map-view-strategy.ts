@@ -3,7 +3,7 @@ import { customElement } from "lit/decorators";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { MapCardConfig } from "../../cards/types";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 
 export interface MapViewStrategyConfig {
   type: "map";
@@ -11,7 +11,7 @@ export interface MapViewStrategyConfig {
 
 @customElement("map-view-strategy")
 export class MapViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     _config: MapViewStrategyConfig,

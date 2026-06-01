@@ -15,7 +15,7 @@ import type {
   EntitiesCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
@@ -25,7 +25,7 @@ export interface HomeOtherDevicesViewStrategyConfig {
 
 @customElement("home-other-devices-view-strategy")
 export class HomeOtherDevicesViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "entities",
     "devices",
     "areas",

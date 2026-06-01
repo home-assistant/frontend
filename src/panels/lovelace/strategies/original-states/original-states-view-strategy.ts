@@ -9,7 +9,7 @@ import type { HomeAssistant } from "../../../../types";
 import type { EmptyStateCardConfig } from "../../cards/types";
 import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 
 export interface OriginalStatesViewStrategyConfig {
   type: "original-states";
@@ -20,7 +20,7 @@ export interface OriginalStatesViewStrategyConfig {
 
 @customElement("original-states-view-strategy")
 export class OriginalStatesViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "entities",
     "devices",
     "areas",

@@ -3,7 +3,7 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type {
   LovelaceStrategyEditor,
-  LovelaceStrategyRegistryKey,
+  LovelaceStrategyDependency,
 } from "../types";
 import type { OriginalStatesViewStrategyConfig } from "./original-states-view-strategy";
 
@@ -12,7 +12,7 @@ export type OriginalStatesDashboardStrategyConfig =
 
 @customElement("original-states-dashboard-strategy")
 export class OriginalStatesDashboardStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     config: OriginalStatesDashboardStrategyConfig

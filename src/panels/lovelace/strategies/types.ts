@@ -6,7 +6,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceGenericElementEditor } from "../types";
 
-export type LovelaceStrategyRegistryKey =
+export type LovelaceStrategyDependency =
   | "entities"
   | "devices"
   | "areas"
@@ -21,7 +21,7 @@ export interface LovelaceStrategy<T = any> {
     oldHass: HomeAssistant,
     newHass: HomeAssistant
   ): boolean;
-  registryDependencies?: readonly LovelaceStrategyRegistryKey[];
+  registryDependencies?: readonly LovelaceStrategyDependency[];
   getConfigElement?: () => LovelaceStrategyEditor;
   noEditor?: boolean;
   configRequired?: boolean;

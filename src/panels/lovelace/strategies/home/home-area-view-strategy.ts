@@ -17,7 +17,7 @@ import type {
 } from "../../cards/types";
 import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES,
@@ -34,7 +34,7 @@ export interface HomeAreaViewStrategyConfig {
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "entities",
     "devices",
     "areas",

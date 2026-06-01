@@ -3,14 +3,14 @@ import { customElement } from "lit/decorators";
 import type { LovelaceDashboardSuggestions } from "../../../../data/lovelace/dashboard";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 import type { MapViewStrategyConfig } from "./map-view-strategy";
 
 export type MapDashboardStrategyConfig = MapViewStrategyConfig;
 
 @customElement("map-dashboard-strategy")
 export class MapDashboardStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     config: MapDashboardStrategyConfig

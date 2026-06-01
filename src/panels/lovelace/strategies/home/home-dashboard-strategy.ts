@@ -6,7 +6,7 @@ import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/vie
 import type { HomeAssistant } from "../../../../types";
 import type {
   LovelaceStrategyEditor,
-  LovelaceStrategyRegistryKey,
+  LovelaceStrategyDependency,
 } from "../types";
 import {
   getSummaryLabel,
@@ -28,7 +28,7 @@ export interface HomeDashboardStrategyConfig {
 
 @customElement("home-dashboard-strategy")
 export class HomeDashboardStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "areas",
   ];
 

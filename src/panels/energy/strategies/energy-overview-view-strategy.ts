@@ -5,12 +5,12 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import type { LovelaceStrategyRegistryKey } from "../../lovelace/strategies/types";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     _config: LovelaceStrategyConfig,

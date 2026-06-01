@@ -10,7 +10,7 @@ import {
   type AreaControlDomain,
 } from "../../card-features/types";
 import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 import type { EntitiesDisplay } from "./area-view-strategy";
 import {
   computeAreaPath,
@@ -39,7 +39,7 @@ export interface AreasViewStrategyConfig {
 
 @customElement("areas-overview-view-strategy")
 export class AreasOverviewViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "entities",
     "devices",
     "areas",

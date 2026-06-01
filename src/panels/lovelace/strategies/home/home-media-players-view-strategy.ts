@@ -10,7 +10,7 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { MediaControlCardConfig } from "../../cards/types";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 import { getAreasFloorHierarchy } from "../../../../common/areas/areas-floor-hierarchy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 
@@ -81,7 +81,7 @@ const processUnassignedEntities = (
 
 @customElement("home-media-players-view-strategy")
 export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "entities",
     "devices",
     "areas",

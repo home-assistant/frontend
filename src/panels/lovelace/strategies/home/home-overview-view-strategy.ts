@@ -35,7 +35,7 @@ import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../helpers/view-columns-conditions";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 import type { CommonControlsSectionStrategyConfig } from "../usage_prediction/common-controls-section-strategy";
 import { HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
@@ -80,7 +80,7 @@ const computeAreaCard = (
 
 @customElement("home-overview-view-strategy")
 export class HomeOverviewViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
     "entities",
     "devices",
     "areas",

@@ -2,7 +2,7 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { IframeCardConfig } from "../../cards/types";
-import type { LovelaceStrategyRegistryKey } from "../types";
+import type { LovelaceStrategyDependency } from "../types";
 
 export interface IframeViewStrategyConfig {
   type: "iframe";
@@ -12,7 +12,7 @@ export interface IframeViewStrategyConfig {
 
 @customElement("iframe-view-strategy")
 export class IframeViewStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     config: IframeViewStrategyConfig

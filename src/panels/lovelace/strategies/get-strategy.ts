@@ -23,14 +23,14 @@ import type {
   LovelaceDashboardStrategyGetCreateSuggestions,
   LovelaceSectionStrategy,
   LovelaceStrategy,
-  LovelaceStrategyRegistryKey,
+  LovelaceStrategyDependency,
   LovelaceViewStrategy,
 } from "./types";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
 
-const DEFAULT_REGISTRY_DEPENDENCIES: readonly LovelaceStrategyRegistryKey[] = [
+const DEFAULT_REGISTRY_DEPENDENCIES: readonly LovelaceStrategyDependency[] = [
   "entities",
   "devices",
   "areas",

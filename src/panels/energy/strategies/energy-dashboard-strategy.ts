@@ -7,7 +7,7 @@ import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceStrategyRegistryKey } from "../../lovelace/strategies/types";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   DEFAULT_POWER_COLLECTION_KEY,
@@ -71,7 +71,7 @@ export interface EnergyDashboardStrategyConfig extends LovelaceStrategyConfig {
 
 @customElement("energy-dashboard-strategy")
 export class EnergyDashboardStrategy extends ReactiveElement {
-  static registryDependencies: readonly LovelaceStrategyRegistryKey[] = [];
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
 
   static async generate(
     _config: EnergyDashboardStrategyConfig,
