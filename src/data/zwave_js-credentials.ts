@@ -126,6 +126,20 @@ export interface SetZwaveUserResult {
   user_id: number;
 }
 
+export interface AddZwaveUserParams {
+  user_name?: string | null;
+  user_type?: string;
+  credential_rule?: string;
+  active?: boolean;
+  credential_type: ZwaveCredentialType;
+  credential_data: string;
+}
+
+export interface AddZwaveUserResult {
+  user_id: number;
+  credential_slot: number;
+}
+
 export interface SetZwaveCredentialParams {
   user_id: number;
   credential_type: ZwaveCredentialType;
@@ -208,6 +222,23 @@ export const setZwaveUser = async (
   const result = await hass.callService<Record<string, SetZwaveUserResult>>(
     "zwave_js",
     "set_user",
+    params,
+    { entity_id },
+    false,
+    true
+  );
+  return unwrapEntityResponse(hass, result.response, entity_id);
+};
+
+export const addZwaveUser = async (
+  hass: HomeAssistant,
+  entity_id: string,
+  params: AddZwaveUserParams
+): Promise<AddZwaveUserResult> => {
+  // notifyOnError=false — caller surfaces errors in-dialog instead.
+  const result = await hass.callService<Record<string, AddZwaveUserResult>>(
+    "zwave_js",
+    "add_user",
     params,
     { entity_id },
     false,

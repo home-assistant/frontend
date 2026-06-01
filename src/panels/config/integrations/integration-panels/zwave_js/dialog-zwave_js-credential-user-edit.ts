@@ -18,8 +18,8 @@ import {
   DEFAULT_CREDENTIAL_MAX_LENGTH,
   DEFAULT_CREDENTIAL_MIN_LENGTH,
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
+  addZwaveUser,
   deleteZwaveCredential,
-  deleteZwaveUser,
   enterableCredentialTypes,
   getCredentialError,
   compatibleUserTypes,
@@ -508,27 +508,19 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     credentialType: ZwaveCredentialType
   ): Promise<void> {
     const params = this._params!;
-    const { user_id } = await setZwaveUser(this.hass, params.entity_id, {
-      user_name: this._supportsUserNames ? this._userName.trim() : undefined,
-      user_type: this._userType,
-      active: true,
-    });
-
+    // Create the user and write the credential in a single call. This is the
+    // only way to add a user on User Code CC locks, where the user and code
+    // share a slot. If the credential write fails, the service rolls the user
+    // back so the lock is never left with a credential-less user.
     try {
-      await setZwaveCredential(this.hass, params.entity_id, {
-        user_id,
+      await addZwaveUser(this.hass, params.entity_id, {
+        user_name: this._supportsUserNames ? this._userName.trim() : undefined,
+        user_type: this._userType,
+        active: true,
         credential_type: credentialType,
         credential_data: this._credentialData,
       });
     } catch (err: unknown) {
-      // Roll back the user so the lock returns to its prior state. We
-      // ignore rollback errors — the credential error is the actionable
-      // one to surface; a stranded user will reappear on next refresh.
-      try {
-        await deleteZwaveUser(this.hass, params.entity_id, user_id);
-      } catch {
-        // Ignore.
-      }
       this._error = this.hass.localize(
         "ui.panel.config.zwave_js.credentials.errors.add_user_failed",
         {

@@ -3,6 +3,7 @@ import {
   getZwaveCredentialCapabilities,
   getZwaveUsers,
   setZwaveUser,
+  addZwaveUser,
   deleteZwaveUser,
   deleteZwaveAllUsers,
   setZwaveCredential,
@@ -168,6 +169,56 @@ describe("zwave_js-credentials", () => {
         true
       );
       expect(result.user_id).toBe(1);
+    });
+  });
+
+  describe("addZwaveUser", () => {
+    const addUserResponse = (inner: unknown) =>
+      ({
+        callService: vi
+          .fn()
+          .mockResolvedValue({ response: { [ENTITY_ID]: inner } }),
+      }) as unknown as HomeAssistant;
+
+    it("calls add_user with user and credential, returning the slot", async () => {
+      const hass = addUserResponse({ user_id: 1, credential_slot: 1 });
+
+      const result = await addZwaveUser(hass, ENTITY_ID, {
+        user_name: "Alice",
+        user_type: "general",
+        active: true,
+        credential_type: "pin_code",
+        credential_data: "1234",
+      });
+
+      expect(hass.callService).toHaveBeenCalledWith(
+        "zwave_js",
+        "add_user",
+        {
+          user_name: "Alice",
+          user_type: "general",
+          active: true,
+          credential_type: "pin_code",
+          credential_data: "1234",
+        },
+        { entity_id: ENTITY_ID },
+        false,
+        true
+      );
+      expect(result).toEqual({ user_id: 1, credential_slot: 1 });
+    });
+
+    it("propagates errors from callService", async () => {
+      const hass = {
+        callService: vi.fn().mockRejectedValue(new Error("No slots")),
+      } as unknown as HomeAssistant;
+
+      await expect(
+        addZwaveUser(hass, ENTITY_ID, {
+          credential_type: "pin_code",
+          credential_data: "1234",
+        })
+      ).rejects.toThrow("No slots");
     });
   });
 
