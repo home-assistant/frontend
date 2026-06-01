@@ -1,7 +1,6 @@
 import { consume, type ContextType } from "@lit/context";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { transform } from "../../common/decorators/transform";
 import "../../components/ha-alert";
 import "../../components/ha-spinner";
 import { showToast } from "../../util/toast";
@@ -26,13 +25,7 @@ import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 export class HaMoreInfoAddTo extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
-  @transform<
-    ContextType<typeof configContext>,
-    ContextType<typeof configContext>["auth"]["external"]
-  >({
-    transformer: ({ auth }) => auth.external,
-  })
-  private _external?: ContextType<typeof configContext>["auth"]["external"];
+  private _config?: ContextType<typeof configContext>;
 
   @state()
   @consumeLocalize()
@@ -50,13 +43,15 @@ export class HaMoreInfoAddTo extends LitElement {
     this._defaultActions = getDefaultAddToActions();
     this._externalActions = [];
 
-    if (this._external?.config.hasEntityAddTo) {
+    if (this._config?.auth.external?.config.hasEntityAddTo) {
       try {
         const response =
-          await this._external.sendMessage<"entity/add_to/get_actions">({
-            type: "entity/add_to/get_actions",
-            payload: { entity_id: this.entityId },
-          });
+          await this._config.auth.external.sendMessage<"entity/add_to/get_actions">(
+            {
+              type: "entity/add_to/get_actions",
+              payload: { entity_id: this.entityId },
+            }
+          );
         if (response?.actions) {
           this._externalActions = response.actions.map((action) => ({
             type: "external",
@@ -87,10 +82,10 @@ export class HaMoreInfoAddTo extends LitElement {
         if (!action.payload) {
           throw new Error("Missing external action payload");
         }
-        if (!this._external) {
+        if (!this._config?.auth.external) {
           throw new Error("Missing external app connection");
         }
-        this._external.fireMessage({
+        this._config.auth.external.fireMessage({
           type: "entity/add_to",
           payload: {
             entity_id: this.entityId,
