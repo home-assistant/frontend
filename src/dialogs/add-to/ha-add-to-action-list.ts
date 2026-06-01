@@ -10,7 +10,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-icon";
 import "../../components/ha-svg-icon";
-import "../../components/item/ha-list-item-base";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
@@ -79,13 +78,13 @@ class HaAddToActionList extends LitElement {
       <h3 class="section-header">
         ${this._localizeValue(section.title, section.titleKey)}
       </h3>
-      <ha-list-base>
-        ${section.actions.length
-          ? section.actions.map((action) => this._renderActionItem(action))
-          : html`<ha-list-item-base
-              .headline=${this._localizeValue(section.empty, section.emptyKey)}
-            ></ha-list-item-base>`}
-      </ha-list-base>
+      ${section.actions.length
+        ? html`<ha-list-base>
+            ${section.actions.map((action) => this._renderActionItem(action))}
+          </ha-list-base>`
+        : html`<h4 class="empty">
+            ${this._localizeValue(section.empty, section.emptyKey)}
+          </h4>`}
     `;
   }
 
@@ -144,6 +143,14 @@ class HaAddToActionList extends LitElement {
       margin: 0;
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-medium);
+      color: var(--secondary-text-color);
+    }
+
+    .empty {
+      padding: var(--ha-space-2) var(--ha-space-4) 0;
+      margin: 0;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
       color: var(--secondary-text-color);
     }
 
