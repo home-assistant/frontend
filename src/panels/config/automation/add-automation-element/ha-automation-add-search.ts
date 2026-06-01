@@ -149,7 +149,13 @@ export class HaAutomationAddSearch extends LitElement {
 
   @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
 
-  private _getDevicesMemoized = memoizeOne(getDevices);
+  private _getDevicesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      configEntryLookup: Record<string, ConfigEntry>,
+      idPrefix: string
+    ) => getDevices(hass, configEntryLookup, { idPrefix })
+  );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
@@ -614,13 +620,6 @@ export class HaAutomationAddSearch extends LitElement {
           let deviceItems = this._getDevicesMemoized(
             this.hass,
             configEntryLookup,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
             `device${TARGET_SEPARATOR}`
           );
 
