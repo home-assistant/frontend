@@ -354,7 +354,10 @@ export class HaSerialPortSelector extends LitElement {
   }
 
   private get _selectorDomain(): string | undefined {
-    return this.context?.handler;
+    // Prefer `domain`: in options flows `handler` is the config entry id, not
+    // the integration domain, which would wrongly mark the integration's own
+    // ports as "not recommended".
+    return this.context?.domain ?? this.context?.handler;
   }
 
   private _memoRecommendedDomains = memoizeOne(
