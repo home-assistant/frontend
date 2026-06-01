@@ -403,6 +403,7 @@ class DataEntryFlowDialog extends LitElement {
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}
+                          .domain=${this._params.domain ?? this._step.handler}
                           @flow-step-footer-state-changed=${this
                             ._handleFooterStateChanged}
                         ></step-flow-form>
