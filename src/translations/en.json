@@ -2760,6 +2760,7 @@
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "title_not_installable": "{count} not installable {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_skipped": "{count} skipped {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
           "show": "show",

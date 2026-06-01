@@ -11,6 +11,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -33,9 +34,12 @@ import { domainToName } from "../../../data/integration";
 import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
+  filterUpdateEntities,
   filterUpdateEntitiesParameterized,
   installUpdates,
   isSystemUpdate,
+  latestVersionIsSkipped,
+  UpdateEntityFeature,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
@@ -111,10 +115,13 @@ class HaConfigSectionUpdates extends LitElement {
 
   protected render(): TemplateResult {
     const installableUpdates = this._filterInstallableUpdateEntities(
+      this.hass.states
+    );
+    const notInstallableUpdates = this._filterNotInstallableUpdateEntities(
       this.hass.states,
       this._showSkipped
     );
-    const notInstallableUpdates = this._filterNotInstallableUpdateEntities(
+    const skippedUpdates = this._filterSkippedUpdateEntities(
       this.hass.states,
       this._showSkipped
     );
@@ -207,6 +214,30 @@ class HaConfigSectionUpdates extends LitElement {
               </ha-card>
             `
           )}
+          ${skippedUpdates.length
+            ? html`
+                <ha-card outlined>
+                  <div class="card-content">
+                    <div class="card-header">
+                      <div class="title" role="heading" aria-level="2">
+                        ${this.hass.localize(
+                          "ui.panel.config.updates.title_skipped",
+                          {
+                            count: skippedUpdates.length,
+                          }
+                        )}
+                      </div>
+                    </div>
+                    <ha-config-updates
+                      .hass=${this.hass}
+                      .narrow=${this.narrow}
+                      .updateEntities=${skippedUpdates}
+                      showAll
+                    ></ha-config-updates>
+                  </div>
+                </ha-card>
+              `
+            : nothing}
           ${notInstallableUpdates.length
             ? html`
                 <ha-card outlined>
@@ -231,7 +262,7 @@ class HaConfigSectionUpdates extends LitElement {
                 </ha-card>
               `
             : nothing}
-          ${groups.length + notInstallableUpdates.length
+          ${groups.length + notInstallableUpdates.length + skippedUpdates.length
             ? nothing
             : html`
                 <ha-card outlined>
@@ -300,13 +331,26 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   private _filterInstallableUpdateEntities = memoizeOne(
-    (entities: HassEntities, showSkipped: boolean) =>
-      filterUpdateEntitiesParameterized(entities, showSkipped, false)
+    (entities: HassEntities) =>
+      filterUpdateEntitiesParameterized(entities, false, false)
   );
 
   private _filterNotInstallableUpdateEntities = memoizeOne(
     (entities: HassEntities, showSkipped: boolean) =>
       filterUpdateEntitiesParameterized(entities, showSkipped, true)
+  );
+
+  private _filterSkippedUpdateEntities = memoizeOne(
+    (entities: HassEntities, showSkipped: boolean): UpdateEntity[] => {
+      if (!showSkipped) {
+        return [];
+      }
+      return filterUpdateEntities(entities).filter(
+        (entity) =>
+          latestVersionIsSkipped(entity) &&
+          supportsFeature(entity, UpdateEntityFeature.INSTALL)
+      );
+    }
   );
 
   private _groupUpdates = memoizeOne(
