@@ -23,6 +23,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -517,7 +518,7 @@ export class MoreInfoDialog extends SubscribeMixin(
     await favoritesHandler.copy(favoritesContext);
   }
 
-  private _goToAddEntityTo(ev) {
+  private _goToAddEntityTo(ev: CustomEvent<RequestSelectedDetail>) {
     // Only check for request-selected events (from menu items), not regular clicks (from icon button)
     if (
       ev.type === "request-selected" &&
