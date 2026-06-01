@@ -12,6 +12,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -19,14 +21,11 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ type: Array }) public path!: LovelaceCardPath;
@@ -42,6 +41,10 @@ export class HuiCardEditMode extends LitElement {
 
   @property({ type: Boolean, attribute: "no-move" })
   public noMove = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   public _hover = false;
@@ -128,9 +131,7 @@ export class HuiCardEditMode extends LitElement {
             : html`
                 <ha-dropdown-item value="edit">
                   <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.edit"
-                  )}
+                  ${this._localize("ui.panel.lovelace.editor.edit_card.edit")}
                 </ha-dropdown-item>
               `}
           ${this.noDuplicate
@@ -141,7 +142,7 @@ export class HuiCardEditMode extends LitElement {
                     slot="icon"
                     .path=${mdiPlusCircleMultipleOutline}
                   ></ha-svg-icon>
-                  ${this.hass.localize(
+                  ${this._localize(
                     "ui.panel.lovelace.editor.edit_card.duplicate"
                   )}
                 </ha-dropdown-item>
@@ -154,22 +155,18 @@ export class HuiCardEditMode extends LitElement {
                     slot="icon"
                     .path=${mdiContentCopy}
                   ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.copy"
-                  )}
+                  ${this._localize("ui.panel.lovelace.editor.edit_card.copy")}
                 </ha-dropdown-item>
                 <ha-dropdown-item value="cut">
                   <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.editor.edit_card.cut"
-                  )}
+                  ${this._localize("ui.panel.lovelace.editor.edit_card.cut")}
                 </ha-dropdown-item>
               `}
           ${this.noDuplicate && this.noEdit && this.noMove
             ? nothing
             : html`<wa-divider></wa-divider>`}
           <ha-dropdown-item value="delete" variant="danger">
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
+            ${this._localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon
               class="warning"
               slot="icon"

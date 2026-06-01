@@ -242,7 +242,6 @@ export class HuiViewHeader extends LitElement {
                           <hui-card-edit-mode
                             @ll-edit-card=${this._editCard}
                             @ll-delete-card=${this._deleteCard}
-                            .hass=${this.hass}
                             .lovelace=${this.lovelace!}
                             .path=${[0]}
                             no-duplicate
@@ -271,7 +270,6 @@ export class HuiViewHeader extends LitElement {
                 >
                   <hui-view-badges
                     .badges=${this.badges}
-                    .hass=${this.hass}
                     .lovelace=${this.lovelace!}
                     .viewIndex=${this.viewIndex!}
                     .showAddLabel=${this.badges.length === 0}

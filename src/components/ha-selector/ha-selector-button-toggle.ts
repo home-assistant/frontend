@@ -1,14 +1,26 @@
+import { consume } from "@lit/context";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { transform } from "../../common/decorators/transform";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ButtonToggleSelector, SelectOption } from "../../data/selector";
-import type { HomeAssistant, ToggleButton } from "../../types";
+import { internationalizationContext } from "../../data/context";
+import type { FrontendLocaleData } from "../../data/translation";
+import type {
+  HomeAssistantInternationalization,
+  ToggleButton,
+} from "../../types";
 import "../ha-button-toggle-group";
 
 @customElement("ha-selector-button_toggle")
 export class HaButtonToggleSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: ButtonToggleSelector;
 
@@ -48,11 +60,7 @@ export class HaButtonToggleSelector extends LitElement {
 
     if (this.selector.button_toggle?.sort) {
       options.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.label,
-          b.label,
-          this.hass.locale.language
-        )
+        caseInsensitiveStringCompare(a.label, b.label, this._locale.language)
       );
     }
 

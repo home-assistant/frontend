@@ -1,8 +1,12 @@
+import { consume } from "@lit/context";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { transform } from "../../common/decorators/transform";
 import type { DateTimeSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { internationalizationContext } from "../../data/context";
+import type { FrontendLocaleData } from "../../data/translation";
+import type { HomeAssistantInternationalization } from "../../types";
 import "../ha-date-input";
 import type { HaDateInput } from "../ha-date-input";
 import "../ha-time-input";
@@ -11,7 +15,12 @@ import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("ha-selector-datetime")
 export class HaDateTimeSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: DateTimeSelector;
 
@@ -41,7 +50,7 @@ export class HaDateTimeSelector extends LitElement {
       <div class="input">
         <ha-date-input
           .label=${this.label}
-          .locale=${this.hass.locale}
+          .locale=${this._locale}
           .disabled=${this.disabled}
           .required=${this.required}
           .value=${values?.[0]}
@@ -51,7 +60,7 @@ export class HaDateTimeSelector extends LitElement {
         <ha-time-input
           enable-second
           .value=${values?.[1] || "00:00:00"}
-          .locale=${this.hass.locale}
+          .locale=${this._locale}
           .disabled=${this.disabled}
           .required=${this.required}
           @value-changed=${this._valueChanged}
