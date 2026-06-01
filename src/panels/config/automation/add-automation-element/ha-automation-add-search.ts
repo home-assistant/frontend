@@ -20,6 +20,10 @@ import type {
   LocalizeKeys,
 } from "../../../../common/translations/localize";
 import { computeRTL } from "../../../../common/util/compute_rtl";
+import {
+  sortRelatedFirst,
+  type RelatedIdSets,
+} from "../../../../common/search/related-context";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/chips/ha-filter-chip";
 import "../../../../components/entity/state-badge";
@@ -40,7 +44,7 @@ import {
 } from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import { labelsContext } from "../../../../data/context";
+import { labelsContext, relatedContext } from "../../../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
@@ -129,6 +133,10 @@ export class HaAutomationAddSearch extends LitElement {
     | "condition"
     | "action";
 
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
+
   @state() private _searchSectionTitle?: string;
 
   @state() private _selectedSearchSection?: SearchSection;
@@ -194,7 +202,8 @@ export class HaAutomationAddSearch extends LitElement {
       this.configEntryLookup,
       this.items,
       this.newTriggersAndConditions,
-      this._selectedSearchSection
+      this._selectedSearchSection,
+      this._relatedIdSets
     );
 
     let emptySearchTranslation: string | undefined;
@@ -487,7 +496,8 @@ export class HaAutomationAddSearch extends LitElement {
       configEntryLookup: Record<string, ConfigEntry>,
       automationItems: AddAutomationElementListItem[],
       newTriggersAndConditions: boolean,
-      selectedSection?: SearchSection
+      selectedSection?: SearchSection,
+      relatedIdSets?: RelatedIdSets
     ) => {
       const resultItems: (
         | string
@@ -568,13 +578,26 @@ export class HaAutomationAddSearch extends LitElement {
             `entity${TARGET_SEPARATOR}`
           );
 
+          if (relatedIdSets?.entities.size) {
+            entityItems = entityItems.map((item) => ({
+              ...item,
+              isRelated: relatedIdSets.entities.has(
+                (item as EntityComboBoxItem).stateObj?.entity_id || ""
+              ),
+            })) as EntityComboBoxItem[];
+          }
+
           if (searchTerm) {
-            entityItems = this._filterGroup(
-              "entity",
-              entityItems,
-              searchTerm,
-              entityComboBoxKeys
+            entityItems = sortRelatedFirst(
+              this._filterGroup(
+                "entity",
+                entityItems,
+                searchTerm,
+                entityComboBoxKeys
+              )
             ) as EntityComboBoxItem[];
+          } else if (relatedIdSets?.entities.size) {
+            entityItems = sortRelatedFirst(entityItems) as EntityComboBoxItem[];
           }
 
           if (!selectedSection && entityItems.length) {
@@ -601,13 +624,26 @@ export class HaAutomationAddSearch extends LitElement {
             `device${TARGET_SEPARATOR}`
           );
 
+          if (relatedIdSets?.devices.size) {
+            deviceItems = deviceItems.map((item) => ({
+              ...item,
+              isRelated: relatedIdSets.devices.has(
+                item.id.split(TARGET_SEPARATOR)[1] || ""
+              ),
+            }));
+          }
+
           if (searchTerm) {
-            deviceItems = this._filterGroup(
-              "device",
-              deviceItems,
-              searchTerm,
-              deviceComboBoxKeys
+            deviceItems = sortRelatedFirst(
+              this._filterGroup(
+                "device",
+                deviceItems,
+                searchTerm,
+                deviceComboBoxKeys
+              )
             );
+          } else if (relatedIdSets?.devices.size) {
+            deviceItems = sortRelatedFirst(deviceItems);
           }
 
           if (!selectedSection && deviceItems.length) {
@@ -639,13 +675,31 @@ export class HaAutomationAddSearch extends LitElement {
             undefined
           );
 
+          if (relatedIdSets?.areas.size) {
+            areasAndFloors = areasAndFloors.map((item) => ({
+              ...item,
+              isRelated:
+                item.type === "area"
+                  ? relatedIdSets.areas.has(
+                      item.id.split(TARGET_SEPARATOR)[1] || ""
+                    )
+                  : false,
+            })) as FloorComboBoxItem[];
+          }
+
           if (searchTerm) {
-            areasAndFloors = this._filterGroup(
-              "area",
-              areasAndFloors,
-              searchTerm,
-              areaFloorComboBoxKeys,
-              false
+            areasAndFloors = sortRelatedFirst(
+              this._filterGroup(
+                "area",
+                areasAndFloors,
+                searchTerm,
+                areaFloorComboBoxKeys,
+                false
+              )
+            ) as FloorComboBoxItem[];
+          } else if (relatedIdSets?.areas.size) {
+            areasAndFloors = sortRelatedFirst(
+              areasAndFloors
             ) as FloorComboBoxItem[];
           }
 

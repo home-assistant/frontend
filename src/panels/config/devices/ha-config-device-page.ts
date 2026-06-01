@@ -379,7 +379,7 @@ export class HaConfigDevicePage extends LitElement {
     if (changedProps.has("deviceId")) {
       this._findRelated();
       // Broadcast device context for quick bar
-      fireEvent(this, "hass-quick-bar-context", {
+      fireEvent(this, "hass-related-context", {
         itemType: "device",
         itemId: this.deviceId,
       });
