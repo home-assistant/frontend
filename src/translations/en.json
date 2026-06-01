@@ -1695,7 +1695,7 @@
         "add_to": {
           "title": "Add {target} to…",
           "item": "Add to…",
-          "actions": {
+          "action_options": {
             "automation_trigger": "Create as a new trigger",
             "automation_condition": "Create as a new condition",
             "automation_action": "Create as a new action",

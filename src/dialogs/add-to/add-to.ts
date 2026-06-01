@@ -14,23 +14,23 @@ import type { HomeAssistant, TranslationDict } from "../../types";
 
 /** Add to action keys are the keys of the translation dictionary for the add to actions. */
 export type AddToActionKey =
-  TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["actions"] extends infer Actions
+  TranslationDict["ui"]["dialogs"]["more_info_control"]["add_to"]["action_options"] extends infer Actions
     ? keyof Actions
     : never;
 
 export type AddToAutomationScriptActionKey = Exclude<AddToActionKey, "scene">;
 
-/** Fully-qualified localize key for an add to action name. */
-type AddToActionNameKey =
-  `ui.dialogs.more_info_control.add_to.actions.${AddToActionKey}`;
+/** Fully-qualified localize key for an add to action option label. */
+export type AddToActionOptionLabelKey =
+  `ui.dialogs.more_info_control.add_to.action_options.${AddToActionKey}`;
 
 interface BaseEntityAddToAction {
   /** Whether the action is enabled and can be selected. */
   enabled: boolean;
-  /** Translated name of the action */
+  /** Translated label of the action option */
   name?: string;
-  /** Fully-qualified localize key for the action name */
-  nameKey?: AddToActionNameKey;
+  /** Fully-qualified localize key for the action option label */
+  nameKey?: AddToActionOptionLabelKey;
   /** Optional translated description of the action */
   description?: string;
   /** MDI icon name (e.g., "mdi:car") */
@@ -87,7 +87,7 @@ export const getDefaultAddToActions = (): EntityAddToActions =>
       type: "default",
       key: def.translation_key,
       enabled: true,
-      nameKey: `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
+      nameKey: `ui.dialogs.more_info_control.add_to.action_options.${def.translation_key}`,
       icon: def.icon,
     })
   );
@@ -116,7 +116,7 @@ export const filterAddToSceneEntityIds = (
         !entry.entity_category &&
         !entry.hidden_by &&
         !SCENE_IGNORED_DOMAINS.includes(computeDomain(entry.entity_id)) &&
-        Boolean(states[entry.entity_id])
+        states[entry.entity_id]
     )
     .map((entry) => entry.entity_id);
 };

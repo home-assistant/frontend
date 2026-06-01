@@ -105,7 +105,7 @@ class DialogAreaAddTo extends LitElement {
             key: "automation_trigger",
             iconPath: mdiRobotOutline,
             name: this._i18n.localize(
-              "ui.dialogs.more_info_control.add_to.actions.automation_trigger"
+              "ui.dialogs.more_info_control.add_to.action_options.automation_trigger"
             ),
           },
           {
@@ -113,7 +113,7 @@ class DialogAreaAddTo extends LitElement {
             key: "automation_condition",
             iconPath: mdiPlaylistCheck,
             name: this._i18n.localize(
-              "ui.dialogs.more_info_control.add_to.actions.automation_condition"
+              "ui.dialogs.more_info_control.add_to.action_options.automation_condition"
             ),
           },
           {
@@ -121,7 +121,7 @@ class DialogAreaAddTo extends LitElement {
             key: "automation_action",
             iconPath: mdiPlayCircleOutline,
             name: this._i18n.localize(
-              "ui.dialogs.more_info_control.add_to.actions.automation_action"
+              "ui.dialogs.more_info_control.add_to.action_options.automation_action"
             ),
           },
         ],
@@ -136,7 +136,7 @@ class DialogAreaAddTo extends LitElement {
             key: "script_action",
             iconPath: mdiScriptTextOutline,
             name: this._i18n.localize(
-              "ui.dialogs.more_info_control.add_to.actions.script_action"
+              "ui.dialogs.more_info_control.add_to.action_options.script_action"
             ),
           },
         ],
@@ -153,7 +153,7 @@ class DialogAreaAddTo extends LitElement {
             type: "scene",
             iconPath: mdiPalette,
             name: this._i18n.localize(
-              "ui.dialogs.more_info_control.add_to.actions.scene"
+              "ui.dialogs.more_info_control.add_to.action_options.scene"
             ),
           },
         ],
