@@ -1,5 +1,4 @@
 import { navigate } from "../../common/navigate";
-import type { LocalizeKeys } from "../../common/translations/localize";
 import { createSearchParam } from "../../common/url/search-params";
 import type { SceneEntities } from "../../data/scene";
 import type { SingleHassServiceTarget } from "../../data/target";
@@ -19,13 +18,17 @@ export type AddToActionKey =
 
 export type AddToAutomationScriptActionKey = Exclude<AddToActionKey, "scene">;
 
+/** Fully-qualified localize key for an add to action name. */
+export type AddToActionNameKey =
+  `ui.dialogs.more_info_control.add_to.actions.${AddToActionKey}`;
+
 interface BaseEntityAddToAction {
   /** Whether the action is enabled and can be selected. */
   enabled: boolean;
   /** Translated name of the action */
   name?: string;
-  /** Translation key for the action name */
-  nameKey?: LocalizeKeys;
+  /** Fully-qualified localize key for the action name */
+  nameKey?: AddToActionNameKey;
   /** Optional translated description of the action */
   description?: string;
   /** MDI icon name (e.g., "mdi:car") */
