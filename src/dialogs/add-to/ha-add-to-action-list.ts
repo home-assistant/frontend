@@ -1,3 +1,4 @@
+import { mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -47,10 +48,6 @@ export type AddToActionListActionSelectedEvent<
   Item extends AddToActionListItem = AddToActionListItem,
 > = HASSDomEvent<AddToActionListActionSelectedDetail<Item>>;
 
-type AddToActionListItemButton = HaListItemButton & {
-  action: AddToActionListItem;
-};
-
 @customElement("ha-add-to-action-list")
 class HaAddToActionList extends LitElement {
   @state()
@@ -65,11 +62,14 @@ class HaAddToActionList extends LitElement {
       return nothing;
     }
 
-    return html`${this.sections.map((section) => this._renderSection(section))}`;
+    return html`${this.sections.map((section, sectionIndex) =>
+      this._renderSection(section, sectionIndex)
+    )}`;
   }
 
   private _renderSection(
-    section: AddToActionListSection
+    section: AddToActionListSection,
+    sectionIndex: number
   ): TemplateResult | typeof nothing {
     if (!section.actions.length && !section.empty && !section.emptyKey) {
       return nothing;
@@ -81,7 +81,9 @@ class HaAddToActionList extends LitElement {
       </h3>
       ${section.actions.length
         ? html`<ha-list-base>
-            ${section.actions.map((action) => this._renderActionItem(action))}
+            ${section.actions.map((action, actionIndex) =>
+              this._renderActionItem(action, sectionIndex, actionIndex)
+            )}
           </ha-list-base>`
         : html`<h4 class="empty">
             ${this._localizeValue(section.empty, section.emptyKey)}
@@ -89,11 +91,16 @@ class HaAddToActionList extends LitElement {
     `;
   }
 
-  private _renderActionItem(action: AddToActionListItem): TemplateResult {
+  private _renderActionItem(
+    action: AddToActionListItem,
+    sectionIndex: number,
+    actionIndex: number
+  ): TemplateResult {
     return html`
       <ha-list-item-button
         .disabled=${action.enabled === false}
-        .action=${action}
+        data-section-index=${sectionIndex}
+        data-action-index=${actionIndex}
         .headline=${this._localizeValue(action.name, action.nameKey)}
         .supportingText=${this._localizeValue(
           action.description,
@@ -102,13 +109,19 @@ class HaAddToActionList extends LitElement {
         @click=${this._actionSelected}
       >
         ${action.icon
-          ? html`<ha-icon slot="start" .icon=${action.icon}></ha-icon>`
+          ? html`<ha-icon
+              class="start-icon"
+              slot="start"
+              .icon=${action.icon}
+            ></ha-icon>`
           : action.iconPath
             ? html`<ha-svg-icon
+                class="start-icon"
                 slot="start"
                 .path=${action.iconPath}
               ></ha-svg-icon>`
             : nothing}
+        <ha-svg-icon class="plus" slot="end" .path=${mdiPlus}></ha-svg-icon>
       </ha-list-item-button>
     `;
   }
@@ -121,14 +134,23 @@ class HaAddToActionList extends LitElement {
   }
 
   private _actionSelected(
-    ev: HASSDomCurrentTargetEvent<AddToActionListItemButton>
+    ev: HASSDomCurrentTargetEvent<HaListItemButton>
   ): void {
-    if (ev.currentTarget.action.enabled === false) {
+    const action =
+      this.sections[Number(ev.currentTarget.dataset.sectionIndex)]?.actions[
+        Number(ev.currentTarget.dataset.actionIndex)
+      ];
+
+    if (!action) {
+      return;
+    }
+
+    if (action.enabled === false) {
       return;
     }
 
     fireEvent(this, "add-to-list-action-selected", {
-      action: ev.currentTarget.action,
+      action,
     });
   }
 
@@ -138,7 +160,7 @@ class HaAddToActionList extends LitElement {
     }
 
     .section-header {
-      padding: var(--ha-space-2) var(--ha-space-4) 0;
+      padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-1);
       margin: 0;
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-medium);
@@ -146,17 +168,34 @@ class HaAddToActionList extends LitElement {
     }
 
     .empty {
-      padding: var(--ha-space-2) var(--ha-space-4) 0;
+      padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-1);
       margin: 0;
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-normal);
       color: var(--secondary-text-color);
     }
 
+    ha-list-item-button {
+      --ha-row-item-padding-inline: var(--ha-space-5);
+    }
+
     ha-icon,
     ha-svg-icon {
       display: flex;
       align-items: center;
+    }
+
+    .start-icon {
+      color: var(--ha-color-text-secondary);
+    }
+
+    .plus {
+      color: var(--primary-color);
+    }
+
+    ha-list-item-button[disabled] .start-icon,
+    ha-list-item-button[disabled] .plus {
+      color: var(--disabled-text-color);
     }
   `;
 }
