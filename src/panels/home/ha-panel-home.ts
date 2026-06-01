@@ -95,26 +95,37 @@ class PanelHome extends LitElement {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass && oldHass.localize !== this.hass.localize) {
+    const oldHass = changedProps.get("hass") as this["hass"] | undefined;
+    if (!oldHass) {
+      return;
+    }
+
+    // Locale changed: regenerate to refresh translated content
+    if (oldHass.localize !== this.hass.localize) {
       this._setLovelace();
       return;
     }
 
-    if (oldHass && this.hass && this.hass.config.state === "RUNNING") {
-      if (oldHass.config.state !== "RUNNING") {
-        this._setup();
-        return;
-      }
-      const shouldRegenerate = checkStrategyShouldRegenerate(
+    if (this.hass.config.state !== "RUNNING") {
+      return;
+    }
+
+    // Home Assistant just started: run the full setup
+    if (oldHass.config.state !== "RUNNING") {
+      this._setup();
+      return;
+    }
+
+    // A registry the strategy depends on changed: regenerate
+    if (
+      checkStrategyShouldRegenerate(
         "dashboard",
         this._strategyConfig.strategy,
         oldHass,
         this.hass
-      );
-      if (shouldRegenerate) {
-        this._debounceRegenerateStrategy();
-      }
+      )
+    ) {
+      this._debounceRegenerateStrategy();
     }
   }
 
