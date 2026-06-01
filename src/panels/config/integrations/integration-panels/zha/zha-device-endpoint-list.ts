@@ -13,7 +13,6 @@ import "../../../../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
 import "../../../../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
-import type { HaListSelectedDetail } from "../../../../../components/list/types";
 import {
   areasContext,
   internationalizationContext,
@@ -103,7 +102,8 @@ export class ZHADeviceEndpointList extends LitElement {
                 ? html`
                     <ha-list-selectable
                       multi
-                      @ha-list-selected=${this._handleListSelectionChanged}
+                      @ha-list-item-selected=${this._handleItemSelected}
+                      @ha-list-item-deselected=${this._handleItemDeselected}
                     >
                       ${repeat(
                         deviceEndpoints,
@@ -261,36 +261,38 @@ export class ZHADeviceEndpointList extends LitElement {
     this._filter = (ev.currentTarget as HTMLInputElement).value;
   }
 
-  private _handleListSelectionChanged(
-    ev: CustomEvent<HaListSelectedDetail>
-  ): void {
+  private _handleItemSelected(ev: CustomEvent<number>): void {
     const list = ev.currentTarget as HaListSelectable;
     let selectedDeviceIds = this._selectedDeviceIds;
 
-    ev.detail.diff?.added.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value) {
-        selectedDeviceIds = this._setSelectedDeviceId(
-          selectedDeviceIds,
-          item.value,
-          true
-        );
-      }
-    });
+    const item = list.items[ev.detail] as HaListItemOption | undefined;
+    if (item?.value) {
+      selectedDeviceIds = this._setSelectedDeviceId(
+        selectedDeviceIds,
+        item.value,
+        true
+      );
 
-    ev.detail.diff?.removed.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value) {
-        selectedDeviceIds = this._setSelectedDeviceId(
-          selectedDeviceIds,
-          item.value,
-          false
-        );
-      }
-    });
+      this._selectedDeviceIds = selectedDeviceIds;
+      this._fireSelectionChanged();
+    }
+  }
 
-    this._selectedDeviceIds = selectedDeviceIds;
-    this._fireSelectionChanged();
+  private _handleItemDeselected(ev: CustomEvent<number>): void {
+    const list = ev.currentTarget as HaListSelectable;
+    let selectedDeviceIds = this._selectedDeviceIds;
+
+    const item = list.items[ev.detail] as HaListItemOption | undefined;
+    if (item?.value) {
+      selectedDeviceIds = this._setSelectedDeviceId(
+        selectedDeviceIds,
+        item.value,
+        false
+      );
+
+      this._selectedDeviceIds = selectedDeviceIds;
+      this._fireSelectionChanged();
+    }
   }
 
   private _setSelectedDeviceId(

@@ -8,13 +8,12 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input-search";
 import "../../../../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
 import "../../../../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
-import type { HaListSelectedDetail } from "../../../../../components/list/types";
-import "../../../../../components/ha-spinner";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
   addMembersToGroup,
@@ -130,7 +129,9 @@ class DialogZHAAddGroupMembers
                           ? html`
                               <ha-list-selectable
                                 multi
-                                @ha-list-selected=${this._handleSelected}
+                                @ha-list-item-selected=${this._handleSelected}
+                                @ha-list-item-deselected=${this
+                                  ._handleDeselected}
                               >
                                 <lit-virtualizer
                                   scroller
@@ -305,26 +306,26 @@ class DialogZHAAddGroupMembers
     this._filter = (ev.currentTarget as HTMLInputElement).value;
   }
 
-  private _handleSelected(ev: CustomEvent<HaListSelectedDetail>): void {
+  private _handleSelected(ev: CustomEvent<number>): void {
     const list = ev.currentTarget as HaListSelectable;
     let selectedDevicesToAdd = this._selectedDevicesToAdd;
+    const item = list.items[ev.detail] as HaListItemOption | undefined;
+    if (item?.value && !selectedDevicesToAdd.includes(item.value)) {
+      selectedDevicesToAdd = [...selectedDevicesToAdd, item.value];
+    }
 
-    ev.detail.diff?.added.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value && !selectedDevicesToAdd.includes(item.value)) {
-        selectedDevicesToAdd = [...selectedDevicesToAdd, item.value];
-      }
-    });
+    this._selectedDevicesToAdd = selectedDevicesToAdd;
+  }
 
-    ev.detail.diff?.removed.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value) {
-        selectedDevicesToAdd = selectedDevicesToAdd.filter(
-          (selectedDeviceId) => selectedDeviceId !== item.value
-        );
-      }
-    });
-
+  private _handleDeselected(ev: CustomEvent<number>): void {
+    const list = ev.currentTarget as HaListSelectable;
+    let selectedDevicesToAdd = this._selectedDevicesToAdd;
+    const item = list.items[ev.detail] as HaListItemOption | undefined;
+    if (item?.value && selectedDevicesToAdd.includes(item.value)) {
+      selectedDevicesToAdd = selectedDevicesToAdd.filter(
+        (value) => value !== item.value
+      );
+    }
     this._selectedDevicesToAdd = selectedDevicesToAdd;
   }
 

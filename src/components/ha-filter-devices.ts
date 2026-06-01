@@ -17,7 +17,6 @@ import "./item/ha-list-item-option";
 import "./list/ha-list-selectable-virtualized";
 import type { HaListSelectableVirtualized } from "./list/ha-list-selectable-virtualized";
 import type { HaListVirtualizedItem } from "./list/ha-list-virtualized";
-import type { HaListValueChangedDetail } from "./list/types";
 
 interface HaFilterDevicesItem extends HaListVirtualizedItem {
   name: string;
@@ -53,11 +52,24 @@ export class HaFilterDevices extends LitElement {
     }
   }
 
+  protected updated(changed: PropertyValues<this>) {
+    if (changed.has("expanded") && this.expanded) {
+      setTimeout(() => {
+        if (!this.expanded || !this._listElement) {
+          return;
+        }
+        this._listElement.style.height = `${this.clientHeight - 49 - 4 - 38}px`;
+        // 49px - height of a header + 1px
+        // 4px - padding-top of the search-input
+        // 38px - height of the search input
+      }, 300);
+    }
+  }
+
   protected render() {
     return html`
       <ha-expansion-panel
         left-chevron
-        flexcontent
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -69,6 +81,7 @@ export class HaFilterDevices extends LitElement {
                 <ha-icon-button
                   .path=${mdiFilterVariantRemove}
                   @click=${this._clearFilter}
+                  @keydown=${this._handleClearFilterKeydown}
                 ></ha-icon-button>`
             : nothing}
         </div>
@@ -85,7 +98,8 @@ export class HaFilterDevices extends LitElement {
                 .rows=${this._devices(this.hass.devices, this._filter || "")}
                 .value=${this.value}
                 .rowRenderer=${this._renderItem}
-                @ha-list-value-changed=${this._handleListChanged}
+                @ha-list-item-selected=${this._handleAdded}
+                @ha-list-item-deselected=${this._handleRemoved}
               ></ha-list-selectable-virtualized>`
           : nothing}
       </ha-expansion-panel>
@@ -102,11 +116,20 @@ export class HaFilterDevices extends LitElement {
           .value=${item.id}
           .selected=${this.value?.includes(item.id) ?? false}
         >
-          <span slot="headline">${item.name}_${item.id}</span>
+          <span slot="headline">${item.name}</span>
         </ha-list-item-option>`;
 
-  private _handleListChanged(ev: CustomEvent<HaListValueChangedDetail>) {
-    this.value = ev.detail.value;
+  private _handleAdded(ev: CustomEvent<number>) {
+    this.value = [
+      ...(this.value ?? []),
+      this._devices(this.hass.devices, this._filter || "")[ev.detail].id,
+    ];
+  }
+
+  private _handleRemoved(ev: CustomEvent<number>) {
+    const id = this._devices(this.hass.devices, this._filter || "")[ev.detail]
+      .id;
+    this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
   }
 
   private _expandedWillChange(ev) {
@@ -189,6 +212,13 @@ export class HaFilterDevices extends LitElement {
     });
   }
 
+  private _handleClearFilterKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
+      this._clearFilter(ev);
+    }
+  }
+
   private _clearFilter(ev) {
     ev.preventDefault();
     this.value = undefined;
@@ -196,6 +226,7 @@ export class HaFilterDevices extends LitElement {
       value: undefined,
       items: undefined,
     });
+    this._listElement?.clearSelection();
   }
 
   static styles = css`

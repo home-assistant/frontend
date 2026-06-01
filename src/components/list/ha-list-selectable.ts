@@ -13,7 +13,8 @@ import { SelectableMixin } from "./ha-list-selectable-mixin";
  *
  * @attr {boolean} multi - Whether multiple options can be selected at once.
  *
- * @fires ha-list-selected - Fired when the selection changes. `detail: HaListSelectedDetail`.
+ * @fires ha-list-item-selected - An option was selected. `detail: number` (option index).
+ * @fires ha-list-item-deselected - An option was deselected (multi mode only). `detail: number` (option index).
  */
 @customElement("ha-list-selectable")
 export class HaListSelectable extends SelectableMixin(HaListBase) {
