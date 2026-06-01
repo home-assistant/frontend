@@ -67,6 +67,7 @@ export class HomeAssistantMain extends LitElement {
       >
         <ha-sidebar
           .hass=${this.hass}
+          .narrow=${sidebarNarrow}
           .route=${this.route}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>

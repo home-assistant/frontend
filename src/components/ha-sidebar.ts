@@ -11,7 +11,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
@@ -47,7 +46,6 @@ import "./ha-tooltip";
 import "./item/ha-list-item-button";
 import "./list/ha-list-nav";
 import "./user/ha-user-badge";
-import { narrowViewportContext } from "../data/context";
 
 const SORT_VALUE_URL_PATHS = {
   energy: 1,
@@ -165,14 +163,12 @@ export const computePanels = memoizeOne(
 class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: "always-expand", type: Boolean })
   public alwaysExpand = false;
-
-  @state()
-  @consume({ context: narrowViewportContext, subscribe: true })
-  private _narrow = false;
 
   @state() private _notifications?: PersistentNotification[];
 
@@ -340,7 +336,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         hasHold: true,
       })}
     >
-      ${!this._narrow
+      ${!this.narrow
         ? html`
             <ha-icon-button
               .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
@@ -392,21 +388,21 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="panels-list">
       <div class="wrapper">
         ${renderList(
-      this._renderPanels(beforeSpacer, selectedPanel),
-      "before-spacer",
-      true
-    )}
+            this._renderPanels(beforeSpacer, selectedPanel),
+            "before-spacer",
+            true
+        )}
         ${this.renderScrollableFades()}
       </div>
       ${this._renderSpacer()}
       ${renderList(
-      html`
-          ${this._renderPanels(afterSpacer, selectedPanel)}
-          ${this._renderFixedPanels(selectedPanel)}
-        `,
-      "after-spacer",
-      false
-    )}
+          html`
+            ${this._renderPanels(afterSpacer, selectedPanel)}
+            ${this._renderFixedPanels(selectedPanel)}
+          `,
+          "after-spacer",
+          false
+      )}
     </div>`;
   }
 
@@ -414,8 +410,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     // prettier-ignore
     return html`
       ${this.hass.user?.is_admin
-        ? this._renderConfiguration(selectedPanel)
-        : this._renderExternalConfiguration()}
+          ? this._renderConfiguration(selectedPanel)
+          : this._renderExternalConfiguration()}
       ${this._renderNotifications()}
       ${this._renderUserItem(selectedPanel)}
     `;
