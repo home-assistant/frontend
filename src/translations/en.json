@@ -1694,7 +1694,7 @@
         },
         "add_to": {
           "title": "Add {target} to…",
-          "menu_item": "Add to…",
+          "item": "Add to…",
           "actions": {
             "automation_trigger": "Create as a new trigger",
             "automation_condition": "Create as a new condition",

@@ -551,7 +551,7 @@ export class HaConfigDevicePage extends LitElement {
                 >
                   <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.menu_item"
+                    "ui.dialogs.more_info_control.add_to.item"
                   )}
                 </ha-button>
               </h1>

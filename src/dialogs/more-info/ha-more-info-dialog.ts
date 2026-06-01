@@ -595,14 +595,14 @@ export class MoreInfoDialog extends SubscribeMixin(
       { target: defaultTitle }
     );
     const addToMenuItem = this.hass.localize(
-      "ui.dialogs.more_info_control.add_to.menu_item"
+      "ui.dialogs.more_info_control.add_to.item"
     );
     const title =
       this._currView === "details"
         ? this.hass.localize("ui.dialogs.more_info_control.details")
         : this._currView === "add_to"
           ? addToTitle
-        : this._childView?.viewTitle || defaultTitle;
+          : this._childView?.viewTitle || defaultTitle;
 
     const favoritesContext =
       this._entry && stateObj
