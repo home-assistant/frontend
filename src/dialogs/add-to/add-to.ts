@@ -82,8 +82,7 @@ export const getDefaultAddToActions = (): EntityAddToActions =>
       type: "default",
       key: def.translation_key,
       enabled: true,
-      nameKey:
-        `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}` as LocalizeKeys,
+      nameKey: `ui.dialogs.more_info_control.add_to.actions.${def.translation_key}`,
       icon: def.icon,
     })
   );
