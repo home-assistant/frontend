@@ -2750,6 +2750,11 @@
         "updates": {
           "caption": "Updates",
           "description": "Manage updates of Home Assistant, apps, and devices",
+          "group_system": "Home Assistant",
+          "group_integrations": "Integrations",
+          "group_apps": "Apps",
+          "update_all": "Update all",
+          "update_all_failed": "Failed to start updates",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -2761,6 +2766,7 @@
           "checking_updates": "Checking for updates...",
           "title": "{count} {count, plural,\n  one {update}\n  other {updates}\n}",
           "title_not_installable": "{count} not installable {count, plural,\n  one {update}\n  other {updates}\n}",
+          "title_skipped": "{count} skipped {count, plural,\n  one {update}\n  other {updates}\n}",
           "unable_to_fetch": "Unable to load updates",
           "more_updates": "Show all updates",
           "show": "show",
