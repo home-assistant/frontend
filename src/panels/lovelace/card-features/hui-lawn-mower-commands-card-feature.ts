@@ -110,20 +110,9 @@ class HuiLawnMowerCommandCardFeature
       | undefined;
   }
 
-  static getStubConfig(
-    hass: HomeAssistant,
-    context: LovelaceCardFeatureContext
-  ): LawnMowerCommandsCardFeatureConfig {
-    const stateObj = context.entity_id
-      ? hass.states[context.entity_id]
-      : undefined;
+  static getStubConfig(): LawnMowerCommandsCardFeatureConfig {
     return {
       type: "lawn-mower-commands",
-      commands: stateObj
-        ? LAWN_MOWER_COMMANDS.filter((c) =>
-            supportsLawnMowerCommand(stateObj, c)
-          ).slice(0, 3)
-        : [],
     };
   }
 
@@ -162,28 +151,28 @@ class HuiLawnMowerCommandCardFeature
 
     const stateObj = this._stateObj as LawnMowerEntity;
 
+    const commands = this._config.commands ?? LAWN_MOWER_COMMANDS;
+
     return html`
       <ha-control-button-group>
-        ${LAWN_MOWER_COMMANDS.filter(
-          (command) =>
-            supportsLawnMowerCommand(stateObj, command) &&
-            this._config?.commands?.includes(command)
-        ).map((command) => {
-          const button = LAWN_MOWER_COMMANDS_BUTTONS[command](stateObj);
-          return html`
-            <ha-control-button
-              .entry=${button}
-              .label=${this.hass!.localize(
-                // @ts-ignore
-                `ui.dialogs.more_info_control.lawn_mower.${button.translationKey}`
-              )}
-              @click=${this._onCommandTap}
-              .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
-            >
-              <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-            </ha-control-button>
-          `;
-        })}
+        ${commands
+          .filter((command) => supportsLawnMowerCommand(stateObj, command))
+          .map((command) => {
+            const button = LAWN_MOWER_COMMANDS_BUTTONS[command](stateObj);
+            return html`
+              <ha-control-button
+                .entry=${button}
+                .label=${this.hass!.localize(
+                  // @ts-ignore
+                  `ui.dialogs.more_info_control.lawn_mower.${button.translationKey}`
+                )}
+                @click=${this._onCommandTap}
+                .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
+              >
+                <ha-svg-icon .path=${button.icon}></ha-svg-icon>
+              </ha-control-button>
+            `;
+          })}
       </ha-control-button-group>
     `;
   }

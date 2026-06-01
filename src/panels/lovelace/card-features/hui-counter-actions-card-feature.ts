@@ -86,7 +86,6 @@ class HuiCounterActionsCardFeature
   static getStubConfig(): CounterActionsCardFeatureConfig {
     return {
       type: "counter-actions",
-      actions: COUNTER_ACTIONS.map((action) => action),
     };
   }
 
