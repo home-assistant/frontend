@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { consume, type ContextType } from "@lit/context";
 import { customElement, state } from "lit/decorators";
@@ -19,6 +19,7 @@ import {
   areasContext,
   internationalizationContext,
 } from "../../../data/context";
+import type { LocalizeKeys } from "../../../common/translations/localize";
 import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
 import {
@@ -85,40 +86,53 @@ class DialogAreaAddTo extends LitElement {
     }
 
     return html`
-      <h3 class="section-header">
-        ${this._i18n.localize(
-          "ui.panel.config.devices.automation.automations_heading"
-        )}
-      </h3>
-      <ha-list>
-        ${this._renderActionItem(
-          "automation_trigger",
-          mdiRobotOutline,
-          "ui.dialogs.more_info_control.add_to.actions.automation_trigger"
-        )}
-        ${this._renderActionItem(
-          "automation_condition",
-          mdiPlaylistCheck,
-          "ui.dialogs.more_info_control.add_to.actions.automation_condition"
-        )}
-        ${this._renderActionItem(
-          "automation_action",
-          mdiPlayCircleOutline,
-          "ui.dialogs.more_info_control.add_to.actions.automation_action"
-        )}
-      </ha-list>
-      <h3 class="section-header">
-        ${this._i18n.localize("ui.panel.config.devices.script.scripts_heading")}
-      </h3>
-      <ha-list>
-        ${this._renderActionItem(
-          "script_action",
-          mdiScriptTextOutline,
-          "ui.dialogs.more_info_control.add_to.actions.script_action"
-        )}
-      </ha-list>
+      ${this._renderActionSection(
+        "ui.panel.config.devices.automation.automations_heading",
+        this._renderActionList([
+          this._renderActionItem(
+            "automation_trigger",
+            mdiRobotOutline,
+            "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
+            this._handleAction
+          ),
+          this._renderActionItem(
+            "automation_condition",
+            mdiPlaylistCheck,
+            "ui.dialogs.more_info_control.add_to.actions.automation_condition",
+            this._handleAction
+          ),
+          this._renderActionItem(
+            "automation_action",
+            mdiPlayCircleOutline,
+            "ui.dialogs.more_info_control.add_to.actions.automation_action",
+            this._handleAction
+          ),
+        ])
+      )}
+      ${this._renderActionSection(
+        "ui.panel.config.devices.script.scripts_heading",
+        this._renderActionList([
+          this._renderActionItem(
+            "script_action",
+            mdiScriptTextOutline,
+            "ui.dialogs.more_info_control.add_to.actions.script_action",
+            this._handleAction
+          ),
+        ])
+      )}
       ${this._renderSceneSection()}
     `;
+  }
+
+  private _renderActionSection(titleKey: LocalizeKeys, list: TemplateResult) {
+    return html`
+      <h3 class="section-header">${this._i18n.localize(titleKey)}</h3>
+      ${list}
+    `;
+  }
+
+  private _renderActionList(items: TemplateResult[]) {
+    return html`<ha-list>${items}</ha-list>`;
   }
 
   private _renderSceneSection() {
@@ -126,43 +140,34 @@ class DialogAreaAddTo extends LitElement {
       return nothing;
     }
 
-    return html`
-      <h3 class="section-header">
-        ${this._i18n.localize("ui.panel.config.devices.scene.scenes_heading")}
-      </h3>
-      <ha-list>
-        <ha-list-item
-          graphic="icon"
-          @click=${this._handleCreateScene}
-          data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.scene"
-          )}
-        </ha-list-item>
-      </ha-list>
-    `;
+    const sceneAction = this._renderActionItem(
+      undefined,
+      mdiPalette,
+      "ui.dialogs.more_info_control.add_to.actions.scene",
+      this._handleCreateScene
+    );
+
+    return this._renderActionSection(
+      "ui.panel.config.devices.scene.scenes_heading",
+      this._renderActionList([sceneAction])
+    );
   }
 
   private _renderActionItem(
-    key: AddToActionKey,
+    key: AddToActionKey | undefined,
     path: string,
-    translationKey:
-      | "ui.dialogs.more_info_control.add_to.actions.automation_trigger"
-      | "ui.dialogs.more_info_control.add_to.actions.automation_condition"
-      | "ui.dialogs.more_info_control.add_to.actions.automation_action"
-      | "ui.dialogs.more_info_control.add_to.actions.script_action"
+    labelKey: LocalizeKeys,
+    handler: (ev: Event) => void
   ) {
     return html`
       <ha-list-item
         graphic="icon"
-        data-type=${key}
-        @click=${this._handleAction}
+        data-type=${key ?? nothing}
+        @click=${handler}
         data-dialog="close"
       >
         <ha-svg-icon slot="graphic" .path=${path}></ha-svg-icon>
-        ${this._i18n.localize(translationKey)}
+        ${this._i18n.localize(labelKey)}
       </ha-list-item>
     `;
   }
