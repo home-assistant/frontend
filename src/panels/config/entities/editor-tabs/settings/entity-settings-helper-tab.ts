@@ -1,16 +1,17 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume, type ContextType } from "@lit/context";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
 import "../../../../../components/ha-button";
+import { dirtyStateContext } from "../../../../../data/context/dirty-state";
 import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
@@ -29,12 +30,14 @@ import type { EntityRegistrySettingsEditor } from "../../entity-registry-setting
 import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
 
 @customElement("entity-settings-helper-tab")
-export class EntitySettingsHelperTab extends DirtyStateProviderMixin()(
-  LitElement
-) {
+export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: ContextType<typeof dirtyStateContext>;
 
   @state() private _error?: string;
 
@@ -64,7 +67,6 @@ export class EntitySettingsHelperTab extends DirtyStateProviderMixin()(
       if (this.entry.unique_id !== changedProperties.get("entry")?.unique_id) {
         this._item = undefined;
       }
-      this._initDirtyTracking({ type: "deep" });
       this._getItem();
     }
   }
@@ -121,7 +123,7 @@ export class EntitySettingsHelperTab extends DirtyStateProviderMixin()(
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${!(this.isDirtyState || this._isHelperDirty) ||
+          .disabled=${!(this._dirtyState?.isDirty || this._isHelperDirty) ||
           !!this._submitting ||
           !!(this._item && !this._item.name)}
         >
@@ -164,7 +166,7 @@ export class EntitySettingsHelperTab extends DirtyStateProviderMixin()(
         );
       }
       const result = await this._registryEditor!.updateEntry();
-      this._markDirtyStateClean();
+      this._dirtyState?.markClean();
       this._originalItemJson = this._item
         ? JSON.stringify(this._item)
         : undefined;

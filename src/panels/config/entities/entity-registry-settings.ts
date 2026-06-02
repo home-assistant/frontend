@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume, type ContextType } from "@lit/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -13,6 +14,7 @@ import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
+import { dirtyStateContext } from "../../../data/context/dirty-state";
 import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -24,7 +26,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -34,12 +35,14 @@ import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-ed
 import { getDeleteConfirmationText } from "./get-delete-confirmation-text";
 
 @customElement("entity-registry-settings")
-export class EntityRegistrySettings extends DirtyStateProviderMixin()(
-  SubscribeMixin(LitElement)
-) {
+export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: ContextType<typeof dirtyStateContext>;
 
   @state() private _helperConfigEntry?: ConfigEntry;
 
@@ -53,7 +56,6 @@ export class EntityRegistrySettings extends DirtyStateProviderMixin()(
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entry")) {
-      this._initDirtyTracking({ type: "deep" });
       this._fetchHelperConfigEntry();
     }
   }
@@ -149,7 +151,7 @@ export class EntityRegistrySettings extends DirtyStateProviderMixin()(
         </ha-button>
         <ha-button
           @click=${this._updateEntry}
-          .disabled=${!this.isDirtyState || !!this._submitting}
+          .disabled=${!this._dirtyState?.isDirty || !!this._submitting}
           .loading=${!!this._submitting}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
@@ -206,7 +208,7 @@ export class EntityRegistrySettings extends DirtyStateProviderMixin()(
     this._error = undefined;
     try {
       const result = await this._registryEditor!.updateEntry();
-      this._markDirtyStateClean();
+      this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
       }

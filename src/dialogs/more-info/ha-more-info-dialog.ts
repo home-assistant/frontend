@@ -63,6 +63,7 @@ import { subscribeLabFeature } from "../../data/labs";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { ScrollableFadeMixin } from "../../mixins/scrollable-fade-mixin";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import {
@@ -121,8 +122,8 @@ declare global {
 const DEFAULT_VIEW: MoreInfoView = "info";
 
 @customElement("ha-more-info-dialog")
-export class MoreInfoDialog extends SubscribeMixin(
-  ScrollableFadeMixin(LitElement)
+export class MoreInfoDialog extends DirtyStateProviderMixin()(
+  SubscribeMixin(ScrollableFadeMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -640,7 +641,8 @@ export class MoreInfoDialog extends SubscribeMixin(
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
         @show-child-view=${this._showChildView}
-        .preventScrimClose=${this._currView === "settings" ||
+        .preventScrimClose=${(this._currView === "settings" &&
+          this.isDirtyState) ||
         !this._isEscapeEnabled}
         flexcontent
       >
@@ -954,6 +956,12 @@ export class MoreInfoDialog extends SubscribeMixin(
         this._dialogElement?.shadowRoot?.querySelector("ha-dialog");
       if (dialog) {
         fireEvent(dialog as HTMLElement, "dialog-set-fullscreen", false);
+      }
+    }
+
+    if (changedProps.has("_currView") || changedProps.has("_entry")) {
+      if (this._currView === "settings" && this._entry) {
+        this._initDirtyTracking({ type: "deep" });
       }
     }
 
