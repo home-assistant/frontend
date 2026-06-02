@@ -160,7 +160,8 @@ export const DirtyStateProviderMixin =
           newState
         );
         if (
-          this._dirtyCurrentState === newState &&
+          this._dirtyCurrentState !== undefined &&
+          this._dirtyCompareFn(this._dirtyCurrentState, newState) &&
           this._dirtyStateContext.isDirty === isDirty
         ) {
           return;
@@ -185,16 +186,7 @@ export const DirtyStateProviderMixin =
        * Whether the current state differs from the initial snapshot.
        */
       public get isDirtyState(): boolean {
-        if (
-          this._dirtyInitialState === undefined ||
-          this._dirtyCurrentState === undefined
-        ) {
-          return false;
-        }
-        return !this._dirtyCompareFn(
-          this._dirtyInitialState,
-          this._dirtyCurrentState
-        );
+        return this._dirtyStateContext.isDirty;
       }
     }
     return DirtyStateProviderMixinClass;
