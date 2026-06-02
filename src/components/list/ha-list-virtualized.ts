@@ -20,8 +20,15 @@ import { HaListItemBase } from "../item/ha-list-item-base";
 import { HaListBase } from "./ha-list-base";
 import type { HaListItemRegistrationDetail } from "./types";
 
+/**
+ * A single row in a {@link HaListVirtualized}. Identified by a stable `id`
+ * used as the virtualizer key. Extra fields are passed through to the
+ * `rowRenderer`.
+ */
 export interface HaListVirtualizedItem {
+  /** Stable key used by the virtualizer to track the row across re-renders. */
   id: string;
+  /** Whether the row can be focused and activated. Defaults to `false`. */
   interactive?: boolean;
   disabled?: boolean;
   [key: string]: unknown;
@@ -32,21 +39,38 @@ export interface HaListVirtualizedItem {
  * @extends {HaListBase}
  *
  * @summary
- * Virtualized list. Renders only the items currently in view to keep large
- * lists performant.
+ * Virtualized list. Renders only the rows currently in view to keep large
+ * lists performant, while preserving the roving-tabindex keyboard navigation
+ * of {@link HaListBase}.
+ *
+ * @csspart base - The scrollable outer container (`<div>`).
+ *
+ * @attr {number} pin-index - Row index to scroll to when the list first
+ * renders. Cleared once the user scrolls.
+ * @attr {string} pin-block - Block alignment for `pin-index`: `start`,
+ * `center` (default), `end`, or `nearest`.
+ *
+ * @fires ha-list-activated - Fired when a row is activated via Enter/Space. `detail: { index, item }`.
  */
 @customElement("ha-list-virtualized")
 export class HaListVirtualized extends HaListBase {
   @state() private _virtualizerReady = false;
 
+  /**
+   * The list data. Each item is rendered by `rowRenderer`; its `interactive`
+   * and `disabled` flags determine whether the row is focusable.
+   */
   @property({ attribute: false })
   public rows!: HaListVirtualizedItem[];
 
+  /** Renders a single row from its data and index. */
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<HaListVirtualizedItem>;
 
+  /** Row index to scroll to on first render (the "pinned" row). */
   @property({ attribute: "pin-index", type: Number }) public pinIndex?: number;
 
+  /** Block alignment used when scrolling to `pinIndex`. */
   @property({ attribute: "pin-block" }) public pinBlock:
     | "start"
     | "center"
@@ -107,6 +131,13 @@ export class HaListVirtualized extends HaListBase {
     </div>`;
   }
 
+  /**
+   * Sets the active (roving-tabindex) row. If the row is outside the rendered
+   * range it is scrolled into view first, then activated/focused once the
+   * virtualizer has laid it out.
+   * @param index - Row index to make active; clamped to the valid range.
+   * @param focusItem - Whether to move DOM focus to the row.
+   */
   public setActiveItemIndex(index: number, focusItem = false) {
     if (!this.hasFocusableItem) {
       this.activeItemIndex = -1;
@@ -130,6 +161,10 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
+  /**
+   * Focuses the row at `index`, scrolling it into view if needed. No-op until
+   * the virtualizer is ready or when `index` is negative.
+   */
   public override focusItemAtIndex(index: number) {
     if (!this._virtualizerReady || index < 0) {
       return;
@@ -157,10 +192,7 @@ export class HaListVirtualized extends HaListBase {
   private async _handleRangeChanged(ev: { first: number; last: number }) {
     this.rangeStart = ev.first;
     this.rangeEnd = ev.last;
-    this.onRangeChanged(ev.first, ev.last);
 
-    // rangeChanged fires before the virtualizer renders the new children,
-    // so wait for layout to settle before reading/focusing them.
     await this.virtualizerElement?.layoutComplete;
     this._applySetSize();
 
@@ -171,9 +203,6 @@ export class HaListVirtualized extends HaListBase {
       this.activeItemIndex >= this.rangeStart &&
       this.activeItemIndex <= this.rangeEnd;
     const focus = this._scrollToActiveItem && inRange && this._activeItemFocus;
-    // Always keep roving tabindex in sync with the rendered range so the
-    // active item is the tab target — otherwise nothing in the list is
-    // tabbable and focus falls through to the scroller container.
     this.applyActive(focus);
     if (this._scrollToActiveItem && inRange) {
       this._activeItemFocus = false;
@@ -194,10 +223,6 @@ export class HaListVirtualized extends HaListBase {
       el.setAttribute("aria-posinset", String(this.rangeStart + index + 1));
     });
   }
-
-  /** Hook fired whenever the visible row range changes. */
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  protected onRangeChanged(_first: number, _last: number) {}
 
   protected onFocusIn = (ev: FocusEvent) => {
     if (
@@ -285,8 +310,6 @@ export class HaListVirtualized extends HaListBase {
   }
 
   protected override getPageSize(): number {
-    // Number of rendered (visible) rows in the current range. Fall back to
-    // the base default when the range isn't known yet.
     if (this.rangeStart < 0 || this.rangeEnd < 0) {
       return super.getPageSize();
     }
