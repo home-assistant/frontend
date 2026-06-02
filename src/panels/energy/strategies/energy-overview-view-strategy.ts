@@ -4,17 +4,19 @@ import type { GridSourceTypeEnergyPreference } from "../../../data/energy";
 import { getEnergyDataCollection } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
+import type { EnergyViewStrategyConfig } from "./energy-cards";
+import { isEnergyCardHidden } from "./energy-cards";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
   static async generate(
-    _config: LovelaceStrategyConfig,
+    _config: EnergyViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+    const hidden = _config.hidden_cards;
 
     const view: LovelaceViewConfig = {
       type: "sections",
@@ -73,7 +75,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       return false;
     });
 
-    if (hasGrid || hasBattery || hasSolar) {
+    if (
+      (hasGrid || hasBattery || hasSolar) &&
+      !isEnergyCardHidden("overview", "energy-distribution", hidden)
+    ) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -88,7 +93,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (prefs.energy_sources.length) {
+    if (
+      prefs.energy_sources.length &&
+      !isEnergyCardHidden("overview", "energy-sources-table", hidden)
+    ) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -104,7 +112,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasPowerSources) {
+    if (
+      hasPowerSources &&
+      !isEnergyCardHidden("overview", "power-sources-graph", hidden)
+    ) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -120,7 +131,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGrid || hasBattery) {
+    if (
+      (hasGrid || hasBattery) &&
+      !isEnergyCardHidden("overview", "energy-usage-graph", hidden)
+    ) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -135,7 +149,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGas) {
+    if (hasGas && !isEnergyCardHidden("overview", "energy-gas-graph", hidden)) {
       view.sections!.push({
         type: "grid",
         cards: [
@@ -150,7 +164,10 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasWaterSources || hasWaterDevices) {
+    if (
+      (hasWaterSources || hasWaterDevices) &&
+      !isEnergyCardHidden("overview", "energy-water-graph", hidden)
+    ) {
       view.sections!.push({
         type: "grid",
         cards: [
