@@ -41,18 +41,34 @@ export const entityComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
+export interface GetEntitiesOptions {
+  includeDomains?: string[];
+  excludeDomains?: string[];
+  entityFilter?: HaEntityPickerEntityFilterFunc;
+  includeDeviceClasses?: string[];
+  includeUnitOfMeasurement?: string[];
+  includeEntities?: string[];
+  excludeEntities?: string[];
+  value?: string;
+  idPrefix?: string;
+}
+
 export const getEntities = (
   hass: HomeAssistant,
-  includeDomains?: string[],
-  excludeDomains?: string[],
-  entityFilter?: HaEntityPickerEntityFilterFunc,
-  includeDeviceClasses?: string[],
-  includeUnitOfMeasurement?: string[],
-  includeEntities?: string[],
-  excludeEntities?: string[],
-  value?: string,
-  idPrefix = ""
+  options?: GetEntitiesOptions
 ): EntityComboBoxItem[] => {
+  const {
+    includeDomains,
+    excludeDomains,
+    entityFilter,
+    includeDeviceClasses,
+    includeUnitOfMeasurement,
+    includeEntities,
+    excludeEntities,
+    value,
+    idPrefix = "",
+  } = options ?? {};
+
   let items: EntityComboBoxItem[];
 
   let entityIds = Object.keys(hass.states);

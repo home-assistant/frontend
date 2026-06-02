@@ -32,6 +32,17 @@ export interface DeviceAreaLabel {
   viaDeviceAreaName?: string;
 }
 
+export interface GetDevicesOptions {
+  includeDomains?: string[];
+  excludeDomains?: string[];
+  includeDeviceClasses?: string[];
+  deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  entityFilter?: HaEntityPickerEntityFilterFunc;
+  excludeDevices?: string[];
+  value?: string;
+  idPrefix?: string;
+}
+
 export const computeDeviceAreaLabel = (
   device: DeviceRegistryEntry,
   areas: HomeAssistant["areas"],
@@ -96,15 +107,19 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
 export const getDevices = (
   hass: HomeAssistant,
   configEntryLookup: Record<string, ConfigEntry>,
-  includeDomains?: string[],
-  excludeDomains?: string[],
-  includeDeviceClasses?: string[],
-  deviceFilter?: HaDevicePickerDeviceFilterFunc,
-  entityFilter?: HaEntityPickerEntityFilterFunc,
-  excludeDevices?: string[],
-  value?: string,
-  idPrefix = ""
+  options?: GetDevicesOptions
 ): DevicePickerItem[] => {
+  const {
+    includeDomains,
+    excludeDomains,
+    includeDeviceClasses,
+    deviceFilter,
+    entityFilter,
+    excludeDevices,
+    value,
+    idPrefix = "",
+  } = options ?? {};
+
   const devices = Object.values(hass.devices);
   const entities = Object.values(hass.entities);
 

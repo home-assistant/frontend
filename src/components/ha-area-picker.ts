@@ -12,6 +12,7 @@ import { areaComboBoxKeys, getAreas } from "../data/area/area_picker";
 import { createAreaRegistryEntry } from "../data/area/area_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
+import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box-item";
@@ -104,7 +105,29 @@ export class HaAreaPicker extends LitElement {
     await this._picker?.open();
   }
 
-  private _getAreasMemoized = memoizeOne(getAreas);
+  private _getAreasMemoized = memoizeOne(
+    (
+      haAreas: HomeAssistant["areas"],
+      haFloors: HomeAssistant["floors"],
+      haDevices: HomeAssistant["devices"],
+      haEntities: HomeAssistant["entities"],
+      haStates: HomeAssistant["states"],
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeAreas?: string[]
+    ) =>
+      getAreas(haAreas, haFloors, haDevices, haEntities, haStates, {
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeAreas,
+      })
+  );
 
   // Recompute value renderer when the areas change
   private _computeValueRenderer = memoizeOne(
