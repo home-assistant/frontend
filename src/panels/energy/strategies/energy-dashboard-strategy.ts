@@ -63,6 +63,7 @@ const WIZARD_VIEW = {
 
 export interface EnergyDashboardStrategyConfig extends LovelaceStrategyConfig {
   type: "energy";
+  default_collection?: string;
 }
 
 @customElement("energy-dashboard-strategy")
@@ -71,7 +72,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     _config: EnergyDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
-    const prefs = await fetchEnergyPrefs(hass);
+    const prefs = await fetchEnergyPrefs(hass, _config.default_collection);
 
     if (
       !prefs ||
@@ -144,10 +145,11 @@ export class EnergyDashboardStrategy extends ReactiveElement {
 }
 
 async function fetchEnergyPrefs(
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  defaultCollection?: string
 ): Promise<EnergyPreferences> {
   const collection = getEnergyDataCollection(hass, {
-    key: DEFAULT_ENERGY_COLLECTION_KEY,
+    key: defaultCollection || DEFAULT_ENERGY_COLLECTION_KEY,
   });
 
   return await new Promise<EnergyPreferences>((resolve) => {

@@ -14,6 +14,7 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
+import { DEFAULT_POWER_COLLECTION_KEY } from "./constants";
 
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
@@ -86,7 +87,15 @@ class PanelEnergy extends LitElement {
 
   private async _setLovelace() {
     const config: LovelaceConfig = await generateLovelaceDashboardStrategy(
-      { strategy: { type: "energy" } },
+      {
+        strategy: {
+          type: "energy",
+          default_collection:
+            this.route?.path === "/now"
+              ? DEFAULT_POWER_COLLECTION_KEY
+              : undefined,
+        },
+      },
       this.hass
     );
 

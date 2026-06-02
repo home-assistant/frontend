@@ -21,7 +21,9 @@ export class PowerViewStrategy extends ReactiveElement {
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
     });
-    await energyCollection.refresh();
+    if (!energyCollection.prefs) {
+      await energyCollection.refresh();
+    }
     const prefs = energyCollection.prefs;
 
     const hasPowerSources = prefs?.energy_sources.some((source) => {
