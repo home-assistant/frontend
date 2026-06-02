@@ -45,6 +45,7 @@ import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-tooltip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -211,11 +212,25 @@ export default class HaAutomationConditionRow extends LitElement {
     );
 
     return html`
-      <ha-condition-icon
-        slot="leading-icon"
-        .hass=${this.hass}
-        .condition=${this.condition.condition}
-      ></ha-condition-icon>
+      <div id="condition-icon" class="icon-badge-wrapper" slot="leading-icon">
+        <ha-condition-icon
+          .hass=${this.hass}
+          .condition=${this.condition.condition}
+        ></ha-condition-icon>
+        ${this.optionsInSidebar && this.condition.condition !== "trigger"
+          ? html`<ha-automation-row-live-test
+                .state=${this._liveTestResult.state}
+                .label=${this.hass.localize(
+                  `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
+                )}
+              ></ha-automation-row-live-test>
+              ${this._liveTestResult.message
+                ? html`<ha-tooltip for="condition-icon"
+                    >${this._liveTestResult.message}</ha-tooltip
+                  >`
+                : nothing}`
+          : nothing}
+      </div>
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
@@ -531,17 +546,7 @@ export default class HaAutomationConditionRow extends LitElement {
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}
-              <ha-automation-row-live-test
-                slot="icons"
-                .state=${this.condition.condition !== "trigger"
-                  ? this._liveTestResult.state
-                  : "unknown"}
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.conditions.live_test_state.${this.condition.condition !== "trigger" ? this._liveTestResult.state : "unknown"}`
-                )}
-                .message=${this._liveTestResult.message}
-              ></ha-automation-row-live-test
-            ></ha-automation-row>`
+            </ha-automation-row>`
           : html`
               <ha-expansion-panel
                 left-chevron
