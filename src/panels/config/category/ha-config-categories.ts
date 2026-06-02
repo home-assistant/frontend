@@ -131,7 +131,6 @@ export class HaConfigCategories extends SubscribeMixin(LitElement) {
       scopeName: {
         title: localize("ui.panel.config.category.headers.scope"),
         defaultHidden: true,
-        groupable: true,
         filterable: true,
         sortable: true,
       },
