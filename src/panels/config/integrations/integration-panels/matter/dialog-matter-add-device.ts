@@ -375,7 +375,6 @@ class DialogMatterAddDevice extends LitElement {
           ? html`
               <ha-icon-button-arrow-prev
                 slot="headerNavigationIcon"
-                .hass=${this.hass}
                 @click=${this._back}
               ></ha-icon-button-arrow-prev>
             `
