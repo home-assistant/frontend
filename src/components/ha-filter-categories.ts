@@ -20,8 +20,8 @@ import {
   subscribeCategoryRegistry,
   updateCategoryRegistryEntry,
 } from "../data/category_registry";
-import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { confirmDeleteCategory } from "../panels/config/category/confirm-delete-category";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -199,17 +199,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
   }
 
   private async _deleteCategory(id: string) {
-    const confirm = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.category.editor.confirm_delete"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.category.editor.confirm_delete_text"
-      ),
-      confirmText: this.hass.localize("ui.common.delete"),
-      destructive: true,
-    });
-    if (!confirm) {
+    if (!(await confirmDeleteCategory(this, this.hass))) {
       return;
     }
     try {

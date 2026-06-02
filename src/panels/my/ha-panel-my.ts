@@ -163,6 +163,9 @@ export const getMyRedirects = (): Redirects => ({
   entities: {
     redirect: "/config/entities",
   },
+  categories: {
+    redirect: "/config/categories",
+  },
   labels: {
     redirect: "/config/labels",
   },

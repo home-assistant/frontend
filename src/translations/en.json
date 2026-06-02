@@ -2675,7 +2675,7 @@
             "secondary": "Manage who can access your home"
           },
           "areas": {
-            "main": "Areas, labels & zones",
+            "main": "Areas, categories, labels & zones",
             "secondary": "Manage locations in and around your house"
           },
           "companion": {
@@ -3109,6 +3109,15 @@
         },
         "category": {
           "caption": "Categories",
+          "description": "Group automations, scenes, scripts, and helpers",
+          "headers": {
+            "name": "Name",
+            "icon": "Icon",
+            "scope": "Type"
+          },
+          "no_categories": "You don't have any categories",
+          "introduction": "Categories can help you organize your automations, scenes, scripts, and helpers. Each type has its own categories.",
+          "introduction2": "Create categories here, then assign them from the matching settings page.",
           "assign": {
             "edit": "Edit category",
             "assign": "Assign category",

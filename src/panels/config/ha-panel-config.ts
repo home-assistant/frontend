@@ -10,9 +10,7 @@ import {
   mdiFlask,
   mdiHammer,
   mdiInformationOutline,
-  mdiLabel,
   mdiLightningBolt,
-  mdiMapMarkerRadius,
   mdiMemory,
   mdiMicrophone,
   mdiNetwork,
@@ -47,6 +45,7 @@ import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../types";
+import { areaConfigTabs } from "./common/area-config-tabs";
 
 declare global {
   // for fire event
@@ -417,34 +416,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
   ],
-  areas: [
-    {
-      component: "areas",
-      path: "/config/areas",
-      translationKey: "ui.panel.config.areas.caption",
-      iconPath: mdiSofa,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "labels",
-      path: "/config/labels",
-      translationKey: "ui.panel.config.labels.caption",
-      iconPath: mdiLabel,
-      iconColor: "#2D338F",
-      core: true,
-      adminOnly: true,
-    },
-    {
-      component: "zone",
-      path: "/config/zone",
-      translationKey: "ui.panel.config.zone.caption",
-      iconPath: mdiMapMarkerRadius,
-      iconColor: "#E48629",
-      adminOnly: true,
-    },
-  ],
+  areas: areaConfigTabs,
   general: [
     {
       path: "/config/general",
@@ -630,6 +602,10 @@ class HaPanelConfig extends HassRouterPage {
       integrations: {
         tag: "ha-config-integrations",
         load: () => import("./integrations/ha-config-integrations"),
+      },
+      categories: {
+        tag: "ha-config-categories",
+        load: () => import("./category/ha-config-categories"),
       },
       labels: {
         tag: "ha-config-labels",
