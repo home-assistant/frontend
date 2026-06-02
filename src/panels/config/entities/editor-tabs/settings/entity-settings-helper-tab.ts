@@ -10,6 +10,7 @@ import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_r
 import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
@@ -28,7 +29,9 @@ import type { EntityRegistrySettingsEditor } from "../../entity-registry-setting
 import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
 
 @customElement("entity-settings-helper-tab")
-export class EntitySettingsHelperTab extends LitElement {
+export class EntitySettingsHelperTab extends DirtyStateProviderMixin()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
@@ -38,8 +41,6 @@ export class EntitySettingsHelperTab extends LitElement {
   @state() private _item?: Helper | null;
 
   @state() private _submitting = false;
-
-  @state() private _dirty = false;
 
   @state() private _componentLoaded?: boolean;
 
@@ -66,7 +67,7 @@ export class EntitySettingsHelperTab extends LitElement {
       ) {
         this._item = undefined;
       }
-
+      this._initDirtyTracking({ type: "deep" });
       this._getItem();
     }
   }
@@ -107,7 +108,6 @@ export class EntitySettingsHelperTab extends LitElement {
           .hass=${this.hass}
           .entry=${this.entry}
           .disabled=${!!this._submitting}
-          @change=${this._entityRegistryChanged}
           hide-name
           hide-icon
         ></entity-registry-settings-editor>
@@ -124,7 +124,7 @@ export class EntitySettingsHelperTab extends LitElement {
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${!this._dirty ||
+          .disabled=${!(this.isDirtyState || this._isHelperDirty) ||
           !!this._submitting ||
           !!(this._item && !this._item.name)}
         >
@@ -139,22 +139,12 @@ export class EntitySettingsHelperTab extends LitElement {
     return JSON.stringify(this._item) !== this._originalItemJson;
   }
 
-  private _updateDirty() {
-    this._dirty = (this._registryEditor?.dirty ?? false) || this._isHelperDirty;
-  }
-
-  private _entityRegistryChanged() {
-    this._error = undefined;
-    this._updateDirty();
-  }
-
   private _valueChanged(ev: CustomEvent): void {
     if (this._item === null) {
       return;
     }
     this._error = undefined;
     this._item = ev.detail.value;
-    this._updateDirty();
   }
 
   private async _getItem() {
@@ -167,15 +157,20 @@ export class EntitySettingsHelperTab extends LitElement {
 
   private async _updateItem(): Promise<void> {
     this._submitting = true;
+    this._error = undefined;
     try {
       if (this._componentLoaded && this._item) {
         await HELPERS_CRUD[this.entry.platform].update(
-          this.hass!,
+          this.hass,
           this._item.id,
           this._item
         );
       }
       const result = await this._registryEditor!.updateEntry();
+      this._markDirtyStateClean();
+      this._originalItemJson = this._item
+        ? JSON.stringify(this._item)
+        : undefined;
       if (result.close) {
         fireEvent(this, "close-dialog");
       }

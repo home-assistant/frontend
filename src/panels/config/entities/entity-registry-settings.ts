@@ -24,6 +24,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -33,7 +34,9 @@ import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-ed
 import { getDeleteConfirmationText } from "./get-delete-confirmation-text";
 
 @customElement("entity-registry-settings")
-export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
+export class EntityRegistrySettings extends DirtyStateProviderMixin()(
+  SubscribeMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
@@ -44,14 +47,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @state() private _submitting?: boolean;
 
-  @state() private _dirty = false;
-
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entry")) {
+      this._initDirtyTracking({ type: "deep" });
       this._fetchHelperConfigEntry();
     }
   }
@@ -133,7 +135,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .entry=${this.entry}
           .helperConfigEntry=${this._helperConfigEntry}
           .disabled=${!!this._submitting}
-          @change=${this._entityRegistryChanged}
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
@@ -148,18 +149,13 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         </ha-button>
         <ha-button
           @click=${this._updateEntry}
-          .disabled=${!this._dirty || !!this._submitting}
+          .disabled=${!this.isDirtyState || !!this._submitting}
           .loading=${!!this._submitting}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
       </div>
     `;
-  }
-
-  private _entityRegistryChanged() {
-    this._error = undefined;
-    this._dirty = this._registryEditor?.dirty ?? false;
   }
 
   private _openDeviceSettings() {
@@ -207,8 +203,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+    this._error = undefined;
     try {
       const result = await this._registryEditor!.updateEntry();
+      this._markDirtyStateClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
       }
