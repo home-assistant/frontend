@@ -4240,6 +4240,8 @@
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "state_of_charge": "Battery state of charge sensor",
               "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
+              "capacity": "Battery capacity",
+              "capacity_helper": "Usable battery capacity in kWh. Used to weight the combined state of charge when you have multiple batteries of different sizes.",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
