@@ -39,6 +39,7 @@ import {
   installUpdates,
   isSystemUpdate,
   latestVersionIsSkipped,
+  updateIsInstalling,
   UpdateEntityFeature,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -218,6 +219,9 @@ class HaConfigSectionUpdates extends LitElement {
                             appearance="plain"
                             size="small"
                             .group=${group}
+                            .disabled=${group.entities.every((entity) =>
+                              updateIsInstalling(entity)
+                            )}
                             @click=${this._updateAll}
                           >
                             ${this.hass.localize(
@@ -339,11 +343,14 @@ class HaConfigSectionUpdates extends LitElement {
 
   private async _updateAll(ev: Event) {
     const group = (ev.currentTarget as any).group as UpdateGroup;
+    const entityIds = group.entities
+      .filter((entity) => !updateIsInstalling(entity))
+      .map((entity) => entity.entity_id);
+    if (!entityIds.length) {
+      return;
+    }
     try {
-      await installUpdates(
-        this.hass,
-        group.entities.map((entity) => entity.entity_id)
-      );
+      await installUpdates(this.hass, entityIds);
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.updates.update_all_failed"),
