@@ -61,10 +61,7 @@ export class EntitySettingsHelperTab extends DirtyStateProviderMixin()(
     super.updated(changedProperties);
     if (changedProperties.has("entry")) {
       this._error = undefined;
-      if (
-        this.entry.unique_id !==
-        (changedProperties.get("entry") as ExtEntityRegistryEntry)?.unique_id
-      ) {
+      if (this.entry.unique_id !== changedProperties.get("entry")?.unique_id) {
         this._item = undefined;
       }
       this._initDirtyTracking({ type: "deep" });
