@@ -45,7 +45,6 @@ import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-tooltip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-dropdown";
@@ -53,6 +52,7 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-tooltip";
 import type {
   AutomationClipboard,
   Condition,
@@ -219,18 +219,20 @@ export default class HaAutomationConditionRow extends LitElement {
         ></ha-condition-icon>
         ${this.optionsInSidebar && this.condition.condition !== "trigger"
           ? html`<ha-automation-row-live-test
-                .state=${this._liveTestResult.state}
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
-                )}
-              ></ha-automation-row-live-test>
-              ${this._liveTestResult.message
-                ? html`<ha-tooltip for="condition-icon"
-                    >${this._liveTestResult.message}</ha-tooltip
-                  >`
-                : nothing}`
+              .state=${this._liveTestResult.state}
+              .label=${this.hass.localize(
+                `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
+              )}
+            ></ha-automation-row-live-test>`
           : nothing}
       </div>
+      ${this.optionsInSidebar &&
+      this.condition.condition !== "trigger" &&
+      this._liveTestResult.message
+        ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
+            >${this._liveTestResult.message}</ha-tooltip
+          >`
+        : nothing}
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)

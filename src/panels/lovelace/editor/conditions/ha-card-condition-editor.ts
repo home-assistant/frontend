@@ -23,7 +23,6 @@ import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/automation/ha-automation-row-live-test";
 import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-tooltip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -31,6 +30,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -242,17 +242,17 @@ export class HaCardConditionEditor extends LitElement {
             ${hideLiveTest
               ? nothing
               : html`<ha-automation-row-live-test
-                    .state=${this._liveTestResult.state}
-                    .label=${this.hass.localize(
-                      `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
-                    )}
-                  ></ha-automation-row-live-test>
-                  ${this._liveTestResult.message
-                    ? html`<ha-tooltip for="condition-icon"
-                        >${this._liveTestResult.message}</ha-tooltip
-                      >`
-                    : nothing}`}
+                  .state=${this._liveTestResult.state}
+                  .label=${this.hass.localize(
+                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
+                  )}
+                ></ha-automation-row-live-test>`}
           </div>
+          ${!hideLiveTest && this._liveTestResult.message
+            ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
+                >${this._liveTestResult.message}</ha-tooltip
+              >`
+            : nothing}
           <h3 slot="header">
             ${this.hass.localize(
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
