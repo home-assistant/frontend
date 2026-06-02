@@ -77,6 +77,7 @@ export type MediaPlayerPlaybackControl =
 export interface MediaPlayerPlaybackCardFeatureConfig {
   type: "media-player-playback";
   controls?: MediaPlayerPlaybackControl[];
+  hide_disabled_controls?: boolean;
 }
 
 export interface MediaPlayerSourceCardFeatureConfig {

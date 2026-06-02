@@ -10136,7 +10136,10 @@
               },
               "media-player-playback": {
                 "label": "Media player playback controls",
-                "controls": "Controls"
+                "customize": "Customize controls",
+                "controls": "Controls",
+                "hide_disabled_controls": "Hide disabled controls",
+                "hide_disabled_controls_helper": "Hide controls that don't apply to the current state instead of showing them disabled"
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode",
