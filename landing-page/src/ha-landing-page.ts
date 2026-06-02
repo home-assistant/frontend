@@ -25,7 +25,7 @@ import { LandingPageBaseElement } from "./landing-page-base-element";
 export const ASSUME_CORE_START_SECONDS = 60;
 const SCHEDULE_CORE_CHECK_SECONDS = 1;
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
-const SCHEDULE_FETCH_JOBS_INFO_SECONDS = 15;
+const SCHEDULE_FETCH_JOBS_INFO_SECONDS = 2;
 
 @customElement("ha-landing-page")
 class HaLandingPage extends LandingPageBaseElement {
