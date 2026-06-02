@@ -130,7 +130,7 @@ class HaAddToActionList extends LitElement {
     value?: string,
     localizeKey?: LocalizeKeys
   ): string | undefined {
-    return value ?? (localizeKey ? this._localize(localizeKey) : undefined);
+    return value || (localizeKey ? this._localize(localizeKey) : undefined);
   }
 
   private _actionSelected(

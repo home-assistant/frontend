@@ -144,11 +144,11 @@ export class HaMoreInfoAddTo extends LitElement {
 
     const sections: AddToActionListSection<EntityAddToAction>[] = [
       {
-        titleKey: "ui.panel.config.devices.automation.automations_heading",
+        titleKey: "ui.dialogs.more_info_control.add_to.automations_heading",
         actions: automationActions,
       },
       {
-        titleKey: "ui.panel.config.devices.script.scripts_heading",
+        titleKey: "ui.dialogs.more_info_control.add_to.scripts_heading",
         actions: scriptActions,
       },
       {

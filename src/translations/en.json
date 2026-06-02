@@ -1702,6 +1702,8 @@
             "script_action": "Create as a new action",
             "scene": "Create as a new scene"
           },
+          "automations_heading": "Automations",
+          "scripts_heading": "Scripts",
           "app_actions": "App actions",
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
