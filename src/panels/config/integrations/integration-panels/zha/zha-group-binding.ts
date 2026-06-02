@@ -209,7 +209,6 @@ export class ZHAGroupBindingControl extends LitElement {
         }
 
         .command-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;

@@ -1,11 +1,12 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import type { ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { zhaDevicePageCardStyles } from "./device-page/zha-device-page-card-styles";
 
 @customElement("zha-device-zigbee-info")
 class ZHADeviceZigbeeInfo extends LitElement {
@@ -62,34 +63,7 @@ class ZHADeviceZigbeeInfo extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        :host {
-          display: block;
-        }
-
-        .device-page-card {
-          overflow: hidden;
-        }
-
-        .card-header {
-          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
-        }
-
-        .card-title {
-          font-size: var(--ha-font-size-xl);
-          font-weight: var(--ha-font-weight-medium);
-          line-height: var(--ha-line-height-condensed);
-        }
-
-        .card-description {
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-m);
-          margin-top: var(--ha-space-1);
-        }
-      `,
-    ];
+    return [haStyle, zhaDevicePageCardStyles];
   }
 }
 

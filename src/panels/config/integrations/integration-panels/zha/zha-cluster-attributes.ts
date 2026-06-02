@@ -238,12 +238,7 @@ export class ZHAClusterAttributes extends LitElement {
           width: 100%;
         }
 
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
-        }
-
         .attribute-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;
@@ -257,10 +252,6 @@ export class ZHAClusterAttributes extends LitElement {
           padding-inline-start: 28px;
           padding-inline-end: 28px;
           padding-bottom: 10px;
-        }
-
-        .header {
-          flex-grow: 1;
         }
 
         .card-actions {

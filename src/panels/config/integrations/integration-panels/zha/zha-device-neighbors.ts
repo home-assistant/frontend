@@ -15,6 +15,7 @@ import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { zhaDevicePageCardStyles } from "./device-page/zha-device-page-card-styles";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;
@@ -216,37 +217,12 @@ class ZHADeviceNeighbors extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      zhaDevicePageCardStyles,
       css`
-        :host {
-          display: block;
-        }
-
-        .device-page-card {
-          overflow: hidden;
-        }
-
-        .card-header {
-          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
-        }
-
-        .card-title {
-          font-size: var(--ha-font-size-xl);
-          font-weight: var(--ha-font-weight-medium);
-          line-height: var(--ha-line-height-condensed);
-        }
-
-        .card-description {
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-m);
-          margin-top: var(--ha-space-1);
-        }
-
         ha-data-table {
           --data-table-background-color: var(--card-background-color);
-          --ha-border-radius-sm: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
+          --data-table-border-width: 0;
+          --ha-border-radius-sm: 0;
         }
 
         .loading-card,

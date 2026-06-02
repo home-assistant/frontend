@@ -199,12 +199,7 @@ export class ZHAClusterCommands extends LitElement {
           width: 100%;
         }
 
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
-        }
-
         .command-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;
@@ -226,22 +221,6 @@ export class ZHAClusterCommands extends LitElement {
           padding-inline-start: 28px;
           padding-inline-end: 28px;
           padding-bottom: 10px;
-        }
-
-        .header {
-          flex-grow: 1;
-        }
-
-        .toggle-help-icon {
-          float: right;
-          top: -6px;
-          right: 0;
-          inset-inline-end: 0;
-          inset-inline-start: initial;
-          padding-right: 0px;
-          padding-inline-end: 0px;
-          padding-inline-start: initial;
-          color: var(--primary-color);
         }
 
         .card-actions {
