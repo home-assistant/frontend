@@ -96,7 +96,6 @@ export class HaFilterDevices extends LitElement {
               <ha-list-selectable-virtualized
                 multi
                 .rows=${this._devices(this.hass.devices, this._filter || "")}
-                .value=${this.value}
                 .rowRenderer=${this._renderItem}
                 @ha-list-item-selected=${this._handleAdded}
                 @ha-list-item-deselected=${this._handleRemoved}

@@ -9,25 +9,32 @@ import { HaListVirtualized } from "./ha-list-virtualized";
  *
  * @summary
  * Virtualized selection list (role `listbox`). Rows must render
- * `<ha-list-item-option>` as their top-level element. Selection is driven by
- * the id-based `value` property; the component handles index/id translation
- * and fires `ha-list-value-changed` when the user changes the selection.
+ * `<ha-list-item-option>` as their top-level element. Selection is index-based:
+ * clicking a row fires `ha-list-item-selected` / `ha-list-item-deselected` with
+ * the row's index, and the row's `selected` attribute is toggled. Consumers own
+ * the source of truth — set each row's `selected` from their own state (for
+ * example, keyed by the option's `value`) and update it in the event handlers.
  *
- * Pass an externally-filtered subset of rows and the full `value`: ids that
- * aren't in `rows` are preserved untouched, so filtering the visible list
- * doesn't deselect items outside the current view.
+ * Because selection is tracked per-row by the consumer, filtering the visible
+ * `rows` doesn't affect selections for items outside the current view.
  *
- * @attr {boolean} multi - Whether multiple options can be selected at once.
+ * @attr {boolean} multi - Whether multiple options can be selected at once. In
+ *   single-select mode, selecting a row clears any previous selection.
  *
- * @fires ha-list-value-changed - Fires on user-driven selection changes.
- *   `detail: { value, added, removed }` (all id-arrays).
- * @fires ha-list-item-selected - Lower-level index-based event from the base mixin.
- * @fires ha-list-item-deselected - Lower-level index-based event from the base mixin.
+ * @fires ha-list-item-selected - Fires when the user selects a row.
+ *   `detail` is the row's index (number).
+ * @fires ha-list-item-deselected - Fires when the user deselects a row (multi-select only).
+ *   `detail` is the row's index (number).
  */
 @customElement("ha-list-selectable-virtualized")
 export class HaListSelectableVirtualized extends SelectableMixin(
   HaListVirtualized
 ) {
+  /**
+   * Hook: maps a clicked option to its absolute index by offsetting its
+   * position among the rendered (virtualized) children by `rangeStart`.
+   * Returns `-1` if it's not one of our rows or nothing is rendered yet.
+   */
   protected optionIndexOf(opt: HaListItemOption): number {
     if (!this.virtualizerElement || this.rangeStart === -1) {
       return -1;
@@ -39,6 +46,7 @@ export class HaListSelectableVirtualized extends SelectableMixin(
     return this.rangeStart + index;
   }
 
+  /** Deselects every currently rendered (visible) option. */
   public clearSelection() {
     if (!this.virtualizerElement || this.rangeStart === -1) {
       return;
