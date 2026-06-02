@@ -199,13 +199,15 @@ export class HaConfigEntities extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
 
   @state() private _filteredItems: DataTableFiltersItems = {};
 
@@ -252,6 +254,8 @@ export class HaConfigEntities extends LitElement {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  private _fromUrl = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -345,7 +349,6 @@ export class HaConfigEntities extends LitElement {
                         : undefined
                     )}
                     slot="item-icon"
-                    .hass=${this.hass}
                     .stateObj=${entry.entity}
                   ></ha-state-icon>
                 `
@@ -771,7 +774,11 @@ export class HaConfigEntities extends LitElement {
             .checked=${selected}
             .indeterminate=${partial}
           ></ha-checkbox>
-          <ha-label .color=${label.color} .description=${label.description}>
+          <ha-label
+            .color=${label.color}
+            .description=${label.description}
+            class="text-ellipsis"
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1069,6 +1076,9 @@ export class HaConfigEntities extends LitElement {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   protected firstUpdated() {
@@ -1086,6 +1096,7 @@ export class HaConfigEntities extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
@@ -1093,14 +1104,16 @@ export class HaConfigEntities extends LitElement {
     const label = this._searchParms.get("label");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!domain && !configEntry && !label && !device) {
+    if (!area && !domain && !configEntry && !label && !device) {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
       "ha-filter-states": [],
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
       "ha-filter-integrations": domain ? [domain] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
@@ -1113,6 +1126,9 @@ export class HaConfigEntities extends LitElement {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _fetchExposedEntities = async () => {
@@ -1153,6 +1169,7 @@ export class HaConfigEntities extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
 
@@ -1661,9 +1678,13 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-dropdown::part(menu),
-        ha-dropdown::part(submenu) {
+        ha-dropdown::part(menu) {
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
+        }
+        ha-dropdown-item::part(submenu) {
+          max-width: calc(60vw - var(--ha-space-8));
+          max-height: calc(100vh - var(--ha-space-8));
+          overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

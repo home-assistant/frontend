@@ -1,16 +1,15 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-formfield";
-import "../../components/ha-radio";
-import type { HaRadio } from "../../components/ha-radio";
-import "../../components/ha-select";
-import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-settings-row";
+import "../../components/ha-theme-picker";
 import "../../components/input/ha-input";
+import "../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../components/radio/ha-radio-group";
+import "../../components/radio/ha-radio-option";
 import {
   saveThemePreferences,
   subscribeThemePreferences,
@@ -20,11 +19,14 @@ import {
   DefaultAccentColor,
   DefaultPrimaryColor,
 } from "../../resources/theme/color/color.globals";
-import type { HomeAssistant, ThemeSettings } from "../../types";
+import type {
+  HomeAssistant,
+  ThemeSettings,
+  ValueChangedEvent,
+} from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { clearSelectedThemeState } from "../../util/ha-pref-storage";
 
-const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";
 const HOME_ASSISTANT_THEME = "default";
 
 @customElement("ha-pick-theme-row")
@@ -32,8 +34,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
-
-  @state() _themeNames: string[] = [];
 
   @state() private _userTheme?: ThemeSettings | null;
 
@@ -88,69 +88,47 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
             ${this.hass.localize("ui.panel.profile.themes.link_promo")}
           </a>
         </span>
-        <ha-select
+        <ha-theme-picker
+          .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.profile.themes.dropdown_label")}
+          .noThemeLabel=${this.hass.localize(
+            "ui.panel.profile.themes.use_default"
+          )}
+          .value=${this.hass.selectedTheme?.theme || undefined}
           .disabled=${!hasThemes}
-          .value=${this.hass.selectedTheme?.theme || USE_DEFAULT_THEME}
-          @selected=${this._handleThemeSelection}
-          .options=${[
-            {
-              value: USE_DEFAULT_THEME,
-              label: this.hass.localize("ui.panel.profile.themes.use_default"),
-            },
-            { value: HOME_ASSISTANT_THEME, label: "Home Assistant" },
-            ...this._themeNames.map((theme) => ({
-              value: theme,
-              label: theme,
-            })),
-          ]}
-        >
-        </ha-select>
+          include-default
+          @value-changed=${this._handleThemeSelection}
+        ></ha-theme-picker>
       </ha-settings-row>
       ${curTheme === HOME_ASSISTANT_THEME ||
       (curThemeIsUseDefault &&
         this.hass.themes.default_dark_theme &&
         this.hass.themes.default_theme) ||
       this._supportsModeSelection(curTheme)
-        ? html` <div class="inputs">
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.profile.themes.dark_mode.auto"
+        ? html`<div class="inputs">
+            <ha-radio-group
+              @change=${this._handleDarkMode}
+              name="dark_mode"
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.profile.themes.theme_mode"
               )}
+              .value=${themeSettings?.dark === undefined
+                ? "auto"
+                : themeSettings.dark
+                  ? "dark"
+                  : "light"}
+              orientation="horizontal"
             >
-              <ha-radio
-                @change=${this._handleDarkMode}
-                name="dark_mode"
-                value="auto"
-                .checked=${themeSettings?.dark === undefined}
-              ></ha-radio>
-            </ha-formfield>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.profile.themes.dark_mode.light"
-              )}
-            >
-              <ha-radio
-                @change=${this._handleDarkMode}
-                name="dark_mode"
-                value="light"
-                .checked=${themeSettings?.dark === false}
-              >
-              </ha-radio>
-            </ha-formfield>
-            <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.profile.themes.dark_mode.dark"
-              )}
-            >
-              <ha-radio
-                @change=${this._handleDarkMode}
-                name="dark_mode"
-                value="dark"
-                .checked=${themeSettings?.dark === true}
-              >
-              </ha-radio>
-            </ha-formfield>
+              <ha-radio-option value="auto">
+                ${this.hass.localize("ui.panel.profile.themes.dark_mode.auto")}
+              </ha-radio-option>
+              <ha-radio-option value="light">
+                ${this.hass.localize("ui.panel.profile.themes.dark_mode.light")}
+              </ha-radio-option>
+              <ha-radio-option value="dark">
+                ${this.hass.localize("ui.panel.profile.themes.dark_mode.dark")}
+              </ha-radio-option>
+            </ha-radio-group>
             ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
                   <ha-input
@@ -209,17 +187,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     `;
   }
 
-  public willUpdate(changedProperties: PropertyValues<this>) {
-    const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
-    const themesChanged =
-      changedProperties.has("hass") &&
-      (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
-
-    if (themesChanged) {
-      this._themeNames = Object.keys(this.hass.themes.themes).sort();
-    }
-  }
-
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
 
@@ -247,9 +214,9 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     return !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
   }
 
-  private _handleDarkMode(ev: CustomEvent) {
+  private _handleDarkMode(ev: Event) {
     let dark: boolean | undefined;
-    switch ((ev.target as HaRadio).value) {
+    switch ((ev.currentTarget as HaRadioGroup).value) {
       case "light":
         dark = false;
         break;
@@ -260,13 +227,14 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
     fireEvent(this, "settheme", { dark });
   }
 
-  private _handleThemeSelection(ev: HaSelectSelectEvent) {
+  private _handleThemeSelection(
+    ev: ValueChangedEvent<string | undefined>
+  ): void {
+    ev.stopPropagation();
     const theme = ev.detail.value;
-    if (theme === this.hass.selectedTheme?.theme) {
-      return;
-    }
 
-    if (theme === USE_DEFAULT_THEME) {
+    if (theme === undefined) {
+      // undefined = "use default"
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
           theme: "",
@@ -276,6 +244,11 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       }
       return;
     }
+
+    if (theme === this.hass.selectedTheme?.theme) {
+      return;
+    }
+
     fireEvent(this, "settheme", {
       theme,
       primaryColor: undefined,
@@ -318,8 +291,10 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       justify-content: space-between;
       margin: 0 12px;
     }
-    ha-formfield {
-      margin: 0 4px;
+    ha-radio-group {
+      display: flex;
+      justify-content: center;
+      margin-inline-end: var(--ha-space-3);
     }
     .color-pickers {
       display: flex;
@@ -333,7 +308,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
       margin: 0 4px;
     }
 
-    ha-select {
+    ha-theme-picker {
       display: block;
       width: 100%;
     }

@@ -1,6 +1,7 @@
-import { mdiLink, mdiMicrophone, mdiOpenInNew, mdiRoomService } from "@mdi/js";
+import { mdiLink, mdiMicrophone, mdiOpenInNew } from "@mdi/js";
 import type { NavigationPathInfo } from "../../../data/compute-navigation-path-info";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { ServiceInfo } from "../../../data/compute-service-info";
 import type { HomeAssistant } from "../../../types";
 
 const DEFAULT: NavigationPathInfo = { label: "", iconPath: mdiLink };
@@ -8,7 +9,8 @@ const DEFAULT: NavigationPathInfo = { label: "", iconPath: mdiLink };
 export const getShortcutCardDefaults = (
   hass: HomeAssistant,
   action: ActionConfig | undefined,
-  navInfo: NavigationPathInfo
+  navInfo: NavigationPathInfo,
+  serviceInfo: ServiceInfo
 ): NavigationPathInfo => {
   switch (action?.action) {
     case "navigate":
@@ -22,10 +24,7 @@ export const getShortcutCardDefaults = (
       };
     case "call-service":
     case "perform-action":
-      return {
-        label: action.perform_action || "",
-        iconPath: mdiRoomService,
-      };
+      return serviceInfo;
     case "url":
       return {
         label: action.url_path || "",

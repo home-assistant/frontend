@@ -2,7 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import "../../../components/ha-control-switch";
+import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
@@ -33,7 +33,7 @@ class HuiEntitiesToggle extends LitElement {
     }
 
     return html`
-      <ha-control-switch
+      <ha-switch
         aria-label=${this.hass!.localize(
           "ui.panel.lovelace.card.entities.toggle"
         )}
@@ -42,19 +42,19 @@ class HuiEntitiesToggle extends LitElement {
           return stateObj && stateObj.state === "on";
         })}
         @change=${this._callService}
-      ></ha-control-switch>
+      ></ha-switch>
     `;
   }
 
   static styles = css`
     :host {
-      width: 38px;
       display: flex;
       align-items: center;
     }
-    ha-control-switch {
-      --control-switch-thickness: 20px;
-      --control-switch-off-color: var(--state-inactive-color);
+    ha-switch {
+      --ha-switch-width: 38px;
+      --ha-switch-size: 20px;
+      --ha-switch-thumb-size: 14px;
     }
   `;
 

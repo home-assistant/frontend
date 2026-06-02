@@ -165,7 +165,6 @@ export class HuiViewFooter extends LitElement {
               <hui-card-edit-mode
                 @ll-edit-card=${this._editCard}
                 @ll-delete-card=${this._deleteCard}
-                .hass=${this.hass}
                 .lovelace=${this.lovelace!}
                 .path=${[0]}
                 no-duplicate

@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE_STATES } from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import { stringCompare } from "../string/compare";
 import { computeDomain } from "./compute_domain";
@@ -225,6 +225,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "sulphur_dioxide",
       "temperature",
       "timestamp",
+      "uptime",
       "volatile_organic_compounds",
       "volatile_organic_compounds_parts",
       "voltage",
@@ -252,7 +253,7 @@ export const getStatesDomain = (
 
   if (!attribute) {
     // All entities can have unavailable states
-    result.push(...UNAVAILABLE_STATES);
+    result.push(UNAVAILABLE, UNKNOWN);
   }
 
   if (!attribute && domain in FIXED_DOMAIN_STATES) {

@@ -112,11 +112,11 @@ export class HaDeviceAction extends LitElement {
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
               .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
+                this.hass.localize,
                 this.action
               )}
               .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
+                this.hass.localize,
                 this.action
               )}
               @value-changed=${this._extraFieldsChanged}
@@ -149,7 +149,7 @@ export class HaDeviceAction extends LitElement {
 
   private async _getCapabilities() {
     this._capabilities = this.action.domain
-      ? await fetchDeviceActionCapabilities(this.hass, this.action)
+      ? await fetchDeviceActionCapabilities(this.hass.callWS, this.action)
       : undefined;
   }
 
@@ -186,6 +186,10 @@ export class HaDeviceAction extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

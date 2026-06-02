@@ -1,3 +1,4 @@
+/* global require, module, __dirname */
 const { existsSync } = require("fs");
 const path = require("path");
 const rspack = require("@rspack/core");
@@ -173,6 +174,16 @@ const createRspackConfig = ({
             path.resolve(paths.root_dir, "src/util/empty.js")
           )
         : false,
+      // core-js ships a Node-only helper that evaluates
+      // `Function('return require("...")')()` when its runtime environment
+      // detection mis-classifies the page as Node. That produces a
+      // ReferenceError on browsers (observed on Safari 14). Since browser
+      // bundles never need to access Node built-in modules, replace it with
+      // a CommonJS no-op stub matching the helper's API (returns undefined).
+      new rspack.NormalModuleReplacementPlugin(
+        /core-js[\\/]internals[\\/]get-built-in-node-module(?:\.js)?$/,
+        path.resolve(__dirname, "get-built-in-node-module-shim.cjs")
+      ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
         new StatsWriterPlugin({

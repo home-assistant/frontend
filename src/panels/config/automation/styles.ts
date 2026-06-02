@@ -8,6 +8,7 @@ export const rowStyles = css`
     --mdc-theme-text-primary-on-background: var(--primary-text-color);
   }
   ha-expansion-panel {
+    position: relative;
     --expansion-panel-summary-padding: 0 0 0 8px;
     --expansion-panel-content-padding: 0;
   }
@@ -20,6 +21,7 @@ export const rowStyles = css`
     gap: var(--ha-space-2);
     padding: var(--ha-space-2) 0;
     min-height: 32px;
+    max-width: 100%;
   }
 
   ha-card {
@@ -45,6 +47,22 @@ export const rowStyles = css`
   }
   .hidden {
     display: none;
+  }
+
+  ha-automation-row-event-chip.event-chip {
+    position: absolute;
+  }
+
+  .note-indicator {
+    color: var(--ha-color-on-neutral-normal);
+  }
+  .note-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .note-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
   }
 `;
 
@@ -118,9 +136,9 @@ export const manualEditorStyles = css`
   .has-sidebar {
     --sidebar-width: min(
       max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-      100vw - ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
       var(--ha-automation-editor-max-width) -
-        ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
+        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
     );
     --sidebar-gap: var(--ha-space-4);
   }
@@ -232,7 +250,6 @@ export const automationRowsStyles = css`
 export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
-    padding-top: 8px;
   }
   .description {
     padding-top: 16px;

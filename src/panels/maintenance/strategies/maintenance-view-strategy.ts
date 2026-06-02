@@ -12,6 +12,8 @@ import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../../lovelace/cards/types";
+import { BINARY_STATE_ON } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
@@ -24,27 +26,46 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   },
   {
     domain: "binary_sensor",
-    device_class: ["battery", "battery_charging"],
+    device_class: ["battery"],
     entity_category: "none",
   },
 ];
 
 const LOW_BATTERY_THRESHOLD = 20;
 
-export const filterNeedsAttentionEntities = (
+export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
 ): string[] =>
   entityIds.filter((entityId) => {
-    const stateValue = parseFloat(hass.states[entityId]?.state ?? "");
+    const state = hass.states[entityId]?.state ?? "";
+    if (computeDomain(entityId) === "binary_sensor") {
+      return state === BINARY_STATE_ON;
+    }
+    const stateValue = parseFloat(state);
     return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
   });
 
-const computeBatteryTileCard = (entityId: string): TileCardConfig => ({
-  type: "tile",
-  entity: entityId,
-  name: { type: "device" },
-});
+export const filterUnavailableBatteryEntities = (
+  hass: HomeAssistant,
+  entityIds: string[]
+): string[] =>
+  entityIds.filter((entityId) => {
+    return hass.states[entityId]?.state === "unavailable";
+  });
+
+const computeBatteryTileCard = (
+  entities: HomeAssistant["entities"],
+  entityId: string
+): TileCardConfig => {
+  const entity = entities[entityId];
+  const deviceId = entity?.device_id;
+  return {
+    type: "tile",
+    entity: entityId,
+    name: { type: deviceId ? "device" : "entity" },
+  };
+};
 
 const processAreasForBattery = (
   areaIds: string[],
@@ -64,7 +85,7 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeBatteryTileCard(entityId));
+      areaCards.push(computeBatteryTileCard(hass.entities, entityId));
     }
 
     if (areaCards.length > 0) {
@@ -97,7 +118,7 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeBatteryTileCard(entityId));
+    cards.push(computeBatteryTileCard(hass.entities, entityId));
   }
 
   return cards;

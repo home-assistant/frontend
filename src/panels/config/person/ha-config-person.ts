@@ -39,8 +39,6 @@ export class HaConfigPerson extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public route!: Route;
 
   @state() private _storageItems?: Person[];
@@ -61,7 +59,6 @@ export class HaConfigPerson extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.persons}
@@ -102,7 +99,6 @@ export class HaConfigPerson extends LitElement {
                     .entry=${entry}
                   >
                     <ha-person-badge
-                      .hass=${this.hass}
                       .person=${entry}
                       slot="graphic"
                     ></ha-person-badge>
@@ -139,7 +135,6 @@ export class HaConfigPerson extends LitElement {
                       (entry) => html`
                         <ha-list-item graphic="avatar">
                           <ha-person-badge
-                            .hass=${this.hass}
                             .person=${entry}
                             slot="graphic"
                           ></ha-person-badge>

@@ -7,7 +7,7 @@ import { css } from "lit";
  */
 export const semanticColorStyles = css`
   html {
-    --ha-color-focus: var(--ha-color-orange-60);
+    --ha-color-focus: var(--ha-color-neutral-60);
 
     /* text */
     --ha-color-text-primary: var(--ha-color-neutral-05);
@@ -161,19 +161,18 @@ export const semanticColorStyles = css`
     --ha-color-on-success-loud: var(--white-color);
 
     /* Surfaces */
-    --ha-color-surface-default: var(--ha-color-neutral-95);
-    --ha-color-on-surface-default: var(--ha-color-neutral-05);
-
-    /* forms */
-    --ha-color-form-background: var(--ha-color-neutral-95);
-    --ha-color-form-background-hover: var(--ha-color-neutral-90);
-    --ha-color-form-background-disabled: var(--ha-color-neutral-80);
     --ha-color-surface-default: var(--ha-color-white);
     --ha-color-surface-low: var(--ha-color-neutral-95);
     --ha-color-surface-lower: var(--ha-color-neutral-90);
     --ha-color-surface-default-inverted: var(--ha-color-neutral-10);
     --ha-color-surface-low-inverted: var(--ha-color-neutral-05);
     --ha-color-surface-lower-inverted: var(--ha-color-black);
+    --ha-color-on-surface-default: var(--ha-color-neutral-05);
+
+    /* forms */
+    --ha-color-form-background: var(--ha-color-neutral-95);
+    --ha-color-form-background-hover: var(--ha-color-neutral-90);
+    --ha-color-form-background-disabled: var(--ha-color-neutral-80);
 
     /* Scrollable fade */
     --ha-color-shadow-scrollable-fade: rgba(0, 0, 0, 0.08);
@@ -225,6 +224,11 @@ export const darkSemanticColorStyles = css`
     --ha-color-fill-neutral-normal-resting: var(--ha-color-neutral-10);
     --ha-color-fill-neutral-normal-hover: var(--ha-color-neutral-20);
     --ha-color-fill-neutral-normal-active: var(--ha-color-neutral-10);
+
+    /* fill neutral loud */
+    --ha-color-fill-neutral-loud-resting: var(--ha-color-neutral-60);
+    --ha-color-fill-neutral-loud-hover: var(--ha-color-neutral-70);
+    --ha-color-fill-neutral-loud-active: var(--ha-color-neutral-60);
 
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-10);
@@ -314,16 +318,16 @@ export const darkSemanticColorStyles = css`
 
     /* Surfaces */
     --ha-color-surface-default: var(--ha-color-neutral-10);
+    --ha-color-surface-low: var(--ha-color-neutral-05);
+    --ha-color-surface-lower: var(--ha-color-black);
+    --ha-color-surface-default-inverted: var(--ha-color-white);
+    --ha-color-surface-low-inverted: var(--ha-color-neutral-95);
+    --ha-color-surface-lower-inverted: var(--ha-color-90);
     --ha-color-on-surface-default: var(--ha-color-neutral-95);
 
     /* forms */
     --ha-color-form-background: var(--ha-color-neutral-20);
     --ha-color-form-background-hover: var(--ha-color-neutral-30);
     --ha-color-form-background-disabled: var(--ha-color-neutral-20);
-    --ha-color-surface-low: var(--ha-color-neutral-05);
-    --ha-color-surface-lower: var(--ha-color-black);
-    --ha-color-surface-default-inverted: var(--ha-color-white);
-    --ha-color-surface-low-inverted: var(--ha-color-neutral-95);
-    --ha-color-surface-lower-inverted: var(--ha-color-90);
   }
 `;

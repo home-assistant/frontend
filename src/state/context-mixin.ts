@@ -15,11 +15,13 @@ import {
   devicesContext,
   entitiesContext,
   floorsContext,
+  formattersContext,
   fullEntitiesContext,
   internationalizationContext,
   labelsContext,
   localeContext,
   localizeContext,
+  manifestsContext,
   panelsContext,
   registriesContext,
   selectedThemeContext,
@@ -32,10 +34,12 @@ import {
 } from "../data/context";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
+import { fetchIntegrationManifestsCollection } from "../data/integration";
 import { subscribeLabelRegistry } from "../data/label/label_registry";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { LazyContextProvider } from "./lazy-context-provider";
+import { RelatedContextProvider } from "./related-context-provider";
 
 export const contextMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -76,6 +80,12 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
         config: new ContextProvider(this, {
           context: configContext,
           initialValue: updateHassGroups.config(
+            this.hass || (this._pendingHass as HomeAssistant)
+          ),
+        }),
+        formatters: new ContextProvider(this, {
+          context: formattersContext,
+          initialValue: updateHassGroups.formatters(
             this.hass || (this._pendingHass as HomeAssistant)
           ),
         }),
@@ -186,7 +196,13 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
           );
         },
       }),
+      manifests: new LazyContextProvider(this, {
+        context: manifestsContext,
+        subscribeFn: fetchIntegrationManifestsCollection,
+      }),
     };
+
+    private __relatedContextProvider = new RelatedContextProvider(this);
 
     protected hassConnected() {
       super.hassConnected();
@@ -201,6 +217,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.setConnection(connection);
       }
+
+      this.__relatedContextProvider.connect();
     }
 
     protected _updateHass(obj: Partial<HomeAssistant>) {
@@ -231,5 +249,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.unsubscribe();
       }
+      this.__relatedContextProvider.disconnect();
     }
   };

@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import "../components/ha-button";
-import { isUnavailableState } from "../data/entity/entity";
+import { UNAVAILABLE } from "../data/entity/entity";
 import type { ScriptEntity } from "../data/script";
 import { canRun, hasScriptFields } from "../data/script";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
@@ -48,8 +48,7 @@ class StateCardScript extends LitElement {
               appearance="plain"
               size="small"
               @click=${this._runScript}
-              .disabled=${isUnavailableState(stateObj.state) ||
-              !canRun(stateObj)}
+              .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
             >
               ${this.hass!.localize("ui.card.script.run")}
             </ha-button>`

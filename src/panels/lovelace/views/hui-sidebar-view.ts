@@ -1,7 +1,7 @@
 import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import type { LovelaceViewElement } from "../../../data/lovelace";
@@ -29,6 +29,12 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
+
+  @query("#main") private _oldMain?: HTMLElement;
+
+  @query("#sidebar") private _oldSidebar?: HTMLElement;
+
+  @query(".container") private _container?: HTMLElement;
 
   private _mqlListenerRef?: () => void;
 
@@ -86,7 +92,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       <hui-view-badges
-        .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
@@ -123,20 +128,18 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     }
 
     if (this.hasUpdated) {
-      const oldMain = this.renderRoot.querySelector("#main");
-      const oldSidebar = this.renderRoot.querySelector("#sidebar");
-      const container = this.renderRoot.querySelector(".container")!;
-      if (oldMain) {
-        container.removeChild(oldMain);
+      const container = this._container!;
+      if (this._oldMain) {
+        container.removeChild(this._oldMain);
       }
-      if (oldSidebar) {
-        container.removeChild(oldSidebar);
+      if (this._oldSidebar) {
+        container.removeChild(this._oldSidebar);
       }
       container.appendChild(mainDiv);
       container.appendChild(sidebarDiv);
     } else {
       this.updateComplete.then(() => {
-        const container = this.renderRoot.querySelector(".container")!;
+        const container = this._container!;
         container.appendChild(mainDiv);
         container.appendChild(sidebarDiv);
       });

@@ -1,13 +1,22 @@
+import { consume } from "@lit/context";
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { transform } from "../../common/decorators/transform";
 import type { DateSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { internationalizationContext } from "../../data/context";
+import type { FrontendLocaleData } from "../../data/translation";
+import type { HomeAssistantInternationalization } from "../../types";
 import "../ha-date-input";
 import type { HaDateInput } from "../ha-date-input";
 
 @customElement("ha-selector-date")
 export class HaDateSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: DateSelector;
 
@@ -31,7 +40,7 @@ export class HaDateSelector extends LitElement {
     return html`
       <ha-date-input
         .label=${this.label}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
         .disabled=${this.disabled}
         .value=${typeof this.value === "string" ? this.value : undefined}
         .required=${this.required}

@@ -161,6 +161,10 @@ export interface VacuumEntityOptions {
   last_seen_segments?: Segment[];
 }
 
+export interface DeviceTrackerEntityOptions {
+  associated_zone?: string | null;
+}
+
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
@@ -172,6 +176,7 @@ export interface EntityRegistryOptions {
   cover?: CoverEntityOptions;
   valve?: ValveEntityOptions;
   vacuum?: VacuumEntityOptions;
+  device_tracker?: DeviceTrackerEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
   conversation?: Record<string, unknown>;
   "cloud.alexa"?: Record<string, unknown>;
@@ -197,7 +202,8 @@ export interface EntityRegistryEntryUpdateParams {
     | LightEntityOptions
     | CoverEntityOptions
     | ValveEntityOptions
-    | VacuumEntityOptions;
+    | VacuumEntityOptions
+    | DeviceTrackerEntityOptions;
   aliases?: (string | null)[];
   labels?: string[];
   categories?: Record<string, string | null>;

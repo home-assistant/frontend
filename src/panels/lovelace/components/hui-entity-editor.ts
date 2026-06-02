@@ -45,7 +45,10 @@ export class HuiEntityEditor extends LitElement {
       stateObj &&
       entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const primary =
       (stateObj &&
@@ -226,9 +229,6 @@ export class HuiEntityEditor extends LitElement {
   }
 
   static styles = css`
-    ha-entity-picker {
-      margin-top: 8px;
-    }
     .entity {
       display: flex;
       align-items: center;
@@ -250,6 +250,11 @@ export class HuiEntityEditor extends LitElement {
     ha-md-list {
       gap: 8px;
       padding-top: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-md-list:has(> *) {
+      margin-bottom: var(--ha-space-2);
     }
     ha-md-list-item {
       border: 1px solid var(--divider-color);

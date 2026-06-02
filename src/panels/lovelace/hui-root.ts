@@ -37,8 +37,8 @@ import {
 } from "../../common/url/search-params";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
-import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -409,6 +409,8 @@ class HUIRoot extends LitElement {
               slot="actionItems"
               .id="button-${index}"
               .path=${item.icon}
+              .label=${label}
+              hide-title
               @click=${item.buttonAction}
             ></ha-icon-button>
             <ha-tooltip placement="bottom" .for="button-${index}">
@@ -1103,11 +1105,11 @@ class HUIRoot extends LitElement {
     const lovelace = this.lovelace!;
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) - 1;
-    this._curView = newIndex;
     if (!this.config.views[oldIndex].path) {
       this._navigateToView(newIndex, true);
     }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
+    this._selectView(newIndex);
   }
 
   private _moveViewRight(ev) {
@@ -1118,11 +1120,11 @@ class HUIRoot extends LitElement {
     const lovelace = this.lovelace!;
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) + 1;
-    this._curView = newIndex;
     if (!this.config.views[oldIndex].path) {
       this._navigateToView(newIndex, true);
     }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
+    this._selectView(newIndex);
   }
 
   private _addView() {
@@ -1243,8 +1245,10 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
-    const subItem = (ev.detail?.item as any)?.data as SubActionItem;
+  private _handleSubItemSelect(
+    ev: HaDropdownSelectEvent<SubActionItem["key"], SubActionItem>
+  ) {
+    const subItem = ev.detail.item.data;
     if (subItem?.action) {
       subItem.action();
     } else if (subItem?.overflowAction) {
@@ -1252,8 +1256,10 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
-    const item = (ev.detail?.item as any)?.data as ActionItem;
+  private _handleOverflowItemSelect(
+    ev: HaDropdownSelectEvent<ActionItem["key"], ActionItem>
+  ) {
+    const item = ev.detail.item.data;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");
       showListItemsDialog(this, {
@@ -1285,7 +1291,7 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -1298,7 +1304,7 @@ class HUIRoot extends LitElement {
         }
         .narrow .header {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)
@@ -1307,7 +1313,7 @@ class HUIRoot extends LitElement {
         }
         :host([scrolled]) .header {
           box-shadow: var(
-            --mdc-top-app-bar-fixed-box-shadow,
+            --bar-box-shadow,
             0px 2px 4px -1px rgba(0, 0, 0, 0.2),
             0px 4px 5px 0px rgba(0, 0, 0, 0.14),
             0px 1px 10px 0px rgba(0, 0, 0, 0.12)

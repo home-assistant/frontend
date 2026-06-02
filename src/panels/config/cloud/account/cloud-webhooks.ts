@@ -4,9 +4,9 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-switch";
+import "../../../../components/item/ha-row-item";
 import type { CloudStatusLoggedIn, CloudWebhook } from "../../../../data/cloud";
 import { createCloudhook, deleteCloudhook } from "../../../../data/cloud";
 import type { Webhook, WebhookError } from "../../../../data/webhook";
@@ -76,7 +76,7 @@ export class CloudWebhooks extends LitElement {
                 `
               : this._localHooks.map(
                   (entry) => html`
-                    <ha-md-list-item .entry=${entry}>
+                    <ha-row-item .entry=${entry}>
                       <span slot="headline"
                         >${entry.name}
                         ${entry.domain !== entry.name.toLowerCase()
@@ -108,7 +108,7 @@ export class CloudWebhooks extends LitElement {
                               @click=${this._enableWebhook}
                             >
                             </ha-switch>`}
-                    </ha-md-list-item>
+                    </ha-row-item>
                   `
                 )}
           <div class="footer">
@@ -237,12 +237,12 @@ export class CloudWebhooks extends LitElement {
         .footer a {
           color: var(--primary-color);
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
-        ha-md-list-item [slot="supporting-text"] {
+        ha-row-item::part(headline),
+        ha-row-item::part(supporting-text) {
+          white-space: wrap;
           word-break: break-all;
         }
       `,

@@ -90,9 +90,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       },
       id: {
         title: localize("ui.panel.config.tag.headers.tag_id"),
-        main: true,
         sortable: true,
         filterable: true,
+        defaultHidden: true,
       },
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
@@ -101,7 +101,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         template: (tag) => html`
           ${tag.last_scanned_datetime
             ? html`<ha-relative-time
-                .hass=${this.hass}
                 .datetime=${tag.last_scanned_datetime}
                 capitalize
               ></ha-relative-time>`
@@ -133,7 +132,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       type: "overflow-menu",
       template: (tag) => html`
         <ha-icon-overflow-menu
-          .hass=${this.hass}
           narrow
           .items=${[
             {

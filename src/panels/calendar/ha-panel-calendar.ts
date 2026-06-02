@@ -24,8 +24,8 @@ import "../../components/ha-two-pane-top-app-bar-fixed";
 import type {
   Calendar,
   CalendarEvent,
-  CalendarEventSubscription,
   CalendarEventApiData,
+  CalendarEventSubscription,
 } from "../../data/calendar";
 import {
   getCalendars,
@@ -144,7 +144,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         >
           <ha-state-icon
             slot="icon"
-            .hass=${this.hass}
             .stateObj=${selCal}
             style="--icon-primary-color: ${selCal.backgroundColor}"
           ></ha-state-icon>
@@ -191,16 +190,20 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        ${showPane && this.hass.user?.is_admin
-          ? html`<ha-list slot="pane" multi}>${calendarItems}</ha-list>
-              <ha-list-item
-                graphic="icon"
-                slot="pane-footer"
-                @click=${this._addCalendar}
-              >
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                ${this.hass.localize("ui.components.calendar.create_calendar")}
-              </ha-list-item>`
+        ${showPane
+          ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${this
+                .hass.user?.is_admin
+                ? html`<ha-list-item
+                    graphic="icon"
+                    slot="pane-footer"
+                    @click=${this._addCalendar}
+                  >
+                    <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.components.calendar.create_calendar"
+                    )}
+                  </ha-list-item>`
+                : nothing}`
           : nothing}
         <ha-full-calendar
           add-fab
@@ -339,7 +342,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   private _addCalendar = async (): Promise<void> => {
     showConfigFlowDialog(this, {
       startFlowHandler: "local_calendar",
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {

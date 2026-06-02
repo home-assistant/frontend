@@ -73,7 +73,6 @@ class DialogImportBlueprint extends LitElement {
     const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width=${this.large ? "full" : "medium"}
         @closed=${this._dialogClosed}
@@ -85,7 +84,9 @@ class DialogImportBlueprint extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" @click=${this._enlarge}> ${heading} </span>
+          <span slot="title" class="title-enlargeable" @click=${this._enlarge}>
+            ${heading}
+          </span>
         </ha-dialog-header>
         <div>
           ${this._error
@@ -148,7 +149,6 @@ class DialogImportBlueprint extends LitElement {
                   <ha-code-editor
                     mode="yaml"
                     .value=${this._result.raw_data}
-                    .hass=${this.hass}
                     read-only
                     dir="ltr"
                   ></ha-code-editor>
@@ -343,6 +343,9 @@ class DialogImportBlueprint extends LitElement {
       }
       ha-expansion-panel {
         --expansion-panel-content-padding: 0px;
+      }
+      .title-enlargeable {
+        display: block;
       }
     `,
   ];

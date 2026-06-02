@@ -1,16 +1,19 @@
+import { consume, type ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import type { HomeAssistant } from "../../../../../types";
+import { internationalizationContext } from "../../../../../data/context";
 
 @customElement("supervisor-app-system-managed")
 class SupervisorAppSystemManaged extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean, attribute: "hide-button" }) public hideButton =
     false;
@@ -19,18 +22,18 @@ class SupervisorAppSystemManaged extends LitElement {
     return html`
       <ha-alert
         alert-type="warning"
-        .title=${this.hass.localize(
+        .title=${this.i18n.localize(
           "ui.panel.config.apps.dashboard.system_managed.title"
         )}
         .narrow=${this.narrow}
       >
-        ${this.hass.localize(
+        ${this.i18n.localize(
           "ui.panel.config.apps.dashboard.system_managed.description"
         )}
         ${!this.hideButton
           ? html`
               <ha-button slot="action" @click=${this._takeControl}>
-                ${this.hass.localize(
+                ${this.i18n.localize(
                   "ui.panel.config.apps.dashboard.system_managed.take_control"
                 )}
               </ha-button>

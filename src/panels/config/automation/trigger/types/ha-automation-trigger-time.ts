@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
@@ -225,6 +225,13 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       `ui.panel.config.automation.editor.triggers.type.time.${schema.name}`
     );
   };
+
+  static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
+  `;
 }
 
 declare global {

@@ -154,7 +154,7 @@ export const getRecorderInfo = (conn: Connection) =>
   });
 
 export const getStatisticIds = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   statistic_type?: "mean" | "sum"
 ) =>
   hass.callWS<StatisticsMetaData[]>({
@@ -227,7 +227,7 @@ export const fetchStatistic = (
     rolling_window: period.rolling_window,
   });
 
-export const validateStatistics = (hass: HomeAssistant) =>
+export const validateStatistics = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<StatisticsValidationResults>({
     type: "recorder/validate_statistics",
   });
@@ -245,7 +245,10 @@ export const updateStatisticsMetadata = (
     unit_class,
   });
 
-export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
+export const clearStatistics = (
+  hass: Pick<HomeAssistant, "callWS">,
+  statistic_ids: string[]
+) =>
   hass.callWS<undefined>({
     type: "recorder/clear_statistics",
     statistic_ids,
@@ -369,5 +372,5 @@ export const getDisplayUnit = (
 export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
-export const updateStatisticsIssues = (hass: HomeAssistant) =>
+export const updateStatisticsIssues = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<undefined>({ type: "recorder/update_statistics_issues" });

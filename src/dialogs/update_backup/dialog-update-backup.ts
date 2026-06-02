@@ -29,7 +29,6 @@ class DialogBox extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.dialogs.update_backup.title")}
         width="small"

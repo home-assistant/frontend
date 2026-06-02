@@ -12,12 +12,13 @@ describe("ECharts internals required by axis-proxy-patch", () => {
     expect(typeof (AxisProxy as any).prototype.filterData).toBe("function");
   });
 
-  it("AxisProxy prototype exposes the expected instance fields pattern", () => {
-    // The patch accesses these properties via `this` inside filterData:
-    //   this._dataZoomModel, this._dimName, this._valueWindow,
+  it("AxisProxy prototype exposes the expected instance methods", () => {
+    // The patch accesses these via `this` inside filterData:
+    //   this.hostedBy(), this._dimName, this._window.value,
     //   this.getTargetSeriesModels()
     // We can't easily construct a real AxisProxy, but we can verify
-    // getTargetSeriesModels exists on the prototype.
+    // the methods exist on the prototype.
+    expect(typeof (AxisProxy as any).prototype.hostedBy).toBe("function");
     expect(typeof (AxisProxy as any).prototype.getTargetSeriesModels).toBe(
       "function"
     );
@@ -38,12 +39,12 @@ describe("axis-proxy-patch applies boundaryFilter mode", () => {
     };
 
     // The patched filterData should not throw when called with
-    // boundaryFilter and a non-matching _dataZoomModel (early return path)
+    // boundaryFilter and a non-hosted dataZoomModel (early return path)
     const mockProxy = {
-      _dataZoomModel: "different-model",
+      hostedBy: () => false,
     };
 
-    // Should return early because dataZoomModel !== this._dataZoomModel
+    // Should return early because hostedBy returns false
     expect(() =>
       filterData.call(mockProxy, mockDataZoomModel, {})
     ).not.toThrow();
@@ -65,20 +66,22 @@ describe("axis-proxy-patch applies boundaryFilter mode", () => {
     };
 
     const mockProxy = {
+      _dataZoomModel: mockDataZoomModel,
+      hostedBy: (model: unknown) => model === mockDataZoomModel,
+      _window: { value: [0, 100] },
       getTargetSeriesModels: () => {
         calls.push("getTargetSeriesModels");
         return [];
       },
     };
 
-    // Should not throw — the original filterData handles non-matching gracefully
+    // Should not throw — the patched function delegates to the original
     expect(() =>
       filterData.call(mockProxy, mockDataZoomModel, {})
     ).not.toThrow();
 
-    // getTargetSeriesModels should NOT have been called because the
-    // patched function delegates to the original for filterMode !== "boundaryFilter"
-    expect(calls).toEqual([]);
+    // The original filterData fetches target series; boundaryFilter logic is not used
+    expect(calls).toEqual(["getTargetSeriesModels"]);
   });
 
   it("filters data keeping boundary points", async () => {
@@ -124,8 +127,9 @@ describe("axis-proxy-patch applies boundaryFilter mode", () => {
 
     const mockProxy = {
       _dataZoomModel: mockDataZoomModel,
+      hostedBy: (model: unknown) => model === mockDataZoomModel,
       _dimName: "x",
-      _valueWindow: [3, 7],
+      _window: { value: [3, 7] },
       getTargetSeriesModels: () => [mockSeriesModel],
     };
 

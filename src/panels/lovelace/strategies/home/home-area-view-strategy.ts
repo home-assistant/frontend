@@ -217,8 +217,8 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     }
 
     const deviceSections: LovelaceSectionRawConfig[] = [];
-
-    const summaryEntities = Object.values(entitiesBySummary).flat();
+    const { maintenance, ...partialEntitiesBySummary } = entitiesBySummary;
+    const summaryEntities = Object.values(partialEntitiesBySummary).flat();
 
     // Scenes section
     const sceneFilter = generateEntityFilter(hass, {
@@ -323,7 +323,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
       const deviceId = deviceEntities.device_id;
       const device = hass.devices[deviceId];
-      let heading = "";
+      let heading: string;
       if (device) {
         heading =
           computeDeviceName(device) ||

@@ -87,6 +87,19 @@ const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
 const HOME_ASSISTANT_SUPERVISOR_TITLE = "Home Assistant Supervisor";
 const HOME_ASSISTANT_OS_TITLE = "Home Assistant Operating System";
 
+// The hassio integration sets these as hard-coded `_attr_title` on the Core,
+// Operating System, and Supervisor update entities. They are not translated,
+// so a title comparison is the reliable way to identify them without depending
+// on the (lazily-fetched) entity sources.
+export const isSystemUpdate = (entity: UpdateEntity): boolean => {
+  const title = entity.attributes.title || "";
+  return (
+    title === HOME_ASSISTANT_CORE_TITLE ||
+    title === HOME_ASSISTANT_OS_TITLE ||
+    title === HOME_ASSISTANT_SUPERVISOR_TITLE
+  );
+};
+
 export const filterUpdateEntities = (
   entities: HassEntities,
   language?: string
@@ -131,6 +144,11 @@ export const filterUpdateEntitiesParameterized = (
       return updateCanNotInstall(entity, showSkipped);
     }
     return updateCanInstall(entity, showSkipped);
+  });
+
+export const installUpdates = (hass: HomeAssistant, entityIds: string[]) =>
+  hass.callService("update", "install", {
+    entity_id: entityIds,
   });
 
 export const checkForEntityUpdates = async (

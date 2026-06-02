@@ -1,7 +1,7 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-md-list-item";
+import "../../../../components/item/ha-list-item-base";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
@@ -14,7 +14,7 @@ class HaDebugConnectionRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-md-list-item>
+      <ha-list-item-base>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.debug.debug_connection.title"
@@ -30,7 +30,7 @@ class HaDebugConnectionRow extends LitElement {
           .checked=${this.hass.debugConnection}
           @change=${this._checkedChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-list-item-base>
     `;
   }
 

@@ -30,7 +30,6 @@ export class HuiPersistentNotificationItem extends LitElement {
           <span>
             <ha-relative-time
               id="relative-time"
-              .hass=${this.hass}
               .datetime=${this.notification.created_at}
               capitalize
             ></ha-relative-time>

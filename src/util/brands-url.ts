@@ -1,3 +1,4 @@
+import { waitForMs } from "../common/util/wait";
 import type { HomeAssistant } from "../types";
 
 export interface BrandsOptions {
@@ -20,15 +21,35 @@ let _brandsRefreshInterval: ReturnType<typeof setInterval> | undefined;
 // Re-fetch every 30 minutes to always have a valid token.
 const TOKEN_REFRESH_MS = 30 * 60 * 1000;
 
-export const fetchAndScheduleBrandsAccessToken = (
+// Delays before each attempt. The first attempt fires immediately; subsequent
+// ones back off to ride through the window after a Home Assistant restart
+// where the WebSocket server accepts connections but the brands integration
+// hasn't registered its WS handler yet. On older backends without the command,
+// every attempt fails and we give up.
+const FETCH_DELAYS_MS = [0, 500, 1000, 2000, 5000, 10000, 15000];
+
+// Returns true if the cached token changed as a result of this call, so
+// callers can decide whether they need to trigger a re-render.
+export const fetchAndScheduleBrandsAccessToken = async (
   hass: HomeAssistant
-): Promise<void> =>
-  fetchBrandsAccessToken(hass).then(
-    () => scheduleBrandsTokenRefresh(hass),
-    () => {
-      // Ignore failures; older backends may not support this command
+): Promise<boolean> => {
+  const previousToken = _brandsAccessToken;
+  /* eslint-disable no-await-in-loop -- retries are intentionally sequential */
+  for (const delay of FETCH_DELAYS_MS) {
+    if (delay) {
+      await waitForMs(delay);
     }
-  );
+    try {
+      await fetchBrandsAccessToken(hass);
+      scheduleBrandsTokenRefresh(hass);
+      return _brandsAccessToken !== previousToken;
+    } catch {
+      // try next delay
+    }
+  }
+  /* eslint-enable no-await-in-loop */
+  return false;
+};
 
 export const fetchBrandsAccessToken = async (
   hass: HomeAssistant

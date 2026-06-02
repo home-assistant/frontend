@@ -18,6 +18,7 @@ import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { fullEntitiesContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../data/logbook";
+import { localizeTriggerDescription } from "../../data/logbook";
 import type {
   ChooseAction,
   IfAction,
@@ -332,7 +333,10 @@ class ActionRenderer {
             : "other",
           alias: triggerStep.changed_variables.trigger?.alias,
           triggeredPath: triggerStep.path === "trigger" ? "manual" : "trigger",
-          trigger: this.trace.trigger,
+          trigger: localizeTriggerDescription(
+            this.hass.localize,
+            this.trace.trigger
+          ),
           time: formatDateTimeWithSeconds(
             new Date(triggerStep.timestamp),
             this.hass.locale,

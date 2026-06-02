@@ -101,7 +101,6 @@ export class HaTemplateSelector extends LitElement {
         : nothing}
       <ha-code-editor
         mode="jinja2"
-        .hass=${this.hass}
         .value=${this.value}
         .readOnly=${this.disabled}
         .placeholder=${this.placeholder || "{{ ... }}"}

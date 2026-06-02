@@ -7,7 +7,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-generic-picker";
 import "../../../components/ha-markdown";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
@@ -98,7 +98,6 @@ export class DialogAddApplicationCredential extends LitElement {
       : "";
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._abortDialog}
         .preventScrimClose=${!!this._domain ||

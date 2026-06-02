@@ -1,4 +1,5 @@
 import type {
+  Connection,
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
@@ -94,6 +95,7 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
+  note?: string;
   /** @deprecated Use `trigger` instead */
   platform?: string;
   trigger: string;
@@ -239,6 +241,7 @@ export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 interface BaseCondition {
   condition: string;
   alias?: string;
+  note?: string;
   enabled?: boolean;
   options?: Record<string, unknown>;
 }
@@ -322,6 +325,7 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
 
 export interface AutomationElementGroupCollection {
   titleKey?: LocalizeKeys;
+  generic?: boolean;
   groups: AutomationElementGroup;
 }
 
@@ -583,6 +587,19 @@ export const testCondition = (
     variables,
   });
 
+export const subscribeCondition = (
+  connection: Connection,
+  onChange: (result: {
+    result?: boolean;
+    error?: string | { code: string; message: string };
+  }) => void,
+  condition: Condition
+) =>
+  connection.subscribeMessage(onChange, {
+    type: "subscribe_condition",
+    condition,
+  });
+
 export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
@@ -592,6 +609,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   delete: () => void;
   close: (focus?: boolean) => void;
+  editNote: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
@@ -653,6 +671,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
+  note?: string;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {

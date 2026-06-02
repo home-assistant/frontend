@@ -1,4 +1,5 @@
 import {
+  mdiAlertCircle,
   mdiDelete,
   mdiDevices,
   mdiDragHorizontalVariant,
@@ -6,7 +7,7 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { repeat } from "lit/directives/repeat";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -15,10 +16,12 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
   EnergyPreferencesValidation,
+  EnergyValidationIssue,
 } from "../../../../data/energy";
 import { saveEnergyPreferences } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -93,7 +96,7 @@ export class EnergyDeviceSettings extends LitElement {
                       ${repeat(
                         this.preferences.device_consumption,
                         (device) => device.stat_consumption,
-                        (device) => html`
+                        (device, index) => html`
                           <div class="row" .device=${device}>
                             <div class="handle">
                               <ha-svg-icon
@@ -108,6 +111,10 @@ export class EnergyDeviceSettings extends LitElement {
                                 this.statsMetadata?.[device.stat_consumption]
                               )}</span
                             >
+                            ${this._renderIssueIndicator(
+                              this.validationResult?.device_consumption[index],
+                              index
+                            )}
                             <ha-icon-button
                               .label=${this.hass.localize("ui.common.edit")}
                               @click=${this._editDevice}
@@ -141,6 +148,31 @@ export class EnergyDeviceSettings extends LitElement {
           </div>
         </div>
       </ha-card>
+    `;
+  }
+
+  private _renderIssueIndicator(
+    issues: EnergyValidationIssue[] | undefined,
+    index: number
+  ) {
+    if (!issues?.length) {
+      return nothing;
+    }
+    const titles = issues.map(
+      (issue) =>
+        this.hass.localize(`component.energy.issues.${issue.type}.title`) ||
+        issue.type
+    );
+    const label = titles.join("\n");
+    const id = `issue-icon-${index}`;
+    return html`
+      <ha-svg-icon
+        id=${id}
+        class="issue-icon"
+        .path=${mdiAlertCircle}
+        aria-label=${label}
+      ></ha-svg-icon>
+      <ha-tooltip .for=${id} placement="top">${label}</ha-tooltip>
     `;
   }
 
@@ -243,6 +275,9 @@ export class EnergyDeviceSettings extends LitElement {
         .handle {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
+        }
+        .issue-icon {
+          color: var(--warning-color);
         }
       `,
     ];

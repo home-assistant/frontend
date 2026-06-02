@@ -9,14 +9,13 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import "../../../components/progress/ha-progress-bar";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
@@ -177,7 +176,8 @@ class MoreInfoUpdate extends LitElement {
     if (
       !this.hass ||
       !this.stateObj ||
-      isUnavailableState(this.stateObj.state)
+      this.stateObj.state === UNAVAILABLE ||
+      this.stateObj.state === UNKNOWN
     ) {
       return nothing;
     }
@@ -274,24 +274,22 @@ class MoreInfoUpdate extends LitElement {
       <div class="footer">
         ${createBackupTexts
           ? html`
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">${createBackupTexts.title}</span>
-                  ${createBackupTexts.description
-                    ? html`
-                        <span slot="supporting-text">
-                          ${createBackupTexts.description}
-                        </span>
-                      `
-                    : nothing}
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._createBackup}
-                    @change=${this._createBackupChanged}
-                    .disabled=${updateIsInstalling(this.stateObj)}
-                  ></ha-switch>
-                </ha-md-list-item>
-              </ha-md-list>
+              <ha-row-item>
+                <span slot="headline">${createBackupTexts.title}</span>
+                ${createBackupTexts.description
+                  ? html`
+                      <span slot="supporting-text">
+                        ${createBackupTexts.description}
+                      </span>
+                    `
+                  : nothing}
+                <ha-switch
+                  slot="end"
+                  .checked=${this._createBackup}
+                  @change=${this._createBackupChanged}
+                  .disabled=${updateIsInstalling(this.stateObj)}
+                ></ha-switch>
+              </ha-row-item>
             `
           : nothing}
         <div class="actions">
@@ -484,20 +482,9 @@ class MoreInfoUpdate extends LitElement {
       z-index: 10;
     }
 
-    ha-md-list {
+    ha-row-item {
       width: 100%;
-      box-sizing: border-box;
-      margin-bottom: calc(var(--ha-space-4) * -1);
-      margin-top: calc(var(--ha-space-1) * -1);
-      --md-sys-color-surface: var(
-        --ha-dialog-surface-background,
-        var(--mdc-theme-surface, #fff)
-      );
-    }
-
-    ha-md-list-item {
-      --md-list-item-leading-space: var(--ha-space-6);
-      --md-list-item-trailing-space: var(--ha-space-6);
+      --ha-row-item-padding-inline: var(--ha-space-6);
     }
 
     .actions {

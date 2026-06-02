@@ -31,7 +31,6 @@ class SupervisorAppInfoDashboard extends LitElement {
         <supervisor-app-info
           .narrow=${this.narrow}
           .route=${this.route}
-          .hass=${this.hass}
           .addon=${this.addon}
           .controlEnabled=${this.controlEnabled}
         ></supervisor-app-info>
@@ -46,8 +45,8 @@ class SupervisorAppInfoDashboard extends LitElement {
       css`
         .content {
           margin: auto;
-          padding: var(--ha-space-2);
-          max-width: 1024px;
+          padding: var(--ha-space-4);
+          max-width: 1200px;
         }
       `,
     ];

@@ -1,11 +1,13 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
+import { consumeEntityStates } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { AttributeSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
-import { ensureArray } from "../../common/array/ensure-array";
 
 @customElement("ha-selector-attribute")
 export class HaSelectorAttribute extends LitElement {
@@ -26,6 +28,10 @@ export class HaSelectorAttribute extends LitElement {
   @property({ attribute: false }) public context?: {
     filter_entity?: string | string[];
   };
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["context", "filter_entity"] })
+  private _filterEntityStates?: Record<string, HassEntity>;
 
   protected render() {
     return html`
@@ -68,12 +74,12 @@ export class HaSelectorAttribute extends LitElement {
     }
 
     // Validate that that the attribute is still valid for this entity, else unselect.
-    let invalid = false;
+    let invalid: boolean;
     if (this.context.filter_entity) {
       const entityIds = ensureArray(this.context.filter_entity);
 
       invalid = !entityIds.some((entityId) => {
-        const stateObj = this.hass.states[entityId];
+        const stateObj = this._filterEntityStates?.[entityId];
         return (
           stateObj &&
           this.value in stateObj.attributes &&

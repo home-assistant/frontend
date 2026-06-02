@@ -23,13 +23,13 @@ import "../../../components/ha-alert";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-dropdown-item";
+import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-labels-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list-item";
-import "../../../components/ha-radio";
 import "../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-state-icon";
@@ -57,6 +57,7 @@ import { updateDeviceRegistryEntry } from "../../../data/device/device_registry"
 import type {
   AlarmControlPanelEntityOptions,
   CalendarEntityOptions,
+  DeviceTrackerEntityOptions,
   EntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
@@ -98,7 +99,7 @@ import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 
-const OVERRIDE_DEVICE_CLASSES = {
+export const OVERRIDE_DEVICE_CLASSES = {
   cover: [
     [
       "awning",
@@ -138,6 +139,10 @@ const SWITCH_AS_DOMAINS = ["cover", "fan", "light", "lock", "siren", "valve"];
 const SWITCH_AS_DOMAINS_INVERT = ["cover", "lock", "valve"];
 
 const PRECISIONS = [0, 1, 2, 3, 4, 5, 6];
+
+const SCANNER_SOURCE_TYPES = ["router", "bluetooth", "bluetooth_le"];
+
+const ZONE_DOMAINS = ["zone"];
 
 @customElement("entity-registry-settings-editor")
 export class EntityRegistrySettingsEditor extends LitElement {
@@ -203,11 +208,41 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _calendarColor?: string | null;
 
+  @state() private _associatedZone?: string;
+
   @state() private _noDeviceArea?: boolean;
 
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
+
+  private _initialStateJson!: string;
+
+  private _lastDirty = false;
+
+  private _currentState() {
+    return {
+      name: this._name.trim() || null,
+      icon: this._icon.trim() || null,
+      entityId: this._entityId.trim(),
+      areaId: this._areaId ?? null,
+      labels: this._labels ?? [],
+      deviceClass: this._deviceClass,
+      disabledBy: this._disabledBy,
+      hiddenBy: this._hiddenBy,
+      unitOfMeasurement: this._unit_of_measurement,
+      precision: this._precision,
+      defaultCode: this._defaultCode,
+      calendarColor: this._calendarColor ?? null,
+      precipitationUnit: this._precipitation_unit,
+      pressureUnit: this._pressure_unit,
+      temperatureUnit: this._temperature_unit,
+      visibilityUnit: this._visibility_unit,
+      windSpeedUnit: this._wind_speed_unit,
+      switchAsDomain: this._switchAsDomain,
+      switchAsInvert: this._switchAsInvert,
+    };
+  }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -265,6 +300,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._calendarColor = this.entry.options?.calendar?.color;
     }
 
+    if (domain === "device_tracker") {
+      this._associatedZone =
+        this.entry.options?.device_tracker?.associated_zone ?? "zone.home";
+    }
+
     if (domain === "weather") {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
@@ -274,6 +314,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._visibility_unit = stateObj?.attributes?.visibility_unit;
       this._wind_speed_unit = stateObj?.attributes?.wind_speed_unit;
     }
+
+    this._initialStateJson = JSON.stringify(this._currentState());
+    this._lastDirty = false;
 
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
 
@@ -373,6 +416,16 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
       }
+      this._initialStateJson = JSON.stringify(this._currentState());
+      this._lastDirty = false;
+    }
+
+    if (this._initialStateJson) {
+      const dirty = this.dirty;
+      if (dirty !== this._lastDirty) {
+        this._lastDirty = dirty;
+        fireEvent(this, "change");
+      }
     }
   }
 
@@ -408,6 +461,23 @@ export class EntityRegistrySettingsEditor extends LitElement {
             .disabled=${this.disabled}
             @input=${this._nameChanged}
           >
+            ${this._device
+              ? html`<span slot="hint"
+                  >${this.hass.localize(
+                    "ui.dialogs.entity_registry.editor.device_name_tip",
+                    {
+                      link: html`<button
+                        class="link"
+                        @click=${this._resetNameAndOpenDeviceSettings}
+                      >
+                        ${this.hass.localize(
+                          "ui.dialogs.entity_registry.editor.open_device_settings"
+                        )}
+                      </button>`,
+                    }
+                  )}</span
+                >`
+              : nothing}
           </ha-input>`}
       ${this.hideIcon
         ? nothing
@@ -420,7 +490,15 @@ export class EntityRegistrySettingsEditor extends LitElement {
               )}
               .placeholder=${this.entry.original_icon ||
               stateObj?.attributes.icon ||
-              (stateObj && until(entityIcon(this.hass, stateObj))) ||
+              (stateObj &&
+                until(
+                  entityIcon(
+                    this.hass.entities,
+                    this.hass.config,
+                    this.hass.connection,
+                    stateObj
+                  )
+                )) ||
               until(entryIcon(this.hass, this.entry))}
               .disabled=${this.disabled}
             >
@@ -428,7 +506,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 ? html`
                     <ha-state-icon
                       slot="start"
-                      .hass=${this.hass}
                       .stateObj=${stateObj}
                     ></ha-state-icon>
                   `
@@ -647,6 +724,21 @@ export class EntityRegistrySettingsEditor extends LitElement {
               .disabled=${this.disabled}
               @value-changed=${this._calendarColorChanged}
             ></ha-color-picker>
+          `
+        : nothing}
+      ${domain === "device_tracker" &&
+      SCANNER_SOURCE_TYPES.includes(stateObj?.attributes?.source_type)
+        ? html`
+            <ha-entity-picker
+              .hass=${this.hass}
+              .value=${this._associatedZone}
+              .label=${this.hass.localize(
+                "ui.dialogs.entity_registry.editor.associated_zone"
+              )}
+              .includeDomains=${ZONE_DOMAINS}
+              .disabled=${this.disabled}
+              @value-changed=${this._associatedZoneChanged}
+            ></ha-entity-picker>
           `
         : nothing}
       ${domain === "sensor" &&
@@ -1054,6 +1146,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
     `;
   }
 
+  public get dirty(): boolean {
+    return JSON.stringify(this._currentState()) !== this._initialStateJson;
+  }
+
   public async updateEntry(): Promise<{
     close: boolean;
     entry: ExtEntityRegistryEntry;
@@ -1139,6 +1235,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
         params.options = this.entry.options?.calendar || {};
         (params.options as CalendarEntityOptions).color = this._calendarColor;
       }
+    }
+    if (
+      domain === "device_tracker" &&
+      this._associatedZone !== undefined &&
+      (this.entry.options?.device_tracker?.associated_zone ?? "zone.home") !==
+        this._associatedZone
+    ) {
+      params.options_domain = "device_tracker";
+      params.options = {
+        associated_zone: this._associatedZone,
+      } as DeviceTrackerEntityOptions;
     }
     if (
       domain === "weather" &&
@@ -1379,6 +1486,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._calendarColor = ev.detail.value || null;
   }
 
+  private _associatedZoneChanged(ev: CustomEvent): void {
+    fireEvent(this, "change");
+    this._associatedZone = ev.detail.value || "zone.home";
+  }
+
   private _precipitationUnitChanged(ev: HaSelectSelectEvent): void {
     fireEvent(this, "change");
     this._precipitation_unit = ev.detail.value;
@@ -1510,6 +1622,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     } else {
       this._hiddenBy = "user";
     }
+  }
+
+  private _resetNameAndOpenDeviceSettings() {
+    this._name = this.entry.name || "";
+    fireEvent(this, "change");
+
+    this._openDeviceSettings();
   }
 
   private _openDeviceSettings() {

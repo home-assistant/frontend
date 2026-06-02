@@ -2,7 +2,9 @@ import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
@@ -20,6 +22,10 @@ import "./ha-list";
 export class HaFilterBlueprints extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   @property({ attribute: false }) public value?: string[];
 
   @property() public type?: "automation" | "script";
@@ -31,6 +37,8 @@ export class HaFilterBlueprints extends LitElement {
   @state() private _shouldRender = false;
 
   @state() private _blueprints?: Blueprints;
+
+  @query("ha-list") private _list?: HTMLElement;
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -52,7 +60,7 @@ export class HaFilterBlueprints extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.blueprint.caption")}
+          ${this._localize("ui.panel.config.blueprint.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -96,8 +104,7 @@ export class HaFilterBlueprints extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (this.narrow || !this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+        this._list!.style.height = `${this.clientHeight - 49}px`;
       }, 300);
     }
   }

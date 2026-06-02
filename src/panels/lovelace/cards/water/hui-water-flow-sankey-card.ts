@@ -160,10 +160,14 @@ class HuiWaterFlowSankeyCard
     // When there are no source meters, pre-compute total device flow so the
     // home node has the correct value (sum of all device consumption) rather
     // than 0. This avoids a broken sankey where the root node has value=0
-    // while its children have positive values.
+    // while its children have positive values. Skip sub-trackers so the
+    // total only reflects top-level devices and we don't double-count.
     let totalDeviceFlow = 0;
     if (waterSources.length === 0) {
       prefs.device_consumption_water.forEach((device) => {
+        if (device.included_in_stat) {
+          return;
+        }
         if (device.stat_rate) {
           totalDeviceFlow += this._getCurrentFlowRate(device.stat_rate);
         }

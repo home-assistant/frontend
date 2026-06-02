@@ -1,11 +1,16 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiChartLine, mdiHelpCircleOutline, mdiShape } from "@mdi/js";
+import {
+  mdiChartLine,
+  mdiHelpCircleOutline,
+  mdiPencil,
+  mdiShape,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import { fireEvent } from "../../common/dom/fire_event";
+import { type HASSDomEvent, fireEvent } from "../../common/dom/fire_event";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -52,6 +57,16 @@ const SEARCH_KEYS = [
   { name: "statisticId", weight: 3 },
   { name: "id", weight: 2 },
 ];
+
+export interface StatisticElementChangedEvent {
+  statisticId: string;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "edit-statistics-element": StatisticElementChangedEvent;
+  }
+}
 
 @customElement("ha-statistic-picker")
 export class HaStatisticPicker extends LitElement {
@@ -130,6 +145,8 @@ export class HaStatisticPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
+  @property({ attribute: "can-edit", type: Boolean }) public canEdit?: boolean;
+
   public willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && !this.statisticIds) ||
@@ -142,6 +159,7 @@ export class HaStatisticPicker extends LitElement {
   private async _getStatisticIds() {
     this.statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
     this._picker?.requestUpdate();
+    this._valueRenderer = this._makeValueRenderer();
   }
 
   private _getItems = () =>
@@ -210,7 +228,10 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const isRTL = computeRTL(hass);
+      const isRTL = computeRTL(
+        hass.language,
+        hass.translationMetadata.translations
+      );
 
       const output: StatisticComboBoxItem[] = [];
 
@@ -314,7 +335,7 @@ export class HaStatisticPicker extends LitElement {
     }
   );
 
-  private _valueRenderer: PickerValueRenderer = (value) => {
+  private _renderValue(value: string) {
     const statisticId = value;
 
     const item = this._computeItem(statisticId);
@@ -337,8 +358,29 @@ export class HaStatisticPicker extends LitElement {
       ${item.secondary
         ? html`<span slot="supporting-text">${item.secondary}</span>`
         : nothing}
+      ${this.canEdit
+        ? html`<ha-icon-button
+            slot="end"
+            .value=${statisticId}
+            .label=${this.hass.localize("ui.common.edit")}
+            .path=${mdiPencil}
+            @click=${this._editItem}
+          ></ha-icon-button>`
+        : nothing}
     `;
-  };
+  }
+
+  private _makeValueRenderer(): PickerValueRenderer {
+    return (value) => this._renderValue(value);
+  }
+
+  private _valueRenderer: PickerValueRenderer = this._makeValueRenderer();
+
+  private _editItem(ev: HASSDomEvent<StatisticElementChangedEvent>) {
+    ev.stopPropagation();
+    const statisticId = (ev.currentTarget as any).value;
+    fireEvent(this, "edit-statistics-element", { statisticId });
+  }
 
   private _computeItem(statisticId: string): StatisticComboBoxItem {
     const stateObj = this.hass.states[statisticId];
@@ -353,7 +395,10 @@ export class HaStatisticPicker extends LitElement {
         this.hass.floors
       );
 
-      const isRTL = computeRTL(this.hass);
+      const isRTL = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
 
       const primary = entityName || deviceName || statisticId;
       const secondary = [areaName, entityName ? deviceName : undefined]

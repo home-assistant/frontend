@@ -13,7 +13,10 @@ import {
 } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
-import { fireEvent } from "../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -52,6 +55,7 @@ export interface PickerComboBoxItem {
   id: string;
   primary: string;
   secondary?: string;
+  disabled?: boolean;
   search_labels?: Record<string, string | null>;
   sorting_label?: string;
   icon_path?: string;
@@ -63,6 +67,12 @@ export interface PickerComboBoxIndexSelectedDetail {
   index: number;
   newTab?: boolean;
 }
+
+type PickerComboBoxRowElement = HTMLDivElement & {
+  disabled?: boolean;
+  index: number;
+  value: string;
+};
 
 export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 const PADDING_ID = "___padding___";
@@ -156,6 +166,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
   @property({ type: Boolean, reflect: true }) public clearable = false;
+
+  @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
 
   @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
 
@@ -332,7 +344,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _getItems = () => {
     let items = [...(this.getItems(this._search, this._selectedSection) || [])];
 
-    if (!this.sections?.length) {
+    if (!this.sections?.length && !this.noSort) {
       items = items.sort((entityA, entityB) => {
         const sortLabelA =
           typeof entityA === "string" ? entityA : entityA.sorting_label;
@@ -425,6 +437,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       class="combo-box-row ${this.value === item.id ? "current-value" : ""}"
       .value=${item.id}
       .index=${index}
+      .disabled=${item.disabled}
       @click=${this._valueSelected}
     >
       ${renderer(item, index)}
@@ -437,10 +450,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._listScrolled = top > 0;
   }
 
-  private _valueSelected = (ev: MouseEvent) => {
+  private _valueSelected = (
+    ev: MouseEvent & HASSDomCurrentTargetEvent<PickerComboBoxRowElement>
+  ) => {
     ev.stopPropagation();
-    const value = (ev.currentTarget as any).value as string;
-    const index = Number((ev.currentTarget as any).index);
+    const { disabled, index, value } = ev.currentTarget;
+    if (disabled) {
+      return;
+    }
     const newValue = value?.trim();
     const newTab = ev.ctrlKey || ev.metaKey;
 
@@ -728,7 +745,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       (
         this.virtualizerElement?.items as (PickerComboBoxItem | string)[]
       ).forEach((item, index) => {
-        if (typeof item !== "string") {
+        if (typeof item !== "string" && !item.disabled) {
           this._fireSelectedEvents(item.id, index, newTab);
         }
       });
@@ -748,7 +765,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     const item = this.virtualizerElement?.items[
       this._selectedItemIndex
     ] as PickerComboBoxItem;
-    if (item) {
+    if (item && !item.disabled) {
       this._fireSelectedEvents(item.id, this._selectedItemIndex, newTab);
     }
   };

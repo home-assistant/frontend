@@ -71,7 +71,6 @@ export default class HaAutomationActionEditor extends LitElement {
                   `
                 : nothing}
               <ha-yaml-editor
-                .hass=${this.hass}
                 .defaultValue=${this.action}
                 @value-changed=${this._onYamlChange}
                 .readOnly=${this.disabled}
@@ -108,6 +107,7 @@ export default class HaAutomationActionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...(this.action.alias ? { alias: this.action.alias } : {}),
+      ...(this.action.note ? { note: this.action.note } : {}),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

@@ -136,7 +136,6 @@ class DialogNewDashboard extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         flexcontent
         width="large"
@@ -300,9 +299,10 @@ class DialogNewDashboard extends LitElement implements HassDialog {
       const options: IFuseOptions<CustomStrategyEntry> = {
         keys: ["type", "name", "description"],
         isCaseSensitive: false,
-        threshold: 0.3,
-        ignoreLocation: true,
         minMatchCharLength: Math.min(filter.length, 2),
+        threshold: 0.3,
+        ignoreDiacritics: true,
+        ignoreLocation: true,
       };
       const fuse = new Fuse(strategies, options);
       return fuse.search(filter).map((result) => result.item);

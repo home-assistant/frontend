@@ -626,7 +626,6 @@ export class HaConfigEntryRow extends LitElement {
   private _handleReconfigure = async () => {
     showConfigFlowDialog(this, {
       startFlowHandler: this.data.entry.domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(
         this.hass,
         this.data.entry.domain

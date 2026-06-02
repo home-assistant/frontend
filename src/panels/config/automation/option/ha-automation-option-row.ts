@@ -3,6 +3,8 @@ import {
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiDelete,
   mdiDotsVertical,
   mdiPlusCircleMultipleOutline,
@@ -17,8 +19,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import "../../../../components/ha-automation-row";
-import type { HaAutomationRow } from "../../../../components/ha-automation-row";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
+import "../../../../components/automation/ha-automation-row";
+import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
@@ -37,11 +40,11 @@ import type { Action, Option } from "../../../../data/script";
 import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showEditorToast } from "../editor-toast";
 import "../action/ha-automation-action";
 import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
 import type HaAutomationCondition from "../condition/ha-automation-condition";
+import { showEditorToast } from "../editor-toast";
 import {
   editorStyles,
   indentStyle,
@@ -138,8 +141,12 @@ export default class HaAutomationOptionRow extends LitElement {
       </div>
     `;
   }
-
   private _renderRow() {
+    const noteTooltipText = truncateWithEllipsis(
+      this.option?.note?.trim() || "",
+      250
+    );
+
     return html`
       <h3 slot="header">
         ${this.option
@@ -150,6 +157,20 @@ export default class HaAutomationOptionRow extends LitElement {
           : this.hass.localize(
               "ui.panel.config.automation.editor.actions.type.choose.default"
             )}
+        ${this.option?.note?.trim()
+          ? html`
+              <ha-svg-icon
+                id="note-icon"
+                tabindex="0"
+                .path=${mdiCommentTextOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.note.label"
+                )}
+                class="note-indicator"
+              ></ha-svg-icon>
+              <ha-tooltip for="note-icon"><p>${noteTooltipText}</p></ha-tooltip>
+            `
+          : nothing}
       </h3>
 
       <slot name="icons" slot="icons"></slot>
@@ -174,6 +195,17 @@ export default class HaAutomationOptionRow extends LitElement {
                 ${this._renderOverflowLabel(
                   this.hass.localize(
                     "ui.panel.config.automation.editor.triggers.rename"
+                  )
+                )}
+              </ha-dropdown-item>
+              <ha-dropdown-item value="edit_note">
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiCommentEditOutline}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    `ui.panel.config.automation.editor.note.${this.option?.note ? "edit" : "add"}`
                   )
                 )}
               </ha-dropdown-item>
@@ -361,6 +393,9 @@ export default class HaAutomationOptionRow extends LitElement {
       case "rename":
         this._renameOption();
         break;
+      case "edit_note":
+        this._editNoteOption();
+        break;
       case "delete":
         this._removeOption();
         break;
@@ -424,6 +459,39 @@ export default class HaAutomationOptionRow extends LitElement {
     }
   };
 
+  private _editNoteOption = async (): Promise<void> => {
+    if (!this.option) {
+      return;
+    }
+    const note = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.note.${this.option.note ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.note.label"
+      ),
+      inputType: "string",
+      defaultValue: this.option.note,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (note !== null) {
+      const value: Option = { ...this.option };
+      if (note === "") {
+        delete value.note;
+      } else {
+        value.note = note;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected) {
+        this.openSidebar(value); // refresh sidebar
+      }
+    }
+  };
+
   private _conditionChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const conditions = ev.detail.value as Condition[];
@@ -455,7 +523,8 @@ export default class HaAutomationOptionRow extends LitElement {
     this.openSidebar();
   }
 
-  public openSidebar(): void {
+  public openSidebar(option?: Option): void {
+    const sidebarOption = option ?? this.option;
     fireEvent(this, "open-sidebar", {
       close: (focus?: boolean) => {
         this._selected = false;
@@ -467,9 +536,11 @@ export default class HaAutomationOptionRow extends LitElement {
       rename: () => {
         this._renameOption();
       },
+      editNote: this._editNoteOption,
       delete: this._removeOption,
       duplicate: this._duplicateOption,
       defaultOption: !!this.defaultActions,
+      note: sidebarOption?.note,
     } satisfies OptionSidebarConfig);
     this._selected = true;
     this._collapsed = false;

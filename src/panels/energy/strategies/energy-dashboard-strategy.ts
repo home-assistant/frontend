@@ -1,6 +1,9 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  EMPTY_PREFERENCES,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { EnergyPreferences } from "../../../data/energy";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -58,14 +61,9 @@ const WIZARD_VIEW = {
   cards: [{ type: "custom:energy-setup-wizard-card" }],
 };
 
-const EMPTY_PREFERENCES: EnergyPreferences = {
-  energy_sources: [],
-  device_consumption: [],
-  device_consumption_water: [],
-};
-
 export interface EnergyDashboardStrategyConfig extends LovelaceStrategyConfig {
   type: "energy";
+  default_collection?: string;
 }
 
 @customElement("energy-dashboard-strategy")
@@ -74,7 +72,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     _config: EnergyDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
-    const prefs = await fetchEnergyPrefs(hass);
+    const prefs = await fetchEnergyPrefs(hass, _config.default_collection);
 
     if (
       !prefs ||
@@ -147,20 +145,19 @@ export class EnergyDashboardStrategy extends ReactiveElement {
 }
 
 async function fetchEnergyPrefs(
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  defaultCollection?: string
 ): Promise<EnergyPreferences> {
   const collection = getEnergyDataCollection(hass, {
-    key: DEFAULT_ENERGY_COLLECTION_KEY,
+    key: defaultCollection || DEFAULT_ENERGY_COLLECTION_KEY,
   });
-  try {
-    await collection.refresh();
-  } catch (err: any) {
-    if (err.code === "not_found") {
-      return EMPTY_PREFERENCES;
-    }
-    throw err;
-  }
-  return collection.prefs || EMPTY_PREFERENCES;
+
+  return await new Promise<EnergyPreferences>((resolve) => {
+    const unsub = collection.subscribe((data) => {
+      unsub();
+      resolve(data.prefs || EMPTY_PREFERENCES);
+    });
+  });
 }
 
 declare global {

@@ -5,9 +5,9 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-button";
-import "../components/ha-icon-button-next";
-import "../components/ha-md-list";
-import "../components/ha-md-list-item";
+import "../components/ha-icon-next";
+import "../components/item/ha-list-item-button";
+import "../components/list/ha-list-base";
 import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
 
@@ -37,8 +37,8 @@ class OnboardingWelcome extends LitElement {
         </div>
       </div>
 
-      <ha-md-list>
-        <ha-md-list-item type="button" @click=${this._restoreBackupUpload}>
+      <ha-list-base>
+        <ha-list-item-button @click=${this._restoreBackupUpload}>
           <div slot="headline">
             ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
           </div>
@@ -47,18 +47,18 @@ class OnboardingWelcome extends LitElement {
               "ui.panel.page-onboarding.restore.options.upload_description"
             )}
           </div>
-          <ha-icon-button-next slot="end"></ha-icon-button-next>
-        </ha-md-list-item>
-        <ha-md-list-item type="button" @click=${this._restoreBackupCloud}>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+        <ha-list-item-button @click=${this._restoreBackupCloud}>
           <div slot="headline">Home Assistant Cloud</div>
           <div slot="supporting-text">
             ${this.localize(
               "ui.panel.page-onboarding.restore.ha-cloud.description"
             )}
           </div>
-          <ha-icon-button-next slot="end"></ha-icon-button-next>
-        </ha-md-list-item>
-      </ha-md-list>
+          <ha-icon-next slot="end"></ha-icon-next>
+        </ha-list-item-button>
+      </ha-list-base>
     `;
   }
 
@@ -123,11 +123,10 @@ class OnboardingWelcome extends LitElement {
           padding: 0 var(--ha-space-4);
         }
 
-        ha-md-list {
+        ha-list-base {
           width: 100%;
           padding-bottom: 0;
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
+          --ha-row-item-padding-inline: 0;
         }
       `,
     ];

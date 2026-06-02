@@ -190,7 +190,6 @@ class MoreInfoWeather extends LitElement {
             <ha-state-icon
               class="weather-icon"
               .stateObj=${this.stateObj}
-              .hass=${this.hass}
             ></ha-state-icon>
           `}
         </div>
@@ -202,7 +201,6 @@ class MoreInfoWeather extends LitElement {
             <div class="time-ago">
               <ha-relative-time
                 id="relative-time"
-                .hass=${this.hass}
                 .datetime=${this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>
@@ -214,7 +212,6 @@ class MoreInfoWeather extends LitElement {
                     )}:
                   </span>
                   <ha-relative-time
-                    .hass=${this.hass}
                     .datetime=${this.stateObj.last_changed}
                     capitalize
                   ></ha-relative-time>
@@ -226,7 +223,6 @@ class MoreInfoWeather extends LitElement {
                     )}:
                   </span>
                   <ha-relative-time
-                    .hass=${this.hass}
                     .datetime=${this.stateObj.last_updated}
                     capitalize
                   ></ha-relative-time>

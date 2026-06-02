@@ -1,11 +1,17 @@
 import { consume } from "@lit/context";
-import type { CSSResult, LitElement, TemplateResult } from "lit";
+import type {
+  CSSResult,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -135,6 +141,21 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected entityRegCreated?: (
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
+
+    protected willUpdate(changedProps: PropertyValues): void {
+      super.willUpdate(changedProps);
+      if (changedProps.has("registryEntry")) {
+        const areaId = this.registryEntry?.area_id;
+        if (areaId) {
+          fireEvent(this, "hass-related-context", {
+            itemType: "area",
+            itemId: areaId,
+          });
+        } else {
+          fireEvent(this, "hass-related-context", undefined);
+        }
+      }
+    }
 
     protected renderLoading(): TemplateResult {
       return html`

@@ -70,7 +70,6 @@ export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
   }
 
   let stateName = "";
-  let tooltip = "";
 
   if (config.entity) {
     stateName =
@@ -92,7 +91,5 @@ export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
 
   const newline = tapTooltip && holdTooltip ? "\n" : "";
 
-  tooltip = tapTooltip + newline + holdTooltip;
-
-  return tooltip;
+  return tapTooltip + newline + holdTooltip;
 };

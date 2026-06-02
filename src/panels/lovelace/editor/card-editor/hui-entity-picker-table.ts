@@ -97,7 +97,10 @@ export class HuiEntityPickerTable extends LitElement {
 
     const columns = this._columns(
       this.narrow,
-      computeRTL(this.hass),
+      computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      ),
       showEntityId
     );
 
@@ -216,7 +219,6 @@ export class HuiEntityPickerTable extends LitElement {
         hidden: narrow,
         template: (entity) => html`
           <ha-relative-time
-            .hass=${this.hass!}
             .datetime=${entity.last_changed}
             capitalize
           ></ha-relative-time>

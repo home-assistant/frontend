@@ -1,8 +1,8 @@
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import type { TemplateResult, PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeAreaName } from "../common/entity/compute_area_name";
@@ -12,6 +12,7 @@ import { areaComboBoxKeys, getAreas } from "../data/area/area_picker";
 import { createAreaRegistryEntry } from "../data/area/area_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
+import type { HaEntityPickerEntityFilterFunc } from "../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box-item";
@@ -85,12 +86,48 @@ export class HaAreaPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
+  @state() private _pendingAreaId?: string;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      this._pendingAreaId &&
+      changedProperties.has("hass") &&
+      this.hass.areas !== changedProperties.get("hass")?.areas &&
+      this.hass.areas[this._pendingAreaId]
+    ) {
+      this._setValue(this._pendingAreaId);
+      this._pendingAreaId = undefined;
+    }
+  }
+
   public async open() {
     await this.updateComplete;
     await this._picker?.open();
   }
 
-  private _getAreasMemoized = memoizeOne(getAreas);
+  private _getAreasMemoized = memoizeOne(
+    (
+      haAreas: HomeAssistant["areas"],
+      haFloors: HomeAssistant["floors"],
+      haDevices: HomeAssistant["devices"],
+      haEntities: HomeAssistant["entities"],
+      haStates: HomeAssistant["states"],
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeAreas?: string[]
+    ) =>
+      getAreas(haAreas, haFloors, haDevices, haEntities, haStates, {
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeAreas,
+      })
+  );
 
   // Recompute value renderer when the areas change
   private _computeValueRenderer = memoizeOne(
@@ -243,7 +280,11 @@ export class HaAreaPicker extends LitElement {
         createEntry: async (values) => {
           try {
             const area = await createAreaRegistryEntry(this.hass, values);
-            this._setValue(area.area_id);
+            if (this.hass.areas[area.area_id]) {
+              this._setValue(area.area_id);
+            } else {
+              this._pendingAreaId = area.area_id;
+            }
           } catch (err: any) {
             showAlertDialog(this, {
               title: this.hass.localize(

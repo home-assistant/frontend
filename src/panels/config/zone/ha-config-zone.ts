@@ -234,7 +234,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
@@ -433,6 +432,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _editZone(id: string) {
     await this.updateComplete;
+    // eslint-disable-next-line lit/prefer-query-decorators
     (this.shadowRoot?.querySelector(`[id="${id}"]`) as HTMLElement)?.click();
   }
 

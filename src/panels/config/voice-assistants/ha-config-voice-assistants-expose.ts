@@ -170,7 +170,6 @@ export class VoiceAssistantsExpose extends LitElement {
           <ha-state-icon
             title=${ifDefined(entry.entity?.state)}
             .stateObj=${entry.entity}
-            .hass=${this.hass}
           ></ha-state-icon>
         `,
       },

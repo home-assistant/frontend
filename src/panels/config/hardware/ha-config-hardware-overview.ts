@@ -12,7 +12,7 @@ import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list-item";
@@ -57,8 +57,6 @@ const DATA_SET_CONFIG: SeriesOption = {
 @customElement("ha-config-hardware-overview")
 class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -249,7 +247,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage
         back-path="/config/system"
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${hardwareTabs(this.hass)}
       >

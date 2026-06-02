@@ -8,7 +8,7 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
+import { hasAction, hasAnyAction } from "../common/has-action";
 import type { LovelaceHeaderFooter } from "../types";
 import type { PictureHeaderFooterConfig } from "./types";
 
@@ -56,9 +56,7 @@ export class HuiPictureHeaderFooter
       return nothing;
     }
 
-    const clickable = Boolean(
-      this._config.tap_action || this._config.hold_action
-    );
+    const clickable = hasAnyAction(this._config);
 
     return html`
       <img

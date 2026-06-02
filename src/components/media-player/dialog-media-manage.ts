@@ -100,7 +100,6 @@ class DialogMediaManage extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         ?prevent-scrim-close=${this._uploading || this._deleting}
         @closed=${this._dialogClosed}
@@ -228,7 +227,7 @@ class DialogMediaManage extends LitElement {
                 </ha-list>
               `}
         ${isComponentLoaded(this.hass.config, "hassio")
-          ? html`<ha-tip .hass=${this.hass}>
+          ? html`<ha-tip>
               ${this.hass.localize(
                 "ui.components.media-browser.file_management.tip_media_storage",
                 {

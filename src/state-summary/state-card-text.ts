@@ -6,7 +6,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
-import { isUnavailableState, UNAVAILABLE } from "../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import type { TextEntity } from "../data/text";
 import { setValue } from "../data/text";
 import type { HomeAssistant } from "../types";
@@ -40,7 +40,7 @@ class StateCardText extends LitElement {
     const value = (ev.target as HaInput).value ?? "";
 
     // Filter out invalid text states
-    if (value && isUnavailableState(value)) {
+    if (value && (value === UNAVAILABLE || value === UNKNOWN)) {
       (ev.target as HaInput).value = this.stateObj.state;
       return;
     }

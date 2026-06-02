@@ -247,11 +247,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             @click=${this._handleMoreInfo}
             .label=${stateLabel}
           >
-            <ha-state-icon
-              slot="icon"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></ha-state-icon>
+            <ha-state-icon slot="icon" .stateObj=${stateObj}></ha-state-icon>
           </ha-assist-chip>
         </h1>
         <div id="armActions" class="actions">

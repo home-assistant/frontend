@@ -114,6 +114,15 @@ export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set([
 export const UNIT_C = "°C";
 export const UNIT_F = "°F";
 
+/** Length units. */
+export const UNIT_IN = "in";
+export const UNIT_KM = "km";
+export const UNIT_MM = "mm";
+
+/** Pressure units. */
+export const UNIT_HPA = "hPa";
+export const UNIT_INHG = "inHg";
+
 /** Entity ID of the default view. */
 export const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 

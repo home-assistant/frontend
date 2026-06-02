@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -13,22 +14,21 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { ensureArray } from "../../../../../common/array/ensure-array";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import type { StateTrigger } from "../../../../../data/automation";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { ANY_STATE_VALUE } from "../../../../../components/entity/const";
-import type { HomeAssistant } from "../../../../../types";
-import { baseTriggerStruct, forDictStruct } from "../../structs";
-import type { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
+import type { StateTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import { baseTriggerStruct, forDictStruct } from "../../structs";
+import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -303,6 +303,13 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         ? "ui.components.entity.entity-picker.entity"
         : `ui.panel.config.automation.editor.triggers.type.state.${schema.name}`
     );
+
+  static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
+  `;
 }
 
 declare global {

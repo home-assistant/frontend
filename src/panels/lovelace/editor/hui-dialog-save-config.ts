@@ -63,7 +63,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     );
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${heading}
         prevent-scrim-close
@@ -121,7 +120,6 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                     )}
                   </p>
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._params!.lovelace.config}
                     autofocus
                   ></ha-yaml-editor>

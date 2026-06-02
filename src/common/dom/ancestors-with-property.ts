@@ -21,8 +21,9 @@ export const closestWithProperty = (
     own
       ? Object.prototype.hasOwnProperty.call(element, property)
       : element && property in element
-  )
+  ) {
     return element;
+  }
   return closestWithProperty(element, property, own);
 };
 

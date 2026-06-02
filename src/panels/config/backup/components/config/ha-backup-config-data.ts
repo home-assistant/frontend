@@ -15,13 +15,13 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/ha-tooltip";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
 import type { HostDisksUsage } from "../../../../../data/hassio/host";
 import { fetchHostDisksUsage } from "../../../../../data/hassio/host";
@@ -238,8 +238,8 @@ class HaBackupConfigData extends LitElement {
 
     return html`
       ${this._renderSizeEstimate()}
-      <ha-md-list>
-        <ha-md-list-item>
+      <ha-list-base>
+        <ha-list-item-base>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           <span slot="headline">
             ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
@@ -260,10 +260,10 @@ class HaBackupConfigData extends LitElement {
             .checked=${data.homeassistant}
             .disabled=${this.forceHomeAssistant || data.database}
           ></ha-switch>
-        </ha-md-list-item>
+        </ha-list-item-base>
 
         ${this._showDbOption
-          ? html`<ha-md-list-item>
+          ? html`<ha-list-item-base>
               <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
               <span slot="headline">
                 ${this.hass.localize("ui.panel.config.backup.data.history")}
@@ -279,11 +279,11 @@ class HaBackupConfigData extends LitElement {
                 @change=${this._switchChanged}
                 .checked=${data.database}
               ></ha-switch>
-            </ha-md-list-item>`
+            </ha-list-item-base>`
           : nothing}
         ${isHassio
           ? html`
-              <ha-md-list-item>
+              <ha-list-item-base>
                 <ha-svg-icon
                   slot="start"
                   .path=${mdiPlayBoxMultiple}
@@ -302,9 +302,9 @@ class HaBackupConfigData extends LitElement {
                   @change=${this._switchChanged}
                   .checked=${data.media}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-list-item-base>
 
-              <ha-md-list-item>
+              <ha-list-item-base>
                 <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
                 <span slot="headline">
                   ${this.hass.localize(
@@ -322,11 +322,11 @@ class HaBackupConfigData extends LitElement {
                   @change=${this._switchChanged}
                   .checked=${data.share}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-list-item-base>
 
               ${this._hasLocalAddons(this._addons)
                 ? html`
-                    <ha-md-list-item>
+                    <ha-list-item-base>
                       <ha-svg-icon
                         slot="start"
                         .path=${mdiFolder}
@@ -347,12 +347,12 @@ class HaBackupConfigData extends LitElement {
                         @change=${this._switchChanged}
                         .checked=${data.local_addons}
                       ></ha-switch>
-                    </ha-md-list-item>
+                    </ha-list-item-base>
                   `
                 : nothing}
               ${this._addons.length
                 ? html`
-                    <ha-md-list-item>
+                    <ha-list-item-base>
                       <ha-svg-icon
                         slot="start"
                         .path=${mdiPuzzle}
@@ -392,12 +392,12 @@ class HaBackupConfigData extends LitElement {
                           },
                         ]}
                       ></ha-select>
-                    </ha-md-list-item>
+                    </ha-list-item-base>
                   `
                 : nothing}
             `
           : nothing}
-      </ha-md-list>
+      </ha-list-base>
       ${isHassio && this._showAddons && this._addons.length
         ? html`
             <ha-expansion-panel
@@ -551,13 +551,15 @@ class HaBackupConfigData extends LitElement {
     ha-spinner {
       --ha-spinner-size: 24px;
     }
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
+    }
+    ha-list-item-base::part(start) {
+      color: var(--ha-color-text-secondary);
     }
     ha-select {
       min-width: 210px;

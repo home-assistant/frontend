@@ -2,10 +2,11 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiDotsVertical } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-icon-button";
@@ -26,7 +27,9 @@ export interface IconOverflowMenuItem {
 
 @customElement("ha-icon-overflow-menu")
 export class HaIconOverflowMenu extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Array }) public items: IconOverflowMenuItem[] = [];
 
@@ -44,7 +47,7 @@ export class HaIconOverflowMenu extends LitElement {
               @click=${stopPropagation}
             >
               <ha-icon-button
-                .label=${this.hass.localize("ui.common.overflow_menu")}
+                .label=${this._localize("ui.common.overflow_menu")}
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
