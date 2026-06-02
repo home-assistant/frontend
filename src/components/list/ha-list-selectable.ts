@@ -1,5 +1,4 @@
 import { customElement } from "lit/decorators";
-import type { HaListItemOption } from "../item/ha-list-item-option";
 import { HaListBase } from "./ha-list-base";
 import { SelectableMixin } from "./ha-list-selectable-mixin";
 
@@ -17,13 +16,7 @@ import { SelectableMixin } from "./ha-list-selectable-mixin";
  * @fires ha-list-item-deselected - An option was deselected (multi mode only). `detail: number` (option index).
  */
 @customElement("ha-list-selectable")
-export class HaListSelectable extends SelectableMixin(HaListBase) {
-  public get selectedItems(): HaListItemOption[] {
-    return this.sortedSelectedIndices()
-      .map((i) => this.items[i] as HaListItemOption | undefined)
-      .filter((it): it is HaListItemOption => !!it);
-  }
-}
+export class HaListSelectable extends SelectableMixin(HaListBase) {}
 
 declare global {
   interface HTMLElementTagNameMap {
