@@ -2,9 +2,9 @@ import { mdiOpenInNew } from "@mdi/js";
 import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../src/common/url/search-params";
+import "../../src/components/animation/ha-fade-in";
 import "../../src/components/ha-alert";
 import "../../src/components/ha-button";
-import "../../src/components/animation/ha-fade-in";
 import "../../src/components/ha-spinner";
 import "../../src/components/ha-svg-icon";
 import "../../src/components/progress/ha-progress-bar";
@@ -222,14 +222,17 @@ class HaLandingPage extends LandingPageBaseElement {
         flex-direction: column;
         gap: var(--ha-space-4);
       }
-      ha-language-picker {
-        min-width: 200px;
-      }
       ha-alert p {
         text-align: unset;
       }
       .footer ha-svg-icon {
         --mdc-icon-size: var(--ha-space-5);
+      }
+      ha-language-picker {
+        margin-inline-start: calc(-1 * var(--ha-space-4));
+      }
+      ha-button {
+        margin-inline-end: calc(-1 * var(--ha-space-2));
       }
       ha-fade-in {
         min-height: calc(100vh - 64px - 88px);

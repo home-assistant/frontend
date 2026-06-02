@@ -11213,7 +11213,7 @@
   },
   "landing-page": {
     "header": "Preparing Home Assistant",
-    "subheader": "This may take 20 minutes or more",
+    "subheader": "The latest version of Home Assistant is being downloaded. This may take 20 minutes or more.",
     "show_details": "Show details",
     "hide_details": "Hide details",
     "network_issue": {
