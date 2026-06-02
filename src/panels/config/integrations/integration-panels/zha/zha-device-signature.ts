@@ -1,8 +1,10 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import type { ZHADevice } from "../../../../../data/zha";
+import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 
 @customElement("zha-device-zigbee-info")
@@ -35,9 +37,59 @@ class ZHADeviceZigbeeInfo extends LitElement {
     }
 
     return html`
-      <ha-code-editor mode="yaml" read-only .value=${this._signature} dir="ltr">
-      </ha-code-editor>
+      <ha-card class="device-page-card">
+        <div class="card-header">
+          <div class="card-title">
+            ${this.hass.localize(
+              "ui.panel.config.zha.device_page.tabs.signature"
+            )}
+          </div>
+          <div class="card-description">
+            ${this.hass.localize(
+              "ui.panel.config.zha.device_page.tab_descriptions.signature"
+            )}
+          </div>
+        </div>
+        <ha-code-editor
+          mode="yaml"
+          read-only
+          .value=${this._signature}
+          dir="ltr"
+        >
+        </ha-code-editor>
+      </ha-card>
     `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      css`
+        :host {
+          display: block;
+        }
+
+        .device-page-card {
+          overflow: hidden;
+        }
+
+        .card-header {
+          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
+        }
+
+        .card-title {
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-medium);
+          line-height: var(--ha-line-height-condensed);
+        }
+
+        .card-description {
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-m);
+          margin-top: var(--ha-space-1);
+        }
+      `,
+    ];
   }
 }
 

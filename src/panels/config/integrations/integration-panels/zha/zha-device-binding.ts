@@ -2,7 +2,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-progress-button";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { ZHADevice } from "../../../../../data/zha";
@@ -16,24 +15,29 @@ export class ZHADeviceBindingControl extends LitElement {
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @state() private _bindTargetIndex = -1;
+  @property({ attribute: false }) public bindableDevices: ZHADevice[] = [];
 
-  @state() private bindableDevices: ZHADevice[] = [];
+  @state() private _bindTargetIndex = -1;
 
   @state() private _deviceToBind?: ZHADevice;
 
   @state() private _bindingOperationInProgress = false;
 
   protected updated(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has("device")) {
+    const oldDevice = changedProperties.get("device");
+    const deviceChanged =
+      changedProperties.has("device") && this.device?.ieee !== oldDevice?.ieee;
+
+    if (deviceChanged || changedProperties.has("bindableDevices")) {
       this._bindTargetIndex = -1;
+      this._deviceToBind = undefined;
     }
     super.updated(changedProperties);
   }
 
   protected render(): TemplateResult {
     return html`
-      <ha-card class="content">
+      <div class="content">
         <div class="command-picker">
           <ha-select
             label=${this.hass!.localize(
@@ -69,7 +73,7 @@ export class ZHADeviceBindingControl extends LitElement {
             ${this.hass!.localize("ui.panel.config.zha.device_binding.bind")}
           </ha-progress-button>
         </div>
-      </ha-card>
+      </div>
     `;
   }
 
@@ -127,10 +131,8 @@ export class ZHADeviceBindingControl extends LitElement {
           width: 100%;
         }
 
-        .content {
-          padding: var(--ha-space-4) 0 0;
-          border: none;
-          outline: none;
+        :host {
+          display: block;
         }
 
         .command-picker {
@@ -142,14 +144,12 @@ export class ZHADeviceBindingControl extends LitElement {
           padding-bottom: 10px;
         }
 
-        .header {
-          flex-grow: 1;
-        }
         .card-actions {
           display: flex;
-          margin-top: var(--ha-space-2);
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2);
           justify-content: flex-end;
-          gap: var(--ha-space-3);
+          gap: var(--ha-space-2);
         }
       `,
     ];
