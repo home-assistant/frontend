@@ -385,7 +385,11 @@ export class DialogEnergyBatterySettings
           display: block;
           margin-bottom: var(--ha-space-4);
         }
-        ha-statistic-picker:last-of-type {
+        ha-input {
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
+        }
+        ha-input:last-of-type {
           margin-bottom: 0;
         }
       `,
