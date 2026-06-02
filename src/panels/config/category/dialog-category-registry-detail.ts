@@ -69,7 +69,7 @@ class DialogCategoryDetail extends DirtyStateProviderMixin<CategoryFormState>()(
         header-title=${entry
           ? this._i18n.localize("ui.panel.config.category.editor.edit")
           : this._i18n.localize("ui.panel.config.category.editor.create")}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
       >
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
