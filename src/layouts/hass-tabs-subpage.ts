@@ -139,6 +139,8 @@ export class HassTabsSubpage extends LitElement {
   );
 
   public willUpdate(changedProperties: PropertyValues<this>) {
+    this.toggleAttribute("narrow", this._narrow);
+
     if (changedProperties.has("route")) {
       const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
