@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -19,7 +18,6 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import { narrowViewportContext } from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
 
@@ -61,9 +59,7 @@ export class HassTabsSubpage extends LitElement {
 
   @property({ attribute: false }) public tabs!: PageNavigation[];
 
-  @state()
-  @consume({ context: narrowViewportContext, subscribe: true })
-  private _narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ type: Boolean, reflect: true, attribute: "is-wide" })
   public isWide = false;
@@ -120,7 +116,7 @@ export class HassTabsSubpage extends LitElement {
           <a href=${page.path} @click=${this._tabClicked}>
             <ha-tab
               .active=${page.path === activeTab?.path}
-              .narrow=${this._narrow}
+              .narrow=${this.narrow}
               .name=${page.translationKey
                 ? localizeFunc(page.translationKey)
                 : page.name}
@@ -155,18 +151,18 @@ export class HassTabsSubpage extends LitElement {
       this.hass.config.components,
       this.hass.language,
       this.hass.userData,
-      this._narrow,
+      this.narrow,
       this.localizeFunc || this.hass.localize
     );
     return html`
-      <div class="toolbar ${classMap({ narrow: this._narrow })}">
+      <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <slot name="toolbar">
           <div class="toolbar-content">
             ${this.mainPage || (!this.backPath && history.state?.root)
               ? html`
                   <ha-menu-button
                     .hass=${this.hass}
-                    .narrow=${this._narrow}
+                    .narrow=${this.narrow}
                   ></ha-menu-button>
                 `
               : this.backPath
@@ -182,12 +178,12 @@ export class HassTabsSubpage extends LitElement {
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
                   `}
-            ${this._narrow || !this.showTabs
+            ${this.narrow || !this.showTabs
               ? html`<div class="main-title">
                   <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
                 </div>`
               : ""}
-            ${this.showTabs && !this._narrow
+            ${this.showTabs && !this.narrow
               ? html`<div id="tabbar">${tabs}</div>`
               : ""}
             <div id="toolbar-icon">
@@ -195,7 +191,7 @@ export class HassTabsSubpage extends LitElement {
             </div>
           </div>
         </slot>
-        ${this.showTabs && this._narrow
+        ${this.showTabs && this.narrow
           ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
           : ""}
       </div>

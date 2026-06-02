@@ -27,6 +27,8 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public route!: Route;
 
   protected render() {
@@ -37,6 +39,7 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
         .tabs=${voiceAssistantTabs}

@@ -511,6 +511,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .backPath=${this._searchParams.has("historyBack")
           ? undefined
           : "/config"}

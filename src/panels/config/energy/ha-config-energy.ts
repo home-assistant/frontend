@@ -118,6 +118,7 @@ class HaConfigEnergy extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
           : "/config/lovelace/dashboards"}

@@ -234,6 +234,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .route=${this.route}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined

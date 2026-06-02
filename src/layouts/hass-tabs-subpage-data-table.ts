@@ -391,6 +391,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       <hass-tabs-subpage
         .hass=${this.hass}
         .localizeFunc=${this.localizeFunc}
+        .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}

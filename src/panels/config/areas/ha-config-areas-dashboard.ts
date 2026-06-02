@@ -82,6 +82,8 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public route!: Route;
 
   @state() private _hierarchy?: AreasFloorHierarchy;
@@ -167,6 +169,7 @@ export class HaConfigAreasDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined

@@ -98,6 +98,7 @@ class HaProfileSectionGeneral extends LitElement {
       <hass-tabs-subpage
         main-page
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .tabs=${profileSections}
         .route=${this.route}
       >
