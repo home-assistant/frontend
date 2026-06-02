@@ -165,13 +165,11 @@ class HaDomainIntegrations extends LitElement {
         : ""}
       ${(PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
         ? html`<ha-list-item-button
-            graphic="medium"
             .domain=${this.domain}
-            @request-selected=${this._standardPicked}
-            hasMeta
+            @click=${this._standardPicked}
           >
             <img
-              slot="graphic"
+              slot="start"
               loading="lazy"
               alt=""
               src=${brandsUrl(
@@ -185,14 +183,14 @@ class HaDomainIntegrations extends LitElement {
               crossorigin="anonymous"
               referrerpolicy="no-referrer"
             />
-            <span
+            <span slot="headline"
               >${this.hass.localize(
                 `ui.panel.config.integrations.add_${
                   this.domain as (typeof PROTOCOL_INTEGRATIONS)[number]
                 }_device`
               )}</span
             >
-            <ha-icon-next slot="meta"></ha-icon-next>
+            <ha-icon-next slot="end"></ha-icon-next>
           </ha-list-item-button>`
         : ""}
       ${this.integration &&
@@ -201,7 +199,7 @@ class HaDomainIntegrations extends LitElement {
         ? html`${this.flowsInProgress?.length
             ? html`<ha-list-item-button
                 .domain=${this.domain}
-                @request-selected=${this._integrationPicked}
+                @click=${this._integrationPicked}
                 .integration=${{
                   ...this.integration,
                   domain: this.domain,
@@ -211,14 +209,18 @@ class HaDomainIntegrations extends LitElement {
                   is_built_in: this.integration.is_built_in !== false,
                   cloud: this.integration.iot_class?.startsWith("cloud_"),
                 }}
-                hasMeta
               >
-                ${this.hass.localize("ui.panel.config.integrations.new_flow", {
-                  integration:
-                    this.integration.name ||
-                    domainToName(this.hass.localize, this.domain),
-                })}
-                <ha-icon-next slot="meta"></ha-icon-next>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.new_flow",
+                    {
+                      integration:
+                        this.integration.name ||
+                        domainToName(this.hass.localize, this.domain),
+                    }
+                  )}
+                </span>
+                <ha-icon-next slot="end"></ha-icon-next>
               </ha-list-item-button>`
             : html`<ha-integration-list-item
                 .domain=${this.domain}
