@@ -58,8 +58,6 @@ const DATA_SET_CONFIG: SeriesOption = {
 class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public route!: Route;
 
   @state() private _error?: string;
@@ -249,7 +247,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage
         back-path="/config/system"
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${hardwareTabs(this.hass)}
       >
