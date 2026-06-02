@@ -60,6 +60,7 @@ import type { SceneEntity } from "../../../data/scene";
 import type { ScriptEntity } from "../../../data/script";
 import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
+import { filterAddToSceneEntityIds } from "../../../dialogs/add-to/add-to";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-error-screen";
@@ -439,7 +440,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                           .path=${mdiPlus}
                         ></ha-svg-icon>
                         ${this.hass.localize(
-                          "ui.dialogs.more_info_control.add_to.title"
+                          "ui.dialogs.more_info_control.add_to.item"
                         )}
                       </ha-button>`
                     : nothing}
@@ -781,9 +782,17 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     if (!area) {
       return;
     }
+    const sceneEntityIds = filterAddToSceneEntityIds(
+      this._areaEntityIds,
+      this._entityReg,
+      this.hass.states
+    );
     showAreaAddToDialog(this, {
       areaId: area.area_id,
-      entityIds: this._areaEntityIds,
+      entityIds: sceneEntityIds,
+      canCreateScene:
+        isComponentLoaded(this.hass.config, "scene") &&
+        sceneEntityIds.length > 0,
     });
   }
 

@@ -12,8 +12,6 @@ import {
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-adaptive-dialog";
-import "../../../../components/ha-list";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-spinner";
 import type { AutomationConfig } from "../../../../data/automation";
 import { showAutomationEditor } from "../../../../data/automation";
@@ -35,14 +33,37 @@ import {
 } from "../../../../data/device/device_automation";
 import type { ScriptConfig } from "../../../../data/script";
 import { showScriptEditor } from "../../../../data/script";
-import type { SceneEntities } from "../../../../data/scene";
 import { showSceneEditor } from "../../../../data/scene";
+import "../../../../dialogs/add-to/ha-add-to-action-list";
+import type {
+  AddToActionListActionSelectedEvent,
+  AddToActionListItem,
+  AddToActionListSection,
+} from "../../../../dialogs/add-to/ha-add-to-action-list";
 import {
   addToActionHandler,
-  type AddToActionKey,
-} from "../../../../dialogs/more-info/add-to";
+  createAddToSceneEntities,
+  type AddToAutomationScriptActionKey,
+} from "../../../../dialogs/add-to/add-to";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { DeviceAddToDialogParams } from "./show-dialog-device-add-to";
+
+type DeviceLegacyAddToActionType =
+  | "trigger"
+  | "condition"
+  | "automation_action"
+  | "script_action";
+
+type DeviceAddToAction =
+  | (AddToActionListItem & {
+      kind: "add-to";
+      key: AddToAutomationScriptActionKey;
+    })
+  | (AddToActionListItem & {
+      kind: "legacy";
+      legacyType: DeviceLegacyAddToActionType;
+    })
+  | (AddToActionListItem & { kind: "scene" });
 
 @customElement("dialog-device-add-to")
 export class DialogDeviceAddTo extends LitElement {
@@ -132,11 +153,18 @@ export class DialogDeviceAddTo extends LitElement {
       return nothing;
     }
 
+    const deviceName = computeDeviceNameDisplay(
+      this._params.device,
+      this._i18n.localize,
+      this._states
+    );
+
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
         header-title=${this._i18n.localize(
-          "ui.dialogs.more_info_control.add_to.title"
+          "ui.dialogs.more_info_control.add_to.title",
+          { target: deviceName }
         )}
         @closed=${this._dialogClosed}
       >
@@ -151,80 +179,62 @@ export class DialogDeviceAddTo extends LitElement {
     if (!this._params) {
       return nothing;
     }
-    const deviceName = computeDeviceNameDisplay(
-      this._params.device,
-      this._i18n.localize,
-      this._states
-    );
+
+    const sections: AddToActionListSection<DeviceAddToAction>[] = [
+      {
+        title: this._i18n.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        ),
+        actions: [
+          {
+            kind: "add-to",
+            key: "automation_trigger",
+            iconPath: mdiRobotOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.action_options.automation_trigger"
+            ),
+          },
+          {
+            kind: "add-to",
+            key: "automation_condition",
+            iconPath: mdiPlaylistCheck,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.action_options.automation_condition"
+            ),
+          },
+          {
+            kind: "add-to",
+            key: "automation_action",
+            iconPath: mdiPlayCircleOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.action_options.automation_action"
+            ),
+          },
+        ],
+      },
+      {
+        title: this._i18n.localize(
+          "ui.panel.config.devices.script.scripts_heading"
+        ),
+        actions: [
+          {
+            kind: "add-to",
+            key: "script_action",
+            iconPath: mdiScriptTextOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.action_options.script_action"
+            ),
+          },
+        ],
+      },
+    ];
+    this._addSceneSection(sections);
 
     return html`
-      <h3 class="section-header">
-        ${this._i18n.localize(
-          "ui.panel.config.devices.automation.automations_heading"
-        )}
-      </h3>
-      <ha-list>
-        <ha-list-item
-          graphic="icon"
-          data-type="automation_trigger"
-          @click=${this._handleNewAction}
-          data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiRobotOutline}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-            { target: deviceName }
-          )}
-        </ha-list-item>
-        <ha-list-item
-          graphic="icon"
-          data-type="automation_condition"
-          @click=${this._handleNewAction}
-          data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiPlaylistCheck}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-            { target: deviceName }
-          )}
-        </ha-list-item>
-        <ha-list-item
-          graphic="icon"
-          data-type="automation_action"
-          @click=${this._handleNewAction}
-          data-dialog="close"
-        >
-          <ha-svg-icon
-            slot="graphic"
-            .path=${mdiPlayCircleOutline}
-          ></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.automation_action",
-            { target: deviceName }
-          )}
-        </ha-list-item>
-      </ha-list>
-      <h3 class="section-header">
-        ${this._i18n.localize("ui.panel.config.devices.script.scripts_heading")}
-      </h3>
-      <ha-list>
-        <ha-list-item
-          graphic="icon"
-          data-type="script_action"
-          @click=${this._handleNewAction}
-          data-dialog="close"
-        >
-          <ha-svg-icon
-            slot="graphic"
-            .path=${mdiScriptTextOutline}
-          ></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.script_action",
-            { target: deviceName }
-          )}
-        </ha-list-item>
-      </ha-list>
-      ${this._renderSceneSection(deviceName)}
+      <ha-add-to-action-list
+        .sections=${sections}
+        @add-to-list-action-selected=${this._handleActionSelected}
+      ></ha-add-to-action-list>
     `;
   }
 
@@ -242,12 +252,6 @@ export class DialogDeviceAddTo extends LitElement {
       return nothing;
     }
 
-    const deviceName = computeDeviceNameDisplay(
-      this._params.device,
-      this._i18n.localize,
-      this._states
-    );
-
     const hasTriggers = Boolean(this._triggers?.length);
     const hasConditions = Boolean(this._conditions?.length);
     const hasActions = Boolean(this._actions?.length);
@@ -263,165 +267,138 @@ export class DialogDeviceAddTo extends LitElement {
       `;
     }
 
-    return html`
-      <h3 class="section-header">
-        ${this._i18n.localize(
-          "ui.panel.config.devices.automation.automations_heading"
-        )}
-      </h3>
-      ${hasTriggers || hasConditions || hasActions
-        ? html`
-            <ha-list>
-              ${hasTriggers
-                ? html`
-                    <ha-list-item
-                      graphic="icon"
-                      data-type="trigger"
-                      @click=${this._handleLegacyAction}
-                      data-dialog="close"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiRobotOutline}
-                      ></ha-svg-icon>
-                      ${this._i18n.localize(
-                        "ui.dialogs.more_info_control.add_to.actions.automation_trigger",
-                        { target: deviceName }
-                      )}
-                    </ha-list-item>
-                  `
-                : nothing}
-              ${hasConditions
-                ? html`
-                    <ha-list-item
-                      graphic="icon"
-                      data-type="condition"
-                      @click=${this._handleLegacyAction}
-                      data-dialog="close"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiPlaylistCheck}
-                      ></ha-svg-icon>
-                      ${this._i18n.localize(
-                        "ui.dialogs.more_info_control.add_to.actions.automation_condition",
-                        { target: deviceName }
-                      )}
-                    </ha-list-item>
-                  `
-                : nothing}
-              ${hasActions
-                ? html`
-                    <ha-list-item
-                      graphic="icon"
-                      data-type="automation_action"
-                      @click=${this._handleLegacyAction}
-                      data-dialog="close"
-                    >
-                      <ha-svg-icon
-                        slot="graphic"
-                        .path=${mdiPlayCircleOutline}
-                      ></ha-svg-icon>
-                      ${this._i18n.localize(
-                        "ui.dialogs.more_info_control.add_to.actions.automation_action",
-                        { target: deviceName }
-                      )}
-                    </ha-list-item>
-                  `
-                : nothing}
-            </ha-list>
-          `
-        : html`
-            <ha-list>
-              <ha-list-item noninteractive>
-                ${this._i18n.localize(
-                  "ui.panel.config.devices.automation.no_automations"
-                )}
-              </ha-list-item>
-            </ha-list>
-          `}
-      <h3 class="section-header">
-        ${this._i18n.localize("ui.panel.config.devices.script.scripts_heading")}
-      </h3>
-      ${hasActions
-        ? html`
-            <ha-list>
-              <ha-list-item
-                graphic="icon"
-                data-type="script_action"
-                @click=${this._handleLegacyAction}
-                data-dialog="close"
-              >
-                <ha-svg-icon
-                  slot="graphic"
-                  .path=${mdiScriptTextOutline}
-                ></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.dialogs.more_info_control.add_to.actions.script_action",
-                  { target: deviceName }
-                )}
-              </ha-list-item>
-            </ha-list>
-          `
-        : html`
-            <ha-list>
-              <ha-list-item noninteractive>
-                ${this._i18n.localize(
-                  "ui.panel.config.devices.script.no_scripts"
-                )}
-              </ha-list-item>
-            </ha-list>
-          `}
-      ${this._renderSceneSection(deviceName)}
-    `;
-  }
-
-  private _renderSceneSection(deviceName: string) {
-    if (!this._params?.entityIds.length) {
-      return nothing;
+    const automationActions: DeviceAddToAction[] = [];
+    if (hasTriggers) {
+      automationActions.push({
+        kind: "legacy",
+        legacyType: "trigger",
+        iconPath: mdiRobotOutline,
+        name: this._i18n.localize(
+          "ui.dialogs.more_info_control.add_to.action_options.automation_trigger"
+        ),
+      });
+    }
+    if (hasConditions) {
+      automationActions.push({
+        kind: "legacy",
+        legacyType: "condition",
+        iconPath: mdiPlaylistCheck,
+        name: this._i18n.localize(
+          "ui.dialogs.more_info_control.add_to.action_options.automation_condition"
+        ),
+      });
+    }
+    if (hasActions) {
+      automationActions.push({
+        kind: "legacy",
+        legacyType: "automation_action",
+        iconPath: mdiPlayCircleOutline,
+        name: this._i18n.localize(
+          "ui.dialogs.more_info_control.add_to.action_options.automation_action"
+        ),
+      });
     }
 
+    const scriptActions: DeviceAddToAction[] = hasActions
+      ? [
+          {
+            kind: "legacy",
+            legacyType: "script_action",
+            iconPath: mdiScriptTextOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.action_options.script_action"
+            ),
+          },
+        ]
+      : [];
+
+    const sections: AddToActionListSection<DeviceAddToAction>[] = [
+      {
+        title: this._i18n.localize(
+          "ui.panel.config.devices.automation.automations_heading"
+        ),
+        actions: automationActions,
+        empty: automationActions.length
+          ? undefined
+          : this._i18n.localize(
+              "ui.panel.config.devices.automation.no_automations"
+            ),
+      },
+      {
+        title: this._i18n.localize(
+          "ui.panel.config.devices.script.scripts_heading"
+        ),
+        actions: scriptActions,
+        empty: scriptActions.length
+          ? undefined
+          : this._i18n.localize("ui.panel.config.devices.script.no_scripts"),
+      },
+    ];
+    this._addSceneSection(sections);
+
     return html`
-      <h3 class="section-header">
-        ${this._i18n.localize("ui.panel.config.devices.scene.scenes_heading")}
-      </h3>
-      <ha-list>
-        <ha-list-item
-          graphic="icon"
-          @click=${this._handleCreateScene}
-          data-dialog="close"
-        >
-          <ha-svg-icon slot="graphic" .path=${mdiPalette}></ha-svg-icon>
-          ${this._i18n.localize(
-            "ui.dialogs.more_info_control.add_to.actions.scene",
-            { target: deviceName }
-          )}
-        </ha-list-item>
-      </ha-list>
+      <ha-add-to-action-list
+        .sections=${sections}
+        @add-to-list-action-selected=${this._handleActionSelected}
+      ></ha-add-to-action-list>
     `;
   }
 
-  private _handleNewAction(ev: Event) {
+  private _addSceneSection(
+    sections: AddToActionListSection<DeviceAddToAction>[]
+  ): void {
+    if (!this._params?.canCreateScene || !this._params.entityIds.length) {
+      return;
+    }
+
+    sections.push({
+      title: this._i18n.localize(
+        "ui.panel.config.devices.scene.scenes_heading"
+      ),
+      actions: [
+        {
+          kind: "scene",
+          iconPath: mdiPalette,
+          name: this._i18n.localize(
+            "ui.dialogs.more_info_control.add_to.action_options.scene"
+          ),
+        },
+      ],
+    });
+  }
+
+  private _handleActionSelected(
+    ev: AddToActionListActionSelectedEvent<DeviceAddToAction>
+  ) {
     if (!this._params) {
       return;
     }
-    const key = (ev.currentTarget as HTMLElement).dataset
-      .type as AddToActionKey;
+
+    const { action } = ev.detail;
+    if (action.kind === "scene") {
+      this._handleCreateScene();
+      return;
+    }
+
+    if (action.kind === "add-to") {
+      this._handleAddToAction(action.key);
+      return;
+    }
+
+    this._handleLegacyAction(action.legacyType);
+  }
+
+  private _handleAddToAction(key: AddToAutomationScriptActionKey) {
+    if (!this._params) {
+      return;
+    }
+
     this.closeDialog();
     addToActionHandler(key, { device_id: this._params.device.id });
   }
 
   // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
-  private _handleLegacyAction(ev: Event) {
-    if (!this._params) {
-      return;
-    }
-    const type = (ev.currentTarget as HTMLElement).dataset.type as
-      | "trigger"
-      | "condition"
-      | "automation_action"
-      | "script_action";
-
+  private _handleLegacyAction(type: DeviceLegacyAddToActionType) {
     this.closeDialog();
 
     if (type === "script_action") {
@@ -430,29 +407,28 @@ export class DialogDeviceAddTo extends LitElement {
         newScript.sequence = [this._actions[0]];
       }
       showScriptEditor(newScript, true);
-    } else {
-      const newAutomation = {} as AutomationConfig;
-      if (type === "trigger" && this._triggers?.length) {
-        newAutomation.triggers = [this._triggers[0]];
-      } else if (type === "condition" && this._conditions?.length) {
-        newAutomation.conditions = [this._conditions[0]];
-      } else if (type === "automation_action" && this._actions?.length) {
-        newAutomation.actions = [this._actions[0]];
-      }
-      showAutomationEditor(newAutomation, true);
+      return;
     }
+
+    const newAutomation = {} as AutomationConfig;
+    if (type === "trigger" && this._triggers?.length) {
+      newAutomation.triggers = [this._triggers[0]];
+    } else if (type === "condition" && this._conditions?.length) {
+      newAutomation.conditions = [this._conditions[0]];
+    } else if (type === "automation_action" && this._actions?.length) {
+      newAutomation.actions = [this._actions[0]];
+    }
+    showAutomationEditor(newAutomation, true);
   }
 
   private _handleCreateScene() {
     if (!this._params) {
       return;
     }
-    const entities: SceneEntities = {};
-    for (const entityId of this._params.entityIds) {
-      entities[entityId] = "";
-    }
     this.closeDialog();
-    showSceneEditor({ entities });
+    showSceneEditor({
+      entities: createAddToSceneEntities(this._params.entityIds),
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -468,14 +444,6 @@ export class DialogDeviceAddTo extends LitElement {
         .empty {
           padding: var(--ha-space-4);
           text-align: center;
-        }
-
-        .section-header {
-          padding: var(--ha-space-2) var(--ha-space-4) 0;
-          margin: 0;
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--secondary-text-color);
         }
       `,
     ];
