@@ -222,6 +222,12 @@ export interface EnergyPreferences {
   device_consumption_water: DeviceConsumptionEnergyPreference[];
 }
 
+export const EMPTY_PREFERENCES: EnergyPreferences = {
+  energy_sources: [],
+  device_consumption: [],
+  device_consumption_water: [],
+};
+
 export interface EnergyInfo {
   cost_sensors: Record<string, string>;
   solar_forecast_domains: string[];
@@ -802,7 +808,16 @@ export const getEnergyDataCollection = (
       if (!collection.prefs) {
         // This will raise if not found.
         // Detect by checking `e.code === "not_found"
-        collection.prefs = await getEnergyPreferences(hass);
+        try {
+          collection.prefs = await getEnergyPreferences(hass);
+        } catch (err: any) {
+          if (err.code === "not_found") {
+            return {
+              prefs: EMPTY_PREFERENCES,
+            } as EnergyData;
+          }
+          throw err;
+        }
       }
 
       scheduleHourlyRefresh(collection);
