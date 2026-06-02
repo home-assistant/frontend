@@ -86,6 +86,7 @@ import { domainToName } from "../../../data/integration";
 import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
+import { filterAddToSceneEntityIds } from "../../../dialogs/add-to/add-to";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -424,6 +425,11 @@ export class HaConfigDevicePage extends LitElement {
       this._entityReg,
       this.hass.devices
     );
+    const sceneEntityIds = filterAddToSceneEntityIds(
+      this._entityIds(entities),
+      this._entityReg,
+      this.hass.states
+    );
     const entitiesByCategory = this._entitiesByCategory(entities);
     const quickLinkCounts = this._getQuickLinkCounts(entities, this._related);
     const batteryEntity = this._batteryEntity(entities);
@@ -531,7 +537,7 @@ export class HaConfigDevicePage extends LitElement {
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
 
     const hasSceneSupport =
-      isComponentLoaded(this.hass.config, "scene") && entities.length;
+      isComponentLoaded(this.hass.config, "scene") && sceneEntityIds.length;
 
     const relatedCard =
       isComponentLoaded(this.hass.config, "automation") ||
@@ -551,7 +557,7 @@ export class HaConfigDevicePage extends LitElement {
                 >
                   <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.title"
+                    "ui.dialogs.more_info_control.add_to.item"
                   )}
                 </ha-button>
               </h1>
@@ -1366,10 +1372,18 @@ export class HaConfigDevicePage extends LitElement {
       this._entityReg,
       this.hass.devices
     ).map((entity) => entity.entity_id);
+    const sceneEntityIds = filterAddToSceneEntityIds(
+      entityIds,
+      this._entityReg,
+      this.hass.states
+    );
     showDeviceAddToDialog(this, {
       device,
       newTriggersConditions: this._newTriggersConditions,
-      entityIds,
+      entityIds: sceneEntityIds,
+      canCreateScene:
+        isComponentLoaded(this.hass.config, "scene") &&
+        sceneEntityIds.length > 0,
     });
   }
 

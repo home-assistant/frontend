@@ -1,26 +1,35 @@
-import { LitElement, css, html, nothing } from "lit";
+import { consume, type ContextType } from "@lit/context";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-alert";
-import "../../components/ha-icon";
 import "../../components/ha-spinner";
-import "../../components/item/ha-list-item-button";
-import "../../components/list/ha-list-base";
-import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import { showToast } from "../../util/toast";
 
-import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import { configContext } from "../../data/context";
+import "../add-to/ha-add-to-action-list";
+import type {
+  AddToActionListActionSelectedEvent,
+  AddToActionListSection,
+} from "../add-to/ha-add-to-action-list";
 import {
   type EntityAddToAction,
   type EntityAddToActions,
   addToActionHandler,
   getDefaultAddToActions,
-} from "./add-to";
+} from "../add-to/add-to";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public entityId!: string;
 
@@ -31,18 +40,13 @@ export class HaMoreInfoAddTo extends LitElement {
   @state() private _loading = true;
 
   private async _loadActions() {
-    this._defaultActions = getDefaultAddToActions(
-      this.hass.states,
-      this.hass.localize,
-      this.hass.formatEntityName,
-      this.entityId
-    );
+    this._defaultActions = getDefaultAddToActions();
     this._externalActions = [];
 
-    if (this.hass.auth.external?.config.hasEntityAddTo) {
+    if (this._config?.auth.external?.config.hasEntityAddTo) {
       try {
         const response =
-          await this.hass.auth.external?.sendMessage<"entity/add_to/get_actions">(
+          await this._config.auth.external.sendMessage<"entity/add_to/get_actions">(
             {
               type: "entity/add_to/get_actions",
               payload: { entity_id: this.entityId },
@@ -66,13 +70,9 @@ export class HaMoreInfoAddTo extends LitElement {
   }
 
   private async _actionSelected(
-    ev: HASSDomCurrentTargetEvent<
-      HaListItemButton & {
-        action: EntityAddToAction;
-      }
-    >
+    ev: AddToActionListActionSelectedEvent<EntityAddToAction>
   ) {
-    const action = ev.currentTarget.action;
+    const { action } = ev.detail;
     if (!action.enabled) {
       return;
     }
@@ -82,7 +82,10 @@ export class HaMoreInfoAddTo extends LitElement {
         if (!action.payload) {
           throw new Error("Missing external action payload");
         }
-        this.hass.auth.external!.fireMessage({
+        if (!this._config?.auth.external) {
+          throw new Error("Missing external app connection");
+        }
+        this._config.auth.external.fireMessage({
           type: "entity/add_to",
           payload: {
             entity_id: this.entityId,
@@ -92,7 +95,7 @@ export class HaMoreInfoAddTo extends LitElement {
         fireEvent(this, "add-to-action-selected");
       } catch (err: unknown) {
         showToast(this, {
-          message: this.hass.localize(
+          message: this._localize(
             "ui.dialogs.more_info_control.add_to.action_failed",
             {
               error: err instanceof Error ? err.message : String(err),
@@ -108,24 +111,6 @@ export class HaMoreInfoAddTo extends LitElement {
     }
 
     addToActionHandler(action.key, { entity_id: this.entityId });
-  }
-
-  private _renderActionItems(actions: EntityAddToActions) {
-    return actions.map(
-      (action) => html`
-        <ha-list-item-button
-          .disabled=${!action.enabled}
-          .action=${action}
-          @click=${this._actionSelected}
-        >
-          <ha-icon slot="start" .icon=${action.icon}></ha-icon>
-          <span slot="headline">${action.name}</span>
-          ${action.description
-            ? html`<span slot="supporting-text">${action.description}</span>`
-            : nothing}
-        </ha-list-item-button>
-      `
-    );
   }
 
   protected async firstUpdated() {
@@ -145,29 +130,38 @@ export class HaMoreInfoAddTo extends LitElement {
     if (!this._defaultActions.length && !this._externalActions.length) {
       return html`
         <ha-alert alert-type="info">
-          ${this.hass.localize(
-            "ui.dialogs.more_info_control.add_to.no_actions"
-          )}
+          ${this._localize("ui.dialogs.more_info_control.add_to.no_actions")}
         </ha-alert>
       `;
     }
 
+    const automationActions = this._defaultActions.filter(
+      (action) => action.type === "default" && action.key !== "script_action"
+    );
+    const scriptActions = this._defaultActions.filter(
+      (action) => action.type === "default" && action.key === "script_action"
+    );
+
+    const sections: AddToActionListSection<EntityAddToAction>[] = [
+      {
+        titleKey: "ui.dialogs.more_info_control.add_to.automations_heading",
+        actions: automationActions,
+      },
+      {
+        titleKey: "ui.dialogs.more_info_control.add_to.scripts_heading",
+        actions: scriptActions,
+      },
+      {
+        titleKey: "ui.dialogs.more_info_control.add_to.app_actions",
+        actions: this._externalActions,
+      },
+    ];
+
     return html`
-      <ha-list-base>
-        ${this._renderActionItems(this._defaultActions)}
-      </ha-list-base>
-      ${this._externalActions.length
-        ? html`
-            <h2 class="section-title">
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.add_to.app_actions"
-              )}
-            </h2>
-            <ha-list-base>
-              ${this._renderActionItems(this._externalActions)}
-            </ha-list-base>
-          `
-        : nothing}
+      <ha-add-to-action-list
+        .sections=${sections}
+        @add-to-list-action-selected=${this._actionSelected}
+      ></ha-add-to-action-list>
     `;
   }
 
@@ -182,20 +176,6 @@ export class HaMoreInfoAddTo extends LitElement {
       justify-content: center;
       align-items: center;
       padding: var(--ha-space-8);
-    }
-
-    .section-title {
-      padding: 0 var(--ha-space-6);
-      margin: var(--ha-space-4) 0 var(--ha-space-1);
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-medium);
-      line-height: var(--ha-line-height-normal);
-      color: var(--secondary-text-color);
-    }
-
-    ha-icon {
-      display: flex;
-      align-items: center;
     }
   `;
 }
