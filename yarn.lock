@@ -7957,10 +7957,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fuse.js@npm:7.3.0":
-  version: 7.3.0
-  resolution: "fuse.js@npm:7.3.0"
-  checksum: 10/b2cdc39e46acb9524fe900356af74c987ecb1dbc67412df651a5291fa072d212e6d74457f0b5d1c39baf79539481f62b613ac792afd8995dd1fc3d20b5354914
+"fuse.js@npm:7.4.0":
+  version: 7.4.0
+  resolution: "fuse.js@npm:7.4.0"
+  checksum: 10/dba0ef239be1f28ba5daefb3a17371c73291f4d0db3d1733b625848a7311e05aa58a795cd5b2fd9626c09857608a74e8c9620f5d1ce2d3d0b2d40155ae15e21e
   languageName: node
   linkType: hard
 
@@ -8534,7 +8534,7 @@ __metadata:
     eslint-plugin-wc: "npm:3.1.0"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.5"
-    fuse.js: "npm:7.3.0"
+    fuse.js: "npm:7.4.0"
     generate-license-file: "npm:4.2.1"
     glob: "npm:13.0.6"
     globals: "npm:17.6.0"
