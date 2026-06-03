@@ -36,7 +36,6 @@ class PanelDeveloperTools extends LitElement {
         <div class="toolbar">
           <ha-icon-button-arrow-prev
             slot="navigationIcon"
-            .hass=${this.hass}
             @click=${this._handleBack}
           ></ha-icon-button-arrow-prev>
           <div class="main-title">
