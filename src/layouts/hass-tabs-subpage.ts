@@ -43,6 +43,7 @@ export interface PageNavigation {
   description?: string;
   iconColor?: string;
   info?: any;
+  filter?: (hass: HomeAssistant) => boolean;
 }
 
 @customElement("hass-tabs-subpage")

@@ -20,6 +20,7 @@ import {
   mdiPalette,
   mdiPaletteSwatch,
   mdiPuzzle,
+  mdiRemote,
   mdiRobot,
   mdiScrewdriver,
   mdiScriptText,
@@ -165,6 +166,17 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "bluetooth",
       translationKey: "bluetooth",
       adminOnly: true,
+    },
+    {
+      path: "/config/infrared",
+      iconPath: mdiRemote,
+      iconColor: "#9C27B0",
+      translationKey: "infrared",
+      adminOnly: true,
+      filter: (hass) =>
+        Object.keys(hass.entities).some((entity_id) =>
+          entity_id.startsWith("infrared.")
+        ),
     },
     {
       path: "/insteon",
@@ -720,6 +732,11 @@ class HaPanelConfig extends HassRouterPage {
         tag: "bluetooth-config-dashboard-router",
         load: () =>
           import("./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"),
+      },
+      infrared: {
+        tag: "infrared-config-dashboard",
+        load: () =>
+          import("./integrations/integration-panels/infrared/infrared-config-dashboard"),
       },
       dhcp: {
         tag: "dhcp-config-panel",
