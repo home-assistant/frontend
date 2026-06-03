@@ -448,6 +448,9 @@ export class HuiActionEditor extends LitElement {
     .confirmation-row ha-formfield {
       flex-grow: 1;
     }
+    .confirmation-row ha-icon-button {
+      color: var(--secondary-text-color);
+    }
   `;
 }
 
