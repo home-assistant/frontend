@@ -2,14 +2,31 @@ import { css, html } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../components/ha-alert";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
-import type { ConfirmationRestrictionConfig } from "../../../../data/lovelace/config/action";
+import type {
+  ActionConfig,
+  ConfirmationRestrictionConfig,
+} from "../../../../data/lovelace/config/action";
+import { getConfirmationDefaultText } from "../../common/confirmation-default-text";
 import type { LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
+interface ConfirmationEditorContext {
+  label?: string;
+  actionConfig?: ActionConfig;
+}
+
 @customElement("hui-action-confirmation-editor")
-export class HuiActionConfirmationEditor extends HuiElementEditor<ConfirmationRestrictionConfig> {
+export class HuiActionConfirmationEditor extends HuiElementEditor<
+  ConfirmationRestrictionConfig,
+  ConfirmationEditorContext
+> {
   protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
     const localize = this.hass.localize.bind(this.hass);
+    const actionConfig = this.context?.actionConfig;
+
+    const textPlaceholder = actionConfig
+      ? await getConfirmationDefaultText(this.hass, actionConfig)
+      : undefined;
 
     return {
       schema: [
@@ -25,7 +42,11 @@ export class HuiActionConfirmationEditor extends HuiElementEditor<ConfirmationRe
         },
         {
           name: "text",
-          selector: { text: {} },
+          selector: {
+            text: {
+              ...(textPlaceholder ? { placeholder: textPlaceholder } : {}),
+            },
+          },
         },
         {
           name: "confirm_text",

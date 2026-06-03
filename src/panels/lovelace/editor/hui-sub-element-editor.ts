@@ -166,6 +166,7 @@ export class HuiSubElementEditor extends LitElement {
             class="editor"
             .hass=${this.hass}
             .value=${this.config.elementConfig}
+            .context=${this.config.context}
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-action-confirmation-editor>

@@ -76,7 +76,7 @@ export class HuiActionConfirmationToggle extends LitElement {
     fireEvent(this, "edit-sub-element", {
       type: "confirmation",
       config: confirmation,
-      context: { label: this.label },
+      context: { label: this.label, actionConfig: this.config },
       saveConfig: (newConfirmation: ConfirmationRestrictionConfig) => {
         fireEvent(this, "value-changed", {
           value: { ...this.config!, confirmation: newConfirmation },
