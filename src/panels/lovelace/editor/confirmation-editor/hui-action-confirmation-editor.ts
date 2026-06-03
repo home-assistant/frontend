@@ -15,7 +15,13 @@ export class HuiActionConfirmationEditor extends HuiElementEditor<ConfirmationRe
       schema: [
         {
           name: "title",
-          selector: { text: {} },
+          selector: {
+            text: {
+              placeholder: localize(
+                "ui.dialogs.generic.default_confirmation_title"
+              ),
+            },
+          },
         },
         {
           name: "text",
