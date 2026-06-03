@@ -325,13 +325,27 @@ export class HaScriptTrace extends LitElement {
       this._runId = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
+      this._entityId = undefined;
       if (this.scriptId) {
         this._loadTraces();
-
-        this._entityId = this._entityRegistry.find(
-          (entry) => entry.unique_id === this.scriptId
-        )?.entity_id;
       }
+    }
+
+    if (
+      (changedProps.has("scriptId") || changedProps.has("_entityRegistry")) &&
+      this.scriptId
+    ) {
+      this._entityId = this._entityRegistry.find(
+        (entry) => entry.unique_id === this.scriptId
+      )?.entity_id;
+    }
+
+    if (
+      changedProps.has("scriptId") ||
+      changedProps.has("_entityId") ||
+      changedProps.has("_entityRegistry")
+    ) {
+      this._setRelatedContext();
     }
 
     if (changedProps.has("_runId") && this._runId) {
@@ -339,6 +353,23 @@ export class HaScriptTrace extends LitElement {
       this._logbookEntries = undefined;
       this._loadTrace();
     }
+  }
+
+  private _setRelatedContext() {
+    const areaId = this._entityId
+      ? this._entityRegistry.find((entry) => entry.entity_id === this._entityId)
+          ?.area_id
+      : undefined;
+    fireEvent(
+      this,
+      "hass-related-context",
+      areaId
+        ? {
+            itemType: "area",
+            itemId: areaId,
+          }
+        : undefined
+    );
   }
 
   private _pickOlderTrace() {

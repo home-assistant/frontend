@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume } from "@lit/context";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -33,6 +34,8 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import type { AutomationEntity } from "../../../data/automation";
+import { fullEntitiesContext } from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
 import type {
@@ -62,6 +65,10 @@ export class HaAutomationTrace extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityRegistry!: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -343,7 +350,7 @@ export class HaAutomationTrace extends LitElement {
     }
 
     if (
-      changedProps.has("automations") &&
+      (changedProps.has("automationId") || changedProps.has("automations")) &&
       this.automationId &&
       !this._entityId
     ) {
@@ -352,6 +359,31 @@ export class HaAutomationTrace extends LitElement {
       );
       this._entityId = automation?.entity_id;
     }
+
+    if (
+      changedProps.has("automationId") ||
+      changedProps.has("_entityId") ||
+      changedProps.has("_entityRegistry")
+    ) {
+      this._setRelatedContext();
+    }
+  }
+
+  private _setRelatedContext() {
+    const areaId = this._entityId
+      ? this._entityRegistry.find((entry) => entry.entity_id === this._entityId)
+          ?.area_id
+      : undefined;
+    fireEvent(
+      this,
+      "hass-related-context",
+      areaId
+        ? {
+            itemType: "area",
+            itemId: areaId,
+          }
+        : undefined
+    );
   }
 
   private _pickOlderTrace() {
