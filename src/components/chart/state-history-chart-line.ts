@@ -1,5 +1,5 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
@@ -11,7 +11,10 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { LineChartEntity, LineChartState } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import type { ECOption } from "../../resources/echarts/echarts";
+import { sideTooltipPosition } from "./chart-tooltip-position";
+import "./ha-chart-tooltip-marker";
+import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
@@ -22,7 +25,6 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { filterXSS } from "../../common/util/xss";
 import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 const safeParseFloat = (value) => {
@@ -59,6 +61,11 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
   @property({ attribute: false }) public names?: Record<string, string>;
+
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
 
   @property() public unit?: string;
 
@@ -101,7 +108,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _datasetToDataIndex: number[] = [];
 
-  @state() private _chartOptions?: ECOption;
+  @state() private _chartOptions?: HaECOption;
 
   private _hiddenStats = new Set<string>();
 
@@ -111,9 +118,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
-  private _previousYAxisLabelValue = 0;
-
-  private _yAxisMaximumFractionDigits = 0;
+  private _yAxisFractionDigits = 1;
 
   protected render() {
     return html`
@@ -136,12 +141,11 @@ export class StateHistoryChartLine extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const time = params[0].axisValue;
-    const title =
-      formatDateTimeWithSeconds(
-        new Date(time),
-        this.hass.locale,
-        this.hass.config
-      ) + "<br>";
+    const title = formatDateTimeWithSeconds(
+      new Date(time),
+      this.hass.locale,
+      this.hass.config
+    );
     const datapoints: Record<string, any>[] = [];
     this._chartData.forEach((dataset, index) => {
       if (
@@ -172,52 +176,44 @@ export class StateHistoryChartLine extends LitElement {
         seriesName: dataset.name,
         seriesIndex: index,
         value: lastData,
-        // HTML copied from echarts. May change based on options
-        marker: `<span style="display:inline-block;margin-right:4px;margin-inline-end:4px;margin-inline-start:initial;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
+        color: dataset.color,
       });
     });
     const unit = this.unit
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
 
-    return (
-      title +
-      datapoints
-        .map((param) => {
-          const entityId = this._entityIds[param.seriesIndex];
-          const stateObj = this.hass.states[entityId];
-          const entry = this.hass.entities[entityId];
-          const stateValue = String(param.value[1]);
-          let value = stateObj
-            ? this.hass.formatEntityState(stateObj, stateValue)
-            : `${formatNumber(
-                stateValue,
-                this.hass.locale,
-                getNumberFormatOptions(undefined, entry)
-              )}${unit}`;
-          const dataIndex = this._datasetToDataIndex[param.seriesIndex];
-          const data = this.data[dataIndex];
-          if (data.statistics && data.statistics.length > 0) {
-            value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-            const source =
-              data.states.length === 0 ||
-              param.value[0] < data.states[0].last_changed
-                ? `${this.hass.localize(
-                    "ui.components.history_charts.source_stats"
-                  )}`
-                : `${this.hass.localize(
-                    "ui.components.history_charts.source_history"
-                  )}`;
-            value += source;
-          }
-
-          if (param.seriesName) {
-            return `${param.marker} ${filterXSS(param.seriesName)}: ${value}`;
-          }
-          return `${param.marker} ${value}`;
-        })
-        .join("<br>")
-    );
+    return html`${title}${datapoints.map((param) => {
+      const entityId = this._entityIds[param.seriesIndex];
+      const stateObj = this.hass.states[entityId];
+      const entry = this.hass.entities[entityId];
+      const stateValue = String(param.value[1]);
+      const value = stateObj
+        ? this.hass.formatEntityState(stateObj, stateValue)
+        : `${formatNumber(
+            stateValue,
+            this.hass.locale,
+            getNumberFormatOptions(undefined, entry)
+          )}${unit}`;
+      const dataIndex = this._datasetToDataIndex[param.seriesIndex];
+      const data = this.data[dataIndex];
+      let statSuffix: TemplateResult | typeof nothing = nothing;
+      if (data.statistics && data.statistics.length > 0) {
+        const source =
+          data.states.length === 0 ||
+          param.value[0] < data.states[0].last_changed
+            ? this.hass.localize("ui.components.history_charts.source_stats")
+            : this.hass.localize("ui.components.history_charts.source_history");
+        // Five non-breaking spaces indent the source label.
+        statSuffix = html`<br />${"\u00a0".repeat(5)}${source}`;
+      }
+      return html`<br /><ha-chart-tooltip-marker
+          .color=${String(param.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${param.seriesName
+          ? html`${param.seriesName}: `
+          : nothing}${value}${statSuffix}`;
+    })}`;
   };
 
   private _datasetHidden(ev: CustomEvent) {
@@ -288,7 +284,10 @@ export class StateHistoryChartLine extends LitElement {
       (changedProps.has("hass") &&
         this._hasEntityStatesChanged(changedProps.get("hass")))
     ) {
-      const rtl = computeRTL(this.hass);
+      const rtl = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
         this.minYAxis;
       let maxYAxis: number | ((values: { max: number }) => number) | undefined =
@@ -405,8 +404,7 @@ export class StateHistoryChartLine extends LitElement {
         tooltip: {
           trigger: "axis",
           renderMode: "html",
-          position: "bottom",
-          align: "center",
+          position: sideTooltipPosition,
           confine: true,
           formatter: this._renderTooltip,
         },
@@ -428,6 +426,14 @@ export class StateHistoryChartLine extends LitElement {
     const datasets: LineSeriesOption[] = [];
     const entityIds: string[] = [];
     const datasetToDataIndex: number[] = [];
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number | null | undefined) => {
+      if (typeof v === "number" && Number.isFinite(v)) {
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    };
     if (entityStates.length === 0) {
       return;
     }
@@ -435,9 +441,11 @@ export class StateHistoryChartLine extends LitElement {
     this._chartTime = new Date();
     const endTime = this.endTime;
     const names = this.names || {};
+    const colors = this.colors || {};
     entityStates.forEach((states, dataIdx) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
+      const color = colors[states.entity_id];
       // array containing [value1, value2, etc]
       let prevValues: any[] | null = null;
 
@@ -461,6 +469,7 @@ export class StateHistoryChartLine extends LitElement {
             d.data!.push([timestamp, prevValues[i]]);
           }
           d.data!.push([timestamp, datavalues[i]]);
+          trackY(datavalues[i]);
         });
         prevValues = datavalues;
       };
@@ -468,11 +477,11 @@ export class StateHistoryChartLine extends LitElement {
       const addDataSet = (
         id: string,
         nameY: string,
-        color?: string,
+        clr?: string,
         fill = false
       ) => {
-        if (!color) {
-          color = getGraphColorByIndex(colorIndex, computedStyles);
+        if (!clr) {
+          clr = getGraphColorByIndex(colorIndex, computedStyles);
           colorIndex++;
         }
         data.push({
@@ -481,7 +490,7 @@ export class StateHistoryChartLine extends LitElement {
           type: "line",
           cursor: "default",
           name: nameY,
-          color,
+          color: clr,
           symbol: "circle",
           symbolSize: 1,
           step: "end",
@@ -492,7 +501,7 @@ export class StateHistoryChartLine extends LitElement {
           },
           areaStyle: fill
             ? {
-                color: color + "7F",
+                color: clr + "7F",
               }
             : undefined,
           tooltip: {
@@ -740,7 +749,7 @@ export class StateHistoryChartLine extends LitElement {
           pushData(new Date(entityState.last_changed), series);
         });
       } else {
-        addDataSet(states.entity_id, name);
+        addDataSet(states.entity_id, name, color);
 
         let lastValue: number;
         let lastDate: Date;
@@ -811,6 +820,7 @@ export class StateHistoryChartLine extends LitElement {
         const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
         if (currentValue !== null) {
           data[0].data!.push([now, currentValue]);
+          trackY(currentValue);
         }
       }
 
@@ -818,6 +828,7 @@ export class StateHistoryChartLine extends LitElement {
       Array.prototype.push.apply(datasets, data);
     });
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._entityIds = entityIds;
     this._datasetToDataIndex = datasetToDataIndex;
@@ -851,20 +862,8 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) => {
-    // show the first significant digit for tiny values
-    const maximumFractionDigits = Math.max(
-      1,
-      // use the difference to the previous value to determine the number of significant digits #25526
-      -Math.floor(
-        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-      )
-    );
-    this._yAxisMaximumFractionDigits = Math.max(
-      this._yAxisMaximumFractionDigits,
-      maximumFractionDigits
-    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits: this._yAxisMaximumFractionDigits,
+      maximumFractionDigits: this._yAxisFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -874,7 +873,6 @@ export class StateHistoryChartLine extends LitElement {
         chartIndex: this.chartIndex,
       });
     }
-    this._previousYAxisLabelValue = value;
     return label;
   };
 

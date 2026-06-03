@@ -30,6 +30,7 @@ import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -47,8 +48,6 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
@@ -56,6 +55,8 @@ import "../../../components/ha-tooltip";
 import { TRIGGER_ICONS } from "../../../components/ha-trigger-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import {
   ACTION_BUILDING_BLOCKS_GROUP,
   ACTION_COLLECTIONS,
@@ -128,7 +129,14 @@ import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
-import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import {
+  ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
+  PASTE_VALUE,
+  getAddAutomationElementTargetFromQuery,
+} from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
 
 const TYPES = {
@@ -230,6 +238,8 @@ class DialogAddAutomationElement
 
   @state() private _newTriggersAndConditions = false;
 
+  @state() private _openedFromQuery = false;
+
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
@@ -295,9 +305,30 @@ class DialogAddAutomationElement
     }
   }
 
-  public showDialog(params): void {
+  public showDialog(params: AddAutomationElementDialogParams): void {
     this._params = params;
     this._resetVariables();
+
+    const queryTarget = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      params.type
+    );
+    this._openedFromQuery = !!queryTarget;
+
+    if (queryTarget) {
+      const searchParams = new URLSearchParams(mainWindow.location.search);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_QUERY_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM);
+      mainWindow.history.replaceState(
+        mainWindow.history.state,
+        "",
+        constructUrlCurrentPath(searchParams.toString())
+      );
+    }
 
     this.addKeyboardShortcuts();
 
@@ -314,16 +345,26 @@ class DialogAddAutomationElement
       (feature) => {
         this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+        if (
+          queryTarget &&
+          this._newTriggersAndConditions &&
+          !this._selectedTarget
+        ) {
+          this._selectedTarget = queryTarget;
+          this._getItemsByTarget();
+        }
       }
     );
 
-    // add initial dialog view state to history
-    mainWindow.history.pushState(
-      {
-        dialogData: {},
-      },
-      ""
-    );
+    if (!queryTarget) {
+      // add initial dialog view state to history
+      mainWindow.history.pushState(
+        {
+          dialogData: {},
+        },
+        ""
+      );
+    }
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
@@ -343,6 +384,16 @@ class DialogAddAutomationElement
 
     // prevent view mode switch when resizing window
     this._bottomSheetMode = this._narrow;
+
+    if (
+      queryTarget &&
+      this._newTriggersAndConditions &&
+      !this._selectedTarget
+    ) {
+      this._selectedTarget = queryTarget;
+      this._tab = "targets";
+      this._getItemsByTarget();
+    }
   }
 
   public closeDialog(historyState?: any) {
@@ -407,6 +458,7 @@ class DialogAddAutomationElement
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
+    this._openedFromQuery = false;
   }
 
   private _updateNarrow = () => {
@@ -598,7 +650,6 @@ class DialogAddAutomationElement
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         width="large"
         .open=${this._open}
         @closed=${this._handleClosed}
@@ -732,7 +783,7 @@ class DialogAddAutomationElement
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
             : html`
-                <ha-md-list
+                <ha-list-base
                   class=${classMap({
                     groups: true,
                     hidden: hideCollections,
@@ -740,43 +791,37 @@ class DialogAddAutomationElement
                   })}
                 >
                   ${this._params!.clipboardItem
-                    ? html`<ha-md-list-item
-                          interactive
-                          type="button"
+                    ? html`<ha-list-item-button
                           class="paste"
                           @click=${this._paste}
                         >
-                          <div class="shortcut-label">
-                            <div class="label">
-                              <div>
-                                ${this.hass.localize(
-                                  `ui.panel.config.automation.editor.${automationElementType}s.paste`
-                                )}
-                              </div>
-                              <div class="supporting-text">
-                                ${this.hass.localize(
-                                  // @ts-ignore
-                                  `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
-                                )}
-                              </div>
-                            </div>
-                            ${!this._narrow
-                              ? html`<span class="shortcut">
-                                  <span
-                                    >${isMac
-                                      ? html`<ha-svg-icon
-                                          slot="start"
-                                          .path=${mdiAppleKeyboardCommand}
-                                        ></ha-svg-icon>`
-                                      : this.hass.localize(
-                                          "ui.panel.config.automation.editor.ctrl"
-                                        )}</span
-                                  >
-                                  <span>+</span>
-                                  <span>V</span>
-                                </span>`
-                              : nothing}
+                          <div slot="headline" class="label">
+                            ${this.hass.localize(
+                              `ui.panel.config.automation.editor.${automationElementType}s.paste`
+                            )}
                           </div>
+                          <div slot="supporting-text">
+                            ${this.hass.localize(
+                              // @ts-ignore
+                              `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
+                            )}
+                          </div>
+                          ${!this._narrow
+                            ? html`<span slot="end" class="shortcut">
+                                <span
+                                  >${isMac
+                                    ? html`<ha-svg-icon
+                                        slot="start"
+                                        .path=${mdiAppleKeyboardCommand}
+                                      ></ha-svg-icon>`
+                                    : this.hass.localize(
+                                        "ui.panel.config.automation.editor.ctrl"
+                                      )}</span
+                                >
+                                <span>+</span>
+                                <span>V</span>
+                              </span>`
+                            : nothing}
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiContentPaste}
@@ -786,7 +831,7 @@ class DialogAddAutomationElement
                             slot="end"
                             .path=${mdiPlus}
                           ></ha-svg-icon>
-                        </ha-md-list-item>
+                        </ha-list-item-button>
                         <wa-divider></wa-divider>`
                     : nothing}
                   ${collections.map(
@@ -800,9 +845,7 @@ class DialogAddAutomationElement
                         collection.groups,
                         (item) => item.key,
                         (item) => html`
-                          <ha-md-list-item
-                            interactive
-                            type="button"
+                          <ha-list-item-button
                             .value=${item.key}
                             .index=${collection.collectionIndex}
                             @click=${this._groupSelected}
@@ -822,12 +865,12 @@ class DialogAddAutomationElement
                             ${this._narrow
                               ? html`<ha-icon-next slot="end"></ha-icon-next>`
                               : nothing}
-                          </ha-md-list-item>
+                          </ha-list-item-button>
                         `
                       )}
                     `
                   )}
-                </ha-md-list>
+                </ha-list-base>
               `}
         ${!this._filter
           ? html`
@@ -896,7 +939,9 @@ class DialogAddAutomationElement
               ></ha-icon-button>
             `
           : nothing}
-        ${this._narrow && (this._selectedGroup || this._selectedTarget)
+        ${this._narrow &&
+        (this._selectedGroup || this._selectedTarget) &&
+        !this._openedFromQuery
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
               @click=${this._back}
@@ -971,7 +1016,14 @@ class DialogAddAutomationElement
 
             subtitle = [areaName, entityName ? deviceName : undefined]
               .filter(Boolean)
-              .join(computeRTL(this.hass) ? " ◂ " : " ▸ ");
+              .join(
+                computeRTL(
+                  this.hass.language,
+                  this.hass.translationMetadata.translations
+                )
+                  ? " ◂ "
+                  : " ▸ "
+              );
           }
         }
 
@@ -2241,7 +2293,14 @@ class DialogAddAutomationElement
 
       if (targetId) {
         return getTargetText(
-          this.hass,
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+          },
+          this.hass.states,
+          this.hass.localize,
           targetType as "floor" | "area" | "device" | "entity" | "label",
           targetId,
           this._getLabel
@@ -2385,8 +2444,14 @@ class DialogAddAutomationElement
           gap: var(--ha-space-3);
         }
 
-        ha-md-list {
-          padding: 0;
+        ha-list-item-button {
+          --ha-row-item-padding-block: var(--ha-space-1);
+          --ha-row-item-padding-inline: var(--ha-space-3);
+          --ha-row-item-min-height: 40px;
+        }
+        ha-list-item-button::part(start),
+        ha-list-item-button::part(end) {
+          color: var(--ha-color-on-neutral-quiet);
         }
 
         ha-automation-add-from-target,
@@ -2477,23 +2542,16 @@ class DialogAddAutomationElement
         ha-svg-icon.plus {
           color: var(--primary-color);
         }
-        .shortcut-label {
-          display: flex;
-          gap: var(--ha-space-3);
-          justify-content: space-between;
-        }
-        .shortcut-label .supporting-text {
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-s);
-        }
-        .shortcut-label .shortcut {
+
+        .shortcut {
           --mdc-icon-size: var(--ha-space-3);
           display: inline-flex;
           flex-direction: row;
           align-items: center;
           gap: 2px;
+          margin-right: var(--ha-space-4);
         }
-        .shortcut-label .shortcut span {
+        .shortcut span {
           font-size: var(--ha-font-size-s);
           font-family: var(--ha-font-family-code);
           color: var(--ha-color-text-secondary);

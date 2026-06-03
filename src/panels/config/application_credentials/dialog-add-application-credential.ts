@@ -98,7 +98,6 @@ export class DialogAddApplicationCredential extends LitElement {
       : "";
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._abortDialog}
         .preventScrimClose=${!!this._domain ||

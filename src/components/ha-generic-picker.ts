@@ -77,7 +77,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     | "bottom-start"
     | "bottom-end"
     | "left-start"
-    | "left-end" = "bottom-start";
+    | "left-end" = "bottom";
 
   /** If set picker shows an add button instead of textbox when value isn't set */
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
@@ -108,6 +108,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @property({ attribute: "custom-value-label" })
   public customValueLabel?: string;
+
+  @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
 
   @query(".container") private _containerElement?: HTMLDivElement;
 
@@ -271,6 +273,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
+        .noSort=${this.noSort}
       ></ha-picker-combo-box>
     `;
   }

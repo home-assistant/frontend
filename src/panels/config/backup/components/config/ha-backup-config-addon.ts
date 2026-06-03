@@ -1,11 +1,11 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/input/ha-input";
 import type { HaInput } from "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 
@@ -20,8 +20,8 @@ class HaBackupConfigAddon extends LitElement {
 
   protected render() {
     return html`
-      <ha-md-list>
-        <ha-md-list-item>
+      <ha-list-base>
+        <ha-list-item-base>
           <span slot="headline">
             ${this.hass.localize(
               `ui.panel.config.backup.schedule.update_preference.label`
@@ -52,8 +52,8 @@ class HaBackupConfigAddon extends LitElement {
               },
             ]}
           ></ha-select>
-        </ha-md-list-item>
-        <ha-md-list-item>
+        </ha-list-item-base>
+        <ha-list-item-base>
           <span slot="headline">
             ${this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
           </span>
@@ -77,8 +77,8 @@ class HaBackupConfigAddon extends LitElement {
               )}
             </span>
           </ha-input>
-        </ha-md-list-item>
-      </ha-md-list>
+        </ha-list-item-base>
+      </ha-list-base>
     `;
   }
 
@@ -106,13 +106,12 @@ class HaBackupConfigAddon extends LitElement {
   }
 
   static styles = css`
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
     }
     ha-select {
       min-width: 210px;

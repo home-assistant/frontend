@@ -18,8 +18,6 @@ class HaConfigDevices extends HassRouterPage {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     routes: {
@@ -53,7 +51,6 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.manifests = this._manifests;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
-    pageEl.showAdvanced = this.showAdvanced;
     pageEl.route = this.routeTail;
   }
 

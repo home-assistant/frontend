@@ -3,9 +3,9 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { storage } from "../../../../common/decorators/storage";
 import { setViewTransitionDisabled } from "../../../../common/util/view-transition";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/item/ha-list-item-base";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-debug-disable-view-transition-row")
@@ -17,7 +17,7 @@ class HaDebugDisableViewTransitionRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-md-list-item>
+      <ha-list-item-base>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.developer-tools.tabs.debug.disable_view_transition.title"
@@ -33,7 +33,7 @@ class HaDebugDisableViewTransitionRow extends LitElement {
           .checked=${this._disabled}
           @change=${this._checkedChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-list-item-base>
     `;
   }
 

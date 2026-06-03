@@ -4,6 +4,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-select";
@@ -79,8 +80,10 @@ class HuiFanOscillateCardFeature
     }
   }
 
-  private async _valueChanged(ev: CustomEvent) {
-    const shouldOscillate = (ev.detail as any).value === "yes";
+  private async _valueChanged(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ) {
+    const shouldOscillate = ev.detail.value === "yes";
 
     if (shouldOscillate === this._stateObj!.attributes.oscillating) return;
 

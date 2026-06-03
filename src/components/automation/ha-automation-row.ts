@@ -124,10 +124,13 @@ export class HaAutomationRow extends LitElement {
   static styles = css`
     :host {
       display: block;
+      position: relative;
     }
     .row {
       display: flex;
-      padding: 0 0 0 var(--ha-space-3);
+      padding-left: var(--ha-space-3);
+      padding-inline-start: var(--ha-space-3);
+      padding-inline-end: initial;
       min-height: 48px;
       align-items: flex-start;
       cursor: pointer;
@@ -143,6 +146,8 @@ export class HaAutomationRow extends LitElement {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       color: var(--ha-color-on-neutral-quiet);
       margin-left: calc(var(--ha-space-2) * -1);
+      margin-inline-start: calc(var(--ha-space-2) * -1);
+      margin-inline-end: initial;
     }
     :host([building-block]) .leading-icon-wrapper {
       background-color: var(--ha-color-fill-neutral-loud-resting);
@@ -160,7 +165,8 @@ export class HaAutomationRow extends LitElement {
     ::slotted([slot="leading-icon"]) {
       color: var(--ha-color-on-neutral-quiet);
     }
-    :host([building-block]) ::slotted([slot="leading-icon"]) {
+    :host([building-block]) ::slotted([slot="leading-icon"].action-icon),
+    :host([building-block]) ::slotted(#condition-icon) {
       --mdc-icon-size: var(--ha-space-5);
       color: var(--white-color);
       transform: rotate(-45deg);
@@ -186,7 +192,6 @@ export class HaAutomationRow extends LitElement {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
-      margin: 0 var(--ha-space-3);
     }
     ::slotted([slot="header"]) {
       overflow-wrap: anywhere;
@@ -194,7 +199,6 @@ export class HaAutomationRow extends LitElement {
     }
     ::slotted([slot="event"]) {
       position: absolute;
-      top: 13px;
       inset-inline-end: 0;
     }
     .icons {

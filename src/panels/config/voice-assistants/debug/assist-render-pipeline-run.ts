@@ -129,12 +129,7 @@ const dataMinusKeysRender = (
         <span slot="header"
           >${hass.localize("ui.panel.config.voice_assistants.debug.raw")}</span
         >
-        <ha-yaml-editor
-          readOnly
-          autoUpdate
-          .hass=${hass}
-          .value=${result}
-        ></ha-yaml-editor>
+        <ha-yaml-editor readOnly autoUpdate .value=${result}></ha-yaml-editor>
       </ha-expansion-panel>`
     : "";
 };
@@ -242,7 +237,6 @@ export class AssistPipelineDebug extends LitElement {
                               <ha-yaml-editor
                                 read-only
                                 auto-update
-                                .hass=${this.hass}
                                 .value=${content}
                               ></ha-yaml-editor>
                             </ha-expansion-panel>
@@ -271,7 +265,6 @@ export class AssistPipelineDebug extends LitElement {
                                     <ha-yaml-editor
                                       read-only
                                       auto-update
-                                      .hass=${this.hass}
                                       .value=${content.tool_calls}
                                     ></ha-yaml-editor>
                                   </ha-expansion-panel>
@@ -535,7 +528,6 @@ export class AssistPipelineDebug extends LitElement {
           <ha-yaml-editor
             read-only
             auto-update
-            .hass=${this.hass}
             .value=${this.pipelineRun}
           ></ha-yaml-editor>
         </ha-expansion-panel>

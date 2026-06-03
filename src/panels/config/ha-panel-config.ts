@@ -414,7 +414,6 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconPath: mdiBadgeAccountHorizontal,
       iconColor: "#5A87FA",
       core: true,
-      advancedOnly: true,
       adminOnly: true,
     },
   ],
@@ -820,7 +819,6 @@ class HaPanelConfig extends HassRouterPage {
 
     el.route = this.routeTail;
     el.hass = this.hass;
-    el.showAdvanced = Boolean(this.hass.userData?.showAdvanced);
     el.isWide = isWide;
     el.narrow = this.narrow;
     el.cloudStatus = this._cloudStatus;

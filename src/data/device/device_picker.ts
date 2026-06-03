@@ -2,22 +2,69 @@ import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type { HaEntityPickerEntityFilterFunc } from "../entity/entity";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "../entity/entity_registry";
 import { domainToName } from "../integration";
 import {
   getDeviceEntityDisplayLookup,
   type DeviceEntityDisplayLookup,
+  type DeviceRegistryEntry,
 } from "./device_registry";
 
 export interface DevicePickerItem extends PickerComboBoxItem {
   domain?: string;
   domain_name?: string;
 }
+
+export interface DeviceAreaLabel {
+  areaName?: string;
+  viaDeviceName?: string;
+  viaDeviceAreaName?: string;
+}
+
+export const computeDeviceAreaLabel = (
+  device: DeviceRegistryEntry,
+  areas: HomeAssistant["areas"],
+  devices: HomeAssistant["devices"],
+  states: HomeAssistant["states"],
+  localize: LocalizeFunc,
+  language: HomeAssistant["language"],
+  translationMetadata: HomeAssistant["translationMetadata"],
+  viaDeviceEntities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[]
+): DeviceAreaLabel => {
+  const area = getDeviceArea(device, areas);
+
+  const viaDevice = device.via_device_id
+    ? devices[device.via_device_id]
+    : undefined;
+  const viaDeviceName = viaDevice
+    ? computeDeviceNameDisplay(viaDevice, localize, states, viaDeviceEntities)
+    : undefined;
+  const viaDeviceArea = viaDevice ? getDeviceArea(viaDevice, areas) : undefined;
+  const viaDeviceAreaName = viaDeviceArea
+    ? computeAreaName(viaDeviceArea)
+    : undefined;
+
+  const isRTL = computeRTL(language, translationMetadata.translations);
+
+  const areaName = area
+    ? computeAreaName(area)
+    : viaDeviceAreaName
+      ? `${viaDeviceAreaName}${isRTL ? " ◂ " : " ▸ "}${viaDeviceName}`
+      : viaDeviceName || undefined;
+
+  return { areaName, viaDeviceName, viaDeviceAreaName };
+};
 
 export const deviceComboBoxKeys: FuseWeightedKey[] = [
   {
@@ -35,6 +82,14 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
   {
     name: "search_labels.domain",
     weight: 4,
+  },
+  {
+    name: "search_labels.viaDeviceName",
+    weight: 3,
+  },
+  {
+    name: "search_labels.viaDeviceArea",
+    weight: 3,
   },
 ];
 
@@ -149,9 +204,19 @@ export const getDevices = (
       deviceEntityLookup[device.id]
     );
 
-    const area = getDeviceArea(device, hass.areas);
-
-    const areaName = area ? computeAreaName(area) : undefined;
+    const { areaName, viaDeviceName, viaDeviceAreaName } =
+      computeDeviceAreaLabel(
+        device,
+        hass.areas,
+        hass.devices,
+        hass.states,
+        hass.localize,
+        hass.language,
+        hass.translationMetadata,
+        device.via_device_id
+          ? deviceEntityLookup[device.via_device_id]
+          : undefined
+      );
 
     const configEntry = device.primary_config_entry
       ? configEntryLookup?.[device.primary_config_entry]
@@ -174,6 +239,8 @@ export const getDevices = (
         areaName: areaName || null,
         domain: domain || null,
         domainName: domainName || null,
+        viaDeviceName: viaDeviceName || null,
+        viaDeviceArea: viaDeviceAreaName || null,
       },
       sorting_label: [primary, areaName, domainName].filter(Boolean).join("_"),
     };

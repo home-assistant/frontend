@@ -4,6 +4,7 @@ import {
   addBrandsAuth,
   brandsUrl,
   clearBrandsTokenRefresh,
+  fetchAndScheduleBrandsAccessToken,
   fetchBrandsAccessToken,
   scheduleBrandsTokenRefresh,
 } from "../../src/util/brands-url";
@@ -167,5 +168,85 @@ describe("scheduleBrandsTokenRefresh", () => {
     // Advance 30 minutes — should not have refreshed because we cleared
     await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
     assert.strictEqual(callCount, 1);
+  });
+});
+
+describe("fetchAndScheduleBrandsAccessToken", () => {
+  afterEach(() => {
+    clearBrandsTokenRefresh();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  it("retries with backoff until the WS call succeeds, returns true when the token changed", async () => {
+    vi.useFakeTimers();
+    let callCount = 0;
+    const mockHass = {
+      callWS: async () => {
+        callCount++;
+        if (callCount < 3) {
+          throw new Error("unknown_command");
+        }
+        return { token: `retry-token-${callCount}` };
+      },
+    } as unknown as HomeAssistant;
+
+    const promise = fetchAndScheduleBrandsAccessToken(mockHass);
+
+    // First attempt fires immediately, fails
+    await vi.advanceTimersByTimeAsync(0);
+    assert.strictEqual(callCount, 1);
+
+    // 500ms backoff → second attempt fails
+    await vi.advanceTimersByTimeAsync(500);
+    assert.strictEqual(callCount, 2);
+
+    // 1000ms backoff → third attempt succeeds
+    await vi.advanceTimersByTimeAsync(1000);
+
+    const changed = await promise;
+    assert.strictEqual(changed, true);
+    assert.strictEqual(callCount, 3);
+    assert.strictEqual(
+      brandsUrl(
+        { domain: "test", type: "icon" },
+        "http://homeassistant.local:8123"
+      ),
+      "http://homeassistant.local:8123/api/brands/integration/test/icon.png?token=retry-token-3"
+    );
+  });
+
+  it("returns false when the backend returns the same token (no UI change needed)", async () => {
+    const mockHass = {
+      callWS: async () => ({ token: "stable-token" }),
+    } as unknown as HomeAssistant;
+
+    // Prime the cached token
+    await fetchBrandsAccessToken(mockHass);
+
+    // Same token returned → no change
+    const changed = await fetchAndScheduleBrandsAccessToken(mockHass);
+    assert.strictEqual(changed, false);
+  });
+
+  it("returns false after all retries fail (e.g. older backend)", async () => {
+    vi.useFakeTimers();
+    let callCount = 0;
+    const mockHass = {
+      callWS: async () => {
+        callCount++;
+        throw new Error("unknown_command");
+      },
+    } as unknown as HomeAssistant;
+
+    const promise = fetchAndScheduleBrandsAccessToken(mockHass);
+
+    // Exhaust all retry delays: 500 + 1000 + 2000 + 5000 + 10000 + 15000
+    await vi.advanceTimersByTimeAsync(33500);
+
+    const changed = await promise;
+    assert.strictEqual(changed, false);
+    // 1 immediate attempt + 6 retries = 7 attempts
+    assert.strictEqual(callCount, 7);
   });
 });

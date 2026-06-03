@@ -307,8 +307,6 @@ export const colorStyles = css`
     --mdc-dialog-scroll-divider-color: var(--divider-color);
     --mdc-dialog-heading-ink-color: var(--primary-text-color);
     --mdc-dialog-content-ink-color: var(--primary-text-color);
-    --mdc-top-app-bar-fixed-box-shadow: var(--bar-box-shadow);
-
     --mdc-text-field-idle-line-color: var(--input-idle-line-color);
     --mdc-text-field-hover-line-color: var(--input-hover-line-color);
     --mdc-text-field-disabled-line-color: var(--input-disabled-line-color);

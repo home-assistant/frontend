@@ -142,6 +142,7 @@ export class HaStatisticPicker extends LitElement {
   private async _getStatisticIds() {
     this.statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
     this._picker?.requestUpdate();
+    this._valueRenderer = this._makeValueRenderer();
   }
 
   private _getItems = () =>
@@ -210,7 +211,10 @@ export class HaStatisticPicker extends LitElement {
         });
       }
 
-      const isRTL = computeRTL(hass);
+      const isRTL = computeRTL(
+        hass.language,
+        hass.translationMetadata.translations
+      );
 
       const output: StatisticComboBoxItem[] = [];
 
@@ -314,7 +318,7 @@ export class HaStatisticPicker extends LitElement {
     }
   );
 
-  private _valueRenderer: PickerValueRenderer = (value) => {
+  private _renderValue(value: string) {
     const statisticId = value;
 
     const item = this._computeItem(statisticId);
@@ -338,7 +342,13 @@ export class HaStatisticPicker extends LitElement {
         ? html`<span slot="supporting-text">${item.secondary}</span>`
         : nothing}
     `;
-  };
+  }
+
+  private _makeValueRenderer(): PickerValueRenderer {
+    return (value) => this._renderValue(value);
+  }
+
+  private _valueRenderer: PickerValueRenderer = this._makeValueRenderer();
 
   private _computeItem(statisticId: string): StatisticComboBoxItem {
     const stateObj = this.hass.states[statisticId];
@@ -353,7 +363,10 @@ export class HaStatisticPicker extends LitElement {
         this.hass.floors
       );
 
-      const isRTL = computeRTL(this.hass);
+      const isRTL = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
 
       const primary = entityName || deviceName || statisticId;
       const secondary = [areaName, entityName ? deviceName : undefined]

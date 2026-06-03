@@ -4,6 +4,8 @@ import {
   mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -30,6 +32,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { debounce } from "../../../../common/util/debounce";
@@ -59,6 +62,7 @@ import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceTrigger } from "../../../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
+import type { TargetSelector } from "../../../../data/selector";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
 import {
@@ -214,6 +218,19 @@ export default class HaAutomationTriggerRow extends LitElement {
         ? { device_id: (this.trigger as DeviceTrigger).device_id }
         : undefined;
 
+    const triggerTargetSpec =
+      type === "platform"
+        ? this.triggerDescriptions[(this.trigger as PlatformTrigger).trigger]
+            ?.target
+        : undefined;
+
+    const noteTooltipText = truncateWithEllipsis(
+      (type !== "list" &&
+        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()) ||
+        "",
+      250
+    );
+
     return html`
       ${type === "list"
         ? html`<ha-svg-icon
@@ -229,7 +246,27 @@ export default class HaAutomationTriggerRow extends LitElement {
       <h3 slot="header">
         ${describeTrigger(this.trigger, this.hass, this._entityReg)}
         ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(target, descriptionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              descriptionHasTarget && !this._isNew,
+              triggerTargetSpec,
+              type !== "device"
+            )
+          : nothing}
+        ${type !== "list" &&
+        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
+          ? html`
+              <ha-svg-icon
+                tabindex="0"
+                id="note-icon"
+                .path=${mdiCommentTextOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.note.label"
+                )}
+                class="note-indicator"
+              ></ha-svg-icon>
+              <ha-tooltip for="note-icon"><p>${noteTooltipText}</p></ha-tooltip>
+            `
           : nothing}
       </h3>
       <ha-automation-row-event-chip
@@ -271,7 +308,19 @@ export default class HaAutomationTriggerRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
-
+        ${type !== "list"
+          ? html`<ha-dropdown-item value="edit_note">
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiCommentEditOutline}
+              ></ha-svg-icon>
+              ${this._renderOverflowLabel(
+                this.hass.localize(
+                  `ui.panel.config.automation.editor.note.${(this.trigger as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
+                )
+              )}
+            </ha-dropdown-item>`
+          : nothing}
         <wa-divider></wa-divider>
 
         <ha-dropdown-item value="duplicate" .disabled=${this.disabled}>
@@ -507,11 +556,17 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"],
+      interactive = false
+    ) =>
       html`<ha-automation-row-targets
-        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
+        .interactive=${interactive}
       ></ha-automation-row-targets>`
   );
 
@@ -643,6 +698,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       rename: () => {
         this._renameTrigger();
       },
+      editNote: this._editNoteTrigger,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -744,7 +800,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         <ha-yaml-editor
           read-only
           disable-fullscreen
-          .hass=${this.hass}
           .defaultValue=${this._triggeredResult}
         ></ha-yaml-editor>
       `,
@@ -774,6 +829,40 @@ export default class HaAutomationTriggerRow extends LitElement {
         delete value.alias;
       } else {
         value.alias = alias;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.triggerEditor?.yamlEditor?.setValue(value);
+      }
+    }
+  };
+
+  private _editNoteTrigger = async (): Promise<void> => {
+    if (isTriggerList(this.trigger)) return;
+    const trigger = this.trigger;
+    const note = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.note.${trigger.note ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.note.label"
+      ),
+      inputType: "string",
+      defaultValue: trigger.note,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (note !== null) {
+      const value = { ...trigger };
+      if (note === "") {
+        delete value.note;
+      } else {
+        value.note = note;
       }
       fireEvent(this, "value-changed", {
         value,
@@ -897,6 +986,9 @@ export default class HaAutomationTriggerRow extends LitElement {
     switch (action) {
       case "rename":
         this._renameTrigger();
+        break;
+      case "edit_note":
+        this._editNoteTrigger();
         break;
       case "duplicate":
         this._duplicateTrigger();

@@ -152,7 +152,6 @@ class DialogNewAutomation extends LitElement {
 
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._open}
         flexcontent
         header-title=${this.hass.localize(
@@ -271,7 +270,7 @@ class DialogNewAutomation extends LitElement {
                         : nothing}
                     ${processedBlueprints.length > 0
                       ? html`
-                          <ha-tip .hass=${this.hass}>
+                          <ha-tip>
                             <a
                               href=${documentationUrl(
                                 this.hass,

@@ -45,7 +45,7 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { TodoItem } from "../../../data/todo";
 import {
   TodoItemStatus,
@@ -111,6 +111,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   @state() private _reordering = false;
 
   @query("ha-input", true) private _input!: HaInput;
+
+  @query("ha-list") private _list?: List;
 
   private _unsubItems?: Promise<UnsubscribeFunc>;
 
@@ -381,7 +383,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const unavailable = isUnavailableState(stateObj.state);
+    const unavailable =
+      stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
 
     // Discard memoization when we rollover to a new day, so filters can be recalculated
     const memoTime = this._config.due_date_period
@@ -764,7 +767,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     let focusedIndex: number | undefined;
     let list: List | undefined;
     if (ev.type === "keydown") {
-      list = this.renderRoot.querySelector("ha-list")!;
+      list = this._list!;
       focusedIndex = list.getFocusedItemIndex();
     }
     const item = this._getItem(ev.currentTarget.itemId);
@@ -894,7 +897,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private async _moveItem(oldIndex: number, newIndex: number) {
     await this.updateComplete;
 
-    const list = this.renderRoot.querySelector("ha-list")!;
+    const list = this._list!;
 
     const items = list.children;
 

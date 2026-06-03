@@ -122,6 +122,7 @@ type SceneItem = SceneEntity & {
   area: string | undefined;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   editable: boolean;
@@ -159,15 +160,19 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   private _filter = "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "scene-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
+
+  private _fromUrl = false;
 
   @state() private _expandedFilter?: string;
 
@@ -239,6 +244,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.scene;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || []).map(
+          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        );
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           scene.entity_id
@@ -252,9 +260,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -277,10 +284,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           showNarrow: true,
           type: "icon",
           template: (scene) => html`
-            <ha-state-icon
-              .hass=${this.hass}
-              .stateObj=${scene}
-            ></ha-state-icon>
+            <ha-state-icon .stateObj=${scene}></ha-state-icon>
           `,
         },
         name: {
@@ -327,7 +331,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           showNarrow: true,
           template: (scene) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {
@@ -403,6 +406,22 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     }
   );
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      if (
+        !this._searchParms.has("area") &&
+        !this._searchParms.has("device") &&
+        !this._searchParms.has("label")
+      ) {
+        this._filters = this._storageFilters;
+      }
+      this._filterArea();
+      this._filterDevice();
+      this._filterLabel();
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_entityReg")) {
@@ -440,7 +459,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.automations}
         .searchLabel=${this.hass.localize(
@@ -704,12 +725,18 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         items: undefined,
       },
     };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   };
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
@@ -759,13 +786,42 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 
-  firstUpdated() {
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
+  private _filterArea() {
+    const area = this._searchParms.get("area");
+    if (!area) {
+      return;
     }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-floor-areas": {
+        value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
+  private _filterDevice() {
+    const device = this._searchParms.get("device");
+    if (!device) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-devices": {
+        value: [device],
+        items: undefined,
+      },
+    };
+    this._applyFilters();
   }
 
   private _filterLabel() {
@@ -773,6 +829,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     if (!label) {
       return;
     }
+    this._fromUrl = true;
     this._filters = {
       ...this._filters,
       "ha-filter-labels": {

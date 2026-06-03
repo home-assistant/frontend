@@ -1,7 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { isUnavailableState, OFF } from "../data/entity/entity";
+import { OFF, UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import type { HumidifierEntity } from "../data/humidifier";
 import type { HomeAssistant } from "../types";
 
@@ -13,9 +13,11 @@ class HaHumidifierState extends LitElement {
 
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();
+    const noValue =
+      this.stateObj.state === UNAVAILABLE || this.stateObj.state === UNKNOWN;
 
     return html`<div class="target">
-        ${!isUnavailableState(this.stateObj.state)
+        ${!noValue
           ? html`<span class="state-label">
                 ${this._localizeState()}
                 ${this.stateObj.attributes.mode
@@ -30,7 +32,7 @@ class HaHumidifierState extends LitElement {
           : this._localizeState()}
       </div>
 
-      ${currentStatus && !isUnavailableState(this.stateObj.state)
+      ${currentStatus && !noValue
         ? html`<div class="current">
             ${this.hass.localize("ui.card.humidifier.currently")}:
             <div class="unit">${currentStatus}</div>
@@ -69,7 +71,10 @@ class HaHumidifierState extends LitElement {
   }
 
   private _localizeState(): string {
-    if (isUnavailableState(this.stateObj.state)) {
+    if (
+      this.stateObj.state === UNAVAILABLE ||
+      this.stateObj.state === UNKNOWN
+    ) {
       return this.hass.localize(`state.default.${this.stateObj.state}`);
     }
 

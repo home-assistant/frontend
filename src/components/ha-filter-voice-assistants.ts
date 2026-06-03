@@ -2,7 +2,7 @@ import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
@@ -32,6 +32,8 @@ export class HaFilterVoiceAssistants extends LitElement {
   @state() private _voiceAssistantOptions: string[] = [];
 
   @state() private _shouldRender = false;
+
+  @query("ha-list") private _list?: HTMLElement;
 
   protected render() {
     return html`
@@ -93,8 +95,7 @@ export class HaFilterVoiceAssistants extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49}px`;
+        this._list!.style.height = `${this.clientHeight - 49}px`;
       }, 300);
     }
   }

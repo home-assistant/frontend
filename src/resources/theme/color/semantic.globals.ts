@@ -7,7 +7,7 @@ import { css } from "lit";
  */
 export const semanticColorStyles = css`
   html {
-    --ha-color-focus: var(--ha-color-orange-60);
+    --ha-color-focus: var(--ha-color-neutral-60);
 
     /* text */
     --ha-color-text-primary: var(--ha-color-neutral-05);
@@ -224,6 +224,11 @@ export const darkSemanticColorStyles = css`
     --ha-color-fill-neutral-normal-resting: var(--ha-color-neutral-10);
     --ha-color-fill-neutral-normal-hover: var(--ha-color-neutral-20);
     --ha-color-fill-neutral-normal-active: var(--ha-color-neutral-10);
+
+    /* fill neutral loud */
+    --ha-color-fill-neutral-loud-resting: var(--ha-color-neutral-60);
+    --ha-color-fill-neutral-loud-hover: var(--ha-color-neutral-70);
+    --ha-color-fill-neutral-loud-active: var(--ha-color-neutral-60);
 
     /* fill disabled quiet */
     --ha-color-fill-disabled-quiet-resting: var(--ha-color-neutral-10);

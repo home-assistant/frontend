@@ -62,7 +62,7 @@ export const waColorStyles = css`
     --wa-panel-border-width: 1px;
     --wa-color-surface-border: var(--ha-color-border-neutral-quiet);
 
-    --wa-focus-ring-color: var(--ha-color-neutral-60);
+    --wa-focus-ring-color: var(--ha-color-focus);
     --wa-shadow-l: 4px 8px 12px 0 rgba(0, 0, 0, 0.3);
 
     --wa-form-control-background-color: var(--wa-color-surface-raised);

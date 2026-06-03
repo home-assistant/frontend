@@ -133,7 +133,10 @@ export class HuiViewHeaderSettingsEditor extends LitElement {
     };
 
     const narrow = this.narrow;
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
     const schema = this._schema(this.hass.localize, isRTL, narrow);
 
     return html`

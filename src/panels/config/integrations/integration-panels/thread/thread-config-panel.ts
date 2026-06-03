@@ -506,7 +506,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         this._refresh();
       },
       startFlowHandler: "otbr",
-      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 

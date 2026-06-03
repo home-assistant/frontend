@@ -51,9 +51,23 @@ export const rowStyles = css`
 
   ha-automation-row-event-chip.event-chip {
     position: absolute;
-    inset-inline-end: 96px;
-    top: var(--ha-space-6);
-    box-shadow: var(--ha-box-shadow-s);
+  }
+
+  .icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .note-indicator {
+    color: var(--ha-color-on-neutral-normal);
+  }
+  .note-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .note-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
   }
 `;
 
@@ -127,9 +141,9 @@ export const manualEditorStyles = css`
   .has-sidebar {
     --sidebar-width: min(
       max(var(--sidebar-dynamic-width), ${SIDEBAR_MIN_WIDTH}px),
-      100vw - ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px),
+      100vw - ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px),
       var(--ha-automation-editor-max-width) -
-        ${CONTENT_MIN_WIDTH}px - var(--mdc-drawer-width, 0px)
+        ${CONTENT_MIN_WIDTH}px - var(--ha-sidebar-width, 0px)
     );
     --sidebar-gap: var(--ha-space-4);
   }
@@ -241,7 +255,6 @@ export const automationRowsStyles = css`
 export const sidebarEditorStyles = css`
   .sidebar-editor {
     display: block;
-    padding-top: 8px;
   }
   .description {
     padding-top: 16px;

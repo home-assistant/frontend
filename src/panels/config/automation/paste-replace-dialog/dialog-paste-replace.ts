@@ -39,7 +39,6 @@ class DialogPasteReplace extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
         header-title=${this.hass.localize(
@@ -53,7 +52,6 @@ class DialogPasteReplace extends LitElement {
         </p>
 
         <ha-yaml-editor
-          .hass=${this.hass}
           .defaultValue=${this._params?.pastedConfig}
           read-only
         ></ha-yaml-editor>

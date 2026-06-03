@@ -166,7 +166,7 @@ class PanelDeveloperTools extends LitElement {
           z-index: 4;
           background-color: var(--app-header-background-color);
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -179,7 +179,7 @@ class PanelDeveloperTools extends LitElement {
         }
         :host([narrow]) .header {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)

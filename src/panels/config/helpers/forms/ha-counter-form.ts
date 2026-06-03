@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-picker";
@@ -35,6 +35,8 @@ class HaCounterForm extends LitElement {
 
   @state() private _step?: number;
 
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
   set item(item: Counter) {
     this._item = item;
     if (item) {
@@ -57,11 +59,7 @@ class HaCounterForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+    this.updateComplete.then(() => this._focusElement?.focus());
   }
 
   protected render() {

@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { createDurationData } from "../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-checkbox";
@@ -33,6 +33,8 @@ class HaTimerForm extends LitElement {
 
   @state() private _restore!: boolean;
 
+  @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
+
   set item(item: Timer) {
     this._item = item;
     if (item) {
@@ -51,11 +53,7 @@ class HaTimerForm extends LitElement {
   }
 
   public focus() {
-    this.updateComplete.then(() =>
-      (
-        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
-      )?.focus()
-    );
+    this.updateComplete.then(() => this._focusElement?.focus());
   }
 
   protected render() {

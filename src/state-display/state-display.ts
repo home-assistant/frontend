@@ -7,7 +7,7 @@ import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { STRINGS_SEPARATOR_DOT } from "../common/const";
 import "../components/ha-relative-time";
-import { isUnavailableState } from "../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import {
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
   SENSOR_DEVICE_CLASS_UPTIME,
@@ -89,7 +89,9 @@ class StateDisplay extends LitElement {
     const domain = computeStateDomain(stateObj);
 
     if (content === "state") {
-      if (this.dashUnavailable && isUnavailableState(stateObj.state)) {
+      const noValue =
+        stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
+      if (this.dashUnavailable && noValue) {
         return "—";
       }
       if (
@@ -97,7 +99,7 @@ class StateDisplay extends LitElement {
           this.stateObj.attributes.device_class
         ) ||
           TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
-        !isUnavailableState(stateObj.state)
+        !noValue
       ) {
         return html`
           <hui-timestamp-display

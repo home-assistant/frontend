@@ -118,7 +118,6 @@ export class HuiDialogSuggestCard extends LitElement {
     }
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize(
           "ui.panel.lovelace.editor.suggest_card.header"
@@ -131,7 +130,6 @@ export class HuiDialogSuggestCard extends LitElement {
             ? html`
                 <div class="editor">
                   <ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._cardConfig}
                     in-dialog
                   ></ha-yaml-editor>

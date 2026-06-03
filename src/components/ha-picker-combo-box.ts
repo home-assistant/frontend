@@ -167,6 +167,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public clearable = false;
 
+  @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
+
   @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
 
   @query("ha-input-search") private _searchFieldElement?: HaInputSearch;
@@ -342,7 +344,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _getItems = () => {
     let items = [...(this.getItems(this._search, this._selectedSection) || [])];
 
-    if (!this.sections?.length) {
+    if (!this.sections?.length && !this.noSort) {
       items = items.sort((entityA, entityB) => {
         const sortLabelA =
           typeof entityA === "string" ? entityA : entityA.sorting_label;

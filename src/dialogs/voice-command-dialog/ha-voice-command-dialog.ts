@@ -98,12 +98,7 @@ export class HaVoiceCommandDialog extends LitElement {
     }
 
     return html`
-      <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        @closed=${this._dialogClosed}
-        flexcontent
-      >
+      <ha-dialog .open=${this._open} @closed=${this._dialogClosed} flexcontent>
         <ha-dialog-header slot="header">
           <ha-icon-button
             slot="navigationIcon"

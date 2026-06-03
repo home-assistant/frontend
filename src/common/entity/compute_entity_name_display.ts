@@ -137,7 +137,10 @@ export const computeEntityPickerDisplay = (
     hass.floors
   );
 
-  const isRTL = computeRTL(hass);
+  const isRTL = computeRTL(
+    hass.language,
+    hass.translationMetadata.translations
+  );
 
   const primary = entityName || deviceName || stateObj.entity_id;
   const secondary =

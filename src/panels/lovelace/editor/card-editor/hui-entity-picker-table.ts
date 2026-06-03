@@ -97,7 +97,10 @@ export class HuiEntityPickerTable extends LitElement {
 
     const columns = this._columns(
       this.narrow,
-      computeRTL(this.hass),
+      computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      ),
       showEntityId
     );
 

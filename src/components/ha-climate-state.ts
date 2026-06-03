@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ClimateEntity } from "../data/climate";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
-import { isUnavailableState, OFF } from "../data/entity/entity";
+import { OFF, UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-climate-state")
@@ -14,9 +14,11 @@ class HaClimateState extends LitElement {
 
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();
+    const noValue =
+      this.stateObj.state === UNAVAILABLE || this.stateObj.state === UNKNOWN;
 
     return html`<div class="target">
-        ${!isUnavailableState(this.stateObj.state)
+        ${!noValue
           ? html`<span class="state-label">
                 ${this._localizeState()}
                 ${this.stateObj.attributes.preset_mode &&
@@ -32,7 +34,7 @@ class HaClimateState extends LitElement {
           : this._localizeState()}
       </div>
 
-      ${currentStatus && !isUnavailableState(this.stateObj.state)
+      ${currentStatus && !noValue
         ? html`
             <div class="current">
               ${this.hass.localize("ui.card.climate.currently")}:
@@ -119,7 +121,10 @@ class HaClimateState extends LitElement {
   }
 
   private _localizeState(): string {
-    if (isUnavailableState(this.stateObj.state)) {
+    if (
+      this.stateObj.state === UNAVAILABLE ||
+      this.stateObj.state === UNKNOWN
+    ) {
       return this.hass.localize(`state.default.${this.stateObj.state}`);
     }
 

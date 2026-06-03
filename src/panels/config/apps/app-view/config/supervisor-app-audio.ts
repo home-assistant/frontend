@@ -183,7 +183,7 @@ class SupervisorAppAudio extends LitElement {
         this._selectedOutput === "default" ? null : this._selectedOutput,
     };
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
       if (this.addon?.state === "started") {
         await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }

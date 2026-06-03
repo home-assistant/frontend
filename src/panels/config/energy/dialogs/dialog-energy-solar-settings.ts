@@ -9,10 +9,11 @@ import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
-import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/radio/ha-radio-group";
+import "../../../../components/input/ha-input";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
 import type { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -27,6 +28,12 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
+import {
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../../data/recorder";
+import type { HaInput } from "../../../../components/input/ha-input";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
@@ -103,7 +110,6 @@ export class DialogEnergySolarSettings
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.solar.dialog.header"
@@ -129,6 +135,24 @@ export class DialogEnergySolarSettings
           )}
           autofocus
         ></ha-statistic-picker>
+
+        <ha-input
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.display_name"
+          )}
+          type="text"
+          .disabled=${!this._source?.stat_energy_from}
+          .value=${this._source?.name || ""}
+          .placeholder=${this._source?.stat_energy_from
+            ? getStatisticLabel(
+                this.hass,
+                this._source.stat_energy_from,
+                this._params?.statsMetadata?.[this._source.stat_energy_from]
+              )
+            : ""}
+          @input=${this._nameChanged}
+        >
+        </ha-input>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -156,30 +180,22 @@ export class DialogEnergySolarSettings
           )}
         </p>
 
-        <ha-formfield
-          label=${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.dont_forecast_production"
-          )}
+        <ha-radio-group
+          .value=${this._forecast ? "true" : "false"}
+          name="forecast"
+          @change=${this._handleForecastChanged}
         >
-          <ha-radio
-            value="false"
-            name="forecast"
-            .checked=${!this._forecast}
-            @change=${this._handleForecastChanged}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          label=${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.forecast_production"
-          )}
-        >
-          <ha-radio
-            value="true"
-            name="forecast"
-            .checked=${this._forecast}
-            @change=${this._handleForecastChanged}
-          ></ha-radio>
-        </ha-formfield>
+          <ha-radio-option value="false">
+            ${this.hass.localize(
+              "ui.panel.config.energy.solar.dialog.dont_forecast_production"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="true">
+            ${this.hass.localize(
+              "ui.panel.config.energy.solar.dialog.forecast_production"
+            )}
+          </ha-radio-option>
+        </ha-radio-group>
         ${this._forecast
           ? html`<div class="forecast-options">
               ${this._configEntries?.map(
@@ -257,9 +273,8 @@ export class DialogEnergySolarSettings
             );
   }
 
-  private _handleForecastChanged(ev: CustomEvent) {
-    const input = ev.currentTarget as HaRadio;
-    this._forecast = input.value === "true";
+  private _handleForecastChanged(ev: Event) {
+    this._forecast = (ev.currentTarget as HaRadioGroup).value === "true";
   }
 
   private _forecastCheckChanged(ev) {
@@ -294,12 +309,36 @@ export class DialogEnergySolarSettings
     });
   }
 
-  private _statisticChanged(ev: ValueChangedEvent<string>) {
+  private async _statisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
+    if (
+      ev.detail.value &&
+      isExternalStatistic(ev.detail.value) &&
+      this._params?.statsMetadata &&
+      !(ev.detail.value in this._params.statsMetadata)
+    ) {
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (metadata) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
+    }
   }
 
   private _powerStatisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_rate: ev.detail.value };
+  }
+
+  private _nameChanged(ev: InputEvent) {
+    this._source = {
+      ...this._source!,
+      name: (ev.target as HaInput).value,
+    };
+    if (!this._source.name) {
+      delete this._source.name;
+    }
   }
 
   private async _save() {
@@ -329,20 +368,18 @@ export class DialogEnergySolarSettings
           margin-inline-end: 16px;
           margin-inline-start: initial;
         }
-        ha-formfield {
-          display: block;
-        }
         ha-statistic-picker {
           width: 100%;
         }
+        ha-radio-group {
+          margin-bottom: var(--ha-space-3);
+        }
         .forecast-options {
-          padding-left: 32px;
-          padding-inline-start: 32px;
-          padding-inline-end: initial;
           display: flex;
           flex-direction: column;
           min-width: 0;
           gap: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-3);
         }
         .forecast-options ha-button {
           margin-top: var(--ha-space-4);

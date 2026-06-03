@@ -53,6 +53,7 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
+import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
 
 export interface IntegrationListItem {
   name: string;
@@ -389,7 +390,6 @@ class AddIntegrationDialog extends LitElement {
       : this.hass.localize("ui.panel.config.integrations.new");
 
     return html`<ha-dialog
-      .hass=${this.hass}
       .open=${this._open}
       header-title=${headerTitle}
       @closed=${this._dialogClosed}
@@ -711,21 +711,8 @@ class AddIntegrationDialog extends LitElement {
       });
       if (configEntries.length > 0) {
         this.closeDialog();
-        const localize = await this.hass.loadBackendTranslation(
-          "title",
-          integration.name
-        );
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry_title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.single_config_entry",
-            {
-              integration_name: domainToName(localize, integration.name),
-            }
-          ),
-        });
+
+        showSingleConfigEntryWarning(this, { domain: integration.domain });
         return;
       }
     }
@@ -774,7 +761,6 @@ class AddIntegrationDialog extends LitElement {
 
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
       navigateToResult: this._navigateToResult,
     });

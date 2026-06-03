@@ -9,6 +9,8 @@ import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
+import "../../components/ha-textarea";
+import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
 import type { HomeAssistant } from "../../types";
@@ -28,7 +30,7 @@ class DialogBox extends LitElement {
 
   @state() private _validInput = true;
 
-  @query("ha-input") private _textField?: HaInput;
+  @query("ha-input, ha-textarea") private _textField?: HaInput | HaTextArea;
 
   private _closePromise?: Promise<void>;
 
@@ -109,7 +111,7 @@ class DialogBox extends LitElement {
         </ha-dialog-header>
         <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
-          ${this._params.prompt
+          ${this._params.prompt && !this._params.multiline
             ? html`
                 <ha-input
                   autofocus
@@ -131,7 +133,19 @@ class DialogBox extends LitElement {
                     : nothing}
                 </ha-input>
               `
-            : nothing}
+            : this._params.prompt && this._params.multiline
+              ? html`
+                  <ha-textarea
+                    resize="auto"
+                    autofocus
+                    .value=${this._params.defaultValue}
+                    .placeholder=${this._params.placeholder}
+                    .label=${this._params.inputLabel}
+                    .disabled=${this._loading}
+                    @input=${this._validateInput}
+                  ></ha-textarea>
+                `
+              : nothing}
         </div>
         <ha-dialog-footer slot="footer">
           ${confirmPrompt

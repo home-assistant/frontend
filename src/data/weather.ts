@@ -29,6 +29,13 @@ import type {
 import type { SVGTemplateResult, TemplateResult } from "lit";
 import { css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
+import {
+  UNIT_HPA,
+  UNIT_IN,
+  UNIT_INHG,
+  UNIT_KM,
+  UNIT_MM,
+} from "../common/const";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { round } from "../common/number/round";
 import "../components/ha-svg-icon";
@@ -245,12 +252,12 @@ export const getWeatherUnit = (
     case "precipitation":
       return (
         stateObj.attributes.precipitation_unit ||
-        (lengthUnit === "km" ? "mm" : "in")
+        (lengthUnit === UNIT_KM ? UNIT_MM : UNIT_IN)
       );
     case "pressure":
       return (
         stateObj.attributes.pressure_unit ||
-        (lengthUnit === "km" ? "hPa" : "inHg")
+        (lengthUnit === UNIT_KM ? UNIT_HPA : UNIT_INHG)
       );
     case "apparent_temperature":
     case "dew_point":

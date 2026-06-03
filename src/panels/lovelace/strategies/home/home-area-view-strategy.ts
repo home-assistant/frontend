@@ -217,8 +217,8 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     }
 
     const deviceSections: LovelaceSectionRawConfig[] = [];
-
-    const summaryEntities = Object.values(entitiesBySummary).flat();
+    const { maintenance, ...partialEntitiesBySummary } = entitiesBySummary;
+    const summaryEntities = Object.values(partialEntitiesBySummary).flat();
 
     // Scenes section
     const sceneFilter = generateEntityFilter(hass, {

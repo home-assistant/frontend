@@ -242,7 +242,6 @@ export class QuickBar extends LitElement {
       <ha-adaptive-dialog
         without-header
         flexcontent
-        .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
         hideActions
@@ -253,7 +252,6 @@ export class QuickBar extends LitElement {
         ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
               id="combo-box"
-              .hass=${this.hass}
               @index-selected=${this._handleItemSelected}
               .notFoundLabel=${this.hass.localize(
                 "ui.dialogs.quick-bar.nothing_found"
@@ -269,7 +267,7 @@ export class QuickBar extends LitElement {
             ></ha-picker-combo-box>`
           : nothing}
         ${this._showHint
-          ? html`<ha-tip slot="footer" .hass=${this.hass}
+          ? html`<ha-tip slot="footer"
               >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
                 keyboard_shortcut: html`<button
                   class="link"

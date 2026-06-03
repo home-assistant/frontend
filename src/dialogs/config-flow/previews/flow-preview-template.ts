@@ -130,7 +130,7 @@ class FlowPreviewTemplate extends LitElement {
     this._listeners = preview.listeners;
     const now = new Date().toISOString();
     this._preview = {
-      entity_id: `${this.stepId}.___flow_preview___`,
+      entity_id: `${preview.domain ?? this.stepId}.___flow_preview___`,
       last_changed: now,
       last_updated: now,
       context: { id: "", parent_id: null, user_id: null },

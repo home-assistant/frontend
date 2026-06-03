@@ -15,7 +15,7 @@ import {
   mdiPlaylistMusic,
   mdiPlayPause,
   mdiPodcast,
-  mdiPower,
+  mdiPowerStandby,
   mdiPowerOff,
   mdiPowerOn,
   mdiRepeat,
@@ -38,7 +38,7 @@ import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { isUnavailableState } from "./entity/entity";
+import { UNAVAILABLE } from "./entity/entity";
 import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
@@ -284,7 +284,8 @@ export const computeMediaControls = (
 
   const state = stateObj.state;
 
-  if (isUnavailableState(state)) {
+  // We only filter out `unavailable`, not `unknown`
+  if (state === UNAVAILABLE) {
     return undefined;
   }
 
@@ -294,7 +295,7 @@ export const computeMediaControls = (
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
-            icon: mdiPower,
+            icon: mdiPowerStandby,
             action: "turn_on",
           },
         ]
@@ -315,7 +316,7 @@ export const computeMediaControls = (
 
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: assumedState ? mdiPowerOff : mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPowerStandby,
       action: "turn_off",
     });
   }

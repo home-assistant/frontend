@@ -57,7 +57,6 @@ class HaMoreInfoDetails extends LitElement {
       <div class="content">
         ${this.yamlMode
           ? html`<ha-yaml-editor
-              .hass=${this.hass}
               .value=${yamlData}
               read-only
               auto-update

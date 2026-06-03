@@ -16,6 +16,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { batteryLevelIconPath } from "../../../../common/entity/battery_icon";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -34,8 +35,12 @@ import type { HomeAssistant } from "../../../../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
+import { formatNumber } from "../../../../common/number/format_number";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;
+
+const periodIncludesNow = (data: EnergyData): boolean =>
+  !data.end || data.end.getTime() >= Date.now();
 
 @customElement("hui-energy-distribution-card")
 class HuiEnergyDistrubutionCard
@@ -100,14 +105,34 @@ class HuiEnergyDistrubutionCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return (
+    if (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
-      !changedProps.has("hass") ||
-      (!!this._data?.co2SignalEntity &&
-        this.hass.states[this._data.co2SignalEntity] !==
-          changedProps.get("hass").states[this._data.co2SignalEntity])
-    );
+      !changedProps.has("hass")
+    ) {
+      return true;
+    }
+    const oldStates = changedProps.get("hass").states;
+    if (
+      this._data?.co2SignalEntity &&
+      this.hass.states[this._data.co2SignalEntity] !==
+        oldStates[this._data.co2SignalEntity]
+    ) {
+      return true;
+    }
+    if (this._data && periodIncludesNow(this._data)) {
+      const batteries = energySourcesByType(this._data.prefs).battery;
+      if (
+        batteries?.some(
+          (source) =>
+            source.stat_soc &&
+            this.hass.states[source.stat_soc] !== oldStates[source.stat_soc]
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected willUpdate() {
@@ -174,10 +199,30 @@ class HuiEnergyDistrubutionCard
 
     let totalBatteryIn: number | null = null;
     let totalBatteryOut: number | null = null;
+    let batteryIconPath = mdiBatteryHigh;
+    let averageBatterySoc: number | null = null;
 
     if (hasBattery) {
       totalBatteryIn = summedData.total.to_battery ?? 0;
       totalBatteryOut = summedData.total.from_battery ?? 0;
+
+      // The SOC reflects the current battery level, so it only matches the
+      // card's data when the selected period extends to now. For historical
+      // periods (yesterday, last week, ...) fall back to the generic icon.
+      if (periodIncludesNow(this._data)) {
+        const socValues = types
+          .battery!.map((source) =>
+            source.stat_soc
+              ? Number(this.hass.states[source.stat_soc]?.state)
+              : NaN
+          )
+          .filter((value) => Number.isFinite(value));
+        if (socValues.length) {
+          averageBatterySoc =
+            socValues.reduce((sum, value) => sum + value, 0) / socValues.length;
+          batteryIconPath = batteryLevelIconPath(averageBatterySoc);
+        }
+      }
     }
 
     let returnedToGrid: number | null = null;
@@ -569,7 +614,21 @@ class HuiEnergyDistrubutionCard
                 ${hasBattery
                   ? html` <div class="circle-container battery">
                       <div class="circle">
-                        <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
+                        <div class="battery-soc">
+                          <ha-svg-icon .path=${batteryIconPath}></ha-svg-icon>
+                          ${averageBatterySoc !== null
+                            ? html`<span
+                                >${formatNumber(
+                                  averageBatterySoc,
+                                  this.hass.locale,
+                                  {
+                                    maximumFractionDigits: 0,
+                                  }
+                                )}
+                                %</span
+                              >`
+                            : nothing}
+                        </div>
                         <span class="battery-in">
                           <ha-svg-icon
                             class="small"
@@ -900,6 +959,13 @@ class HuiEnergyDistrubutionCard
     .circle-container.battery {
       height: 110px;
       justify-content: flex-end;
+    }
+    .battery-soc {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--ha-font-size-s);
+      line-height: 1.2;
     }
     .spacer {
       width: 84px;

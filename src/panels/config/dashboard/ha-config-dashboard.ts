@@ -354,7 +354,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                   </ha-card>
                 `
           )}
-          <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
+          <ha-tip>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-top-app-bar-fixed>
     `;
@@ -434,7 +434,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         .dashboard-alert-title {
-          padding: var(--ha-space-4) var(--ha-space-4) 0;
+          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
           font-size: var(--ha-font-size-l);
         }
 

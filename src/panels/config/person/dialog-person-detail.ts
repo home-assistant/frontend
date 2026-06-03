@@ -6,13 +6,13 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import "../../../components/ha-md-list-item";
 import "../../../components/input/ha-input";
-import "../../../components/ha-dialog";
+import "../../../components/item/ha-row-item";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
@@ -133,7 +133,6 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     const nameInvalid = this._name.trim() === "";
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         header-title=${this._params.entry
@@ -164,7 +163,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass!.localize(
                   "ui.panel.config.person.detail.allow_login"
@@ -184,7 +183,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                   this._user.is_owner)}
                 .checked=${this._userId}
               ></ha-switch>
-            </ha-md-list-item>
+            </ha-row-item>
 
             ${this._renderUserFields()}
             ${this._deviceTrackersAvailable(this.hass)
@@ -280,7 +279,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     return html`
       ${!user.system_generated
         ? html`
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.person.detail.username"
@@ -300,12 +299,12 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                     </ha-icon-button>
                   `
                 : nothing}
-            </ha-md-list-item>
+            </ha-row-item>
           `
         : nothing}
       ${!user.system_generated && this.hass.user?.is_owner
         ? html`
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.person.detail.password"
@@ -325,10 +324,10 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                     </ha-icon-button>
                   `
                 : nothing}
-            </ha-md-list-item>
+            </ha-row-item>
           `
         : nothing}
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.person.detail.local_access_only"
@@ -345,8 +344,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           .checked=${this._localOnly}
           @change=${this._localOnlyChanged}
         ></ha-switch>
-      </ha-md-list-item>
-      <ha-md-list-item>
+      </ha-row-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize("ui.panel.config.person.detail.admin")}</span
         >
@@ -361,7 +360,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           .checked=${this._isAdmin}
           @change=${this._adminChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
     `;
   }
 
@@ -561,10 +560,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           margin-bottom: 16px;
           --file-upload-image-border-radius: var(--ha-border-radius-circle);
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         a {
           color: var(--primary-color);

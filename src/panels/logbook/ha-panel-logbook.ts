@@ -14,7 +14,6 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import "../../components/date-picker/ha-date-range-picker";
-import "../../components/entity/ha-entity-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -305,24 +304,23 @@ export class HaPanelLogbook extends LitElement {
         :host {
           --ha-generic-picker-max-width: 400px;
         }
-        ha-logbook {
+
+        .content {
+          display: flex;
+          flex-direction: column;
           height: calc(
-            100vh -
-              168px - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
+            100vh - var(--header-height, 0px) - var(
+                --safe-area-inset-top,
                 0px
-              )
+              ) - var(--safe-area-inset-bottom, 0px)
           );
+          overflow-x: hidden;
+          padding: 0 0 16px;
         }
 
-        :host([narrow]) ha-logbook {
-          height: calc(
-            100vh -
-              250px - var(--safe-area-inset-top, 0px) - var(
-                --safe-area-inset-bottom,
-                0px
-              )
-          );
+        ha-logbook {
+          flex: 1;
+          min-height: 0;
         }
 
         ha-date-range-picker {
@@ -336,6 +334,10 @@ export class HaPanelLogbook extends LitElement {
         @media all and (max-width: 870px) {
           ha-date-range-picker {
             width: 100%;
+          }
+
+          .filters {
+            flex-direction: column;
           }
         }
 
@@ -360,21 +362,10 @@ export class HaPanelLogbook extends LitElement {
           flex-wrap: wrap;
         }
 
-        ha-entity-picker {
-          display: inline-block;
-          flex-grow: 1;
-          max-width: 400px;
-        }
-
         ha-target-picker {
           flex: 1;
           max-width: 100%;
           min-width: 0;
-        }
-
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
         }
       `,
     ];

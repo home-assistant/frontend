@@ -2,7 +2,7 @@ import { mdiStarFourPoints } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import type {
@@ -51,6 +51,10 @@ export class HaSuggestWithAIButton extends LitElement {
 
   @state()
   private _minWidth?: string;
+
+  @query("ha-assist-chip") private _chip?: HTMLElement & {
+    offsetWidth: number;
+  };
 
   private _intervalId?: number;
 
@@ -109,9 +113,8 @@ export class HaSuggestWithAIButton extends LitElement {
     }
 
     // Capture current width before changing state
-    const chip = this.shadowRoot?.querySelector("ha-assist-chip");
-    if (chip) {
-      this._minWidth = `${chip.offsetWidth}px`;
+    if (this._chip) {
+      this._minWidth = `${this._chip.offsetWidth}px`;
     }
 
     // Reset to suggesting state

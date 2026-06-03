@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -144,8 +145,8 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     `;
   }
 
-  private _speedValueChanged(ev: CustomEvent) {
-    const speed = (ev.detail as any).value as FanSpeed;
+  private _speedValueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const speed = ev.detail.value as FanSpeed;
 
     const percentage = fanSpeedToPercentage(this._stateObj!, speed);
 
@@ -155,9 +156,9 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     });
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
 
     this.hass!.callService("fan", "set_percentage", {
       entity_id: this._stateObj!.entity_id,

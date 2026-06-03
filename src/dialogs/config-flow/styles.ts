@@ -2,12 +2,9 @@ import { css } from "lit";
 
 export const configFlowContentStyles = css`
   h2 {
-    margin: 24px 38px 0 0;
+    margin: var(--ha-space-6) var(--ha-space-10) 0 0;
     margin-inline-start: 0px;
-    margin-inline-end: 38px;
-    padding: 0 24px;
-    padding-inline-start: 24px;
-    padding-inline-end: 24px;
+    margin-inline-end: var(--ha-space-10);
     -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
     -webkit-font-smoothing: var(--ha-font-smoothing);
     font-family: var(
@@ -28,19 +25,8 @@ export const configFlowContentStyles = css`
 
   .content,
   .preview {
-    margin-top: 20px;
-    padding: 0 24px;
+    margin-top: var(--ha-space-5);
   }
-
-  .buttons {
-    position: relative;
-    padding: 16px;
-    margin: 8px 0 0;
-    color: var(--primary-color);
-    display: flex;
-    justify-content: flex-end;
-  }
-
   ha-markdown {
     overflow-wrap: break-word;
   }

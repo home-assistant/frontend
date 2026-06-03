@@ -242,7 +242,6 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
           <ha-code-editor
             class="snapshot-editor"
             mode="yaml"
-            .hass=${this.hass}
             .value=${text}
             read-only
             .linewrap=${true}

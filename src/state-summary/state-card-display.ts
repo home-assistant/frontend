@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
 import "../components/entity/state-info";
-import { isUnavailableState } from "../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import {
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
   SENSOR_DEVICE_CLASS_UPTIME,
@@ -44,7 +44,8 @@ class StateCardDisplay extends LitElement {
           SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
             this.stateObj.attributes.device_class
           ) &&
-          !isUnavailableState(this.stateObj.state)
+          this.stateObj.state !== UNAVAILABLE &&
+          this.stateObj.state !== UNKNOWN
             ? html`<hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(this.stateObj.state)}

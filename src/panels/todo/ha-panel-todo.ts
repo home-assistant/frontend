@@ -174,11 +174,7 @@ class PanelTodo extends LitElement {
           value=${list.entity_id}
           .selected=${list.entity_id === this._entityId}
         >
-          <ha-state-icon
-            .stateObj=${list}
-            .hass=${this.hass}
-            slot="icon"
-          ></ha-state-icon
+          <ha-state-icon .stateObj=${list} slot="icon"></ha-state-icon
           >${list.name}
         </ha-dropdown-item> `
     );
@@ -289,7 +285,6 @@ class PanelTodo extends LitElement {
   private async _addList(): Promise<void> {
     showConfigFlowDialog(this, {
       startFlowHandler: "local_todo",
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, "local_todo"),
     });
   }

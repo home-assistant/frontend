@@ -1,14 +1,14 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
+import type { TargetSelector } from "../../../data/selector";
 import type { TargetType } from "../../../data/target";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
-
-export type NewBackupType = "automatic" | "manual";
 
 export interface TargetDetailsDialogParams {
   title: string;
   type: TargetType;
   itemId: string;
+  selector?: TargetSelector;
   deviceFilter?: HaDevicePickerDeviceFilterFunc;
   entityFilter?: HaEntityPickerEntityFilterFunc;
   includeDomains?: string[];

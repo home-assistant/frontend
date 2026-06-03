@@ -27,7 +27,7 @@ export class HuiViewBackgroundEditor extends LitElement {
   }
 
   private _localizeValueCallback = (key: string) =>
-    this.hass.localize(key as any);
+    this.hass.localize(key as Parameters<LocalizeFunc>[0]);
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc, showSettings: boolean) =>

@@ -256,6 +256,11 @@
         "media_stop": "Stop",
         "media_next_track": "Next track",
         "media_previous_track": "Previous track",
+        "volume_up": "Volume up",
+        "volume_down": "Volume down",
+        "volume_mute": "Mute",
+        "shuffle": "Shuffle",
+        "repeat": "Repeat",
         "media_volume_up": "Volume up",
         "media_volume_down": "Volume down",
         "media_volume_mute": "Volume mute",
@@ -492,6 +497,11 @@
       "markdown": "Markdown"
     },
     "components": {
+      "input": {
+        "clear": "Clear",
+        "show_password": "Show password",
+        "hide_password": "Hide password"
+      },
       "selectors": {
         "serial_port": {
           "enter_manually": "Enter manually",
@@ -628,7 +638,7 @@
         "automation_behavior": {
           "trigger": {
             "options": {
-              "any": {
+              "each": {
                 "label": "Each",
                 "description": "Triggers once for every target that changes"
               },
@@ -636,7 +646,7 @@
                 "label": "First",
                 "description": "Triggers the first time any target changes"
               },
-              "last": {
+              "all": {
                 "label": "All",
                 "description": "Triggers once all targets have changed"
               }
@@ -669,6 +679,13 @@
         "triggered_by_time_pattern": "triggered by time pattern",
         "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
         "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
+        "numeric_state_of": "numeric state of",
+        "state_of": "state of",
+        "event": "event",
+        "time": "time",
+        "time_pattern": "time pattern",
+        "homeassistant_stopping": "Home Assistant stopping",
+        "homeassistant_starting": "Home Assistant starting",
         "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
@@ -1428,6 +1445,7 @@
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+        "syntax_error": "YAML syntax error",
         "error": "Error in parsing YAML: {reason}",
         "error_location": "line: {line}, column: {column}",
         "enter_fullscreen": "Enter fullscreen",
@@ -1657,7 +1675,6 @@
         "back_to_info": "Back to info",
         "info": "Information",
         "related": "Related",
-        "add_entity_to": "Add to",
         "attributes": "Attributes",
         "history": "History",
         "aggregate": "5-minute aggregated",
@@ -1676,6 +1693,18 @@
           "last_triggered": "Last triggered"
         },
         "add_to": {
+          "title": "Add {target} to…",
+          "item": "Add to…",
+          "action_options": {
+            "automation_trigger": "Create as a new trigger",
+            "automation_condition": "Create as a new condition",
+            "automation_action": "Create as a new action",
+            "script_action": "Create as a new action",
+            "scene": "Create as a new scene"
+          },
+          "automations_heading": "Automations",
+          "scripts_heading": "Scripts",
+          "app_actions": "App actions",
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
         },
@@ -1733,7 +1762,7 @@
           "no_areas_text_non_admin": "Ask an administrator to map your vacuum's segments to areas.",
           "configure_area_mapping": "Configure area mapping",
           "configure": "Configure",
-          "clean_areas_order_hint": "Cleaning order may not be supported by your vacuum.",
+          "clean_areas_order_hint": "The order in which areas are cleaned may not be supported by your vacuum.",
           "other_areas": "Other areas"
         },
         "person": {
@@ -1865,6 +1894,7 @@
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
           "calendar_color": "Calendar color",
+          "associated_zone": "Associated zone",
           "entity_id": "Entity ID",
           "unit_of_measurement": "Unit of measurement",
           "precipitation_unit": "Precipitation unit",
@@ -1943,6 +1973,7 @@
           "entity_disabled": "This entity is disabled.",
           "enable_entity": "Enable",
           "open_device_settings": "Open device settings",
+          "device_name_tip": "Consider renaming the device instead to update all its entities at once. {link}",
           "switch_as_x_confirm": "This switch will be hidden and a new {domain} will be added. Your existing configurations using the switch will continue to work.",
           "switch_as_x_remove_confirm": "This {domain} will be removed and the original switch will be visible again. Your existing configurations using the {domain} will no longer work!",
           "switch_as_x_change_confirm": "This {domain_1} will be removed and will be replaced by a new {domain_2}. Your existing configurations using the {domain_1} will no longer work!",
@@ -2395,6 +2426,11 @@
           "header": "Enter setup code",
           "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
+        },
+        "device_added": {
+          "header": "Device added",
+          "finish": "Finish",
+          "skip": "Skip and finish"
         }
       },
       "shortcuts": {
@@ -2691,6 +2727,14 @@
           }
         },
         "common": {
+          "quick_links": {
+            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "helpers": "{count} {count, plural,\n  one {helper}\n  other {helpers}\n}",
+            "automations": "{count} {count, plural,\n  one {automation}\n  other {automations}\n}",
+            "scenes": "{count} {count, plural,\n  one {scene}\n  other {scenes}\n}",
+            "scripts": "{count} {count, plural,\n  one {script}\n  other {scripts}\n}"
+          },
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           },
@@ -2800,6 +2844,7 @@
           },
           "state": {
             "update_available": "Update available",
+            "updating": "Updating...",
             "installed": "Installed",
             "not_installed": "Not installed",
             "not_available": "Not available"
@@ -2855,6 +2900,7 @@
           "dashboard": {
             "cpu_usage": "CPU usage",
             "ram_usage": "RAM usage",
+            "controls": "Controls",
             "app_running": "App is running",
             "app_stopped": "App is stopped",
             "current_version": "Current version: {version}",
@@ -2871,6 +2917,7 @@
             "failed_to_save": "Failed to save: {error}",
             "failed_to_reset": "Failed to reset: {error}",
             "failed_to_restart": "Failed to restart {name}",
+            "uninstalling": "Uninstalling...",
             "protection_mode": {
               "title": "Protection mode disabled!",
               "content": "Protection mode on this app is disabled! This gives the app full access to the entire system, which is more risky for your system if the app is compromised. Only disable protection mode if you know what you are doing.",
@@ -2908,6 +2955,13 @@
               "stages": {
                 "experimental": "Experimental",
                 "deprecated": "Deprecated"
+              },
+              "state": {
+                "started": "Running",
+                "stopped": "Stopped",
+                "error": "Error",
+                "startup": "Starting",
+                "unknown": "Unknown"
               },
               "label": {
                 "rating": "Rating",
@@ -3091,6 +3145,14 @@
           "caption": "Areas",
           "description": "Group devices and entities into areas",
           "edit_settings": "Area settings",
+          "quick_links": {
+            "devices": "[%key:ui::panel::config::common::quick_links::devices%]",
+            "entities": "[%key:ui::panel::config::common::quick_links::entities%]",
+            "helpers": "[%key:ui::panel::config::common::quick_links::helpers%]",
+            "automations": "[%key:ui::panel::config::common::quick_links::automations%]",
+            "scenes": "[%key:ui::panel::config::common::quick_links::scenes%]",
+            "scripts": "[%key:ui::panel::config::common::quick_links::scripts%]"
+          },
           "add_picture": "Add a picture",
           "assigned_to_area": "Assigned to this area",
           "targeting_area": "Targeting this area",
@@ -3140,7 +3202,7 @@
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
             "linked_entities_caption": "Entities",
-            "no_linked_entities": "There are no entities linked to this area.",
+            "no_linked_entities": "There are no entities directly linked to this area.",
             "aliases_section": "Aliases",
             "no_aliases": "No configured aliases",
             "configured_aliases": "{count} configured {count, plural,\n  one {alias}\n  other {aliases}\n}",
@@ -3562,7 +3624,7 @@
               "show_all": "Show all backups"
             },
             "settings": {
-              "title": "Backup settings",
+              "title": "Automatic backup",
               "configure": "Configure backup settings",
               "schedule": "Automatic backup schedule and retention",
               "schedule_copies_all": "and keep all backups",
@@ -3608,6 +3670,10 @@
                 "sat": "Sa",
                 "sun": "Su"
               }
+            },
+            "app_update_backup": {
+              "title": "App update backup",
+              "description": "Backup behavior for app updates"
             }
           },
           "backups": {
@@ -3619,13 +3685,15 @@
             "new_backup": "[%key:ui::panel::config::backup::overview::new_backup%]"
           },
           "settings": {
-            "header": "Backup settings",
+            "header": "Automatic backups",
             "menu": {
               "change_default_location": "Change default action location"
             },
             "schedule": {
-              "title": "Automatic backups",
-              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups."
+              "title": "Backup cycle",
+              "description": "Let Home Assistant take care of your backups by creating a scheduled backup that also removes older backups.",
+              "error_load": "Error loading Supervisor update config: {error}",
+              "error_save": "Error saving Supervisor update config: {error}"
             },
             "data": {
               "title": "Backup data"
@@ -3652,6 +3720,9 @@
               "error_load": "Error loading Supervisor update config: {error}",
               "error_save": "Error saving Supervisor update config: {error}"
             }
+          },
+          "app_update_backups": {
+            "header": "App update backups"
           },
           "details": {
             "header": "Backup",
@@ -3735,10 +3806,13 @@
           },
           "detail": {
             "new_tag": "New tag",
+            "tag_details": "Tag details",
             "name": "Name",
             "description": "Description",
             "tag_id": "Tag ID",
             "tag_id_placeholder": "Auto-generated if left empty",
+            "use_custom_id": "Use a custom tag ID",
+            "custom_id_warning": "Tag IDs are written to the physical tag and can't be changed later. A random UUID is usually safer because the ID stays decoupled from what the tag does. You can rename the tag any time, and reuse the same physical tag in another Home Assistant instance for something completely different, without the ID carrying meaning that no longer fits.",
             "delete": "Delete",
             "update": "Update",
             "create": "Create",
@@ -3786,7 +3860,7 @@
               "type": "Event type",
               "data": "Event data (YAML, optional)",
               "fire_event": "Fire event",
-              "event_fired": "Event {name} fired",
+              "event_fired": "Event {name} fired at {time}",
               "active_listeners": "Active listeners",
               "count_listeners": "({count} {count, plural,\n  one {listener}\n  other {listeners}\n})",
               "listen_to_events": "Listen to events",
@@ -3800,7 +3874,15 @@
               "clear_events": "Clear events",
               "alert_event_type": "Event type is a mandatory field",
               "notification_event_fired": "Event {type} successfully fired!",
-              "subscribe_failed": "Failed to subscribe to event: {error}"
+              "subscribe_failed": "Failed to subscribe to event: {error}",
+              "unknown_error": "Unknown error",
+              "oldest_event": "Oldest event",
+              "older_event": "Older event",
+              "newer_event": "Newer event",
+              "newest_event": "Newest event",
+              "waiting_for_events": "Waiting for events…",
+              "subscribe_prompt": "Subscribe to an event type above to see events here.",
+              "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
             "actions": {
               "title": "Actions",
@@ -3811,8 +3893,8 @@
               "column_description": "Description",
               "column_example": "Example",
               "fill_example_data": "Fill example data",
-              "yaml_mode": "Go to YAML mode",
-              "ui_mode": "Go to UI mode",
+              "yaml_mode": "YAML mode",
+              "ui_mode": "UI mode",
               "yaml_parameters": "Parameters only available in YAML mode",
               "all_parameters": "All available parameters",
               "accepts_target": "This action accepts a target, for example: `entity_id: light.bed_light`",
@@ -3858,6 +3940,7 @@
             "templates": {
               "title": "Template",
               "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+              "about": "About templates",
               "editor": "Template editor",
               "result": "Result",
               "reset": "Reset to demo template",
@@ -4069,6 +4152,7 @@
               "energy_from_helper": "Pick a sensor which measures grid import in either of {unit}.",
               "energy_to_grid": "Energy exported to grid",
               "energy_to_helper": "Pick a sensor which measures grid export in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "import_cost": "Cost tracking",
               "import_cost_para": "Select how Home Assistant should keep track of the costs of the imported energy.",
               "no_cost_tracking": "Do not track costs",
@@ -4126,6 +4210,7 @@
             "dialog": {
               "header": "Configure solar panels",
               "entity_para": "Pick a sensor which measures solar production in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "solar_production_energy": "Solar production energy",
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
@@ -4149,6 +4234,9 @@
               "energy_helper_out": "Pick a sensor that measures the electricity flowing out of the battery in either of {unit}.",
               "energy_into_battery": "Energy charged into the battery",
               "energy_out_of_battery": "Energy discharged from the battery",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "state_of_charge": "Battery state of charge sensor",
+              "state_of_charge_helper": "Sensor reporting battery state of charge as %.",
               "power": "Battery power",
               "power_helper": "Pick a sensor which measures the electricity flowing into and out of the battery in either of {unit}. Positive values indicate discharging the battery, negative values indicate charging the battery.",
               "sensor_type": "Type of power measurement",
@@ -4175,6 +4263,7 @@
               "paragraph": "Gas consumption is measured either as the volume of gas that flows to your home or as the amount of energy contained in the gas.",
               "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
               "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
@@ -4204,6 +4293,7 @@
               "paragraph": "Water consumption is the volume of water that flows to your home.",
               "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
@@ -4993,6 +5083,11 @@
               "placeholder": "Optional description",
               "add": "Add description"
             },
+            "note": {
+              "label": "Note",
+              "edit": "Edit note",
+              "add": "Add note"
+            },
             "leave": {
               "unsaved_new_title": "Save new automation?",
               "unsaved_new_text": "You can save your changes, or delete this automation. You can't undo this action.",
@@ -5072,7 +5167,14 @@
               "invalid": "Invalid target",
               "all_entities": "All entities",
               "none_entities": "No entities",
-              "template": "Template"
+              "template": "Template",
+              "types": {
+                "entity": "[%key:ui::components::target-picker::type::entities%]",
+                "device": "[%key:ui::components::target-picker::type::devices%]",
+                "area": "[%key:ui::components::target-picker::type::areas%]",
+                "floor": "Floors",
+                "label": "[%key:ui::components::target-picker::type::labels%]"
+              }
             },
             "generic": "Generic",
             "triggers": {
@@ -5360,6 +5462,12 @@
               "test": "Test",
               "testing_error": "Condition did not pass",
               "testing_pass": "Condition passes",
+              "live_test_state": {
+                "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+                "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+                "invalid": "Condition is invalid",
+                "unknown": "Condition state unknown"
+              },
               "invalid_condition": "Invalid condition configuration",
               "validation_failed": "Condition validation failed",
               "test_failed": "Error occurred while testing condition",
@@ -5470,7 +5578,7 @@
                   "sunset": "Sunset",
                   "description": {
                     "picker": "Tests if the sun is above or below the horizon.",
-                    "between": "Between {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n} and {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}",
+                    "between": "Between {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n} and {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
                     "before": "Before {beforeChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{beforeOffsetChoice, select, \n offset { {beforeOffset}}\n other {}\n}",
                     "after": "After {afterChoice, select, \n sunrise { sunrise}\n sunset { sunset}\n other {}\n}{afterOffsetChoice, select, \n offset { {afterOffset}}\n other {}\n}"
                   }
@@ -6384,6 +6492,13 @@
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
+          "quick_links": {
+            "entities": "[%key:ui::panel::config::common::quick_links::entities%]",
+            "helpers": "[%key:ui::panel::config::common::quick_links::helpers%]",
+            "automations": "[%key:ui::panel::config::common::quick_links::automations%]",
+            "scenes": "[%key:ui::panel::config::common::quick_links::scenes%]",
+            "scripts": "[%key:ui::panel::config::common::quick_links::scripts%]"
+          },
           "unnamed_device": "Unnamed {type}",
           "unknown_error": "Unknown error",
           "name": "Name",
@@ -6414,6 +6529,8 @@
             "service": "service"
           },
           "automation": {
+            "related_heading": "Related",
+            "automations_scripts_or_scenes": "automations, scripts or scenes",
             "automations_heading": "Automations",
             "automations": "automations",
             "no_automations": "No automations",
@@ -6425,24 +6542,18 @@
               "description": "Start with an empty automation from scratch"
             },
             "triggers": {
-              "title": "Use device as trigger",
-              "description": "When something happens to the device",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "title": "Use device as condition",
-              "description": "Only if a condition is met for the device",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "title": "Use device as action",
-              "description": "Do something on the device",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
-            "no_device_automations": "There are no automations available for this device."
+            "no_device_automations": "There are no automations, scripts or scenes available for this device."
           },
           "script": {
             "scripts_heading": "Scripts",
@@ -6453,10 +6564,6 @@
             "new": {
               "title": "Create new script",
               "description": "Start with an empty script from scratch"
-            },
-            "actions": {
-              "title": "Use device as action",
-              "description": "Do something on this device."
             }
           },
           "scene": {
@@ -6493,6 +6600,7 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "integration": "Integration",
+            "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
             "no_devices": "No devices",
@@ -6865,6 +6973,7 @@
             "supported_hardware": "supported hardware",
             "proceed": "Proceed",
             "single_config_entry_title": "This integration allows only one configuration",
+            "show_integration": "Show integration",
             "single_config_entry": "{integration_name} supports only one configuration. Adding additional ones is not needed."
           }
         },
@@ -7029,6 +7138,7 @@
           "scanning_mode_passive": "passive",
           "scanning_mode_active_label": "Active scanning",
           "scanning_mode_passive_label": "Passive scanning",
+          "scanning_mode_auto_with_current": "Auto ({current})",
           "scanning_mode_none_label": "No scanning",
           "scanner_mode_mismatch": "{name} requested {requested} mode but is operating in {current} mode. The scanner is in a bad state and needs to be power cycled.",
           "scanner_mode_mismatch_remote": "For proxies: reboot the device",
@@ -7046,6 +7156,7 @@
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
           "service_uuids": "Service UUIDs",
+          "raw_advertisement": "Raw advertisement",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
           "area": "Area",
           "scanners": "Scanners",
@@ -7247,8 +7358,15 @@
             "group_details": "Here are all the details for the selected Zigbee group.",
             "group_not_found": "Group not found!",
             "add_members": "Add devices",
-            "remove_members": "Remove device",
+            "remove_members": "Remove devices",
             "removing_members": "Removing devices",
+            "no_members": "This group has no devices",
+            "no_devices_found": "No devices found",
+            "no_devices_to_add": "No devices to add",
+            "no_entities": "No entities",
+            "entity_count": "{count} entity",
+            "entity_count_plural": "{count} entities",
+            "open_device": "Open device",
             "create_group_details": "Enter the required details to create a new Zigbee group",
             "group_name_placeholder": "Group name",
             "group_id_placeholder": "Group ID (optional)",
@@ -7849,6 +7967,78 @@
           "picker": {
             "title": "Select Z-Wave network",
             "no_entries": "No Z-Wave networks configured. Set up the Z-Wave integration first."
+          },
+          "credentials": {
+            "manage": "Manage access",
+            "dialog_title": "Manage access",
+            "users": {
+              "title": "Users",
+              "add": "Add user",
+              "edit": "Edit user",
+              "delete": "Delete user",
+              "delete_all": "Delete all users",
+              "name": "Name",
+              "type": "Type",
+              "no_users": "No users configured",
+              "unnamed_user": "User {index}",
+              "credential_count": "{count, plural,\n  one {# credential}\n  other {# credentials}\n}",
+              "user_types": {
+                "general": {
+                  "label": "General",
+                  "description": "Can operate the lock"
+                },
+                "programming": {
+                  "label": "Programming",
+                  "description": "Can program the device, manage users, and can operate the lock"
+                },
+                "non_access": {
+                  "label": "Non-access",
+                  "description": "Is recognized, but cannot open the lock (only sends events)"
+                },
+                "duress": {
+                  "label": "Duress",
+                  "description": "Can open the lock, but sends an alarm to the hub"
+                },
+                "disposable": {
+                  "label": "Disposable",
+                  "description": "Can open the lock once, disabled after first use"
+                },
+                "expiring": {
+                  "label": "Expiring",
+                  "description": "Can operate the lock. Access gets disabled after a certain time when first used."
+                },
+                "remote_only": {
+                  "label": "Remote only",
+                  "description": "Can only operate the lock remotely"
+                }
+              }
+            },
+            "credential_types": {
+              "pin_code": "PIN code",
+              "password": "Password"
+            },
+            "credential_data": {
+              "type": "Credential type",
+              "pin_code": "PIN code",
+              "password": "Password",
+              "placeholder": "{min}-{max} characters",
+              "placeholder_pin": "{min}-{max} digits"
+            },
+            "errors": {
+              "load_failed": "Failed to load credential information",
+              "save_failed": "Failed to save changes",
+              "empty_response": "The device did not return a response. Please try again.",
+              "no_user_management": "This device does not support user management. Users and credentials cannot be managed here.",
+              "no_compatible_credential_types": "This device does not support any credential types that can be managed here.",
+              "no_compatible_user_types": "This device has no user types that can be managed here. New users cannot be added.",
+              "name_required": "Please enter a name for this user.",
+              "credential_required": "Please enter a credential value.",
+              "credential_length": "Credential must be {min}-{max} characters.",
+              "pin_digits_only": "PIN code must contain only numbers.",
+              "add_user_failed": "Could not add user. {message}."
+            },
+            "confirm_delete_user": "Are you sure you want to delete user {name}? All credentials for this user will also be deleted.",
+            "confirm_delete_all_users": "Are you sure you want to delete all users? All credentials will also be deleted. This cannot be undone."
           }
         },
         "matter": {
@@ -8506,7 +8696,10 @@
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
-              "consumed_battery": "Consumed battery"
+              "consumed_battery": "Consumed battery",
+              "named_battery_charged": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_battery_charged%]",
+              "named_grid_consumed": "Consumed {name}",
+              "named_grid_exported": "[%key:ui::panel::lovelace::cards::energy::energy_sources_table::named_grid_exported%]"
             },
             "energy_sources_table": {
               "grid_total": "Grid total",
@@ -8519,7 +8712,11 @@
               "previous_energy": "Previous usage",
               "previous_cost": "Previous cost",
               "battery_total": "Battery total",
-              "total_costs": "Total costs"
+              "total_costs": "Total costs",
+              "named_battery_charged": "{name} charged",
+              "named_battery_discharged": "{name} discharged",
+              "named_grid_imported": "{name} imported",
+              "named_grid_exported": "{name} exported"
             },
             "energy_solar_graph": {
               "production": "Production {name}",
@@ -8692,7 +8889,6 @@
             "confirm_reset_config_text": "Your dashboard will be reset to an empty state. You can start fresh and build your dashboard from scratch.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
             "confirm_unsaved_comments": "Your configuration might contain comments, these will not be saved. Do you want to continue?",
-            "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
             "resources_moved": "Resources should no longer be added to the dashboard configuration but can be added in the dashboard config panel."
@@ -8866,9 +9062,6 @@
             "tab_visibility": "Visibility",
             "tab_layout": "Layout",
             "paste_condition": "Paste condition",
-            "visibility": {
-              "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
-            },
             "layout": {
               "full_width": "Full width",
               "full_width_helper": "Take up the full width of the section whatever its size",
@@ -8899,10 +9092,7 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
-            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]",
-            "visibility": {
-              "explanation": "The badge will be shown when ALL conditions below are fulfilled. If no conditions are set, the badge will always be shown."
-            }
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
           },
           "suggest_badge": {
             "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
@@ -8974,9 +9164,6 @@
               "background_opacity": "Opacity",
               "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
-            },
-            "visibility": {
-              "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
             }
           },
           "suggest_card": {
@@ -9018,11 +9205,31 @@
             }
           },
           "condition-editor": {
-            "explanation": "The card will be shown when ALL conditions below are fulfilled.",
             "add": "Add condition",
             "test": "[%key:ui::panel::config::automation::editor::conditions::test%]",
             "testing_pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
             "testing_error": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+            "live_test_state": {
+              "pass": "[%key:ui::panel::config::automation::editor::conditions::testing_pass%]",
+              "fail": "[%key:ui::panel::config::automation::editor::conditions::testing_error%]",
+              "invalid": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::invalid%]",
+              "unknown": "[%key:ui::panel::config::automation::editor::conditions::live_test_state::unknown%]"
+            },
+            "visibility_status": {
+              "visible": {
+                "headline": "Current visibility: Visible",
+                "supporting": "All visibility conditions are met",
+                "supporting_empty": "No visibility conditions are set"
+              },
+              "hidden": {
+                "headline": "Current visibility: Hidden",
+                "supporting": "Not all visibility conditions are met"
+              },
+              "invalid": {
+                "headline": "Visibility status unknown",
+                "supporting": "One or more conditions have an invalid configuration"
+              }
+            },
             "invalid_config_title": "Invalid configuration",
             "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
@@ -9231,7 +9438,9 @@
             "history-graph": {
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
+              "show_names": "Show entity names",
               "logarithmic_scale": "Logarithmic scale",
+              "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
               "max_y_axis": "Y axis maximum",
               "fit_y_data": "Extend Y axis limits to fit data"
@@ -9926,20 +10135,25 @@
                 "controls": "Controls"
               },
               "media-player-sound-mode": {
-                "label": "Media player sound mode"
+                "label": "Media player sound mode",
+                "sound_modes": "Sound modes"
               },
               "media-player-source": {
-                "label": "Media player source"
+                "label": "Media player source",
+                "sources": "Sources"
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",
-                "step": "Step size"
+                "step": "Step size",
+                "show_mute_button": "Show mute button"
               },
               "media-player-volume-slider": {
-                "label": "Media player volume slider"
+                "label": "Media player volume slider",
+                "show_mute_button": "Show mute button"
               },
               "vacuum-commands": {
                 "label": "Vacuum commands",
+                "customize": "Customize commands",
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "[%key:ui::dialogs::more_info_control::vacuum::start_pause%]",
@@ -10011,7 +10225,9 @@
               },
               "counter-actions": {
                 "label": "Counter actions",
-                "actions": {
+                "customize": "Customize actions",
+                "actions": "Actions",
+                "actions_list": {
                   "increment": "Increment",
                   "decrement": "Decrement",
                   "reset": "Reset"
@@ -10074,6 +10290,7 @@
               },
               "lawn-mower-commands": {
                 "label": "Lawn mower commands",
+                "customize": "Customize commands",
                 "commands": "Commands",
                 "commands_list": {
                   "start_pause": "Start Pause",
@@ -10123,6 +10340,37 @@
               "trend-graph": {
                 "label": "Trend graph",
                 "detail": "Show more detail"
+              },
+              "temperature-forecast": {
+                "label": "Temperature forecast",
+                "no_forecast": "No forecast data available",
+                "failed_to_load": "Failed to load forecast: {error}",
+                "forecast_type": "Forecast type",
+                "forecast_type_options": {
+                  "daily": "Daily",
+                  "twice_daily": "Twice daily",
+                  "hourly": "Hourly"
+                },
+                "color": "Color",
+                "show_labels": "Show labels"
+              },
+              "precipitation-forecast": {
+                "label": "Precipitation forecast",
+                "no_forecast": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::no_forecast%]",
+                "failed_to_load": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::failed_to_load%]",
+                "forecast_type": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type%]",
+                "forecast_type_options": {
+                  "daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::daily%]",
+                  "twice_daily": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::twice_daily%]",
+                  "hourly": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::forecast_type_options::hourly%]"
+                },
+                "precipitation_type": "Precipitation type",
+                "precipitation_type_options": {
+                  "amount": "Amount",
+                  "probability": "Probability"
+                },
+                "color": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::color%]",
+                "show_labels": "[%key:ui::panel::lovelace::editor::features::types::temperature-forecast::show_labels%]"
               }
             }
           },
@@ -10169,7 +10417,33 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_card": "By card"
+            "by_card": "By card",
+            "search_entities": "Search entities",
+            "home": "[%key:ui::panel::config::automation::editor::home%]",
+            "unassigned": "[%key:ui::panel::config::automation::editor::unassigned%]",
+            "other_areas": "[%key:ui::panel::config::automation::editor::other_areas%]",
+            "entities": "Entities",
+            "helpers": "[%key:ui::panel::config::automation::editor::helpers%]",
+            "devices": "Devices",
+            "services": "[%key:ui::panel::config::automation::editor::services%]",
+            "browse_cards": "Browse all cards",
+            "more_cards": "+{count} more",
+            "content_empty_title": "Pick an entity to see suggestions",
+            "content_empty_description": "Or browse all card types.",
+            "no_search_results_title": "No entity matches your search",
+            "no_search_results_description": "Try a different keyword.",
+            "selected_entity": "Selected entity",
+            "suggestions_title": "Suggestions",
+            "community_title": "Community",
+            "not_found": "Can't find the card you want?",
+            "suggestions": {
+              "periods": {
+                "last_24h": "Last 24 hours",
+                "last_7d": "Last 7 days",
+                "last_30d": "Last 30 days",
+                "last_year": "Last year"
+              }
+            }
           },
           "badge_picker": {
             "no_description": "No description available.",
@@ -10372,6 +10646,7 @@
           "migrate_button": "Migrate",
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
+          "theme_mode": "Theme mode",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
@@ -10416,11 +10691,6 @@
           "step_done": "Setup done for {step}",
           "close": "Close",
           "submit": "Submit"
-        },
-        "advanced_mode": {
-          "title": "Advanced mode",
-          "description": "Unlocks advanced features.",
-          "link_promo": "Learn more"
         },
         "entity_id_picker": {
           "title": "Display entity IDs in picker",
@@ -10936,7 +11206,7 @@
   },
   "landing-page": {
     "header": "Preparing Home Assistant",
-    "subheader": "This may take 20 minutes or more",
+    "subheader": "The latest version of Home Assistant is being downloaded. This may take 20 minutes or more.",
     "show_details": "Show details",
     "hide_details": "Hide details",
     "network_issue": {

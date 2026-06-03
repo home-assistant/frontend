@@ -4,10 +4,11 @@ import {
   mdiAlertCircleCheck,
   mdiAppleKeyboardCommand,
   mdiArrowDown,
-  mdiArrowRightThin,
   mdiArrowUp,
   mdiCheckboxBlankOutline,
   mdiCheckboxOutline,
+  mdiCommentEditOutline,
+  mdiCommentTextOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -35,6 +36,7 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../common/entity/compute_object_id";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/automation/ha-automation-row";
@@ -76,6 +78,7 @@ import type {
 } from "../../../../data/script";
 import { getActionType, isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
+import type { TargetSelector } from "../../../../data/selector";
 import { callExecuteScript } from "../../../../data/service";
 import {
   showAlertDialog,
@@ -288,6 +291,17 @@ export default class HaAutomationActionRow extends LitElement {
         ? { device_id: (this.action as DeviceAction).device_id }
         : undefined;
 
+    const serviceTargetSpec =
+      type === "service" && action
+        ? this.hass.services?.[computeDomain(action)]?.[computeObjectId(action)]
+            ?.target
+        : undefined;
+
+    const noteTooltipText = truncateWithEllipsis(
+      this.action.note?.trim() || "",
+      250
+    );
+
     return html`
       ${type === "service" && "action" in this.action && this.action.action
         ? html`
@@ -317,15 +331,32 @@ export default class HaAutomationActionRow extends LitElement {
           )
         )}
         ${target !== undefined || (actionHasTarget && !this._isNew)
-          ? this._renderTargets(target, actionHasTarget && !this._isNew)
+          ? this._renderTargets(
+              target,
+              actionHasTarget && !this._isNew,
+              serviceTargetSpec,
+              type !== "device_id"
+            )
+          : nothing}
+        ${noteTooltipText
+          ? html`
+              <ha-svg-icon
+                id="note-icon"
+                tabindex="0"
+                .path=${mdiCommentTextOutline}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.note.label"
+                )}
+                class="note-indicator"
+              ></ha-svg-icon
+              ><ha-tooltip for="note-icon"
+                ><p>${noteTooltipText}</p></ha-tooltip
+              >
+            `
           : nothing}
         ${type !== "condition" &&
         (this.action as NonConditionAction).continue_on_error === true
           ? html`<ha-svg-icon
-                class="arrow-right"
-                .path=${mdiArrowRightThin}
-              ></ha-svg-icon
-              ><ha-svg-icon
                 id="svg-icon"
                 .path=${mdiAlertCircleCheck}
               ></ha-svg-icon>
@@ -375,6 +406,14 @@ export default class HaAutomationActionRow extends LitElement {
           ${this._renderOverflowLabel(
             this.hass.localize(
               "ui.panel.config.automation.editor.triggers.rename"
+            )
+          )}
+        </ha-dropdown-item>
+        <ha-dropdown-item value="edit_note">
+          <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+          ${this._renderOverflowLabel(
+            this.hass.localize(
+              `ui.panel.config.automation.editor.note.${this.action.note ? "edit" : "add"}`
             )
           )}
         </ha-dropdown-item>
@@ -681,11 +720,17 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _renderTargets = memoizeOne(
-    (target?: HassServiceTarget, targetRequired = false) =>
+    (
+      target?: HassServiceTarget,
+      targetRequired = false,
+      targetSpec?: TargetSelector["target"],
+      interactive = false
+    ) =>
       html`<ha-automation-row-targets
-        .hass=${this.hass}
         .target=${target}
         .targetRequired=${targetRequired}
+        .selector=${targetSpec ? { target: targetSpec } : undefined}
+        .interactive=${interactive}
       ></ha-automation-row-targets>`
   );
 
@@ -899,6 +944,38 @@ export default class HaAutomationActionRow extends LitElement {
     }
   };
 
+  private _editNoteAction = async (): Promise<void> => {
+    const note = await showPromptDialog(this, {
+      title: this.hass.localize(
+        `ui.panel.config.automation.editor.note.${this.action.note ? "edit" : "add"}`
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.automation.editor.note.label"
+      ),
+      inputType: "string",
+      defaultValue: this.action.note,
+      confirmText: this.hass.localize("ui.common.submit"),
+      multiline: true,
+    });
+    if (note !== null) {
+      const value = { ...this.action };
+      if (note === "") {
+        delete value.note;
+      } else {
+        value.note = note;
+      }
+      fireEvent(this, "value-changed", {
+        value,
+      });
+
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this._actionEditor?.yamlEditor?.setValue(value);
+      }
+    }
+  };
+
   private _duplicateAction = () => {
     fireEvent(this, "duplicate");
   };
@@ -1015,6 +1092,7 @@ export default class HaAutomationActionRow extends LitElement {
       rename: () => {
         this._renameAction();
       },
+      editNote: this._editNoteAction,
       toggleYamlMode: () => {
         this._toggleYamlMode();
         this.openSidebar();
@@ -1110,6 +1188,9 @@ export default class HaAutomationActionRow extends LitElement {
       case "rename":
         this._renameAction();
         break;
+      case "edit_note":
+        this._editNoteAction();
+        break;
       case "duplicate":
         this._duplicateAction();
         break;
@@ -1147,9 +1228,6 @@ export default class HaAutomationActionRow extends LitElement {
     rowStyles,
     overflowStyles,
     css`
-      ha-svg-icon.arrow-right {
-        --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
-      }
       ha-svg-icon#svg-icon {
         --icon-primary-color: var(--ha-color-fill-neutral-loud-active);
       }

@@ -85,6 +85,12 @@ class MatterAddDeviceNew extends LitElement {
   static styles = [
     sharedStyles,
     css`
+      .content {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+      }
       .app-qr {
         margin: 24px auto 0 auto;
         display: flex;

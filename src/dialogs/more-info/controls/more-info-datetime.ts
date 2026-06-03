@@ -5,7 +5,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
 import { setDateTimeValue } from "../../../data/datetime";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 
 @customElement("more-info-datetime")
@@ -19,23 +19,22 @@ class MoreInfoDatetime extends LitElement {
       return nothing;
     }
 
-    const dateObj = isUnavailableState(this.stateObj.state)
-      ? undefined
-      : new Date(this.stateObj.state);
+    const dateObj =
+      this.stateObj.state === UNKNOWN
+        ? undefined
+        : new Date(this.stateObj.state);
     const time = dateObj ? format(dateObj, "HH:mm:ss") : undefined;
     const date = dateObj ? format(dateObj, "yyyy-MM-dd") : undefined;
 
     return html`<ha-date-input
         .locale=${this.hass.locale}
         .value=${date}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
         @value-changed=${this._dateChanged}
       >
       </ha-date-input>
       <ha-time-input
         .value=${time}
         .locale=${this.hass.locale}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
         @value-changed=${this._timeChanged}
         @click=${this._stopEventPropagation}
       ></ha-time-input>`;

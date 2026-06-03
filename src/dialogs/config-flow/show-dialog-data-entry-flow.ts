@@ -167,7 +167,6 @@ export interface DataEntryFlowDialogParams {
     entryId?: string;
   }) => void;
   flowConfig: FlowConfig;
-  showAdvanced?: boolean;
   dialogParentElement?: HTMLElement;
   navigateToResult?: boolean;
   carryOverDevices?: string[];

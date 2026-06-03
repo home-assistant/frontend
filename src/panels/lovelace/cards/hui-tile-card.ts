@@ -313,7 +313,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                     slot="icon"
                     .icon=${this._config.icon}
                     .stateObj=${stateObj}
-                    .hass=${this.hass}
                   ></ha-state-icon>
                 `}
             ${renderTileBadge(stateObj, this.hass)}

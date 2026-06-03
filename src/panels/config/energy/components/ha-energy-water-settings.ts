@@ -95,7 +95,8 @@ export class EnergyWaterSettings extends LitElement {
                             ></ha-icon>`
                           : html`<ha-svg-icon .path=${mdiWater}></ha-svg-icon>`}
                         <span class="content"
-                          >${getStatisticLabel(
+                          >${source.name ||
+                          getStatisticLabel(
                             this.hass,
                             source.stat_energy_from,
                             this.statsMetadata?.[source.stat_energy_from]
@@ -140,6 +141,7 @@ export class EnergyWaterSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsWaterDialog(this, {
+      statsMetadata: this.statsMetadata,
       water_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "water"
       ) as WaterSourceTypeEnergyPreference[],
@@ -157,8 +159,8 @@ export class EnergyWaterSettings extends LitElement {
     const origSource: WaterSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsWaterDialog(this, {
+      statsMetadata: this.statsMetadata,
       source: { ...origSource },
-      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       water_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "water"
       ) as WaterSourceTypeEnergyPreference[],

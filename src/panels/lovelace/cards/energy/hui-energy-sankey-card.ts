@@ -438,9 +438,7 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `<div style="direction:ltr; display: inline;">
-      ${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)}
-      kWh</div>`;
+    `${formatNumber(value, this.hass.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     const { node } = ev.detail;

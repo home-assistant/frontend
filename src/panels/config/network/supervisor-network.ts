@@ -9,12 +9,12 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
-import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-radio";
-import type { HaRadio } from "../../../components/ha-radio";
+import "../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../components/radio/ha-radio-group";
+import "../../../components/radio/ha-radio-option";
 import "../../../components/ha-spinner";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
@@ -182,53 +182,28 @@ export class HassioNetwork extends LitElement {
                   : nothing}
                 ${this._wifiConfiguration
                   ? html`
-                      <div class="radio-row">
-                        <ha-formfield
-                          .label=${this.hass.localize(
+                      <ha-radio-group
+                        orientation="horizontal"
+                        .value=${this._wifiConfiguration.auth || "open"}
+                        name="auth"
+                        @change=${this._handleRadioValueChangedAp}
+                      >
+                        <ha-radio-option value="open">
+                          ${this.hass.localize(
                             "ui.panel.config.network.supervisor.open"
                           )}
-                        >
-                          <ha-radio
-                            @change=${this._handleRadioValueChangedAp}
-                            .ap=${this._wifiConfiguration}
-                            value="open"
-                            name="auth"
-                            .checked=${this._wifiConfiguration.auth ===
-                              undefined ||
-                            this._wifiConfiguration.auth === "open"}
-                          >
-                          </ha-radio>
-                        </ha-formfield>
-                        <ha-formfield
-                          .label=${this.hass.localize(
+                        </ha-radio-option>
+                        <ha-radio-option value="wep">
+                          ${this.hass.localize(
                             "ui.panel.config.network.supervisor.wep"
                           )}
-                        >
-                          <ha-radio
-                            @change=${this._handleRadioValueChangedAp}
-                            .ap=${this._wifiConfiguration}
-                            value="wep"
-                            name="auth"
-                            .checked=${this._wifiConfiguration.auth === "wep"}
-                          >
-                          </ha-radio>
-                        </ha-formfield>
-                        <ha-formfield
-                          .label=${this.hass.localize(
+                        </ha-radio-option>
+                        <ha-radio-option value="wpa-psk">
+                          ${this.hass.localize(
                             "ui.panel.config.network.supervisor.wpa"
                           )}
-                        >
-                          <ha-radio
-                            @change=${this._handleRadioValueChangedAp}
-                            .ap=${this._wifiConfiguration}
-                            value="wpa-psk"
-                            name="auth"
-                            .checked=${this._wifiConfiguration.auth ===
-                            "wpa-psk"}
-                          >
-                          </ha-radio>
-                        </ha-formfield>
-                      </div>
+                        </ha-radio-option>
+                      </ha-radio-group>
                       ${this._wifiConfiguration.auth === "wpa-psk" ||
                       this._wifiConfiguration.auth === "wep"
                         ? html`
@@ -337,51 +312,23 @@ export class HassioNetwork extends LitElement {
         .header=${`IPv${version.charAt(version.length - 1)}`}
         outlined
       >
-        <div class="radio-row">
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.config.network.supervisor.auto"
-            )}
-          >
-            <ha-radio
-              @change=${this._handleRadioValueChanged}
-              .version=${version}
-              value="auto"
-              name="${version}method"
-              .checked=${this._interface![version]?.method === "auto"}
-            >
-            </ha-radio>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.config.network.supervisor.static"
-            )}
-          >
-            <ha-radio
-              @change=${this._handleRadioValueChanged}
-              .version=${version}
-              value="static"
-              name="${version}method"
-              .checked=${this._interface![version]?.method === "static"}
-            >
-            </ha-radio>
-          </ha-formfield>
-          <ha-formfield
-            .label=${this.hass.localize(
-              "ui.panel.config.network.supervisor.disabled"
-            )}
-            class="warning"
-          >
-            <ha-radio
-              @change=${this._handleRadioValueChanged}
-              .version=${version}
-              value="disabled"
-              name="${version}method"
-              .checked=${this._interface![version]?.method === "disabled"}
-            >
-            </ha-radio>
-          </ha-formfield>
-        </div>
+        <ha-radio-group
+          orientation="horizontal"
+          .version=${version}
+          .value=${this._interface![version]?.method}
+          name="${version}method"
+          @change=${this._handleRadioValueChanged}
+        >
+          <ha-radio-option value="auto">
+            ${this.hass.localize("ui.panel.config.network.supervisor.auto")}
+          </ha-radio-option>
+          <ha-radio-option value="static">
+            ${this.hass.localize("ui.panel.config.network.supervisor.static")}
+          </ha-radio-option>
+          <ha-radio-option value="disabled">
+            ${this.hass.localize("ui.panel.config.network.supervisor.disabled")}
+          </ha-radio-option>
+        </ha-radio-group>
         ${["static", "auto"].includes(this._interface![version].method)
           ? html`
               ${this._interface![version].address.map(
@@ -653,9 +600,9 @@ export class HassioNetwork extends LitElement {
   }
 
   private _handleRadioValueChanged(ev: Event): void {
-    const source = ev.target as HaRadio;
+    const source = ev.currentTarget as HaRadioGroup;
     const value = source.value as "disabled" | "auto" | "static";
-    const version = (ev.target as any).version as "ipv4" | "ipv6";
+    const version = (source as any).version as "ipv4" | "ipv6";
 
     if (
       !value ||
@@ -671,8 +618,8 @@ export class HassioNetwork extends LitElement {
   }
 
   private _handleRadioValueChangedAp(ev: Event): void {
-    const source = ev.target as HaRadio;
-    const value = source.value as string as "open" | "wep" | "wpa-psk";
+    const source = ev.currentTarget as HaRadioGroup;
+    const value = source.value as "open" | "wep" | "wpa-psk";
     this._wifiConfiguration!.auth = value;
     this._dirty = true;
     this.requestUpdate("_wifiConfiguration");

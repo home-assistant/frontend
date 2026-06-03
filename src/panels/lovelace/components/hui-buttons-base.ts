@@ -8,6 +8,7 @@ import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import "../../../components/chips/ha-assist-chip";
@@ -65,9 +66,13 @@ export class HuiButtonsBase extends LitElement {
     `;
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
-    handleAction(this, this.hass, config, ev.detail.action!);
+  private _handleAction(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { config: EntitiesCardEntityConfig }
+    > &
+      ActionHandlerEvent
+  ) {
+    handleAction(this, this.hass, ev.currentTarget.config, ev.detail.action);
   }
 
   static get styles(): CSSResultGroup {

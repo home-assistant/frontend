@@ -135,7 +135,6 @@ class HaConfigHardwareAll extends LitElement {
 
     return html`<ha-code-editor
       mode="yaml"
-      .hass=${this.hass}
       .value=${dump(device.attributes, { indent: 2 })}
       read-only
     ></ha-code-editor>`;

@@ -78,7 +78,7 @@ class StepFlowMenu extends LitElement {
     );
 
     return html`
-      ${description ? html`<div class="content">${description}</div>` : ""}
+      ${description ? html`<div class="content">${description}</div>` : nothing}
       <div class="options">
         ${options.map(
           (option) => html`
@@ -119,17 +119,17 @@ class StepFlowMenu extends LitElement {
     configFlowContentStyles,
     css`
       .options {
-        margin-top: 20px;
-        margin-bottom: 16px;
+        margin-top: var(--ha-space-5);
+        margin-bottom: var(--ha-space-4);
       }
       .content {
-        padding-bottom: 16px;
+        padding-bottom: var(--ha-space-4);
       }
       .content + .options {
-        margin-top: 8px;
+        margin-top: var(--ha-space-2);
       }
       ha-list-item {
-        --mdc-list-side-padding: 24px;
+        --mdc-list-side-padding: var(--ha-space-6);
       }
     `,
   ];

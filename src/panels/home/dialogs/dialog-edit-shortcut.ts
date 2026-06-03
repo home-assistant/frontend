@@ -86,7 +86,6 @@ export class DialogEditShortcut
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.edit_shortcut")}
         width="small"

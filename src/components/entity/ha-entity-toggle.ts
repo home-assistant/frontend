@@ -6,11 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import {
-  UNAVAILABLE,
-  UNKNOWN,
-  isUnavailableState,
-} from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -20,7 +16,16 @@ import "../ha-switch";
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
   !STATES_OFF.includes(stateObj.state) &&
-  !isUnavailableState(stateObj.state);
+  stateObj.state !== UNAVAILABLE &&
+  stateObj.state !== UNKNOWN;
+
+/**
+ * @element ha-entity-toggle
+ *
+ * @cssprop --ha-entity-toggle-switch-width - Width of the switch track. Defaults to `38px`.
+ * @cssprop --ha-entity-toggle-switch-size - Height of the switch track. Defaults to `20px`.
+ * @cssprop --ha-entity-toggle-switch-thumb-size - Size of the switch thumb. Defaults to `14px`.
+ */
 
 @customElement("ha-entity-toggle")
 export class HaEntityToggle extends LitElement {
@@ -165,9 +170,9 @@ export class HaEntityToggle extends LitElement {
       white-space: nowrap;
     }
     ha-switch {
-      --ha-switch-width: 38px;
-      --ha-switch-size: 20px;
-      --ha-switch-thumb-size: 14px;
+      --ha-switch-width: var(--ha-entity-toggle-switch-width, 38px);
+      --ha-switch-size: var(--ha-entity-toggle-switch-size, 20px);
+      --ha-switch-thumb-size: var(--ha-entity-toggle-switch-thumb-size, 14px);
     }
     ha-icon-button {
       --ha-icon-button-size: 40px;

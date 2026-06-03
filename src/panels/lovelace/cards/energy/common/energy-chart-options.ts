@@ -1,4 +1,6 @@
 import type { HassConfig } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+import { html, nothing } from "lit";
 import {
   subHours,
   differenceInDays,
@@ -31,10 +33,10 @@ import {
   formatDateWeekdayVeryShortDate,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import type { ECOption } from "../../../../../resources/echarts/echarts";
-import { filterXSS } from "../../../../../common/util/xss";
+import type { HaECOption } from "../../../../../resources/echarts/echarts";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
 export { fillDataGapsAndRoundCaps } from "../../../../../components/chart/round-caps";
@@ -60,17 +62,21 @@ export function getSuggestedMax(
   noRounding: boolean
 ): Date {
   // Maximum period depends on whether plotting a line chart or discrete bars.
-  //  - For line charts we must be plotting all the way to end of a given period,
-  //    otherwise we cut off the last period of data.
-  //  - For bar charts we need to round down to the start of the final bars period
-  //    to avoid unnecessary padding of the chart.
+  //  - For line charts use noRounding true as we must always plot all the way
+  //    to end of a given period, otherwise we cut off the last period of data.
+  //  - For bar charts with 5minute intervals, leave the full time range
+  //    to ensure we don't cut off any bars
+  //  - For bar charts of hourly intervals, round to half-period to avoid excess
+  //    padding but not cut off the final bar if placed mid interval.
+  //  - For bar charts with whole numbers of days we need to round down to the
+  //    start of the final bars period to avoid unnecessary padding of the chart.
   let suggestedMax = new Date(end);
 
   if (noRounding || period === "5minute") {
     return suggestedMax;
   }
-  suggestedMax.setMinutes(0, 0, 0);
   if (period === "hour") {
+    suggestedMax.setMinutes(30, 0, 0);
     return suggestedMax;
   }
   // Sometimes around DST we get a time of 0:59 instead of 23:59 as expected.
@@ -78,7 +84,7 @@ export function getSuggestedMax(
   if (suggestedMax.getHours() === 0) {
     suggestedMax = subHours(suggestedMax, 1);
   }
-  suggestedMax.setHours(0);
+  suggestedMax.setHours(0, 0, 0, 0);
   if (period === "day" || period === "week") {
     return suggestedMax;
   }
@@ -87,17 +93,12 @@ export function getSuggestedMax(
   return suggestedMax;
 }
 
-function createYAxisLabelFormatter(locale: FrontendLocaleData) {
-  let previousValue: number | undefined;
-
-  return (value: number): string => {
-    const maximumFractionDigits = Math.max(
-      1,
-      -Math.floor(Math.log10(Math.abs(value - (previousValue ?? value) || 1)))
-    );
-    previousValue = value;
-    return formatNumber(value, locale, { maximumFractionDigits });
-  };
+function createYAxisLabelFormatter(
+  locale: FrontendLocaleData,
+  fractionDigits: number
+) {
+  return (value: number): string =>
+    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
 }
 
 export function getCommonOptions(
@@ -109,16 +110,33 @@ export function getCommonOptions(
   compareStart?: Date,
   compareEnd?: Date,
   formatTotal?: (total: number) => string,
-  detailedDailyData = false
-): ECOption {
+  detailedDailyData = false,
+  yAxisFractionDigits = 1
+): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
-  const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
+  let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const monthTimeAxis: ECOption = {
+  // Extend suggestedMax so compare bars that land past the main end
+  // (e.g. Feb compared to Jan) stay visible instead of being clipped.
+  if (compare) {
+    const transformedCompareEnd = getCompareTransform(
+      start,
+      compareStart
+    )(compareEnd);
+    if (transformedCompareEnd.getTime() > suggestedMax.getTime()) {
+      suggestedMax = getSuggestedMax(
+        suggestedPeriod,
+        transformedCompareEnd,
+        detailedDailyData
+      );
+    }
+  }
+
+  const monthTimeAxis: HaECOption = {
     xAxis: {
       type: "time",
       min: subDays(start, MONTH_TIME_AXIS_PADDING),
@@ -130,7 +148,7 @@ export function getCommonOptions(
       splitNumber: Math.min(differenceInCalendarMonths(end, start), 5),
     },
   };
-  const normalTimeAxis: ECOption = {
+  const normalTimeAxis: HaECOption = {
     xAxis: {
       type: "time",
       min: start,
@@ -138,7 +156,7 @@ export function getCommonOptions(
     },
   };
 
-  const options: ECOption = {
+  const options: HaECOption = {
     ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
     yAxis: {
       type: "value",
@@ -148,7 +166,7 @@ export function getCommonOptions(
         align: "left",
       },
       axisLabel: {
-        formatter: createYAxisLabelFormatter(locale),
+        formatter: createYAxisLabelFormatter(locale, yAxisFractionDigits),
       },
       splitLine: {
         show: true,
@@ -163,7 +181,7 @@ export function getCommonOptions(
     },
     tooltip: {
       trigger: "axis",
-      formatter: (params: TopLevelFormatterParams): string => {
+      formatter: (params: TopLevelFormatterParams) => {
         // trigger: "axis" gives an array of params, but "item" gives a single param
         if (Array.isArray(params)) {
           const mainItems: CallbackDataParams[] = [];
@@ -175,7 +193,7 @@ export function getCommonOptions(
               mainItems.push(param);
             }
           });
-          return [mainItems, compareItems]
+          const sections = [mainItems, compareItems]
             .map((items) =>
               formatTooltip(
                 items,
@@ -188,8 +206,12 @@ export function getCommonOptions(
                 formatTotal
               )
             )
-            .filter(Boolean)
-            .join("<br><br>");
+            .filter((s): s is TemplateResult => s !== nothing);
+          if (sections.length === 0) return nothing;
+          return html`${sections.map(
+            (section, i) =>
+              html`${i > 0 ? html`<br /><br />` : nothing}${section}`
+          )}`;
         }
         return formatTooltip(
           [params],
@@ -216,9 +238,9 @@ function formatTooltip(
   showCompareYear: boolean,
   unit?: string,
   formatTotal?: (total: number) => string
-) {
+): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
-    return "";
+    return nothing;
   }
   // displayX may be shifted from the period start (see EnergyDataPoint);
   // originalStart has the real date for display. Gap-filled entries lack it.
@@ -242,43 +264,50 @@ function formatTooltip(
       period += ` – ${formatTime(addHours(date, 1), locale, config)}`;
     }
   }
-  const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
 
   let sumPositive = 0;
   let countPositive = 0;
   let sumNegative = 0;
   let countNegative = 0;
-  const values = params
-    .map((param) => {
-      const y = param.value?.[1] as number;
-      const value = formatNumber(
-        y,
-        locale,
-        y < 0.1 ? { maximumFractionDigits: 3 } : undefined
-      );
-      if (value === "0") {
-        return false;
+  const rows: TemplateResult[] = [];
+  for (const param of params) {
+    const y = param.value?.[1] as number;
+    const value = formatNumber(
+      y,
+      locale,
+      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+    );
+    if (value === "0") {
+      continue;
+    }
+    if (param.componentSubType === "bar") {
+      if (y > 0) {
+        sumPositive += y;
+        countPositive++;
+      } else {
+        sumNegative += y;
+        countNegative++;
       }
-      if (param.componentSubType === "bar") {
-        if (y > 0) {
-          sumPositive += y;
-          countPositive++;
-        } else {
-          sumNegative += y;
-          countNegative++;
-        }
-      }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
-    })
-    .filter(Boolean);
-  let footer = "";
-  if (sumPositive !== 0 && countPositive > 1 && formatTotal) {
-    footer += `<br><b>${formatTotal(sumPositive)}</b>`;
+    }
+    rows.push(
+      html`<ha-chart-tooltip-marker
+          .color=${String(param.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${param.seriesName}:
+        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+    );
   }
-  if (sumNegative !== 0 && countNegative > 1 && formatTotal) {
-    footer += `<br><b>${formatTotal(sumNegative)}</b>`;
+  if (rows.length === 0) {
+    return nothing;
   }
-  return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
+  return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
+    ${rows.map(
+      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
+    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
+      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+      : nothing}${sumNegative !== 0 && countNegative > 1 && formatTotal
+      ? html`<br /><b>${formatTotal(sumNegative)}</b>`
+      : nothing}`;
 }
 
 function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
@@ -351,21 +380,35 @@ export function getCompareTransform(start: Date, compareStart?: Date) {
   if (!compareStart) {
     return (ts: Date) => ts;
   }
+  const compareDayDiff = differenceInDays(start, compareStart);
   const compareYearDiff = differenceInYears(start, compareStart);
   if (
     compareYearDiff !== 0 &&
     start.getTime() === startOfYear(start).getTime()
   ) {
-    return (ts: Date) => addYears(ts, compareYearDiff);
+    // addYears clamps Feb 29 -> Feb 28 across leap-year boundaries; fall back
+    // to a day-shift so each compare day keeps a unique x position.
+    return (ts: Date) => {
+      const shifted = addYears(ts, compareYearDiff);
+      return shifted.getDate() === ts.getDate()
+        ? shifted
+        : addDays(ts, compareDayDiff);
+    };
   }
   const compareMonthDiff = differenceInMonths(start, compareStart);
   if (
     compareMonthDiff !== 0 &&
     start.getTime() === startOfMonth(start).getTime()
   ) {
-    return (ts: Date) => addMonths(ts, compareMonthDiff);
+    // addMonths clamps Jan 31 -> Feb 28 when shifting between unequal-length
+    // months; fall back to a day-shift so each compare day keeps a unique x.
+    return (ts: Date) => {
+      const shifted = addMonths(ts, compareMonthDiff);
+      return shifted.getDate() === ts.getDate()
+        ? shifted
+        : addDays(ts, compareDayDiff);
+    };
   }
-  const compareDayDiff = differenceInDays(start, compareStart);
   if (compareDayDiff !== 0 && start.getTime() === startOfDay(start).getTime()) {
     return (ts: Date) => addDays(ts, compareDayDiff);
   }

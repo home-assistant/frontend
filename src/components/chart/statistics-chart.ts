@@ -4,7 +4,7 @@ import type {
   ZRColor,
 } from "echarts/types/dist/shared";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -13,7 +13,9 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 
+import { formatDate } from "../../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import {
   formatNumber,
   getNumberFormatOptions,
@@ -32,12 +34,15 @@ import {
   isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import type { HomeAssistant } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
+import { sideTooltipPosition } from "./chart-tooltip-position";
+import "./ha-chart-tooltip-marker";
 import { fillDataGapsAndRoundCaps } from "./round-caps";
+import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",
@@ -67,6 +72,11 @@ export class StatisticsChart extends LitElement {
   >;
 
   @property({ attribute: false }) public names?: Record<string, string>;
+
+  @property({ attribute: false }) public colors?: Record<
+    string,
+    string | undefined
+  >;
 
   @property() public unit?: string;
 
@@ -117,13 +127,13 @@ export class StatisticsChart extends LitElement {
 
   @state() private _statisticIds: string[] = [];
 
-  @state() private _chartOptions?: ECOption;
+  @state() private _chartOptions?: HaECOption;
 
   @state() private _hiddenStats = new Set<string>();
 
   private _computedStyle?: CSSStyleDeclaration;
 
-  private _previousYAxisLabelValue = 0;
+  private _yAxisFractionDigits = 1;
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -135,7 +145,8 @@ export class StatisticsChart extends LitElement {
       changedProps.has("statTypes") ||
       changedProps.has("chartType") ||
       changedProps.has("hideLegend") ||
-      changedProps.has("_hiddenStats")
+      changedProps.has("_hiddenStats") ||
+      changedProps.has("names")
     ) {
       this._generateData();
     }
@@ -236,42 +247,106 @@ export class StatisticsChart extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const rendered: Record<string, boolean> = {};
+    const chartIsBar = this.chartType.startsWith("bar");
+    const period = this.period;
     const unit = this.unit
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
-    return params
-      .map((param, index: number) => {
-        if (rendered[param.seriesIndex]) return "";
-        rendered[param.seriesIndex] = true;
+    const rows: {
+      time?: string;
+      color: string;
+      seriesName?: string;
+      value: string;
+    }[] = [];
+    for (const param of params) {
+      if (rendered[param.seriesIndex]) continue;
+      rendered[param.seriesIndex] = true;
 
-        const statisticId = this._statisticIds[param.seriesIndex];
-        const stateObj = this.hass.states[statisticId];
-        const entry = this.hass.entities[statisticId];
-        // max series can have 3 values, as the second value is the max-min to form a band
-        const rawValue = String(param.value[2] ?? param.value[1]);
-
-        const options = getNumberFormatOptions(stateObj, entry) ?? {
-          maximumFractionDigits: 2,
-        };
-
-        const value = `${formatNumber(
-          rawValue,
+      const statisticId = this._statisticIds[param.seriesIndex];
+      const stateObj = this.hass.states[statisticId];
+      const entry = this.hass.entities[statisticId];
+      let rawValue: string;
+      let rawTime: string;
+      if (chartIsBar) {
+        // For bar charts value is always second value.
+        rawValue = String(param.value[1]);
+        // Time value is third value (un-shifted date) if given, otherwise first value
+        let startTime: Date;
+        let endTime: Date | undefined;
+        if (param.value[2]) {
+          startTime = new Date(param.value[2]);
+          if (param.value[3]) {
+            endTime = new Date(param.value[3]);
+          }
+        } else {
+          startTime = new Date(param.value[0]);
+        }
+        if (
+          period === "year" ||
+          period === "month" ||
+          period === "week" ||
+          period === "day"
+        ) {
+          // For year/month/day periods, show only the date
+          rawTime =
+            formatDate(startTime, this.hass.locale, this.hass.config) +
+            (endTime && period !== "day"
+              ? ` – ${formatDate(endTime, this.hass.locale, this.hass.config)}`
+              : "");
+        } else {
+          // For other time periods, include time in render, and optionally show range
+          // if we have an end time.
+          rawTime =
+            formatDateTimeWithSeconds(
+              startTime,
+              this.hass.locale,
+              this.hass.config
+            ) +
+            (endTime
+              ? ` – ${formatTimeWithSeconds(
+                  endTime,
+                  this.hass.locale,
+                  this.hass.config
+                )}`
+              : "");
+        }
+      } else {
+        // For lines max series can have 3 values, as the second value is the max-min to form a band
+        rawValue = String(param.value[2] ?? param.value[1]);
+        // Time value is always first value
+        rawTime = formatDateTimeWithSeconds(
+          new Date(param.value[0]),
           this.hass.locale,
-          options
-        )}${unit}`;
+          this.hass.config
+        );
+      }
 
-        const time =
-          index === 0
-            ? formatDateTimeWithSeconds(
-                new Date(param.value[0]),
-                this.hass.locale,
-                this.hass.config
-              ) + "<br>"
-            : "";
-        return `${time}${param.marker} ${param.seriesName}: ${value}`;
-      })
-      .filter(Boolean)
-      .join("<br>");
+      const options = getNumberFormatOptions(stateObj, entry) ?? {
+        maximumFractionDigits: 2,
+      };
+
+      const value = `${formatNumber(rawValue, this.hass.locale, options)}${unit}`;
+
+      rows.push({
+        time: rows.length === 0 ? rawTime : undefined,
+        color: String(param.color ?? ""),
+        seriesName: param.seriesName,
+        value,
+      });
+    }
+
+    if (rows.length === 0) return nothing;
+
+    return html`${rows.map(
+      (row, i) =>
+        html`${row.time
+            ? html`${row.time}<br />`
+            : nothing}<ha-chart-tooltip-marker
+            .color=${row.color}
+          ></ha-chart-tooltip-marker>
+          ${row.seriesName}:
+          ${row.value}${i < rows.length - 1 ? html`<br />` : nothing}`
+    )}`;
   };
 
   private _createOptions() {
@@ -363,7 +438,12 @@ export class StatisticsChart extends LitElement {
         nameTextStyle: {
           align: "left",
         },
-        position: computeRTL(this.hass) ? "right" : "left",
+        position: computeRTL(
+          this.hass.language,
+          this.hass.translationMetadata.translations
+        )
+          ? "right"
+          : "left",
         scale:
           this.chartType.startsWith("line") ||
           this.logarithmicScale ||
@@ -393,8 +473,7 @@ export class StatisticsChart extends LitElement {
       tooltip: {
         trigger: "axis",
         renderMode: "html",
-        position: "bottom",
-        align: "center",
+        position: sideTooltipPosition,
         confine: true,
         formatter: this._renderTooltip,
       },
@@ -429,6 +508,14 @@ export class StatisticsChart extends LitElement {
     const chartStacked = this.chartType.endsWith("stack");
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number | null | undefined) => {
+      if (typeof v === "number" && Number.isFinite(v)) {
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+    };
     const legendData: {
       id: string;
       name: string;
@@ -485,6 +572,7 @@ export class StatisticsChart extends LitElement {
     }
 
     const names = this.names || {};
+    const colors = this.colors || {};
     statisticsData.forEach(([statistic_id, stats]) => {
       const meta = statisticsMetaData?.[statistic_id];
       let name = names[statistic_id];
@@ -500,40 +588,67 @@ export class StatisticsChart extends LitElement {
       const statDataSets: (LineSeriesOption | BarSeriesOption)[] = [];
       const statLegendData: typeof legendData = [];
 
+      // Place bars at centre of their specified time range if this is a bar chart
+      // and the period is 5minute or hour.
+      const centerBars =
+        chartType === "bar" &&
+        (this.period === "5minute" || this.period === "hour");
+
       const pushData = (
-        start: Date,
-        end: Date,
+        start: Date, // Data point start time
+        end: Date, // Data point end time
+        limit: Date, // Limit for end time (e.g. now)
         dataValues: (number | null)[][]
       ) => {
         if (!dataValues.length) return;
-        if (start > end) {
+        // Limit for time range is lesser of overall limit and data point end
+        limit = end.getTime() < limit.getTime() ? end : limit;
+        if (start.getTime() > limit.getTime()) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
         statDataSets.forEach((d, i) => {
-          if (
-            chartType === "line" &&
-            prevEndTime &&
-            prevValues &&
-            prevEndTime.getTime() !== start.getTime()
-          ) {
-            // if the end of the previous data doesn't match the start of the current data,
-            // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime, ...prevValues[i]!]);
-            d.data!.push([prevEndTime, null]);
+          if (chartType === "line") {
+            if (
+              prevEndTime &&
+              prevValues &&
+              prevEndTime.getTime() !== start.getTime()
+            ) {
+              // if the end of the previous data doesn't match the start of the current data,
+              // we have to draw a gap so add a value at the end time, and then an empty value.
+              d.data!.push([prevEndTime, ...prevValues[i]!]);
+              d.data!.push([prevEndTime, null]);
+            }
+            d.data!.push([start, ...dataValues[i]!]);
+            // For band-top rows dataValues[i] is [diff, top]; the actual Y is
+            // the last element. For regular rows it's [value]. Same call works.
+            trackY(dataValues[i][dataValues[i].length - 1]);
+          } else {
+            let time = start;
+            if (centerBars) {
+              // If centering bars, set the time to the midpoint between start and end instead
+              // of the start time.
+              time = new Date((start.getTime() + end.getTime()) / 2);
+            }
+            // Data value should always be a scalar for bar charts. Pass in
+            // real start time as extra value to allow formatting tooltip.
+            d.data!.push([time, dataValues[i][0]!, start, end]);
+            trackY(dataValues[i][0]);
           }
-          d.data!.push([start, ...dataValues[i]!]);
         });
         prevValues = dataValues;
-        prevEndTime = end;
+        prevEndTime = limit;
       };
 
-      const color = getGraphColorByIndex(
-        colorIndex,
-        this._computedStyle || getComputedStyle(this)
-      );
-      colorIndex++;
+      let color = colors[statistic_id];
+      if (color === undefined) {
+        color = getGraphColorByIndex(
+          colorIndex,
+          this._computedStyle || getComputedStyle(this)
+        );
+        colorIndex++;
+      }
 
       const statTypes: this["statTypes"] = [];
 
@@ -683,11 +798,7 @@ export class StatisticsChart extends LitElement {
           dataValues.push(val);
         });
         if (!this._hiddenStats.has(statistic_id)) {
-          pushData(
-            startDate,
-            endDate.getTime() < endTime.getTime() ? endDate : endTime,
-            dataValues
-          );
+          pushData(startDate, endDate, endTime, dataValues);
         }
       });
 
@@ -736,6 +847,7 @@ export class StatisticsChart extends LitElement {
                   val.push(currentValue);
                 }
                 statDataSets[i].data!.push([now, ...val]);
+                trackY(val[val.length - 1]);
               });
             }
           }
@@ -769,6 +881,7 @@ export class StatisticsChart extends LitElement {
       });
     });
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = totalDataSets;
     if (legendData.length !== this._legendData?.length) {
       // only update the legend if it has changed or it will trigger options update
@@ -802,21 +915,10 @@ export class StatisticsChart extends LitElement {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 
-  private _formatYAxisLabel = (value: number) => {
-    // show the first significant digit for tiny values
-    const maximumFractionDigits = Math.max(
-      1,
-      // use the difference to the previous value to determine the number of significant digits #25526
-      -Math.floor(
-        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-      )
-    );
-    const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits,
+  private _formatYAxisLabel = (value: number) =>
+    formatNumber(value, this.hass.locale, {
+      maximumFractionDigits: this._yAxisFractionDigits,
     });
-    this._previousYAxisLabelValue = value;
-    return label;
-  };
 
   static styles = css`
     :host {

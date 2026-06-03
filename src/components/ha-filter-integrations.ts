@@ -1,7 +1,8 @@
+import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -33,6 +34,8 @@ export class HaFilterIntegrations extends LitElement {
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
+
+  @query("ha-list") private _list?: HTMLElement;
 
   protected render() {
     return html`
@@ -98,8 +101,7 @@ export class HaFilterIntegrations extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 4 - 32}px`;
+        this._list!.style.height = `${this.clientHeight - 49 - 4 - 32}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input
@@ -147,9 +149,7 @@ export class HaFilterIntegrations extends LitElement {
         )
   );
 
-  private _itemSelected(
-    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
-  ) {
+  private _itemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
     const integrations = this._integrations(
       this.hass.localize,
       this._manifests!,
@@ -157,18 +157,16 @@ export class HaFilterIntegrations extends LitElement {
       this.value
     );
 
-    if (ev.detail.diff.added.length) {
-      this.value = [
-        ...(this.value || []),
-        integrations[ev.detail.diff.added[0]].domain,
-      ];
-    } else if (ev.detail.diff.removed.length) {
-      const removedDomain = integrations[ev.detail.diff.removed[0]].domain;
-      this.value = this.value?.filter((val) => val !== removedDomain);
-    }
+    const visibleDomains = new Set(integrations.map((i) => i.domain));
+    const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));
+    const selected = [...ev.detail.index]
+      .map((i) => integrations[i]?.domain)
+      .filter((d): d is string => !!d);
+
+    this.value = [...preserved, ...selected];
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: this.value.length ? this.value : undefined,
       items: undefined,
     });
   }

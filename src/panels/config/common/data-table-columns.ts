@@ -7,7 +7,7 @@ import type { DataTableColumnData } from "../../../components/data-table/ha-data
 import { slugify } from "../../../common/string/slugify";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import "../../../components/ha-tooltip";
 import "../../../components/ha-svg-icon";
 
@@ -146,7 +146,11 @@ export const renderRelativeTimeColumn = (
   localize: LocalizeFunc,
   hass: HomeAssistant
 ) => {
-  if (!valueRelativeTime || isUnavailableState(valueRelativeTime)) {
+  if (
+    !valueRelativeTime ||
+    valueRelativeTime === UNAVAILABLE ||
+    valueRelativeTime === UNKNOWN
+  ) {
     return localize("ui.components.relative_time.never");
   }
   const date = new Date(valueRelativeTime);

@@ -126,7 +126,6 @@ class DialogTodoItemEditor extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`

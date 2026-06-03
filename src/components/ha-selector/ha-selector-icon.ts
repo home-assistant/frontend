@@ -36,7 +36,15 @@ export class HaIconSelector extends LitElement {
     const placeholder =
       this.selector.icon?.placeholder ||
       stateObj?.attributes.icon ||
-      (stateObj && until(entityIcon(this.hass, stateObj)));
+      (stateObj &&
+        until(
+          entityIcon(
+            this.hass.entities,
+            this.hass.config,
+            this.hass.connection,
+            stateObj
+          )
+        ));
 
     return html`
       <ha-icon-picker
@@ -51,11 +59,7 @@ export class HaIconSelector extends LitElement {
       >
         ${!placeholder && stateObj
           ? html`
-              <ha-state-icon
-                slot="start"
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-state-icon>
+              <ha-state-icon slot="start" .stateObj=${stateObj}></ha-state-icon>
             `
           : nothing}
       </ha-icon-picker>
