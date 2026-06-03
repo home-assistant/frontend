@@ -8,9 +8,12 @@ import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
 @customElement("power-view-strategy")
 export class PowerViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     _config: LovelaceStrategyConfig,
     hass: HomeAssistant
