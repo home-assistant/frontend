@@ -104,9 +104,6 @@ export class DialogEnergyCustomise
         .headerTitle=${this.hass.localize(
           "ui.panel.config.energy.customise.title"
         )}
-        .headerSubtitle=${this.hass.localize(
-          "ui.panel.config.energy.customise.subtitle"
-        )}
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
@@ -116,7 +113,7 @@ export class DialogEnergyCustomise
             </div>`
           : this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : this._renderGroups()}
+            : html`<div class="groups">${this._renderGroups()}</div>`}
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -235,7 +232,7 @@ export class DialogEnergyCustomise
       haStyleDialog,
       css`
         ha-dialog {
-          --dialog-content-padding: var(--ha-space-6);
+          --dialog-content-padding: var(--ha-space-2) var(--ha-space-6);
         }
         .loading {
           display: flex;
@@ -245,17 +242,23 @@ export class DialogEnergyCustomise
         span.disabled {
           color: var(--disabled-text-color);
         }
+        .groups {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-4);
+        }
         ha-expansion-panel {
           display: block;
           --expansion-panel-content-padding: 0;
+          --expansion-panel-summary-padding: 0 var(--ha-space-4);
           border-radius: var(--ha-border-radius-md);
           --ha-card-border-radius: var(--ha-border-radius-md);
         }
-        ha-expansion-panel + ha-expansion-panel {
-          margin-top: var(--ha-space-2);
-        }
         .cards {
-          padding: 0 var(--ha-space-3);
+          padding: 0 var(--ha-space-4);
+        }
+        .cards ha-settings-row {
+          min-height: 48px;
         }
       `,
     ];

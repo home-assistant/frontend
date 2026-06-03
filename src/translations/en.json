@@ -4141,7 +4141,6 @@
           "customise": {
             "toolbar_action": "Customize cards",
             "title": "Customize energy",
-            "subtitle": "Toggle to show or hide cards",
             "saved": "Energy dashboard updated",
             "save_failed": "Failed to save energy customization",
             "unavailable": "This card isn't shown because the energy source or device it needs isn't configured.",
