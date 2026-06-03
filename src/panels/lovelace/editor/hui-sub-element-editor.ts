@@ -7,6 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import type { HomeAssistant } from "../../../types";
+import "./confirmation-editor/hui-action-confirmation-editor";
 import "./entity-row-editor/hui-row-element-editor";
 import "./feature-editor/hui-card-feature-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
@@ -61,9 +62,14 @@ export class HuiSubElementEditor extends LitElement {
                       ) || elementType,
                   }
                 )
-              : this.hass.localize(
-                  `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
-                )}
+              : this.config?.type === "confirmation" &&
+                  this.config.context?.label
+                ? `${this.config.context.label} - ${this.hass.localize(
+                    "ui.panel.lovelace.editor.sub-element-editor.types.confirmation"
+                  )}`
+                : this.hass.localize(
+                    `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`
+                  )}
           </span>
         </div>
         <ha-icon-button
@@ -153,6 +159,16 @@ export class HuiSubElementEditor extends LitElement {
             @config-changed=${this._handleConfigChanged}
             @GUImode-changed=${this._handleGUIModeChanged}
           ></hui-heading-badge-element-editor>
+        `;
+      case "confirmation":
+        return html`
+          <hui-action-confirmation-editor
+            class="editor"
+            .hass=${this.hass}
+            .value=${this.config.elementConfig}
+            @config-changed=${this._handleConfigChanged}
+            @GUImode-changed=${this._handleGUIModeChanged}
+          ></hui-action-confirmation-editor>
         `;
       default:
         return nothing;

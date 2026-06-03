@@ -19,8 +19,11 @@ const actionConfigStructUser = object({
 export const actionConfigStructConfirmation = union([
   boolean(),
   object({
+    title: optional(string()),
     text: optional(string()),
-    excemptions: optional(array(actionConfigStructUser)),
+    confirm_text: optional(string()),
+    dismiss_text: optional(string()),
+    exemptions: optional(array(actionConfigStructUser)),
   }),
 ]);
 

@@ -104,7 +104,14 @@ export interface SubElementEditorConfig {
     | LovelaceHeadingBadgeConfig;
   saveElementConfig?: (elementConfig: any) => void;
   context?: any;
-  type: "header" | "footer" | "row" | "feature" | "element" | "heading-badge";
+  type:
+    | "header"
+    | "footer"
+    | "row"
+    | "feature"
+    | "element"
+    | "heading-badge"
+    | "confirmation";
 }
 
 export interface EditSubElementEvent<T = any, C = any> {

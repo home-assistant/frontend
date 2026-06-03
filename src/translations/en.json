@@ -9220,6 +9220,17 @@
               "assist": "Assist",
               "url": "URL",
               "none": "Nothing"
+            },
+            "confirmation": {
+              "enable": "Require confirmation",
+              "edit": "Edit confirmation",
+              "title": "Dialog title",
+              "text": "Message",
+              "confirm_text": "Confirm button label",
+              "dismiss_text": "Cancel button label",
+              "confirm_text_placeholder": "OK",
+              "dismiss_text_placeholder": "Cancel",
+              "exemptions_hint": "To configure exempt users, switch to YAML mode."
             }
           },
           "condition-editor": {
@@ -10501,7 +10512,8 @@
               "feature": "Feature editor",
               "element": "Element editor",
               "heading-badge": "Heading badge editor",
-              "element_type": "{type} element editor"
+              "element_type": "{type} element editor",
+              "confirmation": "Confirmation"
             }
           }
         },
