@@ -1,12 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { mdiPencil } from "@mdi/js";
 import { refine } from "superstruct";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-assist-pipeline-picker";
-import "../../../components/ha-formfield";
-import "../../../components/ha-icon-button";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -15,16 +12,15 @@ import "../../../components/ha-help-tooltip";
 import "../../../components/ha-navigation-picker";
 import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-service-control";
-import "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import type {
   ActionConfig,
   CallServiceActionConfig,
-  ConfirmationRestrictionConfig,
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace/config/action";
+import "../editor/confirmation-editor/hui-action-confirmation-toggle";
 import type { ServiceAction } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
 
@@ -239,30 +235,11 @@ export class HuiActionEditor extends LitElement {
             </ha-form>
           `
         : nothing}
-      ${this.config?.action && this.config.action !== "none"
-        ? html`
-            <div class="confirmation-row">
-              <ha-formfield
-                .label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.action-editor.confirmation.enable"
-                )}
-              >
-                <ha-switch
-                  .checked=${!!this.config.confirmation}
-                  @change=${this._toggleConfirmation}
-                ></ha-switch>
-              </ha-formfield>
-              <ha-icon-button
-                .path=${mdiPencil}
-                .disabled=${!this.config.confirmation}
-                .label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.action-editor.confirmation.edit"
-                )}
-                @click=${this._editConfirmation}
-              ></ha-icon-button>
-            </div>
-          `
-        : nothing}
+      <hui-action-confirmation-toggle
+        .hass=${this.hass}
+        .config=${this.config}
+        .label=${this.label}
+      ></hui-action-confirmation-toggle>
     `;
   }
 
@@ -309,47 +286,6 @@ export class HuiActionEditor extends LitElement {
 
     fireEvent(this, "value-changed", {
       value: { action: value, ...preservedConfirmation, ...data },
-    });
-  }
-
-  private _toggleConfirmation(ev: Event): void {
-    ev.stopPropagation();
-    const enabled = (ev.target as HTMLInputElement).checked;
-    if (enabled) {
-      const existing = this.config!.confirmation;
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.config!,
-          confirmation:
-            existing && typeof existing === "object" ? existing : {},
-        },
-      });
-    } else {
-      const { confirmation: _removed, ...rest } = this
-        .config as ActionConfig & {
-        confirmation?: ConfirmationRestrictionConfig | boolean;
-      };
-      fireEvent(this, "value-changed", { value: rest });
-    }
-  }
-
-  private _editConfirmation(): void {
-    if (!this.config?.confirmation) {
-      return;
-    }
-    const confirmation =
-      typeof this.config.confirmation === "object"
-        ? this.config.confirmation
-        : {};
-    fireEvent(this, "edit-sub-element", {
-      type: "confirmation",
-      config: confirmation,
-      context: { label: this.label },
-      saveConfig: (newConfirmation: ConfirmationRestrictionConfig) => {
-        fireEvent(this, "value-changed", {
-          value: { ...this.config!, confirmation: newConfirmation },
-        });
-      },
     });
   }
 
@@ -439,17 +375,6 @@ export class HuiActionEditor extends LitElement {
     }
     ha-service-control {
       --service-control-padding: 0;
-    }
-    .confirmation-row {
-      display: flex;
-      align-items: center;
-      margin-top: 8px;
-    }
-    .confirmation-row ha-formfield {
-      flex-grow: 1;
-    }
-    .confirmation-row ha-icon-button {
-      color: var(--secondary-text-color);
     }
   `;
 }
