@@ -197,12 +197,14 @@ class HaLandingPage extends LandingPageBaseElement {
   private async _fetchSupervisorJobsInfo() {
     try {
       const jobsInfo = await getSupervisorJobsInfo();
-      if (
-        jobsInfo.result === "ok" &&
-        jobsInfo.data.jobs.length &&
-        jobsInfo.data.jobs[0].name === "home_assistant_core_install"
-      ) {
-        this._progress = jobsInfo.data.jobs[0].progress;
+      const coreInstallJob =
+        jobsInfo.result === "ok"
+          ? jobsInfo.data.jobs.find(
+              (job) => job.name === "home_assistant_core_install"
+            )
+          : undefined;
+      if (coreInstallJob) {
+        this._progress = coreInstallJob.progress;
       } else {
         this._progress = -1;
       }
