@@ -8557,7 +8557,7 @@ __metadata:
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
     license-checker-rseidelsohn: "npm:5.0.1"
-    lint-staged: "npm:17.0.6"
+    lint-staged: "npm:17.0.7"
     lit: "npm:3.3.3"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.3"
@@ -9936,21 +9936,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:17.0.6":
-  version: 17.0.6
-  resolution: "lint-staged@npm:17.0.6"
+"lint-staged@npm:17.0.7":
+  version: 17.0.7
+  resolution: "lint-staged@npm:17.0.7"
   dependencies:
     listr2: "npm:^10.2.1"
     picomatch: "npm:^4.0.4"
     string-argv: "npm:^0.3.2"
-    tinyexec: "npm:1.2.2"
+    tinyexec: "npm:^1.2.4"
     yaml: "npm:^2.9.0"
   dependenciesMeta:
     yaml:
       optional: true
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/371918cfb293ed0ca5d16fc2a1de304b5a95d21b87dc1ea7f3751567c8f8a07971a40349fac8edb5fce3c6ea6713f70922ea90184b142fd432a5bb4db6c316b0
+  checksum: 10/4ed3cd01caa78ff5cc5da7ec69f77f091c43a0d5cbb1e084f7ffd3872a9e599675fb8b5f11fd5911faee0d330952889dd0e14378a26620d8f529eae401ce49b4
   languageName: node
   linkType: hard
 
@@ -13172,10 +13172,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyexec@npm:1.2.2, tinyexec@npm:^1.0.2":
-  version: 1.2.2
-  resolution: "tinyexec@npm:1.2.2"
-  checksum: 10/e6f3cabafc33a46063868b4e9c0ab76722e21cb46f0177f7bef5a9656e09ea6fa37115d3e47f776aff11aab9ab696b0c840c8e0099fab574b1e37767c4371aec
+"tinyexec@npm:^1.0.2, tinyexec@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "tinyexec@npm:1.2.4"
+  checksum: 10/f20b3e6f56f24c3ebe0129d0b6e657e561d225df2cf93c1a10362996232dd6ad4b8af8c9e81d258a64d09020e723772baf6fe0be26512dba7c61bb366d67b1f9
   languageName: node
   linkType: hard
 
