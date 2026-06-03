@@ -68,7 +68,7 @@ class HaLandingPage extends LandingPageBaseElement {
                   .indeterminate=${this._progress <= 0}
                   .value=${this._progress > 0 ? this._progress : undefined}
                   .loading=${this._progress >= 0}
-                  >${this._progress >= 0
+                  >${this._progress > 0
                     ? `${Math.round(this._progress)}%`
                     : nothing}</ha-progress-bar
                 >
