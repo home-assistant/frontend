@@ -48,8 +48,7 @@ export class HaIntegrationListItem extends HaListItemButton {
           ${integration.name ||
           domainToName(this._localize, integration.domain)}
           ${integration.is_helper
-            ? // @ts-expect-error translation key not yet defined
-              ` (${this._localize("ui.panel.config.integrations.config_entry.helper")})`
+            ? ` (${this._localize("ui.panel.config.integrations.config_entry.helper")})`
             : nothing}
         </div>
       </div>
