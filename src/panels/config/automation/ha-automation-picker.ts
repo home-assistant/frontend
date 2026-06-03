@@ -3,8 +3,6 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
   mdiAlertCircleOutline,
-  mdiAlertOutline,
-  mdiCheckCircleOutline,
   mdiCog,
   mdiContentDuplicate,
   mdiDelete,
@@ -133,6 +131,13 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 import { loadTraces } from "../../../data/trace";
+import { relativeTime } from "../../../common/datetime/relative_time";
+
+interface ErrorDescription {
+  count: number;
+  total: number;
+  oldest?: Date;
+}
 
 type AutomationItem = AutomationEntity & {
   name: string;
@@ -144,7 +149,8 @@ type AutomationItem = AutomationEntity & {
   labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
-  errors: undefined | "none" | "some" | "all";
+  errors: undefined | ErrorDescription;
+  errors_sort: number;
 };
 
 @customElement("ha-automation-picker")
@@ -165,7 +171,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   @state() private _filteredEntityIds?: string[] | null;
 
-  @state() private _errors: Record<string, "none" | "some" | "all"> = {};
+  @state() private _errors: Record<string, ErrorDescription> = {};
 
   @state()
   @storage({
@@ -250,7 +256,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _automations = memoizeOne(
     (
       automations: AutomationEntity[],
-      errors: Record<string, "none" | "some" | "all">,
+      errors: Record<string, ErrorDescription>,
       entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
       categoryReg?: CategoryRegistryEntry[],
@@ -279,6 +285,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           entityReg,
           automation.entity_id
         );
+
+        const errorObject = automation.attributes.id
+          ? errors[automation.attributes.id]
+          : undefined;
+        const errors_sort = errorObject?.count || 0;
+
         return {
           ...automation,
           name: computeStateName(automation),
@@ -295,9 +307,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
-          errors: automation.attributes.id
-            ? errors[automation.attributes.id]
-            : undefined,
+          errors: errorObject,
+          errors_sort,
         };
       });
     }
@@ -347,31 +358,35 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         category: getCategoryTableColumn(localize),
         labels: getLabelsTableColumn(),
         last_triggered: getTriggeredAtTableColumn(localize, this.hass),
-        result_icon: {
-          title: "",
-          label: localize("ui.panel.config.automation.picker.headers.result"),
-          type: "icon",
+        errors: {
+          title: localize("ui.panel.config.automation.picker.headers.errors"),
+          minWidth: "80px",
+          maxWidth: "80px",
+          sortable: true,
           showNarrow: true,
+          valueColumn: "errors_sort",
           template: (automation) =>
-            automation.errors
-              ? html`<ha-data-table-icon
-                  .path=${automation.errors === "all"
-                    ? mdiAlertCircleOutline
-                    : automation.errors === "none"
-                      ? mdiCheckCircleOutline
-                      : mdiAlertOutline}
-                  .tooltip=${localize(
-                    `ui.panel.config.automation.picker.result_errors.${automation.errors}`
-                  )}
-                  style=${styleMap({
-                    "--ha-data-table-icon-color":
-                      automation.errors === "all"
-                        ? "var(--error-color)"
-                        : automation.errors === "none"
-                          ? "var(--success-color)"
-                          : "var(--warning-color)",
-                  })}
-                ></ha-data-table-icon>`
+            automation.errors?.count
+              ? html` </ha-tooltip>
+                  <div style="color: var(--error-color);">
+                    <ha-data-table-icon
+                      .path=${mdiAlertCircleOutline}
+                      .tooltip=${localize(
+                        "ui.panel.config.automation.picker.result_errors",
+                        {
+                          count: automation.errors.count,
+                          time: relativeTime(
+                            automation.errors.oldest!,
+                            this.hass.locale,
+                            undefined,
+                            false
+                          ),
+                        }
+                      )}
+                      style="--ha-data-table-icon-color: var(--error-color);"
+                    ></ha-data-table-icon>
+                    ${automation.errors.count}/${automation.errors.total}
+                  </div>`
               : nothing,
         },
         formatted_state: {
@@ -839,26 +854,24 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   firstUpdated() {
     loadTraces(this.hass, "automation").then((traces) => {
-      const errors = {};
-      traces.forEach((trace) => {
-        const error = trace.script_execution === "error";
-        const success =
-          trace.script_execution === "aborted" ||
-          trace.script_execution === "finished";
-        const current = errors[trace.item_id];
-        if (!current) {
-          if (error) {
-            errors[trace.item_id] = "all";
-          } else if (success) {
-            errors[trace.item_id] = "none";
-          }
-        } else if (current === "all" && success) {
-          errors[trace.item_id] = "some";
-        } else if (current === "none" && error) {
-          errors[trace.item_id] = "some";
+      this._errors = traces.reduce((acc, trace) => {
+        const id = trace.item_id;
+        const ts = trace.timestamp.finish || trace.timestamp.start;
+        if (!acc[id]) {
+          acc[id] = { count: 0, total: 0 };
         }
-      });
-      this._errors = errors;
+
+        acc[id].total += 1;
+        if (trace.script_execution === "error") {
+          acc[id].count += 1;
+          const date = new Date(ts);
+          if (!acc[id].oldest || date < acc[id].oldest) {
+            acc[id].oldest = date;
+          }
+        }
+
+        return acc;
+      }, {});
     });
   }
 

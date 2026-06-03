@@ -5024,14 +5024,10 @@
               "trigger": "Trigger",
               "actions": "Actions",
               "state": "State",
-              "result": "Result",
+              "errors": "Errors",
               "icon": "Icon"
             },
-            "result_errors": {
-              "none": "All runs successfully completed",
-              "all": "All runs ended with error",
-              "some": "Some runs ended with error"
-            },
+            "result_errors": "{count} errors in the last {time}",
             "bulk_action": "Action",
             "bulk_actions": {
               "move_category": "Move to category",
