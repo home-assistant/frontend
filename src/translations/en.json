@@ -9228,8 +9228,7 @@
               "text": "Message",
               "confirm_text": "Confirm button label",
               "dismiss_text": "Cancel button label",
-              "confirm_text_placeholder": "OK",
-              "dismiss_text_placeholder": "Cancel",
+              "default_value": "Default: {value}",
               "exemptions_hint": "To configure exempt users, switch to YAML mode."
             }
           },

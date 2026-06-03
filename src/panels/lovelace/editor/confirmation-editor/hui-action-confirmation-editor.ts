@@ -24,47 +24,40 @@ export class HuiActionConfirmationEditor extends HuiElementEditor<
     const localize = this.hass.localize.bind(this.hass);
     const actionConfig = this.context?.actionConfig;
 
-    const textPlaceholder = actionConfig
+    const defaultText = actionConfig
       ? await getConfirmationDefaultText(this.hass, actionConfig)
       : undefined;
 
+    const defaultTitle = localize(
+      "ui.dialogs.generic.default_confirmation_title"
+    );
+
+    const helpers: Record<string, string | undefined> = {
+      title: defaultTitle,
+      text: defaultText,
+      confirm_text: localize("ui.common.ok"),
+      dismiss_text: localize("ui.common.cancel"),
+    };
+
     return {
       schema: [
-        {
-          name: "title",
-          selector: {
-            text: {
-              placeholder: localize(
-                "ui.dialogs.generic.default_confirmation_title"
-              ),
-            },
-          },
-        },
-        {
-          name: "text",
-          selector: {
-            text: {
-              ...(textPlaceholder ? { placeholder: textPlaceholder } : {}),
-            },
-          },
-        },
-        {
-          name: "confirm_text",
-          selector: {
-            text: { placeholder: localize("ui.common.ok") },
-          },
-        },
-        {
-          name: "dismiss_text",
-          selector: {
-            text: { placeholder: localize("ui.common.cancel") },
-          },
-        },
+        { name: "title", selector: { text: {} } },
+        { name: "text", selector: { text: {} } },
+        { name: "confirm_text", selector: { text: {} } },
+        { name: "dismiss_text", selector: { text: {} } },
       ] as HaFormSchema[],
       computeLabel: (schema) =>
         localize(
           `ui.panel.lovelace.editor.action-editor.confirmation.${schema.name}` as any
         ),
+      computeHelper: (schema) => {
+        const value = helpers[schema.name];
+        if (!value) return undefined;
+        return localize(
+          "ui.panel.lovelace.editor.action-editor.confirmation.default_value" as any,
+          { value }
+        );
+      },
     };
   }
 
