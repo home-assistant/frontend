@@ -557,7 +557,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         )}
                         <ha-button
                           appearance="plain"
-                          size="small"
+                          size="s"
                           @click=${this._toggleShowDisabled}
                         >
                           ${this.hass.localize(
@@ -677,7 +677,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     <ha-button
                       @click=${this._createFlow}
                       appearance="filled"
-                      size="small"
+                      size="s"
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${this.hass.localize(
@@ -709,7 +709,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         <ha-button
                           @click=${this._createFlow}
                           appearance="filled"
-                          size="small"
+                          size="s"
                         >
                           <ha-svg-icon
                             slot="start"
@@ -723,7 +723,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     `
                   : ""}
         </div>
-        <ha-button slot="fab" size="large" @click=${this._createFlow}>
+        <ha-button slot="fab" size="l" @click=${this._createFlow}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.integrations.add_integration")}
         </ha-button>

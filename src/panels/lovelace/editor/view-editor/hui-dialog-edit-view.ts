@@ -258,7 +258,7 @@ export class HuiDialogEditView extends LitElement {
                     "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
                   )}
                   <ha-button
-                    size="small"
+                    size="s"
                     slot="action"
                     @click=${this._convertToSection}
                   >

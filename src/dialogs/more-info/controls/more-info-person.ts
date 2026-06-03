@@ -39,7 +39,7 @@ class MoreInfoPerson extends LitElement {
             <div class="actions">
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 @click=${this._handleAction}
               >
                 ${this.hass.localize(

@@ -150,7 +150,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
         ? html`<div class="footer centered">
             <ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._changeWakeWord}
               >${this.hass.localize(
                 "ui.panel.config.voice_assistants.satellite_wizard.wake_word.change_wake_word"

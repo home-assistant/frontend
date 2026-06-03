@@ -102,7 +102,7 @@ export class HaPictureUpload extends LitElement {
         <div>
           <ha-button
             appearance="plain"
-            size="small"
+            size="s"
             variant="danger"
             @click=${this._handleChangeClick}
           >

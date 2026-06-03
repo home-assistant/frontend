@@ -114,7 +114,7 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "button") {
       return html`
-        <ha-button appearance="plain" size="small" .disabled=${disabled}>
+        <ha-button appearance="plain" size="s" .disabled=${disabled}>
           ${this.hass.localize("ui.card.button.press")}
         </ha-button>
       `;
@@ -237,7 +237,7 @@ class EntityPreviewRow extends LitElement {
           .disabled=${disabled}
           class="text-content"
           appearance="plain"
-          size="small"
+          size="s"
         >
           ${stateObj.state === "locked"
             ? this.hass!.localize("ui.card.lock.unlock")

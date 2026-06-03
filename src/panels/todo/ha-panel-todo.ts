@@ -273,7 +273,7 @@ class PanelTodo extends LitElement {
         </div>
         ${entityState &&
         supportsFeature(entityState, TodoListEntityFeature.CREATE_TODO_ITEM)
-          ? html`<ha-button class="fab" size="large" @click=${this._addItem}>
+          ? html`<ha-button class="fab" size="l" @click=${this._addItem}>
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize("ui.panel.todo.add_item")}
             </ha-button>`

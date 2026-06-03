@@ -728,7 +728,7 @@ class DialogAddAutomationElement
               active-variant="brand"
               .buttons=${tabButtons}
               .active=${this._tab}
-              size="small"
+              size="s"
               full-width
               @value-changed=${this._switchTab}
             ></ha-button-toggle-group>`

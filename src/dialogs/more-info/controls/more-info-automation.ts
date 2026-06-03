@@ -31,7 +31,7 @@ class MoreInfoAutomation extends LitElement {
       <div class="actions">
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           @click=${this._runActions}
           .disabled=${this.stateObj!.state === UNAVAILABLE}
         >

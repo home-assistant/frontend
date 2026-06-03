@@ -217,7 +217,7 @@ class HaConfigSectionUpdates extends LitElement {
                       ? html`
                           <ha-button
                             appearance="plain"
-                            size="small"
+                            size="s"
                             .group=${group}
                             .disabled=${group.entities.every((entity) =>
                               updateIsInstalling(entity)

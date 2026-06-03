@@ -75,7 +75,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       ${this.lovelace?.editMode && this.cards.length === 0
         ? html`
             <ha-button
-              size="large"
+              size="l"
               @click=${this._addCard}
               class=${classMap({
                 rtl: computeRTL(

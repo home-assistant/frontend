@@ -349,7 +349,7 @@ class HaBlueprintOverview extends LitElement {
             href=${documentationUrl(this.hass, "/get-blueprints")}
             target="_blank"
             rel="noreferrer noopener"
-            size="small"
+            size="s"
           >
             ${this.hass.localize(
               "ui.panel.config.blueprint.overview.discover_more"
@@ -375,7 +375,7 @@ class HaBlueprintOverview extends LitElement {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <ha-button slot="fab" size="large" @click=${this._addBlueprintClicked}>
+        <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
           <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"

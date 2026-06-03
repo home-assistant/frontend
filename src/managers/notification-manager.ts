@@ -97,7 +97,7 @@ class NotificationManager extends LitElement {
           ? html`
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 slot="action"
                 @click=${this._buttonClicked}
               >
