@@ -232,7 +232,6 @@ class HaConfigSectionUpdates extends LitElement {
                       : nothing}
                   </div>
                   <ha-config-updates
-                    .hass=${this.hass}
                     .narrow=${this.narrow}
                     .updateEntities=${group.entities}
                     showAll
@@ -256,7 +255,6 @@ class HaConfigSectionUpdates extends LitElement {
                       </div>
                     </div>
                     <ha-config-updates
-                      .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${skippedUpdates}
                       showAll
@@ -280,7 +278,6 @@ class HaConfigSectionUpdates extends LitElement {
                       </div>
                     </div>
                     <ha-config-updates
-                      .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${notInstallableUpdates}
                       showAll

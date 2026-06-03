@@ -326,7 +326,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                           </a>
                         </div>
                         <ha-config-updates
-                          .hass=${this.hass}
                           .narrow=${this.narrow}
                           .updateEntities=${canInstallUpdates}
                         ></ha-config-updates>
