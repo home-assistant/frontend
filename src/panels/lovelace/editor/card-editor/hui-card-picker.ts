@@ -285,7 +285,7 @@ export class HuiCardPicker extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_filter")) {
-      const div = this.parentElement!.shadowRoot!.getElementById("content");
+      const div = this.shadowRoot!.getElementById("content");
       if (div) {
         div.scrollTo({ behavior: "auto", top: 0 });
       }
