@@ -194,7 +194,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       ${this._visibleOptionals.includes("area")
         ? html` <ha-area-picker
             id="area"
-            .hass=${this.hass}
             .value=${this._entryUpdates.area}
             @value-changed=${this._registryEntryChanged}
           ></ha-area-picker>`

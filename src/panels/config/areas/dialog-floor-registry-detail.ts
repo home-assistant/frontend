@@ -210,7 +210,6 @@ class DialogFloorDetail extends LitElement {
                 </p>`}
             <ha-area-picker
               no-add
-              .hass=${this.hass}
               @value-changed=${this._addArea}
               .excludeAreas=${areas.map((a) => a.area_id)}
               .addButtonLabel=${this.hass.localize(
