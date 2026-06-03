@@ -2,9 +2,8 @@ import { mdiPencil } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-switch";
+import "../../../../components/ha-selector/ha-selector-boolean";
 import type {
   ActionConfig,
   ConfirmationRestrictionConfig,
@@ -26,16 +25,13 @@ export class HuiActionConfirmationToggle extends LitElement {
 
     return html`
       <div class="confirmation-row">
-        <ha-formfield
+        <ha-selector-boolean
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.action-editor.confirmation.enable"
           )}
-        >
-          <ha-switch
-            .checked=${!!this.config.confirmation}
-            @change=${this._toggleConfirmation}
-          ></ha-switch>
-        </ha-formfield>
+          .value=${!!this.config.confirmation}
+          @value-changed=${this._toggleConfirmation}
+        ></ha-selector-boolean>
         <ha-icon-button
           .path=${mdiPencil}
           .disabled=${!this.config.confirmation}
@@ -48,9 +44,9 @@ export class HuiActionConfirmationToggle extends LitElement {
     `;
   }
 
-  private _toggleConfirmation(ev: Event): void {
+  private _toggleConfirmation(ev: CustomEvent): void {
     ev.stopPropagation();
-    const enabled = (ev.target as HTMLInputElement).checked;
+    const enabled = ev.detail.value as boolean;
     if (enabled) {
       const existing = this.config!.confirmation;
       fireEvent(this, "value-changed", {
@@ -95,10 +91,11 @@ export class HuiActionConfirmationToggle extends LitElement {
       align-items: center;
       margin-top: 8px;
     }
-    ha-formfield {
+    ha-selector-boolean {
       flex-grow: 1;
     }
     ha-icon-button {
+      --ha-icon-button-size: var(--ha-space-9);
       color: var(--secondary-text-color);
     }
   `;
