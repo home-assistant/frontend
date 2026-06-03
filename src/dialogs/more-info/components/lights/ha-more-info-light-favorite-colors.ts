@@ -6,8 +6,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import type { LightColor, LightEntity } from "../../../../data/light";
-import { computeDefaultFavoriteColors } from "../../../../data/light";
+import {
+  computeDefaultFavoriteColors,
+  computeLightAttributeService,
+  type LightColor,
+  type LightEntity,
+} from "../../../../data/light";
 import type { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
 import "../ha-more-info-favorites";
@@ -53,10 +57,14 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private _apply(index: number): void {
     const favorite = this._favoriteColors[index];
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj.entity_id,
-      ...favorite,
-    });
+    this.hass.callService(
+      "light",
+      computeLightAttributeService(this.stateObj),
+      {
+        entity_id: this.stateObj.entity_id,
+        ...favorite,
+      }
+    );
   }
 
   private async _save(newFavoriteColors: LightColor[]): Promise<void> {

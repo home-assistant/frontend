@@ -12,6 +12,7 @@ import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import {
+  computeLightAttributeService,
   LightColorMode,
   lightSupportsColorMode,
   type LightEntity,
@@ -121,10 +122,14 @@ class HuiLightColorTempCardFeature
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    this.hass!.callService("light", "turn_on", {
-      entity_id: this._stateObj!.entity_id,
-      color_temp_kelvin: value,
-    });
+    this.hass!.callService(
+      "light",
+      computeLightAttributeService(this._stateObj!),
+      {
+        entity_id: this._stateObj!.entity_id,
+        color_temp_kelvin: value,
+      }
+    );
   }
 
   static get styles() {

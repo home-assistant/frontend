@@ -21,14 +21,15 @@ import {
   type ExtEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
-import type { LightEntity } from "../../../data/light";
 import {
+  computeLightAttributeService,
   LightColorMode,
   LightEntityFeature,
   lightSupportsBrightness,
   lightSupportsColor,
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
+  type LightEntity,
 } from "../../../data/light";
 import "../../../state-control/ha-state-control-toggle";
 import "../../../state-control/light/ha-state-control-light-brightness";
@@ -306,10 +307,14 @@ class MoreInfoLight extends LitElement {
   };
 
   private _setWhite = () => {
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      white: true,
-    });
+    this.hass.callService(
+      "light",
+      computeLightAttributeService(this.stateObj!),
+      {
+        entity_id: this.stateObj!.entity_id,
+        white: true,
+      }
+    );
   };
 
   private _handleEffect(ev: HaDropdownSelectEvent) {
@@ -318,10 +323,14 @@ class MoreInfoLight extends LitElement {
 
     if (!newVal || oldVal === newVal) return;
 
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      effect: newVal,
-    });
+    this.hass.callService(
+      "light",
+      computeLightAttributeService(this.stateObj!),
+      {
+        entity_id: this.stateObj!.entity_id,
+        effect: newVal,
+      }
+    );
   }
 
   static get styles(): CSSResultGroup {

@@ -8,7 +8,10 @@ import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../data/entity/entity";
-import type { LightEntity } from "../../data/light";
+import {
+  computeLightAttributeService,
+  type LightEntity,
+} from "../../data/light";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-light-brightness")
@@ -35,10 +38,14 @@ export class HaStateControlLightBrightness extends LitElement {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
 
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      brightness_pct: value,
-    });
+    this.hass.callService(
+      "light",
+      computeLightAttributeService(this.stateObj),
+      {
+        entity_id: this.stateObj!.entity_id,
+        brightness_pct: value,
+      }
+    );
   }
 
   protected render(): TemplateResult {

@@ -6,6 +6,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
+  computeLightAttributeService,
   computeDefaultFavoriteColors,
   type LightEntity,
   type LightColor,
@@ -189,10 +190,14 @@ class HuiLightColorFavoritesCardFeature
     const index = (ev.target! as any).index!;
 
     const favorite = this._favoriteColors[index];
-    this.hass!.callService("light", "turn_on", {
-      entity_id: this._stateObj!.entity_id,
-      ...favorite,
-    });
+    this.hass!.callService(
+      "light",
+      computeLightAttributeService(this._stateObj!),
+      {
+        entity_id: this._stateObj!.entity_id,
+        ...favorite,
+      }
+    );
   }
 
   static get styles() {

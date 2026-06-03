@@ -16,11 +16,13 @@ import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
-import type { LightColor, LightEntity } from "../../../../data/light";
 import {
+  computeLightAttributeService,
   getLightCurrentModeRgbColor,
   LightColorMode,
   lightSupportsColorMode,
+  type LightColor,
+  type LightEntity,
 } from "../../../../data/light";
 import type { HomeAssistant } from "../../../../types";
 
@@ -346,11 +348,15 @@ class LightRgbColorPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      ...color,
-      ...params,
-    });
+    this.hass.callService(
+      "light",
+      computeLightAttributeService(this.stateObj),
+      {
+        entity_id: this.stateObj!.entity_id,
+        ...color,
+        ...params,
+      }
+    );
   }
 
   private _colorBrightnessSliderChanged(ev: CustomEvent) {

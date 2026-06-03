@@ -72,6 +72,7 @@ export const getLightCurrentModeRgbColor = (
       : entity.attributes.rgb_color;
 
 interface LightEntityAttributes extends HassEntityAttributeBase {
+  entity_id?: string[];
   min_color_temp_kelvin?: number;
   max_color_temp_kelvin?: number;
   min_mireds?: number;
@@ -93,6 +94,11 @@ interface LightEntityAttributes extends HassEntityAttributeBase {
 export interface LightEntity extends HassEntityBase {
   attributes: LightEntityAttributes;
 }
+
+export const computeLightAttributeService = (entity: LightEntity) =>
+  entity.state === "on" && Array.isArray(entity.attributes.entity_id)
+    ? "adjust"
+    : "turn_on";
 
 export type LightColor =
   | {

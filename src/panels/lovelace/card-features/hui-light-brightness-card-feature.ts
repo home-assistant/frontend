@@ -4,7 +4,11 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import { lightSupportsBrightness, type LightEntity } from "../../../data/light";
+import {
+  computeLightAttributeService,
+  lightSupportsBrightness,
+  type LightEntity,
+} from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -94,10 +98,14 @@ class HuiLightBrightnessCardFeature
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    this.hass!.callService("light", "turn_on", {
-      entity_id: this._stateObj!.entity_id,
-      brightness_pct: value,
-    });
+    this.hass!.callService(
+      "light",
+      computeLightAttributeService(this._stateObj!),
+      {
+        entity_id: this._stateObj!.entity_id,
+        brightness_pct: value,
+      }
+    );
   }
 
   static get styles() {

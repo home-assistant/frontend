@@ -15,8 +15,12 @@ import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity/entity_attributes";
-import type { LightColor, LightEntity } from "../../../../data/light";
-import { LightColorMode } from "../../../../data/light";
+import {
+  computeLightAttributeService,
+  LightColorMode,
+  type LightColor,
+  type LightEntity,
+} from "../../../../data/light";
 import type { HomeAssistant } from "../../../../types";
 
 declare global {
@@ -159,11 +163,15 @@ class LightColorTempPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj!.entity_id,
-      ...color,
-      ...params,
-    });
+    this.hass.callService(
+      "light",
+      computeLightAttributeService(this.stateObj),
+      {
+        entity_id: this.stateObj!.entity_id,
+        ...color,
+        ...params,
+      }
+    );
   }
 
   static get styles(): CSSResultGroup {
