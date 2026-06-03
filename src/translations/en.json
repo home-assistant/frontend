@@ -9229,7 +9229,7 @@
               "confirm_text": "Confirm button label",
               "dismiss_text": "Cancel button label",
               "default_value": "Default: {value}",
-              "exemptions_hint": "To configure exempt users, switch to YAML mode."
+              "exemptions": "Exempt users"
             }
           },
           "condition-editor": {
