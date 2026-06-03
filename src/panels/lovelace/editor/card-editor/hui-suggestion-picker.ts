@@ -1,7 +1,7 @@
 import { mdiClose, mdiViewGridPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
@@ -24,6 +24,7 @@ import {
 import type { CardSuggestion } from "../../card-suggestions/types";
 import "./hui-suggestion-card";
 import "./hui-suggestion-entity-tree";
+import type { HuiSuggestionEntityTree } from "./hui-suggestion-entity-tree";
 
 @customElement("hui-suggestion-picker")
 export class HuiSuggestionPicker extends LitElement {
@@ -37,6 +38,14 @@ export class HuiSuggestionPicker extends LitElement {
   @state() private _narrow = false;
 
   private _narrowMql?: MediaQueryList;
+
+  @query("hui-suggestion-entity-tree")
+  private _entityTree?: HuiSuggestionEntityTree;
+
+  public async focus(): Promise<void> {
+    await this.updateComplete;
+    await this._entityTree?.focus();
+  }
 
   public connectedCallback(): void {
     super.connectedCallback();
