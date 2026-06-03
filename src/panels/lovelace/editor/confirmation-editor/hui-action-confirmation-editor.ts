@@ -6,39 +6,38 @@ import type { ConfirmationRestrictionConfig } from "../../../../data/lovelace/co
 import type { LovelaceConfigForm } from "../../types";
 import { HuiElementEditor } from "../hui-element-editor";
 
-const CONFIRMATION_SCHEMA = [
-  {
-    name: "title",
-    selector: { text: {} },
-  },
-  {
-    name: "text",
-    selector: { text: {} },
-  },
-  {
-    name: "confirm_text",
-    selector: { text: {} },
-  },
-  {
-    name: "dismiss_text",
-    selector: { text: {} },
-  },
-] as const satisfies readonly HaFormSchema[];
-
 @customElement("hui-action-confirmation-editor")
 export class HuiActionConfirmationEditor extends HuiElementEditor<ConfirmationRestrictionConfig> {
   protected async getConfigForm(): Promise<LovelaceConfigForm | undefined> {
+    const localize = this.hass.localize.bind(this.hass);
+
     return {
-      schema: CONFIRMATION_SCHEMA as unknown as HaFormSchema[],
-      computeLabel: (schema, localize) =>
+      schema: [
+        {
+          name: "title",
+          selector: { text: {} },
+        },
+        {
+          name: "text",
+          selector: { text: {} },
+        },
+        {
+          name: "confirm_text",
+          selector: {
+            text: { placeholder: localize("ui.common.ok") },
+          },
+        },
+        {
+          name: "dismiss_text",
+          selector: {
+            text: { placeholder: localize("ui.common.cancel") },
+          },
+        },
+      ] as HaFormSchema[],
+      computeLabel: (schema) =>
         localize(
           `ui.panel.lovelace.editor.action-editor.confirmation.${schema.name}` as any
         ),
-      computeHelper: (schema, localize) => {
-        const key = `ui.panel.lovelace.editor.action-editor.confirmation.${schema.name}_placeholder`;
-        const translated = localize(key as any);
-        return translated !== key ? translated : undefined;
-      },
     };
   }
 
