@@ -250,6 +250,7 @@
         "browse_media": "Browse media",
         "turn_on": "Turn on",
         "turn_off": "Turn off",
+        "power": "Power",
         "media_play": "Play",
         "media_play_pause": "Play/pause",
         "media_pause": "Pause",
@@ -10141,7 +10142,10 @@
               },
               "media-player-playback": {
                 "label": "Media player playback controls",
-                "controls": "Controls"
+                "customize": "Customize controls",
+                "controls": "Controls",
+                "hide_disabled_controls": "Hide disabled controls",
+                "hide_disabled_controls_helper": "Hide controls that don't apply to the current state instead of showing them disabled"
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode",
