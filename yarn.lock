@@ -13198,8 +13198,8 @@ __metadata:
 
 "tinykeys@patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch":
   version: 4.0.0
-  resolution: "tinykeys@patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch::version=4.0.0&hash=1f63e4"
-  checksum: 10/20e2fba106adfe0b4392fa96aa7086aa3b78b71802930e1b9e2dfa429f268675d26f75c58cdb13396a709d06e7413376ce2734f7e4d531455931cfb945ee76eb
+  resolution: "tinykeys@patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch::version=4.0.0&hash=267e16"
+  checksum: 10/f1ca5d1eef7fc628ba55c53da218869db0d6efc6ba28ebbc4974476ff6f2a29ec34cd584008eabc6f03453cfcd4c7fc59b51d8fbca355fd30a8e784eb3c9bc8d
   languageName: node
   linkType: hard
 
