@@ -107,15 +107,28 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     let parts;
-    if (this._config.attribute) {
-      parts = this.hass.formatEntityAttributeValueToParts(
-        stateObj,
-        this._config.attribute
-      );
+    let valueToDisplay: string;
+    let unit = "";
+    const hasCustomUnit = this._config.unit;
+    if (hasCustomUnit) {
+      if (this._config.attribute) {
+        parts = this.hass.formatEntityAttributeValueToParts(
+          stateObj,
+          this._config.attribute
+        );
+      } else {
+        parts = this.hass.formatEntityStateToParts(stateObj);
+      }
+      valueToDisplay = parts
+        .filter((part) => part.type === "value")
+        .map((part) => part.value)
+        .join("");
+      unit = computeEntityUnitDisplay(this.hass, stateObj, this._config) ?? "";
     } else {
-      parts = this.hass.formatEntityStateToParts(stateObj);
+      valueToDisplay = this._config.attribute
+        ? this.hass.formatEntityAttributeValue(stateObj, this._config.attribute)
+        : this.hass.formatEntityState(stateObj);
     }
-    const valueToDisplay = parts.find((part) => part.type === "value")?.value;
     const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
@@ -134,8 +147,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
-    const unit =
-      computeEntityUnitDisplay(this.hass, stateObj, this._config) ?? "";
 
     return html`
       <ha-card
