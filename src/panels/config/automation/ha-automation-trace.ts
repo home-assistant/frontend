@@ -68,7 +68,7 @@ export class HaAutomationTrace extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityRegistry!: EntityRegistryEntry[];
+  _entityRegistry?: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -371,8 +371,9 @@ export class HaAutomationTrace extends LitElement {
 
   private _setRelatedContext() {
     const areaId = this._entityId
-      ? this._entityRegistry.find((entry) => entry.entity_id === this._entityId)
-          ?.area_id
+      ? this._entityRegistry?.find(
+          (entry) => entry.entity_id === this._entityId
+        )?.area_id
       : undefined;
     fireEvent(
       this,
