@@ -8,6 +8,7 @@ You are an assistant helping with development of the Home Assistant frontend. Th
 
 - [Quick Reference](#quick-reference)
 - [Core Architecture](#core-architecture)
+- [State Access: Contexts Instead of `hass`](#state-access-contexts-instead-of-hass)
 - [Development Standards](#development-standards)
 - [Component Library](#component-library)
 - [Common Patterns](#common-patterns)
@@ -51,6 +52,57 @@ The Home Assistant frontend is a modern web application that:
 - Is written entirely in TypeScript with strict type checking
 - Communicates with the backend via WebSocket API
 - Provides comprehensive theming and internationalization
+
+## State Access: Contexts Instead of `hass`
+
+Every component used to take the whole `hass: HomeAssistant` object — a god-object that re-renders on any unrelated `hass` change, forces tests to mock everything, and hides what a component actually reads. We're moving leaf components to **fine-grained [Lit context](https://lit.dev/docs/data/context/)**: consume only the slice you need and re-render only when it changes.
+
+For new code, consume the matching context instead of adding a `hass` property. `hass` stays for container components that own it and feed the providers; the canonical migration is [`hui-button-card.ts`](src/panels/lovelace/cards/hui-button-card.ts). Infrastructure: contexts in [`src/data/context/index.ts`](src/data/context/index.ts), the `consume…` helpers in [`src/common/decorators/consume-context-entry.ts`](src/common/decorators/consume-context-entry.ts), and `@transform` in [`src/common/decorators/transform.ts`](src/common/decorators/transform.ts). Providers are wired automatically by `contextMixin` on `HassBaseEl` — you only consume.
+
+### Contexts
+
+Consume the narrowest context that covers your reads:
+
+| Context                                                                 | Replaces                                                                                  |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `statesContext`                                                         | `hass.states`                                                                             |
+| `entitiesContext` / `devicesContext` / `areasContext` / `floorsContext` | `hass.entities` / `.devices` / `.areas` / `.floors` (or `registriesContext` for all four) |
+| `servicesContext`                                                       | `hass.services`                                                                           |
+| `internationalizationContext`                                           | `hass.localize`, `hass.locale`, `hass.language`                                           |
+| `formattersContext`                                                     | `hass.formatEntityName`, `hass.formatEntityState`, `hass.formatEntityAttributeName`, …    |
+| `configContext`                                                         | `hass.config`, `hass.user`, `hass.auth`, `hass.userData`                                  |
+| `connectionContext`                                                     | `hass.connection`, `hass.connected`, `hass.hassUrl`                                       |
+| `apiContext`                                                            | `hass.callService`, `hass.callApi`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth`    |
+| `uiContext`                                                             | `hass.themes`, `hass.selectedTheme`, `hass.panels`, `hass.dockedSidebar`, …               |
+| `narrowViewportContext`                                                 | narrow-layout boolean                                                                     |
+
+Lazy contexts (subscribe on first consumer, tear down after the last): `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, `manifestsContext`. The single-field contexts (`localizeContext`, `themesContext`, `userContext`, …) are **deprecated** — use the grouped ones above.
+
+### Consuming
+
+Use the `consume…` helpers for entity-scoped and `localize` reads. `entityIdPath` is resolved against `this`, so these watch `this._config.entity`:
+
+```ts
+@state() @consumeEntityState({ entityIdPath: ["_config", "entity"] })
+private _stateObj?: HassEntity; // consumeEntityStates(...) for a record of several
+
+@state() @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
+private _entity?: EntityRegistryDisplayEntry;
+
+@state() @consumeLocalize()
+private _localize!: LocalizeFunc;
+```
+
+For any other single field, pair `@consume` with `@transform`:
+
+```ts
+@state()
+@consume({ context: uiContext, subscribe: true })
+@transform<HomeAssistantUI, Themes>({ transformer: ({ themes }) => themes })
+private _themes!: Themes;
+```
+
+`@transform`'s `watch` option re-runs the transformer when a host prop changes — needed when an entity id is computed, since `consumeEntityState` only watches the first path segment. To consume a whole group untransformed, drop `@transform` and type it `ContextType<typeof statesContext>`.
 
 ## Development Standards
 
@@ -136,6 +188,7 @@ export class HaMyComponent extends LitElement {
 ### Data Management
 
 - **Use WebSocket API**: All backend communication via home-assistant-js-websocket
+- **Prefer contexts over `hass`**: For state reads, consume the relevant Lit context instead of taking the whole `hass` object — see [State Access: Contexts Instead of `hass`](#state-access-contexts-instead-of-hass)
 - **Cache appropriately**: Use collections and caching for frequently accessed data
 - **Handle errors gracefully**: All API calls should have error handling
 - **Update real-time**: Subscribe to state changes for live updates
