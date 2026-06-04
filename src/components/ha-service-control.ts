@@ -56,6 +56,20 @@ const showOptionalToggle = (field) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
+// Selector types that render a picker (including their multiple/plural
+// variants). These benefit from the full-width narrow settings-row layout.
+const PICKER_SELECTOR_TYPES = new Set([
+  "area",
+  "device",
+  "entity",
+  "floor",
+  "label",
+  "target",
+]);
+
+const isPickerSelector = (selector?: Selector): boolean =>
+  !!selector && PICKER_SELECTOR_TYPES.has(Object.keys(selector)[0]);
+
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
   selector?: Selector;
@@ -475,6 +489,14 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
+    const targetSelector =
+      serviceData && "target" in serviceData
+        ? this._targetSelector(
+            serviceData.target as TargetSelector,
+            this._value?.target
+          )
+        : undefined;
+
     return html`${this.hidePicker
       ? nothing
       : html`<ha-service-picker
@@ -512,16 +534,15 @@ export class HaServiceControl extends LitElement {
           </div>
         `}
     ${serviceData && "target" in serviceData
-      ? html`<ha-settings-row .narrow=${this.narrow}>
+      ? html`<ha-settings-row
+          .narrow=${this.narrow || isPickerSelector(targetSelector)}
+        >
           <span slot="heading"
             >${this.hass.localize("ui.components.service-control.target")}</span
           >
           <ha-selector
             .hass=${this.hass}
-            .selector=${this._targetSelector(
-              serviceData.target as TargetSelector,
-              this._value?.target
-            )}
+            .selector=${targetSelector}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}
             .value=${this._value?.target}
@@ -664,7 +685,9 @@ export class HaServiceControl extends LitElement {
         : undefined;
 
     return dataField.selector
-      ? html`<ha-settings-row .narrow=${this.narrow}>
+      ? html`<ha-settings-row
+          .narrow=${this.narrow || isPickerSelector(selector)}
+        >
           ${!showOptional
             ? hasOptional
               ? html`<div slot="prefix" class="checkbox-spacer"></div>`
