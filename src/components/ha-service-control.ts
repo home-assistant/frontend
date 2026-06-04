@@ -969,10 +969,10 @@ export class HaServiceControl extends LitElement {
 
   static styles = css`
     ha-settings-row {
-      padding: var(--service-control-padding, 0 16px);
+      padding: var(--service-control-padding, 0 var(--ha-space-4));
     }
     ha-settings-row[narrow] {
-      padding-bottom: 8px;
+      padding-bottom: var(--ha-space-2);
     }
     ha-settings-row {
       --settings-row-content-width: 100%;
@@ -986,20 +986,20 @@ export class HaServiceControl extends LitElement {
     ha-entity-picker,
     ha-yaml-editor {
       display: block;
-      margin: var(--service-control-padding, 0 16px);
+      margin: var(--service-control-padding, 0 var(--ha-space-4));
     }
     ha-yaml-editor {
-      padding: 16px 0;
+      padding: var(--ha-space-4) 0;
     }
     p {
-      margin: var(--service-control-padding, 0 16px);
-      padding: 16px 0;
+      margin: var(--service-control-padding, 0 var(--ha-space-4));
+      padding: var(--ha-space-4) 0;
     }
     :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {
-      width: 32px;
+      width: var(--ha-space-8);
     }
     .clickable {
       cursor: pointer;
@@ -1020,7 +1020,7 @@ export class HaServiceControl extends LitElement {
     }
     ha-expansion-panel {
       --ha-card-border-radius: var(--ha-border-radius-square);
-      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-summary-padding: 0 var(--ha-space-4);
       --expansion-panel-content-padding: 0;
     }
   `;
