@@ -182,7 +182,6 @@ class StepFlowCreateEntry extends LitElement {
                           .device=${device.id}
                         ></ha-input>
                         <ha-area-picker
-                          .hass=${this.hass}
                           .device=${device.id}
                           .value=${this._deviceUpdate[device.id]?.area ??
                           device.area_id ??
