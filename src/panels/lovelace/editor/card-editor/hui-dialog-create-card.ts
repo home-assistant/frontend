@@ -42,6 +42,12 @@ export class HuiCreateDialogCard
 
   @state() private _narrow = false;
 
+  private _createCardOrderSelectCard;
+
+  private _resetCurrTab() {
+    this._currTab = this._createCardOrderSelectCard ? "card" : "entity";
+  }
+
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
 
@@ -70,13 +76,21 @@ export class HuiCreateDialogCard
   private _dialogClosed(): void {
     this._open = false;
     this._params = undefined;
-    this._currTab = "entity";
+    this._resetCurrTab();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
     if (!this._params) {
       return nothing;
+    }
+    if (
+      this._createCardOrderSelectCard !==
+      this.hass.userData?.createCardOrderSelectCard
+    ) {
+      this._createCardOrderSelectCard =
+        this.hass.userData?.createCardOrderSelectCard;
+      this._resetCurrTab();
     }
 
     const title = this._containerConfig.title
