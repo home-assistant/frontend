@@ -56,9 +56,8 @@ const showOptionalToggle = (field) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
-// Selector types that render a picker (including their multiple/plural
-// variants). These benefit from the full-width narrow settings-row layout.
-const PICKER_SELECTOR_TYPES = new Set([
+const FULL_WIDTH_SELECTOR_TYPES = new Set([
+  "action",
   "area",
   "device",
   "entity",
@@ -67,8 +66,11 @@ const PICKER_SELECTOR_TYPES = new Set([
   "target",
 ]);
 
-const isPickerSelector = (selector?: Selector): boolean =>
-  !!selector && PICKER_SELECTOR_TYPES.has(Object.keys(selector)[0]);
+const isFullWidthSelector = (selector?: Selector): boolean =>
+  !!selector &&
+  Object.keys(selector).some((selectorType) =>
+    FULL_WIDTH_SELECTOR_TYPES.has(selectorType)
+  );
 
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
@@ -535,7 +537,7 @@ export class HaServiceControl extends LitElement {
         `}
     ${serviceData && "target" in serviceData
       ? html`<ha-settings-row
-          .narrow=${this.narrow || isPickerSelector(targetSelector)}
+          .narrow=${this.narrow || isFullWidthSelector(targetSelector)}
         >
           <span slot="heading"
             >${this.hass.localize("ui.components.service-control.target")}</span
@@ -686,7 +688,7 @@ export class HaServiceControl extends LitElement {
 
     return dataField.selector
       ? html`<ha-settings-row
-          .narrow=${this.narrow || isPickerSelector(selector)}
+          .narrow=${this.narrow || isFullWidthSelector(selector)}
         >
           ${!showOptional
             ? hasOptional
