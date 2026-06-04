@@ -4,6 +4,7 @@ import { getEnergyDataCollection } from "../../../data/energy";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import { isEnergyCardHidden } from "./energy-cards";
@@ -11,6 +12,8 @@ import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("water-view-strategy")
 export class WaterViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     _config: EnergyViewStrategyConfig,
     hass: HomeAssistant

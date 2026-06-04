@@ -30,6 +30,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -230,11 +231,28 @@ export class HaCardConditionEditor extends LitElement {
     return html`
       <div class="container">
         <ha-expansion-panel left-chevron>
-          <ha-svg-icon
+          <div
+            id="condition-icon"
+            class="icon-badge-wrapper"
             slot="leading-icon"
-            class="condition-icon"
-            .path=${ICON_CONDITION[condition.condition]}
-          ></ha-svg-icon>
+          >
+            <ha-svg-icon
+              .path=${ICON_CONDITION[condition.condition]}
+            ></ha-svg-icon>
+            ${hideLiveTest
+              ? nothing
+              : html`<ha-automation-row-live-test
+                  .state=${this._liveTestResult.state}
+                  .label=${this.hass.localize(
+                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
+                  )}
+                ></ha-automation-row-live-test>`}
+          </div>
+          ${!hideLiveTest && this._liveTestResult.message
+            ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
+                >${this._liveTestResult.message}</ha-tooltip
+              >`
+            : nothing}
           <h3 slot="header">
             ${this.hass.localize(
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
@@ -255,18 +273,6 @@ export class HaCardConditionEditor extends LitElement {
                   "ui.panel.lovelace.editor.condition-editor.testing_error"
                 )}
           </ha-automation-row-event-chip>
-          ${hideLiveTest
-            ? nothing
-            : html`
-                <ha-automation-row-live-test
-                  slot="icons"
-                  .state=${this._liveTestResult.state}
-                  .label=${this.hass.localize(
-                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
-                  )}
-                  .message=${this._liveTestResult.message}
-                ></ha-automation-row-live-test>
-              `}
           <ha-dropdown
             slot="icons"
             @wa-select=${this._handleAction}
@@ -479,17 +485,15 @@ export class HaCardConditionEditor extends LitElement {
         --expansion-panel-summary-padding: 0 0 0 8px;
         --expansion-panel-content-padding: 0;
       }
-      .condition-icon {
+      .icon-badge-wrapper {
         display: none;
       }
       @media (min-width: 870px) {
-        .condition-icon {
-          display: inline-block;
+        .icon-badge-wrapper {
+          display: inline-flex;
+          position: relative;
           color: var(--secondary-text-color);
           opacity: 0.9;
-          margin-right: 8px;
-          margin-inline-end: 8px;
-          margin-inline-start: initial;
         }
       }
       h3 {

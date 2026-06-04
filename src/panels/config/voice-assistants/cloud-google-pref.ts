@@ -227,7 +227,7 @@ export class CloudGooglePref extends LitElement {
           ? html`<div class="card-actions">
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 href="/config/voice-assistants/expose?assistants=cloud.google_assistant&historyBack"
               >
                 ${manualConfig

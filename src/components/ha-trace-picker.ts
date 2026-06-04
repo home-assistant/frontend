@@ -43,7 +43,7 @@ class HaTracePicker extends LitElement {
         slot="field"
         appearance="filled"
         variant="neutral"
-        size="small"
+        size="s"
         @click=${this._openPicker}
       >
         ${this._renderTracePickerValue(this.value!)}

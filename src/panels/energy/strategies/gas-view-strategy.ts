@@ -7,9 +7,12 @@ import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import { isEnergyCardHidden } from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     _config: EnergyViewStrategyConfig,
     hass: HomeAssistant

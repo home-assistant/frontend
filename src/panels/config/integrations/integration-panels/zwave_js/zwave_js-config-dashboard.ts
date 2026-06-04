@@ -170,7 +170,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         </div>
         <ha-button
           slot="fab"
-          size="large"
+          size="l"
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
@@ -482,7 +482,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._downloadBackup}
                     >
                       <ha-svg-icon
@@ -508,7 +508,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._restoreButtonClick}
                     >
                       ${this.hass.localize(
@@ -537,7 +537,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._openConfigFlow}
                     >
                       ${this.hass.localize(
@@ -978,7 +978,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           gap: var(--ha-space-4);
         }
 
-        ha-button[size="small"] ha-svg-icon {
+        ha-button[size="s"] ha-svg-icon {
           --mdc-icon-size: 16px;
         }
 

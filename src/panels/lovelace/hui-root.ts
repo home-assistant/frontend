@@ -203,7 +203,7 @@ class HUIRoot extends LitElement {
           </ha-tooltip>
           <ha-button
             appearance="filled"
-            size="small"
+            size="s"
             class="exit-edit-mode"
             @click=${this._editModeDisable}
           >
@@ -488,7 +488,6 @@ class HUIRoot extends LitElement {
             ${this._editMode
               ? html`
                   <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_view.move_left"
                     )}
@@ -572,7 +571,6 @@ class HUIRoot extends LitElement {
                     ${isSubview || this.backButton
                       ? html`
                           <ha-icon-button-arrow-prev
-                            .hass=${this.hass}
                             slot="navigationIcon"
                             @click=${this._goBack}
                           ></ha-icon-button-arrow-prev>

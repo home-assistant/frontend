@@ -133,6 +133,7 @@ export class HuiCreateDialogCard
             this._currTab === "entity"
               ? html`
                   <hui-suggestion-picker
+                    ?autofocus=${!this._narrow}
                     .hass=${this.hass}
                     .prioritizedCardTypes=${this._params.suggestedCards}
                     @suggestion-picked=${this._handleSuggestionPicked}

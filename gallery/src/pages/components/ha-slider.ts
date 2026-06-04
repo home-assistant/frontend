@@ -29,7 +29,7 @@ export class DemoHaSlider extends LitElement {
                 ></ha-slider>
                 <span>Small</span>
                 <ha-slider
-                  size="small"
+                  size="s"
                   min="0"
                   max="8"
                   value="4"
@@ -37,7 +37,7 @@ export class DemoHaSlider extends LitElement {
                 ></ha-slider>
                 <span>Medium</span>
                 <ha-slider
-                  size="medium"
+                  size="m"
                   min="0"
                   max="8"
                   value="4"

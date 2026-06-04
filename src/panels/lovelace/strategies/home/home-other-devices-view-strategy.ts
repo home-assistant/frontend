@@ -15,6 +15,7 @@ import type {
   EntitiesCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
+import type { LovelaceStrategyDependency } from "../types";
 import { OTHER_DEVICES_FILTERS } from "./helpers/other-devices-filters";
 
 export interface HomeOtherDevicesViewStrategyConfig {
@@ -24,6 +25,13 @@ export interface HomeOtherDevicesViewStrategyConfig {
 
 @customElement("home-other-devices-view-strategy")
 export class HomeOtherDevicesViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "floors",
+  ];
+
   static async generate(
     config: HomeOtherDevicesViewStrategyConfig,
     hass: HomeAssistant

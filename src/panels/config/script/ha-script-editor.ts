@@ -469,7 +469,7 @@ export class HaScriptEditor extends SubscribeMixin(
                   ></ha-yaml-editor>
                   <ha-button
                     slot="fab"
-                    size="large"
+                    size="l"
                     class=${!this.readOnly && this.dirty ? "dirty" : ""}
                     .disabled=${this.saving}
                     @click=${this._handleSaveScript}

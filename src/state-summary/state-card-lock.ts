@@ -31,7 +31,7 @@ class StateCardLock extends LitElement {
         ${!supportsOpen
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._callService}
               data-service="open"
               >${this.hass.localize("ui.card.lock.open")}</ha-button
@@ -40,7 +40,7 @@ class StateCardLock extends LitElement {
         ${isLocked
           ? html` <ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._callService}
               data-service="unlock"
               >${this.hass.localize("ui.card.lock.unlock")}</ha-button
@@ -49,7 +49,7 @@ class StateCardLock extends LitElement {
         ${!isLocked
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._callService}
               data-service="lock"
               >${this.hass.localize("ui.card.lock.lock")}</ha-button

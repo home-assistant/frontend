@@ -117,7 +117,7 @@ export class HaVoiceCommandDialog extends LitElement {
                 slot="trigger"
                 appearance="plain"
                 variant="neutral"
-                size="small"
+                size="s"
                 .loading=${!this._pipelines}
               >
                 ${this._pipeline?.name}

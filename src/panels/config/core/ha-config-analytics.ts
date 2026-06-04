@@ -123,7 +123,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
             </div>
             <div class="card-actions">
               <ha-button
-                size="small"
+                size="s"
                 appearance="plain"
                 @click=${this._downloadDeviceInfo}
               >

@@ -15,7 +15,7 @@ import "./ha-svg-icon";
  *
  * @attr {ToggleButton[]} buttons - the button config
  * @attr {string} active - The value of the currently active button.
- * @attr {("small"|"medium")} size - The size of the buttons in the group.
+ * @attr {("s"|"m")} size - The size of the buttons in the group.
  * @attr {("brand"|"neutral"|"success"|"warning"|"danger")} variant - The variant of the buttons in the group.
  *
  * @fires value-changed - Dispatched when the active button changes.
@@ -26,7 +26,7 @@ export class HaButtonToggleGroup extends LitElement {
 
   @property() public active?: string;
 
-  @property({ reflect: true }) size: "small" | "medium" = "medium";
+  @property({ reflect: true }) size: "s" | "m" = "m";
 
   @property({ type: Boolean, reflect: true, attribute: "no-wrap" })
   public nowrap = false;

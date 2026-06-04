@@ -13,9 +13,12 @@ import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
 } from "../../lovelace/strategies/helpers/view-columns-conditions";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
 @customElement("energy-view-strategy")
 export class EnergyViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     _config: EnergyViewStrategyConfig,
     hass: HomeAssistant

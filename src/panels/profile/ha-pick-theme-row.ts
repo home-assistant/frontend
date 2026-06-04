@@ -152,7 +152,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
                     ? html` <ha-button
                         appearance="plain"
-                        size="small"
+                        size="s"
                         @click=${this._resetColors}
                       >
                         ${this.hass.localize("ui.panel.profile.themes.reset")}
@@ -175,7 +175,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
               </span>
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 .disabled=${this._migrating}
                 @click=${this._migrateThemePreferences}
               >

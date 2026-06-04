@@ -65,7 +65,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
                         @click=${this._sendLovelace}
                         class=${classMap({ inactive: !active })}
                         appearance="plain"
-                        size="small"
+                        size="s"
                         .disabled=${!this._castManager.status}
                       >
                         SHOW

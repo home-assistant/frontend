@@ -161,7 +161,7 @@ class HaConfigBackupDetails extends LitElement {
                                 slot="end"
                                 rel="noreferrer noopener"
                                 appearance="plain"
-                                size="small"
+                                size="s"
                               >
                                 ${this.hass.localize(
                                   "ui.panel.config.backup.location.encryption.location_encrypted_cloud_learn_more"

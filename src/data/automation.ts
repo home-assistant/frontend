@@ -485,6 +485,17 @@ export const migrateAutomationTrigger = (
     }
     delete trigger.platform;
   }
+
+  if ("options" in trigger) {
+    if (trigger.options && "behavior" in trigger.options) {
+      if (trigger.options.behavior === "any") {
+        trigger.options.behavior = "each";
+      } else if (trigger.options.behavior === "last") {
+        trigger.options.behavior = "all";
+      }
+    }
+  }
+
   return trigger;
 };
 

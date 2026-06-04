@@ -130,7 +130,7 @@ class HaInputMulti extends LitElement {
       </ha-sortable>
       <div class="layout horizontal">
         <ha-button
-          size="small"
+          size="s"
           appearance="filled"
           @click=${this._addItem}
           .disabled=${this.disabled ||

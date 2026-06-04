@@ -53,7 +53,7 @@ class HaLawnMowerActionButton extends LitElement {
           appearance="plain"
           @click=${this.callService}
           .service=${action.service}
-          size="small"
+          size="s"
         >
           ${this.hass.localize(`ui.card.lawn_mower.actions.${action.action}`)}
         </ha-button>

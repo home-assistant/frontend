@@ -53,6 +53,11 @@ export const rowStyles = css`
     position: absolute;
   }
 
+  .icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
   .note-indicator {
     color: var(--ha-color-on-neutral-normal);
   }

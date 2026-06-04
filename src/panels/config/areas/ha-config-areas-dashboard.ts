@@ -318,7 +318,7 @@ export class HaConfigAreasDashboard extends LitElement {
             : nothing}
         </div>
         <ha-dropdown slot="fab" @wa-select=${this._handleCreateAction}>
-          <ha-button slot="trigger" id="fab" size="large">
+          <ha-button slot="trigger" id="fab" size="l">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.common.add")}
           </ha-button>

@@ -139,6 +139,8 @@ export class HassTabsSubpage extends LitElement {
   );
 
   public willUpdate(changedProperties: PropertyValues<this>) {
+    this.toggleAttribute("narrow", this._narrow);
+
     if (changedProperties.has("route")) {
       const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
@@ -173,12 +175,10 @@ export class HassTabsSubpage extends LitElement {
                 ? html`
                     <ha-icon-button-arrow-prev
                       .href=${this.backPath}
-                      .hass=${this.hass}
                     ></ha-icon-button-arrow-prev>
                   `
                 : html`
                     <ha-icon-button-arrow-prev
-                      .hass=${this.hass}
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
                   `}

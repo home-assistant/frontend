@@ -61,7 +61,7 @@ export class HaDurationInput extends LitElement {
         ${this.allowNegative
           ? html`
               <ha-button-toggle-group
-                size="small"
+                size="s"
                 .buttons=${[
                   { label: "+", iconPath: mdiPlusThick, value: "+" },
                   { label: "-", iconPath: mdiMinusThick, value: "-" },
