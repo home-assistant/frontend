@@ -40,7 +40,7 @@ script/develop     # Development server
 ```typescript
 import type { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import { showAlertDialog } from "../dialogs/generic/show-alert-dialog";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 ```
 
 ## Core Architecture
@@ -58,7 +58,7 @@ The Home Assistant frontend is a modern web application that:
 
 **Linting and Formatting (Enforced by Tools)**
 
-- ESLint config extends Airbnb, TypeScript strict, Lit, Web Components, Accessibility
+- ESLint config (flat config) extends TypeScript strict, Lit, Web Components, Accessibility (lit-a11y), and import-x
 - Prettier with ES5 trailing commas enforced
 - No console statements (`no-console: "error"`) - use proper logging
 - Import organization: No unused imports, consistent type imports
@@ -160,7 +160,7 @@ try {
   - Defined in `src/resources/theme/core.globals.ts`
   - Common values: `--ha-space-2` (8px), `--ha-space-4` (16px), `--ha-space-8` (32px)
 - **Mobile-first responsive**: Design for mobile, enhance for desktop
-- **Follow Material Design**: Use Material Web Components where appropriate
+- **Prefer `ha-*` components**: Build on the Home Assistant component library (many now wrap Web Awesome components); avoid new use of legacy Material Web Components (`mwc-*`), which are being phased out
 - **Support RTL**: Ensure all layouts work in RTL languages
 
 ```typescript
@@ -267,15 +267,22 @@ fireEvent(this, "show-dialog", {
 
 **Dialog Sizing:**
 
-- Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
+- Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (580px - default), `"large"` (1024px), or `"full"`
 - Custom sizing is NOT recommended - use the standard width presets
 
 **Button Appearance Guidelines:**
 
-- **Primary action buttons**: Default appearance (no appearance attribute) or omit for standard styling
-- **Secondary action buttons**: Use `appearance="plain"` for cancel/dismiss actions
-- **Destructive actions**: Use `appearance="filled"` for delete/remove operations (combined with appropriate semantic styling)
-- **Button sizes**: Use `size="small"` (32px height) or default/medium (40px height)
+`ha-button` (wraps the Web Awesome button — see `src/components/ha-button.ts`) has two independent axes plus size:
+
+- **`variant`** (color): `"brand"` (default), `"neutral"`, `"danger"`, `"warning"`, `"success"`
+- **`appearance`** (fill style): `"accent"`, `"filled"`, `"outlined"`, `"plain"`
+- **`size`**: `"small"` (32px), `"medium"` (40px - default), `"large"` (48px)
+
+Common patterns:
+
+- **Primary action**: `appearance="filled"` for emphasis (or the default appearance for a lighter look)
+- **Secondary action**: `appearance="plain"` for cancel/dismiss actions
+- **Destructive actions**: `variant="danger"` for delete/remove operations (the generic confirmation dialog uses `variant="danger"` for its confirm button — see `src/dialogs/generic/dialog-box.ts`)
 - Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
 
 **Gallery Documentation:**
@@ -308,7 +315,8 @@ fireEvent(this, "show-dialog", {
 ### Alert Component (ha-alert)
 
 - Types: `error`, `warning`, `info`, `success`
-- Properties: `title`, `alert-type`, `dismissable`, `icon`, `action`, `rtl`
+- Properties: `title`, `alert-type`, `dismissable`, `narrow`
+- Slots: `icon` (override the leading icon), `action` (custom action content)
 - Content announced by screen readers when dynamically displayed
 
 ```html
@@ -449,7 +457,7 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 
 ### Common Pitfalls to Avoid
 
-- Don't use `querySelector` - Use refs or component properties
+- Don't manually query the DOM with `querySelector` - use the `@query`/`@queryAll` decorators or component properties
 - Don't manipulate DOM directly - Let Lit handle rendering
 - Don't use global styles - Scope styles to components
 - Don't block the main thread - Use web workers for heavy computation
