@@ -10703,6 +10703,10 @@
           "title": "Display entity IDs in picker",
           "description": "Shows the full entity IDs when selecting entities from a menu list."
         },
+        "create_card_order": {
+          "title": "Create a card by selecting a card",
+          "description": "Prefer creating a card by selecting a card first."
+        },
         "refresh_tokens": {
           "header": "Refresh tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically deleted when you log out. Unused refresh tokens will be automatically deleted after 90 days. The following refresh tokens are currently active for your account.",
