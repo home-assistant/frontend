@@ -5,7 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { MediaPlayerEntity } from "../../../../data/media-player";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type {
   LovelaceCardFeatureContext,
   MediaPlayerSourceCardFeatureConfig,
@@ -74,7 +74,9 @@ export class HuiMediaPlayerSourceCardFeatureEditor
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(
+    ev: ValueChangedEvent<MediaPlayerSourceCardFeatureConfig>
+  ): void {
     const stateObj = this.context?.entity_id
       ? (this.hass!.states[this.context.entity_id] as
           | MediaPlayerEntity
