@@ -276,7 +276,7 @@ fireEvent(this, "show-dialog", {
 
 - **`variant`** (color): `"brand"` (default), `"neutral"`, `"danger"`, `"warning"`, `"success"`
 - **`appearance`** (fill style): `"accent"`, `"filled"`, `"outlined"`, `"plain"`
-- **`size`**: `"small"` (32px), `"medium"` (40px - default), `"large"` (48px)
+- **`size`**: `"s"` (32px), `"m"` (40px - default), `"l"` (48px)
 
 Common patterns:
 
