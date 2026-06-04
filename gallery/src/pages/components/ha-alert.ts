@@ -78,13 +78,13 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action",
     type: "error",
-    actionSlot: html`<ha-button size="small" slot="action">restart</ha-button>`,
+    actionSlot: html`<ha-button size="s" slot="action">restart</ha-button>`,
   },
   {
     title: "Unsaved data",
     description: "You have unsaved data",
     type: "warning",
-    actionSlot: html`<ha-button size="small" slot="action">save</ha-button>`,
+    actionSlot: html`<ha-button size="s" slot="action">save</ha-button>`,
   },
   {
     title: "Slotted icon",

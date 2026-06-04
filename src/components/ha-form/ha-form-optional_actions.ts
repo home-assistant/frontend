@@ -129,7 +129,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
               @wa-select=${this._handleAddAction}
               @closed=${stopPropagation}
             >
-              <ha-button slot="trigger" appearance="filled" size="small">
+              <ha-button slot="trigger" appearance="filled" size="s">
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.localize?.("ui.components.form-optional-actions.add") ||
                 "Add interaction"}

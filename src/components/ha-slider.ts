@@ -5,7 +5,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-slider")
 export class HaSlider extends Slider {
-  @property({ reflect: true }) size: "small" | "medium" = "small";
+  @property({ reflect: true }) size: "s" | "m" = "s";
 
   @property({ type: Boolean, attribute: "with-tooltip" }) withTooltip = true;
 
@@ -110,12 +110,12 @@ export class HaSlider extends Slider {
           );
         }
 
-        :host([size="medium"]) {
+        :host([size="m"]) {
           --thumb-width: 20px;
           --thumb-height: 20px;
         }
 
-        :host([size="small"]) {
+        :host([size="s"]) {
           --thumb-width: 16px;
           --thumb-height: 16px;
         }

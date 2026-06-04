@@ -693,14 +693,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 href=${documentationUrl(this.hass, "/docs/scene/editor/")}
                 target="_blank"
                 rel="noreferrer"
-                size="small"
+                size="s"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
                 <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}
-        <ha-button href="/config/scene/edit/new" size="large" slot="fab">
+        <ha-button href="/config/scene/edit/new" size="l" slot="fab">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.scene.picker.add_scene")}
         </ha-button>

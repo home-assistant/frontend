@@ -32,7 +32,7 @@ class StateCardScript extends LitElement {
         ${stateObj.state === "on"
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._cancelScript}
             >
               ${stateObj.attributes.mode !== "single" &&
@@ -46,7 +46,7 @@ class StateCardScript extends LitElement {
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._runScript}
               .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
             >

@@ -323,7 +323,7 @@ class HaConfigBackupOverview extends LitElement {
 
         <ha-button
           slot="fab"
-          size="large"
+          size="l"
           .loading=${backupInProgress}
           @click=${this._newBackup}
         >

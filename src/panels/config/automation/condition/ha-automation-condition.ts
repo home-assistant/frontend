@@ -294,7 +294,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
               .disabled=${this.disabled}
               @click=${this._addConditionDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(

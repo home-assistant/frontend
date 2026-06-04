@@ -49,7 +49,7 @@ export class DemoHaButton extends LitElement {
                           <ha-button
                             .appearance=${appearance}
                             .variant=${variant}
-                            size="small"
+                            size="s"
                           >
                             ${titleCase(`${variant} ${appearance}`)}
                           </ha-button>
@@ -100,7 +100,7 @@ export class DemoHaButton extends LitElement {
                           <ha-button
                             .variant=${variant}
                             .appearance=${appearance}
-                            size="small"
+                            size="s"
                             disabled
                           >
                             ${titleCase(`${appearance}`)}

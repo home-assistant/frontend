@@ -308,7 +308,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         ${this._mode === "yaml" ? this._renderYamlMode() : this._renderUiMode()}
         <ha-button
           slot="fab"
-          size="large"
+          size="l"
           .disabled=${this._saving}
           @click=${this._saveScene}
           class=${classMap({
@@ -374,7 +374,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                   ></ha-svg-icon>
                 </span>
                 <ha-button
-                  size="small"
+                  size="s"
                   slot="action"
                   @click=${this._toggleLiveMode}
                 >

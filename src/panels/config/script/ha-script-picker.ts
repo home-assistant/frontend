@@ -676,14 +676,14 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 href=${documentationUrl(this.hass, "/docs/script/editor/")}
                 target="_blank"
                 rel="noreferrer"
-                size="small"
+                size="s"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
                 <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}
-        <ha-button slot="fab" size="large" @click=${this._createNew}>
+        <ha-button slot="fab" size="l" @click=${this._createNew}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.script.picker.add_script")}
         </ha-button>

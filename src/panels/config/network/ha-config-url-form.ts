@@ -170,7 +170,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                     "ui.panel.config.url.external_get_ha_cloud"
                   )}
                   <ha-button
-                    size="small"
+                    size="s"
                     href="/config/cloud/register"
                     slot="action"
                   >
@@ -201,7 +201,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                           "ui.panel.config.url.ha_cloud_remote_not_enabled"
                         )}
                         <ha-button
-                          size="small"
+                          size="s"
                           appearance="plain"
                           href="/config/cloud"
                           slot="action"

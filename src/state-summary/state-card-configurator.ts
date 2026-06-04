@@ -24,7 +24,7 @@ class StateCardConfigurator extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         ${this.inDialog
-          ? html`<ha-button appearance="plain" size="small"
+          ? html`<ha-button appearance="plain" size="s"
               >${this.hass.formatEntityState(this.stateObj)}</ha-button
             >`
           : nothing}

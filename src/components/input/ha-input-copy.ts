@@ -99,7 +99,7 @@ export class HaInputCopy extends LitElement {
               : nothing}
           </ha-input>
         </div>
-        <ha-button @click=${this._copy} appearance="plain" size="small">
+        <ha-button @click=${this._copy} appearance="plain" size="s">
           <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
           ${this.label || this._i18n.localize("ui.common.copy")}
         </ha-button>

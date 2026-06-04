@@ -214,7 +214,7 @@ export class HaMoreInfoViewVacuumCleanAreas extends LitElement {
               ? html`
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     @click=${this._openSegmentMapping}
                   >
                     <ha-svg-icon

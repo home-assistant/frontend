@@ -117,7 +117,7 @@ export class HaEntityNamePicker extends LitElement {
         <div class="header">
           ${this.label ? html`<label>${this.label}</label>` : nothing}
           <ha-button-toggle-group
-            size="small"
+            size="s"
             .buttons=${modeButtons}
             .active=${this._mode}
             .disabled=${this.disabled}

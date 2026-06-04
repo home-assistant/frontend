@@ -203,7 +203,7 @@ class HUIRoot extends LitElement {
           </ha-tooltip>
           <ha-button
             appearance="filled"
-            size="small"
+            size="s"
             class="exit-edit-mode"
             @click=${this._editModeDisable}
           >

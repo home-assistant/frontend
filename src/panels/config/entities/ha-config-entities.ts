@@ -1054,7 +1054,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         ${includeAddDeviceFab
-          ? html`<ha-button size="large" @click=${this._addDevice} slot="fab">
+          ? html`<ha-button size="l" @click=${this._addDevice} slot="fab">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.devices.add_device")}
             </ha-button>`

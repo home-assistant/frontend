@@ -179,7 +179,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.add"

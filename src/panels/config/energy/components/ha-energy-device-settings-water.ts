@@ -137,11 +137,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
               `
             : ""}
           <div class="row">
-            <ha-button
-              @click=${this._addDevice}
-              appearance="filled"
-              size="small"
-            >
+            <ha-button @click=${this._addDevice} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption_water.add_device"

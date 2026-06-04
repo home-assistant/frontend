@@ -122,7 +122,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           </div>
         </ha-sortable>
         <ha-dropdown @wa-select=${this._addElement}>
-          <ha-button size="small" slot="trigger" appearance="filled">
+          <ha-button size="s" slot="trigger" appearance="filled">
             <ha-svg-icon slot="start" .path=${mdiPlaylistPlus}></ha-svg-icon>
             ${this.hass.localize(
               "ui.panel.lovelace.editor.card.picture-elements.new_element"

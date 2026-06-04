@@ -117,7 +117,7 @@ export class HaAutomationTrace extends LitElement {
           ? html`
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 class="trace-link"
                 @click=${this._navigateToAutomation}
                 slot="toolbar-icon"
