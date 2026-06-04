@@ -1,0 +1,80 @@
+diff --git a/dist/tinykeys.cjs b/dist/tinykeys.cjs
+index 08c98b6eff3b8fb4b727fe8e6b096951d6ef6347..663989a0f54cc081edef3d649675ceeaabf0bd98 100644
+--- a/dist/tinykeys.cjs
++++ b/dist/tinykeys.cjs
+@@ -61,6 +61,18 @@ function defaultKeybindingsHandlerIgnore(event) {
+ function getModifierState(event, mod) {
+ 	return typeof event.getModifierState === "function" ? event.getModifierState(mod) || ALT_GRAPH_ALIASES.includes(mod) && event.getModifierState("AltGraph") : false;
+ }
++function splitKeybindingPress(press) {
++	let parts = [];
++	let start = 0;
++	for (let index = 0; index < press.length; index++) {
++		if (press[index] === "+" && /[\w\]]/.test(press[index - 1] || "")) {
++			parts.push(press.slice(start, index));
++			start = index + 1;
++		}
++	}
++	parts.push(press.slice(start));
++	return parts;
++}
+ /**
+ * Parses a keybinding string into its parts.
+ *
+@@ -76,10 +88,10 @@ function getModifierState(event, mod) {
+ */
+ function parseKeybinding(str) {
+ 	return str.trim().split(" ").map((press) => {
+-		let parts = press.split(/(?<=\w|\])\+/);
++		let parts = splitKeybindingPress(press);
+ 		let last = parts.pop();
+ 		let regex = last.match(/^\((.+)\)$/);
+-		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "iv") : last;
++		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "i") : last;
+ 		let requiredModifiers = [];
+ 		let optionalModifiers = [];
+ 		for (const part of parts) {
+diff --git a/dist/tinykeys.mjs b/dist/tinykeys.mjs
+index c289972d2728e03d9b272268c38fd3392e8845bf..c32f0233d65eb5cd75b675a4884732027d392564 100644
+--- a/dist/tinykeys.mjs
++++ b/dist/tinykeys.mjs
+@@ -60,6 +60,18 @@ function defaultKeybindingsHandlerIgnore(event) {
+ function getModifierState(event, mod) {
+ 	return typeof event.getModifierState === "function" ? event.getModifierState(mod) || ALT_GRAPH_ALIASES.includes(mod) && event.getModifierState("AltGraph") : false;
+ }
++function splitKeybindingPress(press) {
++	let parts = [];
++	let start = 0;
++	for (let index = 0; index < press.length; index++) {
++		if (press[index] === "+" && /[\w\]]/.test(press[index - 1] || "")) {
++			parts.push(press.slice(start, index));
++			start = index + 1;
++		}
++	}
++	parts.push(press.slice(start));
++	return parts;
++}
+ /**
+ * Parses a keybinding string into its parts.
+ *
+@@ -75,10 +87,10 @@ function getModifierState(event, mod) {
+ */
+ function parseKeybinding(str) {
+ 	return str.trim().split(" ").map((press) => {
+-		let parts = press.split(/(?<=\w|\])\+/);
++		let parts = splitKeybindingPress(press);
+ 		let last = parts.pop();
+ 		let regex = last.match(/^\((.+)\)$/);
+-		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "iv") : last;
++		let key = regex ? new RegExp(`^(?:${regex[1]})$`, "i") : last;
+ 		let requiredModifiers = [];
+ 		let optionalModifiers = [];
+ 		for (const part of parts) {
+diff --git a/dist/tinykeys.umd.js b/dist/tinykeys.umd.js
+index b2a4e157d11fda1505f8ebbaca65eb676e7f0400..fd582f3b958dd982e6b717b160bfd7142c1c2586 100644
+--- a/dist/tinykeys.umd.js
++++ b/dist/tinykeys.umd.js
+@@ -1,2 +1,2 @@
+-(function(e,t){typeof exports==`object`&&typeof module<`u`?t(exports):typeof define==`function`&&define.amd?define([`exports`],t):(e=typeof globalThis<`u`?globalThis:e||self,t(e.tinykeys={}))})(this,function(e){Object.defineProperty(e,Symbol.toStringTag,{value:`Module`});let t=[`Shift`,`Meta`,`Alt`,`Control`],n=typeof navigator==`object`?navigator.platform:``,r=/Mac|iPod|iPhone|iPad/.test(n)?`Meta`:`Control`,i=n===`Win32`?[`Control`,`Alt`]:[`Alt`];function a(e){return!!(e.key&&e.code&&e.getModifierState)}function o(e){let t=e.target;return e.repeat||e.isComposing||t!==e.currentTarget&&t.matches(`[contenteditable],input,select,textarea`)}function s(e,t){return typeof e.getModifierState==`function`?e.getModifierState(t)||i.includes(t)&&e.getModifierState(`AltGraph`):!1}function c(e){return e.trim().split(` `).map(e=>{let t=e.split(/(?<=\w|\])\+/),n=t.pop(),i=n.match(/^\((.+)\)$/),a=i?RegExp(`^(?:${i[1]})$`,`iv`):n,o=[],s=[];for(let e of t){let t=e.match(/^\[(.*)\]$/),n=t?.[1]??e;n=n===`$mod`?r:n,t?s.push(n):o.push(n)}return[o,s,a]})}function l(e,[n,r,a]){let o=n.includes(`AltGraph`);return!((a instanceof RegExp?!(a.test(e.key)||a.test(e.code)):a.toUpperCase()!==e.key.toUpperCase()&&a!==e.code)||n.find(t=>!s(e,t))||t.find(t=>!n.includes(t)&&!r.includes(t)&&a!==t&&s(e,t)&&!(o&&i.includes(t))))}function u(e,t={}){let n=t.timeout??1e3,r=t.ignore??o,i=Object.keys(e).map(t=>[t,c(t),e[t]]),u=new Map,d=null;return e=>{if(!a(e)||r(e))return;let t=[];for(let[n,r,a]of i){let[i,...o]=u.get(n)||r;if(!l(e,i))s(e,e.key)||u.delete(n);else if(o.length>0)u.set(n,o),t.push(n);else if(u.delete(n),t.length)console.warn(`tinykeys: Conflict found, "${n}" did not fire, waiting for:`,t);else{a(e);break}}d&&clearTimeout(d),d=setTimeout(()=>u.clear(),n)}}function d(e,t,n={}){let r=n.event??`keydown`,i=u(t,n);return e.addEventListener(r,i,n.capture),()=>{e.removeEventListener(r,i,n.capture)}}e.createKeybindingsHandler=u,e.defaultKeybindingsHandlerIgnore=o,e.matchKeybindingPress=l,e.parseKeybinding=c,e.tinykeys=d});
++(function(e,t){typeof exports==`object`&&typeof module<`u`?t(exports):typeof define==`function`&&define.amd?define([`exports`],t):(e=typeof globalThis<`u`?globalThis:e||self,t(e.tinykeys={}))})(this,function(e){Object.defineProperty(e,Symbol.toStringTag,{value:`Module`});let t=[`Shift`,`Meta`,`Alt`,`Control`],n=typeof navigator==`object`?navigator.platform:``,r=/Mac|iPod|iPhone|iPad/.test(n)?`Meta`:`Control`,i=n===`Win32`?[`Control`,`Alt`]:[`Alt`];function a(e){return!!(e.key&&e.code&&e.getModifierState)}function o(e){let t=e.target;return e.repeat||e.isComposing||t!==e.currentTarget&&t.matches(`[contenteditable],input,select,textarea`)}function s(e,t){return typeof e.getModifierState==`function`?e.getModifierState(t)||i.includes(t)&&e.getModifierState(`AltGraph`):!1}function c(e){let t=[],n=0;for(let r=0;r<e.length;r++)e[r]===`+`&&/[\w\]]/.test(e[r-1]||``)&&(t.push(e.slice(n,r)),n=r+1);return t.push(e.slice(n)),t}function l(e){return e.trim().split(` `).map(e=>{let t=c(e),n=t.pop(),i=n.match(/^\((.+)\)$/),a=i?RegExp(`^(?:${i[1]})$`,`i`):n,o=[],s=[];for(let e of t){let t=e.match(/^\[(.*)\]$/),n=t?.[1]??e;n=n===`$mod`?r:n,t?s.push(n):o.push(n)}return[o,s,a]})}function u(e,[n,r,a]){let o=n.includes(`AltGraph`);return!((a instanceof RegExp?!(a.test(e.key)||a.test(e.code)):a.toUpperCase()!==e.key.toUpperCase()&&a!==e.code)||n.find(t=>!s(e,t))||t.find(t=>!n.includes(t)&&!r.includes(t)&&a!==t&&s(e,t)&&!(o&&i.includes(t))))}function d(e,t={}){let n=t.timeout??1e3,r=t.ignore??o,i=Object.keys(e).map(t=>[t,l(t),e[t]]),d=new Map,p=null;return e=>{if(!a(e)||r(e))return;let t=[];for(let[n,r,a]of i){let[i,...o]=d.get(n)||r;if(!u(e,i))s(e,e.key)||d.delete(n);else if(o.length>0)d.set(n,o),t.push(n);else if(d.delete(n),t.length)console.warn(`tinykeys: Conflict found, "${n}" did not fire, waiting for:`,t);else{a(e);break}}p&&clearTimeout(p),p=setTimeout(()=>d.clear(),n)}}function p(e,t,n={}){let r=n.event??`keydown`,i=d(t,n);return e.addEventListener(r,i,n.capture),()=>{e.removeEventListener(r,i,n.capture)}}e.createKeybindingsHandler=d,e.defaultKeybindingsHandlerIgnore=o,e.matchKeybindingPress=u,e.parseKeybinding=l,e.tinykeys=p});
+ //# sourceMappingURL=tinykeys.umd.js.map

@@ -114,7 +114,7 @@
     "sortablejs": "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch",
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
-    "tinykeys": "3.1.0",
+    "tinykeys": "patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch",
     "weekstart": "2.0.0",
     "workbox-cacheable-response": "7.4.1",
     "workbox-core": "7.4.1",
