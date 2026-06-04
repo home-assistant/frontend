@@ -37,6 +37,9 @@ export class PowerViewStrategy extends ReactiveElement {
       }
       return false;
     });
+    const hasSolarSources = prefs?.energy_sources.some(
+      (source) => source.type === "solar" && source.stat_rate
+    );
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
@@ -78,6 +81,13 @@ export class PowerViewStrategy extends ReactiveElement {
         type: "power-total",
         collection_key: collectionKey,
       });
+
+      if (hasSolarSources) {
+        badges.push({
+          type: "power-solar",
+          collection_key: collectionKey,
+        });
+      }
 
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
