@@ -80,10 +80,7 @@ export class HuiCreateDialogCard
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected render() {
-    if (!this._params) {
-      return nothing;
-    }
+  protected updated(changedProps) {
     if (
       this._createCardOrderSelectCard !==
       this.hass.userData?.createCardOrderSelectCard
@@ -91,6 +88,12 @@ export class HuiCreateDialogCard
       this._createCardOrderSelectCard =
         this.hass.userData?.createCardOrderSelectCard;
       this._resetCurrTab();
+    }
+  }
+
+  protected render() {
+    if (!this._params) {
+      return nothing;
     }
 
     const title = this._containerConfig.title
