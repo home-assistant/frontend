@@ -1,6 +1,7 @@
+import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
@@ -14,12 +15,15 @@ import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-tooltip";
 import {
+  connectionContext,
+  internationalizationContext,
+} from "../../../../data/context";
+import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
 } from "../../../../data/frontend";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import type {
   EnergyCardCatalogEntry,
@@ -44,7 +48,13 @@ export class DialogEnergyCustomise
   extends LitElement
   implements HassDialog<EnergyCustomiseDialogParams>
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @state() private _params?: EnergyCustomiseDialogParams;
 
@@ -79,12 +89,18 @@ export class DialogEnergyCustomise
 
   private async _loadHidden(): Promise<void> {
     this._error = undefined;
+    // showDialog runs before the dialog is connected to the DOM, so wait for
+    // the first update to ensure the consumed contexts have resolved.
+    await this.updateComplete;
+    if (!this._params) {
+      return;
+    }
     try {
       // The card labels reuse keys from the "energy" translation fragment,
       // which is not guaranteed to be loaded on the config page.
       const [data] = await Promise.all([
-        fetchFrontendSystemData(this.hass.connection, "energy"),
-        this.hass.loadFragmentTranslation("energy"),
+        fetchFrontendSystemData(this._connection.connection, "energy"),
+        this._i18n.loadFragmentTranslation("energy"),
       ]);
       this._hidden = new Set(data?.hidden_cards ?? []);
     } catch (err: any) {
@@ -101,7 +117,7 @@ export class DialogEnergyCustomise
     return html`
       <ha-dialog
         .open=${this._open}
-        .headerTitle=${this.hass.localize(
+        .headerTitle=${this._i18n.localize(
           "ui.panel.config.energy.customise.title"
         )}
         prevent-scrim-close
@@ -122,14 +138,14 @@ export class DialogEnergyCustomise
             @click=${this.closeDialog}
             .disabled=${this._submitting}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._save}
             .disabled=${this._submitting || !this._hidden || !!this._error}
           >
-            ${this.hass.localize("ui.common.save")}
+            ${this._i18n.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -148,7 +164,7 @@ export class DialogEnergyCustomise
         <ha-expansion-panel
           outlined
           expanded
-          .header=${this.hass.localize(group.labelKey)}
+          .header=${this._i18n.localize(group.labelKey)}
         >
           <div class="cards">
             ${cards.map((card) => this._renderCardRow(card))}
@@ -160,7 +176,7 @@ export class DialogEnergyCustomise
 
   private _renderCardRow(card: EnergyCardCatalogEntry) {
     const applicable = card.isApplicable(this._params!.preferences);
-    const label = this.hass.localize(card.labelKey);
+    const label = this._i18n.localize(card.labelKey);
     const rowId = `row-${card.key}`;
     return html`
       <ha-settings-row slim id=${rowId}>
@@ -179,7 +195,7 @@ export class DialogEnergyCustomise
         ? nothing
         : html`
             <ha-tooltip .for=${rowId} placement="top">
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.config.energy.customise.unavailable"
               )}
             </ha-tooltip>
@@ -209,14 +225,14 @@ export class DialogEnergyCustomise
     this._submitting = true;
     try {
       const hidden = Array.from(this._hidden);
-      await saveFrontendSystemData(this.hass.connection, "energy", {
+      await saveFrontendSystemData(this._connection.connection, "energy", {
         hidden_cards: hidden.length ? hidden : undefined,
       });
       this._params?.saveCallback?.();
       this.closeDialog();
     } catch (_err) {
       showToast(this, {
-        message: this.hass.localize(
+        message: this._i18n.localize(
           "ui.panel.config.energy.customise.save_failed"
         ),
         duration: 0,
