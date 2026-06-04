@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { getEntityLocation } from "../../../common/entity/get_entity_location";
 import "../../../components/ha-button";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
@@ -21,8 +22,13 @@ class MoreInfoPerson extends LitElement {
       return nothing;
     }
 
+    const location = getEntityLocation(this.stateObj, this.hass.states);
+    const hasOwnCoordinates =
+      typeof this.stateObj.attributes.latitude === "number" &&
+      typeof this.stateObj.attributes.longitude === "number";
+
     return html`
-      ${this.stateObj.attributes.latitude && this.stateObj.attributes.longitude
+      ${location
         ? html`
             <ha-map
               .hass=${this.hass}
@@ -31,10 +37,7 @@ class MoreInfoPerson extends LitElement {
             ></ha-map>
           `
         : ""}
-      ${!__DEMO__ &&
-      this.hass.user?.is_admin &&
-      this.stateObj.attributes.latitude &&
-      this.stateObj.attributes.longitude
+      ${!__DEMO__ && this.hass.user?.is_admin && hasOwnCoordinates
         ? html`
             <div class="actions">
               <ha-button
