@@ -10144,11 +10144,13 @@
               },
               "media-player-sound-mode": {
                 "label": "Media player sound mode",
-                "sound_modes": "Sound modes"
+                "sound_modes": "Sound modes",
+                "customize": "Customize sound modes"
               },
               "media-player-source": {
                 "label": "Media player source",
-                "sources": "Sources"
+                "sources": "Sources",
+                "customize": "Customize sources"
               },
               "media-player-volume-buttons": {
                 "label": "Media player volume buttons",
