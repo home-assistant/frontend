@@ -5958,6 +5958,7 @@
               "iteration": "Iteration {number}",
               "executed": "Executed: {time}",
               "error": "Error: {error}",
+              "template_errors": "Template errors:",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
               "no_logbook_entries": "No activity found for this step.",
