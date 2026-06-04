@@ -80,7 +80,7 @@ export class HuiCreateDialogCard
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected updated(changedProps) {
+  protected updated(_changedProps) {
     if (
       this._createCardOrderSelectCard !==
       this.hass.userData?.createCardOrderSelectCard
