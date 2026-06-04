@@ -9,7 +9,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
-import { fireEvent } from "../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+  type HASSDomEvent,
+} from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -32,9 +36,11 @@ import {
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
+import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-icon-button";
 import "./ha-markdown";
 import "./ha-selector/ha-selector";
+import type { HaSelector } from "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-service-section-icon";
 import "./ha-settings-row";
@@ -762,14 +768,16 @@ export class HaServiceControl extends LitElement {
     );
   };
 
-  private _toggleCheckbox(ev: Event) {
+  private _toggleCheckbox(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     const checkbox = (
       ev.currentTarget as HTMLElement
     )?.parentElement?.querySelector("ha-checkbox");
     checkbox?.click();
   }
 
-  private _checkboxChanged(ev) {
+  private _checkboxChanged(
+    ev: HASSDomCurrentTargetEvent<HaCheckbox & { key: string }>
+  ) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
     let data;
@@ -892,7 +900,7 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _entityPicked(ev: CustomEvent) {
+  private _entityPicked(ev: HASSDomEvent<{ value: string | undefined }>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (this._value?.data?.entity_id === newValue) {
@@ -913,7 +921,12 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _targetChanged(ev: CustomEvent) {
+  private _targetChanged(
+    ev: HASSDomEvent<{
+      value: HassServiceTarget | undefined;
+      isValid?: boolean;
+    }>
+  ) {
     ev.stopPropagation();
     if (ev.detail.isValid === false) {
       // Don't clear an object selector that returns invalid YAML
@@ -935,13 +948,16 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _serviceDataChanged(ev: CustomEvent) {
+  private _serviceDataChanged(
+    ev: HASSDomEvent<{ value: unknown; isValid?: boolean }> &
+      HASSDomCurrentTargetEvent<HaSelector & { key: string }>
+  ) {
     ev.stopPropagation();
     if (ev.detail.isValid === false) {
       // Don't clear an object selector that returns invalid YAML
       return;
     }
-    const key = (ev.currentTarget as any).key;
+    const key = ev.currentTarget.key;
     const value = ev.detail.value;
     if (
       this._value?.data?.[key] === value ||
@@ -956,7 +972,9 @@ export class HaServiceControl extends LitElement {
     if (
       value === "" ||
       value === undefined ||
-      (typeof value === "object" && !Object.keys(value).length)
+      (value !== null &&
+        typeof value === "object" &&
+        !Object.keys(value).length)
     ) {
       delete data[key];
       delete this._stickySelector[key];
@@ -970,7 +988,12 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _dataChanged(ev: CustomEvent) {
+  private _dataChanged(
+    ev: HASSDomEvent<{
+      value: NonNullable<HaServiceControl["value"]>["data"];
+      isValid?: boolean;
+    }>
+  ) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
       return;
