@@ -64,7 +64,7 @@ export class HaScriptTrace extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityRegistry!: EntityRegistryEntry[];
+  _entityRegistry?: EntityRegistryEntry[];
 
   @state() private _entityId?: string;
 
@@ -311,7 +311,7 @@ export class HaScriptTrace extends LitElement {
     const params = new URLSearchParams(location.search);
     this._loadTraces(params.get("run_id") || undefined);
 
-    this._entityId = this._entityRegistry.find(
+    this._entityId = this._entityRegistry?.find(
       (entry) => entry.unique_id === this.scriptId
     )?.entity_id;
   }
@@ -325,13 +325,27 @@ export class HaScriptTrace extends LitElement {
       this._runId = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
+      this._entityId = undefined;
       if (this.scriptId) {
         this._loadTraces();
-
-        this._entityId = this._entityRegistry.find(
-          (entry) => entry.unique_id === this.scriptId
-        )?.entity_id;
       }
+    }
+
+    if (
+      (changedProps.has("scriptId") || changedProps.has("_entityRegistry")) &&
+      this.scriptId
+    ) {
+      this._entityId = this._entityRegistry?.find(
+        (entry) => entry.unique_id === this.scriptId
+      )?.entity_id;
+    }
+
+    if (
+      changedProps.has("scriptId") ||
+      changedProps.has("_entityId") ||
+      changedProps.has("_entityRegistry")
+    ) {
+      this._setRelatedContext();
     }
 
     if (changedProps.has("_runId") && this._runId) {
@@ -339,6 +353,24 @@ export class HaScriptTrace extends LitElement {
       this._logbookEntries = undefined;
       this._loadTrace();
     }
+  }
+
+  private _setRelatedContext() {
+    const areaId = this._entityId
+      ? this._entityRegistry?.find(
+          (entry) => entry.entity_id === this._entityId
+        )?.area_id
+      : undefined;
+    fireEvent(
+      this,
+      "hass-related-context",
+      areaId
+        ? {
+            itemType: "area",
+            itemId: areaId,
+          }
+        : undefined
+    );
   }
 
   private _pickOlderTrace() {
