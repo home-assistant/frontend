@@ -548,35 +548,24 @@ When creating a pull request, you **must** use the PR template located at `.gith
 
 #### Translation Considerations
 
-- **Add translation keys**: All user-facing text must be translatable
-- **Use placeholders**: Support dynamic content in translations
+All user-facing text must be translatable — see the **Internationalization** section (under Common Patterns) for the `localize` API and placeholder usage. From a copy perspective:
+
 - **Keep context**: Provide enough context for translators
-
-```typescript
-// Good
-this.hass.localize("ui.panel.config.automation.delete_confirm", {
-  name: automation.alias,
-});
-
-// Bad - hardcoded text
-("Are you sure you want to delete this automation?");
-```
+- **Avoid concatenation**: Prefer full localized strings with placeholders over stitching translated fragments together
 
 ### Common Review Issues (From PR Analysis)
+
+Recurring, easy-to-miss problems surfaced in real PR reviews. These complement the standards above rather than repeating them — items already covered earlier (loading states, error handling, mobile layout, theming, import hygiene) are intentionally not duplicated here.
 
 #### User Experience and Accessibility
 
 - **Form validation**: Always provide proper field labels and validation feedback
 - **Form accessibility**: Prevent password managers from incorrectly identifying fields
-- **Loading states**: Show clear progress indicators during async operations
-- **Error handling**: Display meaningful error messages when operations fail
-- **Mobile responsiveness**: Ensure components work well on small screens
 - **Hit targets**: Make clickable areas large enough for touch interaction
-- **Visual feedback**: Provide clear indication of interactive states
+- **Visual feedback**: Provide clear indication of interactive states (hover, active, focus)
 
 #### Dialog and Modal Patterns
 
-- **Dialog width constraints**: Respect minimum and maximum width requirements
 - **Interview progress**: Show clear progress for multi-step operations
 - **State persistence**: Handle dialog state properly during background operations
 - **Cancel behavior**: Ensure cancel/close buttons work consistently
@@ -588,15 +577,12 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 - **Visual hierarchy**: Ensure proper font sizes and spacing ratios
 - **Grid alignment**: Components should align to the design grid system
 - **Badge placement**: Position badges and indicators consistently
-- **Color theming**: Respect theme variables and design system colors
 
 #### Code Quality Issues
 
 - **Null checking**: Always check if entities exist before accessing properties
 - **TypeScript safety**: Handle potentially undefined array/object access
-- **Import organization**: Remove unused imports and use proper type imports
-- **Event handling**: Properly subscribe and unsubscribe from events
-- **Memory leaks**: Clean up subscriptions and event listeners
+- **Event handling and cleanup**: Subscribe/unsubscribe correctly and remove listeners to avoid memory leaks
 
 #### Configuration and Props
 
@@ -607,39 +593,12 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 
 ## Review Guidelines
 
-### Core Requirements Checklist
+Final pre-submission checklist. Linting and formatting are enforced by tooling, so this focuses on what tools can't catch rather than restating every rule above.
 
-- [ ] TypeScript strict mode passes (`yarn lint:types`)
-- [ ] No ESLint errors or warnings (`yarn lint:eslint`)
-- [ ] Prettier formatting applied (`yarn lint:prettier`)
-- [ ] Lit analyzer passes (`yarn lint:lit`)
-- [ ] Component follows Lit best practices
-- [ ] Proper error handling implemented
-- [ ] Loading states handled
-- [ ] Mobile responsive
-- [ ] Theme variables used
-- [ ] Translations added
-- [ ] Accessible to screen readers
-- [ ] Tests added (where applicable)
-- [ ] No console statements (use proper logging)
-- [ ] Unused imports removed
-- [ ] Proper naming conventions
-
-### Text and Copy Checklist
-
-- [ ] Follows terminology guidelines (Delete vs Remove, Create vs Add)
-- [ ] Localization keys added for all user-facing text
-- [ ] Uses "Home Assistant" (never "HA" or "HASS")
-- [ ] Sentence case for ALL text (titles, headings, buttons, labels)
-- [ ] American English spelling
-- [ ] Friendly, informational tone
-- [ ] Avoids abbreviations and jargon
-- [ ] Correct terminology (integration not component)
-
-### Component-Specific Checks
-
-- [ ] ha-alert used correctly for messages
-- [ ] ha-form uses proper schema structure
+- [ ] `yarn lint` passes (TypeScript, ESLint, Prettier, Lit analyzer) and `yarn test` is green
+- [ ] Tests added for new data processing/utilities (where applicable)
+- [ ] All user-facing text is localized and follows the Text and Copy guidelines (sentence case, "Home Assistant" in full, Delete/Remove + Create/Add)
 - [ ] Components handle all states (loading, error, unavailable)
 - [ ] Entity existence checked before property access
-- [ ] Event subscriptions properly cleaned up
+- [ ] Event/subscription listeners cleaned up (no memory leaks)
+- [ ] Accessible to screen readers and keyboard
