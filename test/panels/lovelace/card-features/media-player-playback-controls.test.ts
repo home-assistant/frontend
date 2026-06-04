@@ -75,13 +75,32 @@ const isEnabled = (
 ) => !control(state, action, attributes).disabled;
 
 describe("media player playback default controls", () => {
-  it("renders previous, play and next when idle, pause while playing", () => {
+  it("lead with a power toggle, then previous, play/pause and next", () => {
+    expect(MEDIA_PLAYER_DEFAULT_CONTROLS).toEqual([
+      "power",
+      "media_previous_track",
+      "media_play_pause",
+      "media_next_track",
+    ]);
+  });
+
+  it("renders play when idle, pause while playing", () => {
     expect(
       controlsFor("idle", MEDIA_PLAYER_DEFAULT_CONTROLS).map((b) => b.action)
-    ).toEqual(["media_previous_track", "media_play", "media_next_track"]);
+    ).toEqual([
+      "turn_off",
+      "media_previous_track",
+      "media_play",
+      "media_next_track",
+    ]);
     expect(
       controlsFor("playing", MEDIA_PLAYER_DEFAULT_CONTROLS).map((b) => b.action)
-    ).toEqual(["media_previous_track", "media_pause", "media_next_track"]);
+    ).toEqual([
+      "turn_off",
+      "media_previous_track",
+      "media_pause",
+      "media_next_track",
+    ]);
   });
 
   it("are all usable while playing", () => {
@@ -98,14 +117,35 @@ describe("media player playback default controls", () => {
     expect(isEnabled("idle", "media_play_pause")).toBe(true);
   });
 
-  it("greys out every control when off or unavailable", () => {
-    for (const state of ["off", "unavailable"]) {
-      expect(
-        controlsFor(state, MEDIA_PLAYER_DEFAULT_CONTROLS).every(
-          (b) => b.disabled
-        )
-      ).toBe(true);
-    }
+  it("keeps the power toggle usable when off but greys out everything else", () => {
+    const buttons = controlsFor("off", MEDIA_PLAYER_DEFAULT_CONTROLS);
+    const power = buttons.find((b) => b.action === "turn_on");
+    expect(power?.disabled).toBe(false);
+    expect(buttons.filter((b) => b !== power).every((b) => b.disabled)).toBe(
+      true
+    );
+  });
+
+  it("greys out every control when unavailable", () => {
+    expect(
+      controlsFor("unavailable", MEDIA_PLAYER_DEFAULT_CONTROLS).every(
+        (b) => b.disabled
+      )
+    ).toBe(true);
+  });
+
+  it("uses a power toggle for non-assumed and separate on/off when assumed", () => {
+    const standard = getDefaultMediaPlayerControls(player("playing"));
+    expect(standard).toContain("power");
+    expect(standard).not.toContain("turn_on");
+    expect(standard).not.toContain("turn_off");
+
+    const assumed = getDefaultMediaPlayerControls(
+      player("playing", { assumed_state: true })
+    );
+    expect(assumed).toContain("turn_on");
+    expect(assumed).toContain("turn_off");
+    expect(assumed).not.toContain("power");
   });
 
   it("uses separate play and pause for assumed-state players", () => {
@@ -118,6 +158,39 @@ describe("media player playback default controls", () => {
     expect(assumed).toContain("media_play");
     expect(assumed).toContain("media_pause");
     expect(assumed).not.toContain("media_play_pause");
+  });
+});
+
+describe("media player power toggle", () => {
+  it("turns on when off", () => {
+    const button = control("off", "power");
+    expect(button.action).toBe("turn_on");
+    expect(button.disabled).toBe(false);
+  });
+
+  it("turns off when active", () => {
+    const button = control("playing", "power");
+    expect(button.action).toBe("turn_off");
+    expect(button.disabled).toBe(false);
+  });
+
+  it("is disabled when unavailable", () => {
+    expect(control("unavailable", "power").disabled).toBe(true);
+  });
+
+  it("is disabled when the resolved direction is unsupported", () => {
+    // Off, but the player can only be turned off.
+    expect(
+      control("off", "power", {
+        supported_features: MediaPlayerEntityFeature.TURN_OFF,
+      }).disabled
+    ).toBe(true);
+    // Playing, but the player can only be turned on.
+    expect(
+      control("playing", "power", {
+        supported_features: MediaPlayerEntityFeature.TURN_ON,
+      }).disabled
+    ).toBe(true);
   });
 });
 

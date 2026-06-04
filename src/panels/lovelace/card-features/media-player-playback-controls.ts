@@ -33,6 +33,7 @@ const MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES: Record<
 > = {
   turn_on: [MediaPlayerEntityFeature.TURN_ON],
   turn_off: [MediaPlayerEntityFeature.TURN_OFF],
+  power: [MediaPlayerEntityFeature.TURN_ON, MediaPlayerEntityFeature.TURN_OFF],
   media_play: [MediaPlayerEntityFeature.PLAY],
   media_pause: [MediaPlayerEntityFeature.PAUSE],
   media_play_pause: [
@@ -57,17 +58,20 @@ export const supportsMediaPlayerPlaybackControl = (
     supportsFeature(stateObj, feature)
   );
 
-// Default playback row. Non-assumed players use the play/pause toggle (one
-// button, resolved by state). Assumed-state players can't reliably tell play
-// from pause, so they get separate play and pause controls (each its own
-// service).
+// Default playback row. Non-assumed players use the power and play/pause
+// toggles (one button each, resolved by state). Assumed-state players can't
+// reliably tell on from off or play from pause, so they get separate controls
+// (each its own service).
 export const MEDIA_PLAYER_DEFAULT_CONTROLS: MediaPlayerPlaybackControl[] = [
+  "power",
   "media_previous_track",
   "media_play_pause",
   "media_next_track",
 ];
 
 const MEDIA_PLAYER_ASSUMED_DEFAULT_CONTROLS: MediaPlayerPlaybackControl[] = [
+  "turn_on",
+  "turn_off",
   "media_previous_track",
   "media_play",
   "media_pause",
@@ -101,7 +105,7 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS_BUTTONS: Record<
   (stateObj: MediaPlayerEntity) => ControlButton
 > = {
   turn_on: (stateObj) => ({
-    icon: isAssumed(stateObj) ? mdiPowerOn : mdiPowerStandby,
+    icon: mdiPowerOn,
     action: "turn_on",
     // Usable while reachable and not already on.
     disabled:
@@ -109,10 +113,28 @@ export const MEDIA_PLAYER_PLAYBACK_CONTROLS_BUTTONS: Record<
       (stateActive(stateObj) && !isAssumed(stateObj)),
   }),
   turn_off: (stateObj) => ({
-    icon: isAssumed(stateObj) ? mdiPowerOff : mdiPowerStandby,
+    icon: mdiPowerOff,
     action: "turn_off",
     disabled: !stateActive(stateObj) && !isAssumed(stateObj),
   }),
+  // Resolve to the concrete action in the builder, like media_play_pause, so
+  // the called service follows the current state and the click handler needs no
+  // special case for the toggle.
+  power: (stateObj) => {
+    const active = stateActive(stateObj);
+    return {
+      icon: mdiPowerStandby,
+      action: active ? "turn_off" : "turn_on",
+      disabled:
+        stateObj.state === UNAVAILABLE ||
+        !supportsFeature(
+          stateObj,
+          active
+            ? MediaPlayerEntityFeature.TURN_OFF
+            : MediaPlayerEntityFeature.TURN_ON
+        ),
+    };
+  },
   media_play: (stateObj) => ({
     icon: mdiPlay,
     action: "media_play",

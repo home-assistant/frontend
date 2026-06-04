@@ -58,6 +58,7 @@ export interface LockOpenDoorCardFeatureConfig {
 export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "turn_on",
   "turn_off",
+  "power",
   "media_play",
   "media_pause",
   "media_play_pause",
