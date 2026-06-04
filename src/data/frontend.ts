@@ -3,6 +3,7 @@ import type { ShortcutItem } from "./home_shortcuts";
 
 export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
+  createCardOrderSelectCard?: boolean;
   default_panel?: string;
   apps_info_dismissed?: boolean;
 }
