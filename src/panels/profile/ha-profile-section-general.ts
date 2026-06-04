@@ -17,6 +17,7 @@ import "../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import { isMobileClient } from "../../util/is_mobile";
+import "./ha-create-card-order-row";
 import "./ha-enable-shortcuts-row";
 import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
@@ -170,6 +171,14 @@ class HaProfileSectionGeneral extends LitElement {
                     .hass=${this.hass}
                     .coreUserData=${this._coreUserData}
                   ></ha-entity-id-picker-row>
+                `
+              : nothing}
+            ${this.hass.user!.is_admin
+              ? html`
+                  <ha-create-card-order-row
+                    .hass=${this.hass}
+                    .coreUserData=${this._coreUserData}
+                  ></ha-create-card-order-row>
                 `
               : nothing}
           </ha-card>
