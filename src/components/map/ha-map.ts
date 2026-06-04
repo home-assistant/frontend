@@ -23,6 +23,7 @@ import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
 import { filterXSS } from "../../common/util/xss";
 import type { HomeAssistant, ThemeMode } from "../../types";
@@ -584,18 +585,17 @@ export class HaMap extends ReactiveElement {
       const customTitle = typeof entity !== "string" ? entity.name : undefined;
       const title = customTitle ?? computeStateName(stateObj);
       const {
-        latitude,
-        longitude,
         passive,
         icon,
         radius,
         entity_picture: entityPicture,
-        gps_accuracy: gpsAccuracy,
       } = stateObj.attributes;
 
-      if (!(latitude && longitude)) {
+      const location = getEntityLocation(stateObj, hass.states);
+      if (!location) {
         continue;
       }
+      const { latitude, longitude, gpsAccuracy } = location;
 
       if (computeStateDomain(stateObj) === "zone") {
         // DRAW ZONE
