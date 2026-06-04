@@ -239,6 +239,7 @@ class HaEntitiesPicker extends LitElement {
     }
     .entity ha-entity-picker {
       flex: 1;
+      min-width: var(--ha-entities-picker-entity-min-width, auto);
     }
     .entity-handle {
       padding: 8px;

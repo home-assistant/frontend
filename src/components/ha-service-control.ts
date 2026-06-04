@@ -977,6 +977,7 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
+      --ha-entities-picker-entity-min-width: 0;
       border-top: var(
         --service-control-items-border-top,
         1px solid var(--divider-color)
