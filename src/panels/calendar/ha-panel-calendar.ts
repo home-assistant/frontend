@@ -119,11 +119,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     if (!this._entityRegistry) {
       return html`
         <ha-two-pane-top-app-bar-fixed .narrow=${this.narrow}>
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+          <ha-menu-button slot="navigationIcon"></ha-menu-button>
           <div slot="title">
             ${this.hass.localize("ui.components.calendar.my_calendars")}
           </div>
@@ -158,11 +154,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
+        <ha-menu-button slot="navigationIcon"></ha-menu-button>
 
         ${!showPane
           ? html`<ha-dropdown slot="title">

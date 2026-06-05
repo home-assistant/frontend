@@ -184,11 +184,7 @@ class PanelTodo extends LitElement {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
+        <ha-menu-button slot="navigationIcon"></ha-menu-button>
         <div slot="title">
           ${!showPane
             ? html`<ha-dropdown class="lists">
