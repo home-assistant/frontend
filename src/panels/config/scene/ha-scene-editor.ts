@@ -41,7 +41,10 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
-import { fullEntitiesContext } from "../../../data/context";
+import {
+  fullEntitiesContext,
+  type RelatedContextItem,
+} from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -149,6 +152,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   @state() private _saving = false;
 
   private _entityRegistryUpdate?: EntityRegistryUpdate;
+
+  private _relatedContext?: RelatedContextItem;
 
   private _newSceneId?: string;
 
@@ -653,6 +658,40 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         );
       }
     }
+
+    if (
+      changedProps.has("sceneId") ||
+      changedProps.has("_scene") ||
+      changedProps.has("_registryEntry")
+    ) {
+      this._setRelatedContext();
+    }
+  }
+
+  private _setRelatedContext(): void {
+    const context: RelatedContextItem | undefined = this.sceneId
+      ? this._registryEntry?.area_id
+        ? {
+            itemType: "area",
+            itemId: this._registryEntry.area_id,
+          }
+        : this._scene
+          ? {
+              itemType: "scene",
+              itemId: this._scene.entity_id,
+            }
+          : undefined
+      : undefined;
+
+    if (
+      context?.itemType === this._relatedContext?.itemType &&
+      context?.itemId === this._relatedContext?.itemId
+    ) {
+      return;
+    }
+
+    this._relatedContext = context;
+    fireEvent(this, "hass-related-context", context);
   }
 
   private _handleMenuAction(ev: HaDropdownSelectEvent) {
