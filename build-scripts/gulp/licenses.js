@@ -29,7 +29,7 @@ const LICENSE_OVERRIDES = [
     // type-fest ships two license files (MIT for code, CC0 for types).
     // We use the MIT license since that covers the bundled code.
     packageName: "type-fest",
-    version: "5.6.0",
+    version: "5.7.0",
     licensePath: path.resolve(
       paths.root_dir,
       "node_modules/type-fest/license-mit"
