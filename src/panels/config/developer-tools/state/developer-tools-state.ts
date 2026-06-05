@@ -603,11 +603,6 @@ class HaPanelDevState extends LitElement {
       haStyle,
       css`
         :host {
-          display: block;
-          height: 100%;
-        }
-
-        :host {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
