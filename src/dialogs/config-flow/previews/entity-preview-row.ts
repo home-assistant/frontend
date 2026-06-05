@@ -123,8 +123,7 @@ class EntityPreviewRow extends LitElement {
     const climateDomains = ["climate", "water_heater"];
     if (climateDomains.includes(domain)) {
       return html`
-        <ha-climate-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-climate-state>
+        <ha-climate-state .stateObj=${stateObj}> </ha-climate-state>
       `;
     }
 
@@ -212,8 +211,7 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "humidifier") {
       return html`
-        <ha-humidifier-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-humidifier-state>
+        <ha-humidifier-state .stateObj=${stateObj}> </ha-humidifier-state>
       `;
     }
 
