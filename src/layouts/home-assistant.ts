@@ -5,9 +5,12 @@ import { customElement, state } from "lit/decorators";
 import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
+import { fetchHttpConfig } from "../data/http";
+import type { HttpConfigState } from "../data/http";
 import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
+import { showHttpPendingConfigDialog } from "../dialogs/http-pending-config/show-dialog-http-pending-config";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
@@ -38,6 +41,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _route: Route;
 
   @state() private _databaseMigration?: boolean;
+
+  private _httpPendingDialogOpen = false;
 
   private _panelUrl: string;
 
@@ -70,13 +75,23 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       this._databaseMigration === undefined &&
       changedProps.has("hass") &&
       this.hass?.config &&
-      changedProps.get("hass")?.config !== this.hass?.config
+      oldHass?.config !== this.hass.config
     ) {
       this.checkDataBaseMigration();
+    }
+    // Wait for `hass.user` to populate so the admin guard can run; it arrives
+    // asynchronously after `hass.config`.
+    if (
+      changedProps.has("hass") &&
+      this.hass?.user &&
+      oldHass?.user !== this.hass.user
+    ) {
+      this.checkHttpPendingConfig();
     }
   }
 
@@ -206,6 +221,32 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         location.reload(true);
       }
     }
+  }
+
+  protected async checkHttpPendingConfig() {
+    if (__DEMO__ || this._httpPendingDialogOpen) {
+      return;
+    }
+    if (!this.hass?.user?.is_admin) {
+      return;
+    }
+    let httpConfig: HttpConfigState;
+    try {
+      httpConfig = await fetchHttpConfig(this.hass);
+    } catch (_err) {
+      // The check re-runs on the next reconnect; ignore transient failures.
+      return;
+    }
+    if (!httpConfig.pending || this._httpPendingDialogOpen) {
+      return;
+    }
+    this._httpPendingDialogOpen = true;
+    showHttpPendingConfigDialog(this, {
+      state: httpConfig,
+      onResolved: () => {
+        this._httpPendingDialogOpen = false;
+      },
+    });
   }
 
   protected async checkDataBaseMigration() {

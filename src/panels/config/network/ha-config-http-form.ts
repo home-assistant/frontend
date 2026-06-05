@@ -1,16 +1,18 @@
+import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-form/ha-form";
+import type { HaForm } from "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import { fetchHttpConfig, saveHttpConfig } from "../../../data/http";
-import type { HttpConfig } from "../../../data/http";
-import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
+import type { HttpConfig, HttpConfigState } from "../../../data/http";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
@@ -123,6 +125,8 @@ const SCHEMA = memoizeOne(
 class HaConfigHttpForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state() private _state?: HttpConfigState;
+
   @state() private _config?: HttpConfig;
 
   @state() private _error?: string;
@@ -131,19 +135,36 @@ class HaConfigHttpForm extends LitElement {
 
   @state() private _saving = false;
 
-  @state() private _saved = false;
+  @state() private _showNoChanges = false;
+
+  @query("ha-form") private _form?: HaForm;
+
+  @query("ha-alert") private _firstAlert?: HTMLElement;
+
+  private _onConfigResolved = () => this._fetchConfig();
 
   protected override firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchConfig();
   }
 
+  public override connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("http-config-resolved", this._onConfigResolved);
+  }
+
+  public override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener("http-config-resolved", this._onConfigResolved);
+  }
+
   protected render() {
-    if (!this._config && !this._error) {
+    if (!this._state && !this._error) {
       return nothing;
     }
 
     const schema = SCHEMA(this.hass.localize);
+    const hasPending = !!this._state?.pending;
 
     return html`
       <ha-card
@@ -155,25 +176,29 @@ class HaConfigHttpForm extends LitElement {
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
 
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          ${this._saved
+          ${hasPending
             ? html`
                 <ha-alert
                   alert-type="info"
                   .title=${this.hass.localize(
-                    "ui.panel.config.network.http.restart_required_title"
+                    "ui.panel.config.network.http.pending_banner.title"
                   )}
                 >
                   ${this.hass.localize(
-                    "ui.panel.config.network.http.restart_required_description"
+                    "ui.panel.config.network.http.pending_banner.description"
                   )}
-                  <ha-button slot="action" @click=${this._restart}>
-                    ${this.hass.localize(
-                      "ui.panel.config.network.http.restart"
-                    )}
-                  </ha-button>
+                </ha-alert>
+              `
+            : nothing}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
+          ${this._showNoChanges
+            ? html`
+                <ha-alert alert-type="success">
+                  ${this.hass.localize(
+                    "ui.panel.config.network.http.save_no_changes"
+                  )}
                 </ha-alert>
               `
             : nothing}
@@ -195,7 +220,11 @@ class HaConfigHttpForm extends LitElement {
         ${this._config
           ? html`
               <div class="card-actions">
-                <ha-button @click=${this._save} .disabled=${this._saving}>
+                <ha-button
+                  @click=${this._save}
+                  .disabled=${this._saving}
+                  .loading=${this._saving}
+                >
                   ${this.hass.localize("ui.panel.config.network.http.save")}
                 </ha-button>
               </div>
@@ -207,7 +236,8 @@ class HaConfigHttpForm extends LitElement {
 
   private async _fetchConfig(): Promise<void> {
     try {
-      this._config = await fetchHttpConfig(this.hass);
+      this._state = await fetchHttpConfig(this.hass);
+      this._config = { ...(this._state.pending ?? this._state.stable) };
     } catch (err: any) {
       this._error = err.message;
     }
@@ -240,26 +270,63 @@ class HaConfigHttpForm extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     this._config = ev.detail.value;
-    this._saved = false;
     this._error = undefined;
     this._fieldErrors = {};
+    this._showNoChanges = false;
   }
 
   private async _save(): Promise<void> {
-    if (!this._config) {
+    if (!this._config || !this._state) {
       return;
     }
-    const form = this.renderRoot.querySelector("ha-form");
-    if (form && !form.reportValidity()) {
+    if (this._form && !this._form.reportValidity()) {
       return;
     }
+
+    const current = this._state.pending ?? this._state.stable;
+    if (JSON.stringify(current) === JSON.stringify(this._config)) {
+      this._showNoChanges = true;
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.network.http.save_confirm.title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.network.http.save_confirm.text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.network.http.save_confirm.confirm"
+      ),
+    });
+    if (!confirmed) {
+      return;
+    }
+
     this._saving = true;
     this._error = undefined;
     this._fieldErrors = {};
+    this._showNoChanges = false;
     try {
-      await saveHttpConfig(this.hass, this._config);
-      this._saved = true;
+      const result = await saveHttpConfig(this.hass, this._config);
+      if (!result.restart) {
+        // No-op save (server already had this config). Refresh state so the
+        // banner stays accurate.
+        this._showNoChanges = true;
+        await this._fetchConfig();
+      }
+      // restart === true: a restart is in flight. The reply usually races with
+      // the connection drop; if we do reach this branch, the disconnected
+      // overlay will appear in moments. Leave the form as is.
     } catch (err: any) {
+      // The restart kills the WS connection before the ack — that's expected.
+      if (
+        err?.error?.code === ERR_CONNECTION_LOST ||
+        err === ERR_CONNECTION_LOST
+      ) {
+        return;
+      }
       // voluptuous formats errors as "<message> @ data['<field>']".
       // If a field is identified, mark it inline; otherwise show a card-level
       // alert.
@@ -273,18 +340,13 @@ class HaConfigHttpForm extends LitElement {
       this._saving = false;
     }
     await this.updateComplete;
-    const haForm = this.renderRoot.querySelector("ha-form");
-    await haForm?.updateComplete;
+    await this._form?.updateComplete;
     // Inline field errors render inside ha-form's shadow root, so fall back to
     // it when no top-level alert is present.
     const target =
-      this.renderRoot.querySelector<HTMLElement>("ha-alert") ??
-      haForm?.shadowRoot?.querySelector<HTMLElement>("ha-alert");
+      this._firstAlert ??
+      this._form?.shadowRoot?.querySelector<HTMLElement>("ha-alert");
     target?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
-
-  private _restart(): void {
-    showRestartDialog(this);
   }
 
   static get styles(): CSSResultGroup {
