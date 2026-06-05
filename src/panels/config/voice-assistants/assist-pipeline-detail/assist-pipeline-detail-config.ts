@@ -72,7 +72,6 @@ export class AssistPipelineDetailConfig extends LitElement {
         )
       : "";
 
-
   protected render() {
     return html`
       <div class="section">
@@ -93,7 +92,6 @@ export class AssistPipelineDetailConfig extends LitElement {
           .data=${this.data}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
-
         ></ha-form>
       </div>
     `;
