@@ -165,12 +165,7 @@ export class HassTabsSubpage extends LitElement {
         <slot name="toolbar">
           <div class="toolbar-content">
             ${this.mainPage || (!this.backPath && history.state?.root)
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this._narrow}
-                  ></ha-menu-button>
-                `
+              ? html`<ha-menu-button></ha-menu-button>`
               : this.backPath
                 ? html`
                     <ha-icon-button-arrow-prev

@@ -9,7 +9,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
-import { fireEvent } from "../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+  type HASSDomEvent,
+} from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -32,9 +36,11 @@ import {
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
+import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-icon-button";
 import "./ha-markdown";
 import "./ha-selector/ha-selector";
+import type { HaSelector } from "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-service-section-icon";
 import "./ha-settings-row";
@@ -55,6 +61,22 @@ const showOptionalToggle = (field) =>
   field.selector &&
   !field.required &&
   !("boolean" in field.selector && field.default);
+
+const FULL_WIDTH_SELECTOR_TYPES = new Set([
+  "action",
+  "area",
+  "device",
+  "entity",
+  "floor",
+  "label",
+  "target",
+]);
+
+const isFullWidthSelector = (selector?: Selector): boolean =>
+  !!selector &&
+  Object.keys(selector).some((selectorType) =>
+    FULL_WIDTH_SELECTOR_TYPES.has(selectorType)
+  );
 
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
@@ -475,6 +497,14 @@ export class HaServiceControl extends LitElement {
         )) ||
       serviceData?.description;
 
+    const targetSelector =
+      serviceData && "target" in serviceData
+        ? this._targetSelector(
+            serviceData.target as TargetSelector,
+            this._value?.target
+          )
+        : undefined;
+
     return html`${this.hidePicker
       ? nothing
       : html`<ha-service-picker
@@ -512,16 +542,15 @@ export class HaServiceControl extends LitElement {
           </div>
         `}
     ${serviceData && "target" in serviceData
-      ? html`<ha-settings-row .narrow=${this.narrow}>
+      ? html`<ha-settings-row
+          .narrow=${this.narrow || isFullWidthSelector(targetSelector)}
+        >
           <span slot="heading"
             >${this.hass.localize("ui.components.service-control.target")}</span
           >
           <ha-selector
             .hass=${this.hass}
-            .selector=${this._targetSelector(
-              serviceData.target as TargetSelector,
-              this._value?.target
-            )}
+            .selector=${targetSelector}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}
             .value=${this._value?.target}
@@ -664,7 +693,9 @@ export class HaServiceControl extends LitElement {
         : undefined;
 
     return dataField.selector
-      ? html`<ha-settings-row .narrow=${this.narrow}>
+      ? html`<ha-settings-row
+          .narrow=${this.narrow || isFullWidthSelector(selector)}
+        >
           ${!showOptional
             ? hasOptional
               ? html`<div slot="prefix" class="checkbox-spacer"></div>`
@@ -737,14 +768,16 @@ export class HaServiceControl extends LitElement {
     );
   };
 
-  private _toggleCheckbox(ev: Event) {
+  private _toggleCheckbox(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     const checkbox = (
       ev.currentTarget as HTMLElement
     )?.parentElement?.querySelector("ha-checkbox");
     checkbox?.click();
   }
 
-  private _checkboxChanged(ev) {
+  private _checkboxChanged(
+    ev: HASSDomCurrentTargetEvent<HaCheckbox & { key: string }>
+  ) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
     let data;
@@ -867,7 +900,7 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _entityPicked(ev: CustomEvent) {
+  private _entityPicked(ev: HASSDomEvent<{ value: string | undefined }>) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
     if (this._value?.data?.entity_id === newValue) {
@@ -888,7 +921,12 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _targetChanged(ev: CustomEvent) {
+  private _targetChanged(
+    ev: HASSDomEvent<{
+      value: HassServiceTarget | undefined;
+      isValid?: boolean;
+    }>
+  ) {
     ev.stopPropagation();
     if (ev.detail.isValid === false) {
       // Don't clear an object selector that returns invalid YAML
@@ -910,13 +948,16 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _serviceDataChanged(ev: CustomEvent) {
+  private _serviceDataChanged(
+    ev: HASSDomEvent<{ value: unknown; isValid?: boolean }> &
+      HASSDomCurrentTargetEvent<HaSelector & { key: string }>
+  ) {
     ev.stopPropagation();
     if (ev.detail.isValid === false) {
       // Don't clear an object selector that returns invalid YAML
       return;
     }
-    const key = (ev.currentTarget as any).key;
+    const key = ev.currentTarget.key;
     const value = ev.detail.value;
     if (
       this._value?.data?.[key] === value ||
@@ -931,7 +972,9 @@ export class HaServiceControl extends LitElement {
     if (
       value === "" ||
       value === undefined ||
-      (typeof value === "object" && !Object.keys(value).length)
+      (value !== null &&
+        typeof value === "object" &&
+        !Object.keys(value).length)
     ) {
       delete data[key];
       delete this._stickySelector[key];
@@ -945,7 +988,12 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  private _dataChanged(ev: CustomEvent) {
+  private _dataChanged(
+    ev: HASSDomEvent<{
+      value: NonNullable<HaServiceControl["value"]>["data"];
+      isValid?: boolean;
+    }>
+  ) {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
       return;
@@ -969,14 +1017,15 @@ export class HaServiceControl extends LitElement {
 
   static styles = css`
     ha-settings-row {
-      padding: var(--service-control-padding, 0 16px);
+      padding: var(--service-control-padding, 0 var(--ha-space-4));
     }
     ha-settings-row[narrow] {
-      padding-bottom: 8px;
+      padding-bottom: var(--ha-space-2);
     }
     ha-settings-row {
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
+      --ha-entities-picker-entity-min-width: 0;
       border-top: var(
         --service-control-items-border-top,
         1px solid var(--divider-color)
@@ -986,20 +1035,20 @@ export class HaServiceControl extends LitElement {
     ha-entity-picker,
     ha-yaml-editor {
       display: block;
-      margin: var(--service-control-padding, 0 16px);
+      margin: var(--service-control-padding, 0 var(--ha-space-4));
     }
     ha-yaml-editor {
-      padding: 16px 0;
+      padding: var(--ha-space-4) 0;
     }
     p {
-      margin: var(--service-control-padding, 0 16px);
-      padding: 16px 0;
+      margin: var(--service-control-padding, 0 var(--ha-space-4));
+      padding: var(--ha-space-4) 0;
     }
     :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {
-      width: 32px;
+      width: var(--ha-space-8);
     }
     .clickable {
       cursor: pointer;
@@ -1020,7 +1069,7 @@ export class HaServiceControl extends LitElement {
     }
     ha-expansion-panel {
       --ha-card-border-radius: var(--ha-border-radius-square);
-      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-summary-padding: 0 var(--ha-space-4);
       --expansion-panel-content-padding: 0;
     }
   `;

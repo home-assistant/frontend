@@ -304,7 +304,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
               ></ha-switch>
             </ha-md-list-item>
             <ha-aliases-editor
-              .hass=${this.hass}
               .aliases=${(this._aliases ?? this.entry.aliases).filter(
                 (a): a is string => a !== null
               )}
