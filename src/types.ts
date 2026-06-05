@@ -209,7 +209,7 @@ export interface Context {
 }
 
 export interface ValuePart {
-  type: "value" | "literal" | "unit";
+  type: "value" | "literal" | "unit" | "currency_sign";
   value: string;
 }
 
