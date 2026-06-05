@@ -874,6 +874,15 @@
           "floor": "Floor"
         }
       },
+      "time-format-picker": {
+        "formats": {
+          "relative": "Relative",
+          "total": "Total",
+          "datetime": "Date and time",
+          "time": "Time",
+          "date": "Date"
+        }
+      },
       "subpage-data-table": {
         "filters": "Filters",
         "show_results": "Show {number} results",
@@ -9707,6 +9716,7 @@
               "show_state": "Show state",
               "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
+              "time_format": "Time format",
               "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",

@@ -5,7 +5,10 @@ import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { STRINGS_SEPARATOR_DOT } from "../common/const";
+import {
+  STRINGS_SEPARATOR_DOT,
+  TIMESTAMP_STATE_DOMAINS,
+} from "../common/const";
 import "../components/ha-relative-time";
 import { UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import {
@@ -16,14 +19,6 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
-
-const TIMESTAMP_STATE_DOMAINS = [
-  "button",
-  "infrared",
-  "input_button",
-  "radio_frequency",
-  "scene",
-];
 
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
   "remaining_time",
@@ -70,6 +65,8 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public name?: string;
 
+  @property({ attribute: false }) public timeFormat?: string;
+
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
 
@@ -105,10 +102,11 @@ class StateDisplay extends LitElement {
           <hui-timestamp-display
             .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
-            .format=${this.stateObj.attributes.device_class ===
+            .format=${this.timeFormat ||
+            (this.stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_UPTIME
               ? "total"
-              : "relative"}
+              : "relative")}
             capitalize
           ></hui-timestamp-display>
         `;
