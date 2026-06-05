@@ -12,6 +12,8 @@ import type { LocalizeKeys } from "../common/translations/localize";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant, PanelInfo } from "../types";
 
+type PanelTitleData = Pick<HomeAssistant, "localize" | "panels">;
+
 export const APP_PANEL = "app";
 export const HOME_PANEL = "home";
 export const MY_REDIRECT_PANEL = "_my_redirect";
@@ -65,7 +67,7 @@ export const getPanelNameTranslationKey = (panel: PanelInfo) => {
 };
 
 export const getPanelTitle = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "localize">,
   panel: PanelInfo
 ): string | undefined => {
   const translationKey = getPanelNameTranslationKey(panel);
@@ -74,7 +76,7 @@ export const getPanelTitle = (
 };
 
 export const getPanelTitleFromUrlPath = (
-  hass: HomeAssistant,
+  hass: PanelTitleData,
   urlPath: string
 ): string | undefined => {
   if (!hass.panels) {

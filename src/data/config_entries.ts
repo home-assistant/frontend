@@ -137,7 +137,15 @@ export const getConfigEntries = (
   });
 };
 
-export const getConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
+export const configEntriesToLookup = (
+  entries: ConfigEntry[]
+): Record<string, ConfigEntry> =>
+  Object.fromEntries(entries.map((entry) => [entry.entry_id, entry]));
+
+export const getConfigEntry = (
+  hass: Pick<HomeAssistant, "callWS">,
+  configEntryId: string
+) =>
   hass.callWS<{ config_entry: ConfigEntry }>({
     type: "config_entries/get_single",
     entry_id: configEntryId,

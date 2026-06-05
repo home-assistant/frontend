@@ -7,7 +7,11 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import type { HaDevicePickerDeviceFilterFunc } from "../../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type { HaEntityPickerEntityFilterFunc } from "../entity/entity";
 import type {
@@ -42,6 +46,17 @@ export interface GetDevicesOptions {
   value?: string;
   idPrefix?: string;
 }
+
+export type DevicePickerData = Pick<
+  HomeAssistantRegistries,
+  "areas" | "devices" | "entities"
+> &
+  Pick<
+    HomeAssistantInternationalization,
+    "language" | "localize" | "translationMetadata"
+  > & {
+    states: HomeAssistant["states"];
+  };
 
 export const computeDeviceAreaLabel = (
   device: DeviceRegistryEntry,
@@ -105,7 +120,7 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
 ];
 
 export const getDevices = (
-  hass: HomeAssistant,
+  hass: DevicePickerData,
   configEntryLookup: Record<string, ConfigEntry>,
   options?: GetDevicesOptions
 ): DevicePickerItem[] => {

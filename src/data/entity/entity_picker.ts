@@ -5,7 +5,11 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
 import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../types";
 import { domainToName } from "../integration";
 import type { HaEntityPickerEntityFilterFunc } from "./entity";
 
@@ -53,8 +57,16 @@ export interface GetEntitiesOptions {
   idPrefix?: string;
 }
 
+export type EntityPickerData = HomeAssistantRegistries &
+  Pick<
+    HomeAssistantInternationalization,
+    "language" | "localize" | "translationMetadata"
+  > & {
+    states: HomeAssistant["states"];
+  };
+
 export const getEntities = (
-  hass: HomeAssistant,
+  hass: EntityPickerData,
   options?: GetEntitiesOptions
 ): EntityComboBoxItem[] => {
   const {

@@ -21,6 +21,8 @@ import "../ha-state-icon";
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public hassUrl?: HomeAssistant["hassUrl"];
+
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false }) public overrideIcon?: string;
@@ -136,8 +138,9 @@ export class StateBadge extends LitElement {
           let imageUrl =
             stateObj.attributes.entity_picture_local ||
             stateObj.attributes.entity_picture;
-          if (this.hass) {
-            imageUrl = this.hass.hassUrl(imageUrl);
+          const hassUrl = this.hass?.hassUrl ?? this.hassUrl;
+          if (hassUrl) {
+            imageUrl = hassUrl(imageUrl);
           }
           if (domain === "camera") {
             imageUrl = cameraUrlWithWidthHeight(imageUrl, 80, 80);
@@ -180,8 +183,9 @@ export class StateBadge extends LitElement {
         }
       } else if (this.overrideImage) {
         let imageUrl = this.overrideImage;
-        if (this.hass) {
-          imageUrl = this.hass.hassUrl(imageUrl);
+        const hassUrl = this.hass?.hassUrl ?? this.hassUrl;
+        if (hassUrl) {
+          imageUrl = hassUrl(imageUrl);
         }
         backgroundImage = `url(${imageUrl})`;
         this.icon = false;
