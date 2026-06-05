@@ -23,11 +23,7 @@ class HaPanelMap extends LitElement {
   protected render() {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
+        <ha-menu-button slot="navigationIcon"></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.map")}</div>
         ${!__DEMO__ && this.hass.user?.is_admin
           ? html`<ha-icon-button

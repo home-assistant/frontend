@@ -578,8 +578,6 @@ class HUIRoot extends LitElement {
                       : html`
                           <ha-menu-button
                             slot="navigationIcon"
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
                           ></ha-menu-button>
                         `}
                     ${isSubview

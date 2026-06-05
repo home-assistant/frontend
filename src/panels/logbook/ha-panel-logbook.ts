@@ -76,13 +76,7 @@ export class HaPanelLogbook extends LitElement {
                 @click=${this._goBack}
               ></ha-icon-button-arrow-prev>
             `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
+          : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
         <ha-icon-button
           slot="actionItems"
