@@ -7,12 +7,13 @@ import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   connectionContext,
-  internationalizationContext,
   narrowViewportContext,
   uiContext,
 } from "../data/context";
 import { subscribeNotifications } from "../data/persistent_notification";
 import "./ha-icon-button";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
@@ -20,8 +21,8 @@ class HaMenuButton extends LitElement {
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: ContextType<typeof connectionContext>;
 
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: ContextType<typeof internationalizationContext>;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   @consume({ context: narrowViewportContext, subscribe: true })
@@ -59,7 +60,7 @@ class HaMenuButton extends LitElement {
   }
 
   protected render() {
-    if (!this._show || !this._i18n || !this._ui) {
+    if (!this._show || !this._ui) {
       return nothing;
     }
     const hasNotifications =
@@ -67,7 +68,7 @@ class HaMenuButton extends LitElement {
       (this._narrow || this._ui.dockedSidebar === "always_hidden");
     return html`
       <ha-icon-button
-        .label=${this._i18n.localize("ui.sidebar.sidebar_toggle")}
+        .label=${this._localize("ui.sidebar.sidebar_toggle")}
         .path=${mdiMenu}
         @click=${this._toggleMenu}
       ></ha-icon-button>
