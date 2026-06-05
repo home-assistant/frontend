@@ -32,7 +32,6 @@ import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
-import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
@@ -190,7 +189,6 @@ class PanelTodo extends LitElement {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button slot="navigationIcon"></ha-menu-button>
         <div slot="title">
           ${!showPane
             ? html`<ha-dropdown class="lists">

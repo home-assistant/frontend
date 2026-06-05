@@ -15,7 +15,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { goBack, navigate } from "../../common/navigate";
+import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createHistoryLogbookUrl,
@@ -34,8 +34,6 @@ import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
@@ -117,22 +115,13 @@ class HaPanelHistory extends LitElement {
     this._unsubscribeHistory();
   }
 
-  private _goBack(): void {
-    goBack();
-  }
-
   protected render() {
     const entitiesSelected = this._getEntityIds().length > 0;
     return html`
-      <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._showBack
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${!!this._showBack}
+      >
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>

@@ -5,7 +5,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../common/decorators/storage";
-import { goBack, navigate } from "../../common/navigate";
+import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   createHistoryLogbookUrl,
@@ -18,8 +18,6 @@ import {
 } from "../../common/url/search-params";
 import "../../components/date-picker/ha-date-range-picker";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
@@ -65,21 +63,12 @@ export class HaPanelLogbook extends LitElement {
     this._time = { range: [start, end] };
   }
 
-  private _goBack(): void {
-    goBack();
-  }
-
   protected render() {
     return html`
-      <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._showBack
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${!!this._showBack}
+      >
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
         <ha-icon-button
           slot="actionItems"
