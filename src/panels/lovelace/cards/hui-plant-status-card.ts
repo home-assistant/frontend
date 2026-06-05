@@ -245,10 +245,8 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       ? this.hass!.states[sensorEntityId]
       : undefined;
     if (sensorStateObj) {
-      return this.hass!.formatEntityStateToParts(sensorStateObj)
-        .filter((part) => part.type !== "unit")
-        .map((part) => part.value)
-        .join("");
+      const stateParts = this.hass!.formatEntityStateToParts(sensorStateObj);
+      return stateParts.find((part) => part.type === "value")?.value ?? "—";
     }
     return stateObj.attributes[attribute] ?? "";
   }
