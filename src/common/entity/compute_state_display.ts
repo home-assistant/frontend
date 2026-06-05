@@ -138,22 +138,18 @@ const computeStateToPartsFromEntityAttributes = (
       }
 
       if (parts.length) {
-        interface ValuePartWithSign {
-          type: "value" | "literal" | "unit" | "sign";
-          value: string;
-        }
-        const TYPE_MAP: Record<string, ValuePartWithSign["type"]> = {
+        const TYPE_MAP: Record<string, ValuePart["type"]> = {
           integer: "value",
           group: "value",
           decimal: "value",
           fraction: "value",
-          minusSign: "sign",
-          plusSign: "sign",
+          minusSign: "currency_sign",
+          plusSign: "currency_sign",
           literal: "literal",
           currency: "unit",
         };
 
-        const valueParts: ValuePartWithSign[] = [];
+        let valueParts: ValuePart[] = [];
 
         for (const part of parts) {
           const type = TYPE_MAP[part.type];
@@ -166,20 +162,16 @@ const computeStateToPartsFromEntityAttributes = (
             valueParts.push({ type, value: part.value });
           }
         }
-        const sign =
-          valueParts.find((part) => part.type === "sign")?.value ?? "";
-        const valuePartsCorr = valueParts
-          .filter((part) => part.type !== "sign")
-          .map((part) => {
-            if (part.type === "value") {
-              return {
-                type: "value",
-                value: `${sign}${part.value}`,
-              };
-            }
-            return part;
-          }) as ValuePart[];
-        return valuePartsCorr;
+        const currencySignPart = valueParts.find(
+          (part) => part.type === "currency_sign"
+        );
+        if (currencySignPart) {
+          valueParts = [
+            ...[currencySignPart],
+            ...valueParts.filter((part) => part.type !== "currency_sign"),
+          ];
+        }
+        return valueParts;
       }
     }
 
