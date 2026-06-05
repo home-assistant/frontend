@@ -8304,10 +8304,6 @@
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
               "confirm": "Save and restart"
             },
-            "pending_banner": {
-              "title": "Unconfirmed configuration",
-              "description": "The values below are running but not yet confirmed. Use the confirmation popup to keep or revert them."
-            },
             "ssl_profile_modern": "Modern",
             "ssl_profile_intermediate": "Intermediate",
             "sections": {

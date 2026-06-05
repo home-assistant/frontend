@@ -11,7 +11,7 @@ import "../../../components/ha-form/ha-form";
 import type { HaForm } from "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import { fetchHttpConfig, saveHttpConfig } from "../../../data/http";
-import type { HttpConfig, HttpConfigState } from "../../../data/http";
+import type { HttpConfig } from "../../../data/http";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -125,7 +125,7 @@ const SCHEMA = memoizeOne(
 class HaConfigHttpForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _state?: HttpConfigState;
+  @state() private _stable?: HttpConfig;
 
   @state() private _config?: HttpConfig;
 
@@ -159,12 +159,11 @@ class HaConfigHttpForm extends LitElement {
   }
 
   protected render() {
-    if (!this._state && !this._error) {
+    if (!this._stable && !this._error) {
       return nothing;
     }
 
     const schema = SCHEMA(this.hass.localize);
-    const hasPending = !!this._state?.pending;
 
     return html`
       <ha-card
@@ -175,21 +174,6 @@ class HaConfigHttpForm extends LitElement {
           <p class="description">
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
-
-          ${hasPending
-            ? html`
-                <ha-alert
-                  alert-type="info"
-                  .title=${this.hass.localize(
-                    "ui.panel.config.network.http.pending_banner.title"
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.network.http.pending_banner.description"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
@@ -236,8 +220,11 @@ class HaConfigHttpForm extends LitElement {
 
   private async _fetchConfig(): Promise<void> {
     try {
-      this._state = await fetchHttpConfig(this.hass);
-      this._config = { ...(this._state.pending ?? this._state.stable) };
+      // Pending is exclusively handled by the global confirm/revert dialog, so
+      // the form only ever displays stable.
+      const { stable } = await fetchHttpConfig(this.hass);
+      this._stable = stable;
+      this._config = { ...stable };
     } catch (err: any) {
       this._error = err.message;
     }
@@ -276,15 +263,14 @@ class HaConfigHttpForm extends LitElement {
   }
 
   private async _save(): Promise<void> {
-    if (!this._config || !this._state) {
+    if (!this._config || !this._stable) {
       return;
     }
     if (this._form && !this._form.reportValidity()) {
       return;
     }
 
-    const current = this._state.pending ?? this._state.stable;
-    if (JSON.stringify(current) === JSON.stringify(this._config)) {
+    if (JSON.stringify(this._stable) === JSON.stringify(this._config)) {
       this._showNoChanges = true;
       return;
     }
@@ -311,10 +297,7 @@ class HaConfigHttpForm extends LitElement {
     try {
       const result = await saveHttpConfig(this.hass, this._config);
       if (!result.restart) {
-        // No-op save (server already had this config). Refresh state so the
-        // banner stays accurate.
         this._showNoChanges = true;
-        await this._fetchConfig();
       }
       // restart === true: a restart is in flight. The reply usually races with
       // the connection drop; if we do reach this branch, the disconnected
