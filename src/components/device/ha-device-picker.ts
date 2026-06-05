@@ -14,10 +14,12 @@ import {
   type ConfigEntry,
 } from "../../data/config_entries";
 import {
+  areasContext,
   configContext,
   configEntriesContext,
+  devicesContext,
+  entitiesContext,
   internationalizationContext,
-  registriesContext,
   statesContext,
   uiContext,
 } from "../../data/context";
@@ -106,8 +108,14 @@ export class HaDevicePicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  @consume({ context: registriesContext, subscribe: true })
-  private _registries!: ContextType<typeof registriesContext>;
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
@@ -134,7 +142,9 @@ export class HaDevicePicker extends LitElement {
   private _getDevicesMemoized = memoizeOne(
     (
       states: ContextType<typeof statesContext>,
-      registries: ContextType<typeof registriesContext>,
+      devices: ContextType<typeof devicesContext>,
+      areas: ContextType<typeof areasContext>,
+      entities: ContextType<typeof entitiesContext>,
       i18n: ContextType<typeof internationalizationContext>,
       configEntryLookup: Record<string, ConfigEntry>,
       includeDomains?: string[],
@@ -147,7 +157,9 @@ export class HaDevicePicker extends LitElement {
     ) =>
       getDevices(
         {
-          ...registries,
+          areas,
+          devices,
+          entities,
           states,
           localize: i18n.localize,
           language: i18n.language,
@@ -169,7 +181,9 @@ export class HaDevicePicker extends LitElement {
   private _getItems = () =>
     this._getDevicesMemoized(
       this._states,
-      this._registries,
+      this._devices,
+      this._areas,
+      this._entities,
       this._i18n,
       this._configEntryLookup ?? EMPTY_CONFIG_ENTRY_LOOKUP,
       this.includeDomains,
@@ -183,8 +197,8 @@ export class HaDevicePicker extends LitElement {
 
   private _valueRenderer = memoizeOne(
     (
-      devices: ContextType<typeof registriesContext>["devices"],
-      areas: ContextType<typeof registriesContext>["areas"],
+      devices: ContextType<typeof devicesContext>,
+      areas: ContextType<typeof areasContext>,
       darkMode: boolean,
       hassUrl: string,
       configEntriesLookup: Record<string, ConfigEntry>
@@ -273,8 +287,8 @@ export class HaDevicePicker extends LitElement {
       this._i18n.localize("ui.components.device-picker.placeholder");
 
     const valueRenderer = this._valueRenderer(
-      this._registries.devices,
-      this._registries.areas,
+      this._devices,
+      this._areas,
       this._ui.themes.darkMode,
       this._config.auth.data.hassUrl,
       this._configEntryLookup ?? EMPTY_CONFIG_ENTRY_LOOKUP
