@@ -190,7 +190,6 @@ class HaMoreInfoDetails extends LitElement {
           </div>
           <div class="value">
             <ha-attribute-value
-              .hass=${this.hass}
               .attribute=${attribute}
               .stateObj=${this._stateObj}
             ></ha-attribute-value>
