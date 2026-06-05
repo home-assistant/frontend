@@ -88,7 +88,7 @@
     "dialog-polyfill": "0.5.6",
     "echarts": "6.1.0",
     "element-internals-polyfill": "3.0.2",
-    "fuse.js": "7.4.0",
+    "fuse.js": "7.4.1",
     "google-timezones-json": "1.2.0",
     "gulp-zopfli-green": "7.0.0",
     "hls.js": "1.6.16",
