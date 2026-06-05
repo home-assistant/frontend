@@ -217,19 +217,11 @@ export default class HaAutomationConditionRow extends LitElement {
           .hass=${this.hass}
           .condition=${this.condition.condition}
         ></ha-condition-icon>
-        ${this.optionsInSidebar && this.condition.condition !== "trigger"
-          ? html`<ha-automation-row-live-test
-              .state=${this._liveTestResult.state}
-              .label=${this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
-              )}
-            ></ha-automation-row-live-test>`
-          : nothing}
       </div>
       ${this.optionsInSidebar &&
       this.condition.condition !== "trigger" &&
       this._liveTestResult.message
-        ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
+        ? html`<ha-tooltip for="condition-live-test" slot="leading-icon"
             >${this._liveTestResult.message}</ha-tooltip
           >`
         : nothing}
@@ -244,6 +236,15 @@ export default class HaAutomationConditionRow extends LitElement {
               conditionTargetSpec,
               this.condition.condition !== "device"
             )
+          : nothing}
+        ${this.optionsInSidebar && this.condition.condition !== "trigger"
+          ? html`<ha-automation-row-live-test
+              id="condition-live-test"
+              .state=${this._liveTestResult.state}
+              .label=${this.hass.localize(
+                `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
+              )}
+            ></ha-automation-row-live-test>`
           : nothing}
         ${this.condition.note?.trim()
           ? html`

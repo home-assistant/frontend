@@ -239,17 +239,9 @@ export class HaCardConditionEditor extends LitElement {
             <ha-svg-icon
               .path=${ICON_CONDITION[condition.condition]}
             ></ha-svg-icon>
-            ${hideLiveTest
-              ? nothing
-              : html`<ha-automation-row-live-test
-                  .state=${this._liveTestResult.state}
-                  .label=${this.hass.localize(
-                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
-                  )}
-                ></ha-automation-row-live-test>`}
           </div>
           ${!hideLiveTest && this._liveTestResult.message
-            ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
+            ? html`<ha-tooltip for="condition-live-test" slot="leading-icon"
                 >${this._liveTestResult.message}</ha-tooltip
               >`
             : nothing}
@@ -257,6 +249,15 @@ export class HaCardConditionEditor extends LitElement {
             ${this.hass.localize(
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
             ) || condition.condition}
+            ${!hideLiveTest
+              ? html`<ha-automation-row-live-test
+                  id="condition-live-test"
+                  .state=${this._liveTestResult.state}
+                  .label=${this.hass.localize(
+                    `ui.panel.lovelace.editor.condition-editor.live_test_state.${this._liveTestResult.state}`
+                  )}
+                ></ha-automation-row-live-test>`
+              : nothing}
           </h3>
           <ha-automation-row-event-chip
             .show=${this._testingResult !== undefined}

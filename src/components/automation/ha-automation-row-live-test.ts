@@ -32,10 +32,10 @@ export class HaAutomationRowLiveTest extends LitElement {
 
   static styles = css`
     :host {
-      position: absolute;
-      top: -5px;
-      inset-inline-end: -6px;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin-inline-start: var(--ha-space-1);
     }
     #indicator {
       width: 10px;
