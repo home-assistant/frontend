@@ -58,7 +58,11 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       "id" in this._params.pipeline &&
       this._params.pipeline.id
     ) {
-      this._data = { prefer_local_intents: false, ...this._params.pipeline };
+      this._data = {
+        prefer_local_intents: false,
+        command_timeout_seconds: 15,
+        ...this._params.pipeline,
+      };
 
       this._hideWakeWord =
         this._params.hideWakeWord || !this._data.wake_word_entity;
@@ -97,6 +101,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         ),
       stt_engine: this._params.pipeline?.stt_engine || sstDefault,
       tts_engine: this._params.pipeline?.tts_engine || ttsDefault,
+      command_timeout_seconds: this._params.pipeline?.command_timeout_seconds ?? 15,
     };
   }
 
@@ -175,7 +180,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             .hass=${this.hass}
             .data=${this._data}
             .supportedLanguages=${this._supportedLanguages}
-            keys="name,language"
+            keys="name,language,command_timeout_seconds"
             @value-changed=${this._valueChanged}
             ?autofocus=${!isExistingPipeline}
           ></assist-pipeline-detail-config>
@@ -285,6 +290,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         tts_voice: data.tts_voice ?? null,
         wake_word_entity: data.wake_word_entity ?? null,
         wake_word_id: data.wake_word_id ?? null,
+        command_timeout_seconds: data.command_timeout_seconds ?? 15,
       };
       if (
         this._params!.pipeline &&

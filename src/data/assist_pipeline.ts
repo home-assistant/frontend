@@ -16,6 +16,7 @@ export interface AssistPipeline {
   tts_voice: string | null;
   wake_word_entity: string | null;
   wake_word_id: string | null;
+  command_timeout_seconds: number;
 }
 
 export interface AssistDevice {
@@ -36,6 +37,7 @@ export interface AssistPipelineMutableParams {
   tts_voice: string | null;
   wake_word_entity: string | null;
   wake_word_id: string | null;
+  command_timeout_seconds: number;
 }
 
 export interface AssistRunListing {

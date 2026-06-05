@@ -47,6 +47,19 @@ export class AssistPipelineDetailConfig extends LitElement {
                   },
                 }
               : { name: "", type: "constant" },
+            {
+              name: "command_timeout_seconds",
+              required: true,
+              selector: {
+                number: {
+                  min: 5,
+                  max: 300,
+                  step: 1,
+                  mode: "box",
+                  unit_of_measurement: "s",
+                },
+              },
+            },
           ] as const,
         },
       ] as const
@@ -56,6 +69,13 @@ export class AssistPipelineDetailConfig extends LitElement {
     schema.name
       ? this.hass.localize(
           `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}` as LocalizeKeys
+        )
+      : "";
+
+  private _computeHelper = (schema): string =>
+    schema.name
+      ? this.hass.localize(
+          `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}_description` as LocalizeKeys
         )
       : "";
 
@@ -79,6 +99,7 @@ export class AssistPipelineDetailConfig extends LitElement {
           .data=${this.data}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
+          .computeHelper=${this._computeHelper}
         ></ha-form>
       </div>
     `;

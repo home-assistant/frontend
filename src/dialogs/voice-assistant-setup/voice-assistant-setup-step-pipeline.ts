@@ -361,6 +361,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           tts_voice: ttsVoices.voices![0].voice_id,
           wake_word_entity: null,
           wake_word_id: null,
+          command_timeout_seconds: 15,
         });
       }
 
