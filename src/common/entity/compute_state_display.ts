@@ -138,18 +138,22 @@ const computeStateToPartsFromEntityAttributes = (
       }
 
       if (parts.length) {
-        const TYPE_MAP: Record<string, ValuePart["type"]> = {
+        interface ValuePartWithSign {
+          type: "value" | "literal" | "unit" | "sign";
+          value: string;
+        }
+        const TYPE_MAP: Record<string, ValuePartWithSign["type"]> = {
           integer: "value",
           group: "value",
           decimal: "value",
           fraction: "value",
-          minusSign: "value",
-          plusSign: "value",
+          minusSign: "sign",
+          plusSign: "sign",
           literal: "literal",
           currency: "unit",
         };
 
-        const valueParts: ValuePart[] = [];
+        const valueParts: ValuePartWithSign[] = [];
 
         for (const part of parts) {
           const type = TYPE_MAP[part.type];
@@ -162,7 +166,20 @@ const computeStateToPartsFromEntityAttributes = (
             valueParts.push({ type, value: part.value });
           }
         }
-        return valueParts;
+        const sign =
+          valueParts.find((part) => part.type === "sign")?.value ?? "";
+        const valuePartsCorr = valueParts
+          .filter((part) => part.type !== "sign")
+          .map((part) => {
+            if (part.type === "value") {
+              return {
+                type: "value",
+                value: `${sign}${part.value}`,
+              };
+            }
+            return part;
+          }) as ValuePart[];
+        return valuePartsCorr;
       }
     }
 
