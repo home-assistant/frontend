@@ -8584,7 +8584,7 @@ __metadata:
     superstruct: "npm:2.0.2"
     tar: "npm:7.5.16"
     terser-webpack-plugin: "npm:5.6.1"
-    tinykeys: "npm:4.0.0"
+    tinykeys: "patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch"
     ts-lit-plugin: "npm:2.0.2"
     typescript: "npm:6.0.3"
     typescript-eslint: "npm:8.60.1"
@@ -13193,6 +13193,13 @@ __metadata:
   version: 4.0.0
   resolution: "tinykeys@npm:4.0.0"
   checksum: 10/e31dd0345098bffc87c4df2469f9dcc9cf9a519c592f0d774592f1eeee46798adc66e40058dcaad0c2697eec0f3212c09876c480f3b0ae32e938cb080e664651
+  languageName: node
+  linkType: hard
+
+"tinykeys@patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch":
+  version: 4.0.0
+  resolution: "tinykeys@patch:tinykeys@npm%3A4.0.0#~/.yarn/patches/tinykeys-npm-4.0.0-a6ca3fd771.patch::version=4.0.0&hash=267e16"
+  checksum: 10/f1ca5d1eef7fc628ba55c53da218869db0d6efc6ba28ebbc4974476ff6f2a29ec34cd584008eabc6f03453cfcd4c7fc59b51d8fbca355fd30a8e784eb3c9bc8d
   languageName: node
   linkType: hard
 
