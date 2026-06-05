@@ -4,12 +4,15 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { goBack, navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
-  createSearchParam,
+  createHistoryLogbookUrl,
+  decodeHistoryLogbookQueryParams,
+  historyLogbookTargetFromQueryParams,
+} from "../../common/url/history-logbook-query-params";
+import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
@@ -185,44 +188,17 @@ export class HaPanelLogbook extends LitElement {
   );
 
   private _applyURLParams() {
-    const searchParams = extractSearchParamsObject();
-    const entityIds = searchParams.entity_id;
-    const deviceIds = searchParams.device_id;
-    const areaIds = searchParams.area_id;
-    const floorIds = searchParams.floor_id;
-    const labelsIds = searchParams.label_id;
-    if (entityIds || deviceIds || areaIds || floorIds || labelsIds) {
-      this._targetPickerValue = {};
-    }
-    if (entityIds) {
-      const splitIds = entityIds.split(",");
-      this._targetPickerValue!.entity_id = splitIds;
-    }
-    if (deviceIds) {
-      const splitIds = deviceIds.split(",");
-      this._targetPickerValue!.device_id = splitIds;
-    }
-    if (areaIds) {
-      const splitIds = areaIds.split(",");
-      this._targetPickerValue!.area_id = splitIds;
-    }
-    if (floorIds) {
-      const splitIds = floorIds.split(",");
-      this._targetPickerValue!.floor_id = splitIds;
-    }
-    if (labelsIds) {
-      const splitIds = labelsIds.split(",");
-      this._targetPickerValue!.label_id = splitIds;
+    const queryParams = decodeHistoryLogbookQueryParams(
+      extractSearchParamsObject()
+    );
+    const targetPickerValue = historyLogbookTargetFromQueryParams(queryParams);
+    if (targetPickerValue) {
+      this._targetPickerValue = targetPickerValue;
     }
 
-    const startDateStr = searchParams.start_date;
-    const endDateStr = searchParams.end_date;
-
-    if (startDateStr || endDateStr) {
-      const startDate = startDateStr
-        ? new Date(startDateStr)
-        : this._time.range[0];
-      const endDate = endDateStr ? new Date(endDateStr) : this._time.range[1];
+    if (queryParams.start_date || queryParams.end_date) {
+      const startDate = queryParams.start_date ?? this._time.range[0];
+      const endDate = queryParams.end_date ?? this._time.range[1];
 
       // Only set if date has changed.
       if (
@@ -231,8 +207,8 @@ export class HaPanelLogbook extends LitElement {
       ) {
         this._time = {
           range: [
-            startDateStr ? new Date(startDateStr) : this._time.range[0],
-            endDateStr ? new Date(endDateStr) : this._time.range[1],
+            queryParams.start_date ?? this._time.range[0],
+            queryParams.end_date ?? this._time.range[1],
           ],
         };
       }
@@ -254,37 +230,15 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _updatePath() {
-    const params: Record<string, string> = {};
-
-    if (this._targetPickerValue.entity_id) {
-      params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
-        ","
-      );
-    }
-    if (this._targetPickerValue.label_id) {
-      params.label_id = ensureArray(this._targetPickerValue.label_id).join(",");
-    }
-    if (this._targetPickerValue.floor_id) {
-      params.floor_id = ensureArray(this._targetPickerValue.floor_id).join(",");
-    }
-    if (this._targetPickerValue.area_id) {
-      params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
-    }
-    if (this._targetPickerValue.device_id) {
-      params.device_id = ensureArray(this._targetPickerValue.device_id).join(
-        ","
-      );
-    }
-
-    if (this._time.range[0]) {
-      params.start_date = this._time.range[0].toISOString();
-    }
-
-    if (this._time.range[1]) {
-      params.end_date = this._time.range[1].toISOString();
-    }
-
-    navigate(`/logbook?${createSearchParam(params)}`, { replace: true });
+    navigate(
+      createHistoryLogbookUrl(
+        "/logbook",
+        this._targetPickerValue,
+        this._time.range[0],
+        this._time.range[1]
+      ),
+      { replace: true }
+    );
   }
 
   private _refreshLogbook() {

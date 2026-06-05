@@ -1,0 +1,146 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  createHistoryLogbookUrl,
+  decodeHistoryLogbookQueryParams,
+  historyLogbookQueryParamConfig,
+  historyLogbookTargetParamKeys,
+  historyLogbookTargetFromQueryParams,
+} from "../../../src/common/url/history-logbook-query-params";
+import {
+  createQueryString,
+  decodeQueryParams,
+  queryParamsFromServiceTarget,
+  serviceTargetFromQueryParams,
+} from "../../../src/common/url/query-params";
+
+const panelQueryParams = [
+  {
+    type: "history",
+    path: "/history",
+  },
+  {
+    type: "logbook",
+    path: "/logbook",
+  },
+] as const;
+
+describe.each(panelQueryParams)("$type query params", (panel) => {
+  it("decodes target and date params", () => {
+    const params = decodeQueryParams(
+      "?entity_id=light.kitchen,switch.fan&device_id=device-1&area_id=kitchen&floor_id=downstairs&label_id=important&start_date=2026-06-05T10:00:00.000Z&end_date=2026-06-05T11:00:00.000Z&back=1",
+      historyLogbookQueryParamConfig
+    );
+
+    expect(params).toEqual({
+      entity_id: ["light.kitchen", "switch.fan"],
+      label_id: ["important"],
+      floor_id: ["downstairs"],
+      area_id: ["kitchen"],
+      device_id: ["device-1"],
+      start_date: new Date("2026-06-05T10:00:00.000Z"),
+      end_date: new Date("2026-06-05T11:00:00.000Z"),
+      back: true,
+    });
+  });
+
+  it("creates target picker values only when target params are present", () => {
+    expect(
+      serviceTargetFromQueryParams(
+        decodeQueryParams(
+          "?start_date=2026-06-05T10:00:00.000Z",
+          historyLogbookQueryParamConfig
+        ),
+        historyLogbookTargetParamKeys
+      )
+    ).toBeUndefined();
+
+    expect(
+      serviceTargetFromQueryParams(
+        decodeQueryParams(
+          "?entity_id=light.kitchen&area_id=kitchen",
+          historyLogbookQueryParamConfig
+        ),
+        historyLogbookTargetParamKeys
+      )
+    ).toEqual({
+      entity_id: ["light.kitchen"],
+      area_id: ["kitchen"],
+    });
+  });
+
+  it("ignores empty target values", () => {
+    expect(
+      serviceTargetFromQueryParams(
+        decodeQueryParams(
+          "?entity_id=&device_id=",
+          historyLogbookQueryParamConfig
+        ),
+        historyLogbookTargetParamKeys
+      )
+    ).toBeUndefined();
+  });
+
+  it("encodes target picker values", () => {
+    expect(
+      queryParamsFromServiceTarget(
+        {
+          entity_id: ["light.kitchen", "switch.fan"],
+          area_id: "kitchen",
+        },
+        historyLogbookTargetParamKeys
+      )
+    ).toEqual({
+      entity_id: ["light.kitchen", "switch.fan"],
+      area_id: ["kitchen"],
+    });
+  });
+
+  it("creates deterministic query strings", () => {
+    expect(
+      createQueryString(
+        {
+          device_id: ["device-1"],
+          entity_id: ["light.kitchen"],
+          start_date: new Date("2026-06-05T10:00:00.000Z"),
+          end_date: new Date("2026-06-05T11:00:00.000Z"),
+        },
+        historyLogbookQueryParamConfig
+      )
+    ).toBe(
+      "entity_id=light.kitchen&device_id=device-1&start_date=2026-06-05T10%3A00%3A00.000Z&end_date=2026-06-05T11%3A00%3A00.000Z"
+    );
+  });
+
+  it("creates typed URLs", () => {
+    expect(
+      createHistoryLogbookUrl(
+        panel.path,
+        { entity_id: ["light.kitchen"] },
+        new Date("2026-06-05T10:00:00.000Z"),
+        new Date("2026-06-05T11:00:00.000Z")
+      )
+    ).toBe(
+      `${panel.path}?entity_id=light.kitchen&start_date=2026-06-05T10%3A00%3A00.000Z&end_date=2026-06-05T11%3A00%3A00.000Z`
+    );
+  });
+});
+
+describe("history logbook query params", () => {
+  it("decodes query params", () => {
+    expect(
+      decodeHistoryLogbookQueryParams("?entity_id=light.kitchen&back=1")
+    ).toEqual({
+      entity_id: ["light.kitchen"],
+      back: true,
+    });
+  });
+
+  it("creates target picker values only when target params are present", () => {
+    expect(
+      historyLogbookTargetFromQueryParams(
+        decodeHistoryLogbookQueryParams("?start_date=2026-06-05T10:00:00.000Z")
+      )
+    ).toBeUndefined();
+  });
+});
