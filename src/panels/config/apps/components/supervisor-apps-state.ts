@@ -45,7 +45,6 @@ class SupervisorAppsState extends LitElement {
     }
     .dot.state-started {
       background-color: var(--ha-color-green-80);
-      animation: state-dot-pulse 1.8s infinite;
     }
     .dot.state-startup {
       background-color: var(--ha-color-on-warning-normal);
