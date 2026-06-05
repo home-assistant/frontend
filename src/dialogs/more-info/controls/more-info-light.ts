@@ -309,7 +309,7 @@ class MoreInfoLight extends LitElement {
   private _setWhite = () => {
     this.hass.callService(
       "light",
-      computeLightAttributeService(this.stateObj!),
+      computeLightAttributeService(this.hass, this.stateObj!),
       {
         entity_id: this.stateObj!.entity_id,
         white: true,
@@ -325,7 +325,7 @@ class MoreInfoLight extends LitElement {
 
     this.hass.callService(
       "light",
-      computeLightAttributeService(this.stateObj!),
+      computeLightAttributeService(this.hass, this.stateObj!),
       {
         entity_id: this.stateObj!.entity_id,
         effect: newVal,

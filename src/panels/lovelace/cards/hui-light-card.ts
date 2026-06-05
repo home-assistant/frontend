@@ -217,10 +217,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   private _setBrightness(e: any): void {
     const stateObj = this.hass!.states[this._config!.entity] as LightEntity;
-    this.hass!.callService("light", computeLightAttributeService(stateObj), {
-      entity_id: stateObj.entity_id,
-      brightness_pct: e.detail.value,
-    });
+    this.hass!.callService(
+      "light",
+      computeLightAttributeService(this.hass!, stateObj),
+      {
+        entity_id: stateObj.entity_id,
+        brightness_pct: e.detail.value,
+      }
+    );
   }
 
   private _computeBrightness(stateObj: LightEntity): string {

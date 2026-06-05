@@ -3,6 +3,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 import { temperature2rgb } from "../common/color/convert-light-color";
+import type { HomeAssistant } from "../types";
 
 export const enum LightEntityFeature {
   EFFECT = 4,
@@ -95,10 +96,24 @@ export interface LightEntity extends HassEntityBase {
   attributes: LightEntityAttributes;
 }
 
-export const computeLightAttributeService = (entity: LightEntity) =>
-  entity.state === "on" && Array.isArray(entity.attributes.entity_id)
+export const computeLightAttributeService = (
+  hass: HomeAssistant,
+  entity: LightEntity
+) => {
+  const memberIds = entity.attributes.entity_id;
+
+  if (!Array.isArray(memberIds)) {
+    return "turn_on";
+  }
+
+  if (entity.state === "on") {
+    return "adjust";
+  }
+
+  return memberIds.some((entityId) => hass.states[entityId]?.state === "on")
     ? "adjust"
     : "turn_on";
+};
 
 export type LightColor =
   | {

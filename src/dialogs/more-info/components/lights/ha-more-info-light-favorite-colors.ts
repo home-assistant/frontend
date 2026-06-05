@@ -59,7 +59,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     const favorite = this._favoriteColors[index];
     this.hass.callService(
       "light",
-      computeLightAttributeService(this.stateObj),
+      computeLightAttributeService(this.hass, this.stateObj),
       {
         entity_id: this.stateObj.entity_id,
         ...favorite,

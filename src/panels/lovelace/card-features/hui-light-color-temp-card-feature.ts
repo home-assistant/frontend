@@ -124,7 +124,7 @@ class HuiLightColorTempCardFeature
 
     this.hass!.callService(
       "light",
-      computeLightAttributeService(this._stateObj!),
+      computeLightAttributeService(this.hass!, this._stateObj!),
       {
         entity_id: this._stateObj!.entity_id,
         color_temp_kelvin: value,

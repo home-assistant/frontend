@@ -40,7 +40,7 @@ export class HaStateControlLightBrightness extends LitElement {
 
     this.hass.callService(
       "light",
-      computeLightAttributeService(this.stateObj),
+      computeLightAttributeService(this.hass, this.stateObj),
       {
         entity_id: this.stateObj!.entity_id,
         brightness_pct: value,

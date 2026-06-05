@@ -350,7 +350,7 @@ class LightRgbColorPicker extends LitElement {
     fireEvent(this, "color-changed", color);
     this.hass.callService(
       "light",
-      computeLightAttributeService(this.stateObj),
+      computeLightAttributeService(this.hass, this.stateObj),
       {
         entity_id: this.stateObj!.entity_id,
         ...color,

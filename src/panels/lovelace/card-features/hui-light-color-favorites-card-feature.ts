@@ -192,7 +192,7 @@ class HuiLightColorFavoritesCardFeature
     const favorite = this._favoriteColors[index];
     this.hass!.callService(
       "light",
-      computeLightAttributeService(this._stateObj!),
+      computeLightAttributeService(this.hass!, this._stateObj!),
       {
         entity_id: this._stateObj!.entity_id,
         ...favorite,
