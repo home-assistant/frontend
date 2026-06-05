@@ -72,12 +72,6 @@ export class AssistPipelineDetailConfig extends LitElement {
         )
       : "";
 
-  private _computeHelper = (schema): string =>
-    schema.name
-      ? this.hass.localize(
-          `ui.panel.config.voice_assistants.assistants.pipeline.detail.form.${schema.name}_description` as LocalizeKeys
-        )
-      : "";
 
   protected render() {
     return html`
@@ -99,7 +93,7 @@ export class AssistPipelineDetailConfig extends LitElement {
           .data=${this.data}
           .hass=${this.hass}
           .computeLabel=${this._computeLabel}
-          .computeHelper=${this._computeHelper}
+
         ></ha-form>
       </div>
     `;
