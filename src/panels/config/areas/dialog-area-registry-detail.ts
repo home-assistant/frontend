@@ -206,7 +206,6 @@ class DialogAreaDetail
             )}
           </p>
           <ha-aliases-editor
-            .hass=${this.hass}
             .aliases=${this._aliases}
             @value-changed=${this._aliasesChanged}
           ></ha-aliases-editor>

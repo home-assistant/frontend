@@ -1,12 +1,15 @@
 import { LitElement, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "./input/ha-input-multi";
 
 @customElement("ha-aliases-editor")
 class AliasesEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Array }) public aliases!: string[];
 
@@ -25,9 +28,9 @@ class AliasesEditor extends LitElement {
         .disabled=${this.disabled}
         .sortable=${this.sortable}
         update-on-blur
-        .label=${this.hass!.localize("ui.dialogs.aliases.label")}
-        .removeLabel=${this.hass!.localize("ui.dialogs.aliases.remove")}
-        .addLabel=${this.hass!.localize("ui.dialogs.aliases.add")}
+        .label=${this._localize("ui.dialogs.aliases.label")}
+        .removeLabel=${this._localize("ui.dialogs.aliases.remove")}
+        .addLabel=${this._localize("ui.dialogs.aliases.add")}
         item-index
         @value-changed=${this._aliasesChanged}
       >
