@@ -163,20 +163,20 @@ export class HaStateLabelBadge extends LitElement {
       case "sun":
       case "timer":
         return null;
-      // @ts-expect-error we don't break and go to default
       case "sensor":
         if (entry?.platform === "moon") {
           return null;
         }
-      // eslint-disable-next-line: disable=no-fallthrough
-      default:
-        return entityState.state === UNAVAILABLE ||
-          entityState.state === UNKNOWN
-          ? "—"
-          : this.hass!.formatEntityStateToParts(entityState).find(
-              (part) => part.type === "value"
-            )?.value;
     }
+    if (entityState.state === UNAVAILABLE || entityState.state === UNKNOWN) {
+      return "—";
+    }
+    const stateParts = this.hass!.formatEntityStateToParts(entityState);
+    const currency_sign =
+      stateParts.find((part) => part.type === "currency_sign")?.value ?? "";
+    const val = stateParts.find((part) => part.type === "value")?.value;
+    const composedValue = `${currency_sign}${val}`;
+    return composedValue;
   }
 
   private _computeShowIcon(
