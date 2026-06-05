@@ -115,10 +115,20 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     } else {
       parts = this.hass.formatEntityStateToParts(stateObj);
     }
-    const valueToDisplay = parts.find((part) => part.type === "value")?.value;
+    // eslint-disable-next-line no-console
+    console.log("parts", parts);
+    const currency_sign =
+      parts.find((part) => part.type === "currency_sign")?.value ?? "";
+    const val = parts.find((part) => part.type === "value")?.value;
+    const valueToDisplay = `${currency_sign}${val}`;
     const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
+
+    // eslint-disable-next-line no-console
+    console.log("valueToDisplay", valueToDisplay);
+    // eslint-disable-next-line no-console
+    console.log("value", value);
 
     if (isNaN(value)) {
       return html`
