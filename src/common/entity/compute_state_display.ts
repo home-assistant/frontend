@@ -149,7 +149,7 @@ const computeStateToPartsFromEntityAttributes = (
           currency: "unit",
         };
 
-        let valueParts: ValuePart[] = [];
+        const valueParts: ValuePart[] = [];
 
         for (const part of parts) {
           const type = TYPE_MAP[part.type];
@@ -161,15 +161,6 @@ const computeStateToPartsFromEntityAttributes = (
           } else {
             valueParts.push({ type, value: part.value });
           }
-        }
-        const currencySignPart = valueParts.find(
-          (part) => part.type === "currency_sign"
-        );
-        if (currencySignPart) {
-          valueParts = [
-            ...[currencySignPart],
-            ...valueParts.filter((part) => part.type !== "currency_sign"),
-          ];
         }
         return valueParts;
       }
