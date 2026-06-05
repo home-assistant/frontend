@@ -89,7 +89,6 @@ export class HaDeviceCondition extends LitElement {
       <ha-device-picker
         .value=${deviceId}
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.label"

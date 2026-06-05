@@ -1,24 +1,39 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { consume, type ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
-import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
+import {
+  configEntriesToLookup,
+  type ConfigEntry,
+} from "../../data/config_entries";
+import {
+  configContext,
+  configEntriesContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+  uiContext,
+} from "../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
+  type DevicePickerData,
   type DevicePickerItem,
 } from "../../data/device/device_picker";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
-import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+
+const EMPTY_CONFIG_ENTRY_LOOKUP: Record<string, ConfigEntry> = {};
 
 export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
@@ -28,8 +43,6 @@ export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
@@ -93,11 +106,36 @@ export class HaDevicePicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  @state() private _configEntryLookup: Record<string, ConfigEntry> = {};
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: ContextType<typeof uiContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<
+    ContextType<typeof configEntriesContext>,
+    Record<string, ConfigEntry>
+  >({
+    transformer: configEntriesToLookup,
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
 
   private _getDevicesMemoized = memoizeOne(
     (
-      _devices: HomeAssistant["devices"],
+      states: ContextType<typeof statesContext>,
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
       configEntryLookup: Record<string, ConfigEntry>,
       includeDomains?: string[],
       excludeDomains?: string[],
@@ -107,33 +145,33 @@ export class HaDevicePicker extends LitElement {
       excludeDevices?: string[],
       value?: string
     ) =>
-      getDevices(this.hass, configEntryLookup, {
-        includeDomains,
-        excludeDomains,
-        includeDeviceClasses,
-        deviceFilter,
-        entityFilter,
-        excludeDevices,
-        value,
-      })
+      getDevices(
+        {
+          ...registries,
+          states,
+          localize: i18n.localize,
+          language: i18n.language,
+          translationMetadata: i18n.translationMetadata,
+        } satisfies DevicePickerData,
+        configEntryLookup,
+        {
+          includeDomains,
+          excludeDomains,
+          includeDeviceClasses,
+          deviceFilter,
+          entityFilter,
+          excludeDevices,
+          value,
+        }
+      )
   );
-
-  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
-    super.firstUpdated(_changedProperties);
-    this._loadConfigEntries();
-  }
-
-  private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
-    this._configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
-  }
 
   private _getItems = () =>
     this._getDevicesMemoized(
-      this.hass.devices,
-      this._configEntryLookup,
+      this._states,
+      this._registries,
+      this._i18n,
+      this._configEntryLookup ?? EMPTY_CONFIG_ENTRY_LOOKUP,
       this.includeDomains,
       this.excludeDomains,
       this.includeDeviceClasses,
@@ -144,47 +182,54 @@ export class HaDevicePicker extends LitElement {
     );
 
   private _valueRenderer = memoizeOne(
-    (configEntriesLookup: Record<string, ConfigEntry>) => (value: string) => {
-      const deviceId = value;
-      const device = this.hass.devices[deviceId];
+    (
+      devices: ContextType<typeof registriesContext>["devices"],
+      areas: ContextType<typeof registriesContext>["areas"],
+      darkMode: boolean,
+      hassUrl: string,
+      configEntriesLookup: Record<string, ConfigEntry>
+    ) =>
+      (value: string) => {
+        const deviceId = value;
+        const device = devices[deviceId];
 
-      if (!device) {
-        return html`<span slot="headline">${deviceId}</span>`;
+        if (!device) {
+          return html`<span slot="headline">${deviceId}</span>`;
+        }
+
+        const area = getDeviceArea(device, areas);
+
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+
+        const primary = deviceName;
+        const secondary = areaName;
+
+        const configEntry = device.primary_config_entry
+          ? configEntriesLookup[device.primary_config_entry]
+          : undefined;
+
+        return html`
+          ${configEntry
+            ? html`<img
+                slot="start"
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl(
+                  {
+                    domain: configEntry.domain,
+                    type: "icon",
+                    darkOptimized: darkMode,
+                  },
+                  hassUrl
+                )}
+              />`
+            : nothing}
+          <span slot="headline">${primary}</span>
+          <span slot="supporting-text">${secondary}</span>
+        `;
       }
-
-      const area = getDeviceArea(device, this.hass.areas);
-
-      const deviceName = device ? computeDeviceName(device) : undefined;
-      const areaName = area ? computeAreaName(area) : undefined;
-
-      const primary = deviceName;
-      const secondary = areaName;
-
-      const configEntry = device.primary_config_entry
-        ? configEntriesLookup[device.primary_config_entry]
-        : undefined;
-
-      return html`
-        ${configEntry
-          ? html`<img
-              slot="start"
-              alt=""
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-              src=${brandsUrl(
-                {
-                  domain: configEntry.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
-            />`
-          : nothing}
-        <span slot="headline">${primary}</span>
-        <span slot="supporting-text">${secondary}</span>
-      `;
-    }
   );
 
   private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => html`
@@ -200,9 +245,9 @@ export class HaDevicePicker extends LitElement {
                 {
                   domain: item.domain,
                   type: "icon",
-                  darkOptimized: this.hass.themes.darkMode,
+                  darkOptimized: this._ui.themes.darkMode,
                 },
-                this.hass.auth.data.hassUrl
+                this._config.auth.data.hassUrl
               )}
             />
           `
@@ -225,20 +270,25 @@ export class HaDevicePicker extends LitElement {
   protected render() {
     const placeholder =
       this.placeholder ??
-      this.hass.localize("ui.components.device-picker.placeholder");
+      this._i18n.localize("ui.components.device-picker.placeholder");
 
-    const valueRenderer = this._valueRenderer(this._configEntryLookup);
+    const valueRenderer = this._valueRenderer(
+      this._registries.devices,
+      this._registries.areas,
+      this._ui.themes.darkMode,
+      this._config.auth.data.hassUrl,
+      this._configEntryLookup ?? EMPTY_CONFIG_ENTRY_LOOKUP
+    );
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
         .helper=${this.helper}
         .label=${this.label}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass.localize(
+        .emptyLabel=${this._i18n.localize(
           "ui.components.device-picker.no_devices"
         )}
         .placeholder=${placeholder}
@@ -248,7 +298,7 @@ export class HaDevicePicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
         .searchKeys=${deviceComboBoxKeys}
-        .unknownItemText=${this.hass.localize(
+        .unknownItemText=${this._i18n.localize(
           "ui.components.device-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
@@ -270,7 +320,7 @@ export class HaDevicePicker extends LitElement {
   }
 
   private _notFoundLabel = (search: string) =>
-    this.hass.localize("ui.components.device-picker.no_match", {
+    this._i18n.localize("ui.components.device-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
 }

@@ -96,7 +96,6 @@ export class HaDeviceSelector extends LitElement {
     if (!this.selector.device?.multiple) {
       return html`
         <ha-device-picker
-          .hass=${this.hass}
           .value=${this.value}
           .label=${this.label}
           .helper=${this.helper}
@@ -114,7 +113,6 @@ export class HaDeviceSelector extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : ""}
       <ha-devices-picker
-        .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
         .deviceFilter=${this._filterDevices}

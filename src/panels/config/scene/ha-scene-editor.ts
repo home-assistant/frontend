@@ -463,7 +463,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                       <div class="card-content">
                         <ha-device-picker
                           @value-changed=${this._devicePicked}
-                          .hass=${this.hass}
                           .label=${this.hass.localize(
                             "ui.panel.config.scene.editor.devices.add"
                           )}

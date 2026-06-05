@@ -1,7 +1,7 @@
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "./ha-device-picker";
 import type {
   HaDevicePickerDeviceFilterFunc,
@@ -10,8 +10,6 @@ import type {
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Array }) public value?: string[];
 
   @property() public helper?: string;
@@ -51,10 +49,6 @@ class HaDevicesPicker extends LitElement {
   public entityFilter?: HaDevicePickerEntityFilterFunc;
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const currentDevices = this._currentDevices;
     return html`
       ${currentDevices.map(
@@ -62,7 +56,6 @@ class HaDevicesPicker extends LitElement {
           <div>
             <ha-device-picker
               .curValue=${entityId}
-              .hass=${this.hass}
               .deviceFilter=${this.deviceFilter}
               .entityFilter=${this.entityFilter}
               .includeDomains=${this.includeDomains}
@@ -78,7 +71,6 @@ class HaDevicesPicker extends LitElement {
       )}
       <div>
         <ha-device-picker
-          .hass=${this.hass}
           .helper=${this.helper}
           .deviceFilter=${this.deviceFilter}
           .entityFilter=${this.entityFilter}

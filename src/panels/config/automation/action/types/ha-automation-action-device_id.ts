@@ -89,7 +89,6 @@ export class HaDeviceAction extends LitElement {
         .value=${deviceId}
         .disabled=${this.disabled}
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.device_id.label"
         )}
