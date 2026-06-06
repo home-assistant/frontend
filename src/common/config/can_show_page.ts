@@ -4,9 +4,7 @@ import { ensureArray } from "../array/ensure-array";
 import { isComponentLoaded } from "./is_component_loaded";
 
 export const canShowPage = (hass: HomeAssistant, page: PageNavigation) =>
-  (isCore(page) || isLoadedIntegration(hass, page)) &&
-  isNotLoadedIntegration(hass, page) &&
-  (!page.filter || page.filter(hass));
+  isCore(page) || isLoadedIntegration(hass, page);
 
 export const isLoadedIntegration = (
   hass: HomeAssistant,
@@ -14,15 +12,6 @@ export const isLoadedIntegration = (
 ) =>
   !page.component ||
   ensureArray(page.component).some((integration) =>
-    isComponentLoaded(hass.config, integration)
-  );
-
-export const isNotLoadedIntegration = (
-  hass: HomeAssistant,
-  page: PageNavigation
-) =>
-  !page.not_component ||
-  !ensureArray(page.not_component).some((integration) =>
     isComponentLoaded(hass.config, integration)
   );
 
