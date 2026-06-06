@@ -36,6 +36,7 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
@@ -55,6 +56,14 @@ declare global {
     "ha-refresh-cloud-status": undefined;
   }
 }
+
+const getHasDomainCheck = (domain: string) => {
+  const prefix = `${domain}.`;
+  const checkRegistry = memoizeOne((entries: HomeAssistant["entities"]) =>
+    Object.values(entries).some((entry) => entry.entity_id.startsWith(prefix))
+  );
+  return (hass: HomeAssistant) => checkRegistry(hass.entities);
+};
 
 export const configSections: Record<string, PageNavigation[]> = {
   dashboard: [
@@ -173,10 +182,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       iconColor: "#9C27B0",
       translationKey: "infrared",
       adminOnly: true,
-      filter: (hass) =>
-        Object.keys(hass.entities).some((entity_id) =>
-          entity_id.startsWith("infrared.")
-        ),
+      filter: getHasDomainCheck("infrared"),
     },
     {
       path: "/insteon",

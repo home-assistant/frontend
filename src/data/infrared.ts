@@ -6,7 +6,6 @@ export interface InfraredProxy {
   entity_id: string;
   device_id: string | null;
   config_entry_id: string | null;
-  name: string;
   type: InfraredProxyType;
 }
 

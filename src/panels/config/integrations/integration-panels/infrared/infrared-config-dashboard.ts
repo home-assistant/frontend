@@ -1,13 +1,14 @@
-import {
-  mdiCheck,
-  mdiCloseCircleOutline,
-  mdiRemote,
-  mdiRemoteTv,
-} from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { mdiRemote, mdiRemoteTv } from "@mdi/js";
+import type {
+  CSSResultGroup,
+  PropertyValues,
+  TemplateResult,
+  nothing,
+} from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-relative-time";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
@@ -18,6 +19,7 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
 
 @customElement("infrared-config-dashboard")
 export class InfraredConfigDashboard extends LitElement {
@@ -45,10 +47,6 @@ export class InfraredConfigDashboard extends LitElement {
     const emitters = this._proxies.filter((p) => p.type === "emitter");
     const receivers = this._proxies.filter((p) => p.type === "receiver");
 
-    const isOffline = this._proxies.length === 0;
-    const status = isOffline ? "offline" : "online";
-    const statusIcon = isOffline ? mdiCloseCircleOutline : mdiCheck;
-
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -57,31 +55,6 @@ export class InfraredConfigDashboard extends LitElement {
         back-path="/config"
       >
         <div class="container">
-          <ha-card class="content network-status">
-            <div class="card-content">
-              <div class="heading">
-                <div class="icon ${status}">
-                  <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
-                </div>
-                <div class="details">
-                  ${this.hass.localize(
-                    `ui.panel.config.infrared.status_${status}`
-                  )}<br />
-                  <small>
-                    ${this.hass.localize(
-                      "ui.panel.config.infrared.proxies_summary",
-                      {
-                        emitters: emitters.length,
-                        receivers: receivers.length,
-                      }
-                    )}
-                  </small>
-                </div>
-                <ha-svg-icon class="logo" .path=${mdiRemote}></ha-svg-icon>
-              </div>
-            </div>
-          </ha-card>
-
           <ha-card class="network-card">
             <div class="card-header">
               ${this.hass.localize("ui.panel.config.infrared.proxies")}
@@ -127,6 +100,8 @@ export class InfraredConfigDashboard extends LitElement {
     icon: string,
     proxy: InfraredProxy
   ): TemplateResult | typeof nothing {
+    const entityState = this.hass.states[proxy.entity_id];
+    const entity = this.hass.entities[proxy.entity_id];
     const device = proxy.device_id
       ? this.hass.devices[proxy.device_id]
       : undefined;
@@ -134,26 +109,16 @@ export class InfraredConfigDashboard extends LitElement {
       return html`
         <ha-md-list-item>
           <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
-          <div slot="headline">${proxy.name}</div>
+          <div slot="headline">${computeStateName(entityState)}</div>
         </ha-md-list-item>
       `;
     }
 
-    const deviceName = computeDeviceName(device);
-    const areaName =
-      device && device.area_id
-        ? this.hass.areas[device.area_id]?.name
-        : undefined;
+    const name = computeDeviceName(device) || computeStateName(entityState);
+    const areaId = entity.area_id || device.area_id;
+    const area = areaId ? this.hass.areas[areaId] : undefined;
 
-    let secondary: string;
-    if (deviceName && areaName) {
-      secondary = this.hass.localize(
-        "ui.panel.config.infrared.device_in_area",
-        { device: deviceName, area: areaName }
-      );
-    } else {
-      secondary = deviceName || areaName || "";
-    }
+    const secondary = area ? area.name : "";
 
     return html`
       <ha-md-list-item
@@ -161,9 +126,21 @@ export class InfraredConfigDashboard extends LitElement {
         href="/config/devices/device/${proxy.device_id}"
       >
         <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
-        <div slot="headline">${proxy.name}</div>
+        <div slot="headline">${name}</div>
         <div slot="supporting-text">${secondary}</div>
-        <ha-icon-next slot="end"></ha-icon-next>
+        <div slot="end">
+          ${this.hass.localize("ui.panel.config.infrared.last_used")}:
+          <br />
+          ${entityState.state === "unavailable" ||
+          entityState.state === "unknown"
+            ? this.hass.localize(`state.default.${entityState.state}`)
+            : html`
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${entityState.state}
+                ></ha-relative-time>
+              `}
+        </div>
       </ha-md-list-item>
     `;
   }

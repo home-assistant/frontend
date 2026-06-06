@@ -7117,12 +7117,11 @@
           "title": "Infrared",
           "status_online": "Online",
           "status_offline": "Offline",
-          "proxies_summary": "{emitters} {emitters, plural,\n  one {emitter}\n  other {emitters}\n}, {receivers} {receivers, plural,\n  one {receiver}\n  other {receivers}\n}",
           "proxies": "Proxies",
           "emitters": "Emitters",
           "receivers": "Receivers",
           "no_proxies": "No infrared proxies found",
-          "device_in_area": "{device}, {area}"
+          "last_used": "Last used"
         },
         "bluetooth": {
           "title": "Bluetooth",
