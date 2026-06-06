@@ -37,6 +37,7 @@ export interface PageNavigation {
   core?: boolean;
   /** Hide from non-admin users in filtered navigation and quick bar. */
   adminOnly?: boolean;
+  filter?: (hass: HomeAssistant) => boolean;
   iconPath?: string;
   iconSecondaryPath?: string;
   iconViewBox?: string;

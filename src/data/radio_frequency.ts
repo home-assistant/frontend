@@ -4,7 +4,6 @@ export interface RadioFrequencyTransmitter {
   entity_id: string;
   device_id: string | null;
   config_entry_id: string | null;
-  name: string | null;
   supported_frequency_ranges: [number, number][];
   supported_modulations: string[];
 }

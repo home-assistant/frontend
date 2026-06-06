@@ -7,11 +7,14 @@ import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-relative-time";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
 import { fetchRadioFrequencyTransmitters } from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
+import { computeEntityName } from "../../../../../common/entity/compute_entity_name";
 
 @customElement("radio-frequency-config-dashboard")
 export class RadioFrequencyConfigDashboard extends LitElement {
@@ -59,35 +62,8 @@ export class RadioFrequencyConfigDashboard extends LitElement {
                   </p>`
                 : html`
                     <ha-md-list>
-                      ${this._transmitters.map(
-                        (transmitter) => html`
-                          <ha-md-list-item
-                            type=${transmitter.device_id ? "link" : "text"}
-                            href=${transmitter.device_id
-                              ? `/config/devices/device/${transmitter.device_id}`
-                              : nothing}
-                          >
-                            <ha-svg-icon
-                              slot="start"
-                              .path=${mdiRadioTower}
-                            ></ha-svg-icon>
-                            <div slot="headline">
-                              ${transmitter.name || transmitter.entity_id}
-                            </div>
-                            <div slot="supporting-text">
-                              ${transmitter.supported_frequency_ranges
-                                .map(
-                                  ([min, max]) =>
-                                    `${Math.round(min / 1000000, 2)}-${Math.round(max / 1000000, 2)}MHz`
-                                )
-                                .join(", ")}
-                              - ${transmitter.supported_modulations.join(", ")}
-                            </div>
-                            ${transmitter.device_id
-                              ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                              : nothing}
-                          </ha-md-list-item>
-                        `
+                      ${this._transmitters.map((transmitter) =>
+                        this._renderTransmitter(transmitter)
                       )}
                     </ha-md-list>
                   `}
@@ -95,6 +71,64 @@ export class RadioFrequencyConfigDashboard extends LitElement {
           </ha-card>
         </div>
       </hass-subpage>
+    `;
+  }
+
+  private _renderTransmitter(
+    transmitter: RadioFrequencyTransmitter
+  ): TemplateResult {
+    const entityState = this.hass.states[transmitter.entity_id];
+    const entity = this.hass.entities[transmitter.entity_id];
+    const device = transmitter.device_id
+      ? this.hass.devices[transmitter.device_id]
+      : undefined;
+    const areaId = entity.area_id || (device ? device.area_id : undefined);
+    const area = areaId ? this.hass.areas[areaId] : undefined;
+    return html`
+      <ha-md-list-item
+        type=${device ? "link" : "text"}
+        href=${device
+          ? `/config/devices/device/${transmitter.device_id}`
+          : nothing}
+      >
+        <ha-svg-icon slot="start" .path=${mdiRadioTower}></ha-svg-icon>
+        <div slot="headline">
+          ${device
+            ? computeDeviceName(device)
+            : computeEntityName(
+                this.hass.states[transmitter.entity_id],
+                this.hass.entities,
+                this.hass.devices
+              )}
+        </div>
+        <div slot="supporting-text">
+          ${area ? `${area.name} · ` : ""}
+          ${transmitter.supported_frequency_ranges
+            .map(
+              ([min, max]) =>
+                `${parseFloat((min / 1000000).toFixed(2))}-${parseFloat((max / 1000000).toFixed(2))}MHz`
+            )
+            .join(", ")}
+          · ${transmitter.supported_modulations.join(", ")}
+        </div>
+
+        ${device
+          ? html`<div slot="end">
+              ${this.hass.localize(
+                "ui.panel.config.radio_frequency.last_used"
+              )}:
+              <br />
+              ${entityState.state === "unknown" ||
+              entityState.state === "unavailable"
+                ? this.hass.localize(`state.default.${entityState.state}`)
+                : html`
+                    <ha-relative-time
+                      .datetime=${entityState.state}
+                    ></ha-relative-time>
+                  `}
+            </div>`
+          : nothing}
+      </ha-md-list-item>
     `;
   }
 

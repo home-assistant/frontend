@@ -7178,7 +7178,8 @@
         "radio_frequency": {
           "title": "Radio frequency",
           "transmitters_count": "{count} {count, plural,\n  one {transmitter}\n  other {transmitters}\n}",
-          "no_transmitters": "No radio frequency transmitters found"
+          "no_transmitters": "No radio frequency transmitters found",
+          "last_used": "Last used"
         },
         "dhcp": {
           "title": "DHCP discovery",
