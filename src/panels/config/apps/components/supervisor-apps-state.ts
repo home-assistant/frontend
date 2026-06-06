@@ -55,19 +55,6 @@ class SupervisorAppsState extends LitElement {
     ha-svg-icon {
       --mdc-icon-size: 20px;
     }
-    @keyframes state-dot-pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(var(--rgb-success-color), 0.6);
-      }
-      100% {
-        box-shadow: 0 0 0 6px rgba(var(--rgb-success-color), 0);
-      }
-    }
-    @media (prefers-reduced-motion) {
-      .dot.state-started {
-        animation: none;
-      }
-    }
   `;
 }
 
