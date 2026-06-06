@@ -208,7 +208,7 @@ export class AssistPref extends LitElement {
           appearance="filled"
           @click=${this._addPipeline}
           class="add"
-          size="small"
+          size="s"
         >
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"

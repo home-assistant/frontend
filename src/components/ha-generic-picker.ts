@@ -174,7 +174,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           <slot name="field">
             ${this.addButtonLabel && !this.value
               ? html`<ha-button
-                  size="small"
+                  size="s"
                   appearance="filled"
                   @click=${this.open}
                   .disabled=${this.disabled}

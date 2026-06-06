@@ -131,7 +131,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 ></ha-select>
                 <ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   @click=${this._testWakeWord}
                 >
                   <ha-svg-icon
@@ -166,7 +166,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 </ha-select>
                 <ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   @click=${this._openPipeline}
                 >
                   <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
@@ -186,11 +186,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                   @value-changed=${this._voicePicked}
                   @closed=${stopPropagation}
                 ></ha-tts-voice-picker>
-                <ha-button
-                  appearance="plain"
-                  size="small"
-                  @click=${this._testTts}
-                >
+                <ha-button appearance="plain" size="s" @click=${this._testTts}>
                   <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.satellite_wizard.success.try_tts"

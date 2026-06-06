@@ -136,7 +136,10 @@ class LovelaceFullConfigEditor extends LitElement {
         }
 
         ha-yaml-editor {
+          display: flex;
+          flex-direction: column;
           height: 100%;
+          min-height: 0;
         }
 
         .save-button {

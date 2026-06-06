@@ -190,7 +190,7 @@ export class HaMediaSelector extends LitElement {
               ? html`<div>
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     variant="danger"
                     @click=${this._clearValue}
                   >

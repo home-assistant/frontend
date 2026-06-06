@@ -23,11 +23,7 @@ export class HaAutomationNote extends LitElement {
               "ui.panel.config.automation.editor.note.label"
             )}
           </span>
-          <ha-button
-            @click=${this._handleClick}
-            size="small"
-            appearance="plain"
-          >
+          <ha-button @click=${this._handleClick} size="s" appearance="plain">
             ${this._i18n.localize("ui.common.edit")}
           </ha-button>
         </div>

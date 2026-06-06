@@ -195,7 +195,7 @@ class HaRefreshTokens extends LitElement {
           <ha-button
             variant="danger"
             appearance="filled"
-            size="small"
+            size="s"
             @click=${this._deleteAllTokens}
           >
             ${this.hass.localize(

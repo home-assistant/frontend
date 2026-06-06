@@ -296,7 +296,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                       step="1"
                       .value=${getCurrentProgress(stateObj)}
                       .withTooltip=${false}
-                      size="small"
+                      size="s"
                       aria-label=${this.hass.localize(
                         "ui.card.media_player.track_position"
                       )}
@@ -314,7 +314,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                           step="1"
                           .value=${getCurrentProgress(stateObj)}
                           .withTooltip=${false}
-                          size="small"
+                          size="s"
                           aria-label=${this.hass.localize(
                             "ui.card.media_player.track_position"
                           )}

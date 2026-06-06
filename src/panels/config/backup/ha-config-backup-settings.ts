@@ -289,7 +289,7 @@ class HaConfigBackupSettings extends LitElement {
               : nothing}
             <div class="card-actions">
               <ha-button
-                size="small"
+                size="s"
                 href=${documentationUrl(this.hass, "/integrations/#backup")}
                 target="_blank"
                 rel="noreferrer"
@@ -302,7 +302,7 @@ class HaConfigBackupSettings extends LitElement {
               </ha-button>
               ${supervisor
                 ? html`<ha-button
-                    size="small"
+                    size="s"
                     appearance="plain"
                     href="/config/storage"
                   >
@@ -478,7 +478,7 @@ class HaConfigBackupSettings extends LitElement {
       justify-content: space-between;
     }
 
-    ha-button[size="small"] ha-svg-icon {
+    ha-button[size="s"] ha-svg-icon {
       --mdc-icon-size: 16px;
     }
   `;

@@ -114,7 +114,7 @@ export const ManualEditorMixin = <TConfig>(
             <div class="fab-positioner">
               <ha-button
                 slot="fab"
-                size="large"
+                size="l"
                 class=${this.dirty ? "dirty" : ""}
                 .disabled=${this.saving}
                 @click=${this.saveConfig}

@@ -10,8 +10,9 @@ import type {
   NetworkConfig,
 } from "../data/network";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-checkbox";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
 import "./ha-svg-icon";
@@ -41,11 +42,13 @@ declare global {
 }
 @customElement("ha-network")
 export class HaNetwork extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public networkConfig?: NetworkConfig;
 
   @state() private _expanded?: boolean;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   protected render() {
     if (this.networkConfig === undefined) {
@@ -57,14 +60,14 @@ export class HaNetwork extends LitElement {
         @change=${this._handleAutoConfigureCheckboxClick}
         .checked=${!configured_adapters.length}
         .hint=${!configured_adapters.length
-          ? this.hass.localize(
+          ? this._localize(
               "ui.panel.config.network.adapter.auto_configure_manual_hint"
             )
           : ""}
       >
-        ${this.hass.localize("ui.panel.config.network.adapter.auto_configure")}
+        ${this._localize("ui.panel.config.network.adapter.auto_configure")}
         <div class="description">
-          ${this.hass.localize("ui.panel.config.network.adapter.detected")}:
+          ${this._localize("ui.panel.config.network.adapter.detected")}:
           ${format_auto_detected_interfaces(this.networkConfig.adapters)}
         </div>
       </ha-checkbox>
@@ -77,13 +80,11 @@ export class HaNetwork extends LitElement {
                 .checked=${configured_adapters.includes(adapter.name)}
                 .adapter=${adapter.name}
               >
-                ${this.hass.localize(
-                  "ui.panel.config.network.adapter.adapter"
-                )}:
+                ${this._localize("ui.panel.config.network.adapter.adapter")}:
                 ${adapter.name}
                 ${adapter.default
                   ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>
-                      (${this.hass.localize("ui.common.default")})`
+                      (${this._localize("ui.common.default")})`
                   : nothing}
                 <div class="description">
                   ${format_addresses([...adapter.ipv4, ...adapter.ipv6])}

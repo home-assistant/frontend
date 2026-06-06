@@ -147,7 +147,7 @@ export class HAFullCalendar extends LitElement {
                     <div class="navigation">
                       <ha-button
                         appearance="filled"
-                        size="small"
+                        size="s"
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
@@ -171,7 +171,7 @@ export class HAFullCalendar extends LitElement {
                     <ha-button-toggle-group
                       .buttons=${viewToggleButtons}
                       .active=${this._activeView}
-                      size="small"
+                      size="s"
                       no-wrap
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
@@ -197,7 +197,7 @@ export class HAFullCalendar extends LitElement {
                     <div class="controls buttons">
                       <ha-button
                         appearance="plain"
-                        size="small"
+                        size="s"
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
@@ -207,7 +207,7 @@ export class HAFullCalendar extends LitElement {
                       <ha-button-toggle-group
                         .buttons=${viewToggleButtons}
                         .active=${this._activeView}
-                        size="small"
+                        size="s"
                         no-wrap
                         @value-changed=${this._handleView}
                       ></ha-button-toggle-group>
@@ -219,7 +219,7 @@ export class HAFullCalendar extends LitElement {
 
       <div id="calendar"></div>
       ${this.addFab && this._hasMutableCalendars
-        ? html`<ha-button size="large" slot="fab" @click=${this._createEvent}>
+        ? html`<ha-button size="l" slot="fab" @click=${this._createEvent}>
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.components.calendar.event.add")}
           </ha-button>`

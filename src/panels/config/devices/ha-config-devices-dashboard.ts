@@ -811,7 +811,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-button slot="fab" size="large" @click=${this._addDevice}>
+        <ha-button slot="fab" size="l" @click=${this._addDevice}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.devices.add_device")}
         </ha-button>
@@ -846,7 +846,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-integrations
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"

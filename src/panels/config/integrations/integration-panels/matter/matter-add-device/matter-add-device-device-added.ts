@@ -170,7 +170,6 @@ class MatterAddDeviceDeviceAdded extends LitElement {
             @change=${this._deviceNameChanged}
           ></ha-input>
           <ha-area-picker
-            .hass=${this.hass}
             .value=${this._area}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>

@@ -35,7 +35,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
               )}
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 slot="action"
                 @click=${this._enable}
               >
@@ -57,7 +57,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
       <ha-button
         slot="fab"
-        size="large"
+        size="l"
         class=${this.dirty ? "dirty" : ""}
         .disabled=${this.saving}
         @click=${this._saveAutomation}

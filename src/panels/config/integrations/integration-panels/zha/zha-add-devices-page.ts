@@ -80,7 +80,7 @@ class ZHAAddDevicesPage extends LitElement {
       >
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           slot="toolbar-icon"
           @click=${this._toggleLogs}
           >${this._showLogs ? "Hide logs" : "Show logs"}</ha-button

@@ -22,7 +22,7 @@ class MoreInfoCounter extends LitElement {
       <div class="actions">
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           .action=${"increment"}
           @click=${this._handleActionClick}
           .disabled=${disabled ||
@@ -32,7 +32,7 @@ class MoreInfoCounter extends LitElement {
         </ha-button>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           .action=${"decrement"}
           @click=${this._handleActionClick}
           .disabled=${disabled ||
@@ -42,7 +42,7 @@ class MoreInfoCounter extends LitElement {
         </ha-button>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           .action=${"reset"}
           @click=${this._handleActionClick}
           .disabled=${disabled}

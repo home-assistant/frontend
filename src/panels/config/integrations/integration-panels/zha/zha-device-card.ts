@@ -107,7 +107,6 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
             )}
           ></ha-input>
           <ha-area-picker
-            .hass=${this.hass}
             .device=${this.device.device_reg_id}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>

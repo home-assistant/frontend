@@ -120,7 +120,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
               .disabled=${this.disabled}
               @click=${this._addActionDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(

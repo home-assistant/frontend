@@ -151,7 +151,7 @@ class DialogSystemInformation extends LitElement {
                     ${this.hass.localize("ui.dialogs.unhealthy.title")}
                     <ha-button
                       appearance="plain"
-                      size="small"
+                      size="s"
                       variant="danger"
                       slot="action"
                       @click=${this._unhealthyDialog}
@@ -165,7 +165,7 @@ class DialogSystemInformation extends LitElement {
                     ${this.hass.localize("ui.dialogs.unsupported.title")}
                     <ha-button
                       appearance="plain"
-                      size="small"
+                      size="s"
                       variant="warning"
                       slot="action"
                       @click=${this._unsupportedDialog}
@@ -368,7 +368,7 @@ class DialogSystemInformation extends LitElement {
                 : html`
                     <ha-button
                       appearance="plain"
-                      size="small"
+                      size="s"
                       class="manage"
                       href=${domainInfo.manage_url}
                     >

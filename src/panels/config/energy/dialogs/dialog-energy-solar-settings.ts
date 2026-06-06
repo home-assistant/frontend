@@ -227,7 +227,7 @@ export class DialogEnergySolarSettings
               )}
               <ha-button
                 appearance="filled"
-                size="small"
+                size="s"
                 @click=${this._addForecast}
               >
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>

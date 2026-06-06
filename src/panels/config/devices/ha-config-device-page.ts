@@ -519,7 +519,7 @@ export class HaConfigDevicePage extends LitElement {
               <div class="card-actions" slot="actions">
                 <ha-button
                   variant="warning"
-                  size="small"
+                  size="s"
                   @click=${this._enableDevice}
                 >
                   ${this.hass.localize("ui.common.enable")}

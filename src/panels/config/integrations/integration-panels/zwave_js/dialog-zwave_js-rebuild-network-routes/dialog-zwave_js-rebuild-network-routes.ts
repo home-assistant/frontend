@@ -145,7 +145,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                           @click=${this._showProgressDetail}
                           appearance="outlined"
                           variant="warning"
-                          size="small"
+                          size="s"
                           .title=${this._i18n.localize(
                             "ui.panel.config.zwave_js.rebuild_network_routes.progress.in_progress",
                             { count: this._progress.pending.length }
@@ -162,7 +162,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                           @click=${this._showProgressDetail}
                           appearance="outlined"
                           variant="success"
-                          size="small"
+                          size="s"
                           .title=${this._i18n.localize(
                             "ui.panel.config.zwave_js.rebuild_network_routes.progress.completed",
                             { count: this._progress.done.length }
@@ -181,7 +181,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                               @click=${this._showProgressDetail}
                               appearance="outlined"
                               variant="danger"
-                              size="small"
+                              size="s"
                               .title=${this._i18n.localize(
                                 "ui.panel.config.zwave_js.rebuild_network_routes.progress.failed",
                                 { count: this._progress.failed.length }
@@ -200,7 +200,7 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                               @click=${this._showProgressDetail}
                               appearance="outlined"
                               variant="neutral"
-                              size="small"
+                              size="s"
                               .title=${this._i18n.localize(
                                 "ui.panel.config.zwave_js.rebuild_network_routes.progress.skipped",
                                 { count: this._progress.skipped.length }

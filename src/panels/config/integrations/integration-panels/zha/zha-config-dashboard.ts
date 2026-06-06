@@ -105,7 +105,7 @@ class ZHAConfigDashboard extends LitElement {
         </div>
 
         <a href="/config/zha/add" slot="fab">
-          <ha-button size="large">
+          <ha-button size="l">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.panel.config.zha.add_device")}
           </ha-button>
@@ -319,7 +319,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-button
                 appearance="plain"
                 slot="end"
-                size="small"
+                size="s"
                 @click=${this._createAndDownloadBackup}
               >
                 <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
@@ -342,7 +342,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-button
                 appearance="plain"
                 slot="end"
-                size="small"
+                size="s"
                 @click=${this._openOptionFlow}
               >
                 ${this.hass.localize(
@@ -472,7 +472,7 @@ class ZHAConfigDashboard extends LitElement {
           --md-item-overflow: visible;
         }
 
-        ha-button[size="small"] ha-svg-icon {
+        ha-button[size="s"] ha-svg-icon {
           --mdc-icon-size: 16px;
         }
 

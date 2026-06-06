@@ -150,8 +150,15 @@ export class HaTracePathDetails extends LitElement {
 
       parts.push(
         data.map((trace, idx) => {
-          const { path, timestamp, result, error, changed_variables, ...rest } =
-            trace as any;
+          const {
+            path,
+            timestamp,
+            result,
+            error,
+            template_errors,
+            changed_variables,
+            ...rest
+          } = trace as any;
 
           if (result?.enabled === false) {
             return html`${this.hass!.localize(
@@ -238,6 +245,18 @@ export class HaTracePathDetails extends LitElement {
                       error: error,
                     }
                   )}
+                </div>`
+              : nothing}
+            ${template_errors?.length
+              ? html`<div class="error">
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.template_errors"
+                  )}
+                  <ul>
+                    ${template_errors.map(
+                      (templateError: string) => html`<li>${templateError}</li>`
+                    )}
+                  </ul>
                 </div>`
               : nothing}
             ${result
@@ -404,6 +423,11 @@ export class HaTracePathDetails extends LitElement {
 
         .error {
           color: var(--error-color);
+        }
+
+        .error ul {
+          margin: var(--ha-space-1) 0;
+          padding-left: var(--ha-space-6);
         }
 
         ha-tab-group {

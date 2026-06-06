@@ -275,7 +275,7 @@ export class HaConfigLabels extends LitElement {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-button slot="fab" size="large" @click=${this._addLabel}>
+        <ha-button slot="fab" size="l" @click=${this._addLabel}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </ha-button>

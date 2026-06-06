@@ -116,7 +116,7 @@ export class HaConfigAppsRegistries extends LitElement {
           id="registry"
           has-fab
         ></ha-data-table>
-        <ha-button size="large" @click=${this._showAddRegistryDialog}>
+        <ha-button size="l" @click=${this._showAddRegistryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.registries.add")}
         </ha-button>
@@ -184,7 +184,7 @@ export class HaConfigAppsRegistries extends LitElement {
     ha-icon-button.delete {
       color: var(--error-color);
     }
-    ha-button[size="large"] {
+    ha-button[size="l"] {
       position: fixed;
       right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));

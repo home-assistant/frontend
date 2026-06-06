@@ -695,14 +695,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 target="_blank"
                 appearance="plain"
                 rel="noreferrer"
-                size="small"
+                size="s"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
                 <ha-svg-icon slot="end" .path=${mdiOpenInNew}> </ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}
-        <ha-button slot="fab" size="large" @click=${this._createNew}>
+        <ha-button slot="fab" size="l" @click=${this._createNew}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.automation.picker.add_automation"
