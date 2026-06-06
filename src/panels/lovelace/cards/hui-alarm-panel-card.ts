@@ -260,7 +260,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 .action=${stateAction}
                 @click=${this._handleActionClick}
                 appearance="filled"
-                size="small"
+                size="s"
                 variant=${stateAction === "disarm" ? "danger" : "brand"}
               >
                 ${this._actionDisplay(stateAction)}

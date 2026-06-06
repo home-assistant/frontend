@@ -105,13 +105,7 @@ class PanelClimate extends LitElement {
                 slot="navigationIcon"
               ></ha-icon-button-arrow-prev>
             `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
+          : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
         <div slot="title">${this.hass.localize("panel.climate")}</div>
         ${this._lovelace
           ? html`

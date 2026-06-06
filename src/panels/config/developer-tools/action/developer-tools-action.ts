@@ -167,7 +167,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                 )}
               </div>
               <ha-button-toggle-group
-                size="small"
+                size="s"
                 class="yaml-mode-toggle"
                 .buttons=${modeButtons}
                 .active=${this._yamlMode ? "yaml" : "ui"}

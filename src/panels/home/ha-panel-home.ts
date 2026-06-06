@@ -296,7 +296,7 @@ class PanelHome extends LitElement {
           </span>
         </div>
         <div class="banner-actions">
-          <ha-button size="small" appearance="filled" @click=${this._learnMore}>
+          <ha-button size="s" appearance="filled" @click=${this._learnMore}>
             ${this.hass.localize("ui.panel.home.banner.learn_more")}
           </ha-button>
         </div>

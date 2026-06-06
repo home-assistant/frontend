@@ -122,7 +122,7 @@ export class HuiConditionalCardEditor
                       ></ha-icon-button>
                       <ha-button
                         appearance="plain"
-                        size="small"
+                        size="s"
                         @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"

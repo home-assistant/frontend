@@ -237,7 +237,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
           ? html`
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 @click=${this._showTrace}
                 slot="toolbar-icon"
               >
@@ -490,7 +490,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                                     )}
                                     <ha-button
                                       appearance="filled"
-                                      size="small"
+                                      size="s"
                                       variant="warning"
                                       slot="action"
                                       @click=${this._duplicate}
@@ -508,7 +508,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                                       "ui.panel.config.automation.editor.disabled"
                                     )}
                                     <ha-button
-                                      size="small"
+                                      size="s"
                                       slot="action"
                                       @click=${this._toggle}
                                     >
@@ -533,7 +533,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           )}
                           <ha-button
                             appearance="filled"
-                            size="small"
+                            size="s"
                             slot="action"
                             @click=${this._toggle}
                           >
@@ -553,7 +553,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   ></ha-yaml-editor>
                   <ha-button
                     slot="fab"
-                    size="large"
+                    size="l"
                     class=${this.dirty ? "dirty" : ""}
                     .disabled=${this.saving}
                     @click=${this._handleSaveAutomation}

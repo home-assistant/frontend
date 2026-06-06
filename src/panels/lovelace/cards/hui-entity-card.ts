@@ -181,7 +181,6 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? stateObj.attributes[this._config.attribute!] !== undefined
                 ? html`<ha-attribute-value
                     hide-unit
-                    .hass=${this.hass}
                     .stateObj=${stateObj}
                     .attribute=${this._config.attribute!}
                   >

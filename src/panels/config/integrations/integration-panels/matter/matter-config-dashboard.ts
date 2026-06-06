@@ -91,7 +91,7 @@ export class MatterConfigDashboard extends LitElement {
           ${this._renderNavigationCard()}
         </div>
 
-        <ha-button slot="fab" href="/config/matter/add" size="large">
+        <ha-button slot="fab" href="/config/matter/add" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.matter.panel.add_device")}
         </ha-button>

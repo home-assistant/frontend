@@ -802,7 +802,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-button slot="fab" size="large" @click=${this._createHelper}>
+        <ha-button slot="fab" size="l" @click=${this._createHelper}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
         </ha-button>
@@ -1003,10 +1003,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!entityReg) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.automation.picker.no_category_support"
+          "ui.panel.config.helpers.picker.no_category_support"
         ),
         text: this.hass.localize(
-          "ui.panel.config.automation.picker.no_category_entity_reg"
+          "ui.panel.config.helpers.picker.no_category_entity_reg"
         ),
       });
       return;

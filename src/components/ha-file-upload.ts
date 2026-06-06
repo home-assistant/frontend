@@ -120,7 +120,7 @@ export class HaFileUpload extends LitElement {
             @dragend=${this._handleDragEnd}
             >${!this.value
               ? html`<ha-button
-                    size="small"
+                    size="s"
                     appearance="filled"
                     @click=${this._openFilePicker}
                   >

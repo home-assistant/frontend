@@ -880,7 +880,7 @@ class HuiEnergyDistrubutionCard
               <div class="card-actions">
                 <ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   href=${this._energyDashboardHref}
                 >
                   ${this.hass.localize(

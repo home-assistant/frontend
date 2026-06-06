@@ -8,7 +8,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { transform } from "../../../../common/decorators/transform";
@@ -85,6 +85,15 @@ export class HuiSuggestionEntityTree extends LitElement {
 
   @state() private _fuseIndex?: EntityFuseIndex;
 
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
+  public async focus(): Promise<void> {
+    await this.updateComplete;
+    // Wait for the input's inner wa-input to render so focus delegation works.
+    await this._searchInput?.updateComplete;
+    this._searchInput?.focus();
+  }
+
   public connectedCallback(): void {
     super.connectedCallback();
     this._loadDomainTranslations();
@@ -135,7 +144,7 @@ export class HuiSuggestionEntityTree extends LitElement {
   }
 
   protected render() {
-    if (!this.hass || !this._tree) return nothing;
+    if (!this.hass) return nothing;
 
     return html`
       <ha-input-search
@@ -146,11 +155,13 @@ export class HuiSuggestionEntityTree extends LitElement {
         )}
         @input=${this._handleFilterChange}
       ></ha-input-search>
-      ${this._filter
-        ? this._renderSearchResults()
-        : html`<div class="tree ha-scrollbar">
-            ${this._renderTree(this._tree)}
-          </div>`}
+      ${this._tree
+        ? this._filter
+          ? this._renderSearchResults()
+          : html`<div class="tree ha-scrollbar">
+              ${this._renderTree(this._tree)}
+            </div>`
+        : nothing}
     `;
   }
 

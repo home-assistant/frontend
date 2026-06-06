@@ -69,7 +69,7 @@ class MatterOptionsPage extends LitElement {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._startMobileCommissioning}
                     >
                       ${this.hass.localize(
@@ -92,7 +92,7 @@ class MatterOptionsPage extends LitElement {
                 <ha-button
                   appearance="plain"
                   slot="end"
-                  size="small"
+                  size="s"
                   @click=${this._commission}
                 >
                   ${this.hass.localize(
@@ -114,7 +114,7 @@ class MatterOptionsPage extends LitElement {
                 <ha-button
                   appearance="plain"
                   slot="end"
-                  size="small"
+                  size="s"
                   @click=${this._acceptSharedDevice}
                 >
                   ${this.hass.localize(
@@ -136,7 +136,7 @@ class MatterOptionsPage extends LitElement {
                 <ha-button
                   appearance="plain"
                   slot="end"
-                  size="small"
+                  size="s"
                   @click=${this._setWifi}
                 >
                   ${this.hass.localize(
@@ -158,7 +158,7 @@ class MatterOptionsPage extends LitElement {
                 <ha-button
                   appearance="plain"
                   slot="end"
-                  size="small"
+                  size="s"
                   @click=${this._setThread}
                 >
                   ${this.hass.localize(

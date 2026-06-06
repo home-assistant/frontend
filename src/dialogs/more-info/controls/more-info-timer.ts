@@ -21,7 +21,7 @@ class MoreInfoTimer extends LitElement {
           ? html`
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 .action=${"start"}
                 @click=${this._handleActionClick}
               >
@@ -33,7 +33,7 @@ class MoreInfoTimer extends LitElement {
           ? html`
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 .action=${"pause"}
                 @click=${this._handleActionClick}
               >
@@ -45,7 +45,7 @@ class MoreInfoTimer extends LitElement {
           ? html`
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 .action=${"cancel"}
                 @click=${this._handleActionClick}
               >
@@ -53,7 +53,7 @@ class MoreInfoTimer extends LitElement {
               </ha-button>
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 .action=${"finish"}
                 @click=${this._handleActionClick}
               >

@@ -431,7 +431,7 @@ class MoreInfoMediaPlayer extends LitElement {
                   ? html`<ha-button
                       variant="brand"
                       appearance="filled"
-                      size="medium"
+                      size="m"
                       action=${action}
                       @click=${this._handleClick}
                       class="center-control"

@@ -533,7 +533,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           ? html`
               <ha-button
                 slot="fab"
-                size="large"
+                size="l"
                 ?disabled=${backupInProgress}
                 @click=${this._newBackup}
               >

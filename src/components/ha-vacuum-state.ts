@@ -58,7 +58,7 @@ export class HaVacuumState extends LitElement {
     return html`
       <ha-button
         appearance="plain"
-        size="small"
+        size="s"
         @click=${this._callService}
         .disabled=${!interceptable}
       >

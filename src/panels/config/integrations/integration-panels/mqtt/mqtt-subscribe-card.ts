@@ -101,7 +101,7 @@ class MqttSubscribeCard extends LitElement {
             </ha-select>
             <ha-button
               appearance="plain"
-              size="small"
+              size="s"
               .disabled=${this._topic === ""}
               @click=${this._handleSubmit}
             >

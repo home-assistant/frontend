@@ -2,7 +2,7 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
@@ -66,9 +66,18 @@ export class HuiBadgePicker extends LitElement {
 
   @state() private _height?: number;
 
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
+
+  public async focus(): Promise<void> {
+    await this.updateComplete;
+    // Wait for the input's inner wa-input to render so focus delegation works.
+    await this._searchInput?.updateComplete;
+    this._searchInput?.focus();
+  }
 
   private _filterBadges = memoizeOne(
     (badgeElements: BadgeElement[], filter?: string): BadgeElement[] => {

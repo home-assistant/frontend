@@ -46,7 +46,6 @@ class ConfigNetwork extends LitElement {
           </p>
           <ha-network
             @network-config-changed=${this._configChanged}
-            .hass=${this.hass}
             .networkConfig=${this._networkConfig}
           ></ha-network>
         </div>

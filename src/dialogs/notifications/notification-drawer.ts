@@ -132,7 +132,6 @@ export class HuiNotificationDrawer extends KeyboardShortcutMixin(LitElement) {
           </div>
           <ha-icon-button-prev
             slot="actionItems"
-            .hass=${this.hass}
             @click=${this.closeDialog}
             .label=${this.hass.localize("ui.notification_drawer.close")}
           >

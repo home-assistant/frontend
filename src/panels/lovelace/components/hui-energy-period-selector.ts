@@ -364,7 +364,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
               ${!this.narrow
                 ? html`<ha-button
                     appearance="filled"
-                    size="small"
+                    size="s"
                     @click=${this._pickNow}
                   >
                     ${this.hass.localize(

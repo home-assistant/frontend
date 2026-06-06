@@ -77,9 +77,22 @@ jobs:
         env:
           GITHUB_REF: ${{ github.ref }}
         run: |
-          # Sleep to give pypi time to populate the new version across mirrors
-          sleep 240
           version=$(echo "$GITHUB_REF" | awk -F"/" '{print $NF}' )
+          # Wait for the package to become available on PyPI
+          echo "Waiting for home-assistant-frontend==$version to appear on PyPI..."
+          for i in $(seq 1 30); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/home-assistant-frontend/$version/json")
+            if [ "$status" = "200" ]; then
+              echo "Package is available on PyPI!"
+              break
+            fi
+            if [ "$i" = "30" ]; then
+              echo "Timed out waiting for package to appear on PyPI"
+              exit 1
+            fi
+            echo "Not available yet (HTTP $status), retrying in 30 seconds... ($i/30)"
+            sleep 30
+          done
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       # home-assistant/wheels doesn't support SHA pinning

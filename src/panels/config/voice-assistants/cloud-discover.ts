@@ -73,7 +73,7 @@ export class CloudDiscover extends LitElement {
           <div class="more">
             <ha-button
               appearance="plain"
-              size="small"
+              size="s"
               href="https://www.nabucasa.com"
               target="_blank"
               rel="noreferrer"

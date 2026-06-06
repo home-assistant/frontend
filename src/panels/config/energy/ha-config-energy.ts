@@ -1,5 +1,11 @@
 import "../../../layouts/hass-error-screen";
-import { mdiDownload, mdiFire, mdiLightningBolt, mdiWater } from "@mdi/js";
+import {
+  mdiDownload,
+  mdiFire,
+  mdiLightningBolt,
+  mdiViewDashboardEdit,
+  mdiWater,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -31,7 +37,9 @@ import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
 import { fileDownload } from "../../../util/file_download";
+import { showToast } from "../../../util/toast";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { showEnergyCustomiseDialog } from "./dialogs/show-dialog-energy-customise";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -124,14 +132,22 @@ class HaConfigEnergy extends LitElement {
         .route=${this.route}
         .tabs=${TABS}
       >
-        <ha-icon-button
-          slot="toolbar-icon"
-          .path=${mdiDownload}
-          .label=${this.hass.localize(
-            "ui.panel.config.devices.download_diagnostics"
-          )}
-          @click=${this._downloadDiagnostics}
-        ></ha-icon-button>
+        <div slot="toolbar-icon" class="toolbar-icons">
+          <ha-icon-button
+            .path=${mdiViewDashboardEdit}
+            .label=${this.hass.localize(
+              "ui.panel.config.energy.customise.toolbar_action"
+            )}
+            @click=${this._customise}
+          ></ha-icon-button>
+          <ha-icon-button
+            .path=${mdiDownload}
+            .label=${this.hass.localize(
+              "ui.panel.config.devices.download_diagnostics"
+            )}
+            @click=${this._downloadDiagnostics}
+          ></ha-icon-button>
+        </div>
         <ha-alert>
           ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
@@ -254,6 +270,20 @@ class HaConfigEnergy extends LitElement {
     this._statsMetadata = statsMetadata;
   }
 
+  private _customise() {
+    if (!this._preferences) {
+      return;
+    }
+    showEnergyCustomiseDialog(this, {
+      preferences: this._preferences,
+      saveCallback: () => {
+        showToast(this, {
+          message: this.hass.localize("ui.panel.config.energy.customise.saved"),
+        });
+      },
+    });
+  }
+
   private async _downloadDiagnostics() {
     const data = {
       version: this.hass.config.version,
@@ -285,6 +315,10 @@ class HaConfigEnergy extends LitElement {
     return [
       haStyle,
       css`
+        .toolbar-icons {
+          display: flex;
+          align-items: center;
+        }
         .content {
           padding: 0 var(--ha-space-5);
           max-width: 1040px;

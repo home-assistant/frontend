@@ -50,7 +50,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.state === "on"
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               variant="danger"
               @click=${this._cancelScript}
             >
@@ -66,7 +66,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._runScript}
               .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
             >
