@@ -196,6 +196,7 @@ export interface EnergyDistributionCardConfig extends EnergyCardConfig {
 }
 export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
+  show_legend?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
