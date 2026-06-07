@@ -5,6 +5,11 @@ import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-textarea";
 
+const LONG_VALUE = Array.from(
+  { length: 30 },
+  (_, i) => `Line ${i + 1}: this content overflows the max-height and scrolls.`
+).join("\n");
+
 @customElement("demo-components-ha-textarea")
 export class DemoHaTextarea extends LitElement {
   protected render(): TemplateResult {
@@ -37,6 +42,11 @@ export class DemoHaTextarea extends LitElement {
                     label="Autogrow with value"
                     resize="auto"
                     value="This textarea will grow as you type more content into it. Try adding more lines to see the effect."
+                  ></ha-textarea>
+                  <ha-textarea
+                    label="Autogrow capped (scrolls past max-height)"
+                    resize="auto"
+                    .value=${LONG_VALUE}
                   ></ha-textarea>
                 </div>
 
