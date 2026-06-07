@@ -48,19 +48,6 @@ const _deviceEntities = memoizeOne(
   }
 );
 
-const _mobileAppBatteryChargingEntity = memoizeOne(
-  (
-    hass: HomeAssistant,
-    entities: EntityRegistryDisplayEntry[]
-  ): EntityRegistryDisplayEntry | undefined =>
-    entities.find(
-      (entity) =>
-        hass.states[entity.entity_id] &&
-        entity.platform === "mobile_app" &&
-        entity.name === "Battery state"
-    )
-);
-
 export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
@@ -74,14 +61,12 @@ export const filterLowBatteryEntities = (
     const deviceId = hass.entities[entityId]?.device_id;
     const entities = deviceId ? _deviceEntities(deviceId, hass.entities) : [];
 
-    const batteryChargingEntity =
-      findBatteryChargingEntity(hass, entities) ??
-      _mobileAppBatteryChargingEntity(hass, entities);
+    const batteryChargingEntity = findBatteryChargingEntity(hass, entities);
     const batteryCharging = batteryChargingEntity
       ? hass.states[batteryChargingEntity?.entity_id]
       : undefined;
 
-    if (batteryCharging && ["on", "charging"].includes(batteryCharging.state)) {
+    if (batteryCharging && batteryCharging.state === "on") {
       return false;
     }
 
