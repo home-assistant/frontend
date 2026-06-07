@@ -169,6 +169,9 @@ export class SupervisorAppsRepositoryEl extends LitElement {
           cursor: pointer;
           overflow: hidden;
         }
+        ha-card:hover {
+          background-color: var(--ha-color-fill-neutral-quiet-resting);
+        }
         .card-content.has-footer {
           padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
         }

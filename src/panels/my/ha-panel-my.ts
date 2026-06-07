@@ -296,6 +296,9 @@ export const getMyRedirects = (): Redirects => ({
     component: "history",
     redirect: "/history",
   },
+  maintenance: {
+    redirect: "/maintenance",
+  },
   overview: {
     redirect: "/home/overview",
   },
