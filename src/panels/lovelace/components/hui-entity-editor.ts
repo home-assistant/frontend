@@ -247,6 +247,11 @@ export class HuiEntityEditor extends LitElement {
     .entity ha-entity-picker {
       flex-grow: 1;
     }
+    ha-entity-picker:is([add-button]) {
+      display: block;
+      margin-inline-start: var(--ha-space-1);
+      margin-bottom: var(--ha-space-1);
+    }
     ha-md-list {
       gap: 8px;
       padding-top: 0;
