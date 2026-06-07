@@ -1197,6 +1197,7 @@
       "data-table": {
         "search": "Search",
         "no-data": "No data",
+        "no_match_filter": "No rows matching current filters",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
         "clear": "Clear",
