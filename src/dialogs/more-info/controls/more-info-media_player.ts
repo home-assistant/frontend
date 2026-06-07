@@ -116,12 +116,14 @@ class MoreInfoMediaPlayer extends LitElement {
       MediaPlayerEntityFeature.VOLUME_SET
     );
 
+    const assumedState = this.stateObj.attributes.assumed_state === true;
+
     return html`${(supportsFeature(
       this.stateObj!,
       MediaPlayerEntityFeature.VOLUME_SET
     ) ||
       supportsFeature(this.stateObj!, MediaPlayerEntityFeature.VOLUME_STEP)) &&
-    stateActive(this.stateObj!)
+    (stateActive(this.stateObj!) || assumedState)
       ? html`
           <div class="volume">
             ${supportsMute
