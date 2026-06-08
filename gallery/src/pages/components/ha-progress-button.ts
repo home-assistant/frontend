@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-svg-icon";
@@ -65,9 +66,11 @@ export class DemoHaProgressButton extends LitElement {
     `;
   }
 
-  private async _clickedSuccess(ev: CustomEvent): Promise<void> {
+  private _clickedSuccess(
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-progress-button"]>
+  ) {
     console.log("Clicked success");
-    const button = ev.currentTarget as any;
+    const button = ev.currentTarget;
     button.progress = true;
 
     setTimeout(() => {
@@ -76,8 +79,10 @@ export class DemoHaProgressButton extends LitElement {
     }, 1000);
   }
 
-  private async _clickedFail(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
+  private _clickedFail(
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-progress-button"]>
+  ) {
+    const button = ev.currentTarget;
     button.progress = true;
 
     setTimeout(() => {
