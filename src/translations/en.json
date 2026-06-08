@@ -6595,6 +6595,8 @@
           "data_table": {
             "icon": "Icon",
             "device": "Device",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
             "integration": "Integration",
             "firmware_version": "Firmware",
             "battery": "Battery",
@@ -7313,8 +7315,6 @@
             "information": "Device information",
             "ieee": "IEEE",
             "nwk": "NWK",
-            "manufacturer": "Manufacturer",
-            "model": "Model",
             "bindings_error": "Failed to load binding options",
             "no_bindings": "No bindable devices or groups were found",
             "not_found": "Zigbee device not found",
