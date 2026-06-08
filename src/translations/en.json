@@ -7417,7 +7417,7 @@
           },
           "device_binding": {
             "header": "Device binding",
-            "introduction": "Bind or unbind this device to another Zigbee device.",
+            "introduction": "Bind this device to another Zigbee device or unbind it.",
             "bind": "Bind",
             "unbind": "Unbind",
             "picker_label": "Bindable devices"
