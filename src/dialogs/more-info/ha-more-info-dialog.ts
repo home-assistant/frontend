@@ -856,7 +856,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin()(
           })}
         >
           ${keyed(
-            this._entityId,
+            `${this._entityId}-${this._currView}`,
             html`
               <div
                 class="content ha-scrollbar"
@@ -950,6 +950,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin()(
     const previousView = changedProps.get("_currView") as
       | MoreInfoView
       | undefined;
+
+    if (previousView === "settings" && this._currView !== "settings") {
+      this._discardDirtyStateChanges();
+    }
 
     if (previousView === "details" && this._currView !== "details") {
       const dialog =

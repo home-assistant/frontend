@@ -183,6 +183,17 @@ export const DirtyStateProviderMixin =
       }
 
       /**
+       * Discard current changes and restore the last clean snapshot.
+       */
+      protected _discardDirtyStateChanges(): void {
+        this._dirtyCurrentState = this._dirtyInitialState;
+        this._dirtyStateContext = this._buildContextValue(
+          this._dirtyInitialState,
+          false
+        );
+      }
+
+      /**
        * Whether the current state differs from the initial snapshot.
        */
       public get isDirtyState(): boolean {
