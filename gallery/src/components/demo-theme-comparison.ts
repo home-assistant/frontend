@@ -42,7 +42,7 @@ export class DemoThemeComparison extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProperties: PropertyValues<this>) {
+  protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     this._applyFlippedTheme();
   }

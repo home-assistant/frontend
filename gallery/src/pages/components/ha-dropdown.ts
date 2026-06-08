@@ -26,7 +26,7 @@ export class DemoHaDropdown extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-dropdown">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <ha-dropdown>
                   <ha-button slot="trigger" with-caret>Dropdown</ha-button>

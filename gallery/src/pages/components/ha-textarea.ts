@@ -17,7 +17,7 @@ export class DemoHaTextarea extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-textarea">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <h3>Basic</h3>
                 <div class="row">

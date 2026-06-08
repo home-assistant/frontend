@@ -14,7 +14,7 @@ export class DemoHaProgressButton extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-progress-button">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <ha-progress-button @click=${this._clickedSuccess}>
                   Success

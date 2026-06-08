@@ -56,7 +56,7 @@ export class DemoHaControlSwitch extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-control-switch">
+            <ha-card slot=${slot}>
               ${repeat(switches, (sw) => {
                 const { id, label, ...config } = sw;
                 return html`

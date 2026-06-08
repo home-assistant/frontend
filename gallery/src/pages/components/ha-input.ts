@@ -47,7 +47,7 @@ export class DemoHaInput extends LitElement {
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
             <div slot=${slot} class="panel-content">
-              <ha-card header="ha-input">
+              <ha-card>
                 <div class="card-content">
                   <h3>Basic</h3>
                   <div class="row">

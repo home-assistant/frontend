@@ -138,7 +138,7 @@ export class DemoHaAlert extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-alert demo">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 ${alerts.map(
                   (alert) => html`

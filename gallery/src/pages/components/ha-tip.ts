@@ -33,7 +33,7 @@ export class DemoHaTip extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-tip demo">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 ${tips.map((tip) => html`<ha-tip>${tip}</ha-tip>`)}
               </div>

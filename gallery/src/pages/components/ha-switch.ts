@@ -15,7 +15,7 @@ export class DemoHaSwitch extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-switch">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <div class="row">
                   <span>Unchecked</span>

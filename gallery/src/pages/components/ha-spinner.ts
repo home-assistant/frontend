@@ -16,7 +16,7 @@ export class DemoHaSpinner extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-spinner demo">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <ha-spinner></ha-spinner>
                 <ha-spinner size="tiny"></ha-spinner>

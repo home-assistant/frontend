@@ -63,7 +63,7 @@ export class DemoHaBadge extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-badge demo">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 ${badges.map(
                   (badge) => html`

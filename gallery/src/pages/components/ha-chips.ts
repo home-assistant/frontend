@@ -26,7 +26,7 @@ const chips: {
 export class DemoHaChips extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <ha-card header="ha-chip demo">
+      <ha-card>
         <div class="card-content">
           <p>Action chip</p>
           <ha-chip-set>

@@ -19,7 +19,7 @@ export class DemoHaButton extends LitElement {
       <demo-theme-comparison>
         ${THEME_COMPARISON_PANELS.map(
           ({ slot }) => html`
-            <ha-card slot=${slot} header="ha-button">
+            <ha-card slot=${slot}>
               <div class="card-content">
                 ${variants.map(
                   (variant) => html`
