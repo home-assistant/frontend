@@ -559,6 +559,7 @@ class HaGallery extends LitElement {
         --ha-sidebar-width: 300px;
         --ha-sidebar-expanded-width: 300px;
         --ha-sidebar-expanded-item-width: 292px;
+        --ha-sidebar-expanded-section-item-width: 256px;
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
         --app-header-border-bottom: 1px solid var(--divider-color);
@@ -581,7 +582,7 @@ class HaGallery extends LitElement {
 
       .gallery-sidebar-section .gallery-nav-item {
         margin-inline-start: var(--ha-space-4);
-        width: calc(var(--ha-sidebar-width, 256px) - var(--ha-space-11));
+        width: var(--ha-sidebar-expanded-section-item-width, 248px);
       }
 
       .gallery-sidebar-icon,
@@ -605,7 +606,7 @@ class HaGallery extends LitElement {
         --ha-row-item-padding-block: 0;
         --ha-row-item-padding-inline: var(--ha-space-3);
         position: relative;
-        width: calc(var(--ha-sidebar-width, 256px) - var(--ha-space-2));
+        width: var(--ha-sidebar-expanded-item-width, 248px);
         color: var(--sidebar-text-color);
       }
 
