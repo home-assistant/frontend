@@ -27,7 +27,6 @@ import "./components/page-description";
 const RTL_STORAGE_KEY = "gallery-rtl";
 const THEME_STORAGE_KEY = "gallery-theme";
 const SETTINGS_PAGE = "settings";
-const DEFAULT_PAGE = `${SIDEBAR[0].category}/${SIDEBAR[0].pages![0]}`;
 
 const GITHUB_DEMO_URL =
   "https://github.com/home-assistant/frontend/blob/dev/gallery/src/pages/";
@@ -37,6 +36,16 @@ interface GalleryPage {
   description?: unknown;
   demo?: unknown;
 }
+
+interface GallerySidebarGroup {
+  category: string;
+  header?: string;
+  icon?: string;
+  pages: string[];
+}
+
+const GALLERY_SIDEBAR = SIDEBAR as GallerySidebarGroup[];
+const DEFAULT_PAGE = `${GALLERY_SIDEBAR[0].category}/${GALLERY_SIDEBAR[0].pages[0]}`;
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
 
@@ -252,13 +261,13 @@ class HaGallery extends LitElement {
   private _renderSidebarNavigation() {
     const sidebar: unknown[] = [];
 
-    for (const group of SIDEBAR) {
+    for (const group of GALLERY_SIDEBAR) {
       const links: unknown[] = [];
-      const expanded = group.pages!.some(
+      const expanded = group.pages.some(
         (page) => this._page === `${group.category}/${page}`
       );
 
-      for (const page of group.pages!) {
+      for (const page of group.pages) {
         const key = `${group.category}/${page}`;
         if (!(key in PAGES)) {
           console.error("Undefined page referenced in sidebar.js:", key);
@@ -268,7 +277,8 @@ class HaGallery extends LitElement {
           this._renderPageLink(
             key,
             PAGES[key].metadata.title || page,
-            group.header ? undefined : "main-navigation"
+            group.header ? undefined : "main-navigation",
+            group.header ? undefined : group.icon
           )
         );
       }
@@ -282,6 +292,13 @@ class HaGallery extends LitElement {
                 .header=${group.header}
                 ?expanded=${expanded}
               >
+                ${group.icon
+                  ? html`<ha-svg-icon
+                      slot="leading-icon"
+                      class="gallery-sidebar-icon"
+                      .path=${group.icon}
+                    ></ha-svg-icon>`
+                  : ""}
                 ${links}
               </ha-expansion-panel>
             `
@@ -292,17 +309,26 @@ class HaGallery extends LitElement {
     return sidebar;
   }
 
-  private _renderPageLink(page: string, title: string, slot?: string) {
+  private _renderPageLink(
+    page: string,
+    title: string,
+    slot?: string,
+    iconPath?: string
+  ) {
     return html`
       <ha-list-item-button
         slot=${ifDefined(slot)}
         class=${classMap({
           "gallery-nav-item": true,
+          "has-icon": Boolean(iconPath),
           selected: this._page === page,
         })}
         ?selected=${this._page === page}
         href=${`#${page}`}
       >
+        ${iconPath
+          ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+          : ""}
         <span slot="headline">${title}</span>
       </ha-list-item-button>
     `;
@@ -525,6 +551,14 @@ class HaGallery extends LitElement {
         margin-inline-start: var(--ha-space-4);
       }
 
+      .gallery-sidebar-icon,
+      .gallery-nav-item ha-svg-icon[slot="start"] {
+        color: var(--sidebar-icon-color);
+        flex-shrink: 0;
+        height: var(--ha-space-6);
+        width: var(--ha-space-6);
+      }
+
       .gallery-nav-item,
       .gallery-settings-item {
         flex-shrink: 0;
@@ -540,6 +574,7 @@ class HaGallery extends LitElement {
         color: var(--sidebar-text-color);
       }
 
+      .gallery-nav-item.has-icon,
       .gallery-settings-item {
         --ha-row-item-padding-inline: var(--ha-space-1) var(--ha-space-3);
       }
@@ -576,6 +611,10 @@ class HaGallery extends LitElement {
       }
 
       .gallery-settings-item[selected] ha-svg-icon[slot="start"] {
+        color: var(--sidebar-selected-icon-color);
+      }
+
+      .gallery-nav-item[selected] ha-svg-icon[slot="start"] {
         color: var(--sidebar-selected-icon-color);
       }
 
