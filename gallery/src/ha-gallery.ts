@@ -135,7 +135,7 @@ class HaGallery extends LitElement {
           ${this._renderSidebarNavigation()} ${this._renderSettingsItem()}
         </ha-sidebar>
         <div slot="appContent" class="app-content">
-          <ha-top-app-bar-fixed>
+          <ha-top-app-bar-fixed .narrow=${this._narrow}>
             ${this._narrow || !this._drawerOpen
               ? html`<ha-icon-button
                   slot="navigationIcon"
@@ -528,7 +528,6 @@ class HaGallery extends LitElement {
         -moz-user-select: initial;
         --ha-sidebar-width: 300px;
         --ha-sidebar-expanded-width: 300px;
-        --header-height: 64px;
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
         --app-header-border-bottom: 1px solid var(--divider-color);
