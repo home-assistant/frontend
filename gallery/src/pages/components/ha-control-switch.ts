@@ -9,7 +9,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-switch";
 
@@ -104,23 +103,6 @@ export class DemoHaControlSwitch extends LitElement {
         )}
       </div>
     `;
-  }
-
-  firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
   }
 
   static styles = css`

@@ -1,8 +1,7 @@
 import { mdiHome } from "@mdi/js";
-import type { TemplateResult, PropertyValues } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import { titleCase } from "../../../../src/common/string/title-case";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
@@ -116,23 +115,6 @@ export class DemoHaButton extends LitElement {
         `
       )}
     `;
-  }
-
-  firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
   }
 
   static styles = css`

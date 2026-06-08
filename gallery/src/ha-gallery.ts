@@ -1,161 +1,186 @@
-import { mdiMenu, mdiSwapHorizontal } from "@mdi/js";
+import { mdiCog, mdiMenu } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
+import type { HASSDomEvent } from "../../src/common/dom/fire_event";
 import { setDirectionStyles } from "../../src/common/util/compute_rtl";
 import "../../src/components/ha-button";
 import "../../src/components/ha-drawer";
-import type { HaDrawer } from "../../src/components/ha-drawer";
 import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import "../../src/components/ha-icon-button";
+import "../../src/components/ha-sidebar";
+import "../../src/components/item/ha-list-item-button";
 import "../../src/components/ha-svg-icon";
 import "../../src/components/ha-top-app-bar-fixed";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
+import type { HomeAssistant, ThemeSettings } from "../../src/types";
 import { PAGES, SIDEBAR } from "../build/import-pages";
+import "./components/gallery-settings";
 import "./components/page-description";
 
 const RTL_STORAGE_KEY = "gallery-rtl";
+const THEME_STORAGE_KEY = "gallery-theme";
+const SETTINGS_PAGE = "settings";
+const DEFAULT_PAGE = `${SIDEBAR[0].category}/${SIDEBAR[0].pages![0]}`;
 
 const GITHUB_DEMO_URL =
   "https://github.com/home-assistant/frontend/blob/dev/gallery/src/pages/";
 
-const FAKE_HASS = {
-  // Just enough for computeRTL for notification-manager
-  language: "en",
-  translationMetadata: {
-    translations: {},
-  },
+interface GalleryPage {
+  metadata: Record<string, unknown>;
+  description?: unknown;
+  demo?: unknown;
+}
+
+const mql = matchMedia("(prefers-color-scheme: dark)");
+
+const loadThemeSettings = (): ThemeSettings => {
+  const stored = localStorage.getItem(THEME_STORAGE_KEY);
+  if (!stored) {
+    return { theme: "default" };
+  }
+
+  try {
+    const value = JSON.parse(stored) as Partial<ThemeSettings>;
+    return {
+      theme: "default",
+      dark: typeof value.dark === "boolean" ? value.dark : undefined,
+      primaryColor:
+        typeof value.primaryColor === "string" ? value.primaryColor : undefined,
+      accentColor:
+        typeof value.accentColor === "string" ? value.accentColor : undefined,
+    };
+  } catch (_err) {
+    return { theme: "default" };
+  }
 };
+
+const galleryLocalize = (key: string) =>
+  (
+    ({
+      "ui.sidebar.sidebar_toggle": "Toggle sidebar",
+      "ui.notification_drawer.title": "Notifications",
+      "ui.sidebar.external_app_configuration": "App configuration",
+      "panel.config": "Settings",
+    }) as Record<string, string>
+  )[key] ?? key;
+
+const galleryConnection = {
+  subscribeMessage(
+    callback: (message: unknown) => void,
+    message: { type?: string }
+  ) {
+    if (message.type === "frontend/subscribe_user_data") {
+      callback({ value: { panelOrder: [], hiddenPanels: [] } });
+    } else if (message.type === "persistent_notification/subscribe") {
+      callback({ type: "current", notifications: {} });
+    }
+    return Promise.resolve(() => undefined);
+  },
+  sendMessagePromise() {
+    return Promise.resolve({ value: null });
+  },
+} as unknown as Connection;
 
 @customElement("ha-gallery")
 class HaGallery extends LitElement {
-  @state() private _page =
-    document.location.hash.substring(1) ||
-    `${SIDEBAR[0].category}/${SIDEBAR[0].pages![0]}`;
+  @state() private _page = this._pageFromLocation();
 
   @state() private _rtl = localStorage.getItem(RTL_STORAGE_KEY) === "true";
+
+  @state() private _themeSettings = loadThemeSettings();
+
+  @state() private _systemDark = mql.matches;
 
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
 
-  @query("ha-drawer")
-  private _drawer!: HaDrawer;
-
   private _narrow = window.matchMedia("(max-width: 600px)").matches;
 
+  @state() private _drawerOpen = !this._narrow;
+
   render() {
-    const sidebar: unknown[] = [];
-
-    for (const group of SIDEBAR) {
-      const links: unknown[] = [];
-
-      for (const page of group.pages!) {
-        const key = `${group.category}/${page}`;
-        const active = this._page === key;
-        if (!(key in PAGES)) {
-          console.error("Undefined page referenced in sidebar.js:", key);
-          continue;
-        }
-        const title = PAGES[key].metadata.title || page;
-        links.push(html`
-          <a ?active=${active} href=${`#${group.category}/${page}`}>${title}</a>
-        `);
-      }
-
-      sidebar.push(
-        group.header
-          ? html`
-              <ha-expansion-panel .header=${group.header}>
-                ${links}
-              </ha-expansion-panel>
-            `
-          : links
-      );
-    }
+    const isSettingsPage = this._page === SETTINGS_PAGE;
+    const page = isSettingsPage ? undefined : PAGES[this._page];
 
     return html`
       <ha-drawer
         .direction=${this._rtl ? "rtl" : "ltr"}
-        .open=${!this._narrow}
+        .open=${this._drawerOpen}
         .type=${this._narrow ? "modal" : "dismissible"}
       >
-        <div class="drawer-title">Home Assistant Design</div>
-        <div class="sidebar">${sidebar}</div>
+        <ha-sidebar
+          .hass=${this._galleryHass}
+          .narrow=${this._narrow}
+          .route=${{ prefix: "", path: this._page }}
+          .alwaysExpand=${true}
+          sidebar-title="Home Assistant Design"
+          @hass-toggle-menu=${this._toggleDrawer}
+        >
+          ${this._renderSidebarNavigation()} ${this._renderSettingsItem()}
+        </ha-sidebar>
         <div slot="appContent" class="app-content">
           <ha-top-app-bar-fixed>
-            <ha-icon-button
-              slot="navigationIcon"
-              @click=${this._menuTapped}
-              .path=${mdiMenu}
-            ></ha-icon-button>
+            ${this._narrow || !this._drawerOpen
+              ? html`<ha-icon-button
+                  slot="navigationIcon"
+                  @click=${this._toggleDrawer}
+                  .path=${mdiMenu}
+                ></ha-icon-button>`
+              : ""}
 
             <div slot="title">
-              ${PAGES[this._page].metadata.title || this._page.split("/")[1]}
+              ${isSettingsPage
+                ? "Settings"
+                : page?.metadata.title || this._page.split("/")[1]}
             </div>
             <div class="content">
-              ${PAGES[this._page].description
-                ? html`
-                    <page-description .page=${this._page}></page-description>
-                  `
-                : ""}
-              ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+              ${isSettingsPage
+                ? html`<gallery-settings
+                    .hass=${this._galleryHass}
+                    .themeSettings=${this._themeSettings}
+                    .narrow=${this._narrow}
+                    .rtl=${this._rtl}
+                    @theme-settings-changed=${this._themeSettingsChanged}
+                    @gallery-rtl-changed=${this._rtlChanged}
+                  ></gallery-settings>`
+                : html`
+                    ${page?.description
+                      ? html`
+                          <page-description .page=${this._page}>
+                          </page-description>
+                        `
+                      : ""}
+                    ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+                  `}
             </div>
-            <div class="page-footer">
-              <div class="edit-docs">
-                <div class="header">Help us to improve our documentation</div>
-                <div class="secondary">
-                  Suggest an edit to this page, or provide/view feedback for
-                  this page.
-                </div>
-                <div>
-                  ${PAGES[this._page].description ||
-                  Object.keys(PAGES[this._page].metadata).length > 0
-                    ? html`
-                        <a
-                          href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
-                          target="_blank"
-                        >
-                          Edit text
-                        </a>
-                      `
-                    : ""}
-                  ${PAGES[this._page].demo
-                    ? html`
-                        <a
-                          href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
-                          target="_blank"
-                        >
-                          Edit demo
-                        </a>
-                      `
-                    : ""}
-                </div>
-              </div>
-              <div class="rtl-toggle">
-                <ha-icon-button
-                  @click=${this._toggleRtl}
-                  .label=${this._rtl ? "Switch to LTR" : "Switch to RTL"}
-                >
-                  <ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon>
-                </ha-icon-button>
-              </div>
-            </div>
+            ${isSettingsPage || !page ? "" : this._renderPageFooter(page)}
           </ha-top-app-bar-fixed>
         </div>
       </ha-drawer>
       <notification-manager
-        .hass=${FAKE_HASS}
+        .hass=${this._galleryHass}
         id="notifications"
       ></notification-manager>
     `;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    mql.addEventListener("change", this._systemDarkChanged);
   }
 
   firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._applyDirection();
+    this._applyTheme();
 
     this.addEventListener("show-notification", (ev) =>
       this._notifications.showDialog({ message: ev.detail.message })
@@ -171,15 +196,25 @@ class HaGallery extends LitElement {
       }
     });
 
-    document.location.hash = this._page;
+    if (document.location.hash.substring(1) !== this._page) {
+      document.location.hash = this._page;
+    }
 
-    window.addEventListener("hashchange", () => {
-      this._page = document.location.hash.substring(1);
-      if (this._narrow) {
-        this._drawer.open = false;
-      }
-    });
+    window.addEventListener("hashchange", this._hashChanged);
   }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    mql.removeEventListener("change", this._systemDarkChanged);
+    window.removeEventListener("hashchange", this._hashChanged);
+  }
+
+  private _hashChanged = () => {
+    this._page = this._pageFromLocation();
+    if (this._narrow) {
+      this._drawerOpen = false;
+    }
+  };
 
   updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -188,7 +223,15 @@ class HaGallery extends LitElement {
       this._applyDirection();
     }
 
+    if (changedProps.has("_themeSettings") || changedProps.has("_systemDark")) {
+      this._applyTheme();
+    }
+
     if (!changedProps.has("_page")) {
+      return;
+    }
+
+    if (this._page === SETTINGS_PAGE) {
       return;
     }
 
@@ -197,26 +240,257 @@ class HaGallery extends LitElement {
     }
 
     const menuItem = this.shadowRoot!.querySelector(
-      `a[href="#${this._page}"]`
-    )!;
+      `ha-list-item-button[href="#${this._page}"]`
+    );
 
     // Make sure section is expanded
-    if (menuItem.parentElement instanceof HaExpansionPanel) {
+    if (menuItem?.parentElement instanceof HaExpansionPanel) {
       menuItem.parentElement.expanded = true;
     }
   }
 
-  private _menuTapped() {
-    this._drawer.open = !this._drawer.open;
+  private _renderSidebarNavigation() {
+    const sidebar: unknown[] = [];
+
+    for (const group of SIDEBAR) {
+      const links: unknown[] = [];
+      const expanded = group.pages!.some(
+        (page) => this._page === `${group.category}/${page}`
+      );
+
+      for (const page of group.pages!) {
+        const key = `${group.category}/${page}`;
+        if (!(key in PAGES)) {
+          console.error("Undefined page referenced in sidebar.js:", key);
+          continue;
+        }
+        links.push(
+          this._renderPageLink(
+            key,
+            PAGES[key].metadata.title || page,
+            group.header ? undefined : "main-navigation"
+          )
+        );
+      }
+
+      sidebar.push(
+        group.header
+          ? html`
+              <ha-expansion-panel
+                slot="main-navigation"
+                class="gallery-sidebar-section"
+                .header=${group.header}
+                ?expanded=${expanded}
+              >
+                ${links}
+              </ha-expansion-panel>
+            `
+          : links
+      );
+    }
+
+    return sidebar;
   }
 
-  private _toggleRtl() {
-    this._rtl = !this._rtl;
-    localStorage.setItem(RTL_STORAGE_KEY, String(this._rtl));
+  private _renderPageLink(page: string, title: string, slot?: string) {
+    return html`
+      <ha-list-item-button
+        slot=${ifDefined(slot)}
+        class=${classMap({
+          "gallery-nav-item": true,
+          selected: this._page === page,
+        })}
+        ?selected=${this._page === page}
+        href=${`#${page}`}
+      >
+        <span slot="headline">${title}</span>
+      </ha-list-item-button>
+    `;
+  }
+
+  private _renderSettingsItem() {
+    return html`
+      <ha-list-item-button
+        slot="fixed-navigation"
+        class=${classMap({
+          "gallery-settings-item": true,
+          selected: this._page === SETTINGS_PAGE,
+        })}
+        ?selected=${this._page === SETTINGS_PAGE}
+        href="#settings"
+      >
+        <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
+        <span slot="headline">Settings</span>
+      </ha-list-item-button>
+    `;
+  }
+
+  private _renderPageFooter(page: GalleryPage) {
+    return html`<div class="page-footer">
+      <div class="edit-docs">
+        <div class="header">Help us to improve our documentation</div>
+        <div class="secondary">
+          Suggest an edit to this page, or provide/view feedback for this page.
+        </div>
+        <div>
+          ${page.description || Object.keys(page.metadata).length > 0
+            ? html`
+                <a
+                  href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
+                  target="_blank"
+                >
+                  Edit text
+                </a>
+              `
+            : ""}
+          ${page.demo
+            ? html`
+                <a href=${`${GITHUB_DEMO_URL}${this._page}.ts`} target="_blank">
+                  Edit demo
+                </a>
+              `
+            : ""}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  private _toggleDrawer(ev?: Event) {
+    ev?.stopPropagation();
+    this._drawerOpen = !this._drawerOpen;
   }
 
   private _applyDirection() {
     setDirectionStyles(this._rtl ? "rtl" : "ltr", this);
+  }
+
+  private _themeSettingsChanged(ev: HASSDomEvent<Partial<ThemeSettings>>) {
+    this._themeSettings = {
+      ...this._themeSettings,
+      ...ev.detail,
+      theme: "default",
+    };
+    localStorage.setItem(
+      THEME_STORAGE_KEY,
+      JSON.stringify(this._themeSettings)
+    );
+  }
+
+  private _rtlChanged(ev: HASSDomEvent<{ rtl: boolean }>) {
+    this._rtl = ev.detail.rtl;
+    localStorage.setItem(RTL_STORAGE_KEY, String(this._rtl));
+  }
+
+  private _systemDarkChanged = (ev: MediaQueryListEvent) => {
+    this._systemDark = ev.matches;
+  };
+
+  private _applyTheme() {
+    applyThemesOnElement(
+      document.documentElement,
+      this._themes,
+      "default",
+      this._themeSettings,
+      true
+    );
+
+    let schemeMeta = document.querySelector("meta[name=color-scheme]");
+    if (!schemeMeta) {
+      schemeMeta = document.createElement("meta");
+      schemeMeta.setAttribute("name", "color-scheme");
+      document.head.appendChild(schemeMeta);
+    }
+    schemeMeta.setAttribute(
+      "content",
+      this._effectiveDarkMode ? "dark" : "light"
+    );
+    document.documentElement.style.colorScheme = this._effectiveDarkMode
+      ? "dark"
+      : "light";
+
+    const themeMeta = document.querySelector("meta[name=theme-color]");
+    if (themeMeta) {
+      if (!themeMeta.hasAttribute("default-content")) {
+        themeMeta.setAttribute(
+          "default-content",
+          themeMeta.getAttribute("content")!
+        );
+      }
+      const styles = getComputedStyle(document.documentElement);
+      const themeColor =
+        styles.getPropertyValue("--app-theme-color").trim() ||
+        styles.getPropertyValue("--primary-background-color").trim() ||
+        themeMeta.getAttribute("default-content")!;
+      themeMeta.setAttribute("content", themeColor);
+    }
+  }
+
+  private _pageFromLocation() {
+    const page = document.location.hash.substring(1);
+    return page === SETTINGS_PAGE || page in PAGES ? page : DEFAULT_PAGE;
+  }
+
+  private get _effectiveDarkMode() {
+    return this._themeSettings.dark ?? this._systemDark;
+  }
+
+  private get _themes(): HomeAssistant["themes"] {
+    return {
+      default_theme: "default",
+      default_dark_theme: null,
+      themes: {},
+      darkMode: this._effectiveDarkMode,
+      theme: "default",
+    };
+  }
+
+  private get _galleryHass(): HomeAssistant {
+    return {
+      auth: {},
+      areas: {},
+      config: {},
+      connected: true,
+      connection: galleryConnection,
+      debugConnection: false,
+      devices: {},
+      dockedSidebar: "docked",
+      enableShortcuts: true,
+      entities: {},
+      floors: {},
+      hassUrl: (path) => path,
+      kioskMode: false,
+      language: "en",
+      loadBackendTranslation: async () => galleryLocalize,
+      loadFragmentTranslation: async () => undefined,
+      locale: { language: "en" },
+      localize: galleryLocalize,
+      panelUrl: this._page,
+      panels: {},
+      selectedLanguage: null,
+      selectedTheme: this._themeSettings,
+      services: {},
+      states: {},
+      suspendWhenHidden: false,
+      systemData: {},
+      themes: this._themes,
+      translationMetadata: { translations: {} },
+      user: {
+        id: "gallery",
+        is_admin: false,
+        is_owner: false,
+        name: "Settings",
+        credentials: [],
+        mfa_modules: [],
+      },
+      userData: {},
+      vibrate: false,
+      callApi: async () => undefined,
+      callApiRaw: async () => new Response(),
+      callService: async () => ({ context: { id: "gallery" } }),
+      callWS: async () => undefined,
+      fetchWithAuth: async () => new Response(),
+      sendWS: () => undefined,
+    } as unknown as HomeAssistant;
   }
 
   static styles = [
@@ -226,49 +500,83 @@ class HaGallery extends LitElement {
         -ms-user-select: initial;
         -webkit-user-select: initial;
         -moz-user-select: initial;
-        --ha-sidebar-width: 256px;
+        --ha-sidebar-width: 300px;
+        --ha-sidebar-expanded-width: 300px;
         --header-height: 64px;
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+        --app-header-border-bottom: 1px solid var(--divider-color);
       }
 
-      .sidebar {
+      .gallery-sidebar-section {
+        color: var(--sidebar-text-color);
+        margin: 0 var(--ha-space-1) var(--ha-space-1);
+        border-radius: var(--ha-border-radius-sm);
+      }
+
+      .gallery-sidebar-section::part(summary) {
+        min-height: var(--ha-space-10);
+        padding: 0 var(--ha-space-3);
+        border-radius: var(--ha-border-radius-sm);
         box-sizing: border-box;
-        max-height: calc(100vh - var(--header-height));
-        overflow-y: auto;
-        padding: 4px;
       }
 
-      .drawer-title {
-        align-items: center;
-        box-sizing: border-box;
-        color: var(--primary-text-color);
-        display: flex;
-        font-size: var(--ha-font-size-l);
-        font-weight: var(--ha-font-weight-medium);
-        min-height: var(--header-height);
-        padding: 0 16px;
+      .gallery-sidebar-section .gallery-nav-item {
+        margin-inline-start: var(--ha-space-4);
       }
 
-      .sidebar a {
-        color: var(--primary-text-color);
-        display: block;
-        padding: 12px;
-        text-decoration: none;
+      .gallery-nav-item,
+      .gallery-settings-item {
+        flex-shrink: 0;
+        margin: 0 var(--ha-space-1) var(--ha-space-1);
+        border-radius: var(--ha-border-radius-sm);
+        --ha-row-item-min-height: var(--ha-space-10);
+        --ha-row-item-padding-block: 0;
+        --ha-row-item-padding-inline: var(--ha-space-3);
         position: relative;
+        width: calc(
+          var(--ha-sidebar-expanded-width, 256px) - var(--ha-space-2)
+        );
+        color: var(--sidebar-text-color);
       }
 
-      .sidebar a[active]::before {
-        border-radius: var(--ha-border-radius-lg);
+      .gallery-settings-item {
+        --ha-row-item-padding-inline: var(--ha-space-1) var(--ha-space-3);
+      }
+
+      .gallery-nav-item::part(headline),
+      .gallery-settings-item::part(headline) {
+        color: inherit;
+      }
+
+      .gallery-nav-item[selected],
+      .gallery-settings-item[selected] {
+        color: var(--sidebar-selected-icon-color);
+      }
+
+      .gallery-nav-item[selected]::before,
+      .gallery-settings-item[selected]::before {
+        border-radius: var(--ha-border-radius-sm);
         position: absolute;
         top: 0;
-        right: 2px;
+        right: 0;
         bottom: 0;
-        left: 2px;
+        left: 0;
         pointer-events: none;
         content: "";
-        transition: opacity 15ms linear;
-        will-change: opacity;
         background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
+        opacity: var(--dark-divider-opacity);
+      }
+
+      .gallery-settings-item ha-svg-icon[slot="start"] {
+        color: var(--sidebar-icon-color);
+        flex-shrink: 0;
+        height: var(--ha-space-6);
+        width: var(--ha-space-6);
+      }
+
+      .gallery-settings-item[selected] ha-svg-icon[slot="start"] {
+        color: var(--sidebar-selected-icon-color);
       }
 
       .app-content {
@@ -323,18 +631,6 @@ class HaGallery extends LitElement {
         display: inline-block;
         margin: 0 8px;
         text-decoration: none;
-      }
-
-      .rtl-toggle {
-        padding: var(--ha-space-4);
-        display: inline-flex;
-        align-items: flex-end;
-        margin-top: 12px !important;
-      }
-
-      .rtl-toggle ha-icon-button {
-        border: 1px solid var(--divider-color);
-        border-radius: var(--ha-border-radius-pill);
       }
     `,
   ];

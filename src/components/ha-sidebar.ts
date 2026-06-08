@@ -170,6 +170,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: "always-expand", type: Boolean })
   public alwaysExpand = false;
 
+  @property({ attribute: "sidebar-title" }) public sidebarTitle =
+    "Home Assistant";
+
   @state() private _notifications?: PersistentNotification[];
 
   @state() private _updatesCount = 0;
@@ -347,7 +350,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
             ></ha-icon-button>
           `
         : ""}
-      <div class="title">Home Assistant</div>
+      <div class="title">${this.sidebarTitle}</div>
     </div>`;
   }
 
@@ -362,16 +365,28 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       >`;
 
     if (!this._panelOrder || !this._hiddenPanels) {
-      return html`
-        <ha-fade-in .delay=${500}>
-          <ha-spinner size="small"></ha-spinner>
-        </ha-fade-in>
+      return html`<div class="panels-list">
+        <div class="wrapper">
+          ${renderList(
+            html`<slot name="main-navigation">
+              <ha-fade-in .delay=${500}>
+                <ha-spinner size="small"></ha-spinner>
+              </ha-fade-in>
+            </slot>`,
+            "before-spacer",
+            true
+          )}
+          ${this.renderScrollableFades()}
+        </div>
+        ${this._renderSpacer()}
         ${renderList(
-          html`${this._renderFixedPanels(selectedPanel)}`,
+          html`<slot name="fixed-navigation">
+            ${this._renderFixedPanels(selectedPanel)}
+          </slot>`,
           "after-spacer",
           false
         )}
-      `;
+      </div>`;
     }
 
     const defaultPanel = getDefaultPanelUrlPath(this.hass);
@@ -388,7 +403,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="panels-list">
       <div class="wrapper">
         ${renderList(
-      this._renderPanels(beforeSpacer, selectedPanel),
+      html`<slot name="main-navigation">
+        ${this._renderPanels(beforeSpacer, selectedPanel)}
+      </slot>`,
       "before-spacer",
       true
     )}
@@ -396,10 +413,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       </div>
       ${this._renderSpacer()}
       ${renderList(
-      html`
+      html`<slot name="fixed-navigation">
           ${this._renderPanels(afterSpacer, selectedPanel)}
           ${this._renderFixedPanels(selectedPanel)}
-        `,
+        </slot>`,
       "after-spacer",
       false
     )}
@@ -665,7 +682,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           transition: width var(--ha-animation-duration-normal) ease;
         }
         :host([expanded]) .menu {
-          width: calc(256px + var(--safe-area-inset-left, 0px));
+          width: calc(
+            var(--ha-sidebar-expanded-width, 256px) +
+              var(--safe-area-inset-left, 0px)
+          );
         }
         :host([narrow][expanded]) .menu {
           width: 100%;
@@ -748,7 +768,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           color: var(--sidebar-text-color);
         }
         :host([expanded]) ha-list-item-button {
-          width: 248px;
+          width: calc(
+            var(--ha-sidebar-expanded-width, 256px) - var(--ha-space-2)
+          );
         }
         :host([narrow][expanded]) ha-list-item-button {
           width: calc(240px - var(--safe-area-inset-left, 0px));

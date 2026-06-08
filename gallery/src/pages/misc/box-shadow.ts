@@ -1,7 +1,5 @@
-import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 
 const SHADOWS = ["s", "m", "l"] as const;
 
@@ -29,23 +27,6 @@ export class DemoMiscBoxShadow extends LitElement {
         `
       )}
     `;
-  }
-
-  firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
   }
 
   static styles = css`
