@@ -634,11 +634,16 @@ class HaGallery extends LitElement {
       }
 
       .content {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
         flex: 1;
+        padding-top: var(--ha-space-4);
       }
 
       page-description {
-        margin: 16px;
+        display: block;
+        margin: 0 var(--ha-space-4) var(--ha-space-4);
       }
 
       .page-footer {
