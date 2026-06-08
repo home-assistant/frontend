@@ -21,7 +21,11 @@ export const loadGalleryThemeSettings = (): ThemeSettings => {
   }
 
   try {
-    const value = JSON.parse(stored) as Partial<ThemeSettings>;
+    const parsed = JSON.parse(stored) as unknown;
+    const value =
+      parsed && typeof parsed === "object"
+        ? (parsed as Partial<ThemeSettings>)
+        : {};
     return {
       theme: "default",
       dark: typeof value.dark === "boolean" ? value.dark : undefined,

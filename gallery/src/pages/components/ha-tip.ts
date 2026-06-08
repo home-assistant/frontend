@@ -5,6 +5,13 @@ import { customElement, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-tip";
 import { internationalizationContext } from "../../../../src/data/context";
+import {
+  DateFormat,
+  FirstWeekday,
+  NumberFormat,
+  TimeFormat,
+  TimeZone,
+} from "../../../../src/data/translation";
 import type { HomeAssistantInternationalization } from "../../../../src/types";
 import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
@@ -14,19 +21,30 @@ const tips: (string | TemplateResult)[] = [
   html`<i>Tip</i> <b>with</b> <sub>HTML</sub>`,
 ];
 
+const localize = (key: string) => key;
+
+const DEMO_I18N: HomeAssistantInternationalization = {
+  localize,
+  language: "en",
+  selectedLanguage: null,
+  locale: {
+    language: "en",
+    number_format: NumberFormat.language,
+    time_format: TimeFormat.language,
+    date_format: DateFormat.language,
+    first_weekday: FirstWeekday.language,
+    time_zone: TimeZone.local,
+  },
+  translationMetadata: { fragments: [], translations: {} },
+  loadBackendTranslation: async () => localize,
+  loadFragmentTranslation: async () => localize,
+};
+
 @customElement("demo-components-ha-tip")
 export class DemoHaTip extends LitElement {
   @provide({ context: internationalizationContext })
   @state()
-  protected _i18n: HomeAssistantInternationalization = {
-    localize: ((key: string) => key) as any,
-    language: "en",
-    selectedLanguage: null,
-    locale: {} as any,
-    translationMetadata: {} as any,
-    loadBackendTranslation: (async () => (key: string) => key) as any,
-    loadFragmentTranslation: (async () => (key: string) => key) as any,
-  };
+  protected _i18n = DEMO_I18N;
 
   protected render(): TemplateResult {
     return html`

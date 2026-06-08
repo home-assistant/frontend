@@ -10,6 +10,14 @@ import "../../../../src/components/input/ha-input-copy";
 import "../../../../src/components/input/ha-input-multi";
 import "../../../../src/components/input/ha-input-search";
 import { internationalizationContext } from "../../../../src/data/context";
+import {
+  DateFormat,
+  FirstWeekday,
+  NumberFormat,
+  TimeFormat,
+  TimeZone,
+} from "../../../../src/data/translation";
+import type { HomeAssistantInternationalization } from "../../../../src/types";
 import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const LOCALIZE_KEYS: Record<string, string> = {
@@ -22,6 +30,25 @@ const LOCALIZE_KEYS: Record<string, string> = {
   "ui.common.copied_clipboard": "Copied to clipboard",
 };
 
+const localize = (key: string) => LOCALIZE_KEYS[key] ?? key;
+
+const DEMO_I18N: HomeAssistantInternationalization = {
+  localize,
+  language: "en",
+  selectedLanguage: null,
+  locale: {
+    language: "en",
+    number_format: NumberFormat.language,
+    time_format: TimeFormat.language,
+    date_format: DateFormat.language,
+    first_weekday: FirstWeekday.language,
+    time_zone: TimeZone.local,
+  },
+  translationMetadata: { fragments: [], translations: {} },
+  loadBackendTranslation: async () => localize,
+  loadFragmentTranslation: async () => localize,
+};
+
 @customElement("demo-components-ha-input")
 export class DemoHaInput extends LitElement {
   constructor() {
@@ -29,15 +56,7 @@ export class DemoHaInput extends LitElement {
     // Provides internationalizationContext for ha-input-copy, ha-input-multi and ha-input-search
     new ContextProvider(this, {
       context: internationalizationContext,
-      initialValue: {
-        localize: ((key: string) => LOCALIZE_KEYS[key] ?? key) as any,
-        language: "en",
-        selectedLanguage: null,
-        locale: {} as any,
-        translationMetadata: {} as any,
-        loadBackendTranslation: (async () => (key: string) => key) as any,
-        loadFragmentTranslation: (async () => (key: string) => key) as any,
-      },
+      initialValue: DEMO_I18N,
     });
   }
 

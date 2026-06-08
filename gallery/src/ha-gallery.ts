@@ -461,14 +461,15 @@ class HaGallery extends LitElement {
       if (!themeMeta.hasAttribute("default-content")) {
         themeMeta.setAttribute(
           "default-content",
-          themeMeta.getAttribute("content")!
+          themeMeta.getAttribute("content") ?? ""
         );
       }
       const styles = getComputedStyle(document.documentElement);
       const themeColor =
         styles.getPropertyValue("--app-theme-color").trim() ||
         styles.getPropertyValue("--primary-background-color").trim() ||
-        themeMeta.getAttribute("default-content")!;
+        themeMeta.getAttribute("default-content") ||
+        "";
       themeMeta.setAttribute("content", themeColor);
     }
   }
@@ -510,7 +511,14 @@ class HaGallery extends LitElement {
       language: "en",
       loadBackendTranslation: async () => galleryLocalize,
       loadFragmentTranslation: async () => undefined,
-      locale: { language: "en" },
+      locale: {
+        language: "en",
+        number_format: "language",
+        time_format: "language",
+        date_format: "language",
+        first_weekday: "language",
+        time_zone: "local",
+      },
       localize: galleryLocalize,
       panelUrl: this._page,
       panels: {},
@@ -521,7 +529,7 @@ class HaGallery extends LitElement {
       suspendWhenHidden: false,
       systemData: {},
       themes: this._themes,
-      translationMetadata: { translations: {} },
+      translationMetadata: { fragments: [], translations: {} },
       user: {
         id: "gallery",
         is_admin: false,
