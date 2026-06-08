@@ -538,11 +538,11 @@ class HaGallery extends LitElement {
         color: var(--sidebar-text-color);
         margin: 0 var(--ha-space-1) var(--ha-space-1);
         border-radius: var(--ha-border-radius-sm);
+        --expansion-panel-summary-padding: 0 var(--ha-space-2);
       }
 
       .gallery-sidebar-section::part(summary) {
         min-height: var(--ha-space-10);
-        padding: 0 var(--ha-space-3);
         border-radius: var(--ha-border-radius-sm);
         box-sizing: border-box;
       }
@@ -557,6 +557,10 @@ class HaGallery extends LitElement {
         flex-shrink: 0;
         height: var(--ha-space-6);
         width: var(--ha-space-6);
+      }
+
+      .gallery-sidebar-icon {
+        margin-inline-end: var(--ha-space-3);
       }
 
       .gallery-nav-item,
@@ -576,7 +580,8 @@ class HaGallery extends LitElement {
 
       .gallery-nav-item.has-icon,
       .gallery-settings-item {
-        --ha-row-item-padding-inline: var(--ha-space-1) var(--ha-space-3);
+        --ha-row-item-gap: var(--ha-space-3);
+        --ha-row-item-padding-inline: var(--ha-space-2) var(--ha-space-3);
       }
 
       .gallery-nav-item::part(headline),
