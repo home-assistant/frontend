@@ -156,7 +156,7 @@ export class HaListVirtualized extends HaListBase {
       this._activeItemFocus = focusItem;
       this._scrollToActiveItem = true;
       this.virtualizerElement
-        ?.element(index)
+        ?.element(this.activeItemIndex)
         ?.scrollIntoView({ block: "nearest" });
     }
   }
