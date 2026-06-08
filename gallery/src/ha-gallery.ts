@@ -92,6 +92,12 @@ class HaGallery extends LitElement {
   @query("notification-manager")
   private _notifications!: HTMLElementTagNameMap["notification-manager"];
 
+  @query("ha-sidebar")
+  private _sidebar?: HTMLElementTagNameMap["ha-sidebar"];
+
+  @query(".gallery-nav-item[selected]")
+  private _selectedNavigationItem?: HTMLElementTagNameMap["ha-list-item-button"];
+
   private _narrow = window.matchMedia("(max-width: 600px)").matches;
 
   @state() private _drawerOpen = !this._narrow;
@@ -230,14 +236,48 @@ class HaGallery extends LitElement {
       PAGES[this._page].demo();
     }
 
-    const menuItem = this.shadowRoot!.querySelector(
-      `ha-list-item-button[href="#${this._page}"]`
+    void this._scrollSelectedNavigationItemIntoView();
+  }
+
+  private async _scrollSelectedNavigationItemIntoView() {
+    const menuItem = this._selectedNavigationItem;
+
+    if (!menuItem) {
+      return;
+    }
+
+    // Make sure section is expanded before measuring the selected item.
+    if (menuItem.parentElement instanceof HaExpansionPanel) {
+      menuItem.parentElement.expanded = true;
+      await menuItem.parentElement.updateComplete;
+    }
+
+    const scrollable = this._sidebar?.shadowRoot?.querySelector<HTMLElement>(
+      "ha-list-nav.before-spacer"
     );
 
-    // Make sure section is expanded
-    if (menuItem?.parentElement instanceof HaExpansionPanel) {
-      menuItem.parentElement.expanded = true;
+    if (!scrollable) {
+      return;
     }
+
+    requestAnimationFrame(() => {
+      const itemRect = menuItem.getBoundingClientRect();
+      const scrollableRect = scrollable.getBoundingClientRect();
+      const targetScrollTop =
+        scrollable.scrollTop +
+        itemRect.top -
+        scrollableRect.top -
+        (scrollableRect.height - itemRect.height) / 2;
+
+      scrollable.scrollTo({
+        top: Math.min(
+          Math.max(0, targetScrollTop),
+          scrollable.scrollHeight - scrollable.clientHeight
+        ),
+        left: 0,
+      });
+      scrollable.scrollLeft = 0;
+    });
   }
 
   private _renderSidebarNavigation() {
@@ -517,7 +557,9 @@ class HaGallery extends LitElement {
 
       .gallery-sidebar-section {
         color: var(--sidebar-text-color);
+        box-sizing: border-box;
         margin: 0 var(--ha-space-1) var(--ha-space-1);
+        overflow-x: hidden;
         border-radius: var(--ha-border-radius-sm);
         --expansion-panel-summary-padding: 0 var(--ha-space-2);
       }
@@ -530,6 +572,9 @@ class HaGallery extends LitElement {
 
       .gallery-sidebar-section .gallery-nav-item {
         margin-inline-start: var(--ha-space-4);
+        width: calc(
+          var(--ha-sidebar-expanded-width, 256px) - var(--ha-space-11)
+        );
       }
 
       .gallery-sidebar-icon,
