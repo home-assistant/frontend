@@ -167,7 +167,7 @@ export class StateHistoryCharts extends LitElement {
           )}`}
       ${this.syncCharts && this._hasZoomedCharts
         ? html`<ha-button
-            size="large"
+            size="l"
             class="reset-button"
             @click=${this._handleGlobalZoomReset}
           >

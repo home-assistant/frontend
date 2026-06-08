@@ -40,7 +40,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
               appearance="plain"
               slot="end"
               @click=${this._download}
-              size="small"
+              size="s"
             >
               <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -63,7 +63,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
               appearance="plain"
               slot="end"
               @click=${this._show}
-              size="small"
+              size="s"
             >
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.show_encryption_key_action"
@@ -84,7 +84,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
             <ha-button
               appearance="plain"
               variant="danger"
-              size="small"
+              size="s"
               slot="end"
               @click=${this._change}
             >
@@ -156,7 +156,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
     ha-list-item-base::part(supporting-text) {
       white-space: wrap;
     }
-    ha-button[size="small"] ha-svg-icon {
+    ha-button[size="s"] ha-svg-icon {
       --mdc-icon-size: 16px;
     }
   `;

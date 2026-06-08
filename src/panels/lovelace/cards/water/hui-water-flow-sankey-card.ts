@@ -511,9 +511,11 @@ class HuiWaterFlowSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `<div style="direction:ltr; display: inline;">
-      ${formatFlowRateShort(this.hass.locale, this.hass.config.unit_system.length, value)}
-    </div>`;
+    formatFlowRateShort(
+      this.hass.locale,
+      this.hass.config.unit_system.length,
+      value
+    );
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     const { node } = ev.detail;

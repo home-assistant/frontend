@@ -25,15 +25,9 @@ class HassErrorScreen extends LitElement {
       ${this.toolbar
         ? html`<div class="toolbar">
             ${this.rootnav || history.state?.root
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
+              ? html`<ha-menu-button></ha-menu-button>`
               : html`
                   <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}
@@ -42,7 +36,7 @@ class HassErrorScreen extends LitElement {
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
-          <ha-button appearance="plain" size="small" @click=${this._handleBack}>
+          <ha-button appearance="plain" size="s" @click=${this._handleBack}>
             ${this.hass?.localize("ui.common.back")}
           </ha-button>
         </slot>

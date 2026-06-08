@@ -195,7 +195,7 @@ export class HaConfigAppsRepositories extends LitElement {
           id="slug"
           has-fab
         ></ha-data-table>
-        <ha-button size="large" @click=${this._showAddRepositoryDialog}>
+        <ha-button size="l" @click=${this._showAddRepositoryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.repositories.add")}
         </ha-button>
@@ -292,7 +292,7 @@ export class HaConfigAppsRepositories extends LitElement {
     ha-icon-button.delete {
       color: var(--error-color);
     }
-    ha-button[size="large"] {
+    ha-button[size="l"] {
       position: fixed;
       right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
       bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));

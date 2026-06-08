@@ -11,6 +11,7 @@ interface BaseTraceStep {
   path: string;
   timestamp: string;
   error?: string;
+  template_errors?: string[];
   changed_variables?: Record<string, unknown>;
 }
 

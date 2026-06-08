@@ -132,7 +132,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
               href="https://www.home-assistant.io/installation/#advanced-installation-methods"
               target="_blank"
               rel="noreferrer noopener"
-              size="small"
+              size="s"
             >
               ${this.localize(
                 "ui.panel.page-onboarding.restore.ha-cloud.learn_more"

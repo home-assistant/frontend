@@ -27,15 +27,9 @@ class HassLoadingScreen extends LitElement {
         ? ""
         : html`<div class="toolbar">
             ${this.rootnav || history.state?.root
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
+              ? html`<ha-menu-button></ha-menu-button>`
               : html`
                   <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}

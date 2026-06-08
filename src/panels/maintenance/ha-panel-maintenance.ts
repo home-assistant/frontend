@@ -106,13 +106,7 @@ class PanelMaintenance extends LitElement {
                   slot="navigationIcon"
                 ></ha-icon-button-arrow-prev>
               `
-            : html`
-                <ha-menu-button
-                  slot="navigationIcon"
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `}
+            : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
           <div class="main-title">
             ${this.hass.localize("panel.maintenance")}
           </div>

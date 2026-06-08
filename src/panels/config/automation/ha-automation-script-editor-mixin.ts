@@ -142,19 +142,40 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
 
+    private _relatedContextAreaId?: string;
+
     protected willUpdate(changedProps: PropertyValues): void {
       super.willUpdate(changedProps);
-      if (changedProps.has("registryEntry")) {
-        const areaId = this.registryEntry?.area_id;
-        if (areaId) {
-          fireEvent(this, "hass-related-context", {
-            itemType: "area",
-            itemId: areaId,
-          });
-        } else {
-          fireEvent(this, "hass-related-context", undefined);
-        }
+      if (
+        changedProps.has("currentEntityId") ||
+        changedProps.has("entityRegistry")
+      ) {
+        this._setRelatedContext();
       }
+    }
+
+    private _setRelatedContext(): void {
+      const areaId = this.currentEntityId
+        ? this.entityRegistry?.find(
+            ({ entity_id }) => entity_id === this.currentEntityId
+          )?.area_id || undefined
+        : undefined;
+
+      if (areaId === this._relatedContextAreaId) {
+        return;
+      }
+
+      this._relatedContextAreaId = areaId;
+      fireEvent(
+        this,
+        "hass-related-context",
+        areaId
+          ? {
+              itemType: "area",
+              itemId: areaId,
+            }
+          : undefined
+      );
     }
 
     protected renderLoading(): TemplateResult {

@@ -7,13 +7,16 @@ import {
 import type { EnergyPreferences } from "../../../data/energy";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { LovelaceStrategyViewConfig } from "../../../data/lovelace/config/view";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   DEFAULT_POWER_COLLECTION_KEY,
 } from "../constants";
+import type { EnergyViewPath } from "./energy-cards";
+import { isEnergyViewEmpty } from "./energy-cards";
 
 const OVERVIEW_VIEW = {
   path: "overview",
@@ -21,7 +24,7 @@ const OVERVIEW_VIEW = {
     type: "energy-overview",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
-} as LovelaceViewConfig;
+} as LovelaceStrategyViewConfig;
 
 const ENERGY_VIEW = {
   path: "electricity",
@@ -29,7 +32,7 @@ const ENERGY_VIEW = {
     type: "energy",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
-} as LovelaceViewConfig;
+} as LovelaceStrategyViewConfig;
 
 const WATER_VIEW = {
   path: "water",
@@ -37,7 +40,7 @@ const WATER_VIEW = {
     type: "water",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
-} as LovelaceViewConfig;
+} as LovelaceStrategyViewConfig;
 
 const GAS_VIEW = {
   path: "gas",
@@ -45,7 +48,7 @@ const GAS_VIEW = {
     type: "gas",
     collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
   },
-} as LovelaceViewConfig;
+} as LovelaceStrategyViewConfig;
 
 const POWER_VIEW = {
   path: "now",
@@ -53,7 +56,7 @@ const POWER_VIEW = {
     type: "power",
     collection_key: DEFAULT_POWER_COLLECTION_KEY,
   },
-} as LovelaceViewConfig;
+} as LovelaceStrategyViewConfig;
 
 const WIZARD_VIEW = {
   type: "panel",
@@ -64,10 +67,13 @@ const WIZARD_VIEW = {
 export interface EnergyDashboardStrategyConfig extends LovelaceStrategyConfig {
   type: "energy";
   default_collection?: string;
+  hidden_cards?: string[];
 }
 
 @customElement("energy-dashboard-strategy")
 export class EnergyDashboardStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
     _config: EnergyDashboardStrategyConfig,
     hass: HomeAssistant
@@ -112,28 +118,42 @@ export class EnergyDashboardStrategy extends ReactiveElement {
 
     const hasDeviceConsumption = prefs.device_consumption.length > 0;
 
-    const views: LovelaceViewConfig[] = [];
+    const hidden = _config.hidden_cards;
+
+    const candidateViews: LovelaceStrategyViewConfig[] = [];
     if (hasEnergy || hasDeviceConsumption) {
-      views.push(ENERGY_VIEW);
+      candidateViews.push(ENERGY_VIEW);
     }
     if (hasGas) {
-      views.push(GAS_VIEW);
+      candidateViews.push(GAS_VIEW);
     }
     if (hasWater) {
-      views.push(WATER_VIEW);
+      candidateViews.push(WATER_VIEW);
     }
     if (hasPower) {
-      views.push(POWER_VIEW);
+      candidateViews.push(POWER_VIEW);
     }
     if (
       hasPowerSource ||
       [hasEnergy, hasGas, hasWater].filter(Boolean).length > 1
     ) {
-      views.unshift(OVERVIEW_VIEW);
+      candidateViews.unshift(OVERVIEW_VIEW);
     }
+
+    // Drop a view (tab) when every card it would render has been hidden, so we
+    // don't show an empty tab. Keep at least one view so the dashboard never
+    // renders blank and the customize entry stays reachable.
+    let views = candidateViews.filter(
+      (view) => !isEnergyViewEmpty(view.path as EnergyViewPath, prefs, hidden)
+    );
+    if (views.length === 0) {
+      views = candidateViews;
+    }
+
     return {
       views: views.map((view) => ({
         ...view,
+        strategy: { ...view.strategy, hidden_cards: hidden },
         title:
           view.title ||
           hass.localize(`ui.panel.energy.title.${view.path}` as LocalizeKeys),

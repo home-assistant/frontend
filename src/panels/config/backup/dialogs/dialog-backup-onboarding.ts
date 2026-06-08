@@ -379,7 +379,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
               )}
             </span>
             <ha-button
-              size="small"
+              size="s"
               appearance="plain"
               slot="end"
               @click=${this._downloadKey}

@@ -307,7 +307,7 @@ export class HaNumericThresholdSelector extends LitElement {
               >`
             : nothing}
           <ha-button-toggle-group
-            size="small"
+            size="s"
             .buttons=${choiceToggleButtons}
             .active=${activeChoice}
             .disabled=${this.disabled}

@@ -92,7 +92,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 ? html`${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.device_disabled"
                     )}<ha-button
-                      size="small"
+                      size="s"
                       variant="warning"
                       @click=${this._openDeviceSettings}
                       slot="action"
@@ -108,7 +108,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       this.entry.disabled_by!
                     )
                       ? html`<ha-button
-                          size="small"
+                          size="s"
                           variant="warning"
                           slot="action"
                           @click=${this._enableEntry}

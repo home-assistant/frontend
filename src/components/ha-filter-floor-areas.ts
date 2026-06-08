@@ -23,7 +23,6 @@ import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
 import type { HaListSelectable } from "./list/ha-list-selectable";
-import type { HaListSelectedDetail } from "./list/types";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
@@ -42,7 +41,7 @@ export class HaFilterFloorAreas extends LitElement {
 
   @state() private _shouldRender = false;
 
-  @query("ha-list-selectable") private _list?: HTMLElement;
+  @query("ha-list-selectable") private _list?: HaListSelectable;
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -75,6 +74,7 @@ export class HaFilterFloorAreas extends LitElement {
                 <ha-icon-button
                   .path=${mdiFilterVariantRemove}
                   @click=${this._clearFilter}
+                  @keydown=${this._handleClearFilterKeydown}
                 ></ha-icon-button>`
             : nothing}
         </div>
@@ -83,7 +83,8 @@ export class HaFilterFloorAreas extends LitElement {
               <ha-list-selectable
                 class="ha-scrollbar"
                 multi
-                @ha-list-selected=${this._handleListChanged}
+                @ha-list-item-selected=${this._handleAdded}
+                @ha-list-item-deselected=${this._handleRemoved}
                 aria-label=${this.hass.localize(
                   "ui.panel.config.areas.caption"
                 )}
@@ -163,46 +164,47 @@ export class HaFilterFloorAreas extends LitElement {
     `;
   }
 
-  private _handleListChanged(ev: CustomEvent<HaListSelectedDetail>) {
-    if (!ev.detail.diff?.added.size && !ev.detail.diff?.removed.size) {
+  private _handleAdded(ev: CustomEvent<number>) {
+    if (!this.value) {
+      this.value = {};
+    }
+
+    const addedItem = (ev.currentTarget as HaListSelectable).items[
+      ev.detail
+    ] as HaListItemOption & { type: string; value: string };
+
+    if (!addedItem) {
       return;
     }
 
-    if (ev.detail.diff?.added.size) {
-      const addedIndex = ev.detail.diff.added.values().next().value;
-      if (addedIndex === undefined) {
-        return;
-      }
-      const addedItem = (ev.currentTarget as HaListSelectable).items[
-        addedIndex
-      ] as HaListItemOption & { type: string; value: string };
+    this.value = {
+      ...this.value,
+      [addedItem.type]: [
+        ...(this.value[addedItem.type] || []),
+        addedItem.value,
+      ],
+    };
+  }
 
-      if (!this.value) {
-        this.value = {};
-      }
-      this.value = {
-        ...this.value,
-        [addedItem.type]: [
-          ...(this.value[addedItem.type] || []),
-          addedItem.value,
-        ],
-      };
-    } else {
-      const removedIndex = ev.detail.diff?.removed.values().next().value;
-      if (removedIndex === undefined) {
-        return;
-      }
-      const removedItem = (ev.currentTarget as HaListSelectable).items[
-        removedIndex
-      ] as HaListItemOption & { type: string; value: string };
-
-      this.value = {
-        ...this.value,
-        [removedItem.type]: this.value![removedItem.type].filter(
-          (val) => val !== removedItem.value
-        ),
-      };
+  private _handleRemoved(ev: CustomEvent<number>) {
+    if (!this.value) {
+      return;
     }
+
+    const removedItem = (ev.currentTarget as HaListSelectable).items[
+      ev.detail
+    ] as HaListItemOption & { type: string; value: string };
+
+    if (!removedItem) {
+      return;
+    }
+
+    this.value = {
+      ...this.value,
+      [removedItem.type]: this.value![removedItem.type].filter(
+        (val) => val !== removedItem.value
+      ),
+    };
   }
 
   protected updated(changed: PropertyValues<this>) {
@@ -286,6 +288,13 @@ export class HaFilterFloorAreas extends LitElement {
     });
   }
 
+  private _handleClearFilterKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
+      this._clearFilter(ev);
+    }
+  }
+
   private _clearFilter(ev) {
     ev.preventDefault();
     this.value = undefined;
@@ -293,6 +302,7 @@ export class HaFilterFloorAreas extends LitElement {
       value: undefined,
       items: undefined,
     });
+    this._list?.clearSelection();
   }
 
   static get styles(): CSSResultGroup {

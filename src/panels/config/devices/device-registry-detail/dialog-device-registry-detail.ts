@@ -92,7 +92,6 @@ class DialogDeviceRegistryDetail extends LitElement {
               .disabled=${this._submitting}
             ></ha-input>
             <ha-area-picker
-              .hass=${this.hass}
               .value=${this._areaId}
               @value-changed=${this._areaPicked}
             ></ha-area-picker>

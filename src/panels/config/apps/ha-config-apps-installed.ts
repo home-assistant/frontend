@@ -156,7 +156,7 @@ export class HaConfigAppsInstalled extends LitElement {
               )}
         </div>
 
-        <ha-button size="large" href="/config/apps/available">
+        <ha-button size="l" href="/config/apps/available">
           <ha-svg-icon slot="start" .path=${mdiStorePlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.installed.add_app")}
         </ha-button>
@@ -295,7 +295,7 @@ export class HaConfigAppsInstalled extends LitElement {
         cursor: pointer;
       }
 
-      ha-button[size="large"] {
+      ha-button[size="l"] {
         position: fixed;
         right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
         bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));

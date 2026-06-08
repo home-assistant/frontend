@@ -85,7 +85,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
                 <ha-area-picker
                   .curValue=${area}
                   .noAdd=${this.noAdd}
-                  .hass=${this.hass}
                   .value=${area}
                   .label=${this.pickedAreaLabel}
                   .includeDomains=${this.includeDomains}
@@ -112,7 +111,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
       <div>
         <ha-area-picker
           .noAdd=${this.noAdd}
-          .hass=${this.hass}
           .label=${this.pickAreaLabel}
           .helper=${this.helper}
           .includeDomains=${this.includeDomains}

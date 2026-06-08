@@ -174,7 +174,7 @@ class DialogImportBlueprint extends LitElement {
                   )}
                 </p>
                 <ha-button
-                  size="small"
+                  size="s"
                   appearance="plain"
                   href=${documentationUrl(this.hass, "/get-blueprints")}
                   target="_blank"

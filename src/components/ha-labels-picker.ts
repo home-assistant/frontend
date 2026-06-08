@@ -171,7 +171,7 @@ export class HaLabelsPicker extends LitElement {
             : nothing}
           <ha-button
             id="picker"
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._openPicker}
             .disabled=${this.disabled}

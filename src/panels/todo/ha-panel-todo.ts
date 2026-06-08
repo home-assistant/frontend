@@ -184,11 +184,7 @@ class PanelTodo extends LitElement {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
+        <ha-menu-button slot="navigationIcon"></ha-menu-button>
         <div slot="title">
           ${!showPane
             ? html`<ha-dropdown class="lists">
@@ -273,7 +269,7 @@ class PanelTodo extends LitElement {
         </div>
         ${entityState &&
         supportsFeature(entityState, TodoListEntityFeature.CREATE_TODO_ITEM)
-          ? html`<ha-button class="fab" size="large" @click=${this._addItem}>
+          ? html`<ha-button class="fab" size="l" @click=${this._addItem}>
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize("ui.panel.todo.add_item")}
             </ha-button>`

@@ -187,7 +187,7 @@ export class CloudRemotePref extends LitElement {
               <ha-button
                 slot="end"
                 appearance="plain"
-                size="small"
+                size="s"
                 @click=${this._openCertInfo}
               >
                 ${this.hass.localize(

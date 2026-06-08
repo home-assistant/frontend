@@ -62,10 +62,11 @@ host reflects `aria-multiselectable`.
 
 **Events**
 
-- `ha-list-selected` — selection changed. Detail
-  `{ index: number | Set<number>, diff: { added: Set<number>, removed: Set<number> } }`.
-  `index` is a `number` in single mode (`-1` when nothing selected) and a
-  `Set<number>` in multi mode.
+- `ha-list-item-selected` — an option was selected. Detail is the option's
+  index (`number`). In single mode this is the only selection event; in multi
+  mode it fires for each option added to the selection.
+- `ha-list-item-deselected` — an option was deselected (multi mode only). Detail
+  is the option's index (`number`).
 
 **Methods / getters**
 

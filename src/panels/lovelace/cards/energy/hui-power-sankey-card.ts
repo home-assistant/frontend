@@ -580,9 +580,7 @@ class HuiPowerSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `<div style="direction:ltr; display: inline;">
-      ${formatPowerShort(this.hass, value)}
-    </div>`;
+    formatPowerShort(this.hass, value);
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     const { node } = ev.detail;

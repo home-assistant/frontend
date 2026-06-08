@@ -116,7 +116,7 @@ export class HaConfigPerson extends LitElement {
                     <ha-button
                       @click=${this._createPerson}
                       appearance="filled"
-                      size="small"
+                      size="s"
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${hass.localize(
@@ -147,7 +147,7 @@ export class HaConfigPerson extends LitElement {
               `
             : nothing}
         </ha-config-section>
-        <ha-button slot="fab" size="large" @click=${this._createPerson}>
+        <ha-button slot="fab" size="l" @click=${this._createPerson}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${hass.localize("ui.panel.config.person.add_person")}
         </ha-button>

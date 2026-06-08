@@ -81,6 +81,7 @@ export class HuiEnergyGraphCardEditor
         ? [
             {
               name: "show_legend",
+              default: true,
               required: false,
               selector: { boolean: {} },
             },

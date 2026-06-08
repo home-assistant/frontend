@@ -3,18 +3,16 @@ import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input-search";
 import "../../../../../components/item/ha-list-item-option";
-import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
-import "../../../../../components/list/ha-list-selectable";
-import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
-import type { HaListSelectedDetail } from "../../../../../components/list/types";
-import "../../../../../components/ha-spinner";
+import "../../../../../components/list/ha-list-selectable-virtualized";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
   addMembersToGroup,
@@ -23,7 +21,6 @@ import {
 } from "../../../../../data/zha";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import { haStyleScrollbar } from "../../../../../resources/styles";
-import { loadVirtualizer } from "../../../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZHAAddGroupMembersDialogParams } from "./show-dialog-zha-add-group-members";
 
@@ -49,8 +46,6 @@ class DialogZHAAddGroupMembers
   @state() private _processingAdd = false;
 
   @state() private _selectedDevicesToAdd: string[] = [];
-
-  @state() private _virtualizerReady = false;
 
   private _fetchDataToken = 0;
 
@@ -80,7 +75,6 @@ class DialogZHAAddGroupMembers
     this._loading = false;
     this._processingAdd = false;
     this._selectedDevicesToAdd = [];
-    this._virtualizerReady = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -89,7 +83,10 @@ class DialogZHAAddGroupMembers
       return nothing;
     }
 
-    const deviceEndpoints = this._filteredDeviceEndpoints;
+    const deviceEndpoints = this._filteredDeviceEndpoints(
+      this._filter,
+      this._availableDeviceEndpoints
+    );
     const showSearch =
       this._availableDeviceEndpoints.length > 5 || this._filter;
 
@@ -100,7 +97,6 @@ class DialogZHAAddGroupMembers
           "ui.panel.config.zha.groups.add_members"
         )}
         ?prevent-scrim-close=${this._selectedDevicesToAdd.length > 0}
-        @after-show=${this._loadVirtualizer}
         @closed=${this._dialogClosed}
       >
         <ha-icon-button
@@ -126,22 +122,14 @@ class DialogZHAAddGroupMembers
                 <div class="list-container">
                   ${deviceEndpoints.length
                     ? html`
-                        ${this._virtualizerReady
-                          ? html`
-                              <ha-list-selectable
-                                multi
-                                @ha-list-selected=${this._handleSelected}
-                              >
-                                <lit-virtualizer
-                                  scroller
-                                  class="ha-scrollbar"
-                                  .items=${deviceEndpoints}
-                                  .renderItem=${this._renderDeviceEndpoint}
-                                  .keyFunction=${this._keyFunction}
-                                ></lit-virtualizer>
-                              </ha-list-selectable>
-                            `
-                          : this._renderLoadingSpinner()}
+                        <ha-list-selectable-virtualized
+                          multi
+                          .rows=${deviceEndpoints}
+                          .rowRenderer=${this._renderDeviceEndpoint}
+                          @ha-list-item-selected=${this._handleSelected}
+                          @ha-list-item-deselected=${this._handleDeselected}
+                        >
+                        </ha-list-selectable-virtualized>
                       `
                     : html`
                         <div class="empty-list">
@@ -205,34 +193,32 @@ class DialogZHAAddGroupMembers
     );
   }
 
-  private get _filteredDeviceEndpoints(): ZHADeviceEndpoint[] {
-    const normalizedFilter = this._filter.trim().toLowerCase();
-    const deviceEndpoints = this._availableDeviceEndpoints;
+  private _filteredDeviceEndpoints = memoizeOne(
+    (filter: string, availableDeviceEndpoints: ZHADeviceEndpoint[]) => {
+      const normalizedFilter = filter.trim().toLowerCase();
+      let deviceEndpoints = availableDeviceEndpoints;
 
-    if (!normalizedFilter) {
-      return deviceEndpoints;
+      if (normalizedFilter) {
+        deviceEndpoints = deviceEndpoints.filter((deviceEndpoint) =>
+          [
+            this._deviceEndpointName(deviceEndpoint),
+            this._deviceEndpointDetails(deviceEndpoint),
+            deviceEndpoint.device.ieee,
+            deviceEndpoint.device.manufacturer,
+            deviceEndpoint.device.model,
+          ]
+            .filter(Boolean)
+            .some((value) => value!.toLowerCase().includes(normalizedFilter))
+        );
+      }
+
+      return deviceEndpoints.map((deviceEndpoint) => ({
+        id: this._deviceEndpointId(deviceEndpoint),
+        interactive: true,
+        ...deviceEndpoint,
+      }));
     }
-
-    return deviceEndpoints.filter((deviceEndpoint) =>
-      [
-        this._deviceEndpointName(deviceEndpoint),
-        this._deviceEndpointDetails(deviceEndpoint),
-        deviceEndpoint.device.ieee,
-        deviceEndpoint.device.manufacturer,
-        deviceEndpoint.device.model,
-      ]
-        .filter(Boolean)
-        .some((value) => value!.toLowerCase().includes(normalizedFilter))
-    );
-  }
-
-  private async _loadVirtualizer(): Promise<void> {
-    await loadVirtualizer();
-    this._virtualizerReady = true;
-  }
-
-  private _keyFunction = (deviceEndpoint: unknown): string =>
-    this._deviceEndpointId(deviceEndpoint as ZHADeviceEndpoint);
+  );
 
   private _renderDeviceEndpoint: RenderItemFunction<ZHADeviceEndpoint> = (
     deviceEndpoint
@@ -305,26 +291,30 @@ class DialogZHAAddGroupMembers
     this._filter = (ev.currentTarget as HTMLInputElement).value;
   }
 
-  private _handleSelected(ev: CustomEvent<HaListSelectedDetail>): void {
-    const list = ev.currentTarget as HaListSelectable;
+  private _handleSelected(ev: CustomEvent<number>): void {
     let selectedDevicesToAdd = this._selectedDevicesToAdd;
+    const item = this._filteredDeviceEndpoints(
+      this._filter,
+      this._availableDeviceEndpoints
+    )[ev.detail];
+    if (item && !selectedDevicesToAdd.includes(item.id)) {
+      selectedDevicesToAdd = [...selectedDevicesToAdd, item.id];
+    }
 
-    ev.detail.diff?.added.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value && !selectedDevicesToAdd.includes(item.value)) {
-        selectedDevicesToAdd = [...selectedDevicesToAdd, item.value];
-      }
-    });
+    this._selectedDevicesToAdd = selectedDevicesToAdd;
+  }
 
-    ev.detail.diff?.removed.forEach((index) => {
-      const item = list.items[index] as HaListItemOption | undefined;
-      if (item?.value) {
-        selectedDevicesToAdd = selectedDevicesToAdd.filter(
-          (selectedDeviceId) => selectedDeviceId !== item.value
-        );
-      }
-    });
-
+  private _handleDeselected(ev: CustomEvent<number>): void {
+    let selectedDevicesToAdd = this._selectedDevicesToAdd;
+    const item = this._filteredDeviceEndpoints(
+      this._filter,
+      this._availableDeviceEndpoints
+    )[ev.detail];
+    if (item && selectedDevicesToAdd.includes(item.id)) {
+      selectedDevicesToAdd = selectedDevicesToAdd.filter(
+        (value) => value !== item.id
+      );
+    }
     this._selectedDevicesToAdd = selectedDevicesToAdd;
   }
 
@@ -385,7 +375,7 @@ class DialogZHAAddGroupMembers
           overflow: hidden;
         }
 
-        lit-virtualizer {
+        ha-list-selectable-virtualized {
           display: block;
           width: 100%;
           height: 100%;

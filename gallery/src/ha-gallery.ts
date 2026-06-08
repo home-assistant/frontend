@@ -94,55 +94,55 @@ class HaGallery extends LitElement {
             <div slot="title">
               ${PAGES[this._page].metadata.title || this._page.split("/")[1]}
             </div>
+            <div class="content">
+              ${PAGES[this._page].description
+                ? html`
+                    <page-description .page=${this._page}></page-description>
+                  `
+                : ""}
+              ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+            </div>
+            <div class="page-footer">
+              <div class="edit-docs">
+                <div class="header">Help us to improve our documentation</div>
+                <div class="secondary">
+                  Suggest an edit to this page, or provide/view feedback for
+                  this page.
+                </div>
+                <div>
+                  ${PAGES[this._page].description ||
+                  Object.keys(PAGES[this._page].metadata).length > 0
+                    ? html`
+                        <a
+                          href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
+                          target="_blank"
+                        >
+                          Edit text
+                        </a>
+                      `
+                    : ""}
+                  ${PAGES[this._page].demo
+                    ? html`
+                        <a
+                          href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
+                          target="_blank"
+                        >
+                          Edit demo
+                        </a>
+                      `
+                    : ""}
+                </div>
+              </div>
+              <div class="rtl-toggle">
+                <ha-icon-button
+                  @click=${this._toggleRtl}
+                  .label=${this._rtl ? "Switch to LTR" : "Switch to RTL"}
+                >
+                  <ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon>
+                </ha-icon-button>
+              </div>
+            </div>
           </ha-top-app-bar-fixed>
-          <div class="content">
-            ${PAGES[this._page].description
-              ? html`
-                  <page-description .page=${this._page}></page-description>
-                `
-              : ""}
-            ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
-          </div>
-          <div class="page-footer">
-            <div class="edit-docs">
-              <div class="header">Help us to improve our documentation</div>
-              <div class="secondary">
-                Suggest an edit to this page, or provide/view feedback for this
-                page.
-              </div>
-              <div>
-                ${PAGES[this._page].description ||
-                Object.keys(PAGES[this._page].metadata).length > 0
-                  ? html`
-                      <a
-                        href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
-                        target="_blank"
-                      >
-                        Edit text
-                      </a>
-                    `
-                  : ""}
-                ${PAGES[this._page].demo
-                  ? html`
-                      <a
-                        href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
-                        target="_blank"
-                      >
-                        Edit demo
-                      </a>
-                    `
-                  : ""}
-              </div>
-            </div>
-            <div class="rtl-toggle">
-              <ha-icon-button
-                @click=${this._toggleRtl}
-                .label=${this._rtl ? "Switch to LTR" : "Switch to RTL"}
-              >
-                <ha-svg-icon .path=${mdiSwapHorizontal}></ha-svg-icon>
-              </ha-icon-button>
-            </div>
-          </div>
         </div>
       </ha-drawer>
       <notification-manager

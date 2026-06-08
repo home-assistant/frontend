@@ -221,7 +221,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities: HassEntity[] = [];
+  @state() private _helperEntities?: HassEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -229,7 +229,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
-  @state() private _entitySource: Record<string, string> = {};
+  @state() private _entitySource?: Record<string, string>;
 
   @state() private _selected: string[] = [];
 
@@ -499,7 +499,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             configEntry !== undefined || entityState.attributes.editable,
           type: configEntry
             ? configEntry.domain
-            : this._entitySource[entityState.entity_id] ||
+            : this._entitySource![entityState.entity_id] ||
               computeStateDomain(entityState),
           configEntry,
           entity: entityState,
@@ -802,7 +802,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-button slot="fab" size="large" @click=${this._createHelper}>
+        <ha-button slot="fab" size="l" @click=${this._createHelper}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
         </ha-button>
@@ -830,6 +830,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _applyFilters() {
+    if (!this._helperEntities) {
+      return;
+    }
     const filters = Object.entries(this._filters);
 
     let items: Set<string> | undefined;
@@ -1003,10 +1006,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!entityReg) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.automation.picker.no_category_support"
+          "ui.panel.config.helpers.picker.no_category_support"
         ),
         text: this.hass.localize(
-          "ui.panel.config.automation.picker.no_category_entity_reg"
+          "ui.panel.config.helpers.picker.no_category_entity_reg"
         ),
       });
       return;
@@ -1224,7 +1227,7 @@ ${rejected
       this._setFiltersFromUrl();
     }
 
-    if (!this._entityEntries || !this._configEntries) {
+    if (!this._entityEntries || !this._configEntries || !this._entitySource) {
       return;
     }
 
@@ -1265,6 +1268,7 @@ ${rejected
     );
 
     if (
+      !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
       !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {
