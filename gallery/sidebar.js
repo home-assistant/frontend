@@ -1,6 +1,5 @@
 import {
   mdiAccountGroup,
-  mdiBookOpenPageVariant,
   mdiCalendarClock,
   mdiDotsHorizontal,
   mdiHome,
@@ -8,7 +7,6 @@ import {
   mdiPalette,
   mdiPuzzle,
   mdiRobot,
-  mdiTextBoxOutline,
   mdiViewDashboard,
 } from "@mdi/js";
 
@@ -21,6 +19,16 @@ export default [
   },
 
   {
+    category: "brand",
+    icon: mdiPalette,
+    header: "Brand",
+  },
+  {
+    category: "components",
+    icon: mdiPuzzle,
+    header: "Components",
+  },
+  {
     category: "lovelace",
     icon: mdiViewDashboard,
     // Label for in the sidebar
@@ -28,6 +36,11 @@ export default [
     // Specify order of pages. Any pages in the category folder but not listed here will
     // automatically be added after the pages listed here.
     pages: ["introduction"],
+  },
+  {
+    category: "more-info",
+    icon: mdiInformationOutline,
+    header: "More Info dialogs",
   },
   {
     category: "automation",
@@ -42,26 +55,6 @@ export default [
     ],
   },
   {
-    category: "components",
-    icon: mdiPuzzle,
-    header: "Components",
-  },
-  {
-    category: "more-info",
-    icon: mdiInformationOutline,
-    header: "More Info dialogs",
-  },
-  {
-    category: "misc",
-    icon: mdiDotsHorizontal,
-    header: "Miscellaneous",
-  },
-  {
-    category: "brand",
-    icon: mdiPalette,
-    header: "Brand",
-  },
-  {
     category: "user-test",
     icon: mdiAccountGroup,
     header: "Users",
@@ -73,13 +66,17 @@ export default [
     header: "Date and Time",
   },
   {
-    category: "design.home-assistant.io",
-    icon: mdiBookOpenPageVariant,
-    header: "About",
-  },
-  {
-    category: "Text",
-    icon: mdiTextBoxOutline,
-    header: "Text",
+    category: "misc",
+    icon: mdiDotsHorizontal,
+    header: "Miscellaneous",
+    pages: [
+      "entity-state",
+      "ha-markdown",
+      "integration-card",
+      "box-shadow",
+      "util-long-press",
+      "remove-delete-add-create",
+      "editing",
+    ],
   },
 ];

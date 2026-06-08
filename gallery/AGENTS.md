@@ -73,7 +73,7 @@ Use markdown pages for explanations, design guidance, API notes, and copy standa
 - Keep examples short and focused on the behavior being documented.
 - Prefer real component names and attributes over prose-only descriptions.
 - Use Home Assistant terminology from the root `AGENTS.md`.
-- For remove/delete and add/create wording, follow `src/pages/Text/remove-delete-add-create.markdown`.
+- For remove/delete and add/create wording, follow `src/pages/misc/remove-delete-add-create.markdown`.
 
 Gallery markdown is documentation content and is not localized with `localize`. If demo code creates production UI strings, keep those strings aligned with the root localization and copy guidance.
 
