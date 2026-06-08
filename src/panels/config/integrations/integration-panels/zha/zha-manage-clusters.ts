@@ -138,16 +138,14 @@ export class ZHAManageClusters extends LitElement {
       <ha-generic-picker
         no-sort
         class="menu"
-        .hass=${this.hass}
         .label=${this.hass.localize("ui.panel.config.zha.clusters.header")}
         .searchLabel=${this.hass.localize(
           "ui.panel.config.zha.clusters.change_cluster"
         )}
         .getItems=${this._clusterItems(this._clusters, this.hass.localize)}
         .value=${this._selectedClusterValue}
-        .valueRenderer=${this._clusterValueRenderer(
-          this._clusters,
-          this.hass.localize
+        .notFoundLabel=${this.hass.localize(
+          "ui.panel.config.zha.clusters.no_clusters"
         )}
         @value-changed=${this._selectedClusterChanged}
         hide-clear-icon
@@ -275,23 +273,6 @@ export class ZHAManageClusters extends LitElement {
           secondary: computeClusterSecondary(cluster, localize),
           sorting_label: cluster.name,
         }))
-  );
-
-  private _clusterValueRenderer = memoizeOne(
-    (clusters: Cluster[], localize: HomeAssistant["localize"]) =>
-      (value: string) => {
-        const cluster = clusters.find(
-          (entry) => computeClusterValue(entry) === value
-        );
-        return cluster
-          ? html`
-              <span slot="headline">${cluster.name}</span>
-              <span slot="supporting-text">
-                ${computeClusterSecondary(cluster, localize)}
-              </span>
-            `
-          : html`<span slot="headline">${value}</span>`;
-      }
   );
 
   static get styles(): CSSResultGroup {

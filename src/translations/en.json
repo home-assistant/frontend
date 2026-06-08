@@ -6595,8 +6595,6 @@
           "data_table": {
             "icon": "Icon",
             "device": "Device",
-            "manufacturer": "Manufacturer",
-            "model": "Model",
             "integration": "Integration",
             "firmware_version": "Firmware",
             "battery": "Battery",
@@ -7338,7 +7336,6 @@
             "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
             "cluster_description": "Endpoint ID: {endpoint} · ID: {id} · Type: {type}",
             "load_failed": "Failed to load clusters",
-            "no_matching_clusters": "No matching clusters found",
             "no_clusters": "No clusters found",
             "tabs": {
               "attributes": "Attributes",
