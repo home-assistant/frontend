@@ -21,11 +21,14 @@ import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
 import type { HomeAssistant, ThemeSettings } from "../../src/types";
 import { PAGES, SIDEBAR } from "../build/import-pages";
+import {
+  GALLERY_THEME_STORAGE_KEY,
+  loadGalleryThemeSettings,
+} from "./common/theme";
 import "./components/gallery-settings";
 import "./components/page-description";
 
 const RTL_STORAGE_KEY = "gallery-rtl";
-const THEME_STORAGE_KEY = "gallery-theme";
 const SETTINGS_PAGE = "settings";
 
 const GITHUB_DEMO_URL =
@@ -48,27 +51,6 @@ const GALLERY_SIDEBAR = SIDEBAR as GallerySidebarGroup[];
 const DEFAULT_PAGE = `${GALLERY_SIDEBAR[0].category}/${GALLERY_SIDEBAR[0].pages[0]}`;
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
-
-const loadThemeSettings = (): ThemeSettings => {
-  const stored = localStorage.getItem(THEME_STORAGE_KEY);
-  if (!stored) {
-    return { theme: "default" };
-  }
-
-  try {
-    const value = JSON.parse(stored) as Partial<ThemeSettings>;
-    return {
-      theme: "default",
-      dark: typeof value.dark === "boolean" ? value.dark : undefined,
-      primaryColor:
-        typeof value.primaryColor === "string" ? value.primaryColor : undefined,
-      accentColor:
-        typeof value.accentColor === "string" ? value.accentColor : undefined,
-    };
-  } catch (_err) {
-    return { theme: "default" };
-  }
-};
 
 const galleryLocalize = (key: string) =>
   (
@@ -103,7 +85,7 @@ class HaGallery extends LitElement {
 
   @state() private _rtl = localStorage.getItem(RTL_STORAGE_KEY) === "true";
 
-  @state() private _themeSettings = loadThemeSettings();
+  @state() private _themeSettings = loadGalleryThemeSettings();
 
   @state() private _systemDark = mql.matches;
 
@@ -397,7 +379,7 @@ class HaGallery extends LitElement {
       theme: "default",
     };
     localStorage.setItem(
-      THEME_STORAGE_KEY,
+      GALLERY_THEME_STORAGE_KEY,
       JSON.stringify(this._themeSettings)
     );
   }

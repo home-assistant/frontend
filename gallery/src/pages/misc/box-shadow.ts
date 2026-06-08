@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const SHADOWS = ["s", "m", "l"] as const;
 
@@ -7,50 +8,32 @@ const SHADOWS = ["s", "m", "l"] as const;
 export class DemoMiscBoxShadow extends LitElement {
   protected render() {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <h2>${mode}</h2>
-            <div class="grid">
-              ${SHADOWS.map(
-                (size) => html`
-                  <div
-                    class="box"
-                    style="box-shadow: var(--ha-box-shadow-${size})"
-                  >
-                    ${size}
-                  </div>
-                `
-              )}
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <div slot=${slot} class="panel-content">
+              <div class="grid">
+                ${SHADOWS.map(
+                  (size) => html`
+                    <div
+                      class="box"
+                      style="box-shadow: var(--ha-box-shadow-${size})"
+                    >
+                      ${size}
+                    </div>
+                  `
+                )}
+              </div>
             </div>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
   static styles = css`
     :host {
-      display: flex;
-      flex-direction: row;
-      gap: 48px;
-      padding: 48px;
-    }
-
-    .light,
-    .dark {
-      flex: 1;
-      background-color: var(--primary-background-color);
-      border-radius: 16px;
-      padding: 32px;
-    }
-
-    h2 {
-      margin: 0 0 24px;
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--primary-text-color);
-      text-transform: capitalize;
+      display: block;
     }
 
     .grid {

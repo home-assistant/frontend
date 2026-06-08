@@ -6,6 +6,7 @@ import "../../../../src/components/ha-badge";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-svg-icon";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const badges: {
   type?: "badge" | "button";
@@ -59,10 +60,10 @@ const badges: {
 export class DemoHaBadge extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <ha-card header="ha-badge ${mode} demo">
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot} header="ha-badge demo">
               <div class="card-content">
                 ${badges.map(
                   (badge) => html`
@@ -77,28 +78,23 @@ export class DemoHaBadge extends LitElement {
                 )}
               </div>
             </ha-card>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
   static styles = css`
     :host {
-      display: flex;
-      justify-content: center;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     .card-content {
       display: flex;
+      flex-wrap: wrap;
       gap: var(--ha-space-6);
     }
   `;

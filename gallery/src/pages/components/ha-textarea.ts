@@ -3,6 +3,7 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-textarea";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const LONG_VALUE = Array.from(
   { length: 30 },
@@ -13,10 +14,10 @@ const LONG_VALUE = Array.from(
 export class DemoHaTextarea extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <ha-card header="ha-textarea in ${mode}">
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot} header="ha-textarea">
               <div class="card-content">
                 <h3>Basic</h3>
                 <div class="row">
@@ -93,25 +94,19 @@ export class DemoHaTextarea extends LitElement {
                 </div>
               </div>
             </ha-card>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
   static styles = css`
     :host {
-      display: flex;
-      justify-content: center;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     .card-content {
       display: flex;

@@ -6,6 +6,7 @@ import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-tip";
 import { internationalizationContext } from "../../../../src/data/context";
 import type { HomeAssistantInternationalization } from "../../../../src/types";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const tips: (string | TemplateResult)[] = [
   "Test tip",
@@ -28,36 +29,31 @@ export class DemoHaTip extends LitElement {
   };
 
   protected render(): TemplateResult {
-    return html` ${["light", "dark"].map(
-      (mode) => html`
-        <div class=${mode}>
-          <ha-card header="ha-tip ${mode} demo">
-            <div class="card-content">
-              ${tips.map((tip) => html`<ha-tip>${tip}</ha-tip>`)}
-            </div>
-          </ha-card>
-        </div>
-      `
-    )}`;
+    return html`
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot} header="ha-tip demo">
+              <div class="card-content">
+                ${tips.map((tip) => html`<ha-tip>${tip}</ha-tip>`)}
+              </div>
+            </ha-card>
+          `
+        )}
+      </demo-theme-comparison>
+    `;
   }
 
   static styles = css`
     :host {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     ha-tip {
       margin-bottom: 14px;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
   `;
 }

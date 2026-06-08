@@ -5,6 +5,7 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-logo-svg";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const alerts: {
   title?: string;
@@ -134,10 +135,10 @@ const alerts: {
 export class DemoHaAlert extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <ha-card header="ha-alert ${mode} demo">
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot} header="ha-alert demo">
               <div class="card-content">
                 ${alerts.map(
                   (alert) => html`
@@ -153,26 +154,19 @@ export class DemoHaAlert extends LitElement {
                 )}
               </div>
             </ha-card>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
   static styles = css`
     :host {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     ha-alert {
       display: block;

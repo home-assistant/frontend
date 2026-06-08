@@ -5,15 +5,16 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-svg-icon";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 @customElement("demo-components-ha-progress-button")
 export class DemoHaProgressButton extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <ha-card header="ha-progress-button in ${mode}">
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot} header="ha-progress-button">
               <div class="card-content">
                 <ha-progress-button @click=${this._clickedSuccess}>
                   Success
@@ -58,9 +59,9 @@ export class DemoHaProgressButton extends LitElement {
                 </ha-progress-button>
               </div>
             </ha-card>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
@@ -87,20 +88,14 @@ export class DemoHaProgressButton extends LitElement {
 
   static styles = css`
     :host {
-      display: flex;
-      justify-content: center;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     .button {
       padding: unset;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     .card-content {
       display: flex;
