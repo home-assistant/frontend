@@ -360,33 +360,29 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         last_triggered: getTriggeredAtTableColumn(localize, this.hass),
         errors: {
           title: localize("ui.panel.config.automation.picker.headers.errors"),
-          minWidth: "80px",
-          maxWidth: "80px",
+          minWidth: "70px",
+          maxWidth: "70px",
           sortable: true,
           showNarrow: true,
           valueColumn: "errors_sort",
           template: (automation) =>
             automation.errors?.count
-              ? html` </ha-tooltip>
-                  <div style="color: var(--error-color);">
-                    <ha-data-table-icon
-                      .path=${mdiAlertCircleOutline}
-                      .tooltip=${localize(
-                        "ui.panel.config.automation.picker.result_errors",
-                        {
-                          count: automation.errors.count,
-                          time: relativeTime(
-                            automation.errors.oldest!,
-                            this.hass.locale,
-                            undefined,
-                            false
-                          ),
-                        }
-                      )}
-                      style="--ha-data-table-icon-color: var(--error-color);"
-                    ></ha-data-table-icon>
-                    ${automation.errors.count}/${automation.errors.total}
-                  </div>`
+              ? html`<ha-data-table-icon
+                  .path=${mdiAlertCircleOutline}
+                  .tooltip=${localize(
+                    "ui.panel.config.automation.picker.result_errors",
+                    {
+                      count: automation.errors.count,
+                      time: relativeTime(
+                        automation.errors.oldest!,
+                        this.hass.locale,
+                        undefined,
+                        false
+                      ),
+                    }
+                  )}
+                  style="--ha-data-table-icon-color: var(--error-color);"
+                ></ha-data-table-icon>`
               : nothing,
         },
         formatted_state: {
