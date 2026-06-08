@@ -25,7 +25,7 @@ import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import { goBack, navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
@@ -423,9 +423,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                         if (!entityStateObj) {
                           return nothing;
                         }
+                        const { primary, secondary } =
+                          computeEntityPickerDisplay(this.hass, entityStateObj);
                         return html`
                           <ha-list-item
                             hasMeta
+                            ?twoline=${!!secondary}
                             .graphic=${this._mode === "live"
                               ? "icon"
                               : undefined}
@@ -444,7 +447,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                                   ></state-badge>
                                 `
                               : nothing}
-                            ${computeStateName(entityStateObj)}
+                            ${primary}
+                            ${secondary
+                              ? html`<span slot="secondary">${secondary}</span>`
+                              : nothing}
                           </ha-list-item>
                         `;
                       })}
@@ -496,10 +502,16 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                           if (!entityStateObj) {
                             return nothing;
                           }
+                          const { primary, secondary } =
+                            computeEntityPickerDisplay(
+                              this.hass,
+                              entityStateObj
+                            );
                           return html`
                             <ha-list-item
                               class="entity"
                               hasMeta
+                              ?twoline=${!!secondary}
                               .graphic=${this._mode === "live"
                                 ? "icon"
                                 : undefined}
@@ -516,7 +528,12 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                                     slot="graphic"
                                   ></state-badge>`
                                 : nothing}
-                              ${computeStateName(entityStateObj)}
+                              ${primary}
+                              ${secondary
+                                ? html`<span slot="secondary"
+                                    >${secondary}</span
+                                  >`
+                                : nothing}
                               <div slot="meta">
                                 <ha-icon-button
                                   .path=${mdiDelete}
