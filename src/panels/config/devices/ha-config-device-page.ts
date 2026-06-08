@@ -906,6 +906,7 @@ export class HaConfigDevicePage extends LitElement {
               .time=${this._logbookTime}
               .entityIds=${this._entityIds(entities)}
               .deviceIds=${this._deviceIdInList(this.deviceId)}
+              .scope=${"device"}
               virtualize
               narrow
               no-icon

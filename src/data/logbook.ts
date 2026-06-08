@@ -1,15 +1,9 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  BINARY_STATE_OFF,
-  BINARY_STATE_ON,
-  DOMAINS_WITH_DYNAMIC_PICTURE,
-} from "../common/const";
+import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
-import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 import { isNumericEntity } from "./history";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
@@ -50,23 +44,27 @@ export interface LogbookEntry {
 // Localization mapping for all the triggers in core
 // in homeassistant.components.homeassistant.triggers
 //
-type TriggerPhraseKeys =
-  | "triggered_by_numeric_state_of"
-  | "triggered_by_state_of"
-  | "triggered_by_event"
-  | "triggered_by_time"
-  | "triggered_by_time_pattern"
-  | "triggered_by_homeassistant_stopping"
-  | "triggered_by_homeassistant_starting";
+// Keys are the bare translation keys under `ui.components.logbook`.
+//
+type TriggerPhraseKey =
+  | "numeric_state_of"
+  | "state_of"
+  | "event"
+  | "time_pattern"
+  | "time"
+  | "homeassistant_stopping"
+  | "homeassistant_starting";
 
-const triggerPhrases: Record<TriggerPhraseKeys, string> = {
-  triggered_by_numeric_state_of: "numeric state of", // number state trigger
-  triggered_by_state_of: "state of", // state trigger
-  triggered_by_event: "event", // event trigger
-  triggered_by_time_pattern: "time pattern", // time trigger
-  triggered_by_time: "time", // time trigger
-  triggered_by_homeassistant_stopping: "Home Assistant stopping", // stop event
-  triggered_by_homeassistant_starting: "Home Assistant starting", // start event
+// Order matters: "time pattern" must be tested before "time" because the
+// source phrase is matched with `startsWith`.
+const triggerPhrases: Record<TriggerPhraseKey, string> = {
+  numeric_state_of: "numeric state of", // number state trigger
+  state_of: "state of", // state trigger
+  event: "event", // event trigger
+  time_pattern: "time pattern", // time trigger
+  time: "time", // time trigger
+  homeassistant_stopping: "Home Assistant stopping", // stop event
+  homeassistant_starting: "Home Assistant starting", // start event
 };
 
 export const getLogbookDataForContext = async (
@@ -158,215 +156,101 @@ export const createHistoricState = (
     state: state,
     attributes: {
       // Rebuild the historical state by copying static attributes only
-      device_class: currentStateObj?.attributes.device_class,
-      source_type: currentStateObj?.attributes.source_type,
-      has_date: currentStateObj?.attributes.has_date,
-      has_time: currentStateObj?.attributes.has_time,
+      device_class: currentStateObj.attributes.device_class,
+      // Needed so numeric states keep their unit (e.g. "21 °C") and are
+      // recognised as numeric by computeStateDisplay.
+      unit_of_measurement: currentStateObj.attributes.unit_of_measurement,
+      state_class: currentStateObj.attributes.state_class,
+      source_type: currentStateObj.attributes.source_type,
+      has_date: currentStateObj.attributes.has_date,
+      has_time: currentStateObj.attributes.has_time,
       // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
       // as they would present a false state in the log (played media right now vs actual historic data).
       entity_picture_local: DOMAINS_WITH_DYNAMIC_PICTURE.has(
         computeDomain(currentStateObj.entity_id)
       )
         ? undefined
-        : currentStateObj?.attributes.entity_picture_local,
+        : currentStateObj.attributes.entity_picture_local,
       entity_picture: DOMAINS_WITH_DYNAMIC_PICTURE.has(
         computeDomain(currentStateObj.entity_id)
       )
         ? undefined
-        : currentStateObj?.attributes.entity_picture,
+        : currentStateObj.attributes.entity_picture,
     },
   }) as unknown as HassEntity;
 
+// Localize a backend trigger `source` phrase (e.g. "state of sensor.x") by
+// translating the leading phrase while keeping the entity id. The automation
+// trace timeline frames it with its own "triggered by" wording, so we only
+// translate the bare description here.
 export const localizeTriggerSource = (
   localize: LocalizeFunc,
   source: string
 ) => {
-  for (const triggerPhraseKey of Object.keys(
-    triggerPhrases
-  ) as TriggerPhraseKeys[]) {
-    const phrase = triggerPhrases[triggerPhraseKey];
+  for (const key of Object.keys(triggerPhrases) as TriggerPhraseKey[]) {
+    const phrase = triggerPhrases[key];
     if (source.startsWith(phrase)) {
-      return source.replace(
-        phrase,
-        `${localize(`ui.components.logbook.${triggerPhraseKey}`)}`
-      );
+      return source.replace(phrase, localize(`ui.components.logbook.${key}`));
     }
   }
   return source;
 };
 
-// Mapping from a phrase key to the bare-phrase translation key (without the
-// "triggered by" prefix), used by localizeTriggerDescription below.
-const triggerDescriptionKeys: Record<
-  TriggerPhraseKeys,
-  | "numeric_state_of"
-  | "state_of"
-  | "event"
+export type TriggerPlatform =
+  | "state"
+  | "numeric_state"
   | "time"
   | "time_pattern"
-  | "homeassistant_stopping"
-  | "homeassistant_starting"
-> = {
-  triggered_by_numeric_state_of: "numeric_state_of",
-  triggered_by_state_of: "state_of",
-  triggered_by_event: "event",
-  triggered_by_time_pattern: "time_pattern",
-  triggered_by_time: "time",
-  triggered_by_homeassistant_stopping: "homeassistant_stopping",
-  triggered_by_homeassistant_starting: "homeassistant_starting",
+  | "event"
+  | "homeassistant";
+
+// Maps the English `triggerPhrases` to automation trigger platforms, so the
+// feed can reuse the editor's trigger-type labels instead of dedicated strings.
+const triggerPlatform: Record<TriggerPhraseKey, TriggerPlatform> = {
+  numeric_state_of: "numeric_state",
+  state_of: "state",
+  event: "event",
+  time_pattern: "time_pattern",
+  time: "time",
+  homeassistant_stopping: "homeassistant",
+  homeassistant_starting: "homeassistant",
 };
 
-// Like localizeTriggerSource, but returns just the bare localized trigger
-// description (without the "triggered by" prefix). Used where the surrounding
-// template already supplies its own "triggered by" wording.
-export const localizeTriggerDescription = (
-  localize: LocalizeFunc,
-  source: string
-) => {
-  for (const triggerPhraseKey of Object.keys(
-    triggerPhrases
-  ) as TriggerPhraseKeys[]) {
-    const phrase = triggerPhrases[triggerPhraseKey];
-    if (source.startsWith(phrase)) {
-      const bareKey = triggerDescriptionKeys[triggerPhraseKey];
-      return source.replace(
-        phrase,
-        `${localize(`ui.components.logbook.${bareKey}`)}`
-      );
+export interface ParsedTriggerSource {
+  platform?: TriggerPlatform;
+  entityId?: string;
+}
+
+// Best-effort parse of the backend's English trigger `source` (e.g. "numeric
+// state of sensor.x", "time pattern") into a platform + triggering entity.
+// Temporary bridge until the backend sends the trigger structurally.
+export const parseTriggerSource = (source: string): ParsedTriggerSource => {
+  for (const key of Object.keys(triggerPhrases) as TriggerPhraseKey[]) {
+    const phrase = triggerPhrases[key];
+    if (!source.startsWith(phrase)) {
+      continue;
     }
+    const rest = source.slice(phrase.length).trim();
+    const entityId = /^[a-z_]+\.[a-z0-9_]+$/.test(rest) ? rest : undefined;
+    return { platform: triggerPlatform[key], entityId };
   }
-  return source;
+  return {};
 };
 
 export const localizeStateMessage = (
   hass: HomeAssistant,
-  localize: LocalizeFunc,
   state: string,
   stateObj: HassEntity,
   domain: string
 ): string => {
-  switch (domain) {
-    case "device_tracker":
-    case "person":
-      if (state === "not_home") {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
-      }
-      if (state === "home") {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
-      }
-      return localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_state`, { state });
-
-    case "sun":
-      return state === "above_horizon"
-        ? localize(`${LOGBOOK_LOCALIZE_PATH}.rose`)
-        : localize(`${LOGBOOK_LOCALIZE_PATH}.set`);
-
-    case "binary_sensor": {
-      const isOn = state === BINARY_STATE_ON;
-      const isOff = state === BINARY_STATE_OFF;
-      const device_class = stateObj.attributes.device_class;
-
-      if (device_class && (isOn || isOff)) {
-        return (
-          localize(
-            `${LOGBOOK_LOCALIZE_PATH}.${isOn ? "detected_device_classes" : "cleared_device_classes"}.${device_class}`,
-            {
-              device_class: autoCaseNoun(
-                localize(
-                  `component.binary_sensor.entity_component.${device_class}.name`
-                ) || device_class,
-                hass.language
-              ),
-            }
-          ) ||
-          // If there's no key for a specific device class, fallback to generic string
-          localize(
-            `${LOGBOOK_LOCALIZE_PATH}.${isOn ? "detected_device_class" : "cleared_device_class"}`,
-            {
-              device_class: autoCaseNoun(
-                localize(
-                  `component.binary_sensor.entity_component.${device_class}.name`
-                ) || device_class,
-                hass.language
-              ),
-            }
-          )
-        );
-      }
-
-      break;
-    }
-
-    case "cover":
-      switch (state) {
-        case "open":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
-        case "opening":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
-        case "closing":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_closing`);
-        case "closed":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
-      }
-      break;
-
-    case "event": {
-      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
-
-      // TODO: This is not working yet, as we don't get historic attribute values
-
-      const event_type = hass
-        .formatEntityAttributeValue(stateObj, "event_type")
-        ?.toString();
-
-      if (!event_type) {
-        return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_unknown_event`);
-      }
-
-      return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event`, {
-        event_type: autoCaseNoun(event_type, hass.language),
-      });
-    }
-
-    case "lock":
-      switch (state) {
-        case "unlocked":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_unlocked`);
-        case "locking":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_locking`);
-        case "unlocking":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_unlocking`);
-        case "opening":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
-        case "open":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_opened`);
-        case "locked":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.was_locked`);
-        case "jammed":
-          return localize(`${LOGBOOK_LOCALIZE_PATH}.is_jammed`);
-      }
-      break;
+  // Events expose a timestamp as their state, which has no meaningful display
+  // value, so keep a dedicated phrase.
+  if (domain === "event") {
+    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
   }
-
-  if (state === BINARY_STATE_ON) {
-    return localize(`${LOGBOOK_LOCALIZE_PATH}.turned_on`);
-  }
-
-  if (state === BINARY_STATE_OFF) {
-    return localize(`${LOGBOOK_LOCALIZE_PATH}.turned_off`);
-  }
-
-  if (state === UNKNOWN) {
-    return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unknown`);
-  }
-
-  if (state === UNAVAILABLE) {
-    return localize(`${LOGBOOK_LOCALIZE_PATH}.became_unavailable`);
-  }
-
-  return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.changed_to_state`, {
-    state: stateObj ? hass.formatEntityState(stateObj, state) : state,
-  });
+  // Every other domain reuses the backend state translation, so the logbook
+  // speaks the same vocabulary as the rest of the UI.
+  return hass.formatEntityState(stateObj, state);
 };
 
 export const filterLogbookCompatibleEntities = (

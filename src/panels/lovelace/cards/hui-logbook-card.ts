@@ -215,7 +215,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
             .entityIds=${this._getEntityIds()}
             .stateFilter=${this._stateFilter}
             narrow
-            relative-time
+            no-icon
             virtualize
           ></ha-logbook>
         </div>
