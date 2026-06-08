@@ -1,5 +1,15 @@
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
-import { themeStyles } from "../../../src/resources/theme/theme";
+import { extractVars } from "../../../src/common/style/derived-css-vars";
+import { animationStyles } from "../../../src/resources/theme/animations.globals";
+import { coreStyles } from "../../../src/resources/theme/core.globals";
+import { colorStyles } from "../../../src/resources/theme/color/color.globals";
+import { coreColorStyles } from "../../../src/resources/theme/color/core.globals";
+import { semanticColorStyles } from "../../../src/resources/theme/color/semantic.globals";
+import { waColorStyles } from "../../../src/resources/theme/color/wa.globals";
+import { mainStyles } from "../../../src/resources/theme/main.globals";
+import { semanticStyles } from "../../../src/resources/theme/semantic.globals";
+import { typographyStyles } from "../../../src/resources/theme/typography.globals";
+import { waMainStyles } from "../../../src/resources/theme/wa.globals";
 import type { HomeAssistant, ThemeSettings } from "../../../src/types";
 
 export const GALLERY_THEME_STORAGE_KEY = "gallery-theme";
@@ -25,25 +35,28 @@ export const loadGalleryThemeSettings = (): ThemeSettings => {
   }
 };
 
-const LIGHT_THEME_VARIABLES = themeStyles
-  .split(";")
-  .reduce<Record<string, string>>((variables, rawLine) => {
-    const variableStart = rawLine.indexOf("--");
-    if (variableStart === -1) {
-      return variables;
-    }
+const LIGHT_THEME_STYLES = [
+  coreStyles,
+  mainStyles,
+  typographyStyles,
+  semanticStyles,
+  coreColorStyles,
+  semanticColorStyles,
+  colorStyles,
+  waColorStyles,
+  waMainStyles,
+  animationStyles,
+];
 
-    const line = rawLine.substring(variableStart).replaceAll("}", "").trim();
-    const separator = line.indexOf(":");
-    if (separator === -1) {
-      return variables;
+const LIGHT_THEME_VARIABLES = LIGHT_THEME_STYLES.reduce<Record<string, string>>(
+  (variables, style) => {
+    for (const [key, value] of Object.entries(extractVars(style))) {
+      variables[`--${key}`] = value;
     }
-
-    variables[line.substring(0, separator)] = line
-      .substring(separator + 1)
-      .trim();
     return variables;
-  }, {});
+  },
+  {}
+);
 
 const LIGHT_THEME_VARIABLE_KEYS = Object.keys(LIGHT_THEME_VARIABLES);
 
