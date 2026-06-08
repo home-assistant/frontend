@@ -82,7 +82,7 @@ export class DemoHaChips extends LitElement {
                   ${chip.icon
                     ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
                       </ha-svg-icon>`
-                    : ""}
+                    : nothing}
                   ${chip.content}
                 </ha-input-chip>
               `

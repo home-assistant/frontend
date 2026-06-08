@@ -349,7 +349,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
               @action=${this._toggleSidebar}
             ></ha-icon-button>
           `
-        : ""}
+        : nothing}
       <div class="title">${this.sidebarTitle}</div>
     </div>`;
   }
@@ -558,7 +558,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       >
         <ha-user-badge slot="start" .user=${this.hass.user}></ha-user-badge>
         <span class="item-text" slot="headline"
-          >${this.hass.user ? this.hass.user.name : ""}</span
+          >${this.hass.user ? this.hass.user.name : nothing}</span
         >
       </ha-list-item-button>
       ${!this.alwaysExpand && this.hass.user
@@ -768,9 +768,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           color: var(--sidebar-text-color);
         }
         :host([expanded]) ha-list-item-button {
-          width: calc(
-            var(--ha-sidebar-expanded-width, 256px) - var(--ha-space-2)
-          );
+          width: var(--ha-sidebar-expanded-item-width, 248px);
         }
         :host([narrow][expanded]) ha-list-item-button {
           width: calc(240px - var(--safe-area-inset-left, 0px));

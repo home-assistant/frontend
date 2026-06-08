@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -54,7 +54,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
         .description=${html`
           ${!hasThemes
             ? this.hass.localize("ui.panel.profile.themes.error_no_theme")
-            : ""}
+            : nothing}
           <a
             href=${documentationUrl(
               this.hass,
@@ -112,7 +112,7 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
               </ha-button>
             </ha-settings-row>
           `
-        : ""}
+        : nothing}
     `;
   }
 

@@ -1,7 +1,7 @@
 import { mdiCog, mdiMenu } from "@mdi/js";
 import type { Connection } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -130,7 +130,7 @@ class HaGallery extends LitElement {
                   @click=${this._toggleDrawer}
                   .path=${mdiMenu}
                 ></ha-icon-button>`
-              : ""}
+              : nothing}
 
             <div slot="title">
               ${isSettingsPage
@@ -153,11 +153,11 @@ class HaGallery extends LitElement {
                           <page-description .page=${this._page}>
                           </page-description>
                         `
-                      : ""}
+                      : nothing}
                     ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
                   `}
             </div>
-            ${isSettingsPage || !page ? "" : this._renderPageFooter(page)}
+            ${isSettingsPage || !page ? nothing : this._renderPageFooter(page)}
           </ha-top-app-bar-fixed>
         </div>
       </ha-drawer>
@@ -320,7 +320,7 @@ class HaGallery extends LitElement {
                       class="gallery-sidebar-icon"
                       .path=${group.icon}
                     ></ha-svg-icon>`
-                  : ""}
+                  : nothing}
                 ${links}
               </ha-expansion-panel>
             `
@@ -350,7 +350,7 @@ class HaGallery extends LitElement {
       >
         ${iconPath
           ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
-          : ""}
+          : nothing}
         <span slot="headline">${title}</span>
       </ha-list-item-button>
     `;
@@ -390,14 +390,14 @@ class HaGallery extends LitElement {
                   Edit text
                 </a>
               `
-            : ""}
+            : nothing}
           ${page.demo
             ? html`
                 <a href=${`${GITHUB_DEMO_URL}${this._page}.ts`} target="_blank">
                   Edit demo
                 </a>
               `
-            : ""}
+            : nothing}
         </div>
       </div>
     </div>`;
@@ -558,6 +558,7 @@ class HaGallery extends LitElement {
         -moz-user-select: initial;
         --ha-sidebar-width: 300px;
         --ha-sidebar-expanded-width: 300px;
+        --ha-sidebar-expanded-item-width: 292px;
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
         --app-header-border-bottom: 1px solid var(--divider-color);
@@ -580,9 +581,7 @@ class HaGallery extends LitElement {
 
       .gallery-sidebar-section .gallery-nav-item {
         margin-inline-start: var(--ha-space-4);
-        width: calc(
-          var(--ha-sidebar-expanded-width, 256px) - var(--ha-space-11)
-        );
+        width: calc(var(--ha-sidebar-width, 256px) - var(--ha-space-11));
       }
 
       .gallery-sidebar-icon,
@@ -606,9 +605,7 @@ class HaGallery extends LitElement {
         --ha-row-item-padding-block: 0;
         --ha-row-item-padding-inline: var(--ha-space-3);
         position: relative;
-        width: calc(
-          var(--ha-sidebar-expanded-width, 256px) - var(--ha-space-2)
-        );
+        width: calc(var(--ha-sidebar-width, 256px) - var(--ha-space-2));
         color: var(--sidebar-text-color);
       }
 
