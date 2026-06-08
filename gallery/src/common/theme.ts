@@ -59,6 +59,7 @@ const LIGHT_THEME_VARIABLES = LIGHT_THEME_STYLES.reduce<Record<string, string>>(
 );
 
 const LIGHT_THEME_VARIABLE_KEYS = Object.keys(LIGHT_THEME_VARIABLES);
+const LIGHT_THEME_DEFAULTS_APPLIED = new WeakSet<HTMLElement>();
 
 export const effectiveGalleryDarkMode = (
   themeSettings: ThemeSettings,
@@ -78,12 +79,18 @@ const applyLightThemeDefaults = (element: HTMLElement, lightMode: boolean) => {
     for (const [key, value] of Object.entries(LIGHT_THEME_VARIABLES)) {
       element.style.setProperty(key, value);
     }
+    LIGHT_THEME_DEFAULTS_APPLIED.add(element);
+    return;
+  }
+
+  if (!LIGHT_THEME_DEFAULTS_APPLIED.has(element)) {
     return;
   }
 
   for (const key of LIGHT_THEME_VARIABLE_KEYS) {
     element.style.removeProperty(key);
   }
+  LIGHT_THEME_DEFAULTS_APPLIED.delete(element);
 };
 
 export const applyFlippedGalleryTheme = (
