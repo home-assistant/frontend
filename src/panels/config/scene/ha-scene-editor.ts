@@ -25,6 +25,7 @@ import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -47,7 +48,11 @@ import {
 } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import {
+  entityRegistryByEntityId,
+  updateEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
+import { domainToName } from "../../../data/integration";
 import type {
   SceneConfig,
   SceneEntities,
@@ -344,6 +349,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       this._deviceEntityLookup,
       Object.values(this.hass.devices)
     );
+    const entityRegistryLookup = entityRegistryByEntityId(
+      this._entityRegistryEntries
+    );
     return html` <div
       id="root"
       class=${classMap({
@@ -423,9 +431,19 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                         if (!entityStateObj) {
                           return nothing;
                         }
+                        const { secondary } = computeEntityPickerDisplay(
+                          this.hass,
+                          entityStateObj
+                        );
+                        const platform =
+                          entityRegistryLookup[entityId]?.platform;
+                        const integrationName = platform
+                          ? domainToName(this.hass.localize, platform)
+                          : undefined;
                         return html`
                           <ha-list-item
                             hasMeta
+                            ?twoline=${!!secondary}
                             .graphic=${this._mode === "live"
                               ? "icon"
                               : undefined}
@@ -445,6 +463,14 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                                 `
                               : nothing}
                             ${computeStateName(entityStateObj)}
+                            ${secondary
+                              ? html`<span slot="secondary">${secondary}</span>`
+                              : nothing}
+                            ${integrationName
+                              ? html`<span slot="meta" class="domain"
+                                  >${integrationName}</span
+                                >`
+                              : nothing}
                           </ha-list-item>
                         `;
                       })}
@@ -496,10 +522,19 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                           if (!entityStateObj) {
                             return nothing;
                           }
+                          const { secondary } = computeEntityPickerDisplay(
+                            this.hass,
+                            entityStateObj
+                          );
+                          const domainName = domainToName(
+                            this.hass.localize,
+                            computeDomain(entityId)
+                          );
                           return html`
                             <ha-list-item
                               class="entity"
                               hasMeta
+                              ?twoline=${!!secondary}
                               .graphic=${this._mode === "live"
                                 ? "icon"
                                 : undefined}
@@ -517,7 +552,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                                   ></state-badge>`
                                 : nothing}
                               ${computeStateName(entityStateObj)}
+                              ${secondary
+                                ? html`<span slot="secondary"
+                                    >${secondary}</span
+                                  >`
+                                : nothing}
                               <div slot="meta">
+                                <span class="domain">${domainName}</span>
                                 <ha-icon-button
                                   .path=${mdiDelete}
                                   .entityId=${entityId}
@@ -1355,9 +1396,20 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           display: flex;
           justify-content: center;
           align-items: center;
+          gap: 8px;
+        }
+        ha-list-item {
+          /* let the trailing label size to its content instead of the default
+             fixed meta width, which would clip it */
+          --mdc-list-item-meta-size: auto;
         }
         ha-list-item.entity {
           padding-right: 28px;
+        }
+        .domain {
+          font-size: var(--ha-font-size-s);
+          color: var(--secondary-text-color);
+          white-space: nowrap;
         }
       `,
     ];
