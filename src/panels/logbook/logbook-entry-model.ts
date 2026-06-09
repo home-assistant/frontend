@@ -113,7 +113,8 @@ export interface LogbookCause {
   userId?: string;
   stateObj?: HassEntity;
   iconPath?: string;
-  triggerPlatform?: string; // Rendered by ha-trigger-icon (per trigger type).
+  triggerPlatform?: string;
+  brandDomain?: string;
 }
 
 // Localize a trigger's type name. Integration-provided triggers are namespaced
@@ -220,7 +221,9 @@ export const resolveLogbookCause = (
   }
 
   if (item.context_name) {
-    return { iconPath: mdiPuzzle, name: item.context_name };
+    return item.context_domain
+      ? { brandDomain: item.context_domain, name: item.context_name }
+      : { iconPath: mdiPuzzle, name: item.context_name };
   }
 
   return undefined;

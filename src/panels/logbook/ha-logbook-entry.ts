@@ -13,9 +13,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/entity/state-badge";
+import "../../components/ha-domain-icon";
 import "../../components/ha-icon-next";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
+import "../../components/ha-trigger-icon";
 import "../../components/user/ha-user-badge";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { LogbookEntry } from "../../data/logbook";
@@ -167,7 +169,12 @@ class HaLogbookEntry extends LitElement {
         <div class="content">
           ${this.narrow
             ? hideName
-              ? this._renderInline(whatHappened, cause, timeLabel, relativeLabel)
+              ? this._renderInline(
+                  whatHappened,
+                  cause,
+                  timeLabel,
+                  relativeLabel
+                )
               : this._renderCompact(
                   item.entity_id,
                   name,
@@ -203,7 +210,9 @@ class HaLogbookEntry extends LitElement {
     return html`
       <div class="line1">
         <span class="line1-main">${whatHappened}</span>
-        ${cause ? this._causeIcon(cause) : nothing}
+        ${cause
+          ? html`<span title=${cause.name}>${this._causeIcon(cause)}</span>`
+          : nothing}
         <span class="time-inline" title=${relativeLabel}>${timeLabel}</span>
       </div>
     `;
@@ -346,8 +355,8 @@ class HaLogbookEntry extends LitElement {
       >
       ${timeLabel
         ? html`<span class="time-inline" title=${relativeLabel || ""}
-              >${timeLabel}</span
-            >`
+            >${timeLabel}</span
+          >`
         : nothing}
     </div>`;
   }
@@ -399,6 +408,19 @@ class HaLogbookEntry extends LitElement {
         class="cause-icon"
         .stateObj=${cause.stateObj}
       ></ha-state-icon>`;
+    }
+    if (cause.triggerPlatform) {
+      return html`<ha-trigger-icon
+        class="cause-icon"
+        .trigger=${cause.triggerPlatform}
+      ></ha-trigger-icon>`;
+    }
+    if (cause.brandDomain) {
+      return html`<ha-domain-icon
+        class="cause-icon"
+        .domain=${cause.brandDomain}
+        brand-fallback
+      ></ha-domain-icon>`;
     }
     if (cause.iconPath) {
       return html`<ha-svg-icon
@@ -632,7 +654,6 @@ class HaLogbookEntry extends LitElement {
           top: calc(var(--dot-pos) + 9px);
         }
 
-
         /* First row of a day: no rail above the icon. */
         .node.rail-trim-top::before {
           display: none;
@@ -787,12 +808,11 @@ class HaLogbookEntry extends LitElement {
           font-variant-numeric: tabular-nums;
         }
 
-
         .cause-avatar {
           flex-shrink: 0;
-          width: 16px;
-          height: 16px;
-          font-size: 9px;
+          width: 18px;
+          height: 18px;
+          font-size: 10px;
         }
 
         .line2 {
@@ -832,7 +852,7 @@ class HaLogbookEntry extends LitElement {
 
         .cause-icon {
           flex-shrink: 0;
-          --mdc-icon-size: 14px;
+          --mdc-icon-size: 18px;
           color: var(--secondary-text-color);
         }
 
