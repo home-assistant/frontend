@@ -126,7 +126,7 @@ const DEFAULT_VIEW: MoreInfoView = "info";
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends DirtyStateProviderMixin<
   EntitySettingsState | Helper | Record<string, string[]> | null,
-  "entity-registry" | "helper" | "segment-mapping"
+  "entity-registry" | "helper" | "vacuum-segment-mapping"
 >()(SubscribeMixin(ScrollableFadeMixin(LitElement))) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
