@@ -6,28 +6,48 @@ export type SearchParamsSource =
   | Record<string, string>
   | string;
 
-export interface QueryParamConfig<
-  ListKey extends string,
-  DateKey extends string,
-  BooleanKey extends string,
-> {
-  list?: readonly ListKey[];
-  date?: readonly DateKey[];
+export interface QueryParamConfig {
+  list?: readonly string[];
+  date?: readonly string[];
   boolean?: readonly {
-    key: BooleanKey;
+    key: string;
     trueValue: string;
   }[];
+  string?: readonly string[];
 }
 
-export type QueryParamValues<
-  ListKey extends string,
-  DateKey extends string,
-  BooleanKey extends string,
-> = Partial<
-  Record<ListKey, string[]> &
-    Record<DateKey, Date> &
-    Record<BooleanKey, boolean>
+type ListKeyOf<C extends QueryParamConfig> = C extends {
+  list: readonly (infer K extends string)[];
+}
+  ? K
+  : never;
+
+type DateKeyOf<C extends QueryParamConfig> = C extends {
+  date: readonly (infer K extends string)[];
+}
+  ? K
+  : never;
+
+type BooleanKeyOf<C extends QueryParamConfig> = C extends {
+  boolean: readonly { key: infer K extends string }[];
+}
+  ? K
+  : never;
+
+type StringKeyOf<C extends QueryParamConfig> = C extends {
+  string: readonly (infer K extends string)[];
+}
+  ? K
+  : never;
+
+export type QueryParamValues<C extends QueryParamConfig> = Partial<
+  Record<ListKeyOf<C>, string[]> &
+    Record<DateKeyOf<C>, Date> &
+    Record<BooleanKeyOf<C>, boolean> &
+    Record<StringKeyOf<C>, string>
 >;
+
+type QueryParamValue = string[] | Date | boolean | string;
 
 export type ServiceTargetQueryParams<
   Key extends keyof HassServiceTarget & string,
@@ -46,53 +66,59 @@ const getSearchParam = (
   return searchParams[key] ?? null;
 };
 
-export const decodeQueryParams = <
-  ListKey extends string,
-  DateKey extends string,
-  BooleanKey extends string,
->(
+export function decodeQueryParams<C extends QueryParamConfig>(
   searchParams: SearchParamsSource,
-  config: QueryParamConfig<ListKey, DateKey, BooleanKey>
-): QueryParamValues<ListKey, DateKey, BooleanKey> => {
-  const params: QueryParamValues<ListKey, DateKey, BooleanKey> = {};
+  config: C
+): QueryParamValues<C>;
+export function decodeQueryParams(
+  searchParams: SearchParamsSource,
+  config: QueryParamConfig
+): Record<string, QueryParamValue | undefined> {
+  const params: Record<string, QueryParamValue> = {};
   for (const key of config.list ?? []) {
     const value = getSearchParam(searchParams, key);
     if (value) {
-      params[key] = value.split(",") as (typeof params)[typeof key];
+      params[key] = value.split(",");
     }
   }
   for (const key of config.date ?? []) {
     const value = getSearchParam(searchParams, key);
     if (value) {
-      params[key] = new Date(value) as (typeof params)[typeof key];
+      params[key] = new Date(value);
     }
   }
   for (const { key, trueValue } of config.boolean ?? []) {
     if (getSearchParam(searchParams, key) === trueValue) {
-      params[key] = true as (typeof params)[typeof key];
+      params[key] = true;
+    }
+  }
+  for (const key of config.string ?? []) {
+    const value = getSearchParam(searchParams, key);
+    if (value) {
+      params[key] = value;
     }
   }
   return params;
-};
+}
 
-export const createQueryString = <
-  ListKey extends string,
-  DateKey extends string,
-  BooleanKey extends string,
->(
-  values: QueryParamValues<ListKey, DateKey, BooleanKey>,
-  config: QueryParamConfig<ListKey, DateKey, BooleanKey>
-): string => {
+export function createQueryString<C extends QueryParamConfig>(
+  values: QueryParamValues<NoInfer<C>>,
+  config: C
+): string;
+export function createQueryString(
+  values: Record<string, QueryParamValue | undefined>,
+  config: QueryParamConfig
+): string {
   const searchParams = new URLSearchParams();
   for (const key of config.list ?? []) {
-    const value = values[key] as string[] | undefined;
-    if (value?.length) {
+    const value = values[key];
+    if (Array.isArray(value) && value.length) {
       searchParams.append(key, value.join(","));
     }
   }
   for (const key of config.date ?? []) {
-    const value = values[key] as Date | undefined;
-    if (value) {
+    const value = values[key];
+    if (value instanceof Date) {
       searchParams.append(key, value.toISOString());
     }
   }
@@ -101,8 +127,14 @@ export const createQueryString = <
       searchParams.append(key, trueValue);
     }
   }
+  for (const key of config.string ?? []) {
+    const value = values[key];
+    if (typeof value === "string" && value) {
+      searchParams.append(key, value);
+    }
+  }
   return searchParams.toString();
-};
+}
 
 export const serviceTargetFromQueryParams = <
   Key extends keyof HassServiceTarget & string,

@@ -16,32 +16,17 @@ export type HistoryLogbookTargetParamKey =
   | "area_id"
   | "device_id";
 
-export type HistoryLogbookDateParamKey = "start_date" | "end_date";
-
-export type HistoryLogbookBooleanParamKey = "back";
-
-export type HistoryLogbookQueryParams = QueryParamValues<
-  HistoryLogbookTargetParamKey,
-  HistoryLogbookDateParamKey,
-  HistoryLogbookBooleanParamKey
->;
-
-export const historyLogbookTargetParamKeys: HistoryLogbookTargetParamKey[] = [
-  "entity_id",
-  "label_id",
-  "floor_id",
-  "area_id",
-  "device_id",
-];
+export const historyLogbookTargetParamKeys: readonly HistoryLogbookTargetParamKey[] =
+  ["entity_id", "label_id", "floor_id", "area_id", "device_id"];
 
 export const historyLogbookQueryParamConfig = {
   list: historyLogbookTargetParamKeys,
   date: ["start_date", "end_date"],
   boolean: [{ key: "back", trueValue: "1" }],
-} satisfies QueryParamConfig<
-  HistoryLogbookTargetParamKey,
-  HistoryLogbookDateParamKey,
-  HistoryLogbookBooleanParamKey
+} as const satisfies QueryParamConfig;
+
+export type HistoryLogbookQueryParams = QueryParamValues<
+  typeof historyLogbookQueryParamConfig
 >;
 
 export const decodeHistoryLogbookQueryParams = (
