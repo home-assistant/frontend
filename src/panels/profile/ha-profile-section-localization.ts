@@ -7,6 +7,7 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-pick-date-format-row";
 import "./ha-pick-first-weekday-row";
+import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-time-format-row";
 import "./ha-pick-time-zone-row";
@@ -36,6 +37,10 @@ class HaProfileSectionLocalization extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.localization_detail")}
             </div>
+            <ha-pick-language-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-language-row>
             <ha-pick-time-zone-row
               .narrow=${this.narrow}
               .hass=${this.hass}
