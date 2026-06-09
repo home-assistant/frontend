@@ -35,6 +35,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../../types";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
@@ -57,14 +58,14 @@ const PREDEFINED_DNS = {
 };
 
 @customElement("supervisor-network")
-export class HassioNetwork extends LitElement {
+export class HassioNetwork extends DirtyStateProviderMixin<NetworkInterface>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _accessPoints: AccessPoint[] = [];
 
   @state() private _curTabIndex = 0;
-
-  @state() private _dirty = false;
 
   @state() private _interface?: NetworkInterface;
 
@@ -88,6 +89,7 @@ export class HassioNetwork extends LitElement {
       a.primary > b.primary ? -1 : 1
     );
     this._interface = { ...this._interfaces[this._curTabIndex] };
+    this._initDirtyTracking({ type: "deep" }, this._interface);
   }
 
   protected render() {
@@ -230,7 +232,7 @@ export class HassioNetwork extends LitElement {
             ? this._renderIPConfiguration(version)
             : nothing
         )}
-        ${this._dirty
+        ${this.isDirtyState
           ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.panel.config.network.supervisor.warning"
@@ -242,7 +244,7 @@ export class HassioNetwork extends LitElement {
         <ha-button
           .loading=${this._processing}
           @click=${this._updateNetwork}
-          .disabled=${!this._dirty}
+          .disabled=${!this.isDirtyState}
         >
           ${this.hass.localize("ui.common.save")}
         </ha-button>
@@ -254,12 +256,17 @@ export class HassioNetwork extends LitElement {
 
   private _selectAP(event) {
     this._wifiConfiguration = event.currentTarget.ap;
+    let iface = this._interface!;
     IP_VERSIONS.forEach((version) => {
-      if (this._interface![version]!.method === "disabled") {
-        this._interface![version]!.method = "auto";
+      if (iface[version]!.method === "disabled") {
+        iface = {
+          ...iface,
+          [version]: { ...iface[version], method: "auto" },
+        };
       }
     });
-    this._dirty = true;
+    this._interface = iface;
+    this._updateDirtyState(this._interface);
   }
 
   private async _scanForAP() {
@@ -555,7 +562,7 @@ export class HassioNetwork extends LitElement {
         this._interface!.interface,
         interfaceOptions
       );
-      this._dirty = false;
+      this._markDirtyStateClean();
       await this._fetchNetworkInfo();
     } catch (err: any) {
       showAlertDialog(this, {
@@ -571,32 +578,38 @@ export class HassioNetwork extends LitElement {
 
   private async _clear() {
     await this._fetchNetworkInfo();
-    this._interface!.ipv4!.method = "auto";
-    this._interface!.ipv4!.nameservers = [];
-    this._interface!.ipv6!.method = "auto";
-    this._interface!.ipv6!.nameservers = [];
-    // removing the connection will disable the interface
-    // this is the only way to forget the wifi network right now
-    this._interface!.wifi = null;
+    this._interface = {
+      ...this._interface!,
+      ipv4: {
+        ...this._interface!.ipv4!,
+        method: "auto",
+        nameservers: [],
+      },
+      ipv6: {
+        ...this._interface!.ipv6!,
+        method: "auto",
+        nameservers: [],
+      },
+      wifi: null,
+    };
     this._wifiConfiguration = undefined;
-    this._dirty = true;
-    this.requestUpdate("_interface");
+    this._updateDirtyState(this._interface);
   }
 
   private async _handleTabActivated(ev: CustomEvent): Promise<void> {
-    if (this._dirty) {
+    if (this.isDirtyState) {
       const confirm = await showConfirmationDialog(this, {
         text: this.hass.localize("ui.panel.config.network.supervisor.unsaved"),
         confirmText: this.hass.localize("ui.common.yes"),
         dismissText: this.hass.localize("ui.common.no"),
       });
       if (!confirm) {
-        this.requestUpdate("_interface");
         return;
       }
     }
     this._curTabIndex = Number(ev.detail.name);
     this._interface = { ...this._interfaces[this._curTabIndex] };
+    this._initDirtyTracking({ type: "deep" }, this._interface);
   }
 
   private _handleRadioValueChanged(ev: Event): void {
@@ -611,18 +624,19 @@ export class HassioNetwork extends LitElement {
     ) {
       return;
     }
-    this._dirty = true;
 
-    this._interface[version]!.method = value;
-    this.requestUpdate("_interface");
+    this._interface = {
+      ...this._interface,
+      [version]: { ...this._interface[version], method: value },
+    };
+    this._updateDirtyState(this._interface);
   }
 
   private _handleRadioValueChangedAp(ev: Event): void {
     const source = ev.currentTarget as HaRadioGroup;
     const value = source.value as "open" | "wep" | "wpa-psk";
-    this._wifiConfiguration!.auth = value;
-    this._dirty = true;
-    this.requestUpdate("_wifiConfiguration");
+    this._wifiConfiguration = { ...this._wifiConfiguration!, auth: value };
+    this._updateDirtyState(this._interface!);
   }
 
   private _handleInputValueChanged(ev: Event): void {
@@ -636,35 +650,50 @@ export class HassioNetwork extends LitElement {
       return;
     }
 
-    this._dirty = true;
+    const versionData = this._interface[version];
     if (id === "address") {
       const index = (ev.target as any).index as number;
-      const { mask: oldMask } = parseAddress(
-        this._interface[version].address![index]
-      );
+      const { mask: oldMask } = parseAddress(versionData.address![index]);
       const { mask } = parseAddress(value);
-      this._interface[version].address![index] = formatAddress(
-        value,
-        mask || oldMask || ""
-      );
-      this.requestUpdate("_interface");
+      const newAddress = [...versionData.address!];
+      newAddress[index] = formatAddress(value, mask || oldMask || "");
+      this._interface = {
+        ...this._interface,
+        [version]: { ...versionData, address: newAddress },
+      };
     } else if (id === "netmask") {
       const index = (ev.target as any).index as number;
-      const { ip } = parseAddress(this._interface[version].address![index]);
-      this._interface[version].address![index] = formatAddress(ip, value);
-      this.requestUpdate("_interface");
+      const { ip } = parseAddress(versionData.address![index]);
+      const newAddress = [...versionData.address!];
+      newAddress[index] = formatAddress(ip, value);
+      this._interface = {
+        ...this._interface,
+        [version]: { ...versionData, address: newAddress },
+      };
     } else if (id === "prefix") {
       const index = (ev.target as any).index as number;
-      const { ip } = parseAddress(this._interface[version].address![index]);
-      this._interface[version].address![index] = `${ip}/${value}`;
-      this.requestUpdate("_interface");
+      const { ip } = parseAddress(versionData.address![index]);
+      const newAddress = [...versionData.address!];
+      newAddress[index] = `${ip}/${value}`;
+      this._interface = {
+        ...this._interface,
+        [version]: { ...versionData, address: newAddress },
+      };
     } else if (id === "nameserver") {
       const index = (ev.target as any).index as number;
-      this._interface[version].nameservers![index] = value;
-      this.requestUpdate("_interface");
+      const newNameservers = [...versionData.nameservers!];
+      newNameservers[index] = value;
+      this._interface = {
+        ...this._interface,
+        [version]: { ...versionData, nameservers: newNameservers },
+      };
     } else {
-      this._interface[version][id] = value;
+      this._interface = {
+        ...this._interface,
+        [version]: { ...versionData, [id]: value },
+      };
     }
+    this._updateDirtyState(this._interface);
   }
 
   private _handleInputValueChangedWifi(ev: Event): void {
@@ -680,26 +709,35 @@ export class HassioNetwork extends LitElement {
       source.reportValidity();
       return;
     }
-    this._dirty = true;
-    this._wifiConfiguration![id] = value;
+    this._wifiConfiguration = { ...this._wifiConfiguration, [id]: value };
+    this._updateDirtyState(this._interface!);
   }
 
   private _addAddress(ev: Event): void {
     const version = (ev.target as any).version as "ipv4" | "ipv6";
-    this._interface![version]!.address!.push(
-      version === "ipv4" ? "0.0.0.0/24" : "::/64"
-    );
-    this._dirty = true;
-    this.requestUpdate("_interface");
+    const newAddr = version === "ipv4" ? "0.0.0.0/24" : "::/64";
+    this._interface = {
+      ...this._interface!,
+      [version]: {
+        ...this._interface![version],
+        address: [...this._interface![version]!.address!, newAddr],
+      },
+    };
+    this._updateDirtyState(this._interface);
   }
 
   private _removeAddress(ev: Event): void {
     const source = ev.target as any;
     const index = source.index as number;
     const version = source.version as "ipv4" | "ipv6";
-    this._interface![version]!.address!.splice(index, 1);
-    this._dirty = true;
-    this.requestUpdate("_interface");
+    const newAddress = this._interface![version]!.address!.filter(
+      (_, i) => i !== index
+    );
+    this._interface = {
+      ...this._interface!,
+      [version]: { ...this._interface![version], address: newAddress },
+    };
+    this._updateDirtyState(this._interface);
   }
 
   private _handleDNSMenuOpened() {
@@ -711,30 +749,41 @@ export class HassioNetwork extends LitElement {
   }
 
   private _addPredefinedDNS(version: "ipv4" | "ipv6", addresses: string[]) {
-    if (!this._interface![version]!.nameservers) {
-      this._interface![version]!.nameservers = [];
-    }
-    this._interface![version]!.nameservers!.push(...addresses);
-    this._dirty = true;
-    this.requestUpdate("_interface");
+    const existing = this._interface![version]!.nameservers || [];
+    this._interface = {
+      ...this._interface!,
+      [version]: {
+        ...this._interface![version],
+        nameservers: [...existing, ...addresses],
+      },
+    };
+    this._updateDirtyState(this._interface);
   }
 
   private _addCustomDNS(version: "ipv4" | "ipv6") {
-    if (!this._interface![version]!.nameservers) {
-      this._interface![version]!.nameservers = [];
-    }
-    this._interface![version]!.nameservers!.push("");
-    this._dirty = true;
-    this.requestUpdate("_interface");
+    const existing = this._interface![version]!.nameservers || [];
+    this._interface = {
+      ...this._interface!,
+      [version]: {
+        ...this._interface![version],
+        nameservers: [...existing, ""],
+      },
+    };
+    this._updateDirtyState(this._interface);
   }
 
   private _removeNameserver(ev: Event): void {
     const source = ev.target as any;
     const index = source.index as number;
     const version = source.version as "ipv4" | "ipv6";
-    this._interface![version]!.nameservers!.splice(index, 1);
-    this._dirty = true;
-    this.requestUpdate("_interface");
+    const newNameservers = this._interface![version]!.nameservers!.filter(
+      (_, i) => i !== index
+    );
+    this._interface = {
+      ...this._interface!,
+      [version]: { ...this._interface![version], nameservers: newNameservers },
+    };
+    this._updateDirtyState(this._interface);
   }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {

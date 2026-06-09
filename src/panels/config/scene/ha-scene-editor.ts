@@ -76,6 +76,7 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -97,8 +98,8 @@ interface DeviceEntities {
 type DeviceEntitiesLookup = Record<string, string[]>;
 
 @customElement("ha-scene-editor")
-export class HaSceneEditor extends PreventUnsavedMixin(
-  KeyboardShortcutMixin(LitElement)
+export class HaSceneEditor extends DirtyStateProviderMixin<boolean>()(
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -211,6 +212,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   public connectedCallback() {
     super.connectedCallback();
+    this._initDirtyTracking({ type: "shallow" }, false);
     if (!this.sceneId) {
       this._mode = "live";
       this._subscribeEvents();
@@ -602,6 +604,10 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (changedProps.has("_dirty")) {
+      this._updateDirtyState(this._dirty);
+    }
 
     if (
       this._entityRegCreated &&
@@ -1320,10 +1326,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         onClose: () => resolve(false),
       });
     });
-  }
-
-  protected get isDirty() {
-    return this._dirty;
   }
 
   protected async promptDiscardChanges() {

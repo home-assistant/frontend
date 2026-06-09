@@ -20,6 +20,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
 
@@ -87,7 +88,9 @@ export interface EditorDomainHooks<TConfig> {
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
-  class AutomationScriptEditorClass extends superClass {
+  class AutomationScriptEditorClass extends DirtyStateProviderMixin<boolean>()(
+    superClass
+  ) {
     @property({ attribute: false }) public hass!: HomeAssistant;
 
     @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -144,8 +147,16 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     private _relatedContextAreaId?: string;
 
+    connectedCallback(): void {
+      super.connectedCallback();
+      this._initDirtyTracking({ type: "shallow" }, false);
+    }
+
     protected willUpdate(changedProps: PropertyValues): void {
       super.willUpdate(changedProps);
+      if (changedProps.has("dirty")) {
+        this._updateDirtyState(this.dirty);
+      }
       if (
         changedProps.has("currentEntityId") ||
         changedProps.has("entityRegistry")
@@ -236,10 +247,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         afterNextRender(() => goBack("/config"));
       }
     };
-
-    protected get isDirty() {
-      return this.dirty;
-    }
 
     protected async promptDiscardChanges() {
       return this.confirmUnsavedChanged();
