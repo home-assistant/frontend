@@ -15,7 +15,7 @@ import {
   mdiPlaylistEdit,
   mdiTag,
 } from "@mdi/js";
-import type { HassEvent } from "home-assistant-js-websocket";
+import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -440,28 +440,26 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                         const integrationName = platform
                           ? domainToName(this.hass.localize, platform)
                           : undefined;
+                        const badgeStateObj = this._badgeStateObj(
+                          entityId,
+                          entityStateObj
+                        );
                         return html`
                           <ha-list-item
                             hasMeta
                             ?twoline=${!!secondary}
-                            .graphic=${this._mode === "live"
-                              ? "icon"
-                              : undefined}
+                            graphic="icon"
                             .entityId=${entityId}
                             @click=${this._mode === "live"
                               ? this._showMoreInfo
                               : undefined}
                             .noninteractive=${this._mode === "review"}
                           >
-                            ${this._mode === "live"
-                              ? html`
-                                  <state-badge
-                                    .hass=${this.hass}
-                                    .stateObj=${entityStateObj}
-                                    slot="graphic"
-                                  ></state-badge>
-                                `
-                              : nothing}
+                            <state-badge
+                              .hass=${this.hass}
+                              .stateObj=${badgeStateObj}
+                              slot="graphic"
+                            ></state-badge>
                             ${computeStateName(entityStateObj)}
                             ${secondary
                               ? html`<span slot="secondary">${secondary}</span>`
@@ -530,27 +528,27 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                             this.hass.localize,
                             computeDomain(entityId)
                           );
+                          const badgeStateObj = this._badgeStateObj(
+                            entityId,
+                            entityStateObj
+                          );
                           return html`
                             <ha-list-item
                               class="entity"
                               hasMeta
                               ?twoline=${!!secondary}
-                              .graphic=${this._mode === "live"
-                                ? "icon"
-                                : undefined}
+                              graphic="icon"
                               .entityId=${entityId}
                               @click=${this._mode === "live"
                                 ? this._showMoreInfo
                                 : undefined}
                               .noninteractive=${this._mode === "review"}
                             >
-                              ${this._mode === "live"
-                                ? html` <state-badge
-                                    .hass=${this.hass}
-                                    .stateObj=${entityStateObj}
-                                    slot="graphic"
-                                  ></state-badge>`
-                                : nothing}
+                              <state-badge
+                                .hass=${this.hass}
+                                .stateObj=${badgeStateObj}
+                                slot="graphic"
+                              ></state-badge>
                               ${computeStateName(entityStateObj)}
                               ${secondary
                                 ? html`<span slot="secondary"
@@ -1150,6 +1148,40 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       return undefined;
     }
     return { ...stateObj.attributes, state: stateObj.state };
+  }
+
+  // Builds a state object from the scene's stored target state, so review mode
+  // can render the icon the entity will have once the scene is applied rather
+  // than its current live icon.
+  private _sceneStateObj(entityId: string): HassEntity | undefined {
+    const sceneEntity = this._config?.entities[entityId];
+    if (sceneEntity === undefined) {
+      return undefined;
+    }
+    if (typeof sceneEntity === "string") {
+      return {
+        entity_id: entityId,
+        state: sceneEntity,
+        attributes: {},
+      } as HassEntity;
+    }
+    const { state: sceneState, ...attributes } = sceneEntity;
+    return {
+      entity_id: entityId,
+      state: sceneState,
+      attributes,
+    } as HassEntity;
+  }
+
+  // Picks the state the row's icon should reflect: the live state in live mode,
+  // the scene's target state in review mode.
+  private _badgeStateObj(
+    entityId: string,
+    entityStateObj: HassEntity
+  ): HassEntity {
+    return this._mode === "live"
+      ? entityStateObj
+      : (this._sceneStateObj(entityId) ?? entityStateObj);
   }
 
   private _generateConfigFromLive() {
