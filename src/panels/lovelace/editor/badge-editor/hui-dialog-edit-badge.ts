@@ -110,7 +110,7 @@ export class HuiDialogEditBadge
       this._badgeConfig = deepFreeze(this._badgeConfig);
     }
     if ("badgeConfig" in params && this._badgeConfig) {
-      this._initDirtyTracking({ type: "deep" }, {} as LovelaceBadgeConfig);
+      this._initDirtyTracking({ type: "deep" }, { type: "" });
       this._updateDirtyState(this._badgeConfig);
     } else {
       this._initDirtyTracking({ type: "deep" }, this._badgeConfig);
@@ -304,8 +304,8 @@ export class HuiDialogEditBadge
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    const config = deepFreeze(ev.detail.config) as LovelaceBadgeConfig;
+  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent<LovelaceBadgeConfig>>) {
+    const config = deepFreeze(ev.detail.config);
     this._badgeConfig = config;
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;

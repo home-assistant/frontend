@@ -96,7 +96,7 @@ export class HuiDialogEditCard
       this._cardConfig = deepFreeze(this._cardConfig);
     }
     if (params.isNew && this._cardConfig) {
-      this._initDirtyTracking({ type: "deep" }, {} as LovelaceCardConfig);
+      this._initDirtyTracking({ type: "deep" }, { type: "" });
       this._updateDirtyState(this._cardConfig);
     } else {
       this._initDirtyTracking({ type: "deep" }, this._cardConfig);
@@ -288,8 +288,8 @@ export class HuiDialogEditCard
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    const config = deepFreeze(ev.detail.config) as LovelaceCardConfig;
+  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent<LovelaceCardConfig>>) {
+    const config = deepFreeze(ev.detail.config);
     this._cardConfig = config;
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
