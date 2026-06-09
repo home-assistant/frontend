@@ -66,6 +66,7 @@ import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
+import { fetchGroupsForEntity } from "../../data/group";
 import { ScrollableFadeMixin } from "../../mixins/scrollable-fade-mixin";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import {
@@ -168,6 +169,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @state() private _newTriggersAndConditions = false;
 
+  @state() private _canAddToGroup = false;
+
   protected scrollFadeThreshold = 24;
 
   protected get scrollableElement(): HTMLElement | null {
@@ -194,6 +197,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._fill = false;
     this._open = true;
     this._loadEntityRegistryEntry();
+    this._loadAddToGroupSupport();
   }
 
   private async _loadEntityRegistryEntry() {
@@ -222,6 +226,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._entityId = undefined;
     this._parentEntityIds = [];
     this._entry = undefined;
+    this._canAddToGroup = false;
     this._infoEditMode = false;
     this._detailsYamlMode = false;
     this._initialView = DEFAULT_VIEW;
@@ -269,8 +274,30 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     // When new_triggers_conditions labs feature is promoted, this whole check can be removed.
     return (
       this._newTriggersAndConditions ||
-      !!this.hass.auth.external?.config.hasEntityAddTo
+      !!this.hass.auth.external?.config.hasEntityAddTo ||
+      this._canAddToGroup
     );
+  }
+
+  private async _loadAddToGroupSupport() {
+    const entityId = this._entityId;
+    this._canAddToGroup = false;
+
+    if (!entityId || !this.hass.user?.is_admin) {
+      return;
+    }
+
+    try {
+      const { group_type } = await fetchGroupsForEntity(
+        this.hass.callWS,
+        entityId
+      );
+      if (this._entityId === entityId) {
+        this._canAddToGroup = group_type !== null;
+      }
+    } catch (_err: unknown) {
+      // The backend endpoint may be unavailable when the frontend is newer than Core.
+    }
   }
 
   protected hassSubscribe() {
@@ -333,6 +360,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       this._entityId = this._parentEntityIds.pop();
       this._currView = DEFAULT_VIEW;
       this._loadEntityRegistryEntry();
+      this._loadAddToGroupSupport();
     }
   }
 
@@ -1021,6 +1049,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._detailsYamlMode = false;
     this._childViewStack = [];
     this._loadEntityRegistryEntry();
+    this._loadAddToGroupSupport();
   }
 
   private _enableEscapeKeyClose = () => {

@@ -6,9 +6,11 @@ import "../../components/ha-spinner";
 import { showToast } from "../../util/toast";
 
 import { fireEvent } from "../../common/dom/fire_event";
-import { configContext } from "../../data/context";
+import { apiContext, configContext } from "../../data/context";
+import { addEntityToGroup, fetchGroupsForEntity } from "../../data/group";
 import "../add-to/ha-add-to-action-list";
 import type {
+  AddToActionListItem,
   AddToActionListActionSelectedEvent,
   AddToActionListSection,
 } from "../add-to/ha-add-to-action-list";
@@ -21,8 +23,19 @@ import {
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../common/translations/localize";
 
+type GroupAddToAction = AddToActionListItem & {
+  type: "group";
+  entryId: string;
+};
+
+type MoreInfoAddToAction = EntityAddToAction | GroupAddToAction;
+
 @customElement("ha-more-info-add-to")
 export class HaMoreInfoAddTo extends LitElement {
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
+
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config?: ContextType<typeof configContext>;
@@ -37,11 +50,36 @@ export class HaMoreInfoAddTo extends LitElement {
 
   @state() private _externalActions: EntityAddToActions = [];
 
+  @state() private _groupActions: GroupAddToAction[] = [];
+
+  @state() private _showGroupActions = false;
+
   @state() private _loading = true;
 
   private async _loadActions() {
     this._defaultActions = getDefaultAddToActions();
     this._externalActions = [];
+    this._groupActions = [];
+    this._showGroupActions = false;
+
+    if (this._api) {
+      try {
+        const response = await fetchGroupsForEntity(
+          this._api.callWS,
+          this.entityId
+        );
+        this._showGroupActions = response.group_type !== null;
+        this._groupActions = response.groups.map((group) => ({
+          type: "group",
+          entryId: group.entry_id,
+          enabled: true,
+          name: group.name,
+          icon: "mdi:google-circles-communities",
+        }));
+      } catch (_err: unknown) {
+        // The backend endpoint may be unavailable when the frontend is newer than Core.
+      }
+    }
 
     if (this._config?.auth.external?.config.hasEntityAddTo) {
       try {
@@ -70,7 +108,7 @@ export class HaMoreInfoAddTo extends LitElement {
   }
 
   private async _actionSelected(
-    ev: AddToActionListActionSelectedEvent<EntityAddToAction>
+    ev: AddToActionListActionSelectedEvent<MoreInfoAddToAction>
   ) {
     const { action } = ev.detail;
     if (!action.enabled) {
@@ -91,6 +129,32 @@ export class HaMoreInfoAddTo extends LitElement {
             entity_id: this.entityId,
             app_payload: action.payload,
           },
+        });
+        fireEvent(this, "add-to-action-selected");
+      } catch (err: unknown) {
+        showToast(this, {
+          message: this._localize(
+            "ui.dialogs.more_info_control.add_to.action_failed",
+            {
+              error: err instanceof Error ? err.message : String(err),
+            }
+          ),
+        });
+      }
+      return;
+    }
+
+    if (action.type === "group") {
+      try {
+        if (!this._api) {
+          throw new Error("Missing API connection");
+        }
+        await addEntityToGroup(this._api.callWS, action.entryId, this.entityId);
+        showToast(this, {
+          message: this._localize(
+            "ui.dialogs.more_info_control.add_to.added_to_group",
+            { group: action.name }
+          ),
         });
         fireEvent(this, "add-to-action-selected");
       } catch (err: unknown) {
@@ -127,7 +191,11 @@ export class HaMoreInfoAddTo extends LitElement {
       `;
     }
 
-    if (!this._defaultActions.length && !this._externalActions.length) {
+    if (
+      !this._groupActions.length &&
+      !this._defaultActions.length &&
+      !this._externalActions.length
+    ) {
       return html`
         <ha-alert alert-type="info">
           ${this._localize("ui.dialogs.more_info_control.add_to.no_actions")}
@@ -142,7 +210,7 @@ export class HaMoreInfoAddTo extends LitElement {
       (action) => action.type === "default" && action.key === "script_action"
     );
 
-    const sections: AddToActionListSection<EntityAddToAction>[] = [
+    const sections: AddToActionListSection<MoreInfoAddToAction>[] = [
       {
         titleKey: "ui.dialogs.more_info_control.add_to.automations_heading",
         actions: automationActions,
@@ -156,6 +224,14 @@ export class HaMoreInfoAddTo extends LitElement {
         actions: this._externalActions,
       },
     ];
+
+    if (this._showGroupActions) {
+      sections.push({
+        titleKey: "ui.dialogs.more_info_control.add_to.groups_heading",
+        actions: this._groupActions,
+        emptyKey: "ui.dialogs.more_info_control.add_to.no_groups",
+      });
+    }
 
     return html`
       <ha-add-to-action-list

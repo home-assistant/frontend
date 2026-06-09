@@ -1704,10 +1704,13 @@
             "script_action": "Create as a new action",
             "scene": "Create as a new scene"
           },
+          "groups_heading": "Groups",
+          "no_groups": "No compatible groups available",
           "automations_heading": "Automations",
           "scripts_heading": "Scripts",
           "app_actions": "App actions",
           "no_actions": "No actions available",
+          "added_to_group": "Added to {group}",
           "action_failed": "Failed to perform the action {error}"
         },
         "sun": {
