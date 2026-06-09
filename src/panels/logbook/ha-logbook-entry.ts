@@ -815,6 +815,12 @@ class HaLogbookEntry extends LitElement {
           font-size: 10px;
         }
 
+        .cause .cause-avatar {
+          width: 16px;
+          height: 16px;
+          font-size: 9px;
+        }
+
         .line2 {
           display: flex;
           align-items: center;
@@ -854,6 +860,10 @@ class HaLogbookEntry extends LitElement {
           flex-shrink: 0;
           --mdc-icon-size: 18px;
           color: var(--secondary-text-color);
+        }
+
+        .cause .cause-icon {
+          --mdc-icon-size: 16px;
         }
 
         .cause-name {
