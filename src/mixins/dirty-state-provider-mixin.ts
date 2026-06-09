@@ -181,6 +181,7 @@ export const DirtyStateProviderMixin =
 
       /**
        * Whether any slice's current value differs from its baseline.
+       * This passes the protected getter to the consuming class.
        */
       public get isDirtyState(): boolean {
         return this._dirtyStateContext.isDirty;

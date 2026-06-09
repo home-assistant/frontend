@@ -75,6 +75,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -97,8 +98,8 @@ interface DeviceEntities {
 type DeviceEntitiesLookup = Record<string, string[]>;
 
 @customElement("ha-scene-editor")
-export class HaSceneEditor extends PreventUnsavedMixin(
-  KeyboardShortcutMixin(LitElement)
+export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -112,9 +113,9 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @state() private _dirty = false;
-
   @state() private _errors?: string;
+
+  private _sceneRevision = 0;
 
   @state() private _yamlErrors?: string;
 
@@ -322,7 +323,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           .disabled=${this._saving}
           @click=${this._saveScene}
           class=${classMap({
-            dirty: this._dirty || !this.sceneId,
+            dirty: this.isDirty || !this.sceneId,
             saving: this._saving,
           })}
         >
@@ -641,7 +642,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     }
 
     if (changedProps.has("sceneId") && !this.sceneId && this.hass) {
-      this._dirty = false;
+      this._sceneRevision = 0;
       const initData = getSceneEditorInitData();
       this._config = {
         name: this.hass.localize("ui.panel.config.scene.editor.default_name"),
@@ -656,9 +657,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           category: "",
         };
       }
-      this._dirty =
+      this._initDirtyTracking({ type: "shallow" }, 0);
+      if (
         initData !== undefined &&
-        (initData.areaId !== undefined || initData.config !== undefined);
+        (initData.areaId !== undefined || initData.config !== undefined)
+      ) {
+        this._updateDirtyState(++this._sceneRevision);
+      }
     }
 
     if (changedProps.has("_entityRegistryEntries")) {
@@ -816,7 +821,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   private async _enterLiveMode() {
-    if (this._dirty) {
+    if (this.isDirty) {
       const result = await showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.scene.editor.enter_live_mode_unsaved"
@@ -850,13 +855,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this._dirty = true;
     if (!ev.detail.isValid) {
       this._yamlErrors = ev.detail.errorMsg;
       return;
     }
     this._yamlErrors = undefined;
     this._config = ev.detail.value;
+    this._updateDirtyState(++this._sceneRevision);
     this._errors = undefined;
   }
 
@@ -911,7 +916,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       (entity: SceneEntity) => entity.attributes.id === this.sceneId
     );
 
-    this._dirty = false;
+    this._sceneRevision = 0;
+    this._initDirtyTracking({ type: "shallow" }, 0);
     this._config = config;
   }
 
@@ -960,7 +966,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     this._entities = [...this._entities, entityId];
     this._single_entities.push(entityId);
     this._storeState(entityId);
-    this._dirty = true;
+    this._updateDirtyState(++this._sceneRevision);
   }
 
   private _deleteEntity(ev: Event) {
@@ -978,7 +984,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     if (this._config!.metadata) {
       delete this._config!.metadata[deleteEntityId];
     }
-    this._dirty = true;
+    this._updateDirtyState(++this._sceneRevision);
   }
 
   private _pickDevice(device_id: string) {
@@ -994,7 +1000,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     deviceEntities.forEach((entityId) => {
       this._storeState(entityId);
     });
-    this._dirty = true;
+    this._updateDirtyState(++this._sceneRevision);
   }
 
   private _devicePicked(ev: CustomEvent) {
@@ -1018,7 +1024,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         delete this._config!.entities[entityId];
       });
     }
-    this._dirty = true;
+    this._updateDirtyState(++this._sceneRevision);
   }
 
   private _stateChanged(event: HassEvent) {
@@ -1026,7 +1032,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       event.context.id !== this._activateContextId &&
       this._entities.includes(event.data.entity_id)
     ) {
-      this._dirty = true;
+      this._updateDirtyState(++this._sceneRevision);
     }
   }
 
@@ -1072,7 +1078,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this._dirty) {
+    if (this.isDirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
           "ui.panel.config.scene.editor.unsaved_confirm_title"
@@ -1239,7 +1245,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         }
       }
 
-      this._dirty = false;
+      this._markDirtyStateClean();
       if (isNewScene) {
         navigate(`/config/scene/edit/${id}`, { replace: true });
       }
@@ -1294,7 +1300,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         updateConfig: async (newConfig, entityRegistryUpdate) => {
           this._config = newConfig;
           this._entityRegistryUpdate = entityRegistryUpdate;
-          this._dirty = true;
+          this._updateDirtyState(++this._sceneRevision);
           this.requestUpdate();
           resolve(true);
         },
@@ -1313,17 +1319,13 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         updateConfig: async (newConfig, entityRegistryUpdate) => {
           this._config = newConfig;
           this._entityRegistryUpdate = entityRegistryUpdate;
-          this._dirty = true;
+          this._updateDirtyState(++this._sceneRevision);
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
       });
     });
-  }
-
-  protected get isDirty() {
-    return this._dirty;
   }
 
   protected async promptDiscardChanges() {
