@@ -153,7 +153,7 @@ describe("history logbook query params", () => {
 describe("string params", () => {
   const stringConfig = {
     string: ["name", "color"],
-  } satisfies QueryParamConfig<never, never, never, "name" | "color">;
+  } as const satisfies QueryParamConfig;
 
   it("decodes scalar string params", () => {
     expect(decodeQueryParams("?name=hello&color=blue", stringConfig)).toEqual({

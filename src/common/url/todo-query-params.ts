@@ -6,26 +6,12 @@ import {
   type SearchParamsSource,
 } from "./query-params";
 
-export type TodoStringParamKey = "entity_id";
-
-export type TodoBooleanParamKey = "add_item";
-
-export type TodoQueryParams = QueryParamValues<
-  never,
-  never,
-  TodoBooleanParamKey,
-  TodoStringParamKey
->;
-
 export const todoQueryParamConfig = {
   string: ["entity_id"],
   boolean: [{ key: "add_item", trueValue: "true" }],
-} satisfies QueryParamConfig<
-  never,
-  never,
-  TodoBooleanParamKey,
-  TodoStringParamKey
->;
+} as const satisfies QueryParamConfig;
+
+export type TodoQueryParams = QueryParamValues<typeof todoQueryParamConfig>;
 
 export const decodeTodoQueryParams = (
   searchParams: SearchParamsSource
