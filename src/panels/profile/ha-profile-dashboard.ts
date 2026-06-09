@@ -102,7 +102,9 @@ class HaProfileDashboard extends LitElement {
               </div>
             </div>
           </ha-card>
-          <ha-card>
+          <ha-card
+            .header=${this.hass.localize("ui.panel.profile.themes.header")}
+          >
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
