@@ -10749,6 +10749,7 @@
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
           "theme_mode": "Theme mode",
+          "colors": "Custom colors",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
@@ -10756,7 +10757,7 @@
           },
           "primary_color": "Primary color",
           "accent_color": "Accent color",
-          "reset": "Reset",
+          "reset": "Reset colors",
           "use_default": "Use default theme"
         },
         "dashboard": {
