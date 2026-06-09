@@ -13,6 +13,7 @@ import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/input/ha-input";
 import "../../../components/item/ha-row-item";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
@@ -44,8 +45,20 @@ const cropOptions: CropOptions = {
   aspectRatio: 1,
 };
 
+interface PersonFormState {
+  name: string;
+  picture: string | null;
+  userId: string | undefined;
+  deviceTrackers: string[];
+  isAdmin: boolean | undefined;
+  localOnly: boolean | undefined;
+}
+
 @customElement("dialog-person-detail")
-class DialogPersonDetail extends LitElement implements HassDialog {
+class DialogPersonDetail
+  extends DirtyStateProviderMixin<PersonFormState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
@@ -104,7 +117,19 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._picture = null;
     }
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
+  }
+
+  private _currentState(): PersonFormState {
+    return {
+      name: this._name,
+      picture: this._picture,
+      userId: this._userId,
+      deviceTrackers: this._deviceTrackers,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+    };
   }
 
   public closeDialog() {
@@ -134,7 +159,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this._params.entry
           ? this._params.entry.name
           : this.hass!.localize("ui.panel.config.person.detail.new_person")}
@@ -367,14 +392,17 @@ class DialogPersonDetail extends LitElement implements HassDialog {
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
     this._name = (ev.target as HTMLInputElement).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private _localOnlyChanged(ev): void {
     this._localOnly = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _allowLoginChanged(ev): Promise<void> {
@@ -393,6 +421,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
             this._localOnly = user.local_only;
+            this._updateDirtyState(this._currentState());
           }
         },
         name: this._name,
@@ -421,17 +450,20 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._user = undefined;
       this._isAdmin = undefined;
       this._localOnly = undefined;
+      this._updateDirtyState(this._currentState());
     }
   }
 
   private _deviceTrackersChanged(ev: ValueChangedEvent<string[]>) {
     this._error = undefined;
     this._deviceTrackers = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _changePassword() {
@@ -527,6 +559,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         await this._params!.createEntry?.(values);
         this._personExists = true;
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";

@@ -11,6 +11,7 @@ import "../../../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
 import "../../../../components/radio/ha-radio-option";
 import "../../../../components/input/ha-input";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type {
   GridSourceTypeEnergyPreference,
   PowerConfig,
@@ -43,9 +44,17 @@ const energyUnitClasses = ["energy"];
 
 type CostType = "no_cost" | "stat" | "entity" | "number";
 
+interface EnergyGridFormState {
+  source: GridSourceTypeEnergyPreference | undefined;
+  powerType: PowerType;
+  powerConfig: PowerConfig;
+  importCostType: CostType;
+  exportCostType: CostType;
+}
+
 @customElement("dialog-energy-grid-settings")
 export class DialogEnergyGridSettings
-  extends LitElement
+  extends DirtyStateProviderMixin<EnergyGridFormState>()(LitElement)
   implements HassDialog<EnergySettingsGridDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -144,6 +153,17 @@ export class DialogEnergyGridSettings
     );
 
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): EnergyGridFormState {
+    return {
+      source: this._source,
+      powerType: this._powerType,
+      powerConfig: this._powerConfig,
+      importCostType: this._importCostType,
+      exportCostType: this._exportCostType,
+    };
   }
 
   public closeDialog() {
@@ -185,7 +205,7 @@ export class DialogEnergyGridSettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.grid.dialog.header"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
@@ -507,6 +527,7 @@ export class DialogEnergyGridSettings
       };
     }
     this._updateMetadata(ev.detail.value);
+    this._updateDirtyState(this._currentState());
   }
 
   private _statisticToChanged(ev: ValueChangedEvent<string>) {
@@ -536,6 +557,7 @@ export class DialogEnergyGridSettings
       };
     }
     this._updateMetadata(ev.detail.value);
+    this._updateDirtyState(this._currentState());
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -546,6 +568,7 @@ export class DialogEnergyGridSettings
     if (!this._source.name) {
       delete this._source.name;
     }
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleImportCostTypeChanged(ev: Event) {
@@ -557,6 +580,7 @@ export class DialogEnergyGridSettings
       entity_energy_price: null,
       number_energy_price: null,
     };
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleExportCostTypeChanged(ev: Event) {
@@ -568,10 +592,12 @@ export class DialogEnergyGridSettings
       entity_energy_price_export: null,
       number_energy_price_export: null,
     };
+    this._updateDirtyState(this._currentState());
   }
 
   private _statCostChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_cost: ev.detail.value || null };
+    this._updateDirtyState(this._currentState());
   }
 
   private _entityCostChanged(ev: ValueChangedEvent<string>) {
@@ -579,12 +605,14 @@ export class DialogEnergyGridSettings
       ...this._source!,
       entity_energy_price: ev.detail.value || null,
     };
+    this._updateDirtyState(this._currentState());
   }
 
   private _numberCostChanged(ev: Event) {
     const input = ev.currentTarget as HTMLInputElement;
     const value = input.value ? parseFloat(input.value) : null;
     this._source = { ...this._source!, number_energy_price: value };
+    this._updateDirtyState(this._currentState());
   }
 
   private _statCompensationChanged(ev: ValueChangedEvent<string>) {
@@ -592,6 +620,7 @@ export class DialogEnergyGridSettings
       ...this._source!,
       stat_compensation: ev.detail.value || null,
     };
+    this._updateDirtyState(this._currentState());
   }
 
   private _entityCompensationChanged(ev: ValueChangedEvent<string>) {
@@ -599,12 +628,14 @@ export class DialogEnergyGridSettings
       ...this._source!,
       entity_energy_price_export: ev.detail.value || null,
     };
+    this._updateDirtyState(this._currentState());
   }
 
   private _numberCompensationChanged(ev: Event) {
     const input = ev.currentTarget as HTMLInputElement;
     const value = input.value ? parseFloat(input.value) : null;
     this._source = { ...this._source!, number_energy_price_export: value };
+    this._updateDirtyState(this._currentState());
   }
 
   private _handlePowerConfigChanged(
@@ -612,6 +643,7 @@ export class DialogEnergyGridSettings
   ) {
     this._powerType = ev.detail.powerType;
     this._powerConfig = ev.detail.powerConfig;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _save() {
@@ -638,6 +670,7 @@ export class DialogEnergyGridSettings
       }
 
       await this._params!.saveCallback(source);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
