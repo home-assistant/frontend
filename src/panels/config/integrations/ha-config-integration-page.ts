@@ -47,7 +47,10 @@ import { fetchDiagnosticHandler } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
-import { getErrorLogDownloadUrl } from "../../../data/error_log";
+import {
+  getCoreLogFileDownloadUnavailableReason,
+  getErrorLogDownloadUrl,
+} from "../../../data/error_log";
 import type {
   IntegrationLogInfo,
   IntegrationManifest,
@@ -1179,6 +1182,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       LogSeverity[LogSeverity.NOTSET],
       "once"
     );
+    const logFileDownloadUnavailableReason =
+      getCoreLogFileDownloadUnavailableReason(this.hass);
+    if (logFileDownloadUnavailableReason) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.logs.managed_log_file_disabled_title"
+        ),
+        text: this.hass.localize(
+          `ui.panel.config.logs.managed_log_file_disabled_debug_download.${logFileDownloadUnavailableReason}`
+        ),
+      });
+      return;
+    }
+
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const logFileName = `home-assistant_${integration}_${timeString}.log`;
     const signedUrl = await getSignedPath(

@@ -4549,6 +4549,15 @@
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
           "download_logs": "Download logs",
+          "managed_log_file_disabled_title": "Log file disabled",
+          "managed_log_file_disabled": {
+            "environment": "Home Assistant is not managing a log file because HA_DISABLE_LOG_FILE is set. Raw log view and log download are unavailable.",
+            "supervisor": "Home Assistant is not managing a local log file. Raw log view and log download are handled by Supervisor."
+          },
+          "managed_log_file_disabled_debug_download": {
+            "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not managing a log file.",
+            "supervisor": "Debug logging has been disabled, but no log file was downloaded because Home Assistant is not managing a local log file."
+          },
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",

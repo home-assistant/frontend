@@ -45,7 +45,11 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import type { ConnectionStatus } from "../../../data/connection-status";
-import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
+import {
+  fetchErrorLog,
+  getCoreLogFileDownloadUnavailableReason,
+  getErrorLogDownloadUrl,
+} from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   fetchHassioBoots,
@@ -131,6 +135,11 @@ class ErrorLogCard extends LitElement {
     const hasBoots = this._streamSupported && Array.isArray(this._boots);
 
     const localize = this.localizeFunc || this.hass.localize;
+    const logFileDownloadUnavailableReason =
+      !this.provider || this.provider === "core"
+        ? getCoreLogFileDownloadUnavailableReason(this.hass)
+        : undefined;
+
     return html`
       <div class="error-log-intro">
         ${this._error
@@ -187,11 +196,13 @@ class ErrorLogCard extends LitElement {
                     </ha-dropdown>
                   `
                 : nothing}
-              <ha-icon-button
-                .path=${mdiDownload}
-                @click=${this._downloadLogs}
-                .label=${localize("ui.panel.config.logs.download_logs")}
-              ></ha-icon-button>
+              ${logFileDownloadUnavailableReason
+                ? nothing
+                : html`<ha-icon-button
+                    .path=${mdiDownload}
+                    @click=${this._downloadLogs}
+                    .label=${localize("ui.panel.config.logs.download_logs")}
+                  ></ha-icon-button>`}
               <ha-icon-button
                 .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
                 @click=${this._toggleLineWrap}
@@ -248,11 +259,21 @@ class ErrorLogCard extends LitElement {
                   <ha-spinner></ha-spinner>
                 </div>`
               : nothing}
-            ${this._loadingState === "loading"
-              ? html`<div>${localize("ui.panel.config.logs.loading_log")}</div>`
-              : this._loadingState === "empty"
-                ? html`<div>${localize("ui.panel.config.logs.no_errors")}</div>`
-                : nothing}
+            ${logFileDownloadUnavailableReason
+              ? html`<div>
+                  ${localize(
+                    `ui.panel.config.logs.managed_log_file_disabled.${logFileDownloadUnavailableReason}`
+                  )}
+                </div>`
+              : this._loadingState === "loading"
+                ? html`<div>
+                    ${localize("ui.panel.config.logs.loading_log")}
+                  </div>`
+                : this._loadingState === "empty"
+                  ? html`<div>
+                      ${localize("ui.panel.config.logs.no_errors")}
+                    </div>`
+                  : nothing}
             ${this._loadingState === "loaded" &&
             this.filter &&
             this._noSearchResults
@@ -367,6 +388,13 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _downloadLogs(): Promise<void> {
+    if (
+      (!this.provider || this.provider === "core") &&
+      getCoreLogFileDownloadUnavailableReason(this.hass)
+    ) {
+      return;
+    }
+
     if (this._streamSupported && this.provider) {
       showDownloadLogsDialog(this, {
         header: this.header,
@@ -398,6 +426,14 @@ class ErrorLogCard extends LitElement {
       this._loadingPrevState = undefined;
       this._firstCursor = undefined;
       this._ansiToHtmlElement?.clear();
+    }
+
+    if (
+      (!this.provider || this.provider === "core") &&
+      getCoreLogFileDownloadUnavailableReason(this.hass)
+    ) {
+      this._loadingState = "loaded";
+      return;
     }
 
     const streamLogs =

@@ -20,7 +20,7 @@ import "../../src/components/ha-top-app-bar-fixed";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
 import type { HomeAssistant, ThemeSettings } from "../../src/types";
-import { PAGES, SIDEBAR } from "../build/import-pages";
+import { PAGES, SIDEBAR } from "../build/import-pages.js";
 import {
   GALLERY_THEME_STORAGE_KEY,
   loadGalleryThemeSettings,

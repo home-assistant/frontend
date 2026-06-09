@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -14,7 +15,10 @@ import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import { getSignedPath } from "../../../data/auth";
-import { getErrorLogDownloadUrl } from "../../../data/error_log";
+import {
+  getCoreLogFileDownloadUnavailableReason,
+  getErrorLogDownloadUrl,
+} from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
 import type { LoggedError } from "../../../data/system_log";
 import {
@@ -88,6 +92,8 @@ export class SystemLogCard extends LitElement {
   );
 
   protected render() {
+    const logFileDownloadUnavailableReason =
+      getCoreLogFileDownloadUnavailableReason(this.hass);
     const filteredItems = this._items
       ? this._getFilteredItems(
           this.hass.localize,
@@ -111,34 +117,50 @@ export class SystemLogCard extends LitElement {
                 <div class="header">
                   <h1 class="card-header">${this.header || "Logs"}</h1>
                   <div class="header-buttons">
-                    <ha-icon-button
-                      .path=${mdiDownload}
-                      @click=${this._downloadLogs}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.logs.download_logs"
-                      )}
-                    ></ha-icon-button>
+                    ${logFileDownloadUnavailableReason
+                      ? nothing
+                      : html`<ha-icon-button
+                          .path=${mdiDownload}
+                          @click=${this._downloadLogs}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.logs.download_logs"
+                          )}
+                        ></ha-icon-button>`}
                     <ha-icon-button
                       .path=${mdiRefresh}
                       @click=${this.fetchData}
                       .label=${this.hass.localize("ui.common.refresh")}
                     ></ha-icon-button>
 
-                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
-                      <ha-icon-button
-                        slot="trigger"
-                        .path=${mdiDotsVertical}
-                        .label=${this.hass.localize("ui.common.menu")}
-                      ></ha-icon-button>
-                      <ha-dropdown-item value="show-full-logs">
-                        <ha-svg-icon slot="icon" .path=${mdiText}></ha-svg-icon>
-                        ${this.hass.localize(
-                          "ui.panel.config.logs.show_full_logs"
-                        )}
-                      </ha-dropdown-item>
-                    </ha-dropdown>
+                    ${logFileDownloadUnavailableReason
+                      ? nothing
+                      : html`<ha-dropdown
+                          @wa-select=${this._handleOverflowAction}
+                        >
+                          <ha-icon-button
+                            slot="trigger"
+                            .path=${mdiDotsVertical}
+                            .label=${this.hass.localize("ui.common.menu")}
+                          ></ha-icon-button>
+                          <ha-dropdown-item value="show-full-logs">
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${mdiText}
+                            ></ha-svg-icon>
+                            ${this.hass.localize(
+                              "ui.panel.config.logs.show_full_logs"
+                            )}
+                          </ha-dropdown-item>
+                        </ha-dropdown>`}
                   </div>
                 </div>
+                ${logFileDownloadUnavailableReason
+                  ? html`<ha-alert alert-type="warning">
+                      ${this.hass.localize(
+                        `ui.panel.config.logs.managed_log_file_disabled.${logFileDownloadUnavailableReason}`
+                      )}
+                    </ha-alert>`
+                  : nothing}
                 ${this._items.length === 0
                   ? html`
                       <div class="card-content empty-content">
@@ -232,6 +254,10 @@ export class SystemLogCard extends LitElement {
   }
 
   private async _downloadLogs() {
+    if (getCoreLogFileDownloadUnavailableReason(this.hass)) {
+      return;
+    }
+
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const downloadUrl = getErrorLogDownloadUrl(this.hass);
     const logFileName = `home-assistant_${timeString}.log`;
