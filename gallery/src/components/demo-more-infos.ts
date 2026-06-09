@@ -47,10 +47,10 @@ class DemoMoreInfos extends LitElement {
       justify-content: center;
     }
     demo-more-info {
-      margin: 16px 16px 32px;
+      margin: var(--ha-space-4) var(--ha-space-4) var(--ha-space-8);
     }
     ha-formfield {
-      margin-right: 16px;
+      margin-right: var(--ha-space-4);
     }
   `;
 
