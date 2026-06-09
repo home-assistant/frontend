@@ -14,10 +14,13 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-more-info-view-vacuum-segment-mapping")
-export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
+export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
+  Record<string, string[]>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public params!: { entityId: string };
@@ -25,8 +28,6 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
   @state() private _areaMapping?: Record<string, string[]>;
 
   @state() private _submitting = false;
-
-  @state() private _dirty = false;
 
   @state() private _error?: string;
 
@@ -44,16 +45,16 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
       this.params.entityId
     );
 
-    if (this._entry?.options?.vacuum) {
-      this._areaMapping = this._entry.options.vacuum.area_mapping || {};
-    } else {
-      this._areaMapping = {};
-    }
+    const mapping: Record<string, string[]> =
+      this._entry?.options?.vacuum?.area_mapping || {};
+    this._areaMapping = mapping;
+    this._initDirtyTracking({ type: "deep" }, mapping);
   }
 
   private _valueChanged(ev: CustomEvent) {
-    this._areaMapping = ev.detail.value;
-    this._dirty = true;
+    const mapping: Record<string, string[]> = ev.detail.value;
+    this._areaMapping = mapping;
+    this._updateDirtyState(mapping);
   }
 
   private async _save() {
@@ -77,7 +78,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         options_domain: "vacuum",
         options: options,
       });
-      this._dirty = false;
+      this._markDirtyStateClean();
       fireEvent(this, "close-child-view");
     } catch (err: any) {
       this._error = err.message;
@@ -107,7 +108,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         <div class="footer">
           <ha-button
             @click=${this._save}
-            .disabled=${!this._dirty || this._submitting}
+            .disabled=${!this.isDirtyState || this._submitting}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
