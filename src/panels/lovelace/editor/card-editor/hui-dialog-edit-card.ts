@@ -288,7 +288,9 @@ export class HuiDialogEditCard
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent<LovelaceCardConfig>>) {
+  private _handleConfigChanged(
+    ev: HASSDomEvent<ConfigChangedEvent<LovelaceCardConfig>>
+  ) {
     const config = deepFreeze(ev.detail.config);
     this._cardConfig = config;
     this._error = ev.detail.error;

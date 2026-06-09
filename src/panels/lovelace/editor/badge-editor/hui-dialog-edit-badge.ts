@@ -304,7 +304,9 @@ export class HuiDialogEditBadge
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent<LovelaceBadgeConfig>>) {
+  private _handleConfigChanged(
+    ev: HASSDomEvent<ConfigChangedEvent<LovelaceBadgeConfig>>
+  ) {
     const config = deepFreeze(ev.detail.config);
     this._badgeConfig = config;
     this._error = ev.detail.error;
