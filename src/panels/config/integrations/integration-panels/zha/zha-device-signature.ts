@@ -1,9 +1,12 @@
-import type { PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import type { ZHADevice } from "../../../../../data/zha";
+import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { zhaDevicePageCardStyles } from "./device-page/zha-device-page-card-styles";
 
 @customElement("zha-device-zigbee-info")
 class ZHADeviceZigbeeInfo extends LitElement {
@@ -35,9 +38,32 @@ class ZHADeviceZigbeeInfo extends LitElement {
     }
 
     return html`
-      <ha-code-editor mode="yaml" read-only .value=${this._signature} dir="ltr">
-      </ha-code-editor>
+      <ha-card class="device-page-card">
+        <div class="card-header">
+          <div class="card-title">
+            ${this.hass.localize(
+              "ui.panel.config.zha.device_page.tabs.signature"
+            )}
+          </div>
+          <div class="card-description">
+            ${this.hass.localize(
+              "ui.panel.config.zha.device_page.tab_descriptions.signature"
+            )}
+          </div>
+        </div>
+        <ha-code-editor
+          mode="yaml"
+          read-only
+          .value=${this._signature}
+          dir="ltr"
+        >
+        </ha-code-editor>
+      </ha-card>
     `;
+  }
+
+  static get styles(): CSSResultGroup {
+    return [haStyle, zhaDevicePageCardStyles];
   }
 }
 
