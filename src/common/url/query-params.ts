@@ -10,6 +10,7 @@ export interface QueryParamConfig<
   ListKey extends string,
   DateKey extends string,
   BooleanKey extends string,
+  StringKey extends string = never,
 > {
   list?: readonly ListKey[];
   date?: readonly DateKey[];
@@ -17,16 +18,19 @@ export interface QueryParamConfig<
     key: BooleanKey;
     trueValue: string;
   }[];
+  string?: readonly StringKey[];
 }
 
 export type QueryParamValues<
   ListKey extends string,
   DateKey extends string,
   BooleanKey extends string,
+  StringKey extends string = never,
 > = Partial<
   Record<ListKey, string[]> &
     Record<DateKey, Date> &
-    Record<BooleanKey, boolean>
+    Record<BooleanKey, boolean> &
+    Record<StringKey, string>
 >;
 
 export type ServiceTargetQueryParams<
@@ -50,11 +54,12 @@ export const decodeQueryParams = <
   ListKey extends string,
   DateKey extends string,
   BooleanKey extends string,
+  StringKey extends string = never,
 >(
   searchParams: SearchParamsSource,
-  config: QueryParamConfig<ListKey, DateKey, BooleanKey>
-): QueryParamValues<ListKey, DateKey, BooleanKey> => {
-  const params: QueryParamValues<ListKey, DateKey, BooleanKey> = {};
+  config: QueryParamConfig<ListKey, DateKey, BooleanKey, StringKey>
+): QueryParamValues<ListKey, DateKey, BooleanKey, StringKey> => {
+  const params: QueryParamValues<ListKey, DateKey, BooleanKey, StringKey> = {};
   for (const key of config.list ?? []) {
     const value = getSearchParam(searchParams, key);
     if (value) {
@@ -72,16 +77,28 @@ export const decodeQueryParams = <
       params[key] = true as (typeof params)[typeof key];
     }
   }
+  for (const key of config.string ?? []) {
+    const value = getSearchParam(searchParams, key);
+    if (value) {
+      params[key] = value as (typeof params)[typeof key];
+    }
+  }
   return params;
 };
 
 export const createQueryString = <
-  ListKey extends string,
-  DateKey extends string,
-  BooleanKey extends string,
+  ListKey extends string = never,
+  DateKey extends string = never,
+  BooleanKey extends string = never,
+  StringKey extends string = never,
 >(
-  values: QueryParamValues<ListKey, DateKey, BooleanKey>,
-  config: QueryParamConfig<ListKey, DateKey, BooleanKey>
+  values: QueryParamValues<
+    NoInfer<ListKey>,
+    NoInfer<DateKey>,
+    NoInfer<BooleanKey>,
+    NoInfer<StringKey>
+  >,
+  config: QueryParamConfig<ListKey, DateKey, BooleanKey, StringKey>
 ): string => {
   const searchParams = new URLSearchParams();
   for (const key of config.list ?? []) {
@@ -99,6 +116,12 @@ export const createQueryString = <
   for (const { key, trueValue } of config.boolean ?? []) {
     if (values[key]) {
       searchParams.append(key, trueValue);
+    }
+  }
+  for (const key of config.string ?? []) {
+    const value = values[key] as string | undefined;
+    if (value) {
+      searchParams.append(key, value);
     }
   }
   return searchParams.toString();
