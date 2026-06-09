@@ -10,13 +10,21 @@ import "../../components/ha-button";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { ConfigEntryMutableParams } from "../../data/config_entries";
 import { updateConfigEntry } from "../../data/config_entries";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 
+interface SystemOptionsState {
+  disableNewEntities: boolean;
+  disablePolling: boolean;
+}
+
 @customElement("dialog-config-entry-system-options")
-class DialogConfigEntrySystemOptions extends LitElement {
+class DialogConfigEntrySystemOptions extends DirtyStateProviderMixin<SystemOptionsState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _disableNewEntities!: boolean;
@@ -38,6 +46,13 @@ class DialogConfigEntrySystemOptions extends LitElement {
     this._error = undefined;
     this._disableNewEntities = params.entry.pref_disable_new_entities;
     this._disablePolling = params.entry.pref_disable_polling;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      {
+        disableNewEntities: this._disableNewEntities,
+        disablePolling: this._disablePolling,
+      }
+    );
     this._open = true;
   }
 
@@ -68,7 +83,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
               ) || this._params.entry.domain,
           }
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -135,7 +150,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting}
+            .disabled=${this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize(
               "ui.dialogs.config_entry_system_options.update"
@@ -149,11 +164,19 @@ class DialogConfigEntrySystemOptions extends LitElement {
   private _disableNewEntitiesChanged(ev: Event): void {
     this._error = undefined;
     this._disableNewEntities = !(ev.target as HaSwitch).checked;
+    this._updateDirtyState({
+      disableNewEntities: this._disableNewEntities,
+      disablePolling: this._disablePolling,
+    });
   }
 
   private _disablePollingChanged(ev: Event): void {
     this._error = undefined;
     this._disablePolling = !(ev.target as HaSwitch).checked;
+    this._updateDirtyState({
+      disableNewEntities: this._disableNewEntities,
+      disablePolling: this._disablePolling,
+    });
   }
 
   private async _updateEntry(): Promise<void> {
