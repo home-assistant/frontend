@@ -1166,6 +1166,11 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       } as HassEntity;
     }
     const { state: sceneState, ...attributes } = sceneEntity;
+    // The scene snapshots entity_picture with an access token that is stale by
+    // the time review mode renders, which would leave the badge showing a
+    // broken image instead of an icon. Drop it so the entity's icon resolves.
+    delete attributes.entity_picture;
+    delete attributes.entity_picture_local;
     return {
       entity_id: entityId,
       state: sceneState,
