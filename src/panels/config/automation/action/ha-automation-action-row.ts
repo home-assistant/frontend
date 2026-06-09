@@ -41,6 +41,7 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
+import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row-event-chip";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
@@ -312,13 +313,25 @@ export default class HaAutomationActionRow extends LitElement {
               .service=${this.action.action}
             ></ha-service-icon>
           `
-        : html`
-            <ha-svg-icon
+        : type === "condition" && this.optionsInSidebar
+          ? html`<ha-automation-condition-live-test
+              id="condition-icon"
               slot="leading-icon"
-              class="action-icon"
-              .path=${ACTION_ICONS[type!]}
-            ></ha-svg-icon>
-          `}
+              .hass=${this.hass}
+              .condition=${this.action as Condition}
+            >
+              <ha-svg-icon
+                class="action-icon"
+                .path=${ACTION_ICONS[type]}
+              ></ha-svg-icon>
+            </ha-automation-condition-live-test>`
+          : html`
+              <ha-svg-icon
+                slot="leading-icon"
+                class="action-icon"
+                .path=${ACTION_ICONS[type!]}
+              ></ha-svg-icon>
+            `}
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeAction(
