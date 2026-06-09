@@ -637,6 +637,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       this.hass.translationMetadata.translations
     );
 
+    const childViewContent = this._childView
+      ? html`
+          <div class="child-view">
+            ${dynamicElement(this._childView.viewTag, {
+              hass: this.hass,
+              entry: this._entry,
+              params: this._childView.viewParams,
+            })}
+          </div>
+        `
+      : nothing;
+
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
@@ -870,23 +882,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
               >
                 ${this._currView === "settings"
                   ? html`
-                      <ha-more-info-settings
-                        .hass=${this.hass}
-                        .entityId=${this._entityId}
-                        .entry=${this._entry}
-                      ></ha-more-info-settings>
+                      <div ?hidden=${!!this._childView}>
+                        <ha-more-info-settings
+                          .hass=${this.hass}
+                          .entityId=${this._entityId}
+                          .entry=${this._entry}
+                        ></ha-more-info-settings>
+                      </div>
+                      ${childViewContent}
                     `
                   : cache(
                       this._childView
-                        ? html`
-                            <div class="child-view">
-                              ${dynamicElement(this._childView.viewTag, {
-                                hass: this.hass,
-                                entry: this._entry,
-                                params: this._childView.viewParams,
-                              })}
-                            </div>
-                          `
+                        ? childViewContent
                         : this._currView === "info"
                           ? html`
                               <ha-more-info-info
