@@ -1,3 +1,5 @@
+import { startOfYesterday } from "date-fns";
+import { mdiChevronRight } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,7 +8,9 @@ import memoizeOne from "memoize-one";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import type { HaLogbook } from "../../logbook/ha-logbook";
@@ -65,6 +69,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   @state() private _targetPickerValue: HassServiceTarget = {};
 
   @state() private _stateFilter?: string[];
+
+  @state() private _showMoreHref = "";
 
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
@@ -133,6 +139,21 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._targetPickerValue = target;
 
     this._stateFilter = ensureArray(config.state_filter);
+
+    const params: Record<string, string> = {
+      start_date: startOfYesterday().toISOString(),
+      back: "1",
+    };
+    if (target.entity_id) {
+      params.entity_id = ensureArray(target.entity_id).join(",");
+    }
+    if (target.device_id) {
+      params.device_id = ensureArray(target.device_id).join(",");
+    }
+    if (target.area_id) {
+      params.area_id = ensureArray(target.area_id).join(",");
+    }
+    this._showMoreHref = `/logbook?${createSearchParam(params)}`;
   }
 
   private _getEntityIds(): string[] | undefined {
@@ -200,10 +221,20 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card
-        .header=${this._config!.title}
-        class=${classMap({ "no-header": !this._config!.title })}
-      >
+      <ha-card class=${classMap({ "no-header": !this._config!.title })}>
+        <div class="card-header">
+          ${this._config!.title
+            ? html`<div class="name">${this._config!.title}</div>`
+            : nothing}
+          <a href=${this._showMoreHref}>
+            <ha-icon-button
+              .path=${mdiChevronRight}
+              .label=${this.hass.localize(
+                "ui.dialogs.more_info_control.show_more"
+              )}
+            ></ha-icon-button>
+          </a>
+        </div>
         <div class="content">
           <ha-logbook
             class=${classMap({
@@ -231,6 +262,25 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px 16px 0;
+        }
+
+        .card-header .name {
+          font-size: var(--ha-card-header-font-size, 1.4rem);
+          font-weight: var(--ha-card-header-font-weight, 500);
+          color: var(--ha-card-header-color, var(--primary-text-color));
+        }
+
+        .card-header a {
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
         }
 
         .content {

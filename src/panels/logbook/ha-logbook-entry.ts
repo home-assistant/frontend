@@ -6,6 +6,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { computeTimelineColor } from "../../components/chart/timeline-color";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -130,17 +131,15 @@ class HaLogbookEntry extends LitElement {
     const relativeLabel = relativeTime(when, this.hass.locale);
 
     const cause = resolveLogbookCause(this.hass, item, this.userIdToName);
-    const causeIcon = this.narrow && cause ? this._causeIcon(cause) : nothing;
 
     return html`
       <div
         class="entry ${classMap({
           narrow: this.narrow,
           "no-name": hideName,
+          "no-icon": this.noIcon,
           "no-entity": !item.entity_id,
           "last-of-day": this.lastOfDay,
-          // Only single-entity surfaces (more-info) condense; everywhere else
-          // keeps a fixed 56px row for an even timeline rhythm.
           "single-line": hideName,
           clickable: hasTrace,
           [`category-${category}`]: true,
@@ -157,7 +156,6 @@ class HaLogbookEntry extends LitElement {
             "rail-trim-bottom": this.lastOfDay,
           })}"
         >
-          <span class="rail"></span>
           ${this._renderNode(
             item,
             category,
@@ -168,43 +166,93 @@ class HaLogbookEntry extends LitElement {
         </div>
         <div class="content">
           ${this.narrow
-            ? html`
-                <div class="line1">
-                  <span class="line1-main">${whatHappened}</span>
-                  ${causeIcon}
-                  <span class="time-inline" title=${relativeLabel}
-                    >${timeLabel}</span
-                  >
-                </div>
-                ${!hideName
-                  ? html`<div class="line-meta">
-                      ${contextText
-                        ? `${contextText} ▸ `
-                        : ""}${this._renderEntity(
-                        item.entity_id,
-                        name,
-                        hasTrace
-                      )}
-                    </div>`
-                  : nothing}
-              `
-            : html`
-                <div class="line1">
-                  <span class="line1-main">
-                    ${!hideName
-                      ? this._renderEntity(item.entity_id, name, hasTrace)
-                      : ""}
-                    ${!hideName && whatHappened && category !== "integration"
-                      ? html`<span class="state-arrow">→</span>`
-                      : nothing}
-                    ${whatHappened}
-                  </span>
-                </div>
-                ${this._renderLine2(cause, contextText)}
-              `}
+            ? hideName
+              ? this._renderInline(whatHappened, cause, timeLabel, relativeLabel)
+              : this._renderCompact(
+                  item.entity_id,
+                  name,
+                  hasTrace,
+                  whatHappened,
+                  cause,
+                  contextText,
+                  timeLabel,
+                  relativeLabel
+                )
+            : this._renderWide(
+                hideName,
+                item.entity_id,
+                name,
+                hasTrace,
+                whatHappened,
+                category,
+                cause,
+                contextText
+              )}
         </div>
         ${hasTrace ? html`<ha-icon-next></ha-icon-next>` : ""}
       </div>
+    `;
+  }
+
+  private _renderInline(
+    whatHappened: TemplateResult | string,
+    cause: LogbookCause | undefined,
+    timeLabel: string,
+    relativeLabel: string
+  ) {
+    return html`
+      <div class="line1">
+        <span class="line1-main">${whatHappened}</span>
+        ${cause ? this._causeIcon(cause) : nothing}
+        <span class="time-inline" title=${relativeLabel}>${timeLabel}</span>
+      </div>
+    `;
+  }
+
+  private _renderCompact(
+    entityId: string | undefined,
+    name: string | undefined,
+    hasTrace: boolean,
+    whatHappened: TemplateResult | string,
+    cause: LogbookCause | undefined,
+    contextText: string | undefined,
+    timeLabel: string,
+    relativeLabel: string
+  ) {
+    return html`
+      <div class="line1">
+        <span class="entity-name"
+          >${this._renderEntity(entityId, name, hasTrace)}</span
+        >
+        <span class="state-value">${whatHappened}</span>
+      </div>
+      ${this._renderLine2(cause, contextText, timeLabel, relativeLabel)}
+    `;
+  }
+
+  private _renderWide(
+    hideName: boolean,
+    entityId: string | undefined,
+    name: string | undefined,
+    hasTrace: boolean,
+    whatHappened: TemplateResult | string,
+    category: LogbookEntryCategory,
+    cause: LogbookCause | undefined,
+    contextText: string | undefined
+  ) {
+    return html`
+      <div class="line1">
+        <span class="line1-main"
+          >${!hideName
+            ? html`<span class="entity-name"
+                  >${this._renderEntity(entityId, name, hasTrace)}</span
+                >${whatHappened && category !== "integration"
+                  ? html`<span class="state-arrow">→</span>`
+                  : nothing}`
+            : nothing}${whatHappened}</span
+        >
+      </div>
+      ${this._renderLine2(cause, contextText)}
     `;
   }
 
@@ -242,10 +290,23 @@ class HaLogbookEntry extends LitElement {
     historicStateObj: HassEntity | undefined,
     overrideImage: string | undefined
   ) {
-    const color = nodeColor(category, historicStateObj);
+    const isUnavailable = item.state === UNAVAILABLE;
+    const color =
+      this.noIcon && !isUnavailable
+        ? item.state
+          ? computeTimelineColor(
+              item.state,
+              getComputedStyle(this),
+              historicStateObj
+            )
+          : undefined
+        : nodeColor(category, historicStateObj);
     const style = color ? styleMap({ "--node-color": color }) : nothing;
     if (this.noIcon) {
-      return html`<span class="dot" style=${style}></span>`;
+      return html`<span
+        class="dot ${classMap({ unavailable: isUnavailable })}"
+        style=${style}
+      ></span>`;
     }
     const unavailable =
       category === "entity" && historicStateObj?.state === UNAVAILABLE;
@@ -263,7 +324,9 @@ class HaLogbookEntry extends LitElement {
 
   private _renderLine2(
     cause: LogbookCause | undefined,
-    contextText: string | undefined
+    contextText: string | undefined,
+    timeLabel?: TemplateResult | string,
+    relativeLabel?: string
   ) {
     const parts: (TemplateResult | string)[] = [];
     if (contextText) {
@@ -272,13 +335,20 @@ class HaLogbookEntry extends LitElement {
     if (cause) {
       parts.push(this._renderCauseLabel(cause));
     }
-    if (!parts.length) {
+    if (!parts.length && !timeLabel) {
       return nothing;
     }
     return html`<div class="line2">
-      ${parts.map((part, i) =>
-        i ? html`<span class="sep"> · </span>${part}` : part
-      )}
+      <span class="line2-left"
+        >${parts.map((part, i) =>
+          i ? html`<span class="sep"> · </span>${part}` : part
+        )}</span
+      >
+      ${timeLabel
+        ? html`<span class="time-inline" title=${relativeLabel || ""}
+              >${timeLabel}</span
+            >`
+        : nothing}
     </div>`;
   }
 
@@ -457,14 +527,14 @@ class HaLogbookEntry extends LitElement {
         .entry {
           position: relative;
           display: grid;
-          grid-template-columns: 72px 28px minmax(0, 1fr);
+          grid-template-columns: 72px 36px minmax(0, 1fr);
           column-gap: var(--ha-space-3);
           width: 100%;
           box-sizing: border-box;
           /* No vertical padding: the rail must reach the row edges so it stays
              continuous between nodes. Air comes from min-height instead. */
           padding: 0 var(--ha-space-4);
-          min-height: 56px;
+          min-height: 60px;
           line-height: var(--ha-line-height-normal);
           align-items: stretch;
         }
@@ -476,7 +546,13 @@ class HaLogbookEntry extends LitElement {
         /* Narrow drops the time column (time moves into line 1) so the content
            gets the full width instead of truncating the value. */
         .entry.narrow {
+          grid-template-columns: 36px minmax(0, 1fr);
+        }
+
+        /* No-icon narrow: dot is 10px — a smaller node column saves space. */
+        .entry.narrow.no-icon {
           grid-template-columns: 28px minmax(0, 1fr);
+          column-gap: var(--ha-space-2);
         }
 
         .entry.category-automation {
@@ -511,10 +587,12 @@ class HaLogbookEntry extends LitElement {
           align-self: stretch;
         }
 
-        .rail {
+        /* Two rail segments (::before = top, ::after = bottom) with a 2px gap
+           on each side of the node. --rail-gap = node half-size + 2px clearance. */
+        .node::before,
+        .node::after {
+          content: "";
           position: absolute;
-          top: 0;
-          bottom: 0;
           left: 50%;
           width: 2px;
           transform: translateX(-50%);
@@ -522,12 +600,47 @@ class HaLogbookEntry extends LitElement {
           z-index: 0;
         }
 
-        /* Trim the rail to start/end at the node on the first/last row of a day. */
-        .node.rail-trim-top .rail {
-          top: 50%;
+        .node::before {
+          top: 0;
+          bottom: calc(50% + var(--rail-gap, 22px));
         }
-        .node.rail-trim-bottom .rail {
-          bottom: 50%;
+
+        .node::after {
+          top: calc(50% + var(--rail-gap, 22px));
+          bottom: 0;
+        }
+
+        /* Dot is 10px — gap of 7px (5px radius + 2px clearance). */
+        .entry.no-icon .node {
+          --rail-gap: 9px;
+        }
+
+        /* Two-line no-icon rows: align dot to line1 instead of centering.
+           --dot-pos is measured from node top and matches line1's center
+           (~20px = 8px content offset + 12px half-lineheight in a 60px row). */
+        .entry.no-icon:not(.single-line) .node {
+          --dot-pos: 20px;
+          justify-content: flex-start;
+          padding-top: calc(var(--dot-pos) - 5px);
+        }
+
+        .entry.no-icon:not(.single-line) .node::before {
+          bottom: calc(100% - var(--dot-pos) + 9px);
+        }
+
+        .entry.no-icon:not(.single-line) .node::after {
+          top: calc(var(--dot-pos) + 9px);
+        }
+
+
+        /* First row of a day: no rail above the icon. */
+        .node.rail-trim-top::before {
+          display: none;
+        }
+
+        /* Last row of a day: no rail below the icon. */
+        .node.rail-trim-bottom::after {
+          display: none;
         }
 
         .node-icon {
@@ -538,14 +651,13 @@ class HaLogbookEntry extends LitElement {
           align-items: center;
           justify-content: center;
           box-sizing: border-box;
-          width: 28px;
-          height: 28px;
+          width: 36px;
+          height: 36px;
           border-radius: var(--ha-border-radius-circle);
-          /* Colored ring + opaque base so the rail reads as passing behind. */
-          border: 1px solid var(--node-color);
+          /* Opaque base so the rail reads as passing behind. */
           background-color: var(--card-background-color);
           color: var(--node-color);
-          --mdc-icon-size: 18px;
+          --mdc-icon-size: 24px;
         }
 
         /* Tinted fill via an opacity layer (color-mix is not safe for our
@@ -563,8 +675,7 @@ class HaLogbookEntry extends LitElement {
           position: relative;
         }
 
-        /* Orange "attention" badge in the icon corner (unavailable), like the
-           tile card badge. */
+        /* Orange "attention" badge in the icon corner (unavailable). */
         .node-badge {
           position: absolute;
           top: -1px;
@@ -592,11 +703,16 @@ class HaLogbookEntry extends LitElement {
           --node-color: var(--category-color, var(--disabled-color));
           position: relative;
           z-index: 1;
-          margin-top: 4px;
           width: 10px;
           height: 10px;
           border-radius: var(--ha-border-radius-circle);
           background-color: var(--node-color);
+        }
+
+        .dot.unavailable {
+          background-color: transparent;
+          border: 2px solid var(--disabled-color);
+          box-sizing: border-box;
         }
 
         .content {
@@ -633,6 +749,36 @@ class HaLogbookEntry extends LitElement {
           text-overflow: ellipsis;
         }
 
+        .entity-name {
+          font-weight: var(--ha-font-weight-medium);
+        }
+
+        .line1 > .entity-name {
+          flex: 1 1 auto;
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .line1 > .entity-name button.link {
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 100%;
+        }
+
+        .state-value {
+          flex: 0 1 auto;
+          min-width: 0;
+          max-width: 60%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: right;
+        }
+
         .time-inline {
           flex-shrink: 0;
           font-size: var(--ha-font-size-s);
@@ -641,23 +787,6 @@ class HaLogbookEntry extends LitElement {
           font-variant-numeric: tabular-nums;
         }
 
-        .entry.narrow .line1-main {
-          font-weight: var(--ha-font-weight-medium);
-        }
-
-        /* Same font-size as line 1 — the distinction comes from weight and
-           color (primary vs secondary). */
-        .line-meta {
-          color: var(--secondary-text-color);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .line-meta button.link {
-          color: var(--secondary-text-color);
-          font-weight: var(--ha-font-weight-normal);
-        }
 
         .cause-avatar {
           flex-shrink: 0;
@@ -667,8 +796,16 @@ class HaLogbookEntry extends LitElement {
         }
 
         .line2 {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
+        }
+
+        .line2-left {
+          flex: 1;
+          min-width: 0;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -679,7 +816,7 @@ class HaLogbookEntry extends LitElement {
         }
 
         .state-arrow {
-          color: var(--secondary-text-color);
+          color: var(--disabled-color);
           padding: 0 2px;
         }
 
@@ -689,6 +826,8 @@ class HaLogbookEntry extends LitElement {
           display: inline-flex;
           align-items: center;
           gap: var(--ha-space-1);
+          max-width: 100%;
+          overflow: hidden;
         }
 
         .cause-icon {
@@ -698,6 +837,11 @@ class HaLogbookEntry extends LitElement {
         }
 
         .cause-name {
+          flex: 1 1 auto;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
           color: var(--primary-text-color);
         }
 

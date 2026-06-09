@@ -46,6 +46,10 @@ class HaLogbookRenderer extends LitElement {
   @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
+    if (!this.hasUpdated) {
+      // Names of integration-provided triggers (component.<domain>.triggers.*).
+      this.hass.loadBackendTranslation("triggers");
+    }
     if (
       (!this.hasUpdated && this.virtualize) ||
       (changedProps.has("virtualize") && this.virtualize)

@@ -1,12 +1,9 @@
-import {
-  mdiClockOutline,
-  mdiFlash,
-  mdiPuzzle,
-  mdiRobot,
-  mdiScriptText,
-} from "@mdi/js";
+import { mdiFlash, mdiPuzzle, mdiRobot, mdiScriptText } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { LocalizeKeys } from "../../common/translations/localize";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import { computeObjectId } from "../../common/entity/compute_object_id";
 import { stateColorCss } from "../../common/entity/state_color";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { LogbookEntry } from "../../data/logbook";
@@ -116,7 +113,47 @@ export interface LogbookCause {
   userId?: string;
   stateObj?: HassEntity;
   iconPath?: string;
+  triggerPlatform?: string; // Rendered by ha-trigger-icon (per trigger type).
 }
+
+// Localize a trigger's type name. Integration-provided triggers are namespaced
+// (e.g. "sensor.temperature_changed") and come from backend translations;
+// built-in types reuse the automation editor labels via [%key] in our own,
+// always-loaded namespace. Falls back to the raw key.
+const localizeTriggerName = (hass: HomeAssistant, trigger: string): string => {
+  if (trigger.includes(".")) {
+    return (
+      hass.localize(
+        `component.${computeDomain(trigger)}.triggers.${computeObjectId(trigger)}.name`
+      ) || trigger
+    );
+  }
+  return (
+    hass.localize(
+      `ui.components.logbook.trigger_type.${trigger}` as LocalizeKeys
+    ) || trigger
+  );
+};
+
+// Build the cause of a self-triggered automation/script: the trigger's own
+// icon + name (its alias if the user named it, else the localized type) —
+// shared by the structured and the legacy code paths.
+const triggerCause = (
+  hass: HomeAssistant,
+  platform: string | undefined,
+  alias?: string
+): LogbookCause | undefined => {
+  if (alias) {
+    return { triggerPlatform: platform, name: alias };
+  }
+  if (platform) {
+    return {
+      triggerPlatform: platform,
+      name: localizeTriggerName(hass, platform),
+    };
+  }
+  return undefined;
+};
 
 // Who/what caused an entry: a user, an automation/script, a triggering entity,
 // or an integration. Returns the actor's glyph/avatar + name.
@@ -157,36 +194,28 @@ export const resolveLogbookCause = (
       entityDisplay(hass, item.context_entity_id).primary ??
       item.context_entity_id_name;
     if (name) {
-      return { name, stateObj: hass.states[item.context_entity_id] };
+      return { name, iconPath: mdiFlash };
     }
   }
 
-  // A self-triggered automation/script: reconstruct from its English source.
-  // Temporary until the backend sends the trigger structurally.
+  // A self-triggered automation/script.
   if (
     item.domain &&
     TRIGGER_DOMAINS.includes(item.domain) &&
-    item.source &&
     !hasContext(item)
   ) {
-    const trigger = parseTriggerSource(item.source);
-    if (trigger.entityId) {
-      const stateObj = hass.states[trigger.entityId];
-      if (stateObj) {
-        const name =
-          entityDisplay(hass, trigger.entityId).primary ?? trigger.entityId;
-        return { name, stateObj };
-      }
+    let cause: LogbookCause | undefined;
+    if (item.trigger) {
+      // New backend: structured trigger summary.
+      cause = triggerCause(hass, item.trigger.trigger, item.trigger.alias);
+    } else if (item.source) {
+      // Legacy backend: parse the English `source` phrase. Removable once the
+      // structured trigger is guaranteed (min backend version).
+      const parsed = parseTriggerSource(item.source);
+      cause = triggerCause(hass, parsed.platform);
     }
-    if (trigger.platform) {
-      const isTime =
-        trigger.platform === "time" || trigger.platform === "time_pattern";
-      return {
-        iconPath: isTime ? mdiClockOutline : mdiFlash,
-        name: hass.localize(
-          `ui.components.logbook.trigger_type.${trigger.platform}`
-        ),
-      };
+    if (cause) {
+      return cause;
     }
   }
 

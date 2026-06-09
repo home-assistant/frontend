@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifyLogbookEntry,
   entityDisplay,
+  resolveLogbookCause,
 } from "../../../src/panels/logbook/logbook-entry-model";
 import type { LogbookEntry } from "../../../src/data/logbook";
 import type { HomeAssistant } from "../../../src/types";
@@ -149,5 +150,107 @@ describe("entityDisplay", () => {
 
   it("returns an empty display for a deleted entity", () => {
     expect(entityDisplay(baseHass({}), "light.removed")).toEqual({});
+  });
+});
+
+describe("resolveLogbookCause", () => {
+  const localizeStub = (table: Record<string, string> = {}) =>
+    ((key: string) => table[key] ?? "") as HomeAssistant["localize"];
+
+  it("uses the trigger type (icon + name), not the entity it fired on", () => {
+    const hass = baseHass({
+      localize: localizeStub({
+        "ui.components.logbook.trigger_type.state": "State",
+      }),
+    });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({
+        domain: "automation",
+        source: "state of something.else",
+        trigger: { trigger: "state", entity_id: "binary_sensor.porte" },
+      }),
+      {}
+    );
+    expect(cause?.name).toBe("State");
+    expect(cause?.triggerPlatform).toBe("state");
+    expect(cause?.stateObj).toBeUndefined();
+  });
+
+  it("prefers the trigger alias when present", () => {
+    const hass = baseHass({ localize: localizeStub() });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({
+        domain: "automation",
+        trigger: {
+          trigger: "state",
+          entity_id: "binary_sensor.porte",
+          alias: "Quand la porte s'ouvre",
+        },
+      }),
+      {}
+    );
+    expect(cause?.name).toBe("Quand la porte s'ouvre");
+    expect(cause?.triggerPlatform).toBe("state");
+  });
+
+  it("labels a structured platform trigger via localize", () => {
+    const hass = baseHass({
+      localize: localizeStub({
+        "ui.components.logbook.trigger_type.time": "Time",
+      }),
+    });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({ domain: "automation", trigger: { trigger: "time" } }),
+      {}
+    );
+    expect(cause?.name).toBe("Time");
+    expect(cause?.triggerPlatform).toBe("time");
+  });
+
+  it("falls back to the bare platform key for an unknown platform", () => {
+    const hass = baseHass({ localize: localizeStub() });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({ domain: "automation", trigger: { trigger: "sun" } }),
+      {}
+    );
+    expect(cause?.name).toBe("sun");
+    expect(cause?.triggerPlatform).toBe("sun");
+  });
+
+  it("localizes an integration trigger via backend translations", () => {
+    const hass = baseHass({
+      localize: localizeStub({
+        "component.sensor.triggers.temperature_changed.name":
+          "Temperature changed",
+      }),
+    });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({
+        domain: "automation",
+        trigger: { trigger: "sensor.temperature_changed" },
+      }),
+      {}
+    );
+    expect(cause?.name).toBe("Temperature changed");
+    expect(cause?.triggerPlatform).toBe("sensor.temperature_changed");
+  });
+
+  it("falls back to parsing the English source on older backends", () => {
+    const hass = baseHass({
+      localize: localizeStub({
+        "ui.components.logbook.trigger_type.time_pattern": "Time pattern",
+      }),
+    });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({ domain: "automation", source: "time pattern" }),
+      {}
+    );
+    expect(cause?.name).toBe("Time pattern");
   });
 });
