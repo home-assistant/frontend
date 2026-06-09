@@ -14,6 +14,7 @@ import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-config-navigation-list";
 import "../../components/ha-svg-icon";
+import "./ha-pick-theme-row";
 import { isExternal } from "../../data/external";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-subpage";
@@ -100,6 +101,12 @@ class HaProfileDashboard extends LitElement {
                 </ha-button>
               </div>
             </div>
+          </ha-card>
+          <ha-card>
+            <ha-pick-theme-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-theme-row>
           </ha-card>
           <ha-card outlined>
             <ha-config-navigation-list

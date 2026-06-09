@@ -14,7 +14,6 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-entity-id-picker-row";
 import "./ha-pick-dashboard-row";
-import "./ha-pick-theme-row";
 
 @customElement("ha-profile-section-preferences")
 class HaProfileSectionPreferences extends LitElement {
@@ -78,10 +77,6 @@ class HaProfileSectionPreferences extends LitElement {
             <div class="card-content">
               ${this.hass.localize("ui.panel.profile.user_preferences_detail")}
             </div>
-            <ha-pick-theme-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-theme-row>
             <ha-pick-dashboard-row
               .narrow=${this.narrow}
               .hass=${this.hass}
