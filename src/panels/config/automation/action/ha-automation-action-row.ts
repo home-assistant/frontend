@@ -314,8 +314,8 @@ export default class HaAutomationActionRow extends LitElement {
             ></ha-service-icon>
           `
         : type === "condition" &&
-          this.optionsInSidebar &&
-          (this.action as Condition).condition !== "trigger"
+            this.optionsInSidebar &&
+            (this.action as Condition).condition !== "trigger"
           ? html`<ha-automation-condition-live-test
               id="condition-icon"
               slot="leading-icon"
