@@ -372,6 +372,45 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("helperConfigEntry")) {
+      if (this.helperConfigEntry?.domain === "switch_as_x") {
+        this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      } else {
+        this._switchAsDomain = "switch";
+        this._switchAsInvert = false;
+      }
+    }
+
+    if (this._name === undefined || this._entityId === undefined) {
+      return;
+    }
+
+    this._dirtyState?.setState(
+      {
+        name: this._name.trim() || null,
+        icon: this._icon.trim() || null,
+        entityId: this._entityId.trim(),
+        areaId: this._areaId ?? null,
+        labels: this._labels ?? [],
+        deviceClass: this._deviceClass,
+        disabledBy: this._disabledBy,
+        hiddenBy: this._hiddenBy,
+        unitOfMeasurement: this._unit_of_measurement,
+        precision: this._precision,
+        defaultCode: this._defaultCode,
+        calendarColor: this._calendarColor ?? null,
+        precipitationUnit: this._precipitation_unit,
+        pressureUnit: this._pressure_unit,
+        temperatureUnit: this._temperature_unit,
+        visibilityUnit: this._visibility_unit,
+        windSpeedUnit: this._wind_speed_unit,
+        switchAsDomain: this._switchAsDomain,
+        switchAsInvert: this._switchAsInvert,
+      },
+      "entity-registry"
+    );
+
     if (changedProps.has("_deviceClass")) {
       const domain = computeDomain(this.entry.entity_id);
 
@@ -415,40 +454,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._weatherConvertibleUnits = undefined;
       }
     }
-    if (changedProps.has("helperConfigEntry")) {
-      if (this.helperConfigEntry?.domain === "switch_as_x") {
-        this._switchAsDomain = computeDomain(this.entry.entity_id);
-        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
-      } else {
-        this._switchAsDomain = "switch";
-        this._switchAsInvert = false;
-      }
-    }
-
-    this._dirtyState?.setState(
-      {
-        name: this._name.trim() || null,
-        icon: this._icon.trim() || null,
-        entityId: this._entityId.trim(),
-        areaId: this._areaId ?? null,
-        labels: this._labels ?? [],
-        deviceClass: this._deviceClass,
-        disabledBy: this._disabledBy,
-        hiddenBy: this._hiddenBy,
-        unitOfMeasurement: this._unit_of_measurement,
-        precision: this._precision,
-        defaultCode: this._defaultCode,
-        calendarColor: this._calendarColor ?? null,
-        precipitationUnit: this._precipitation_unit,
-        pressureUnit: this._pressure_unit,
-        temperatureUnit: this._temperature_unit,
-        visibilityUnit: this._visibility_unit,
-        windSpeedUnit: this._wind_speed_unit,
-        switchAsDomain: this._switchAsDomain,
-        switchAsInvert: this._switchAsInvert,
-      },
-      "entity-registry"
-    );
   }
 
   protected render() {
