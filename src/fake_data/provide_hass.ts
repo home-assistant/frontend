@@ -6,6 +6,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   DateFormat,
@@ -20,6 +21,7 @@ import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
+import { ENTITY_COMPONENT_ICONS } from "./entity_component_icons";
 import { getEntity } from "./entities/registry";
 import type { EntityInput } from "./entities/types";
 
@@ -32,6 +34,12 @@ type MockRestCallback = (
   path: string,
   parameters: Record<string, any> | undefined
 ) => any;
+
+interface MockGetIconsMessage {
+  type: "frontend/get_icons";
+  category: IconCategory;
+  integration?: string;
+}
 
 export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
@@ -414,6 +422,10 @@ export const provideHass = (
     ],
     ...overrideData,
   };
+
+  hassObj.mockWS("frontend/get_icons", ({ category }: MockGetIconsMessage) => ({
+    resources: category === "entity_component" ? ENTITY_COMPONENT_ICONS : {},
+  }));
 
   // Set hass if required
   if (setHassProperty) {
