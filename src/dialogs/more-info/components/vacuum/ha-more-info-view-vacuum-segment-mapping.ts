@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +7,10 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-vacuum-segment-area-mapper";
 import type { HaVacuumSegmentAreaMapper } from "../../../../components/ha-vacuum-segment-area-mapper";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../../data/context/dirty-state";
 import type {
   ExtEntityRegistryEntry,
   VacuumEntityOptions,
@@ -14,16 +19,20 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
-import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 
 @customElement("ha-more-info-view-vacuum-segment-mapping")
-export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
-  Record<string, string[]>
->()(LitElement) {
+export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public params!: { entityId: string };
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<
+    Record<string, string[]>,
+    "vacuum-segment-mapping"
+  >;
 
   @state() private _areaMapping?: Record<string, string[]>;
 
@@ -48,12 +57,12 @@ export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
     const mapping: Record<string, string[]> =
       this._entry?.options?.vacuum?.area_mapping || {};
     this._areaMapping = mapping;
-    this._initDirtyTracking({ type: "deep" }, mapping);
+    this._dirtyState?.setState(mapping, "vacuum-segment-mapping");
   }
 
   private _valueChanged(ev: ValueChangedEvent<Record<string, string[]>>) {
     this._areaMapping = ev.detail.value;
-    this._updateDirtyState(ev.detail.value);
+    this._dirtyState?.setState(ev.detail.value, "vacuum-segment-mapping");
   }
 
   private async _save() {
@@ -77,7 +86,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
         options_domain: "vacuum",
         options: options,
       });
-      this._markDirtyStateClean();
+      this._dirtyState?.markClean();
       fireEvent(this, "close-child-view");
     } catch (err: any) {
       this._error = err.message;
@@ -107,7 +116,7 @@ export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
         <div class="footer">
           <ha-button
             @click=${this._save}
-            .disabled=${!this.isDirtyState || this._submitting}
+            .disabled=${!this._dirtyState?.isDirty || this._submitting}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
