@@ -482,7 +482,7 @@ class HaLogbookEntry extends LitElement {
         .entry.category-automation {
           --category-color: var(
             --logbook-category-automation-color,
-            var(--purple-color)
+            var(--light-blue-color)
           );
         }
 
