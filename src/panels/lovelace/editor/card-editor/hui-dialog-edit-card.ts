@@ -267,7 +267,7 @@ export class HuiDialogEditCard
           </ha-button>
           <ha-button
             slot="primaryAction"
-            ?disabled=${!this._canSave || !this.isDirtyState}
+            ?disabled=${!this._canSave || this._saving || !this.isDirtyState}
             @click=${this._save}
             .loading=${this._saving}
           >
