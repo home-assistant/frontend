@@ -7333,7 +7333,6 @@
           "clusters": {
             "header": "Clusters",
             "change_cluster": "Change cluster",
-            "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
             "cluster_description": "Endpoint ID: {endpoint} · ID: {id} · Type: {type}",
             "load_failed": "Failed to load clusters",
             "no_clusters": "No clusters found",
