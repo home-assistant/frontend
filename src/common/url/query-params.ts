@@ -47,6 +47,8 @@ export type QueryParamValues<C extends QueryParamConfig> = Partial<
     Record<StringKeyOf<C>, string>
 >;
 
+type QueryParamValue = string[] | Date | boolean | string;
+
 export type ServiceTargetQueryParams<
   Key extends keyof HassServiceTarget & string,
 > = Partial<Record<Key, string[]>>;
@@ -64,11 +66,15 @@ const getSearchParam = (
   return searchParams[key] ?? null;
 };
 
-export const decodeQueryParams = <C extends QueryParamConfig>(
+export function decodeQueryParams<C extends QueryParamConfig>(
   searchParams: SearchParamsSource,
   config: C
-): QueryParamValues<C> => {
-  const params: Record<string, unknown> = {};
+): QueryParamValues<C>;
+export function decodeQueryParams(
+  searchParams: SearchParamsSource,
+  config: QueryParamConfig
+): Record<string, QueryParamValue | undefined> {
+  const params: Record<string, QueryParamValue> = {};
   for (const key of config.list ?? []) {
     const value = getSearchParam(searchParams, key);
     if (value) {
@@ -92,40 +98,43 @@ export const decodeQueryParams = <C extends QueryParamConfig>(
       params[key] = value;
     }
   }
-  return params as QueryParamValues<C>;
-};
+  return params;
+}
 
-export const createQueryString = <C extends QueryParamConfig>(
+export function createQueryString<C extends QueryParamConfig>(
   values: QueryParamValues<NoInfer<C>>,
   config: C
-): string => {
+): string;
+export function createQueryString(
+  values: Record<string, QueryParamValue | undefined>,
+  config: QueryParamConfig
+): string {
   const searchParams = new URLSearchParams();
-  const record = values as Record<string, unknown>;
   for (const key of config.list ?? []) {
-    const value = record[key] as string[] | undefined;
-    if (value?.length) {
+    const value = values[key];
+    if (Array.isArray(value) && value.length) {
       searchParams.append(key, value.join(","));
     }
   }
   for (const key of config.date ?? []) {
-    const value = record[key] as Date | undefined;
-    if (value) {
+    const value = values[key];
+    if (value instanceof Date) {
       searchParams.append(key, value.toISOString());
     }
   }
   for (const { key, trueValue } of config.boolean ?? []) {
-    if (record[key]) {
+    if (values[key]) {
       searchParams.append(key, trueValue);
     }
   }
   for (const key of config.string ?? []) {
-    const value = record[key] as string | undefined;
-    if (value) {
+    const value = values[key];
+    if (typeof value === "string" && value) {
       searchParams.append(key, value);
     }
   }
   return searchParams.toString();
-};
+}
 
 export const serviceTargetFromQueryParams = <
   Key extends keyof HassServiceTarget & string,
