@@ -1566,7 +1566,8 @@ export class HaChartBase extends LitElement {
       .chart-legend ul {
         row-gap: 0;
       }
-      .chart-legend li {
+      /* Only grow the toggle rows, not the expand/collapse chip's row. */
+      .chart-legend li:has(.legend-toggle) {
         height: 40px;
         padding: 0;
       }
