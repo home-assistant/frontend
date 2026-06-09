@@ -1,11 +1,7 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement, css, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import { css, html, LitElement } from "lit";
+import { customElement, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-button";
-import type { HaButton } from "../../../src/components/ha-button";
 import type { ThemeSettings } from "../../../src/types";
 import {
   applyFlippedGalleryTheme,
@@ -15,15 +11,13 @@ import {
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
 
-@customElement("demo-black-white-row")
-class DemoBlackWhiteRow extends LitElement {
-  // eslint-disable-next-line lit/no-native-attributes
-  @property() title!: string;
+export const THEME_COMPARISON_PANELS = [
+  { slot: "current" },
+  { slot: "flipped" },
+] as const;
 
-  @property({ attribute: false }) value?: unknown;
-
-  @property({ type: Boolean }) public disabled = false;
-
+@customElement("demo-theme-comparison")
+export class DemoThemeComparison extends LitElement {
   @state() private _themeSettings = loadGalleryThemeSettings();
 
   @state() private _systemDark = mql.matches;
@@ -75,49 +69,15 @@ class DemoBlackWhiteRow extends LitElement {
       currentLabel === "Dark mode" ? "Light mode" : "Dark mode";
 
     return html`
-      <div class="row">
-        <section class="content current" aria-label=${currentLabel}>
-          <h2>${currentLabel}</h2>
-          <ha-card .header=${this.title}>
-            <div class="card-content">
-              <slot name="light"></slot>
-            </div>
-            <div class="card-actions">
-              <ha-button .disabled=${this.disabled} @click=${this.handleSubmit}>
-                Submit
-              </ha-button>
-            </div>
-          </ha-card>
-        </section>
-        <section class="content flipped" aria-label=${flippedLabel}>
-          <h2>${flippedLabel}</h2>
-          <ha-card .header=${this.title}>
-            <div class="card-content">
-              <slot name="dark"></slot>
-            </div>
-            <div class="card-actions">
-              <ha-button .disabled=${this.disabled} @click=${this.handleSubmit}>
-                Submit
-              </ha-button>
-            </div>
-          </ha-card>
-          ${this.value
-            ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
-            : nothing}
-        </section>
-      </div>
+      <section class="panel" aria-label=${currentLabel}>
+        <h2>${currentLabel}</h2>
+        <slot name="current"></slot>
+      </section>
+      <section class="panel flipped" aria-label=${flippedLabel}>
+        <h2>${flippedLabel}</h2>
+        <slot name="flipped"></slot>
+      </section>
     `;
-  }
-
-  handleSubmit(ev: Event) {
-    const content = (ev.target as HaButton).closest(".content");
-    if (!content) {
-      return;
-    }
-
-    fireEvent(this, "submitted" as any, {
-      slot: content.classList.contains("current") ? "light" : "dark",
-    });
   }
 
   private _themeSettingsChanged = (
@@ -148,60 +108,39 @@ class DemoBlackWhiteRow extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
-      flex: 1;
-      min-block-size: 100%;
-    }
-    .row {
+      box-sizing: border-box;
       display: grid;
+      flex: 1;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       inline-size: 100%;
       min-block-size: 100%;
     }
-    .content {
+
+    .panel {
       box-sizing: border-box;
+      min-block-size: 100%;
       min-inline-size: 0;
-      padding: var(--ha-space-8);
+      padding: var(--ha-space-6);
       background-color: var(--primary-background-color);
       color: var(--primary-text-color);
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-4);
     }
-    ha-card {
-      width: 100%;
-    }
+
     h2 {
-      margin: 0;
+      margin: 0 0 var(--ha-space-4);
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-xl);
       font-weight: var(--ha-font-weight-medium);
       line-height: var(--ha-line-height-normal);
     }
-    pre {
+
+    ::slotted(*) {
       box-sizing: border-box;
-      width: 100%;
-      margin: 0;
-      overflow: auto;
-      color: var(--primary-text-color);
+      inline-size: 100%;
     }
-    .card-actions {
-      display: flex;
-      flex-direction: row-reverse;
-      border-top: none;
-    }
+
     @media only screen and (max-width: 1000px) {
-      .row {
+      :host {
         grid-template-columns: 1fr;
-      }
-      .content {
-        padding: 16px;
-      }
-      ha-card {
-        width: 100%;
-      }
-      pre {
-        margin: 0;
       }
     }
   `;
@@ -209,6 +148,6 @@ class DemoBlackWhiteRow extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-black-white-row": DemoBlackWhiteRow;
+    "demo-theme-comparison": DemoThemeComparison;
   }
 }

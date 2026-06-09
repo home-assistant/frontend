@@ -1,12 +1,19 @@
 import { provide } from "@lit/context";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-tip";
 import { internationalizationContext } from "../../../../src/data/context";
+import {
+  DateFormat,
+  FirstWeekday,
+  NumberFormat,
+  TimeFormat,
+  TimeZone,
+} from "../../../../src/data/translation";
 import type { HomeAssistantInternationalization } from "../../../../src/types";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const tips: (string | TemplateResult)[] = [
   "Test tip",
@@ -14,68 +21,57 @@ const tips: (string | TemplateResult)[] = [
   html`<i>Tip</i> <b>with</b> <sub>HTML</sub>`,
 ];
 
+const localize = (key: string) => key;
+
+const DEMO_I18N: HomeAssistantInternationalization = {
+  localize,
+  language: "en",
+  selectedLanguage: null,
+  locale: {
+    language: "en",
+    number_format: NumberFormat.language,
+    time_format: TimeFormat.language,
+    date_format: DateFormat.language,
+    first_weekday: FirstWeekday.language,
+    time_zone: TimeZone.local,
+  },
+  translationMetadata: { fragments: [], translations: {} },
+  loadBackendTranslation: async () => localize,
+  loadFragmentTranslation: async () => localize,
+};
+
 @customElement("demo-components-ha-tip")
 export class DemoHaTip extends LitElement {
   @provide({ context: internationalizationContext })
   @state()
-  protected _i18n: HomeAssistantInternationalization = {
-    localize: ((key: string) => key) as any,
-    language: "en",
-    selectedLanguage: null,
-    locale: {} as any,
-    translationMetadata: {} as any,
-    loadBackendTranslation: (async () => (key: string) => key) as any,
-    loadFragmentTranslation: (async () => (key: string) => key) as any,
-  };
+  protected _i18n = DEMO_I18N;
 
   protected render(): TemplateResult {
-    return html` ${["light", "dark"].map(
-      (mode) => html`
-        <div class=${mode}>
-          <ha-card header="ha-tip ${mode} demo">
-            <div class="card-content">
-              ${tips.map((tip) => html`<ha-tip>${tip}</ha-tip>`)}
-            </div>
-          </ha-card>
-        </div>
-      `
-    )}`;
-  }
-
-  firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
+    return html`
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot}>
+              <div class="card-content">
+                ${tips.map((tip) => html`<ha-tip>${tip}</ha-tip>`)}
+              </div>
+            </ha-card>
+          `
+        )}
+      </demo-theme-comparison>
+    `;
   }
 
   static styles = css`
     :host {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     ha-tip {
       margin-bottom: 14px;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
   `;
 }
