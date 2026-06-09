@@ -16,6 +16,7 @@ import type {
   AssistPipelineMutableParams,
 } from "../../../data/assist_pipeline";
 import { fetchAssistPipelineLanguages } from "../../../data/assist_pipeline";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./assist-pipeline-detail/assist-pipeline-detail-config";
@@ -28,7 +29,9 @@ import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-vo
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
-export class DialogVoiceAssistantPipelineDetail extends LitElement {
+export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
+  Partial<AssistPipeline>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: VoiceAssistantPipelineDetailsDialogParams;
@@ -62,6 +65,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
       this._hideWakeWord =
         this._params.hideWakeWord || !this._data.wake_word_entity;
+      this._initDirtyTracking({ type: "deep" }, this._data);
       return;
     }
 
@@ -98,6 +102,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       stt_engine: this._params.pipeline?.stt_engine || sstDefault,
       tts_engine: this._params.pipeline?.tts_engine || ttsDefault,
     };
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
@@ -145,7 +150,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${title}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${!this._hideWakeWord ||
@@ -266,6 +271,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         value[key] = ev.detail.value[key];
       });
     this._data = { ...this._data, ...value };
+    this._updateDirtyState(this._data);
   }
 
   private async _updatePipeline() {
