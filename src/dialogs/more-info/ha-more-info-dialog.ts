@@ -856,7 +856,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin()(
           })}
         >
           ${keyed(
-            `${this._entityId}-${this._currView}`,
+            this._entityId,
             html`
               <div
                 class="content ha-scrollbar"
@@ -865,70 +865,70 @@ export class MoreInfoDialog extends DirtyStateProviderMixin()(
                 @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
                 @hass-more-info=${this._handleMoreInfoEvent}
               >
-                ${cache(
-                  this._childView
-                    ? html`
-                        <div class="child-view">
-                          ${dynamicElement(this._childView.viewTag, {
-                            hass: this.hass,
-                            entry: this._entry,
-                            params: this._childView.viewParams,
-                          })}
-                        </div>
-                      `
-                    : this._currView === "info"
-                      ? html`
-                          <ha-more-info-info
-                            .hass=${this.hass}
-                            .entityId=${this._entityId}
-                            .entry=${this._entry}
-                            .editMode=${this._infoEditMode}
-                            .data=${this._data}
-                          ></ha-more-info-info>
-                        `
-                      : this._currView === "history"
+                ${this._currView === "settings"
+                  ? html`
+                      <ha-more-info-settings
+                        .hass=${this.hass}
+                        .entityId=${this._entityId}
+                        .entry=${this._entry}
+                      ></ha-more-info-settings>
+                    `
+                  : cache(
+                      this._childView
                         ? html`
-                            <ha-more-info-history-and-logbook
-                              .hass=${this.hass}
-                              .entityId=${this._entityId}
-                            ></ha-more-info-history-and-logbook>
+                            <div class="child-view">
+                              ${dynamicElement(this._childView.viewTag, {
+                                hass: this.hass,
+                                entry: this._entry,
+                                params: this._childView.viewParams,
+                              })}
+                            </div>
                           `
-                        : this._currView === "settings"
+                        : this._currView === "info"
                           ? html`
-                              <ha-more-info-settings
+                              <ha-more-info-info
                                 .hass=${this.hass}
                                 .entityId=${this._entityId}
                                 .entry=${this._entry}
-                              ></ha-more-info-settings>
+                                .editMode=${this._infoEditMode}
+                                .data=${this._data}
+                              ></ha-more-info-info>
                             `
-                          : this._currView === "related"
+                          : this._currView === "history"
                             ? html`
-                                <ha-related-items
+                                <ha-more-info-history-and-logbook
                                   .hass=${this.hass}
-                                  .itemId=${entityId}
-                                  .itemType=${SearchableDomains.has(domain)
-                                    ? (domain as ItemType)
-                                    : "entity"}
-                                ></ha-related-items>
+                                  .entityId=${this._entityId}
+                                ></ha-more-info-history-and-logbook>
                               `
-                            : this._currView === "add_to"
+                            : this._currView === "related"
                               ? html`
-                                  <ha-more-info-add-to
-                                    .entityId=${entityId}
-                                    @add-to-action-selected=${this._goBack}
-                                  ></ha-more-info-add-to>
+                                  <ha-related-items
+                                    .hass=${this.hass}
+                                    .itemId=${entityId}
+                                    .itemType=${SearchableDomains.has(domain)
+                                      ? (domain as ItemType)
+                                      : "entity"}
+                                  ></ha-related-items>
                                 `
-                              : this._currView === "details"
+                              : this._currView === "add_to"
                                 ? html`
-                                    <ha-more-info-details
-                                      .hass=${this.hass}
-                                      .entry=${this._entry}
-                                      .params=${{ entityId }}
-                                      .yamlMode=${this._detailsYamlMode}
-                                    ></ha-more-info-details>
+                                    <ha-more-info-add-to
+                                      .entityId=${entityId}
+                                      @add-to-action-selected=${this._goBack}
+                                    ></ha-more-info-add-to>
                                   `
-                                : nothing
-                )}
+                                : this._currView === "details"
+                                  ? html`
+                                      <ha-more-info-details
+                                        .hass=${this.hass}
+                                        .entry=${this._entry}
+                                        .params=${{ entityId }}
+                                        .yamlMode=${this._detailsYamlMode}
+                                      ></ha-more-info-details>
+                                    `
+                                  : nothing
+                    )}
               </div>
             `
           )}
