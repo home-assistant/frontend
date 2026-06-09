@@ -857,6 +857,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     ev.stopPropagation();
     if (!ev.detail.isValid) {
       this._yamlErrors = ev.detail.errorMsg;
+      this._updateDirtyState(++this._sceneRevision);
       return;
     }
     this._yamlErrors = undefined;

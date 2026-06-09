@@ -107,6 +107,10 @@ export class HaScriptEditor extends SubscribeMixin(
     currentConfig: () => this.config!,
   });
 
+  public override get isDirtyState(): boolean {
+    return super.isDirtyState || !!this.yamlErrors;
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
