@@ -17,7 +17,7 @@ export type StreamType = typeof STREAM_TYPE_HLS | typeof STREAM_TYPE_WEB_RTC;
 
 interface CameraEntityAttributes extends HassEntityAttributeBase {
   model_name: string;
-  access_token: string;
+  access_token?: string;
   brand: string;
   motion_detection: boolean;
   frontend_stream_type: string;
@@ -78,8 +78,12 @@ export const cameraUrlWithWidthHeight = (
   height: number
 ) => `${base_url}&width=${width}&height=${height}`;
 
-export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
-  `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
+export const computeMJPEGStreamUrl = (
+  entity: CameraEntity
+): string | undefined =>
+  entity.attributes.access_token
+    ? `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`
+    : undefined;
 
 export const fetchThumbnailUrlWithCache = async (
   hass: HomeAssistant,
