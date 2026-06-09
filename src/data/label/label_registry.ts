@@ -14,6 +14,25 @@ export interface LabelRegistryEntry extends RegistryEntry {
   description: string | null;
 }
 
+export interface LabelRegistryEntryOrUnknown extends LabelRegistryEntry {
+  unknown?: true;
+}
+
+export const getLabelRegistryEntryOrUnknown = (
+  labelReg: LabelRegistryEntry[],
+  id: string
+): LabelRegistryEntryOrUnknown =>
+  labelReg.find((label) => label.label_id === id) || {
+    label_id: id,
+    name: `Unknown label: ${id}`,
+    icon: "mdi:alert-circle",
+    color: "red",
+    description: null,
+    created_at: NaN,
+    modified_at: NaN,
+    unknown: true,
+  };
+
 export interface LabelRegistryEntryMutableParams {
   name: string;
   icon?: string | null;

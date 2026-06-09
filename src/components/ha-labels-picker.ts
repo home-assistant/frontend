@@ -10,7 +10,10 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
-import { updateLabelRegistryEntry } from "../data/label/label_registry";
+import {
+  getLabelRegistryEntryOrUnknown,
+  updateLabelRegistryEntry,
+} from "../data/label/label_registry";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
@@ -97,18 +100,11 @@ export class HaLabelsPicker extends LitElement {
   private _sortedLabels = memoizeOne(
     (
       value: string[] | undefined,
-      labels: LabelRegistryEntry[] | undefined,
+      labels: LabelRegistryEntry[],
       language: string
     ) =>
       value
-        ?.map(
-          (id) =>
-            labels?.find((label) => label.label_id === id) || {
-              label_id: id,
-              name: id,
-              color: "rgba(var(--rgb-primary-text-color), 0.15)",
-            }
-        )
+        ?.map((id) => getLabelRegistryEntryOrUnknown(labels, id))
         .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
         .map((label) => ({
           ...label,
@@ -116,7 +112,10 @@ export class HaLabelsPicker extends LitElement {
         }))
   );
 
-  protected render(): TemplateResult {
+  protected render(): TemplateResult | typeof nothing {
+    if (!this._labels) {
+      return nothing;
+    }
     const labels = this._sortedLabels(
       this.value,
       this._labels,
@@ -195,12 +194,14 @@ export class HaLabelsPicker extends LitElement {
 
   private _openDetail(ev) {
     const label = ev.currentTarget.item;
-    showLabelDetailDialog(this, {
-      entry: label,
-      updateEntry: async (values) => {
-        await updateLabelRegistryEntry(this.hass, label.label_id, values);
-      },
-    });
+    if (!label.unknown) {
+      showLabelDetailDialog(this, {
+        entry: label,
+        updateEntry: async (values) => {
+          await updateLabelRegistryEntry(this.hass, label.label_id, values);
+        },
+      });
+    }
   }
 
   private _labelChanged(ev: ValueChangedEvent<string>) {
