@@ -1,4 +1,5 @@
 import { provide } from "@lit/context";
+import deepClone from "deep-clone-simple";
 import type { LitElement } from "lit";
 import { state } from "lit/decorators";
 import { deepEqual } from "../common/util/deep-equal";
@@ -67,6 +68,8 @@ export const DirtyStateProviderMixin =
 
       private _dirtyCompareFn: (a: State, b: State) => boolean = deepEqual;
 
+      private _dirtyCloneFn: (value: State) => State = (value) => value;
+
       @provide({ context: dirtyStateContext })
       @state()
       private _dirtyStateContext: DirtyStateContext<State, Key> =
@@ -94,7 +97,10 @@ export const DirtyStateProviderMixin =
         const slice = this._dirtySlices.get(key);
         if (!slice) {
           // First push for this key becomes the baseline.
-          this._dirtySlices.set(key, { initial: value, current: value });
+          this._dirtySlices.set(key, {
+            initial: this._dirtyCloneFn(value),
+            current: value,
+          });
           this._publishContext();
           return;
         }
@@ -122,17 +128,20 @@ export const DirtyStateProviderMixin =
         switch (strategy.type) {
           case "deep":
             this._dirtyCompareFn = (a, b) => deepEqual(a, b);
+            this._dirtyCloneFn = (value) => deepClone(value);
             break;
           case "shallow":
             this._dirtyCompareFn = (a, b) => shallowEqual(a, b);
+            this._dirtyCloneFn = (value) => value;
             break;
           default:
             this._dirtyCompareFn = strategy.compare;
+            this._dirtyCloneFn = (value) => value;
         }
         this._dirtySlices.clear();
         if (initialState !== undefined) {
           this._dirtySlices.set(DEFAULT_DIRTY_STATE_KEY, {
-            initial: initialState,
+            initial: this._dirtyCloneFn(initialState),
             current: initialState,
           });
         }
@@ -154,7 +163,7 @@ export const DirtyStateProviderMixin =
        */
       protected _markDirtyStateClean(): void {
         for (const slice of this._dirtySlices.values()) {
-          slice.initial = slice.current;
+          slice.initial = this._dirtyCloneFn(slice.current);
         }
         this._publishContext();
       }
@@ -165,7 +174,7 @@ export const DirtyStateProviderMixin =
        */
       protected _discardDirtyStateChanges(): void {
         for (const slice of this._dirtySlices.values()) {
-          slice.current = slice.initial;
+          slice.current = this._dirtyCloneFn(slice.initial);
         }
         this._publishContext();
       }
