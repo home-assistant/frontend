@@ -103,7 +103,7 @@ class PanelTodo extends LitElement {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
 
-      const params = decodeTodoQueryParams(window.location.search);
+      const params = decodeTodoQueryParams(extractSearchParamsObject());
       this._openAddItemFromUrl = params.add_item ?? false;
 
       if (params.entity_id) {
