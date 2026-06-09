@@ -64,6 +64,8 @@ import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
+import type { Helper } from "../../panels/config/helpers/const";
 import { ScrollableFadeMixin } from "../../mixins/scrollable-fade-mixin";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import {
@@ -122,9 +124,10 @@ declare global {
 const DEFAULT_VIEW: MoreInfoView = "info";
 
 @customElement("ha-more-info-dialog")
-export class MoreInfoDialog extends DirtyStateProviderMixin()(
-  SubscribeMixin(ScrollableFadeMixin(LitElement))
-) {
+export class MoreInfoDialog extends DirtyStateProviderMixin<
+  EntitySettingsState | Helper | null,
+  "entity-registry" | "helper"
+>()(SubscribeMixin(ScrollableFadeMixin(LitElement))) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;

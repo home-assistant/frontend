@@ -2,7 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume, type ContextType } from "@lit/context";
+import { consume } from "@lit/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -14,7 +14,10 @@ import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
-import { dirtyStateContext } from "../../../data/context/dirty-state";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -42,7 +45,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @consume({ context: dirtyStateContext, subscribe: true })
   @state()
-  private _dirtyState?: ContextType<typeof dirtyStateContext>;
+  private _dirtyState?: DirtyStateContext;
 
   @state() private _helperConfigEntry?: ConfigEntry;
 

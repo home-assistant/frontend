@@ -4,7 +4,9 @@ import { state } from "lit/decorators";
 import { deepEqual } from "../common/util/deep-equal";
 import { shallowEqual } from "../common/util/shallow-equal";
 import {
+  DEFAULT_DIRTY_STATE_KEY,
   dirtyStateContext,
+  type DefaultDirtyStateKey,
   type DirtyStateContext,
 } from "../data/context/dirty-state";
 import type { Constructor } from "../types";
@@ -14,46 +16,32 @@ export type CompareStrategy<State> =
   | { type: "shallow" }
   | { type: "custom"; compare: (a: State, b: State) => boolean };
 
-function resolveCompare<State>(
-  strategy: CompareStrategy<State>
-): (a: State, b: State) => boolean {
-  switch (strategy.type) {
-    case "deep":
-      return (a, b) => deepEqual(a, b);
-    case "shallow":
-      return (a, b) => shallowEqual(a, b);
-    default:
-      return strategy.compare;
-  }
-}
-
 /**
  * Mixin that provides dirty-state tracking via Lit context.
  *
- * Uses the `@provide` decorator so any descendant component can consume
- * dirty-state with `@consume({ context: dirtyStateContext, subscribe: true })`.
+ * The provider holds a map of named slices. Each slice has its own initial
+ * snapshot and current value, and is compared with the configured compare
+ * strategy. `isDirty` is true when any slice differs from its initial value,
+ * so independent contributors (e.g. a helper form alongside the entity
+ * registry editor) can coexist without overwriting each other.
  *
- * Curried generic pattern: `State` is explicitly provided while `Base` is
- * inferred from the superclass argument.
- *
- * @example Eager init (state known upfront, e.g. dialog open):
+ * @example Eager init for the provider's own slice:
  * ```ts
- * interface MyDialogState { name: string; icon: string }
- *
  * class MyDialog extends DirtyStateProviderMixin<MyDialogState>()(LitElement) {
  *   open() {
  *     this._initDirtyTracking({ type: "shallow" }, { name: "", icon: "" });
+ *     // Update later with `this._updateDirtyState({ name, icon })`.
  *   }
  * }
  * ```
  *
- * @example Deferred init (child consumer reports initial state):
+ * @example Deferred init with child consumers:
  * ```ts
- * class MyPage extends DirtyStateProviderMixin<FormState>()(LitElement) {
+ * class MyPage extends DirtyStateProviderMixin<MyState, "their-key">()(LitElement) {
  *   connectedCallback() {
  *     super.connectedCallback();
  *     this._initDirtyTracking({ type: "deep" });
- *     // First setState from a child consumer sets the baseline
+ *     // Child consumers push slices via `setState(value, "their-key")`.
  *   }
  * }
  * ```
@@ -62,46 +50,35 @@ function resolveCompare<State>(
  * ```ts
  * @consume({ context: dirtyStateContext, subscribe: true })
  * @state()
- * private _dirtyState?: DirtyStateContext;
+ * private _dirtyState?: DirtyStateContext<MyState, "my-section">;
  *
  * // Read: this._dirtyState?.isDirty
- * // Write: this._dirtyState?.setState(newState)
+ * // Write: this._dirtyState?.setState(value, "my-section")
  * ```
  */
 export const DirtyStateProviderMixin =
-  <State = unknown>() =>
+  <State = unknown, Key extends string = DefaultDirtyStateKey>() =>
   <Base extends Constructor<LitElement>>(superClass: Base) => {
     class DirtyStateProviderMixinClass extends superClass {
-      private _dirtyInitialState: State | undefined;
-
-      private _dirtyCurrentState: State | undefined;
+      private _dirtySlices = new Map<
+        Key | DefaultDirtyStateKey,
+        { initial: State; current: State }
+      >();
 
       private _dirtyCompareFn: (a: State, b: State) => boolean = deepEqual;
 
       @provide({ context: dirtyStateContext })
       @state()
-      private _dirtyStateContext: DirtyStateContext = this._buildContextValue(
-        undefined,
-        false
-      );
+      private _dirtyStateContext: DirtyStateContext<State, Key> =
+        this._buildContextValue();
 
-      /**
-       * Build the context value object for the provider.
-       *
-       * The returned type is `DirtyStateContext` (i.e. `DirtyStateContext<unknown>`)
-       * because the singleton context key is typed at `unknown`. The single
-       * `unknown → State` narrowing cast in `setState` is the only unsafe boundary
-       * and is confined here.
-       */
-      private _buildContextValue(
-        currentState: State | undefined,
-        isDirty: boolean
-      ): DirtyStateContext {
+      private _buildContextValue(): DirtyStateContext<State, Key> {
         return {
-          isDirty,
-          state: currentState,
-          setState: (incoming: unknown) => {
-            this._updateDirtyState(incoming as State);
+          isDirty: Array.from(this._dirtySlices.values()).some(
+            ({ initial, current }) => !this._dirtyCompareFn(initial, current)
+          ),
+          setState: (value: State, key: Key) => {
+            this._writeSlice(key, value);
           },
           markClean: () => {
             this._markDirtyStateClean();
@@ -109,12 +86,32 @@ export const DirtyStateProviderMixin =
         };
       }
 
+      private _publishContext(): void {
+        this._dirtyStateContext = this._buildContextValue();
+      }
+
+      private _writeSlice(key: Key | DefaultDirtyStateKey, value: State): void {
+        const slice = this._dirtySlices.get(key);
+        if (!slice) {
+          // First push for this key becomes the baseline.
+          this._dirtySlices.set(key, { initial: value, current: value });
+          this._publishContext();
+          return;
+        }
+        if (this._dirtyCompareFn(slice.current, value)) {
+          return;
+        }
+        slice.current = value;
+        this._publishContext();
+      }
+
       /**
        * Initialize dirty state tracking.
        *
-       * When `initialState` is provided, tracking starts immediately.
-       * When omitted (deferred mode), the first `_updateDirtyState` /
-       * `setState` call from a consumer becomes the baseline snapshot.
+       * When `initialState` is provided, it seeds the provider's own slice so
+       * `_updateDirtyState` can be used immediately. When omitted, the first
+       * push for any key (via the provider helper or a consumer's `setState`)
+       * becomes that key's baseline.
        *
        * Call again to reset (e.g. when the underlying entity changes).
        */
@@ -122,79 +119,59 @@ export const DirtyStateProviderMixin =
         strategy: CompareStrategy<State>,
         initialState?: State
       ): void {
-        this._dirtyCompareFn = resolveCompare(strategy);
-        if (initialState !== undefined) {
-          this._dirtyInitialState = initialState;
-          this._dirtyCurrentState = initialState;
-          this._dirtyStateContext = this._buildContextValue(
-            initialState,
-            false
-          );
-        } else {
-          this._dirtyInitialState = undefined;
-          this._dirtyCurrentState = undefined;
-          this._dirtyStateContext = this._buildContextValue(undefined, false);
+        switch (strategy.type) {
+          case "deep":
+            this._dirtyCompareFn = (a, b) => deepEqual(a, b);
+            break;
+          case "shallow":
+            this._dirtyCompareFn = (a, b) => shallowEqual(a, b);
+            break;
+          default:
+            this._dirtyCompareFn = strategy.compare;
         }
+        this._dirtySlices.clear();
+        if (initialState !== undefined) {
+          this._dirtySlices.set(DEFAULT_DIRTY_STATE_KEY, {
+            initial: initialState,
+            current: initialState,
+          });
+        }
+        this._publishContext();
       }
 
       /**
-       * Update the tracked state. Triggers dirty comparison against initial snapshot.
-       *
-       * If called before `_initDirtyTracking` provided an initial state (deferred
-       * mode), the first call sets the baseline and reports clean.
-       *
-       * Guarded: no-ops if the computed dirty status and state reference are
-       * unchanged, preventing render loops when called from `updated()`.
+       * Update the provider's own state slice. Triggers dirty comparison
+       * against the provider's baseline (or sets the baseline if this is the
+       * first push after a deferred init).
        */
       protected _updateDirtyState(newState: State): void {
-        // Deferred init: first state becomes the baseline
-        if (this._dirtyInitialState === undefined) {
-          this._dirtyInitialState = newState;
-          this._dirtyCurrentState = newState;
-          this._dirtyStateContext = this._buildContextValue(newState, false);
-          return;
-        }
-
-        const isDirty = !this._dirtyCompareFn(
-          this._dirtyInitialState,
-          newState
-        );
-        if (
-          this._dirtyCurrentState !== undefined &&
-          this._dirtyCompareFn(this._dirtyCurrentState, newState) &&
-          this._dirtyStateContext.isDirty === isDirty
-        ) {
-          return;
-        }
-        this._dirtyCurrentState = newState;
-        this._dirtyStateContext = this._buildContextValue(newState, isDirty);
+        this._writeSlice(DEFAULT_DIRTY_STATE_KEY, newState);
       }
 
       /**
-       * Reset the initial snapshot to the current state, marking the state as clean.
-       * Call this after a successful save.
+       * Reset every slice's baseline to its current value. Call this after a
+       * successful save.
        */
       protected _markDirtyStateClean(): void {
-        this._dirtyInitialState = this._dirtyCurrentState;
-        this._dirtyStateContext = this._buildContextValue(
-          this._dirtyCurrentState,
-          false
-        );
+        for (const slice of this._dirtySlices.values()) {
+          slice.initial = slice.current;
+        }
+        this._publishContext();
       }
 
       /**
-       * Discard current changes and restore the last clean snapshot.
+       * Discard pending changes by restoring each slice's current value back
+       * to its baseline.
        */
       protected _discardDirtyStateChanges(): void {
-        this._dirtyCurrentState = this._dirtyInitialState;
-        this._dirtyStateContext = this._buildContextValue(
-          this._dirtyInitialState,
-          false
-        );
+        for (const slice of this._dirtySlices.values()) {
+          slice.current = slice.initial;
+        }
+        this._publishContext();
       }
 
       /**
-       * Whether the current state differs from the initial snapshot.
+       * Whether any slice's current value differs from its baseline.
        */
       public get isDirtyState(): boolean {
         return this._dirtyStateContext.isDirty;

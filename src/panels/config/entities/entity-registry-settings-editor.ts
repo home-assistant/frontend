@@ -6,7 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
-import { consume, type ContextType } from "@lit/context";
+import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -45,7 +45,10 @@ import {
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
-import { dirtyStateContext } from "../../../data/context/dirty-state";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteConfigEntry } from "../../../data/config_entries";
 import {
@@ -145,7 +148,7 @@ const SCANNER_SOURCE_TYPES = ["router", "bluetooth", "bluetooth_le"];
 
 const ZONE_DOMAINS = ["zone"];
 
-interface EntitySettingsState {
+export interface EntitySettingsState {
   name: string | null;
   icon: string | null;
   entityId: string;
@@ -183,7 +186,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @consume({ context: dirtyStateContext, subscribe: true })
   @state()
-  private _dirtyState?: ContextType<typeof dirtyStateContext>;
+  private _dirtyState?: DirtyStateContext<
+    EntitySettingsState,
+    "entity-registry"
+  >;
 
   @state() private _name!: string;
 
@@ -247,30 +253,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
-
-  private _currentState(): EntitySettingsState {
-    return {
-      name: this._name.trim() || null,
-      icon: this._icon.trim() || null,
-      entityId: this._entityId.trim(),
-      areaId: this._areaId ?? null,
-      labels: this._labels ?? [],
-      deviceClass: this._deviceClass,
-      disabledBy: this._disabledBy,
-      hiddenBy: this._hiddenBy,
-      unitOfMeasurement: this._unit_of_measurement,
-      precision: this._precision,
-      defaultCode: this._defaultCode,
-      calendarColor: this._calendarColor ?? null,
-      precipitationUnit: this._precipitation_unit,
-      pressureUnit: this._pressure_unit,
-      temperatureUnit: this._temperature_unit,
-      visibilityUnit: this._visibility_unit,
-      windSpeedUnit: this._wind_speed_unit,
-      switchAsDomain: this._switchAsDomain,
-      switchAsInvert: this._switchAsInvert,
-    };
-  }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -443,7 +425,30 @@ export class EntityRegistrySettingsEditor extends LitElement {
       }
     }
 
-    this._dirtyState?.setState(this._currentState());
+    this._dirtyState?.setState(
+      {
+        name: this._name.trim() || null,
+        icon: this._icon.trim() || null,
+        entityId: this._entityId.trim(),
+        areaId: this._areaId ?? null,
+        labels: this._labels ?? [],
+        deviceClass: this._deviceClass,
+        disabledBy: this._disabledBy,
+        hiddenBy: this._hiddenBy,
+        unitOfMeasurement: this._unit_of_measurement,
+        precision: this._precision,
+        defaultCode: this._defaultCode,
+        calendarColor: this._calendarColor ?? null,
+        precipitationUnit: this._precipitation_unit,
+        pressureUnit: this._pressure_unit,
+        temperatureUnit: this._temperature_unit,
+        visibilityUnit: this._visibility_unit,
+        windSpeedUnit: this._wind_speed_unit,
+        switchAsDomain: this._switchAsDomain,
+        switchAsInvert: this._switchAsInvert,
+      },
+      "entity-registry"
+    );
   }
 
   protected render() {
