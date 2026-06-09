@@ -15,7 +15,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 
 @customElement("ha-more-info-view-vacuum-segment-mapping")
 export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
@@ -51,10 +51,9 @@ export class HaMoreInfoViewVacuumSegmentMapping extends DirtyStateProviderMixin<
     this._initDirtyTracking({ type: "deep" }, mapping);
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const mapping: Record<string, string[]> = ev.detail.value;
-    this._areaMapping = mapping;
-    this._updateDirtyState(mapping);
+  private _valueChanged(ev: ValueChangedEvent<Record<string, string[]>>) {
+    this._areaMapping = ev.detail.value;
+    this._updateDirtyState(ev.detail.value);
   }
 
   private async _save() {
