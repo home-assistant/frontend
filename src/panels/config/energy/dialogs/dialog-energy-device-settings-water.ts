@@ -30,9 +30,9 @@ const flowRateUnitClasses = ["volume_flow_rate"];
 
 @customElement("dialog-energy-device-settings-water")
 export class DialogEnergyDeviceSettingsWater
-  extends DirtyStateProviderMixin<
-    DeviceConsumptionEnergyPreference | undefined
-  >()(LitElement)
+  extends DirtyStateProviderMixin<DeviceConsumptionEnergyPreference | null>()(
+    LitElement
+  )
   implements HassDialog<EnergySettingsDeviceWaterDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -75,7 +75,7 @@ export class DialogEnergyDeviceSettingsWater
       .filter((id) => id && id !== this._device?.stat_rate) as string[];
 
     this._open = true;
-    this._initDirtyTracking({ type: "deep" }, this._device);
+    this._initDirtyTracking({ type: "deep" }, this._device ?? null);
   }
 
   private _computePossibleParents() {
@@ -244,7 +244,7 @@ export class DialogEnergyDeviceSettingsWater
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
-      this._updateDirtyState(this._device);
+      this._updateDirtyState(this._device ?? null);
       return;
     }
     this._device = { stat_consumption: ev.detail.value };
