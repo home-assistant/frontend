@@ -40,10 +40,8 @@ import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../../data/sensor";
-import { TIMESTAMP_STATE_DOMAINS } from "../../../../common/const";
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
+import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -287,17 +285,13 @@ export class HuiTileCardEditor
 
     const entityId = this._config!.entity;
 
-    const domain = computeDomain(entityId || "");
-    const sensorDeviceClass =
-      domain === "sensor"
-        ? this.hass.states[entityId].attributes.device_class
-        : "";
     const showTimeFormat =
       !this._config.hide_state &&
-      (TIMESTAMP_STATE_DOMAINS.includes(domain) ||
-        SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(sensorDeviceClass)) &&
-      (!this._config.state_content ||
-        this._config.state_content.includes("state"));
+      stateContentHasTimestamp(
+        entityId,
+        this.hass.states[entityId],
+        this._config.state_content
+      );
 
     const schema = this._schema(
       this.hass.localize,

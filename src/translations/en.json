@@ -465,6 +465,7 @@
       "save": "Save",
       "apply": "Apply",
       "add": "Add",
+      "auto": "Auto",
       "create": "Create",
       "edit": "Edit",
       "edit_item": "Edit {name}",

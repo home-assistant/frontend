@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
@@ -19,6 +19,7 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
+import { computeDomain } from "../common/entity/compute_domain";
 
 export const STATE_DISPLAY_SPECIAL_CONTENT = [
   "remaining_time",
@@ -55,6 +56,54 @@ export const DEFAULT_STATE_CONTENT_DOMAINS: Record<string, StateContent> = {
   valve: ["state", "current_position"],
 };
 
+const TIMESTAMP_STATE_PROPS = ["last_updated", "last_changed"];
+
+const TIMESTAMP_CONTENTS = [...TIMESTAMP_STATE_PROPS, "last_triggered"];
+
+const TIMESTAMP_DOMAIN_CONTENTS = {
+  calendar: ["start_time", "end_time"],
+  input_datetime: ["timestamp"],
+  sun: [
+    "next_dawn",
+    "next_dusk",
+    "next_midnight",
+    "next_noon",
+    "next_rising",
+    "next_setting",
+  ],
+};
+
+export const stateContentHasTimestamp = (
+  entityId?: string,
+  stateObj?: HassEntity,
+  content?: StateContent
+): boolean => {
+  const contentArray = ensureArray(content);
+  if (content && contentArray.some((c) => TIMESTAMP_CONTENTS.includes(c))) {
+    return true;
+  }
+  if (!entityId) {
+    return false;
+  }
+  const domain = computeDomain(entityId);
+  if (!content || content.includes("state")) {
+    if (TIMESTAMP_STATE_DOMAINS.includes(domain)) {
+      return true;
+    }
+    if (stateObj) {
+      const sensorDeviceClass =
+        domain === "sensor" ? stateObj.attributes.device_class : "";
+      if (SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(sensorDeviceClass)) {
+        return true;
+      }
+    }
+  }
+  return (
+    TIMESTAMP_DOMAIN_CONTENTS[domain] &&
+    contentArray.some((c) => TIMESTAMP_DOMAIN_CONTENTS[domain].includes(c))
+  );
+};
+
 @customElement("state-display")
 class StateDisplay extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -70,13 +119,34 @@ class StateDisplay extends LitElement {
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
 
+  private _normalizedContent?: StateContent;
+
   protected createRenderRoot() {
     return this;
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("content")) {
+      const migrateKey = (s) => {
+        if (s === "last-updated") return "last_updated";
+        if (s === "last-changed") return "last_changed";
+        return s;
+      };
+      if (typeof this.content === "string") {
+        this._normalizedContent = migrateKey(this.content);
+      } else if (Array.isArray(this.content)) {
+        this._normalizedContent = this.content.map(migrateKey);
+      }
+    }
+  }
+
   private get _content(): StateContent {
     const domain = computeStateDomain(this.stateObj);
-    return this.content ?? DEFAULT_STATE_CONTENT_DOMAINS[domain] ?? "state";
+    return (
+      this._normalizedContent ??
+      DEFAULT_STATE_CONTENT_DOMAINS[domain] ??
+      "state"
+    );
   }
 
   private _computeContent(
@@ -129,40 +199,34 @@ class StateDisplay extends LitElement {
 
     let relativeDateTime: string | Date | undefined;
 
-    // Check last-changed for backwards compatibility
-    if (content === "last_changed" || content === "last-changed") {
-      relativeDateTime = stateObj.last_changed;
-    }
-    // Check last_updated for backwards compatibility
-    if (content === "last_updated" || content === "last-updated") {
-      relativeDateTime = stateObj.last_updated;
-    }
-    if (domain === "input_datetime" && content === "timestamp") {
+    if (TIMESTAMP_STATE_PROPS.includes(content)) {
+      relativeDateTime = stateObj[content];
+    } else if (domain === "input_datetime" && content === "timestamp") {
       relativeDateTime = new Date(stateObj.attributes.timestamp * 1000);
-    }
-
-    if (
-      content === "last_triggered" ||
-      (domain === "calendar" &&
-        (content === "start_time" || content === "end_time")) ||
-      (domain === "sun" &&
-        (content === "next_dawn" ||
-          content === "next_dusk" ||
-          content === "next_midnight" ||
-          content === "next_noon" ||
-          content === "next_rising" ||
-          content === "next_setting"))
+    } else if (
+      TIMESTAMP_CONTENTS.includes(content) ||
+      TIMESTAMP_DOMAIN_CONTENTS[domain]?.includes(content)
     ) {
       relativeDateTime = stateObj.attributes[content];
     }
 
     if (relativeDateTime) {
-      return html`
-        <ha-relative-time
-          .datetime=${relativeDateTime}
-          capitalize
-        ></ha-relative-time>
-      `;
+      if (!this.timeFormat) {
+        return html`
+          <ha-relative-time
+            .datetime=${relativeDateTime}
+            capitalize
+          ></ha-relative-time>
+        `;
+      }
+      return html`<hui-timestamp-display
+        .hass=${this.hass}
+        .ts=${relativeDateTime instanceof Date
+          ? relativeDateTime
+          : new Date(relativeDateTime)}
+        .format=${this.timeFormat}
+        capitalize
+      ></hui-timestamp-display>`;
     }
 
     const specialContent = (STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS[domain] ??

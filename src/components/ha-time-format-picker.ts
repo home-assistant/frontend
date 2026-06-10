@@ -23,7 +23,7 @@ export class HaTimeFormatPicker extends LitElement {
 
   protected render() {
     const OPTIONS = [
-      { label: this._localize("ui.common.default"), value: "default" },
+      { label: this._localize("ui.common.auto"), value: "auto" },
     ].concat(
       TIMESTAMP_RENDERING_FORMATS.map((format) => ({
         label:
@@ -37,7 +37,7 @@ export class HaTimeFormatPicker extends LitElement {
     return html`
       <ha-select
         .label=${this.label ?? ""}
-        .value=${this.value || "default"}
+        .value=${this.value || "auto"}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         @selected=${this._selectChanged}
@@ -49,7 +49,7 @@ export class HaTimeFormatPicker extends LitElement {
 
   private _selectChanged(ev) {
     ev.stopPropagation();
-    if (ev.detail?.value === "default" && this.value !== undefined) {
+    if (ev.detail?.value === "auto" && this.value !== undefined) {
       fireEvent(this, "value-changed", {
         value: undefined,
       });
