@@ -322,9 +322,16 @@ export interface HomeAssistantUI {
   suspendWhenHidden: boolean;
 }
 
+export type ManagedLogFileDisabledReason = "environment" | "supervisor";
+
+export interface HassLoggingConfig {
+  managed_log_file: boolean;
+  managed_log_file_disabled_reason: ManagedLogFileDisabledReason | null;
+}
+
 export interface HomeAssistantConfig {
   auth: Auth & { external?: ExternalMessaging };
-  config: HassConfig;
+  config: HassConfig & { logging?: HassLoggingConfig };
   user?: CurrentUser;
   userData?: CoreFrontendUserData;
   systemData?: CoreFrontendSystemData;
