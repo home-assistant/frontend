@@ -125,8 +125,8 @@ const DEFAULT_VIEW: MoreInfoView = "info";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends DirtyStateProviderMixin<
-  EntitySettingsState | Helper | null,
-  "entity-registry" | "helper"
+  EntitySettingsState | Helper | Record<string, string[]> | null,
+  "entity-registry" | "helper" | "vacuum-segment-mapping"
 >()(SubscribeMixin(ScrollableFadeMixin(LitElement))) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -656,7 +656,8 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
         @show-child-view=${this._showChildView}
-        .preventScrimClose=${(this._currView === "settings" &&
+        .preventScrimClose=${((this._currView === "settings" ||
+          this._childView) &&
           this.isDirtyState) ||
         !this._isEscapeEnabled}
         flexcontent
