@@ -363,10 +363,10 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           minWidth: "70px",
           maxWidth: "70px",
           sortable: true,
-          showNarrow: true,
+          showNarrow: false,
           valueColumn: "errors_sort",
           template: (automation) =>
-            automation.errors?.count
+            !narrow && automation.errors?.count
               ? html`<ha-data-table-icon
                   .path=${mdiAlertCircleOutline}
                   .tooltip=${localize(
