@@ -4,7 +4,7 @@ import "../ha-time-format-picker";
 
 @customElement("ha-selector-ui_time_format")
 export class HaSelectorUiTimeFormat extends LitElement {
-  @property() public value?: string | string[];
+  @property() public value?: string;
 
   @property() public label?: string;
 
