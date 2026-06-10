@@ -1,7 +1,6 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -20,22 +19,31 @@ import {
   createUser,
   deleteUser,
 } from "../../../data/user";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import type { AddUserDialogParams } from "./show-dialog-add-user";
 
+interface AddUserFormState {
+  name?: string;
+  username?: string;
+  password?: string;
+  passwordConfirm?: string;
+  isAdmin?: boolean;
+  localOnly?: boolean;
+}
+
 @customElement("dialog-add-user")
-export class DialogAddUser extends LitElement {
+export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
+  DialogMixin<AddUserDialogParams>(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loading = false;
 
   // Error message when can't talk to server etc
   @state() private _error?: string;
-
-  @state() private _params?: AddUserDialogParams;
-
-  @state() private _open = false;
 
   @state() private _name?: string;
 
@@ -51,9 +59,9 @@ export class DialogAddUser extends LitElement {
 
   @state() private _allowChangeName = true;
 
-  public showDialog(params: AddUserDialogParams) {
-    this._params = params;
-    this._name = this._params.name || "";
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._name = this.params?.name || "";
     this._username = "";
     this._password = "";
     this._passwordConfirm = "";
@@ -62,14 +70,24 @@ export class DialogAddUser extends LitElement {
     this._error = undefined;
     this._loading = false;
 
-    if (this._params.name) {
+    if (this.params?.name) {
       this._allowChangeName = false;
       this._maybePopulateUsername();
     } else {
       this._allowChangeName = true;
     }
 
-    this._open = true;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      {
+        name: this._name,
+        username: this._username,
+        password: "",
+        passwordConfirm: "",
+        isAdmin: false,
+        localOnly: false,
+      }
+    );
   }
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
@@ -82,18 +100,17 @@ export class DialogAddUser extends LitElement {
   }
 
   protected render() {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        .open=${this._open}
-        prevent-scrim-close
+        open
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.users.add_user.caption"
         )}
-        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -204,7 +221,7 @@ export class DialogAddUser extends LitElement {
           <ha-button
             slot="secondaryAction"
             appearance="plain"
-            @click=${this._close}
+            @click=${this.closeDialog}
           >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
@@ -224,15 +241,6 @@ export class DialogAddUser extends LitElement {
     `;
   }
 
-  private _close() {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   private _maybePopulateUsername() {
     if (this._username || !this._name) {
       return;
@@ -242,6 +250,7 @@ export class DialogAddUser extends LitElement {
 
     if (parts.length) {
       this._username = parts[0].toLowerCase();
+      this._publishDirtyState();
     }
   }
 
@@ -249,16 +258,30 @@ export class DialogAddUser extends LitElement {
     this._error = undefined;
     const target = ev.target as HaInput;
     this[`_${target.name}`] = target.value;
+    this._publishDirtyState();
   }
 
   private async _adminChanged(ev: Event): Promise<void> {
     const target = ev.target as HaSwitch;
     this._isAdmin = target.checked;
+    this._publishDirtyState();
   }
 
   private _localOnlyChanged(ev: Event): void {
     const target = ev.target as HaSwitch;
     this._localOnly = target.checked;
+    this._publishDirtyState();
+  }
+
+  private _publishDirtyState(): void {
+    this._updateDirtyState({
+      name: this._name,
+      username: this._username,
+      password: this._password,
+      passwordConfirm: this._passwordConfirm,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+    });
   }
 
   private async _createUser(ev: Event) {
@@ -305,8 +328,9 @@ export class DialogAddUser extends LitElement {
         type: "homeassistant",
       },
     ];
-    this._params!.userAddedCallback(user);
-    this._close();
+    this.params!.userAddedCallback(user);
+    this._markDirtyStateClean();
+    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
