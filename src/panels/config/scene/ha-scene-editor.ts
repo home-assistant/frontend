@@ -1152,13 +1152,16 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   }
 
   // Memoized per config so re-renders reuse the same object references and
-  // the state badges skip work when nothing changed.
+  // the state badges skip work when nothing changed. The live device_class
+  // read is deliberately outside the memoize key: it is static per entity,
+  // and keying on hass would defeat the caching this exists for.
   private _sceneStateObjs = memoizeOne((config?: SceneConfig) => {
     const objs: Record<string, HassEntity | undefined> = {};
     for (const entityId of Object.keys(config?.entities ?? {})) {
       objs[entityId] = sceneEntityStateObj(
         entityId,
-        config!.entities[entityId]
+        config!.entities[entityId],
+        this.hass.states[entityId]?.attributes.device_class
       );
     }
     return objs;

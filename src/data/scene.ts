@@ -90,9 +90,15 @@ const normalizeSceneEntityState = (sceneState: unknown): string | undefined => {
 //
 // The result is a partial HassEntity meant for badge rendering only - it has
 // no last_changed, last_updated, or context.
+//
+// fallbackDeviceClass fills in device_class when the scene entry does not
+// carry one (string shorthand, hand-written minimal dicts), since icon
+// resolution keys on it. Only this identity attribute is borrowed - merging
+// stateful live attributes like rgb_color would mis-color an off target.
 export const sceneEntityStateObj = (
   entityId: string,
-  sceneEntity: unknown
+  sceneEntity: unknown,
+  fallbackDeviceClass?: string
 ): HassEntity | undefined => {
   // An entity left without a value in the YAML editor parses as null.
   if (sceneEntity == null) {
@@ -102,7 +108,10 @@ export const sceneEntityStateObj = (
     return {
       entity_id: entityId,
       state: normalizeSceneEntityState(sceneEntity),
-      attributes: {},
+      attributes:
+        fallbackDeviceClass === undefined
+          ? {}
+          : { device_class: fallbackDeviceClass },
     } as HassEntity;
   }
   const { state: sceneState, ...attributes } = sceneEntity as Record<
@@ -129,6 +138,12 @@ export const sceneEntityStateObj = (
     !Array.isArray(attributes.rgb_color)
   ) {
     delete attributes.rgb_color;
+  }
+  if (
+    attributes.device_class === undefined &&
+    fallbackDeviceClass !== undefined
+  ) {
+    attributes.device_class = fallbackDeviceClass;
   }
   return {
     entity_id: entityId,

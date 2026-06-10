@@ -103,6 +103,37 @@ describe("sceneEntityStateObj", () => {
     ).toEqual([255, 0, 0]);
   });
 
+  it("borrows the fallback device_class for string shorthand", () => {
+    expect(sceneEntityStateObj("cover.garage", "open", "garage")).toEqual({
+      entity_id: "cover.garage",
+      state: "open",
+      attributes: { device_class: "garage" },
+    });
+  });
+
+  it("borrows the fallback device_class when the dict has none", () => {
+    expect(
+      sceneEntityStateObj("cover.garage", { state: "open" }, "garage")
+        ?.attributes.device_class
+    ).toBe("garage");
+  });
+
+  it("prefers the scene's own device_class over the fallback", () => {
+    expect(
+      sceneEntityStateObj(
+        "cover.garage",
+        { state: "open", device_class: "door" },
+        "garage"
+      )?.attributes.device_class
+    ).toBe("door");
+  });
+
+  it("adds no device_class key without a fallback", () => {
+    expect(
+      sceneEntityStateObj("cover.garage", { state: "open" })?.attributes
+    ).toEqual({});
+  });
+
   it("leaves the state undefined when the dict has none", () => {
     expect(sceneEntityStateObj("light.kitchen", { brightness: 100 })).toEqual({
       entity_id: "light.kitchen",
