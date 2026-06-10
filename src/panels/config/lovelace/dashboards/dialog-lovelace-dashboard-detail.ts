@@ -14,13 +14,16 @@ import type {
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 import { pickAvailableDashboardUrlPath } from "./pick-available-dashboard-url-path";
 
 @customElement("dialog-lovelace-dashboard-detail")
-export class DialogLovelaceDashboardDetail extends LitElement {
+export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
+  Partial<LovelaceDashboard>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceDashboardDetailsDialogParams;
@@ -55,6 +58,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         this._fillUrlPath(suggestions.title);
       }
     }
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
@@ -95,7 +99,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           : this.hass.localize(
               "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
             )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
@@ -144,7 +148,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             @click=${this._updateDashboard}
             .disabled=${(this._error && "url_path" in this._error) ||
             titleInvalid ||
-            this._submitting}
+            this._submitting ||
+            !this.isDirtyState}
             ?autofocus=${this._params.dashboard?.mode === "yaml"}
           >
             ${this._params.urlPath
@@ -251,6 +256,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     } else {
       this._data = value;
     }
+    this._updateDirtyState(this._data!);
   }
 
   private _fillUrlPath(title: string) {
@@ -270,6 +276,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           ? pickAvailableDashboardUrlPath(baseSlug, taken)
           : baseSlug,
     };
+    this._updateDirtyState(this._data!);
   }
 
   private async _updateDashboard() {
@@ -292,6 +299,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           this._data as LovelaceDashboardCreateParams
         );
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       let localizedErrorMessage: string | undefined;

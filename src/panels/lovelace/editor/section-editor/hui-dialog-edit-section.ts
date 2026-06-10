@@ -30,6 +30,7 @@ import {
 } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -53,7 +54,7 @@ const TABS = ["tab-settings", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-section")
 export class HuiDialogEditSection
-  extends LitElement
+  extends DirtyStateProviderMixin<LovelaceSectionRawConfig>()(LitElement)
   implements HassDialog<EditSectionDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -96,6 +97,7 @@ export class HuiDialogEditSection
     this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
     ]);
+    this._initDirtyTracking({ type: "deep" }, this._config);
   }
 
   public closeDialog() {
@@ -159,7 +161,7 @@ export class HuiDialogEditSection
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         class=${classMap({
@@ -231,7 +233,11 @@ export class HuiDialogEditSection
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
 
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            ?disabled=${!this.isDirtyState}
+          >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
@@ -242,6 +248,7 @@ export class HuiDialogEditSection
   private _configChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     this._config = ev.detail.value;
+    this._updateDirtyState(this._config!);
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
@@ -399,6 +406,7 @@ export class HuiDialogEditSection
       return;
     }
     this._config = ev.detail.value;
+    this._updateDirtyState(this._config!);
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -423,6 +431,7 @@ export class HuiDialogEditSection
     );
 
     this._params.saveConfig(newConfig);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
