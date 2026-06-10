@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -19,7 +20,6 @@ import {
   createUser,
   deleteUser,
 } from "../../../data/user";
-import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
@@ -36,7 +36,7 @@ interface AddUserFormState {
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
-  DialogMixin<AddUserDialogParams>(LitElement)
+  LitElement
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -44,6 +44,10 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
 
   // Error message when can't talk to server etc
   @state() private _error?: string;
+
+  @state() private _params?: AddUserDialogParams;
+
+  @state() private _open = false;
 
   @state() private _name?: string;
 
@@ -59,9 +63,9 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
 
   @state() private _allowChangeName = true;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._name = this.params?.name || "";
+  public showDialog(params: AddUserDialogParams) {
+    this._params = params;
+    this._name = this._params.name || "";
     this._username = "";
     this._password = "";
     this._passwordConfirm = "";
@@ -70,12 +74,14 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
     this._error = undefined;
     this._loading = false;
 
-    if (this.params?.name) {
+    if (this._params.name) {
       this._allowChangeName = false;
       this._maybePopulateUsername();
     } else {
       this._allowChangeName = true;
     }
+
+    this._open = true;
 
     this._initDirtyTracking(
       { type: "shallow" },
@@ -100,17 +106,18 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
   }
 
   protected render() {
-    if (!this.params) {
+    if (!this._params) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        open
+        .open=${this._open}
         .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.users.add_user.caption"
         )}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -221,7 +228,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
           <ha-button
             slot="secondaryAction"
             appearance="plain"
-            @click=${this.closeDialog}
+            @click=${this._close}
           >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
@@ -239,6 +246,15 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _close() {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _maybePopulateUsername() {
@@ -328,9 +344,9 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
         type: "homeassistant",
       },
     ];
-    this.params!.userAddedCallback(user);
+    this._params!.userAddedCallback(user);
     this._markDirtyStateClean();
-    this.closeDialog();
+    this._close();
   }
 
   static get styles(): CSSResultGroup {

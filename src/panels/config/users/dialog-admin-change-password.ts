@@ -2,13 +2,13 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import { adminChangePassword } from "../../../data/auth";
-import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -45,9 +45,13 @@ interface FormData {
 
 @customElement("dialog-admin-change-password")
 class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
-  DialogMixin<AdminChangePasswordDialogParams>(LitElement)
+  LitElement
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _params?: AdminChangePasswordDialogParams;
+
+  @state() private _open = false;
 
   @state() private _userId?: string;
 
@@ -59,17 +63,29 @@ class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
 
   @state() private _success = false;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._userId = this.params?.userId;
+  public showDialog(params: AdminChangePasswordDialogParams): void {
+    this._params = params;
+    this._userId = params.userId;
     this._data = undefined;
     this._error = undefined;
     this._submitting = false;
     this._success = false;
-    this._initDirtyTracking(
-      { type: "shallow" },
-      { new_password: undefined, password_confirm: undefined }
-    );
+    this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, {});
+  }
+
+  public closeDialog(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    this._userId = undefined;
+    this._data = undefined;
+    this._error = undefined;
+    this._submitting = false;
+    this._success = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _computeLabel = (schema: SchemaUnion<typeof SCHEMA>) =>
@@ -96,7 +112,7 @@ class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
   }
 
   protected render() {
-    if (!this.params) {
+    if (!this._params) {
       return nothing;
     }
 
@@ -106,11 +122,12 @@ class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
 
     return html`
       <ha-dialog
-        open
+        .open=${this._open}
         .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.users.change_password.caption"
         )}
+        @closed=${this._dialogClosed}
       >
         ${this._success
           ? html`
@@ -162,7 +179,7 @@ class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
 
   private _valueChanged(ev) {
     this._data = ev.detail.value;
-    this._updateDirtyState(this._data!);
+    this._updateDirtyState(this._data ?? {});
     this._validate();
   }
 

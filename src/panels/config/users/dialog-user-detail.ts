@@ -2,6 +2,7 @@ import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
@@ -23,7 +24,6 @@ import {
   showAlertDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -39,7 +39,7 @@ interface UserDetailFormState {
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
-  DialogMixin<UserDetailDialogParams>(LitElement)
+  LitElement
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -53,17 +53,20 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
 
   @state() private _error?: string;
 
+  @state() private _params?: UserDetailDialogParams;
+
+  @state() private _open = false;
+
   @state() private _submitting = false;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    const entry = this.params!.entry;
+  public async showDialog(params: UserDetailDialogParams): Promise<void> {
+    this._params = params;
     this._error = undefined;
-    this._name = entry.name || "";
-    this._isAdmin = entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
-    this._localOnly = entry.local_only;
-    this._isActive = entry.is_active;
-
+    this._name = params.entry.name || "";
+    this._isAdmin = params.entry.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
+    this._localOnly = params.entry.local_only;
+    this._isActive = params.entry.is_active;
+    this._open = true;
     this._initDirtyTracking(
       { type: "shallow" },
       {
@@ -73,19 +76,21 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
         isActive: this._isActive,
       }
     );
+    await this.updateComplete;
   }
 
   protected render() {
-    if (!this.params) {
+    if (!this._params) {
       return nothing;
     }
-    const user = this.params.entry;
+    const user = this._params.entry;
     const badges = computeUserBadges(this.hass, user, true);
     return html`
       <ha-dialog
-        open
+        .open=${this._open}
         .preventScrimClose=${this.isDirtyState}
         header-title=${user.name}
+        @closed=${this._dialogClosed}
       >
         <div>
           ${this._error
@@ -303,7 +308,7 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
   private async _updateEntry() {
     this._submitting = true;
     try {
-      await this.params!.updateEntry({
+      await this._params!.updateEntry({
         name: this._name.trim(),
         is_active: this._isActive,
         group_ids: [
@@ -312,7 +317,7 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
         local_only: this._localOnly,
       });
       this._markDirtyStateClean();
-      this.closeDialog();
+      this._close();
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
@@ -323,8 +328,9 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
   private async _deleteEntry() {
     this._submitting = true;
     try {
-      if (await this.params!.removeEntry()) {
-        this.closeDialog();
+      if (await this._params!.removeEntry()) {
+        this._markDirtyStateClean();
+        this._close();
       }
     } finally {
       this._submitting = false;
@@ -332,7 +338,7 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
   }
 
   private async _changeUsername() {
-    const credential = this.params?.entry.credentials.find(
+    const credential = this._params?.entry.credentials.find(
       (cred) => cred.type === "homeassistant"
     );
     if (!credential) {
@@ -351,20 +357,20 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
       title: this.hass.localize(
         "ui.panel.config.users.change_username.caption"
       ),
-      defaultValue: this.params!.entry.username!,
+      defaultValue: this._params!.entry.username!,
     });
     if (newUsername) {
       try {
         await adminChangeUsername(
           this.hass,
-          this.params!.entry.id,
+          this._params!.entry.id,
           newUsername
         );
-        this.params = {
-          ...this.params!,
-          entry: { ...this.params!.entry, username: newUsername },
+        this._params = {
+          ...this._params!,
+          entry: { ...this._params!.entry, username: newUsername },
         };
-        this.params.replaceEntry(this.params.entry);
+        this._params.replaceEntry(this._params.entry);
         showAlertDialog(this, {
           text: this.hass.localize(
             "ui.panel.config.users.change_username.username_changed"
@@ -382,7 +388,7 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
   }
 
   private async _changePassword() {
-    const credential = this.params?.entry.credentials.find(
+    const credential = this._params?.entry.credentials.find(
       (cred) => cred.type === "homeassistant"
     );
     if (!credential) {
@@ -392,7 +398,16 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
       return;
     }
 
-    showAdminChangePasswordDialog(this, { userId: this.params!.entry.id });
+    showAdminChangePasswordDialog(this, { userId: this._params!.entry.id });
+  }
+
+  private _close(): void {
+    this._open = false;
+  }
+
+  private _dialogClosed(): void {
+    this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResultGroup {
