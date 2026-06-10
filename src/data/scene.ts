@@ -1,4 +1,5 @@
 import type {
+  HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
@@ -66,6 +67,59 @@ export type SceneMetaData = Record<
   string,
   { entity_only?: boolean | undefined }
 >;
+
+// Hand-edited scenes.yaml is parsed as YAML 1.1 by the backend, so unquoted
+// on/off arrive here as booleans and bare numbers as numbers. The backend
+// applies boolean states as on/off; mirror that so the badge reflects what
+// activating the scene will actually do.
+const normalizeSceneEntityState = (sceneState: unknown): string | undefined => {
+  if (sceneState == null) {
+    return undefined;
+  }
+  if (typeof sceneState === "boolean") {
+    return sceneState ? "on" : "off";
+  }
+  return String(sceneState);
+};
+
+// Builds a state object from the scene's stored target state, so the scene
+// editor can render the icon the entity will have once the scene is applied
+// rather than its current live icon. The parameter is typed unknown because
+// the scene config API returns raw YAML: booleans, numbers, and nulls occur
+// in hand-edited files beyond what the SceneEntities union declares.
+//
+// The result is a partial HassEntity meant for badge rendering only - it has
+// no last_changed, last_updated, or context.
+export const sceneEntityStateObj = (
+  entityId: string,
+  sceneEntity: unknown
+): HassEntity | undefined => {
+  // An entity left without a value in the YAML editor parses as null.
+  if (sceneEntity == null) {
+    return undefined;
+  }
+  if (typeof sceneEntity !== "object") {
+    return {
+      entity_id: entityId,
+      state: normalizeSceneEntityState(sceneEntity),
+      attributes: {},
+    } as HassEntity;
+  }
+  const { state: sceneState, ...attributes } = sceneEntity as Record<
+    string,
+    any
+  >;
+  // The scene snapshots entity_picture with an access token that is stale by
+  // the time review mode renders, which would leave the badge showing a
+  // broken image instead of an icon. Drop it so the entity's icon resolves.
+  delete attributes.entity_picture;
+  delete attributes.entity_picture_local;
+  return {
+    entity_id: entityId,
+    state: normalizeSceneEntityState(sceneState),
+    attributes,
+  } as HassEntity;
+};
 
 export const activateScene = (
   hass: HomeAssistant,

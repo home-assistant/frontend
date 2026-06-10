@@ -67,6 +67,7 @@ import {
   getSceneEditorInitData,
   saveScene,
   SCENE_IGNORED_DOMAINS,
+  sceneEntityStateObj,
   showSceneEditor,
 } from "../../../data/scene";
 import {
@@ -95,20 +96,6 @@ interface DeviceEntities {
 }
 
 type DeviceEntitiesLookup = Record<string, string[]>;
-
-// Hand-edited scenes.yaml is parsed as YAML 1.1 by the backend, so unquoted
-// on/off arrive here as booleans and bare numbers as numbers. The backend
-// applies boolean states as on/off; mirror that so the badge reflects what
-// activating the scene will actually do.
-const normalizeSceneEntityState = (sceneState: unknown): string | undefined => {
-  if (sceneState == null) {
-    return undefined;
-  }
-  if (typeof sceneState === "boolean") {
-    return sceneState ? "on" : "off";
-  }
-  return String(sceneState);
-};
 
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends PreventUnsavedMixin(
@@ -1164,34 +1151,18 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     return { ...stateObj.attributes, state: stateObj.state };
   }
 
-  // Builds a state object from the scene's stored target state, so review mode
-  // can render the icon the entity will have once the scene is applied rather
-  // than its current live icon.
-  private _sceneStateObj(entityId: string): HassEntity | undefined {
-    const sceneEntity = this._config?.entities[entityId];
-    // An entity left without a value in the YAML editor parses as null.
-    if (sceneEntity == null) {
-      return undefined;
+  // Memoized per config so re-renders reuse the same object references and
+  // the state badges skip work when nothing changed.
+  private _sceneStateObjs = memoizeOne((config?: SceneConfig) => {
+    const objs: Record<string, HassEntity | undefined> = {};
+    for (const entityId of Object.keys(config?.entities ?? {})) {
+      objs[entityId] = sceneEntityStateObj(
+        entityId,
+        config!.entities[entityId]
+      );
     }
-    if (typeof sceneEntity !== "object") {
-      return {
-        entity_id: entityId,
-        state: normalizeSceneEntityState(sceneEntity),
-        attributes: {},
-      } as HassEntity;
-    }
-    const { state: sceneState, ...attributes } = sceneEntity;
-    // The scene snapshots entity_picture with an access token that is stale by
-    // the time review mode renders, which would leave the badge showing a
-    // broken image instead of an icon. Drop it so the entity's icon resolves.
-    delete attributes.entity_picture;
-    delete attributes.entity_picture_local;
-    return {
-      entity_id: entityId,
-      state: normalizeSceneEntityState(sceneState),
-      attributes,
-    } as HassEntity;
-  }
+    return objs;
+  });
 
   // Picks the state the row's icon should reflect: the live state in live mode,
   // the scene's target state in review mode.
@@ -1201,7 +1172,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   ): HassEntity {
     return this._mode === "live"
       ? entityStateObj
-      : (this._sceneStateObj(entityId) ?? entityStateObj);
+      : (this._sceneStateObjs(this._config)[entityId] ?? entityStateObj);
   }
 
   private _generateConfigFromLive() {
