@@ -1,0 +1,42 @@
+name: Blocking labels
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
+    branches:
+      - dev
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check blocking labels
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for blocking labels
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const blockingLabels = [
+              "wait for backend",
+              "Needs UX",
+              "Do Not Review",
+              "Blocked",
+              "has-parent",
+            ];
+            const prLabels = context.payload.pull_request.labels.map(
+              (l) => l.name
+            );
+            const found = blockingLabels.filter((bl) => prLabels.includes(bl));
+            if (found.length > 0) {
+              core.setFailed(
+                `This PR is blocked by label${found.length > 1 ? "s" : ""}: ${found.join(", ")}`
+              );
+            }
