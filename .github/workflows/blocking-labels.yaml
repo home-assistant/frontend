@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   check:
-    name: Check for labels which block the PR from being merged
+    name: Check for labels which block the Pull Request from being merged
     runs-on: ubuntu-latest
     steps:
       - name: Check for blocking labels
@@ -36,7 +36,7 @@ jobs:
             );
             const found = blockingLabels.filter((bl) => prLabels.includes(bl));
             if (found.length > 0) {
-              const message = `This PR is blocked by label${found.length > 1 ? "s" : ""}: ${found.join(", ")}`;
+              const message = `This Pull Request is blocked by label${found.length > 1 ? "s" : ""}: ${found.join(", ")}`;
               await core.summary
                 .addHeading(":no_entry_sign: Pull Request is blocked", 2)
                 .addRaw(message)
@@ -45,6 +45,6 @@ jobs:
             } else {
               await core.summary
                 .addHeading(":white_check_mark: Pull Request is clear to merge after review", 2)
-                .addRaw("This PR is not blocked by any labels which prevent it from being merged.")
+                .addRaw("This Pull Request is not blocked by any labels which prevent it from being merged.")
                 .write();
             }
