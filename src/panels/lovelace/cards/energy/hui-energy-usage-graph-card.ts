@@ -51,6 +51,13 @@ const colorPropertyMap = {
   used_battery: "--energy-battery-out-color",
 };
 
+const stackOrder = {
+  to_battery: 1,
+  to_grid: 2,
+  used_solar: 3,
+  used_battery: 4,
+};
+
 @customElement("hui-energy-usage-graph-card")
 export class HuiEnergyUsageGraphCard
   extends SubscribeMixin(LitElement)
@@ -559,7 +566,7 @@ export class HuiEnergyUsageGraphCard
       this._compareStart!
     );
 
-    Object.entries(combinedData).forEach(([type, sources], idx) => {
+    Object.entries(combinedData).forEach(([type, sources]) => {
       Object.entries(sources).forEach(([statId, source]) => {
         const points: BarSeriesOption["data"] = [];
         // Process chart data.
@@ -592,12 +599,7 @@ export class HuiEnergyUsageGraphCard
                   statisticsMetaData[statId]
                 ),
           // @ts-expect-error
-          order:
-            type === "used_solar"
-              ? 1
-              : type === "to_battery"
-                ? Object.keys(combinedData).length
-                : idx + 2,
+          order: stackOrder[type] ?? Object.keys(combinedData).length,
           barMaxWidth: 50,
           itemStyle: {
             borderColor: getEnergyColor(
