@@ -45,6 +45,7 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
     this._open = true;
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
+      this._initDirtyTracking({ type: "deep" }, this._data);
     } else {
       const suggestions = this._params.suggestions;
       this._data = {
@@ -54,11 +55,13 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
         require_admin: false,
         mode: "storage",
       };
+      // New dashboards have no saved baseline, so track against an emptyobject to mark them dirty from the outset (keeps Create enabled).
+      this._initDirtyTracking({ type: "deep" }, {});
       if (suggestions?.title) {
         this._fillUrlPath(suggestions.title);
       }
+      this._updateDirtyState(this._data!);
     }
-    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
