@@ -2,6 +2,9 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { goBack } from "../common/navigate";
+import "./ha-icon-button-arrow-prev";
+import "./ha-menu-button";
 
 const PASSIVE_EVENT_OPTIONS = { passive: true } as const;
 
@@ -135,6 +138,8 @@ export const haTopAppBarFixedStyles = css`
 export class HaTopAppBarFixed extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ attribute: "back-button", type: Boolean }) backButton = false;
+
   @property({ attribute: "center-title", type: Boolean }) centerTitle = false;
 
   @query(".top-app-bar") protected _barElement!: HTMLElement;
@@ -200,16 +205,14 @@ export class HaTopAppBarFixed extends LitElement {
         <div class="row">
           ${paneHeader
             ? html`<section class="section" id="title">
-                <slot name="navigationIcon"></slot>
-                ${title}
+                ${this._renderNavigationIcon()} ${title}
               </section>`
             : nothing}
           <section class="section" id="navigation">
             ${paneHeader
               ? nothing
-              : html`<slot name="navigationIcon"></slot> ${this.centerTitle
-                    ? nothing
-                    : title}`}
+              : html`${this._renderNavigationIcon()}
+                ${this.centerTitle ? nothing : title}`}
           </section>
           ${!paneHeader && this.centerTitle
             ? html`<section class="section center">${title}</section>`
@@ -222,6 +225,20 @@ export class HaTopAppBarFixed extends LitElement {
           <slot name="subRow" @slotchange=${this._subRowSlotChanged}></slot>
         </div>
       </header>
+    `;
+  }
+
+  private _renderNavigationIcon() {
+    return html`
+      <slot name="navigationIcon">
+        ${this.backButton
+          ? html`
+              <ha-icon-button-arrow-prev
+                @click=${this._handleBackClick}
+              ></ha-icon-button-arrow-prev>
+            `
+          : html`<ha-menu-button></ha-menu-button>`}
+      </slot>
     `;
   }
 
@@ -267,6 +284,11 @@ export class HaTopAppBarFixed extends LitElement {
         : this.scrollTarget.scrollTop;
     this._barElement?.classList.toggle("scrolled", scrollTop > 0);
   };
+
+  private _handleBackClick(ev: Event) {
+    ev.stopPropagation();
+    goBack();
+  }
 
   protected _registerListeners() {
     this.scrollTarget.addEventListener(

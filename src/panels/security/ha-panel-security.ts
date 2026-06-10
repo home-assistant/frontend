@@ -1,11 +1,8 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { goBack } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
 import { haStyle } from "../../resources/styles";
@@ -90,22 +87,12 @@ class PanelSecurity extends LitElement {
     this._setLovelace();
   };
 
-  private _back(ev) {
-    ev.stopPropagation();
-    goBack();
-  }
-
   protected render() {
     return html`
-      <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._searchParms.has("historyBack")
-          ? html`
-              <ha-icon-button-arrow-prev
-                @click=${this._back}
-                slot="navigationIcon"
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`<ha-menu-button slot="navigationIcon"></ha-menu-button>`}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${this._searchParms.has("historyBack")}
+      >
         <div slot="title">${this.hass.localize("panel.security")}</div>
         ${this._lovelace
           ? html`
