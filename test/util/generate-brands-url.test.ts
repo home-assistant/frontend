@@ -1,4 +1,4 @@
-import { assert, describe, it, vi, afterEach } from "vitest";
+import { assert, describe, it, vi, afterEach, beforeEach } from "vitest";
 import type { HomeAssistant } from "../../src/types";
 import {
   addBrandsAuth,
@@ -6,17 +6,74 @@ import {
   clearBrandsTokenRefresh,
   fetchAndScheduleBrandsAccessToken,
   fetchBrandsAccessToken,
+  hardwareBrandsUrl,
   scheduleBrandsTokenRefresh,
 } from "../../src/util/brands-url";
 
+// NOTE: the cached brands token is module-level state that persists across
+// tests. The "without a token" assertions below must run before any test
+// fetches a token, so this block is intentionally declared first.
+describe("Brands URLs without a token", () => {
+  // The brands API requires a token; until one is fetched the URL builders
+  // return an empty src so no token-less request (which 401s) fires. Components
+  // re-render once the token arrives and recompute the URL.
+  it("brandsUrl returns an empty src", () => {
+    assert.strictEqual(
+      brandsUrl(
+        { domain: "cloud", type: "logo" },
+        "http://homeassistant.local:8123"
+      ),
+      ""
+    );
+  });
+
+  it("hardwareBrandsUrl returns an empty src", () => {
+    assert.strictEqual(
+      hardwareBrandsUrl(
+        { category: "boards", manufacturer: "raspberry_pi" },
+        "http://homeassistant.local:8123"
+      ),
+      ""
+    );
+  });
+
+  it("addBrandsAuth returns an empty src for brands URLs", () => {
+    assert.strictEqual(
+      addBrandsAuth(
+        "/api/brands/integration/demo/icon.png",
+        "http://homeassistant.local:8123"
+      ),
+      ""
+    );
+  });
+
+  it("addBrandsAuth returns non-brands URLs unchanged", () => {
+    assert.strictEqual(
+      addBrandsAuth(
+        "/api/camera_proxy/camera.foo?token=abc",
+        "http://homeassistant.local:8123"
+      ),
+      "/api/camera_proxy/camera.foo?token=abc"
+    );
+  });
+});
+
 describe("Generate brands Url", () => {
+  // Fetch a token before these run so the URL builders produce loadable URLs.
+  beforeEach(async () => {
+    const mockHass = {
+      callWS: async () => ({ token: "test-token-123" }),
+    } as unknown as HomeAssistant;
+    await fetchBrandsAccessToken(mockHass);
+  });
+
   it("Generate logo brands url for cloud component", () => {
     assert.strictEqual(
       brandsUrl(
         { domain: "cloud", type: "logo" },
         "http://homeassistant.local:8123"
       ),
-      "http://homeassistant.local:8123/api/brands/integration/cloud/logo.png"
+      "http://homeassistant.local:8123/api/brands/integration/cloud/logo.png?token=test-token-123"
     );
   });
   it("Generate icon brands url for cloud component", () => {
@@ -25,7 +82,7 @@ describe("Generate brands Url", () => {
         { domain: "cloud", type: "icon" },
         "http://homeassistant.local:8123"
       ),
-      "http://homeassistant.local:8123/api/brands/integration/cloud/icon.png"
+      "http://homeassistant.local:8123/api/brands/integration/cloud/icon.png?token=test-token-123"
     );
   });
 
@@ -35,7 +92,7 @@ describe("Generate brands Url", () => {
         { domain: "cloud", type: "logo", darkOptimized: true },
         "http://homeassistant.local:8123"
       ),
-      "http://homeassistant.local:8123/api/brands/integration/cloud/dark_logo.png"
+      "http://homeassistant.local:8123/api/brands/integration/cloud/dark_logo.png?token=test-token-123"
     );
   });
 });
@@ -48,16 +105,6 @@ describe("addBrandsAuth", () => {
         "http://homeassistant.local:8123"
       ),
       "/api/camera_proxy/camera.foo?token=abc"
-    );
-  });
-
-  it("Returns brands URL unchanged when no token is available", () => {
-    assert.strictEqual(
-      addBrandsAuth(
-        "/api/brands/integration/demo/icon.png",
-        "http://homeassistant.local:8123"
-      ),
-      "/api/brands/integration/demo/icon.png"
     );
   });
 
