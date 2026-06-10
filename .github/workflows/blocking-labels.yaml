@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   check:
-    name: Check for labels which should block the PR from being merged
+    name: Check for labels which block the PR from being merged
     runs-on: ubuntu-latest
     steps:
       - name: Check for blocking labels
@@ -45,6 +45,6 @@ jobs:
             } else {
               await core.summary
                 .addHeading(":white_check_mark: Pull Request is clear to merge after review", 2)
-                .addRaw("This PR is not blocked by any labels which should prevent it from being merged.")
+                .addRaw("This PR is not blocked by any labels which prevent it from being merged.")
                 .write();
             }
