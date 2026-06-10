@@ -114,6 +114,22 @@ export const sceneEntityStateObj = (
   // broken image instead of an icon. Drop it so the entity's icon resolves.
   delete attributes.entity_picture;
   delete attributes.entity_picture_local;
+  // state-badge does arithmetic on brightness and joins rgb_color; hand-typed
+  // YAML can hold them as strings, which renders a blown-out or missing icon.
+  if (attributes.brightness !== undefined) {
+    const brightness = Number(attributes.brightness);
+    if (Number.isFinite(brightness)) {
+      attributes.brightness = brightness;
+    } else {
+      delete attributes.brightness;
+    }
+  }
+  if (
+    attributes.rgb_color !== undefined &&
+    !Array.isArray(attributes.rgb_color)
+  ) {
+    delete attributes.rgb_color;
+  }
   return {
     entity_id: entityId,
     state: normalizeSceneEntityState(sceneState),

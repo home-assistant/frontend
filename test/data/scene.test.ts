@@ -71,6 +71,38 @@ describe("sceneEntityStateObj", () => {
     });
   });
 
+  it("coerces a numeric-string brightness to a number", () => {
+    expect(
+      sceneEntityStateObj("light.kitchen", { state: "on", brightness: "180" })
+        ?.attributes.brightness
+    ).toBe(180);
+  });
+
+  it("drops a non-numeric brightness", () => {
+    expect(
+      sceneEntityStateObj("light.kitchen", { state: "on", brightness: "max" })
+        ?.attributes
+    ).toEqual({});
+  });
+
+  it("drops a non-array rgb_color", () => {
+    expect(
+      sceneEntityStateObj("light.kitchen", {
+        state: "on",
+        rgb_color: "255,0,0",
+      })?.attributes
+    ).toEqual({});
+  });
+
+  it("keeps a valid rgb_color array", () => {
+    expect(
+      sceneEntityStateObj("light.kitchen", {
+        state: "on",
+        rgb_color: [255, 0, 0],
+      })?.attributes.rgb_color
+    ).toEqual([255, 0, 0]);
+  });
+
   it("leaves the state undefined when the dict has none", () => {
     expect(sceneEntityStateObj("light.kitchen", { brightness: 100 })).toEqual({
       entity_id: "light.kitchen",
