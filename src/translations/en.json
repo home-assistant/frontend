@@ -671,7 +671,7 @@
         "entries_not_found": "No activity found.",
         "automation_triggered": "Triggered",
         "script_ran": "Ran",
-        "caused_by": "by",
+        "caused_by": "by {name}",
         "trigger_type": {
           "calendar": "[%key:ui::panel::config::automation::editor::triggers::type::calendar::label%]",
           "conversation": "[%key:ui::panel::config::automation::editor::triggers::type::conversation::label%]",
@@ -698,7 +698,6 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
-        "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {

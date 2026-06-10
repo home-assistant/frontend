@@ -174,7 +174,26 @@ describe("resolveLogbookCause", () => {
     );
     expect(cause?.name).toBe("State");
     expect(cause?.triggerPlatform).toBe("state");
-    expect(cause?.stateObj).toBeUndefined();
+  });
+
+  it("labels a service call with the action name and integration icon", () => {
+    const hass = baseHass({
+      localize: localizeStub({
+        "component.light.title": "Light",
+        "component.light.services.turn_on.name": "Turn on",
+      }),
+    });
+    const cause = resolveLogbookCause(
+      hass,
+      entry({
+        context_event_type: "call_service",
+        context_domain: "light",
+        context_service: "turn_on",
+      }),
+      {}
+    );
+    expect(cause?.name).toBe("Light: Turn on");
+    expect(cause?.brandDomain).toBe("light");
   });
 
   it("prefers the trigger alias when present", () => {

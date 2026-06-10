@@ -1,4 +1,5 @@
 import { mdiFlash, mdiPuzzle, mdiRobot, mdiScriptText } from "@mdi/js";
+import { isSameDay } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -6,6 +7,7 @@ import { computeEntityNameList } from "../../common/entity/compute_entity_name_d
 import { computeObjectId } from "../../common/entity/compute_object_id";
 import { stateColorCss } from "../../common/entity/state_color";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { domainToName } from "../../data/integration";
 import type { LogbookEntry } from "../../data/logbook";
 import { parseTriggerSource } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
@@ -91,10 +93,7 @@ export const hasContext = (item: LogbookEntry) =>
   item.context_event_type || item.context_state || item.context_message;
 
 export const sameDay = (a?: LogbookEntry, b?: LogbookEntry) =>
-  !!a?.when &&
-  !!b?.when &&
-  new Date(a.when * 1000).toDateString() ===
-    new Date(b.when * 1000).toDateString();
+  !!a?.when && !!b?.when && isSameDay(a.when * 1000, b.when * 1000);
 
 // Dashboard state color for entity nodes; unavailable is flagged with an orange
 // badge by the row, not here.
@@ -111,7 +110,6 @@ export const nodeColor = (
 export interface LogbookCause {
   name: string;
   userId?: string;
-  stateObj?: HassEntity;
   iconPath?: string;
   triggerPlatform?: string;
   brandDomain?: string;
@@ -156,6 +154,17 @@ const triggerCause = (
   return undefined;
 };
 
+const localizeServiceName = (
+  hass: HomeAssistant,
+  domain: string,
+  service: string
+): string =>
+  hass.localize(
+    `component.${domain}.services.${service}.name` as LocalizeKeys
+  ) ||
+  hass.services[domain]?.[service]?.name ||
+  service;
+
 // Who/what caused an entry: a user, an automation/script, a triggering entity,
 // or an integration. Returns the actor's glyph/avatar + name.
 export const resolveLogbookCause = (
@@ -189,7 +198,17 @@ export const resolveLogbookCause = (
     }
   }
 
-  // Triggering entity's own icon — reads differently from an automation.
+  if (item.context_event_type === "call_service" && item.context_domain) {
+    const serviceName = item.context_service
+      ? localizeServiceName(hass, item.context_domain, item.context_service)
+      : undefined;
+    const domainName = domainToName(hass.localize, item.context_domain);
+    return {
+      brandDomain: item.context_domain,
+      name: serviceName ? `${domainName}: ${serviceName}` : domainName,
+    };
+  }
+
   if (item.context_state && item.context_entity_id) {
     const name =
       entityDisplay(hass, item.context_entity_id).primary ??
@@ -199,7 +218,6 @@ export const resolveLogbookCause = (
     }
   }
 
-  // A self-triggered automation/script.
   if (
     item.domain &&
     TRIGGER_DOMAINS.includes(item.domain) &&
@@ -207,7 +225,6 @@ export const resolveLogbookCause = (
   ) {
     let cause: LogbookCause | undefined;
     if (item.trigger) {
-      // New backend: structured trigger summary.
       cause = triggerCause(hass, item.trigger.trigger, item.trigger.alias);
     } else if (item.source) {
       // Legacy backend: parse the English `source` phrase. Removable once the

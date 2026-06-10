@@ -1812,6 +1812,7 @@ export class HaConfigDevicePage extends LitElement {
           color: var(--primary-text-color);
           margin-right: calc(var(--ha-space-2) * -1);
           margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
         }
 
         ha-card:has(ha-logbook) {

@@ -4,6 +4,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
@@ -12,6 +13,7 @@ import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon-next";
@@ -66,6 +68,10 @@ class HaLogbookEntry extends LitElement {
   @property({ type: Boolean, attribute: false }) public firstOfDay = false;
 
   @property({ type: Boolean, attribute: false }) public lastOfDay = false;
+
+  // Live computed-style handle, resolved once per element — reading custom
+  // properties forces a style recalc, costly to repeat per row while scrolling.
+  private _computedStyle?: CSSStyleDeclaration;
 
   protected render() {
     const item = this.item;
@@ -147,7 +153,10 @@ class HaLogbookEntry extends LitElement {
           [`category-${category}`]: true,
         })}"
         .traceLink=${traceLink}
+        role=${ifDefined(hasTrace ? "link" : undefined)}
+        tabindex=${ifDefined(hasTrace ? "0" : undefined)}
         @click=${this._handleClick}
+        @keydown=${this._handleKeydown}
       >
         ${!this.narrow
           ? html`<div class="time" title=${relativeLabel}>${timeLabel}</div>`
@@ -249,14 +258,20 @@ class HaLogbookEntry extends LitElement {
     cause: LogbookCause | undefined,
     contextText: string | undefined
   ) {
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
     return html`
       <div class="line1">
         <span class="line1-main"
           >${!hideName
             ? html`<span class="entity-name"
                   >${this._renderEntity(entityId, name, hasTrace)}</span
-                >${whatHappened && category !== "integration"
-                  ? html`<span class="state-arrow">→</span>`
+                >${whatHappened
+                  ? category !== "integration"
+                    ? html`<span class="state-arrow">${rtl ? "←" : "→"}</span>`
+                    : " "
                   : nothing}`
             : nothing}${whatHappened}</span
         >
@@ -305,7 +320,7 @@ class HaLogbookEntry extends LitElement {
         ? item.state
           ? computeTimelineColor(
               item.state,
-              getComputedStyle(this),
+              (this._computedStyle ??= getComputedStyle(this)),
               historicStateObj
             )
           : undefined
@@ -374,7 +389,15 @@ class HaLogbookEntry extends LitElement {
         : item.state;
     }
 
-    if (domain && TRIGGER_DOMAINS.includes(domain)) {
+    // Automation/script runs show a generic "Triggered"/"Ran" headline (the
+    // trigger detail moves to the cause line). A logbook.log entry against an
+    // automation/script carries neither source nor structured trigger, so it
+    // falls through to render its own custom message instead.
+    if (
+      domain &&
+      TRIGGER_DOMAINS.includes(domain) &&
+      (item.source || item.trigger)
+    ) {
       return this.hass.localize(
         domain === "script"
           ? "ui.components.logbook.script_ran"
@@ -403,12 +426,6 @@ class HaLogbookEntry extends LitElement {
         .user=${this._causeUser(cause.userId, cause.name)}
       ></ha-user-badge>`;
     }
-    if (cause.stateObj) {
-      return html`<ha-state-icon
-        class="cause-icon"
-        .stateObj=${cause.stateObj}
-      ></ha-state-icon>`;
-    }
     if (cause.triggerPlatform) {
       return html`<ha-trigger-icon
         class="cause-icon"
@@ -433,9 +450,12 @@ class HaLogbookEntry extends LitElement {
 
   private _renderCauseLabel(cause: LogbookCause) {
     return html`<span class="cause">
-      ${this.hass.localize("ui.components.logbook.caused_by")}
       ${this._causeIcon(cause)}
-      <span class="cause-name">${cause.name}</span>
+      <span class="cause-name"
+        >${this.hass.localize("ui.components.logbook.caused_by", {
+          name: cause.name,
+        })}</span
+      >
     </span>`;
   }
 
@@ -533,6 +553,19 @@ class HaLogbookEntry extends LitElement {
     if (!target.traceLink) {
       return;
     }
+    navigate(target.traceLink);
+    fireEvent(this, "closed");
+  }
+
+  private _handleKeydown(ev: KeyboardEvent) {
+    if (ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    const target = ev.currentTarget as any;
+    if (!target.traceLink) {
+      return;
+    }
+    ev.preventDefault();
     navigate(target.traceLink);
     fireEvent(this, "closed");
   }
@@ -837,7 +870,9 @@ class HaLogbookEntry extends LitElement {
           text-overflow: ellipsis;
         }
 
-        .entry.no-name .line1:first-letter {
+        /* .line1-main is a flex item (blockified), so ::first-letter applies;
+           .line1 itself is a flex container, where it would not. */
+        .entry.no-name .line1-main:first-letter {
           text-transform: capitalize;
         }
 
@@ -893,13 +928,19 @@ class HaLogbookEntry extends LitElement {
           cursor: pointer;
         }
 
-        .entry:hover {
-          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        /* Reserve room for the absolutely-positioned trailing chevron so the
+           row content (and its right-aligned time) doesn't slide under it. */
+        .entry.clickable {
+          padding-inline-end: var(--ha-space-12);
         }
 
-        a {
-          color: var(--primary-color);
-          text-decoration: none;
+        .entry.clickable:focus-visible {
+          outline: 2px solid var(--primary-color);
+          outline-offset: -2px;
+        }
+
+        .entry:hover {
+          background-color: rgba(var(--rgb-primary-text-color), 0.04);
         }
 
         /* Entity names read as the subject, not a wall of blue links — the

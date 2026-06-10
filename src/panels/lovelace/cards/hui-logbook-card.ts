@@ -70,8 +70,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @state() private _stateFilter?: string[];
 
-  @state() private _showMoreHref = "";
-
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
   }
@@ -139,7 +137,12 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._targetPickerValue = target;
 
     this._stateFilter = ensureArray(config.state_filter);
+  }
 
+  // Built in render() (not cached) so start_date stays relative to "now", not
+  // to when the card was configured — long-lived dashboards stay current.
+  private _showMoreUrl(): string {
+    const target = this._targetPickerValue;
     const params: Record<string, string> = {
       start_date: startOfYesterday().toISOString(),
       back: "1",
@@ -153,7 +156,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     if (target.area_id) {
       params.area_id = ensureArray(target.area_id).join(",");
     }
-    this._showMoreHref = `/logbook?${createSearchParam(params)}`;
+    if (target.floor_id) {
+      params.floor_id = ensureArray(target.floor_id).join(",");
+    }
+    if (target.label_id) {
+      params.label_id = ensureArray(target.label_id).join(",");
+    }
+    return `/logbook?${createSearchParam(params)}`;
   }
 
   private _getEntityIds(): string[] | undefined {
@@ -222,19 +231,19 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card class=${classMap({ "no-header": !this._config!.title })}>
-        <div class="card-header">
-          ${this._config!.title
-            ? html`<div class="name">${this._config!.title}</div>`
-            : nothing}
-          <a href=${this._showMoreHref}>
-            <ha-icon-button
-              .path=${mdiChevronRight}
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.show_more"
-              )}
-            ></ha-icon-button>
-          </a>
-        </div>
+        ${this._config!.title
+          ? html`<div class="card-header">
+              <h1 class="name">${this._config!.title}</h1>
+              <a href=${this._showMoreUrl()}>
+                <ha-icon-button
+                  .path=${mdiChevronRight}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                ></ha-icon-button>
+              </a>
+            </div>`
+          : nothing}
         <div class="content">
           <ha-logbook
             class=${classMap({
@@ -272,6 +281,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         }
 
         .card-header .name {
+          margin: 0;
           font-size: var(--ha-card-header-font-size, 1.4rem);
           font-weight: var(--ha-card-header-font-weight, 500);
           color: var(--ha-card-header-color, var(--primary-text-color));
@@ -281,6 +291,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           color: var(--primary-text-color);
           margin-right: calc(var(--ha-space-2) * -1);
           margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
         }
 
         .content {
