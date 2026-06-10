@@ -96,6 +96,20 @@ interface DeviceEntities {
 
 type DeviceEntitiesLookup = Record<string, string[]>;
 
+// Hand-edited scenes.yaml is parsed as YAML 1.1 by the backend, so unquoted
+// on/off arrive here as booleans and bare numbers as numbers. The backend
+// applies boolean states as on/off; mirror that so the badge reflects what
+// activating the scene will actually do.
+const normalizeSceneEntityState = (sceneState: unknown): string | undefined => {
+  if (sceneState == null) {
+    return undefined;
+  }
+  if (typeof sceneState === "boolean") {
+    return sceneState ? "on" : "off";
+  }
+  return String(sceneState);
+};
+
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends PreventUnsavedMixin(
   KeyboardShortcutMixin(LitElement)
@@ -1155,13 +1169,14 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   // than its current live icon.
   private _sceneStateObj(entityId: string): HassEntity | undefined {
     const sceneEntity = this._config?.entities[entityId];
-    if (sceneEntity === undefined) {
+    // An entity left without a value in the YAML editor parses as null.
+    if (sceneEntity == null) {
       return undefined;
     }
-    if (typeof sceneEntity === "string") {
+    if (typeof sceneEntity !== "object") {
       return {
         entity_id: entityId,
-        state: sceneEntity,
+        state: normalizeSceneEntityState(sceneEntity),
         attributes: {},
       } as HassEntity;
     }
@@ -1173,7 +1188,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
     delete attributes.entity_picture_local;
     return {
       entity_id: entityId,
-      state: sceneState,
+      state: normalizeSceneEntityState(sceneState),
       attributes,
     } as HassEntity;
   }
