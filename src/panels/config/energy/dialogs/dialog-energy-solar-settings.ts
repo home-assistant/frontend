@@ -293,18 +293,15 @@ export class DialogEnergySolarSettings
     const input = ev.currentTarget as HaCheckbox;
     const entry = (input as any).entry as ConfigEntry;
     const checked = input.checked;
+    const list = this._source!.config_entry_solar_forecast
+      ? [...this._source!.config_entry_solar_forecast]
+      : [];
     if (checked) {
-      if (this._source!.config_entry_solar_forecast === null) {
-        this._source!.config_entry_solar_forecast = [];
-      }
-      this._source!.config_entry_solar_forecast.push(entry.entry_id);
+      list.push(entry.entry_id);
     } else {
-      this._source!.config_entry_solar_forecast!.splice(
-        this._source!.config_entry_solar_forecast!.indexOf(entry.entry_id),
-        1
-      );
+      list.splice(list.indexOf(entry.entry_id), 1);
     }
-    this._source = { ...this._source! };
+    this._source = { ...this._source!, config_entry_solar_forecast: list };
     this._updateFormDirtyState();
   }
 
@@ -313,11 +310,14 @@ export class DialogEnergySolarSettings
       startFlowHandler: "forecast_solar",
       dialogClosedCallback: (params) => {
         if (params.entryId) {
-          if (this._source!.config_entry_solar_forecast === null) {
-            this._source!.config_entry_solar_forecast = [];
-          }
-          this._source!.config_entry_solar_forecast.push(params.entryId);
-          this._source = { ...this._source! };
+          const list = this._source!.config_entry_solar_forecast
+            ? [...this._source!.config_entry_solar_forecast]
+            : [];
+          list.push(params.entryId);
+          this._source = {
+            ...this._source!,
+            config_entry_solar_forecast: list,
+          };
           this._fetchSolarForecastConfigEntries();
           this._updateFormDirtyState();
         }
