@@ -1,20 +1,26 @@
 import { mdiFlash, mdiPuzzle, mdiRobot, mdiScriptText } from "@mdi/js";
 import { isSameDay } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
-import { computeObjectId } from "../../common/entity/compute_object_id";
 import { stateColorCss } from "../../common/entity/state_color";
+import type { LocalizeKeys } from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import type { LogbookEntry } from "../../data/logbook";
-import { parseTriggerSource } from "../../data/logbook";
+import {
+  createHistoricState,
+  localizeStateMessage,
+  parseTriggerSource,
+} from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
 
 export type LogbookEntryCategory = "entity" | "automation" | "integration";
 
 export const TRIGGER_DOMAINS = ["automation", "script"];
+
+export const stripEntityId = (message: string, entityId?: string) =>
+  entityId ? message.replace(entityId, " ") : message;
 
 export const classifyLogbookEntry = (
   item: LogbookEntry
@@ -115,44 +121,12 @@ export interface LogbookCause {
   brandDomain?: string;
 }
 
-// Localize a trigger's type name. Integration-provided triggers are namespaced
-// (e.g. "sensor.temperature_changed") and come from backend translations;
-// built-in types reuse the automation editor labels via [%key] in our own,
-// always-loaded namespace. Falls back to the raw key.
-const localizeTriggerName = (hass: HomeAssistant, trigger: string): string => {
-  if (trigger.includes(".")) {
-    return (
-      hass.localize(
-        `component.${computeDomain(trigger)}.triggers.${computeObjectId(trigger)}.name`
-      ) || trigger
-    );
-  }
-  return (
-    hass.localize(
-      `ui.components.logbook.trigger_type.${trigger}` as LocalizeKeys
-    ) || trigger
-  );
-};
-
-// Build the cause of a self-triggered automation/script: the trigger's own
-// icon + name (its alias if the user named it, else the localized type) —
-// shared by the structured and the legacy code paths.
-const triggerCause = (
-  hass: HomeAssistant,
-  platform: string | undefined,
-  alias?: string
-): LogbookCause | undefined => {
-  if (alias) {
-    return { triggerPlatform: platform, name: alias };
-  }
-  if (platform) {
-    return {
-      triggerPlatform: platform,
-      name: localizeTriggerName(hass, platform),
-    };
-  }
-  return undefined;
-};
+// Localize a built-in trigger platform (state, time, …) via the automation
+// editor labels reused in our always-loaded namespace. Falls back to the key.
+const localizeTriggerName = (hass: HomeAssistant, platform: string): string =>
+  hass.localize(
+    `ui.components.logbook.trigger_type.${platform}` as LocalizeKeys
+  ) || platform;
 
 const localizeServiceName = (
   hass: HomeAssistant,
@@ -221,19 +195,15 @@ export const resolveLogbookCause = (
   if (
     item.domain &&
     TRIGGER_DOMAINS.includes(item.domain) &&
-    !hasContext(item)
+    !hasContext(item) &&
+    item.source
   ) {
-    let cause: LogbookCause | undefined;
-    if (item.trigger) {
-      cause = triggerCause(hass, item.trigger.trigger, item.trigger.alias);
-    } else if (item.source) {
-      // Legacy backend: parse the English `source` phrase. Removable once the
-      // structured trigger is guaranteed (min backend version).
-      const parsed = parseTriggerSource(item.source);
-      cause = triggerCause(hass, parsed.platform);
-    }
-    if (cause) {
-      return cause;
+    const { platform } = parseTriggerSource(item.source);
+    if (platform) {
+      return {
+        triggerPlatform: platform,
+        name: localizeTriggerName(hass, platform),
+      };
     }
   }
 
@@ -244,4 +214,128 @@ export const resolveLogbookCause = (
   }
 
   return undefined;
+};
+
+// The node glyph, decided by type. The component switches on `type` to render
+// (state icon / robot-script / brand logo); it owns the brand URL and colors.
+export type LogbookGlyph =
+  | { type: "state"; stateObj: HassEntity; icon?: string }
+  | { type: "automation"; script: boolean }
+  | { type: "brand"; domain?: string; icon?: string };
+
+export const resolveLogbookGlyph = (
+  item: LogbookEntry,
+  category: LogbookEntryCategory,
+  stateObj: HassEntity | undefined,
+  domain: string | undefined
+): LogbookGlyph => {
+  if (category === "automation") {
+    return { type: "automation", script: domain === "script" };
+  }
+  if (stateObj) {
+    return { type: "state", stateObj: stateObj, icon: item.icon };
+  }
+  return { type: "brand", domain, icon: item.icon };
+};
+
+// What happened. `value` reads as a state/result and gets the "name → value"
+// arrow; `phrase` is a full sentence (integration message) rendered inline and
+// linkified by the component.
+export interface LogbookWhat {
+  text: string;
+  kind: "value" | "phrase";
+}
+
+const resolveLogbookWhat = (
+  hass: HomeAssistant,
+  item: LogbookEntry,
+  domain: string | undefined,
+  stateObj: HassEntity | undefined
+): LogbookWhat | undefined => {
+  if (item.entity_id && item.state) {
+    return {
+      text: stateObj
+        ? localizeStateMessage(hass, item.state, stateObj, domain!)
+        : item.state,
+      kind: "value",
+    };
+  }
+  // An automation/script run: self-triggered (has `source`) or started by
+  // something else (has a context). Either way show the generic "Triggered"/
+  // "Ran" headline; a bare logbook.log message (no source, no context) falls
+  // through to render its own text.
+  if (
+    domain &&
+    TRIGGER_DOMAINS.includes(domain) &&
+    (item.source || hasContext(item))
+  ) {
+    return {
+      text: hass.localize(
+        domain === "script"
+          ? "ui.components.logbook.script_ran"
+          : "ui.components.logbook.automation_triggered"
+      ),
+      kind: "value",
+    };
+  }
+  if (item.message) {
+    return {
+      text: hasContext(item)
+        ? stripEntityId(item.message, item.context_entity_id)
+        : item.message,
+      kind: "phrase",
+    };
+  }
+  return undefined;
+};
+
+// The type-agnostic view-model: name / what / context / cause + the node glyph,
+// derived once per entry so the display just arranges these fields by style.
+export interface LogbookItem {
+  category: LogbookEntryCategory;
+  glyph: LogbookGlyph;
+  entityId?: string;
+  name?: string;
+  context?: string;
+  what?: LogbookWhat;
+  cause?: LogbookCause;
+  when: number; // ms timestamp
+}
+
+export interface BuildLogbookItemOptions {
+  scope?: LogbookScope;
+  userIdToName?: Record<string, string>;
+}
+
+export const buildLogbookItem = (
+  hass: HomeAssistant,
+  item: LogbookEntry,
+  opts: BuildLogbookItemOptions = {}
+): LogbookItem => {
+  const category = classifyLogbookEntry(item);
+  const domain = item.entity_id ? computeDomain(item.entity_id) : item.domain;
+  const currentStateObj = item.entity_id
+    ? hass.states[item.entity_id]
+    : undefined;
+  const historicStateObj = currentStateObj
+    ? createHistoricState(currentStateObj, item.state)
+    : undefined;
+
+  // Context (and the registry-resolved name) only for entity rows — an
+  // automation's configured area is noise.
+  const display =
+    category === "entity" && item.entity_id
+      ? entityDisplay(hass, item.entity_id, opts.scope)
+      : undefined;
+
+  return {
+    category,
+    glyph: resolveLogbookGlyph(item, category, historicStateObj, domain),
+    entityId: item.entity_id,
+    name: display?.primary ?? item.name,
+    context: display?.secondary,
+    what: resolveLogbookWhat(hass, item, domain, historicStateObj),
+    cause: resolveLogbookCause(hass, item, opts.userIdToName ?? {}),
+    when: item.when * 1000,
+  };
 };

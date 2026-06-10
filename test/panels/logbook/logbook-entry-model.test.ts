@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildLogbookItem,
   classifyLogbookEntry,
   entityDisplay,
   resolveLogbookCause,
+  resolveLogbookGlyph,
 } from "../../../src/panels/logbook/logbook-entry-model";
 import type { LogbookEntry } from "../../../src/data/logbook";
 import type { HomeAssistant } from "../../../src/types";
@@ -167,8 +169,7 @@ describe("resolveLogbookCause", () => {
       hass,
       entry({
         domain: "automation",
-        source: "state of something.else",
-        trigger: { trigger: "state", entity_id: "binary_sensor.porte" },
+        source: "state of binary_sensor.porte",
       }),
       {}
     );
@@ -196,70 +197,18 @@ describe("resolveLogbookCause", () => {
     expect(cause?.brandDomain).toBe("light");
   });
 
-  it("prefers the trigger alias when present", () => {
+  it("falls back to the raw platform key when untranslated", () => {
     const hass = baseHass({ localize: localizeStub() });
     const cause = resolveLogbookCause(
       hass,
-      entry({
-        domain: "automation",
-        trigger: {
-          trigger: "state",
-          entity_id: "binary_sensor.porte",
-          alias: "Quand la porte s'ouvre",
-        },
-      }),
+      entry({ domain: "automation", source: "numeric state of sensor.temp" }),
       {}
     );
-    expect(cause?.name).toBe("Quand la porte s'ouvre");
-    expect(cause?.triggerPlatform).toBe("state");
+    expect(cause?.name).toBe("numeric_state");
+    expect(cause?.triggerPlatform).toBe("numeric_state");
   });
 
-  it("labels a structured platform trigger via localize", () => {
-    const hass = baseHass({
-      localize: localizeStub({
-        "ui.components.logbook.trigger_type.time": "Time",
-      }),
-    });
-    const cause = resolveLogbookCause(
-      hass,
-      entry({ domain: "automation", trigger: { trigger: "time" } }),
-      {}
-    );
-    expect(cause?.name).toBe("Time");
-    expect(cause?.triggerPlatform).toBe("time");
-  });
-
-  it("falls back to the bare platform key for an unknown platform", () => {
-    const hass = baseHass({ localize: localizeStub() });
-    const cause = resolveLogbookCause(
-      hass,
-      entry({ domain: "automation", trigger: { trigger: "sun" } }),
-      {}
-    );
-    expect(cause?.name).toBe("sun");
-    expect(cause?.triggerPlatform).toBe("sun");
-  });
-
-  it("localizes an integration trigger via backend translations", () => {
-    const hass = baseHass({
-      localize: localizeStub({
-        "component.sensor.triggers.temperature_changed.name":
-          "Temperature changed",
-      }),
-    });
-    const cause = resolveLogbookCause(
-      hass,
-      entry({
-        domain: "automation",
-        trigger: { trigger: "sensor.temperature_changed" },
-      }),
-      {}
-    );
-    expect(cause?.name).toBe("Temperature changed");
-    expect(cause?.triggerPlatform).toBe("sensor.temperature_changed");
-  });
-
-  it("falls back to parsing the English source on older backends", () => {
+  it("parses the English source for the trigger platform", () => {
     const hass = baseHass({
       localize: localizeStub({
         "ui.components.logbook.trigger_type.time_pattern": "Time pattern",
@@ -271,5 +220,159 @@ describe("resolveLogbookCause", () => {
       {}
     );
     expect(cause?.name).toBe("Time pattern");
+  });
+});
+
+describe("resolveLogbookGlyph", () => {
+  it("returns the automation/script glyph for a run", () => {
+    expect(
+      resolveLogbookGlyph(
+        entry({ entity_id: "automation.x", domain: "automation" }),
+        "automation",
+        undefined,
+        "automation"
+      )
+    ).toEqual({ type: "automation", script: false });
+    expect(
+      resolveLogbookGlyph(
+        entry({ entity_id: "script.x", domain: "script" }),
+        "automation",
+        undefined,
+        "script"
+      )
+    ).toEqual({ type: "automation", script: true });
+  });
+
+  it("returns the entity state glyph when there is a historic state", () => {
+    const historic = mockStateObj({ entity_id: "light.x" });
+    expect(
+      resolveLogbookGlyph(
+        entry({ entity_id: "light.x", icon: "mdi:bulb" }),
+        "entity",
+        historic,
+        "light"
+      )
+    ).toEqual({ type: "state", stateObj: historic, icon: "mdi:bulb" });
+  });
+
+  it("falls back to the integration brand glyph", () => {
+    expect(
+      resolveLogbookGlyph(
+        entry({ domain: "zha", message: "x" }),
+        "integration",
+        undefined,
+        "zha"
+      )
+    ).toEqual({ type: "brand", domain: "zha", icon: undefined });
+  });
+});
+
+describe("buildLogbookItem", () => {
+  it("builds an entity item (name, state as 'value', context, glyph)", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+      formatEntityState: ((_stateObj: any, state: string) =>
+        state === "on"
+          ? "Allumé"
+          : state) as HomeAssistant["formatEntityState"],
+      states: {
+        "light.salon": mockStateObj({
+          entity_id: "light.salon",
+          attributes: { friendly_name: "Spots Salon" },
+        }),
+      },
+      entities: {
+        "light.salon": mockEntity({
+          entity_id: "light.salon",
+          name: "Spots Salon",
+          device_id: "device_1",
+        }),
+      },
+      devices: {
+        device_1: mockDevice({
+          id: "device_1",
+          name: "Ampli",
+          area_id: "area_1",
+        }),
+      },
+      areas: { area_1: mockArea({ area_id: "area_1", name: "Salon" }) },
+    });
+    const model = buildLogbookItem(
+      hass,
+      entry({ entity_id: "light.salon", state: "on", when: 1000 }),
+      {}
+    );
+    expect(model.category).toBe("entity");
+    expect(model.name).toBe("Spots Salon");
+    expect(model.context).toBe("Salon ▸ Ampli");
+    expect(model.what).toEqual({ text: "Allumé", kind: "value" });
+    expect(model.glyph.type).toBe("state");
+    expect(model.when).toBe(1_000_000);
+  });
+
+  it("builds an automation item ('Triggered' value, automation glyph, trigger cause)", () => {
+    const hass = baseHass({
+      localize: ((key: string) =>
+        ({
+          "ui.components.logbook.automation_triggered": "Triggered",
+          "ui.components.logbook.trigger_type.state": "State",
+        })[key] ?? "") as HomeAssistant["localize"],
+    });
+    const model = buildLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.x",
+        domain: "automation",
+        name: "Mode nuit",
+        source: "state of binary_sensor.porte",
+      }),
+      {}
+    );
+    expect(model.category).toBe("automation");
+    expect(model.name).toBe("Mode nuit");
+    expect(model.context).toBeUndefined();
+    expect(model.what).toEqual({ text: "Triggered", kind: "value" });
+    expect(model.glyph).toEqual({ type: "automation", script: false });
+    expect(model.cause?.name).toBe("State");
+  });
+
+  it("builds an integration item (message as 'phrase', brand glyph)", () => {
+    const hass = baseHass({
+      localize: (() => "") as HomeAssistant["localize"],
+    });
+    const model = buildLogbookItem(
+      hass,
+      entry({ domain: "zha", name: "Remote", message: "button pressed" }),
+      {}
+    );
+    expect(model.category).toBe("integration");
+    expect(model.name).toBe("Remote");
+    expect(model.what).toEqual({ text: "button pressed", kind: "phrase" });
+    expect(model.glyph).toEqual({
+      type: "brand",
+      domain: "zha",
+      icon: undefined,
+    });
+    expect(model.cause).toBeUndefined();
+  });
+
+  it("shows 'Ran' for a script started by something else (context, no source)", () => {
+    const hass = baseHass({
+      localize: ((key: string) =>
+        ({ "ui.components.logbook.script_ran": "Ran" })[key] ??
+        "") as HomeAssistant["localize"],
+    });
+    const model = buildLogbookItem(
+      hass,
+      entry({
+        entity_id: "script.x",
+        domain: "script",
+        message: "started",
+        context_event_type: "automation_triggered",
+        context_name: "Some automation",
+      }),
+      {}
+    );
+    expect(model.what).toEqual({ text: "Ran", kind: "value" });
   });
 });

@@ -16,16 +16,6 @@ export interface LogbookStreamMessage {
   partial?: boolean; // Indicates more historical chunks are coming
 }
 
-// JSON-safe, config-shaped summary of an automation/script trigger, sent by the
-// backend on automation_triggered / script_started entries (see core's
-// summarize_trigger): the platform/type is exposed under `trigger`.
-export interface LogbookTrigger {
-  trigger?: string;
-  entity_id?: string | string[];
-  id?: string;
-  alias?: string;
-}
-
 export interface LogbookEntry {
   // Base data
   when: number; // Python timestamp. Do *1000 to get JS timestamp.
@@ -33,8 +23,7 @@ export interface LogbookEntry {
   message?: string;
   entity_id?: string;
   icon?: string;
-  source?: string; // The trigger source (legacy English phrase)
-  trigger?: LogbookTrigger; // Structured trigger (newer backends)
+  source?: string; // The trigger source (English phrase, parsed for the cause)
   domain?: string;
   state?: string; // The state of the entity
   // Context data

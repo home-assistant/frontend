@@ -38,18 +38,12 @@ class HaLogbookRenderer extends LitElement {
 
   @property({ type: Boolean, attribute: "no-icon" }) public noIcon = false;
 
-  @property({ type: Boolean, attribute: "no-name" }) public noName = false;
-
   @property({ attribute: false }) public scope?: LogbookScope;
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (!this.hasUpdated) {
-      // Names of integration-provided triggers (component.<domain>.triggers.*).
-      this.hass.loadBackendTranslation("triggers");
-    }
     if (
       (!this.hasUpdated && this.virtualize) ||
       (changedProps.has("virtualize") && this.virtualize)
@@ -128,7 +122,6 @@ class HaLogbookRenderer extends LitElement {
           .traceContexts=${this.traceContexts}
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}
-          .noName=${this.noName}
           .scope=${this.scope}
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}

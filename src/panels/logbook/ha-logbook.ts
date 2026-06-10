@@ -61,8 +61,6 @@ export class HaLogbook extends LitElement {
 
   @property({ type: Boolean, attribute: "no-icon" }) public noIcon = false;
 
-  @property({ type: Boolean, attribute: "no-name" }) public noName = false;
-
   // Surface scope: removes the context (and, for "entity", the subject name)
   // the surface already implies.
   @property({ attribute: false }) public scope?: LogbookScope;
@@ -124,7 +122,6 @@ export class HaLogbook extends LitElement {
         .narrow=${this.narrow}
         .virtualize=${this.virtualize}
         .noIcon=${this.noIcon}
-        .noName=${this.noName}
         .scope=${this.scope}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}

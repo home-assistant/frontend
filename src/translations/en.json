@@ -671,7 +671,7 @@
         "entries_not_found": "No activity found.",
         "automation_triggered": "Triggered",
         "script_ran": "Ran",
-        "caused_by": "by {name}",
+        "view_trace": "View trace",
         "trigger_type": {
           "calendar": "[%key:ui::panel::config::automation::editor::triggers::type::calendar::label%]",
           "conversation": "[%key:ui::panel::config::automation::editor::triggers::type::conversation::label%]",
