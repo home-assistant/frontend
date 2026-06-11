@@ -1520,7 +1520,9 @@ export class HaChartBase extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      line-height: 1;
+      /* overflow: hidden clips descenders (e.g. "g", parentheses) with a tight
+         line-height, so give the line box room to contain them */
+      line-height: var(--ha-line-height-condensed);
     }
     @media (hover: hover) {
       .chart-legend .label.clickable:hover {
