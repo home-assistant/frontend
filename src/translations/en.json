@@ -10749,7 +10749,6 @@
           "migrate_success": "Theme settings migrated.",
           "migrate_failed": "Failed to migrate theme settings.",
           "theme_mode": "Theme mode",
-          "colors": "Custom colors",
           "dark_mode": {
             "auto": "Auto",
             "light": "Light",
