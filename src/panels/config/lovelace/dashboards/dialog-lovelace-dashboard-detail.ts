@@ -79,6 +79,8 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
       return nothing;
     }
 
+    const yamlMode = this._params.dashboard?.mode === "yaml";
+
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     const cancelButton = html`
@@ -106,7 +108,7 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._params.dashboard?.mode === "yaml"
+          ${yamlMode
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
@@ -149,11 +151,12 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
           <ha-button
             slot="primaryAction"
             @click=${this._updateDashboard}
-            .disabled=${(this._error && "url_path" in this._error) ||
-            titleInvalid ||
-            this._submitting ||
-            !this.isDirtyState}
-            ?autofocus=${this._params.dashboard?.mode === "yaml"}
+            .disabled=${!yamlMode &&
+            ((this._error && "url_path" in this._error) ||
+              titleInvalid ||
+              this._submitting ||
+              !this.isDirtyState)}
+            ?autofocus=${yamlMode}
           >
             ${this._params.urlPath
               ? this._params.dashboard?.mode === "storage"
