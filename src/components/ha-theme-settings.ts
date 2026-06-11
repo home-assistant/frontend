@@ -26,6 +26,7 @@ export interface ThemeSettingsLabels {
   autoMode?: string;
   lightMode?: string;
   darkMode?: string;
+  colors?: string;
   primaryColor?: string;
   accentColor?: string;
   reset?: string;
@@ -129,27 +130,24 @@ export class HaThemeSettings extends LitElement {
           ? html`
               <ha-list-item-base>
                 <span slot="headline"
-                  >${this.labels?.primaryColor ?? "Primary color"}</span
+                  >${this.labels?.colors ?? "Custom colors"}</span
                 >
-                <ha-input
-                  slot="end"
-                  .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
-                  type="color"
-                  .name=${"primaryColor"}
-                  @change=${this._handleColorChange}
-                ></ha-input>
-              </ha-list-item-base>
-              <ha-list-item-base>
-                <span slot="headline"
-                  >${this.labels?.accentColor ?? "Accent color"}</span
-                >
-                <ha-input
-                  slot="end"
-                  .value=${themeSettings?.accentColor || DefaultAccentColor}
-                  type="color"
-                  .name=${"accentColor"}
-                  @change=${this._handleColorChange}
-                ></ha-input>
+                <div slot="end" class="color-pickers">
+                  <ha-input
+                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
+                    type="color"
+                    .label=${this.labels?.primaryColor ?? "Primary color"}
+                    .name=${"primaryColor"}
+                    @change=${this._handleColorChange}
+                  ></ha-input>
+                  <ha-input
+                    .value=${themeSettings?.accentColor || DefaultAccentColor}
+                    type="color"
+                    .label=${this.labels?.accentColor ?? "Accent color"}
+                    .name=${"accentColor"}
+                    @change=${this._handleColorChange}
+                  ></ha-input>
+                </div>
               </ha-list-item-base>
               ${themeSettings?.primaryColor || themeSettings?.accentColor
                 ? html`
@@ -249,6 +247,14 @@ export class HaThemeSettings extends LitElement {
     }
     ha-theme-picker {
       min-width: 150px;
+    }
+    .color-pickers {
+      display: flex;
+      gap: var(--ha-space-2);
+    }
+    .color-pickers ha-input {
+      min-width: 150px;
+      flex: 1;
     }
     .reset-row {
       display: flex;
