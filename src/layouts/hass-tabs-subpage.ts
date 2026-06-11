@@ -33,7 +33,6 @@ export interface PageNavigation {
   translationKey?: string;
   component?: string | string[];
   name?: string;
-  not_component?: string | string[];
   core?: boolean;
   /** Hide from non-admin users in filtered navigation and quick bar. */
   adminOnly?: boolean;
@@ -165,12 +164,7 @@ export class HassTabsSubpage extends LitElement {
         <slot name="toolbar">
           <div class="toolbar-content">
             ${this.mainPage || (!this.backPath && history.state?.root)
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this._narrow}
-                  ></ha-menu-button>
-                `
+              ? html`<ha-menu-button></ha-menu-button>`
               : this.backPath
                 ? html`
                     <ha-icon-button-arrow-prev

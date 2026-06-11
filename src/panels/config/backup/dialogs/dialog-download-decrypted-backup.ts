@@ -12,13 +12,17 @@ import {
   getPreferredAgentForDownload,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { downloadBackupFile } from "../helper/download_backup";
 import type { DownloadDecryptedBackupDialogParams } from "./show-dialog-download-decrypted-backup";
 
 @customElement("ha-dialog-download-decrypted-backup")
-class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
+class DialogDownloadDecryptedBackup
+  extends DirtyStateProviderMixin<string>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -32,6 +36,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
   public showDialog(params: DownloadDecryptedBackupDialogParams): void {
     this._open = true;
     this._params = params;
+    this._initDirtyTracking({ type: "shallow" }, "");
   }
 
   public closeDialog() {
@@ -60,7 +65,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
         header-title=${this.hass.localize(
           "ui.panel.config.backup.dialogs.download.title"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <p>
@@ -105,7 +110,11 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
 
-          <ha-button slot="primaryAction" @click=${this._submit}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._submit}
+            .disabled=${!this.isDirtyState}
+          >
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.download.download"
             )}
@@ -136,6 +145,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
         this._agentId,
         this._encryptionKey
       );
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       if (err?.code === "password_incorrect") {
@@ -155,6 +165,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
   private _keyChanged(ev) {
     this._encryptionKey = ev.currentTarget.value;
     this._error = "";
+    this._updateDirtyState(this._encryptionKey);
   }
 
   private get _agentId() {

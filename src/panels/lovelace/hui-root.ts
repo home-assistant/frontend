@@ -522,7 +522,6 @@ class HUIRoot extends LitElement {
                     @click=${this._editView}
                   ></ha-icon-button>
                   <ha-icon-button-arrow-next
-                    .hass=${this.hass}
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_view.move_right"
                     )}
@@ -578,8 +577,6 @@ class HUIRoot extends LitElement {
                       : html`
                           <ha-menu-button
                             slot="navigationIcon"
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
                           ></ha-menu-button>
                         `}
                     ${isSubview
@@ -1353,6 +1350,13 @@ class HUIRoot extends LitElement {
           white-space: nowrap;
           display: flex;
           align-items: center;
+        }
+        .edit-mode .action-items ha-icon-button[disabled] {
+          --ha-color-on-disabled-quiet: color-mix(
+            in srgb,
+            var(--app-header-edit-text-color, #fff) 50%,
+            transparent
+          );
         }
         ha-tab-group {
           --ha-tab-indicator-color: var(

@@ -45,6 +45,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
@@ -232,7 +233,6 @@ class HaConfigSectionUpdates extends LitElement {
                       : nothing}
                   </div>
                   <ha-config-updates
-                    .hass=${this.hass}
                     .narrow=${this.narrow}
                     .updateEntities=${group.entities}
                     showAll
@@ -256,7 +256,6 @@ class HaConfigSectionUpdates extends LitElement {
                       </div>
                     </div>
                     <ha-config-updates
-                      .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${skippedUpdates}
                       showAll
@@ -280,7 +279,6 @@ class HaConfigSectionUpdates extends LitElement {
                       </div>
                     </div>
                     <ha-config-updates
-                      .hass=${this.hass}
                       .narrow=${this.narrow}
                       .updateEntities=${notInstallableUpdates}
                       showAll
@@ -350,13 +348,22 @@ class HaConfigSectionUpdates extends LitElement {
       return;
     }
     try {
-      await installUpdates(this.hass, entityIds);
+      await installUpdates(this.hass, entityIds, false);
     } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize("ui.panel.config.updates.update_all_failed"),
-        text: extractApiErrorMessage(err),
-        warning: true,
-      });
+      let message = extractApiErrorMessage(err);
+      // The backend error embeds the raw entity_id; swap in the update's name.
+      for (const entityId of entityIds) {
+        const stateObj = this.hass.states[entityId] as UpdateEntity | undefined;
+        if (stateObj && message.includes(entityId)) {
+          message = message.replaceAll(
+            entityId,
+            stateObj.attributes.title ||
+              stateObj.attributes.friendly_name ||
+              entityId
+          );
+        }
+      }
+      showToast(this, { message, duration: 10000, dismissable: true });
     }
   }
 

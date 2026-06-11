@@ -13,13 +13,16 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { goBack, navigate } from "../../common/navigate";
+import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
-  createSearchParam,
+  createHistoryLogbookUrl,
+  decodeHistoryLogbookQueryParams,
+  historyLogbookTargetFromQueryParams,
+} from "../../common/url/history-logbook-query-params";
+import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
@@ -31,8 +34,6 @@ import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-target-picker";
 import "../../components/ha-top-app-bar-fixed";
@@ -114,28 +115,13 @@ class HaPanelHistory extends LitElement {
     this._unsubscribeHistory();
   }
 
-  private _goBack(): void {
-    goBack();
-  }
-
   protected render() {
     const entitiesSelected = this._getEntityIds().length > 0;
     return html`
-      <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._showBack
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${!!this._showBack}
+      >
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
@@ -236,43 +222,18 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
-    const searchParams = extractSearchParamsObject();
-    const entityIds = searchParams.entity_id;
-    const deviceIds = searchParams.device_id;
-    const areaIds = searchParams.area_id;
-    const floorIds = searchParams.floor_id;
-    const labelsIds = searchParams.label_id;
-    if (entityIds || deviceIds || areaIds || floorIds || labelsIds) {
-      this._targetPickerValue = {};
+    const queryParams = decodeHistoryLogbookQueryParams(
+      extractSearchParamsObject()
+    );
+    const targetPickerValue = historyLogbookTargetFromQueryParams(queryParams);
+    if (targetPickerValue) {
+      this._targetPickerValue = targetPickerValue;
     }
-    if (entityIds) {
-      const splitIds = entityIds.split(",");
-      this._targetPickerValue!.entity_id = splitIds;
+    if (queryParams.start_date) {
+      this._startDate = queryParams.start_date;
     }
-    if (deviceIds) {
-      const splitIds = deviceIds.split(",");
-      this._targetPickerValue!.device_id = splitIds;
-    }
-    if (areaIds) {
-      const splitIds = areaIds.split(",");
-      this._targetPickerValue!.area_id = splitIds;
-    }
-    if (floorIds) {
-      const splitIds = floorIds.split(",");
-      this._targetPickerValue!.floor_id = splitIds;
-    }
-    if (labelsIds) {
-      const splitIds = labelsIds.split(",");
-      this._targetPickerValue!.label_id = splitIds;
-    }
-
-    const startDate = searchParams.start_date;
-    if (startDate) {
-      this._startDate = new Date(startDate);
-    }
-    const endDate = searchParams.end_date;
-    if (endDate) {
-      this._endDate = new Date(endDate);
+    if (queryParams.end_date) {
+      this._endDate = queryParams.end_date;
     }
   }
 
@@ -475,37 +436,15 @@ class HaPanelHistory extends LitElement {
   }
 
   private _updatePath() {
-    const params: Record<string, string> = {};
-
-    if (this._targetPickerValue.entity_id) {
-      params.entity_id = ensureArray(this._targetPickerValue.entity_id).join(
-        ","
-      );
-    }
-    if (this._targetPickerValue.label_id) {
-      params.label_id = ensureArray(this._targetPickerValue.label_id).join(",");
-    }
-    if (this._targetPickerValue.floor_id) {
-      params.floor_id = ensureArray(this._targetPickerValue.floor_id).join(",");
-    }
-    if (this._targetPickerValue.area_id) {
-      params.area_id = ensureArray(this._targetPickerValue.area_id).join(",");
-    }
-    if (this._targetPickerValue.device_id) {
-      params.device_id = ensureArray(this._targetPickerValue.device_id).join(
-        ","
-      );
-    }
-
-    if (this._startDate) {
-      params.start_date = this._startDate.toISOString();
-    }
-
-    if (this._endDate) {
-      params.end_date = this._endDate.toISOString();
-    }
-
-    navigate(`/history?${createSearchParam(params)}`, { replace: true });
+    navigate(
+      createHistoryLogbookUrl(
+        "/history",
+        this._targetPickerValue,
+        this._startDate,
+        this._endDate
+      ),
+      { replace: true }
+    );
   }
 
   private async _handleMenuAction(ev: HaDropdownSelectEvent) {

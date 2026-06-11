@@ -17,7 +17,6 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import "../../../components/ha-tooltip";
@@ -236,11 +235,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.config")}</div>
 
         <ha-icon-button
@@ -326,7 +320,6 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                           </a>
                         </div>
                         <ha-config-updates
-                          .hass=${this.hass}
                           .narrow=${this.narrow}
                           .updateEntities=${canInstallUpdates}
                         ></ha-config-updates>

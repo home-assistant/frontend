@@ -1197,6 +1197,7 @@
       "data-table": {
         "search": "Search",
         "no-data": "No data",
+        "no_match_filter": "No rows matching current filters",
         "filtering_by": "Filtering by",
         "hidden": "{number} hidden",
         "clear": "Clear",
@@ -2254,15 +2255,6 @@
         "attribute": "Attribute",
         "min_max_change": "min/max/change"
       },
-      "zha_manage_device": {
-        "heading": "Manage Zigbee device",
-        "tabs": {
-          "clusters": "Clusters",
-          "bindings": "Bindings",
-          "signature": "Signature",
-          "neighbors": "Neighbors"
-        }
-      },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No area",
@@ -2758,7 +2750,6 @@
           "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
-          "update_all_failed": "Failed to start updates",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -3832,6 +3823,7 @@
         "developer-tools": {
           "tabs": {
             "assist": {
+              "tab": "Assist",
               "title": "Sentences parser",
               "description": "Enter sentences and see how they will be parsed by Home Assistant. Each line will be processed as an individual sentence. Intents will not be executed on your instance.",
               "parse_sentences": "Parse sentences",
@@ -4139,6 +4131,17 @@
             "gas": "Gas",
             "water": "Water"
           },
+          "customise": {
+            "toolbar_action": "Customize cards",
+            "title": "Customize energy",
+            "saved": "Energy dashboard updated",
+            "save_failed": "Failed to save energy customization",
+            "unavailable": "This card isn't shown because the energy source or device it needs isn't configured.",
+            "groups": {
+              "overview": "Overview",
+              "now": "Now"
+            }
+          },
           "delete_source": "Are you sure you want to remove this source?",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
@@ -4377,7 +4380,9 @@
             "error_information": "Error information",
             "delete_confirm_title": "Delete helper?",
             "delete_confirm_text": "Are you sure you want to delete {name}?",
-            "delete_failed": "Failed to delete helper"
+            "delete_failed": "Failed to delete helper",
+            "no_category_support": "You can't assign a category to this helper",
+            "no_category_entity_reg": "To assign a category to a helper it needs to have a unique ID."
           },
           "dialog": {
             "create": "Create",
@@ -7322,10 +7327,32 @@
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
             "search_again": "Search again"
           },
+          "device_page": {
+            "heading": "Manage Zigbee device",
+            "information": "Device information",
+            "ieee": "IEEE",
+            "nwk": "NWK",
+            "bindings_error": "Failed to load binding options",
+            "no_bindings": "No bindable devices or groups were found",
+            "not_found": "Zigbee device not found",
+            "tabs": {
+              "clusters": "Clusters",
+              "bindings": "Bindings",
+              "signature": "Signature",
+              "neighbors": "Neighbors"
+            },
+            "tab_descriptions": {
+              "signature": "View the raw Zigbee signature for this device.",
+              "neighbors": "View neighboring Zigbee devices reported by this device."
+            }
+          },
           "add_device": "Add device",
           "clusters": {
             "header": "Clusters",
-            "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
+            "change_cluster": "Change cluster",
+            "cluster_description": "Endpoint ID: {endpoint} · ID: {id} · Type: {type}",
+            "load_failed": "Failed to load clusters",
+            "no_clusters": "No clusters found",
             "tabs": {
               "attributes": "Attributes",
               "commands": "Commands"
@@ -7402,6 +7429,8 @@
             "offline": "Offline"
           },
           "device_binding": {
+            "header": "Device binding",
+            "introduction": "Bind this device to another Zigbee device or unbind it.",
             "bind": "Bind",
             "unbind": "Unbind",
             "picker_label": "Bindable devices"
@@ -7421,7 +7450,9 @@
             "name": "Name",
             "lqi": "LQI",
             "relationship": "Relationship",
-            "depth": "Depth"
+            "depth": "Depth",
+            "load_failed": "Failed to load neighbors",
+            "no_neighbors": "No neighbors found"
           },
           "change_channel_dialog": {
             "title": "Change Zigbee channel",
@@ -11196,7 +11227,12 @@
           "energy_top_consumers_title": "Top consumers",
           "power_sankey_title": "Current power flow",
           "water_flow_sankey_title": "Current water flow",
-          "power_sources_graph_title": "Power sources"
+          "power_sources_graph_title": "Power sources",
+          "energy_grid_balance_title": "Grid energy balance",
+          "energy_grid_neutrality_gauge_title": "Grid neutrality gauge",
+          "energy_solar_consumed_gauge_title": "Solar consumed gauge",
+          "energy_self_sufficiency_gauge_title": "Self-sufficiency gauge",
+          "energy_carbon_consumed_gauge_title": "Carbon consumed gauge"
         }
       },
       "history": {

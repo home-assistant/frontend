@@ -2,9 +2,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { goBack } from "../common/navigate";
-import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-button";
-import "../components/ha-menu-button";
+import "../components/ha-top-app-bar-fixed";
 import type { HomeAssistant } from "../types";
 import "../components/ha-alert";
 
@@ -21,23 +20,22 @@ class HassErrorScreen extends LitElement {
   @property() public error?: string;
 
   protected render(): TemplateResult {
+    if (!this.toolbar) {
+      return this._renderContent();
+    }
+
     return html`
-      ${this.toolbar
-        ? html`<div class="toolbar">
-            ${this.rootnav || history.state?.root
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
-              : html`
-                  <ha-icon-button-arrow-prev
-                    @click=${this._handleBack}
-                  ></ha-icon-button-arrow-prev>
-                `}
-          </div>`
-        : ""}
+      <ha-top-app-bar-fixed
+        .narrow=${this.narrow}
+        .backButton=${!(this.rootnav || history.state?.root)}
+      >
+        ${this._renderContent()}
+      </ha-top-app-bar-fixed>
+    `;
+  }
+
+  private _renderContent(): TemplateResult {
+    return html`
       <div class="content">
         <ha-alert alert-type="error">${this.error}</ha-alert>
         <slot>
@@ -61,30 +59,9 @@ class HassErrorScreen extends LitElement {
           height: 100%;
           background-color: var(--primary-background-color);
         }
-        .toolbar {
-          display: flex;
-          align-items: center;
-          font-size: var(--ha-font-size-xl);
-          height: var(--header-height);
-          padding: 8px 12px;
-          pointer-events: none;
-          background-color: var(--app-header-background-color);
-          font-weight: var(--ha-font-weight-normal);
-          color: var(--app-header-text-color, white);
-          border-bottom: var(--app-header-border-bottom, none);
-          box-sizing: border-box;
-        }
-        @media (max-width: 599px) {
-          .toolbar {
-            padding: 4px;
-          }
-        }
-        ha-icon-button-arrow-prev {
-          pointer-events: auto;
-        }
         .content {
           color: var(--primary-text-color);
-          height: calc(100% - var(--header-height));
+          height: 100%;
           display: flex;
           padding: 16px;
           align-items: center;

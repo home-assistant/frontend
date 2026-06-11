@@ -108,9 +108,9 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
     css`
       .shadow-container {
         position: absolute;
-        top: calc(-1 * var(--header-height));
+        top: calc(-1 * var(--total-top-app-bar-height));
         width: 100%;
-        height: var(--header-height);
+        height: var(--total-top-app-bar-height);
         z-index: 1;
         transition: box-shadow 200ms linear;
       }
@@ -131,7 +131,7 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
       .top-app-bar-fixed-adjust--pane {
         display: flex;
         height: calc(
-          100vh - var(--header-height, 0px) - var(
+          100vh - var(--total-top-app-bar-height, 0px) - var(
               --safe-area-inset-top,
               0px
             ) - var(--safe-area-inset-bottom, 0px)

@@ -11,12 +11,15 @@ import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import type { ZoneMutableParams } from "../../../data/zone";
 import { getZoneEditorInitData } from "../../../data/zone";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 
 @customElement("dialog-zone-detail")
-class DialogZoneDetail extends LitElement {
+class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: Record<string, string>;
@@ -53,6 +56,7 @@ class DialogZoneDetail extends LitElement {
         radius: 100,
       };
     }
+    this._initDirtyTracking({ type: "deep" }, this._data);
     this._open = true;
   }
 
@@ -93,7 +97,7 @@ class DialogZoneDetail extends LitElement {
               name: this._params.entry.name,
             })
           : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-form
@@ -131,7 +135,7 @@ class DialogZoneDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${!valid || this._submitting}
+            .disabled=${!valid || this._submitting || !this.isDirtyState}
           >
             ${this._params.entry
               ? this.hass!.localize("ui.common.save")
@@ -189,6 +193,7 @@ class DialogZoneDetail extends LitElement {
       delete value.icon;
     }
     this._data = value;
+    this._updateDirtyState(value);
   }
 
   private _computeLabel = (

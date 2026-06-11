@@ -6,7 +6,6 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-icon-button";
-import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/map/ha-map";
 import { haStyle } from "../../resources/styles";
@@ -23,11 +22,6 @@ class HaPanelMap extends LitElement {
   protected render() {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
         <div slot="title">${this.hass.localize("panel.map")}</div>
         ${!__DEMO__ && this.hass.user?.is_admin
           ? html`<ha-icon-button

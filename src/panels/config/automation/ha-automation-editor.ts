@@ -146,6 +146,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     currentConfig: () => this.config!,
   });
 
+  public override get isDirtyState(): boolean {
+    return super.isDirtyState || !!this.yamlErrors;
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
@@ -421,7 +425,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           .config=${this.config}
                           .disabled=${this.readOnly}
                           .saving=${this.saving}
-                          .dirty=${this.dirty}
                           @value-changed=${this._valueChanged}
                           @save-automation=${this._handleSaveAutomation}
                         ></blueprint-automation-editor>
@@ -434,7 +437,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           .stateObj=${stateObj}
                           .config=${this.config}
                           .disabled=${this.readOnly}
-                          .dirty=${this.dirty}
                           .saving=${this.saving}
                           @value-changed=${this._valueChanged}
                           @save-automation=${this._handleSaveAutomation}
@@ -554,7 +556,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                   <ha-button
                     slot="fab"
                     size="l"
-                    class=${this.dirty ? "dirty" : ""}
+                    class=${this.isDirtyState ? "dirty" : ""}
                     .disabled=${this.saving}
                     @click=${this._handleSaveAutomation}
                   >
@@ -602,7 +604,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       !this.entityId
     ) {
       const initData = getAutomationEditorInitData();
-      this.dirty = !!initData;
       let baseConfig: Partial<AutomationConfig> = { description: "" };
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig = {
@@ -617,6 +618,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ...baseConfig,
         ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
+      this._initDirtyTracking({ type: "deep" }, baseConfig as AutomationConfig);
+      this._updateDirtyState(this.config);
       this.currentEntityId = undefined;
       this.readOnly = false;
     }
@@ -624,10 +627,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeAutomationConfig(c.config);
+        this._initDirtyTracking({ type: "deep" }, this.config);
         this._checkValidation();
       });
       this.currentEntityId = this.entityId;
-      this.dirty = false;
       this.readOnly = true;
     }
 
@@ -690,7 +693,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (this.readOnly) {
       return;
     }
-    this.dirty = true;
+    this._updateDirtyState(this.config);
     this.errors = undefined;
   }
 
@@ -762,7 +765,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this.dirty = true;
     if (!ev.detail.isValid) {
       this.yamlErrors = ev.detail.errorMsg;
       return;
@@ -772,11 +774,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       id: this.config?.id,
       ...normalizeAutomationConfig(ev.detail.value),
     };
+    this._updateDirtyState(this.config!);
     this.errors = undefined;
   }
 
   protected async confirmUnsavedChanged(): Promise<boolean> {
-    if (!this.dirty) {
+    if (!this.isDirtyState) {
       return true;
     }
 
@@ -787,7 +790,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this.dirty = true;
+          this._updateDirtyState(this.config);
           this.requestUpdate();
 
           const id = this.automationId || String(Date.now());
@@ -901,7 +904,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this.dirty = true;
+          this._updateDirtyState(this.config);
           this.requestUpdate();
           resolve(true);
         },
@@ -918,7 +921,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         config: this.config!,
         updateConfig: (config) => {
           this.config = config;
-          this.dirty = true;
+          this._updateDirtyState(config);
           this.requestUpdate();
           resolve();
         },
@@ -1009,7 +1012,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         }
       }
 
-      this.dirty = false;
+      this._markDirtyStateClean();
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
       showEditorToast(this, {
@@ -1068,7 +1071,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private _applyUndoRedo(config: AutomationConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this.config = config;
-    this.dirty = true;
+    this._updateDirtyState(this.config);
   }
 
   private _undo() {

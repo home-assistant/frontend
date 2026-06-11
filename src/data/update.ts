@@ -146,10 +146,20 @@ export const filterUpdateEntitiesParameterized = (
     return updateCanInstall(entity, showSkipped);
   });
 
-export const installUpdates = (hass: HomeAssistant, entityIds: string[]) =>
-  hass.callService("update", "install", {
-    entity_id: entityIds,
-  });
+export const installUpdates = (
+  hass: HomeAssistant,
+  entityIds: string[],
+  notifyOnError = true
+) =>
+  hass.callService(
+    "update",
+    "install",
+    {
+      entity_id: entityIds,
+    },
+    undefined,
+    notifyOnError
+  );
 
 export const checkForEntityUpdates = async (
   element: HTMLElement,

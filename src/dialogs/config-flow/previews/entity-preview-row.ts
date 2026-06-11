@@ -106,7 +106,9 @@ class EntityPreviewRow extends LitElement {
     }
   `;
 
-  private _renderEntityState(stateObj: HassEntity): TemplateResult | string {
+  private _renderEntityState(
+    stateObj: HassEntity
+  ): TemplateResult | string | typeof nothing {
     const domain = stateObj.entity_id.split(".", 1)[0];
     const disabled = stateObj.state === UNAVAILABLE;
     const noValue =
@@ -123,8 +125,7 @@ class EntityPreviewRow extends LitElement {
     const climateDomains = ["climate", "water_heater"];
     if (climateDomains.includes(domain)) {
       return html`
-        <ha-climate-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-climate-state>
+        <ha-climate-state .stateObj=${stateObj}> </ha-climate-state>
       `;
     }
 
@@ -133,15 +134,11 @@ class EntityPreviewRow extends LitElement {
         ${isTiltOnly(stateObj)
           ? html`
               <ha-cover-tilt-controls
-                .hass=${this.hass}
                 .stateObj=${stateObj}
               ></ha-cover-tilt-controls>
             `
           : html`
-              <ha-cover-controls
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-cover-controls>
+              <ha-cover-controls .stateObj=${stateObj}></ha-cover-controls>
             `}
       `;
     }
@@ -216,13 +213,15 @@ class EntityPreviewRow extends LitElement {
 
     if (domain === "humidifier") {
       return html`
-        <ha-humidifier-state .hass=${this.hass} .stateObj=${stateObj}>
-        </ha-humidifier-state>
+        <ha-humidifier-state .stateObj=${stateObj}> </ha-humidifier-state>
       `;
     }
 
     if (domain === "image") {
-      const image: string = computeImageUrl(stateObj as ImageEntity);
+      const image = computeImageUrl(stateObj as ImageEntity);
+      if (!image) {
+        return nothing;
+      }
       return html`
         <img
           alt=${ifDefined(stateObj?.attributes.friendly_name)}
