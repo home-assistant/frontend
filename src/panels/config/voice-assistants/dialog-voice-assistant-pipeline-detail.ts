@@ -239,6 +239,7 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
             slot="primaryAction"
             @click=${this._updatePipeline}
             .loading=${this._submitting}
+            .disabled=${!this.isDirtyState}
           >
             ${isExistingPipeline
               ? this.hass.localize(
