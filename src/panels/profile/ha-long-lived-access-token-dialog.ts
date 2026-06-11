@@ -11,6 +11,7 @@ import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-svg-icon";
 import "../../components/input/ha-input";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
@@ -18,7 +19,9 @@ import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 
 @customElement("ha-long-lived-access-token-dialog")
-export class HaLongLivedAccessTokenDialog extends LitElement {
+export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _qrCode?: TemplateResult;
@@ -46,6 +49,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     );
     this._renderDialog = true;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, "");
   }
 
   public closeDialog() {
@@ -80,7 +84,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
           : this.hass.localize(
               "ui.panel.profile.long_lived_access_tokens.create"
             )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -177,10 +181,16 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
   private _nameChanged(ev: Event) {
     this._name = (ev.currentTarget as HTMLInputElement).value;
     this._errorMessage = undefined;
+    this._updateDirtyState(this._name);
   }
 
   private _isCreateDisabled() {
-    return this._loading || !this._name.trim() || this._hasDuplicateName();
+    return (
+      this._loading ||
+      !this._name.trim() ||
+      this._hasDuplicateName() ||
+      !this.isDirtyState
+    );
   }
 
   private async _createToken(): Promise<void> {
@@ -200,6 +210,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
         client_name: name,
       });
       this._name = name;
+      this._markDirtyStateClean();
       this._createdCallback();
     } catch (err: unknown) {
       this._errorMessage = err instanceof Error ? err.message : String(err);

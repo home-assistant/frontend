@@ -10,13 +10,14 @@ import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { CustomShortcutItem } from "../../../data/home_shortcuts";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { EditShortcutDialogParams } from "./show-dialog-edit-shortcut";
 
 @customElement("dialog-edit-shortcut")
 export class DialogEditShortcut
-  extends LitElement
+  extends DirtyStateProviderMixin<CustomShortcutItem>()(LitElement)
   implements HassDialog<EditShortcutDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -32,6 +33,7 @@ export class DialogEditShortcut
   public showDialog(params: EditShortcutDialogParams): void {
     this._params = params;
     this._data = { ...params.item };
+    this._initDirtyTracking({ type: "shallow" }, this._data);
     this._open = true;
   }
 
@@ -89,6 +91,7 @@ export class DialogEditShortcut
         .open=${this._open}
         .headerTitle=${this.hass.localize("ui.panel.home.editor.edit_shortcut")}
         width="small"
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-form
@@ -107,7 +110,11 @@ export class DialogEditShortcut
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!this.isDirtyState}
+          >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
@@ -124,6 +131,7 @@ export class DialogEditShortcut
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._data = ev.detail.value as CustomShortcutItem;
+    this._updateDirtyState(this._data);
   }
 
   private _save() {
@@ -136,6 +144,7 @@ export class DialogEditShortcut
       icon: icon || undefined,
       color: color || undefined,
     });
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
