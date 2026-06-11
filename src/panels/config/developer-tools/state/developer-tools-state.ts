@@ -87,6 +87,18 @@ class HaPanelDevState extends LitElement {
   })
   private _showAttributes = true;
 
+  @storage({
+    key: "devToolsShowDevice",
+    state: true,
+  })
+  private _showDevice = true;
+
+  @storage({
+    key: "devToolsShowArea",
+    state: true,
+  })
+  private _showArea = true;
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state()
@@ -157,7 +169,23 @@ class HaPanelDevState extends LitElement {
           )}
         </h1>
         ${!this.narrow
-          ? html`<ha-checkbox
+          ? html`<div class="filters-toggles"><ha-checkbox
+              .checked=${this._showDevice}
+              @change=${this._saveDeviceCheckboxState}
+            >
+              ${this._i18n.localize(
+                "ui.panel.config.entities.picker.headers.device"
+              )}
+            </ha-checkbox>
+            <ha-checkbox
+              .checked=${this._showArea}
+              @change=${this._saveAreaCheckboxState}
+            >
+              ${this._i18n.localize(
+                "ui.panel.config.generic.headers.area"
+              )}
+            </ha-checkbox>
+            </div><ha-checkbox
               .checked=${this._showAttributes}
               @change=${this._saveAttributeCheckboxState}
             >
@@ -280,6 +308,8 @@ class HaPanelDevState extends LitElement {
         .entities=${entities}
         .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
         .showAttributes=${this._showAttributes}
+        .showDevice=${this._showDevice}
+        .showArea=${this._showArea}
         @states-tool-entity-selected=${this._entitySelected}
       >
         <ha-input-search
@@ -593,6 +623,14 @@ class HaPanelDevState extends LitElement {
     this._showAttributes = ev.target.checked;
   }
 
+  private _saveDeviceCheckboxState(ev) {
+    this._showDevice = ev.target.checked;
+  }  
+
+  private _saveAreaCheckboxState(ev) {
+    this._showArea = ev.target.checked;
+  }  
+
   private _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
     this._validJSON = ev.detail.isValid;
@@ -617,12 +655,27 @@ class HaPanelDevState extends LitElement {
 
         .heading {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-start; /* Aligns title and checkboxes inline left-to-right */
+          align-items: center;
+          gap: var(--ha-space-4);
         }
 
-        .heading ha-checkbox {
-          margin-right: var(--ha-space-2);
-          justify-content: center;
+        /* Create a flexible space pusher to slide the checkboxes to the right side together */
+        .heading h1 {
+          margin-right: auto;
+        }
+
+        .filters-toggles {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+        }
+
+        /* Completely neutralizes the auto-stretching center rule */
+        .heading .filters-toggles ha-checkbox {
+          margin-right: 0;
+          width: max-content;
+          display: inline-flex;
         }
 
         .entity-id {

@@ -37,6 +37,12 @@ class HaPanelDevStateRenderer extends LitElement {
   @property({ attribute: false })
   public showAttributes = true;
 
+  @property({ attribute: false })
+  public showDevice = true;
+
+  @property({ attribute: false })
+  public showArea = true;  
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -57,11 +63,15 @@ class HaPanelDevStateRenderer extends LitElement {
 
   protected render() {
     const showAttributes = !this.narrow && this.showAttributes;
+    const showDevice = !this.narrow && this.showDevice;
+    const showArea = !this.narrow && this.showArea;
     return html`
       <div
         class=${classMap({
           entities: true,
           "hide-attributes": !showAttributes,
+          "hide-device": !showDevice,
+          "hide-area": !showArea,
           "hide-extra": this.narrow,
         })}
         role="table"
@@ -81,14 +91,14 @@ class HaPanelDevStateRenderer extends LitElement {
               )}
             </span>
           </div>
-          <div class="header" role="columnheader">
+          <div class="header" role="columnheader" ?hidden=${!showDevice}>
             <span class="padded">
               ${this._i18n.localize(
                 "ui.panel.config.entities.picker.headers.device"
               )}
             </span>
           </div>
-          <div class="header" role="columnheader">
+          <div class="header" role="columnheader" ?hidden=${!showArea}>
             <span class="padded">
               ${this._i18n.localize("ui.panel.config.generic.headers.area")}
             </span>
@@ -353,6 +363,24 @@ class HaPanelDevStateRenderer extends LitElement {
 
         .entities .row .cell:nth-child(5) {
           white-space: pre-wrap;
+        }
+
+        .hide-device .filter-devices {
+          display: none;
+        }
+
+        .hide-device .row .header:nth-child(3),
+        .hide-device .row .cell:nth-child(3) {
+          display: none;
+        }
+
+        .hide-area .filter-areas {
+          display: none;
+        }
+
+        .hide-area .row .header:nth-child(4),
+        .hide-area .row .cell:nth-child(4) {
+          display: none;
         }
 
         .hide-attributes .filter-attributes {
