@@ -44,7 +44,7 @@ export class HaThemeSettings extends LitElement {
 
   @property() public heading?: string;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: "include-default", type: Boolean })
   public includeDefault = false;
@@ -255,6 +255,16 @@ export class HaThemeSettings extends LitElement {
     .color-pickers ha-input {
       min-width: 150px;
       flex: 1;
+    }
+    :host([narrow]) ha-list-item-base::part(base) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    :host([narrow]) ha-list-item-base::part(end) {
+      width: 100%;
+    }
+    :host([narrow]) .color-pickers {
+      width: 100%;
     }
     .reset-row {
       display: flex;
