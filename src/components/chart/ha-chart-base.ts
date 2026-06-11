@@ -1558,6 +1558,25 @@ export class HaChartBase extends LitElement {
     .chart-legend .legend-toggle ha-svg-icon {
       --mdc-icon-size: 18px;
     }
+    /* On touch devices, enlarge the toggle tap target via taller rows and
+       leading padding (which also separates it from the previous item), while
+       keeping the icon tight to its own label so the pairing stays clear.
+       Drop the now-pointless row gap and li padding. */
+    @media (pointer: coarse) {
+      .chart-legend ul {
+        row-gap: 0;
+      }
+      /* Only grow the toggle rows, not the expand/collapse chip's row. */
+      .chart-legend li:has(.legend-toggle) {
+        height: 40px;
+        padding: 0;
+      }
+      .chart-legend .legend-toggle {
+        padding: 11px;
+        padding-inline-end: 4px;
+        margin: 0;
+      }
+    }
     ha-assist-chip {
       height: 100%;
       --_label-text-weight: 500;
