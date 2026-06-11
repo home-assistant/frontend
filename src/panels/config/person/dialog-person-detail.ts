@@ -287,7 +287,7 @@ class DialogPersonDetail
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
+            .disabled=${nameInvalid || this._submitting || !this.isDirtyState}
           >
             ${this._params.entry
               ? this.hass!.localize("ui.common.save")
