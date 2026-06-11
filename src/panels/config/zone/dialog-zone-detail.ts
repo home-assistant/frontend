@@ -135,7 +135,7 @@ class DialogZoneDetail extends DirtyStateProviderMixin<ZoneMutableParams>()(
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${!valid || this._submitting}
+            .disabled=${!valid || this._submitting || !this.isDirtyState}
           >
             ${this._params.entry
               ? this.hass!.localize("ui.common.save")
