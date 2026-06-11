@@ -278,7 +278,7 @@ export class LovelacePanel extends LitElement {
   }
 
   public get urlPath() {
-    return this.panel!.url_path;
+    return this.panel?.url_path ?? null;
   }
 
   private _forceFetchConfig() {
@@ -286,18 +286,24 @@ export class LovelacePanel extends LitElement {
   }
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
-    this._loading = true;
+    if (!this.panel) {
+      return;
+    }
 
     let conf: LovelaceConfig;
     let rawConf: LovelaceRawConfig | undefined;
-    const confMode = this.panel!.config?.mode;
+    const confMode = this.panel.config?.mode;
 
     // If no mode, redirect to /home as there is no "lovelace" dashboard
     if (!confMode) {
+      if (this.panel.config === null || this.panel.config === undefined) {
+        return;
+      }
       navigate("/home", { replace: true });
       return;
     }
 
+    this._loading = true;
     let confProm: Promise<LovelaceRawConfig> | undefined;
     const preloadWindow = window as WindowWithPreloads;
 
