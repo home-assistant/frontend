@@ -1,4 +1,3 @@
-import { undoDepth } from "@codemirror/commands";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -34,7 +33,7 @@ const strategyStruct = type({
 });
 
 @customElement("hui-editor")
-class LovelaceFullConfigEditor extends DirtyStateProviderMixin<boolean>()(
+class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
   LitElement
 ) {
   @property({ type: Boolean }) public narrow = false;
@@ -97,17 +96,9 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<boolean>()(
     `;
   }
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this._initDirtyTracking(
-      { type: "custom", compare: (a, b) => a === b },
-      false
-    );
-  }
-
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this.yamlEditor.setValue(this.lovelace!.rawConfig);
+    this._setValue();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -119,8 +110,17 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<boolean>()(
       oldLovelace.rawConfig !== this.lovelace.rawConfig &&
       !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
     ) {
-      this.yamlEditor.setValue(this.lovelace!.rawConfig);
+      this._setValue();
     }
+  }
+
+  private _setValue() {
+    this.yamlEditor.setValue(this.lovelace!.rawConfig);
+    // Baseline the dirty check against the loaded YAML so it resets on save.
+    this._initDirtyTracking(
+      { type: "custom", compare: (a, b) => a === b },
+      this.yamlEditor.yaml
+    );
   }
 
   static get styles(): CSSResultGroup {
@@ -167,11 +167,10 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<boolean>()(
   private _yamlChanged(ev: CustomEvent) {
     this._config = ev.detail.isValid ? ev.detail.value : undefined;
     this._yamlError = ev.detail.errorMsg;
-    const changed = undoDepth(this.yamlEditor.codemirror!.state) > 0;
-    this._updateDirtyState(changed);
-    if (changed && !window.onbeforeunload) {
+    this._updateDirtyState(this.yamlEditor.yaml);
+    if (this.isDirtyState && !window.onbeforeunload) {
       window.onbeforeunload = () => true;
-    } else if (!changed && window.onbeforeunload) {
+    } else if (!this.isDirtyState && window.onbeforeunload) {
       window.onbeforeunload = null;
     }
   }
