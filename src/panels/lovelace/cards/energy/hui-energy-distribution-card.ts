@@ -40,7 +40,8 @@ import { formatNumber } from "../../../../common/number/format_number";
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
 const periodIncludesNow = (data: EnergyData): boolean =>
-  !data.end || data.end.getTime() >= Date.now();
+  data.start.getTime() >= Date.now() - (24 * 60 * 60 * 1000 + 60 * 1000) &&
+  (!data.end || data.end.getTime() >= Date.now());
 
 @customElement("hui-energy-distribution-card")
 class HuiEnergyDistrubutionCard
@@ -209,6 +210,7 @@ class HuiEnergyDistrubutionCard
       // The SOC reflects the current battery level, so it only matches the
       // card's data when the selected period extends to now. For historical
       // periods (yesterday, last week, ...) fall back to the generic icon.
+      // Same goes for historic periods that just happen to extend to now (e.g. last 365d)
       if (periodIncludesNow(this._data)) {
         const socValues = types
           .battery!.map((source) =>
