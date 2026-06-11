@@ -151,6 +151,7 @@ class HaDomainIntegrations extends LitElement {
             .map(
               ([dom, val]) =>
                 html`<ha-integration-list-item
+                  .domain=${dom}
                   .integration=${{
                     ...val,
                     domain: dom,

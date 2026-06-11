@@ -162,7 +162,7 @@ export class HaDataTable extends LitElement {
 
   @state() private _filter = "";
 
-  @state() private _filteredData: DataTableRowData[] = [];
+  @state() private _filteredData?: DataTableRowData[];
 
   @state() private _headerHeight = 0;
 
@@ -204,7 +204,7 @@ export class HaDataTable extends LitElement {
   }
 
   public selectAll(): void {
-    this._checkedRows = this._filteredData
+    this._checkedRows = (this._filteredData || [])
       .filter((data) => data.selectable !== false)
       .map((data) => data[this.id]);
     this._lastSelectedRowId = null;
@@ -216,7 +216,7 @@ export class HaDataTable extends LitElement {
       this._checkedRows = [];
     }
     ids.forEach((id) => {
-      const row = this._filteredData.find((data) => data[this.id] === id);
+      const row = this._filteredData?.find((data) => data[this.id] === id);
       if (row?.selectable !== false && !this._checkedRows.includes(id)) {
         this._checkedRows.push(id);
       }
@@ -238,7 +238,7 @@ export class HaDataTable extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this._filteredData.length) {
+    if (this._filteredData?.length) {
       // Force update of location of rows
       this._filteredData = [...this._filteredData];
     }
@@ -366,7 +366,10 @@ export class HaDataTable extends LitElement {
       this._lastSelectedRowId = null;
     }
 
-    if (properties.has("selectable") || properties.has("hiddenColumns")) {
+    if (
+      this._filteredData &&
+      (properties.has("selectable") || properties.has("hiddenColumns"))
+    ) {
       this._filteredData = [...this._filteredData];
     }
   }
@@ -409,6 +412,8 @@ export class HaDataTable extends LitElement {
     const renderRow = (row: DataTableRowData, index: number) =>
       this._renderRow(columns, this.narrow, row, index);
 
+    const filteredDataLength = this._filteredData?.length || 0;
+
     return html`
       <div class="mdc-data-table">
         <slot name="header" @slotchange=${this._calcTableHeight}>
@@ -429,10 +434,10 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          aria-rowcount=${this._filteredData.length + 1}
+          aria-rowcount=${filteredDataLength + 1}
           style=${styleMap({
             height: this.autoHeight
-              ? `${(this._filteredData.length || 1) * 53 + 53}px`
+              ? `${(filteredDataLength || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
@@ -521,16 +526,23 @@ export class HaDataTable extends LitElement {
               })}
             </slot>
           </div>
-          ${!this._filteredData.length
+          ${!this._filteredData?.length
             ? html`
                 <div class="mdc-data-table__content">
                   <div class="mdc-data-table__row" role="row">
                     <div class="mdc-data-table__cell grows center" role="cell">
-                      ${this.noDataText ||
-                      this._i18n?.localize?.(
-                        "ui.components.data-table.no-data"
-                      ) ||
-                      "No data"}
+                      ${!this._filteredData
+                        ? this._i18n?.localize?.("ui.common.loading") ||
+                          "Loading"
+                        : this.data.length
+                          ? this._i18n?.localize?.(
+                              "ui.components.data-table.no_match_filter"
+                            ) || "No rows matching current filters"
+                          : this.noDataText ||
+                            this._i18n?.localize?.(
+                              "ui.components.data-table.no-data"
+                            ) ||
+                            "No data"}
                     </div>
                   </div>
                 </div>
@@ -903,7 +915,7 @@ export class HaDataTable extends LitElement {
     const rowId = checkboxElement.rowId;
 
     const groupedData = this._groupData(
-      this._filteredData,
+      this._filteredData || [],
       this._i18n?.localize,
       this._i18n?.locale,
       this.appendRow,
@@ -1005,7 +1017,7 @@ export class HaDataTable extends LitElement {
 
   private _checkedRowsChanged() {
     // force scroller to update, change it's items
-    if (this._filteredData.length) {
+    if (this._filteredData?.length) {
       this._filteredData = [...this._filteredData];
     }
     fireEvent(this, "selection-changed", {
@@ -1465,6 +1477,11 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__table.auto-height .scroller {
           overflow-y: hidden !important;
         }
+
+        .mdc-data-table__table.auto-height lit-virtualizer {
+          overscroll-behavior-y: auto;
+        }
+
         .grows {
           flex-grow: 1;
           flex-shrink: 1;

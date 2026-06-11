@@ -10,7 +10,7 @@ All pages are stored in [the pages folder][pages-folder] on GitHub. Pages are gr
 
 ## Development
 
-You can develop design.home-assistant.io locally by checking out [the Home Assistant frontend repository](https://github.com/home-assistant/frontend). The command to run the gallery is `gallery/script/develop_gallery`. It will automatically open a browser window and load the development version of the website.
+You can develop design.home-assistant.io locally by checking out [the Home Assistant frontend repository](https://github.com/home-assistant/frontend). The command to run the gallery is `gallery/script/develop_gallery`. After the first build finishes, the command prints the local URL for the development version of the website.
 
 ## Creating a page
 

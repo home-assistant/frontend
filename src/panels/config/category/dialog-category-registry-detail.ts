@@ -15,13 +15,19 @@ import type {
 } from "../../../data/category_registry";
 import { internationalizationContext } from "../../../data/context";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { ValueChangedEvent } from "../../../types";
 import type { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
 
+interface CategoryFormState {
+  name: string;
+  icon: string | null;
+}
+
 @customElement("dialog-category-registry-detail")
-class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParams>(
-  LitElement
+class DialogCategoryDetail extends DirtyStateProviderMixin<CategoryFormState>()(
+  DialogMixin<CategoryRegistryDetailDialogParams>(LitElement)
 ) {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -44,6 +50,10 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
       this._name = this.params?.suggestedName || "";
       this._icon = null;
     }
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { name: this._name, icon: this._icon }
+    );
   }
 
   protected render() {
@@ -52,13 +62,14 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
     }
     const entry = this.params.entry;
     const nameInvalid = !this._isNameValid();
+    const isCreate = !entry;
     return html`
       <ha-dialog
         open
         header-title=${entry
           ? this._i18n.localize("ui.panel.config.category.editor.edit")
           : this._i18n.localize("ui.panel.config.category.editor.create")}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
       >
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -96,7 +107,9 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || !!this._submitting}
+            .disabled=${nameInvalid ||
+            !!this._submitting ||
+            (!isCreate && !this.isDirtyState)}
           >
             ${entry
               ? this._i18n.localize("ui.common.save")
@@ -114,15 +127,17 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState({ name: this._name, icon: this._icon });
   }
 
   private _iconChanged(ev: ValueChangedEvent<string>) {
     this._error = undefined;
     this._icon = ev.detail.value;
+    this._updateDirtyState({ name: this._name, icon: this._icon });
   }
 
   private async _updateEntry() {
-    const create = !this.params!.entry;
+    const create = !this.params?.entry;
     this._submitting = true;
     let newValue: CategoryRegistryEntry | undefined;
     try {
@@ -131,10 +146,11 @@ class DialogCategoryDetail extends DialogMixin<CategoryRegistryDetailDialogParam
         icon: this._icon || (create ? undefined : null),
       };
       if (create) {
-        newValue = await this.params!.createEntry!(values);
+        newValue = await this.params?.createEntry?.(values);
       } else {
-        newValue = await this.params!.updateEntry!(values);
+        newValue = await this.params?.updateEntry?.(values);
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =
