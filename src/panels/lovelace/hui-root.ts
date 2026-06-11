@@ -1356,6 +1356,13 @@ class HUIRoot extends LitElement {
           display: flex;
           align-items: center;
         }
+        .edit-mode .action-items ha-icon-button[disabled] {
+          --ha-color-on-disabled-quiet: color-mix(
+            in srgb,
+            var(--app-header-edit-text-color, #fff) 50%,
+            transparent
+          );
+        }
         ha-tab-group {
           --ha-tab-indicator-color: var(
             --app-header-selection-bar-color,

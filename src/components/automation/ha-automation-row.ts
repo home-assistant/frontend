@@ -161,6 +161,8 @@ export class HaAutomationRow extends LitElement {
     }
     .leading-icon-wrapper {
       padding-top: var(--ha-space-3);
+      position: relative;
+      z-index: 1;
     }
     ::slotted([slot="leading-icon"]) {
       color: var(--ha-color-on-neutral-quiet);

@@ -4,12 +4,14 @@ import type {
 } from "home-assistant-js-websocket";
 
 interface ImageEntityAttributes extends HassEntityAttributeBase {
-  access_token: string;
+  access_token?: string;
 }
 
 export interface ImageEntity extends HassEntityBase {
   attributes: ImageEntityAttributes;
 }
 
-export const computeImageUrl = (entity: ImageEntity): string =>
-  `/api/image_proxy/${entity.entity_id}?token=${entity.attributes.access_token}&state=${entity.state}`;
+export const computeImageUrl = (entity: ImageEntity): string | undefined =>
+  entity.attributes.access_token
+    ? `/api/image_proxy/${entity.entity_id}?token=${entity.attributes.access_token}&state=${entity.state}`
+    : undefined;

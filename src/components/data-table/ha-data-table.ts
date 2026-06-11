@@ -1465,6 +1465,11 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__table.auto-height .scroller {
           overflow-y: hidden !important;
         }
+
+        .mdc-data-table__table.auto-height lit-virtualizer {
+          overscroll-behavior-y: auto;
+        }
+
         .grows {
           flex-grow: 1;
           flex-shrink: 1;

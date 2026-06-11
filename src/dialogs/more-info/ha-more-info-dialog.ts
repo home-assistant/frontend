@@ -262,9 +262,8 @@ export class MoreInfoDialog extends SubscribeMixin(
   }
 
   private _shouldShowAddEntityTo(): boolean {
-    // When new_triggers_conditions labs feature is promoted, this whole check can be removed.
     return (
-      this._newTriggersAndConditions ||
+      (this._newTriggersAndConditions && !!this.hass.user?.is_admin) ||
       !!this.hass.auth.external?.config.hasEntityAddTo
     );
   }

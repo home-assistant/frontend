@@ -15,9 +15,13 @@ class MoreInfoImage extends LitElement {
     if (!this.hass || !this.stateObj) {
       return nothing;
     }
+    const imageUrl = computeImageUrl(this.stateObj);
+    if (!imageUrl) {
+      return nothing;
+    }
     return html`<img
       alt=${this.stateObj.attributes.friendly_name || this.stateObj.entity_id}
-      src=${this.hass.hassUrl(computeImageUrl(this.stateObj))}
+      src=${this.hass.hassUrl(imageUrl)}
     /> `;
   }
 
