@@ -1,3 +1,4 @@
+import { isSectionRef } from "../../../data/lovelace/config/section";
 import type { HuiSection } from "../sections/hui-section";
 
 /**
@@ -39,7 +40,8 @@ export function computeSectionsBackgroundAlignment(
     columnsUsed += span;
     currentRow.indices.push(idx);
 
-    if (section.config.background !== undefined) {
+    const sectionCfg = section.config;
+    if (!isSectionRef(sectionCfg) && sectionCfg.background !== undefined) {
       currentRow.hasBackground = true;
     }
   }
@@ -49,7 +51,8 @@ export function computeSectionsBackgroundAlignment(
   for (const row of rows) {
     if (!row.hasBackground) continue;
     for (const idx of row.indices) {
-      if (sections[idx].config.background === undefined) {
+      const cfg = sections[idx].config;
+      if (isSectionRef(cfg) || cfg.background === undefined) {
         sectionsNeedingMargin.add(idx);
       }
     }

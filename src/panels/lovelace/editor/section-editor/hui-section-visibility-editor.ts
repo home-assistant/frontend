@@ -1,7 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type {
+  LovelaceBaseSectionConfig,
+  LovelaceSectionRawConfig,
+} from "../../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
 import "../conditions/ha-card-conditions-editor";
@@ -14,7 +17,8 @@ export class HuiDialogEditSection extends LitElement {
   @property({ attribute: false }) public config!: LovelaceSectionRawConfig;
 
   render() {
-    const conditions = this.config.visibility ?? [];
+    const conditions =
+      (this.config as LovelaceBaseSectionConfig).visibility ?? [];
     return html`
       <ha-visibility-status
         .hass=${this.hass}
@@ -38,10 +42,10 @@ export class HuiDialogEditSection extends LitElement {
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     const conditions = ev.detail.value as Condition[];
-    const newConfig: LovelaceSectionRawConfig = {
+    const newConfig = {
       ...this.config,
       visibility: conditions,
-    };
+    } as LovelaceBaseSectionConfig;
     if (newConfig.visibility?.length === 0) {
       delete newConfig.visibility;
     }

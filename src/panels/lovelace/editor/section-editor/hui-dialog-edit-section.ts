@@ -10,6 +10,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-dialog-footer";
@@ -21,7 +22,11 @@ import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type {
+  LovelaceSharedSectionConfig,
+  LovelaceSectionRawConfig,
+} from "../../../../data/lovelace/config/section";
+import { isSectionRef } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { saveConfig } from "../../../../data/lovelace/config/types";
 import {
@@ -36,7 +41,13 @@ import {
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
-import { addSection, deleteSection, moveSection } from "../config-util";
+import {
+  addSection,
+  deleteSection,
+  getSharedSection,
+  moveSection,
+  updateSharedSection,
+} from "../config-util";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
@@ -72,6 +83,14 @@ export class HuiDialogEditSection
 
   @state() private _open = false;
 
+  @state() private _isRef = false;
+
+  @state() private _sharedSectionId?: string;
+
+  @state() private _editingSharedDef = false;
+
+  @state() private _layoutOnly = false;
+
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
@@ -89,13 +108,36 @@ export class HuiDialogEditSection
 
     this.lovelace = params.lovelace;
 
-    this._config = findLovelaceContainer(this._params.lovelaceConfig, [
+    const rawSection = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
       this._params.sectionIndex,
     ]);
+    this._isRef = isSectionRef(rawSection);
     this._viewConfig = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
-    ]);
+    ]) as LovelaceViewConfig;
+
+    if (this._isRef && isSectionRef(rawSection)) {
+      this._sharedSectionId = rawSection.section_ref;
+      const editShared = params.editSharedDefinition ?? true;
+      this._editingSharedDef = editShared;
+      this._layoutOnly = !editShared;
+
+      if (editShared) {
+        const sharedDef = getSharedSection(
+          this._params.lovelaceConfig,
+          rawSection.section_ref
+        );
+        this._config = sharedDef ?? rawSection;
+      } else {
+        this._config = rawSection;
+      }
+    } else {
+      this._sharedSectionId = undefined;
+      this._editingSharedDef = false;
+      this._layoutOnly = false;
+      this._config = rawSection;
+    }
   }
 
   public closeDialog() {
@@ -108,6 +150,10 @@ export class HuiDialogEditSection
     this._yamlMode = false;
     this._config = undefined;
     this._currTab = TABS[0];
+    this._isRef = false;
+    this._sharedSectionId = undefined;
+    this._editingSharedDef = false;
+    this._layoutOnly = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -116,14 +162,34 @@ export class HuiDialogEditSection
       return nothing;
     }
 
-    const heading = this.hass!.localize(
-      "ui.panel.lovelace.editor.edit_section.header"
-    );
+    const heading =
+      this._isRef && this._editingSharedDef
+        ? this.hass!.localize(
+            "ui.panel.lovelace.editor.section.edit_shared_section"
+          )
+        : this._isRef && this._layoutOnly
+          ? this.hass!.localize(
+              "ui.panel.lovelace.editor.section.edit_layout_options"
+            )
+          : this.hass!.localize("ui.panel.lovelace.editor.edit_section.header");
+
+    const sharedBanner =
+      this._isRef && this._editingSharedDef
+        ? html`
+            <ha-alert alert-type="info">
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.section.shared_section_banner"
+              )}
+            </ha-alert>
+          `
+        : nothing;
 
     let content: TemplateResult<1> | typeof nothing = nothing;
 
     if (this._yamlMode) {
+      // Not pixel perfect, so open to feedback here
       content = html`
+        ${sharedBanner}
         <ha-yaml-editor
           autofocus
           in-dialog
@@ -134,10 +200,12 @@ export class HuiDialogEditSection
       switch (this._currTab) {
         case "tab-settings":
           content = html`
+            ${sharedBanner}
             <hui-section-settings-editor
               .hass=${this.hass}
               .config=${this._config}
               .viewConfig=${this._viewConfig}
+              .layoutOnly=${this._layoutOnly}
               @value-changed=${this._configChanged}
             >
             </hui-section-settings-editor>
@@ -145,6 +213,7 @@ export class HuiDialogEditSection
           break;
         case "tab-visibility":
           content = html`
+            ${sharedBanner}
             <hui-section-visibility-editor
               .hass=${this.hass}
               .config=${this._config}
@@ -416,11 +485,26 @@ export class HuiDialogEditSection
     if (!this._params || !this._config) {
       return;
     }
-    const newConfig = updateLovelaceContainer(
-      this._params.lovelaceConfig,
-      [this._params.viewIndex, this._params.sectionIndex],
-      this._config
-    );
+
+    let newConfig: LovelaceConfig;
+
+    if (this._isRef && this._editingSharedDef && this._sharedSectionId) {
+      // Save changes to the shared section definition (affects all views)
+      const { id: _id, ...updates } = this
+        ._config as LovelaceSharedSectionConfig;
+      newConfig = updateSharedSection(
+        this._params.lovelaceConfig,
+        this._sharedSectionId,
+        updates
+      );
+    } else {
+      // Standard save: update the section (or ref's layout props) in the view
+      newConfig = updateLovelaceContainer(
+        this._params.lovelaceConfig,
+        [this._params.viewIndex, this._params.sectionIndex],
+        this._config
+      );
+    }
 
     this._params.saveConfig(newConfig);
     this.closeDialog();

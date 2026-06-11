@@ -1,8 +1,17 @@
 import deepClone from "deep-clone-simple";
+import { generateUuidV4 } from "../../../common/util/uuid";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
+import type {
+  LovelaceSectionRefConfig,
+  LovelaceSectionRawConfig,
+  LovelaceSharedSectionConfig,
+} from "../../../data/lovelace/config/section";
+import {
+  isSectionRef,
+  isStrategySection,
+} from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
@@ -353,6 +362,123 @@ export const moveSection = (
   newConfig = insertSection(newConfig, toPath[0], toPath[1], section);
 
   return newConfig;
+};
+
+export const getSharedSection = (
+  config: LovelaceConfig,
+  id: string
+): LovelaceSharedSectionConfig | undefined =>
+  config.shared_sections?.find((s) => s.id === id);
+
+// Count how many section refs across all views reference
+export const countSharedSectionRefs = (
+  config: LovelaceConfig,
+  id: string
+): number =>
+  config.views.reduce((total, view) => {
+    if (isStrategyView(view) || !view.sections) return total;
+    return (
+      total +
+      view.sections.filter((s) => isSectionRef(s) && s.section_ref === id)
+        .length
+    );
+  }, 0);
+
+// Create one and update the config with the new shared section definition
+export const createSharedSection = (
+  config: LovelaceConfig,
+  sectionConfig: Omit<LovelaceSharedSectionConfig, "id">
+): { config: LovelaceConfig; id: string } => {
+  const id = generateUuidV4();
+  const newSharedSection: LovelaceSharedSectionConfig = {
+    ...sectionConfig,
+    id,
+  };
+  return {
+    config: {
+      ...config,
+      shared_sections: [...(config.shared_sections ?? []), newSharedSection],
+    },
+    id,
+  };
+};
+
+export const updateSharedSection = (
+  config: LovelaceConfig,
+  id: string,
+  updates: Partial<Omit<LovelaceSharedSectionConfig, "id">>
+): LovelaceConfig => ({
+  ...config,
+  shared_sections: (config.shared_sections ?? []).map((s) =>
+    s.id === id ? { ...s, ...updates } : s
+  ),
+});
+
+export const deleteSharedSection = (
+  config: LovelaceConfig,
+  id: string
+): LovelaceConfig => {
+  const newSharedSections = (config.shared_sections ?? []).filter(
+    (s) => s.id !== id
+  );
+  const newViews = config.views.map((view) => {
+    if (isStrategyView(view) || !view.sections) return view;
+    const filteredSections = view.sections.filter(
+      (s) => !(isSectionRef(s) && s.section_ref === id)
+    );
+    if (filteredSections.length === view.sections.length) return view;
+    return { ...view, sections: filteredSections };
+  });
+  return {
+    ...config,
+    shared_sections: newSharedSections,
+    views: newViews,
+  };
+};
+
+// Promote to shared section and open the shared section editor for the new shared section
+// Note Erwin: if there are better approaches here, please let me know in the review :)
+export const promoteToSharedSection = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sectionIndex: number
+): LovelaceConfig => {
+  const view = findLovelaceContainer(config, [viewIndex]);
+  if (isStrategyView(view)) {
+    throw new Error("Cannot promote a section in a strategy view");
+  }
+  const section = view.sections?.[sectionIndex];
+  if (!section) {
+    throw new Error("Section does not exist");
+  }
+  if (isSectionRef(section) || isStrategySection(section)) {
+    throw new Error("Section is already a reference or strategy section");
+  }
+
+  const { column_span, row_span, ...sharedDef } = section;
+
+  const { config: newConfig, id } = createSharedSection(config, sharedDef);
+
+  const ref: LovelaceSectionRefConfig = {
+    section_ref: id,
+    ...(column_span !== undefined && { column_span }),
+    ...(row_span !== undefined && { row_span }),
+  };
+
+  const updatedView = {
+    ...view,
+    sections: view.sections!.map((s, idx) => (idx === sectionIndex ? ref : s)),
+  };
+  return updateLovelaceContainer(newConfig, [viewIndex], updatedView);
+};
+
+export const addSectionRef = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sharedSectionId: string
+): LovelaceConfig => {
+  const ref: LovelaceSectionRefConfig = { section_ref: sharedSectionId };
+  return addSection(config, viewIndex, ref);
 };
 
 export const addBadge = (

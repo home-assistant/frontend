@@ -16,6 +16,7 @@ import "../../../components/ha-svg-icon";
 import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import { isSectionRef } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
@@ -23,6 +24,7 @@ import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import "../components/hui-section-edit-mode";
 import { addSection, moveCard, moveSection } from "../editor/config-util";
+import { showAddSectionDialog } from "../editor/section-editor/show-add-section-dialog";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
   findLovelaceItems,
@@ -414,7 +416,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   );
 
   private _renderSection(section: HuiSection, alignBackground: boolean) {
-    const hasBackground = section.config.background !== undefined;
+    // Ref sections defer background/theme to the resolved shared definition;
+    // access only the base section props that are present on all config types.
+    // Again, i thought this would be the best, open to feedback here
+    const sectionConfig = section.config;
+    const hasBackground =
+      !isSectionRef(sectionConfig) && sectionConfig.background !== undefined;
 
     return html`
       <div
@@ -423,11 +430,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           "align-background": alignBackground,
         })}"
       >
-        ${hasBackground
+        ${hasBackground && !isSectionRef(sectionConfig)
           ? html`<hui-section-background
               .hass=${this.hass}
-              .background=${section.config.background}
-              .theme=${section.config.theme}
+              .background=${sectionConfig.background}
+              .theme=${sectionConfig.theme}
             ></hui-section-background>`
           : nothing}
         ${section}
@@ -436,12 +443,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _createSection(): void {
-    const newConfig = addSection(
-      this.lovelace!.config,
-      this.index!,
-      generateDefaultSection(this.hass.localize, true)
-    );
-    this.lovelace!.saveConfig(newConfig);
+    showAddSectionDialog(this, {
+      lovelace: this.lovelace!,
+      lovelaceConfig: this.lovelace!.config,
+      viewIndex: this.index!,
+      saveConfig: (newConfig) => {
+        this.lovelace!.saveConfig(newConfig);
+      },
+    });
   }
 
   private _sectionMoved(ev: CustomEvent) {

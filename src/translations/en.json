@@ -8913,7 +8913,8 @@
             "open": "Open dashboard menu",
             "raw_editor": "Raw configuration editor",
             "manage_dashboards": "Manage dashboards",
-            "manage_resources": "Manage resources"
+            "manage_resources": "Manage resources",
+            "manage_shared_sections": "Manage shared sections"
           },
           "common": {
             "edit": "Edit",
@@ -9183,7 +9184,29 @@
             "create_section": "Create section",
             "default_section_title": "New section",
             "imported_cards_title": "Imported cards",
-            "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Move them into sections to display them in your view."
+            "imported_cards_description": "These cards are imported from another view. They will only be displayed in edit mode. Move them into sections to display them in your view.",
+            "share_section": "Share section",
+            "unlink_section": "Unlink from shared",
+            "edit_shared_section": "Edit shared section",
+            "edit_layout_options": "Edit layout options",
+            "shared_indicator": "Shared section",
+            "shared_section_banner": "This section is shared. Changes will apply to all views using it."
+          },
+          "add_section": {
+            "header": "Add section",
+            "new_section": "New section",
+            "use_shared_section": "Use a shared section",
+            "no_shared_sections_yet": "No shared sections yet",
+            "no_shared_sections_hint": "Share an existing section using the three dotted menu on any section."
+          },
+          "manage_shared_sections": {
+            "header": "Shared sections",
+            "no_shared_sections": "No shared sections yet. Share a section from the edit mode menu.",
+            "cards_count": "{count} {count, plural, one {card} other {cards}}",
+            "used_in_views": "{count} {count, plural, one {view} other {views}}",
+            "delete_title": "Delete shared section",
+            "delete_warning": "This shared section is used in {count} {count, plural, one {view} other {views}}. All references will be removed.",
+            "unnamed_section": "Section {id}"
           },
           "delete_section": {
             "title": "Delete section",

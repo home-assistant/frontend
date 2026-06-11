@@ -14,6 +14,7 @@ import {
   mdiRefresh,
   mdiRobot,
   mdiShape,
+  mdiShareVariant,
   mdiSofa,
   mdiUndo,
   mdiViewDashboard,
@@ -86,6 +87,7 @@ import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-di
 import { showPersonDetailDialog } from "../config/person/show-dialog-person-detail";
 import { swapView } from "./editor/config-util";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
+import { showManageSharedSectionsDialog } from "./editor/section-editor/show-manage-shared-sections-dialog";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { getLovelaceStrategy } from "./strategies/get-strategy";
@@ -248,6 +250,14 @@ class HUIRoot extends LitElement {
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
         visible: this._editMode,
+        overflow: true,
+      },
+      {
+        icon: mdiShareVariant,
+        key: "ui.panel.lovelace.editor.menu.manage_shared_sections",
+        overflowAction: this._handleManageSharedSections,
+        visible:
+          this._editMode && !!this.lovelace?.config?.shared_sections?.length,
         overflow: true,
       },
       {
@@ -950,6 +960,15 @@ class HUIRoot extends LitElement {
 
   private _handleManageResources = () => {
     navigate("/config/lovelace/resources");
+  };
+
+  private _handleManageSharedSections = () => {
+    if (!this.lovelace) return;
+    showManageSharedSectionsDialog(this, {
+      lovelace: this.lovelace,
+      lovelaceConfig: this.lovelace.config,
+      saveConfig: this.lovelace.saveConfig,
+    });
   };
 
   private _handleUnusedEntities = () => {

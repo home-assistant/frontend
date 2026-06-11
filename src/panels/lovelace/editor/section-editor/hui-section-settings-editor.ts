@@ -12,6 +12,7 @@ import type {
 import {
   DEFAULT_SECTION_BACKGROUND_OPACITY,
   resolveSectionBackground,
+  type LovelaceBaseSectionConfig,
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -33,8 +34,17 @@ export class HuiDialogEditSection extends LitElement {
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
 
+  /** When true, only show layout fields (column_span / row_span) — used for shared section refs */
+  @property({ type: Boolean, attribute: "layout-only" }) public layoutOnly =
+    false;
+
   private _schema = memoizeOne(
-    (maxColumns: number, backgroundEnabled: boolean, localize: LocalizeFunc) =>
+    (
+      maxColumns: number,
+      backgroundEnabled: boolean,
+      localize: LocalizeFunc,
+      layoutOnly: boolean
+    ) =>
       [
         {
           name: "column_span",
@@ -46,78 +56,85 @@ export class HuiDialogEditSection extends LitElement {
             },
           },
         },
-        {
-          name: "background_enabled",
-          selector: { boolean: {} },
-        },
-        ...(backgroundEnabled
+        ...(!layoutOnly
           ? ([
               {
-                name: "background",
-                type: "expandable",
-                flatten: true,
-                expanded: true,
-                iconPath: mdiPalette,
-                schema: [
-                  {
-                    name: "background_color",
-                    selector: {
-                      ui_color: {
-                        extra_options: [
-                          {
-                            value: "default",
-                            label: localize(
-                              "ui.panel.lovelace.editor.edit_section.settings.background_color_default"
-                            ),
-                            display_color:
-                              "var(--ha-section-background-color, var(--secondary-background-color))",
+                name: "background_enabled",
+                selector: { boolean: {} },
+              },
+              ...(backgroundEnabled
+                ? ([
+                    {
+                      name: "background",
+                      type: "expandable",
+                      flatten: true,
+                      expanded: true,
+                      iconPath: mdiPalette,
+                      schema: [
+                        {
+                          name: "background_color",
+                          selector: {
+                            ui_color: {
+                              extra_options: [
+                                {
+                                  value: "default",
+                                  label: localize(
+                                    "ui.panel.lovelace.editor.edit_section.settings.background_color_default"
+                                  ),
+                                  display_color:
+                                    "var(--ha-section-background-color, var(--secondary-background-color))",
+                                },
+                              ],
+                            },
                           },
-                        ],
-                      },
+                        },
+                        {
+                          name: "background_opacity",
+                          selector: {
+                            number: {
+                              min: 0,
+                              max: 100,
+                              step: 1,
+                              unit_of_measurement: "%",
+                              mode: "slider",
+                            },
+                          },
+                        },
+                      ],
                     },
-                  },
-                  {
-                    name: "background_opacity",
-                    selector: {
-                      number: {
-                        min: 0,
-                        max: 100,
-                        step: 1,
-                        unit_of_measurement: "%",
-                        mode: "slider",
-                      },
-                    },
-                  },
-                ],
+                  ] as const satisfies readonly HaFormSchema[])
+                : []),
+              {
+                name: "theme",
+                selector: {
+                  theme: {},
+                },
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        {
-          name: "theme",
-          selector: {
-            theme: {},
-          },
-        },
       ] as const satisfies HaFormSchema[]
   );
 
   render() {
-    const backgroundEnabled = this.config.background !== undefined;
-    const background = resolveSectionBackground(this.config.background);
+    const baseConfig = this.config as LovelaceBaseSectionConfig;
+    const backgroundEnabled =
+      !this.layoutOnly && baseConfig.background !== undefined;
+    const background = resolveSectionBackground(baseConfig.background);
 
     const data: SettingsData = {
-      column_span: this.config.column_span || 1,
+      column_span: baseConfig.column_span || 1,
       background_enabled: backgroundEnabled,
       background_color: background?.color ?? "default",
       background_opacity:
         background?.opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
-      theme: this.config.theme,
+      theme: baseConfig.theme,
     };
 
     const schema = this._schema(
       this.viewConfig.max_columns || 4,
       backgroundEnabled,
-      this.hass.localize
+      this.hass.localize,
+      this.layoutOnly
     );
 
     return html`
@@ -150,29 +167,30 @@ export class HuiDialogEditSection extends LitElement {
     ev.stopPropagation();
     const newData = ev.detail.value as SettingsData;
 
-    const newConfig: LovelaceSectionRawConfig = {
+    const newConfig = {
       ...this.config,
       column_span: newData.column_span,
-    };
+    } as LovelaceBaseSectionConfig & { type?: string; cards?: unknown[] };
 
-    if (newData.background_enabled) {
-      const hasCustomColor =
-        newData.background_color !== undefined &&
-        newData.background_color !== "default";
+    if (!this.layoutOnly) {
+      if (newData.background_enabled) {
+        const hasCustomColor =
+          newData.background_color !== undefined &&
+          newData.background_color !== "default";
 
-      newConfig.background = {
-        ...(hasCustomColor ? { color: newData.background_color } : {}),
-        opacity: newData.background_opacity!,
-      };
-    } else {
-      delete newConfig.background;
-    }
+        newConfig.background = {
+          ...(hasCustomColor ? { color: newData.background_color } : {}),
+          opacity: newData.background_opacity!,
+        };
+      } else {
+        delete newConfig.background;
+      }
 
-    // Only include theme if it's set.
-    if (newData.theme) {
-      newConfig.theme = newData.theme;
-    } else {
-      delete newConfig.theme;
+      if (newData.theme) {
+        newConfig.theme = newData.theme;
+      } else {
+        delete newConfig.theme;
+      }
     }
 
     fireEvent(this, "value-changed", { value: newConfig });

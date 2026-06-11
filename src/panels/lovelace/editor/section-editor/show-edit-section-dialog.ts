@@ -8,6 +8,7 @@ export interface EditSectionDialogParams {
   saveConfig: (config: LovelaceConfig) => void;
   viewIndex: number;
   sectionIndex: number;
+  editSharedDefinition?: boolean;
 }
 
 const importEditSectionDialog = () => import("./hui-dialog-edit-section");
