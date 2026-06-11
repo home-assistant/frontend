@@ -24,16 +24,24 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
 
+type CostType = "no-costs" | "number" | "entity" | "statistic";
+
+interface WaterFormState {
+  source: WaterSourceTypeEnergyPreference;
+  costs: CostType;
+}
+
 const flowRateUnitClasses = ["volume_flow_rate"];
 
 @customElement("dialog-energy-water-settings")
 export class DialogEnergyWaterSettings
-  extends LitElement
+  extends DirtyStateProviderMixin<WaterFormState>()(LitElement)
   implements HassDialog<EnergySettingsWaterDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -44,7 +52,7 @@ export class DialogEnergyWaterSettings
 
   @state() private _source?: WaterSourceTypeEnergyPreference;
 
-  @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
+  @state() private _costs?: CostType;
 
   @state() private _water_units?: string[];
 
@@ -84,6 +92,10 @@ export class DialogEnergyWaterSettings
       .filter((id) => id && id !== this._source?.stat_rate) as string[];
 
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      { source: this._source!, costs: this._costs! }
+    );
   }
 
   public closeDialog() {
@@ -121,7 +133,7 @@ export class DialogEnergyWaterSettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.water.dialog.header"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -259,7 +271,8 @@ export class DialogEnergyWaterSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._source.stat_energy_from}
+            .disabled=${!this._source!.stat_energy_from ||
+            (!!this._params?.source && !this.isDirtyState)}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -270,11 +283,8 @@ export class DialogEnergyWaterSettings
   }
 
   private _handleCostChanged(ev: Event) {
-    this._costs = (ev.currentTarget as HaRadioGroup).value as
-      | "no-costs"
-      | "number"
-      | "entity"
-      | "statistic";
+    this._costs = (ev.currentTarget as HaRadioGroup).value as CostType;
+    this._updateFormDirtyState();
   }
 
   private _numberPriceChanged(ev: InputEvent) {
@@ -284,6 +294,7 @@ export class DialogEnergyWaterSettings
       entity_energy_price: null,
       stat_cost: null,
     };
+    this._updateFormDirtyState();
   }
 
   private _priceStatChanged(ev: CustomEvent) {
@@ -293,6 +304,7 @@ export class DialogEnergyWaterSettings
       number_energy_price: null,
       stat_cost: ev.detail.value,
     };
+    this._updateFormDirtyState();
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
@@ -302,6 +314,7 @@ export class DialogEnergyWaterSettings
       number_energy_price: null,
       stat_cost: null,
     };
+    this._updateFormDirtyState();
   }
 
   private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
@@ -309,6 +322,7 @@ export class DialogEnergyWaterSettings
       ...this._source!,
       stat_rate: ev.detail.value || undefined,
     };
+    this._updateFormDirtyState();
   }
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
@@ -338,6 +352,7 @@ export class DialogEnergyWaterSettings
         this.requestUpdate("_params");
       }
     }
+    this._updateFormDirtyState();
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -348,6 +363,11 @@ export class DialogEnergyWaterSettings
     if (!this._source.name) {
       delete this._source.name;
     }
+    this._updateFormDirtyState();
+  }
+
+  private _updateFormDirtyState(): void {
+    this._updateDirtyState({ source: this._source!, costs: this._costs! });
   }
 
   private async _save() {
@@ -358,6 +378,7 @@ export class DialogEnergyWaterSettings
         this._source!.stat_cost = null;
       }
       await this._params!.saveCallback(this._source!);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
