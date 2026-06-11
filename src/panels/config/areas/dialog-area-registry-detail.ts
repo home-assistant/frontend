@@ -412,7 +412,9 @@ class DialogAreaDetail
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
+            .disabled=${nameInvalid ||
+            this._submitting ||
+            (!!this._params?.entry && !this.isDirtyState)}
           >
             ${entry
               ? this.hass.localize("ui.common.save")
