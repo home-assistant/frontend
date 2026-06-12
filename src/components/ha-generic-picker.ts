@@ -14,7 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { tinykeys } from "tinykeys";
 import { fireEvent } from "../common/dom/fire_event";
-import { authContext } from "../data/context";
+import { configContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import { isIosApp } from "../util/is_ios";
@@ -77,7 +77,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     | "bottom-start"
     | "bottom-end"
     | "left-start"
-    | "left-end" = "bottom-start";
+    | "left-end" = "bottom";
 
   /** If set picker shows an add button instead of textbox when value isn't set */
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
@@ -109,13 +109,15 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @property({ attribute: "custom-value-label" })
   public customValueLabel?: string;
 
+  @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   @state()
-  @consume({ context: authContext, subscribe: true })
-  private auth?: ContextType<typeof authContext>;
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
 
   @state() private _opened = false;
 
@@ -145,7 +147,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _unsubscribeTinyKeys?: () => void;
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("value")) {
       this._setUnknownValue();
     }
@@ -172,7 +174,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           <slot name="field">
             ${this.addButtonLabel && !this.value
               ? html`<ha-button
-                  size="small"
+                  size="s"
                   appearance="filled"
                   @click=${this.open}
                   .disabled=${this.disabled}
@@ -271,6 +273,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
+        .noSort=${this.noSort}
       ></ha-picker-combo-box>
     `;
   }
@@ -308,16 +311,24 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _initialFieldValue?: string;
 
+  public refreshItems() {
+    this._comboBox?.refreshItems();
+  }
+
   private _dialogOpened = () => {
     this._opened = true;
+    fireEvent(this, "picker-opened");
     requestAnimationFrame(() => {
       // Set initial field value if needed
       if (this._initialFieldValue) {
         this._comboBox?.setFieldValue(this._initialFieldValue);
         this._initialFieldValue = undefined;
       }
-      if (this.auth?.external && isIosApp(this.auth.external)) {
-        this.auth.external.fireMessage({
+      if (
+        this._hassConfig?.auth.external &&
+        isIosApp(this._hassConfig.auth.external)
+      ) {
+        this._hassConfig.auth.external.fireMessage({
           type: "focus_element",
           payload: {
             element_id: "combo-box",
@@ -441,10 +452,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         }
 
         wa-popover::part(body) {
-          width: max(var(--body-width), 250px);
+          width: var(--ha-generic-picker-width, max(var(--body-width), 250px));
           max-width: var(
             --ha-generic-picker-max-width,
-            max(var(--body-width), 250px)
+            var(--ha-generic-picker-width, max(var(--body-width), 250px))
           );
           max-height: 500px;
           height: 70vh;
@@ -465,6 +476,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           --ha-bottom-sheet-padding: 0;
           --ha-bottom-sheet-surface-background: var(--card-background-color);
           --ha-bottom-sheet-border-radius: var(--ha-border-radius-2xl);
+          --ha-bottom-sheet-content-padding: 0 var(--safe-area-inset-right)
+            var(--safe-area-inset-bottom) var(--safe-area-inset-left);
         }
 
         ha-picker-field.opened {
@@ -482,5 +495,6 @@ declare global {
 
   interface HASSDomEvents {
     "picker-closed": undefined;
+    "picker-opened": undefined;
   }
 }

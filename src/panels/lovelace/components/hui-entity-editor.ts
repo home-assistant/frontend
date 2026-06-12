@@ -24,6 +24,8 @@ export class HuiEntityEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public required = true;
+
   @property({ attribute: "can-edit", type: Boolean }) public canEdit?;
 
   private _entityKeys = new WeakMap<EntityConfig, string>();
@@ -43,7 +45,10 @@ export class HuiEntityEditor extends LitElement {
       stateObj &&
       entityUseDeviceName(stateObj, this.hass.entities, this.hass.devices);
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const primary =
       (stateObj &&
@@ -125,10 +130,11 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-        this.hass.localize("ui.panel.lovelace.editor.card.generic.entities") +
-          " (" +
-          this.hass.localize("ui.panel.lovelace.editor.card.config.required") +
-          ")"}
+        `${this.hass.localize("ui.panel.lovelace.editor.card.generic.entities")}${
+          this.required
+            ? ` (${this.hass.localize("ui.panel.lovelace.editor.card.config.required")})`
+            : ""
+        }`}
       </h3>
       ${this.canEdit
         ? html`
@@ -146,7 +152,7 @@ export class HuiEntityEditor extends LitElement {
               </ha-sortable>
             </div>
           `
-        : html` <ha-sortable
+        : html`<ha-sortable
             handle-selector=".handle"
             @item-moved=${this._entityMoved}
           >
@@ -223,9 +229,6 @@ export class HuiEntityEditor extends LitElement {
   }
 
   static styles = css`
-    ha-entity-picker {
-      margin-top: 8px;
-    }
     .entity {
       display: flex;
       align-items: center;
@@ -244,9 +247,19 @@ export class HuiEntityEditor extends LitElement {
     .entity ha-entity-picker {
       flex-grow: 1;
     }
+    ha-entity-picker:is([add-button]) {
+      display: block;
+      margin-inline-start: var(--ha-space-1);
+      margin-bottom: var(--ha-space-1);
+    }
     ha-md-list {
       gap: 8px;
       padding-top: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-md-list:has(> *) {
+      margin-bottom: var(--ha-space-2);
     }
     ha-md-list-item {
       border: 1px solid var(--divider-color);

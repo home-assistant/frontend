@@ -4,7 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { keyed } from "lit/directives/keyed";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-areas-display-editor";
 import type { AreasDisplayValue } from "../../../../../components/ha-areas-display-editor";
 import "../../../../../components/ha-areas-floors-display-editor";
@@ -12,6 +15,7 @@ import type { AreasFloorsDisplayValue } from "../../../../../components/ha-areas
 import "../../../../../components/ha-entities-display-editor";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
+import type { HaIconButton } from "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
 import type { DisplayItem } from "../../../../../components/ha-items-display-editor";
 import "../../../../../components/ha-svg-icon";
@@ -193,9 +197,11 @@ export class HuiAreasDashboardStrategyEditor
     `;
   };
 
-  private _toggleAreaLargeCard = (ev: Event) => {
+  private _toggleAreaLargeCard = (
+    ev: HASSDomCurrentTargetEvent<HaIconButton & { area: string }>
+  ) => {
     ev.stopPropagation();
-    const area = (ev.currentTarget! as any).area as string;
+    const area = ev.currentTarget.area;
     const newConfig: AreasDashboardStrategyConfig = {
       ...this._config!,
       areas_options: {
@@ -238,9 +244,11 @@ export class HuiAreasDashboardStrategyEditor
     })
   );
 
-  private _editArea(ev: Event): void {
+  private _editArea(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { area: AreaRegistryEntry }>
+  ): void {
     ev.stopPropagation();
-    const area = (ev.currentTarget! as any).area as AreaRegistryEntry;
+    const area = ev.currentTarget.area;
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: (values) =>

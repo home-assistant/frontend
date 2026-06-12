@@ -15,20 +15,33 @@ import {
 import type { HaEntityPickerEntityFilterFunc } from "../entity/entity";
 import type { EntityRegistryDisplayEntry } from "../entity/entity_registry";
 
+export interface GetAreasOptions {
+  includeDomains?: string[];
+  excludeDomains?: string[];
+  includeDeviceClasses?: string[];
+  deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  entityFilter?: HaEntityPickerEntityFilterFunc;
+  excludeAreas?: string[];
+  idPrefix?: string;
+}
+
 export const getAreas = (
   haAreas: HomeAssistant["areas"],
   haFloors: HomeAssistant["floors"],
   haDevices: HomeAssistant["devices"],
   haEntities: HomeAssistant["entities"],
   haStates: HomeAssistant["states"],
-  includeDomains?: string[],
-  excludeDomains?: string[],
-  includeDeviceClasses?: string[],
-  deviceFilter?: HaDevicePickerDeviceFilterFunc,
-  entityFilter?: HaEntityPickerEntityFilterFunc,
-  excludeAreas?: string[],
-  idPrefix = ""
+  options?: GetAreasOptions
 ): PickerComboBoxItem[] => {
+  const {
+    includeDomains,
+    excludeDomains,
+    includeDeviceClasses,
+    deviceFilter,
+    entityFilter,
+    excludeAreas,
+    idPrefix = "",
+  } = options ?? {};
   let deviceEntityLookup: DeviceEntityDisplayLookup = {};
   let inputDevices: DeviceRegistryEntry[] | undefined;
   let inputEntities: EntityRegistryDisplayEntry[] | undefined;

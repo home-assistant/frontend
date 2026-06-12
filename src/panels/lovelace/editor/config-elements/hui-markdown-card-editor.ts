@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,7 +13,14 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import type { MarkdownCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import {
+  type UiAction,
+  supportedActions,
+} from "../../components/hui-action-editor";
+
+const TAP_ACTIONS: UiAction[] = ["navigate", "url", "perform-action", "none"];
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -20,6 +28,11 @@ const cardConfigStruct = assign(
     text_only: optional(boolean()),
     title: optional(string()),
     content: string(),
+    tap_action: optional(supportedActions(actionConfigStruct, TAP_ACTIONS)),
+    hold_action: optional(supportedActions(actionConfigStruct, TAP_ACTIONS)),
+    double_tap_action: optional(
+      supportedActions(actionConfigStruct, TAP_ACTIONS)
+    ),
   })
 );
 
@@ -67,6 +80,43 @@ export class HuiMarkdownCardEditor
           name: "content",
           required: true,
           selector: { template: { preview: false } },
+        },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "actions_warning",
+              type: "constant",
+            },
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  actions: TAP_ACTIONS,
+                  default_action: "none",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      actions: TAP_ACTIONS,
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
+          ],
         },
       ] as const satisfies HaFormSchema[]
   );
@@ -119,6 +169,20 @@ export class HuiMarkdownCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.markdown.${schema.name}`
         );
+      case "interactions":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.interactions"
+        );
+      case "actions_warning":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.markdown.actions_warning"
+        );
+      case "tap_action":
+      case "hold_action":
+      case "double_tap_action":
+        return `${this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        )} (${this.hass!.localize("ui.panel.lovelace.editor.card.config.optional")})`;
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`

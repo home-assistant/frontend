@@ -87,7 +87,7 @@ export const redirectWithAuthCode = (
   // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
   if (!url.includes("?")) {
     url += "?";
-  } else if (!url.endsWith("&")) {
+  } else if (!url.endsWith("?") && !url.endsWith("&")) {
     url += "&";
   }
 

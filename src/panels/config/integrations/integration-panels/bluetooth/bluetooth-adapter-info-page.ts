@@ -19,6 +19,7 @@ import type {
   HaScannerType,
 } from "../../../../../data/bluetooth";
 import {
+  isScannerStateMismatch,
   subscribeBluetoothConnectionAllocations,
   subscribeBluetoothScannerState,
   subscribeBluetoothScannersDetails,
@@ -285,9 +286,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
       const scannerType: HaScannerType =
         scannerDetails?.scanner_type ?? "unknown";
       const isRemoteScanner = scannerType === "remote";
-      const hasMismatch =
-        scannerState &&
-        scannerState.current_mode !== scannerState.requested_mode;
+      const hasMismatch = scannerState && isScannerStateMismatch(scannerState);
 
       const allocations = scannerDetails
         ? this._connectionAllocationData.find(
@@ -435,6 +434,13 @@ export class BluetoothAdapterInfoPage extends LitElement {
     if (!scannerState) {
       return this.hass.localize(
         "ui.panel.config.bluetooth.scanner_state_unknown"
+      );
+    }
+
+    if (scannerState.requested_mode === "auto") {
+      return this.hass.localize(
+        "ui.panel.config.bluetooth.scanning_mode_auto_with_current",
+        { current: this._formatMode(scannerState.current_mode) }
       );
     }
 

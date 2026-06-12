@@ -49,12 +49,17 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="large"
         header-title=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
-          { device: computeDeviceNameDisplay(this._params.device, this.hass) }
+          {
+            device: computeDeviceNameDisplay(
+              this._params.device,
+              this.hass.localize,
+              this.hass.states
+            ),
+          }
         )}
         @closed=${this._dialogClosed}
       >

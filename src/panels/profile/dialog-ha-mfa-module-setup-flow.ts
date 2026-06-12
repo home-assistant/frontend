@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
@@ -82,7 +82,6 @@ class HaMfaModuleSetupFlow extends LitElement {
     }
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         prevent-scrim-close
         header-title=${this._computeStepTitle()}
@@ -209,7 +208,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     ];
   }
 
-  protected firstUpdated(changedProperties) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.hass.loadBackendTranslation("mfa_setup", "auth");
     this.addEventListener("keypress", (ev) => {

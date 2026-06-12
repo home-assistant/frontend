@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   any,
   array,
@@ -17,7 +18,6 @@ import {
   type,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { customType } from "../../../../common/structs/is-custom-type";
@@ -25,11 +25,13 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-theme-picker";
+import "../../../../components/input/ha-input";
 import { isCustomType } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
+import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
 import type { EntitiesCardConfig } from "../../cards/types";
+import { processConfigEntities } from "../../common/process-config-entities";
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
@@ -43,13 +45,11 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import type {
-  EditorTarget,
   EditDetailElementEvent,
+  EditorTarget,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
-import { processConfigEntities } from "../../common/process-config-entities";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
@@ -249,7 +249,7 @@ export class HuiEntitiesCardEditor
 
     return html`
       <div class="card-config">
-        <ha-textfield
+        <ha-input
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
           )} (${this.hass.localize(
@@ -258,7 +258,7 @@ export class HuiEntitiesCardEditor
           .value=${this._title}
           .configValue=${"title"}
           @input=${this._valueChanged}
-        ></ha-textfield>
+        ></ha-input>
         <ha-theme-picker
           .hass=${this.hass}
           .value=${this._theme}
@@ -430,12 +430,11 @@ export class HuiEntitiesCardEditor
         }
 
         hui-header-footer-editor {
-          padding-top: 4px;
+          padding-top: var(--ha-space-1);
         }
 
-        ha-textfield {
-          display: block;
-          margin-bottom: 16px;
+        ha-input {
+          --ha-input-padding-bottom: var(--ha-space-4);
         }
       `,
     ];

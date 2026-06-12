@@ -10,10 +10,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
+import { resolveThemeColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { getEntityLocation } from "../../../common/entity/get_entity_location";
 import { deepEqual } from "../../../common/util/deep-equal";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-alert";
@@ -25,6 +27,7 @@ import type {
   HaMapEntity,
   HaMapPathPoint,
   HaMapPaths,
+  MapCardMarkerLabelMode,
 } from "../../../components/map/ha-map";
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
@@ -47,7 +50,7 @@ export const DEFAULT_ZOOM = 14;
 
 interface GeoEntity {
   entity_id: string;
-  label_mode?: "state" | "attribute" | "name" | "icon";
+  label_mode?: MapCardMarkerLabelMode;
   attribute?: string;
   unit?: string;
   focus: boolean;
@@ -88,10 +91,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     const personSources = new Set<string>();
     const locationEntities: string[] = [];
     Object.values(hass.states).forEach((entity) => {
-      if (
-        !("latitude" in entity.attributes) ||
-        !("longitude" in entity.attributes)
-      ) {
+      if (!getEntityLocation(entity, hass.states)) {
         return;
       }
       locationEntities.push(entity.entity_id);
@@ -268,6 +268,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return true;
     }
 
+    // Allow update when components list changes so we can retry subscription
+    if (
+      !this._subscribed &&
+      !this._error &&
+      this._config &&
+      oldHass.config.components !== this.hass.config.components
+    ) {
+      return true;
+    }
+
     if (changedProps.has("_stateHistory")) {
       return true;
     }
@@ -283,7 +293,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       : hasConfigChanged(this, changedProps);
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (
       this._config?.show_all &&
@@ -315,7 +325,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entity.entity_id)
         );
-        return checkConditionsMet(conditionWithEntity, this.hass!);
+        return checkConditionsMet(conditionWithEntity, this.hass!, {});
       });
     } else {
       this._filteredMapEntities = this._mapEntities;
@@ -336,7 +346,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
+      !isComponentLoaded(this.hass!.config, "history") ||
       this._subscribed ||
       !(this._config?.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)
     ) {
@@ -365,14 +375,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _unsubscribeHistory() {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
 
   protected updated(changedProps: PropertyValues): void {
     if (this._configEntities?.length) {
-      if (!this._subscribed || changedProps.has("_config")) {
+      if (
+        (this.isConnected && !this._subscribed && !this._error) ||
+        changedProps.has("_config")
+      ) {
         this._unsubscribeHistory();
         this._subscribeHistory();
       }
@@ -422,8 +435,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     const computedStyles = getComputedStyle(this);
     color = getColorByIndex(this._colorIndex, computedStyles);
-    this._colorIndex++;
-    this._colorDict[entityId] = color;
+    if (color) {
+      this._colorIndex++;
+      this._colorDict[entityId] = color;
+    }
     return color;
   }
 
@@ -465,7 +480,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return [
       ...(this._configEntities || []).map((entityConf) => ({
         entity_id: entityConf.entity,
-        color: this._getColor(entityConf.entity),
+        color: entityConf.color
+          ? resolveThemeColor(entityConf.color)
+          : this._getColor(entityConf.entity),
         label_mode: entityConf.label_mode,
         attribute: entityConf.attribute,
         unit: entityConf.unit,
@@ -525,7 +542,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           points,
           name,
           fullDatetime: (config.hours_to_show ?? DEFAULT_HOURS_TO_SHOW) > 144,
-          color: this._getColor(entityId),
+          color: entityConfig?.color
+            ? resolveThemeColor(entityConfig.color)
+            : this._getColor(entityId),
           gradualOpacity: 0.8,
         });
       }

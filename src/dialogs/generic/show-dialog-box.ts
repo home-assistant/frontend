@@ -5,6 +5,7 @@ interface BaseDialogBoxParams {
   confirmText?: string;
   text?: string | TemplateResult;
   title?: string;
+  subtitle?: string;
   warning?: boolean;
 }
 
@@ -22,6 +23,7 @@ export interface ConfirmationDialogParams extends BaseDialogBoxParams {
 
 export interface PromptDialogParams extends BaseDialogBoxParams {
   inputLabel?: string;
+  inputSuffix?: string;
   dismissText?: string;
   inputType?: string;
   defaultValue?: string;
@@ -31,6 +33,7 @@ export interface PromptDialogParams extends BaseDialogBoxParams {
   inputMin?: number | string;
   inputMax?: number | string;
   action?: (value?: string) => Promise<void>;
+  multiline?: boolean;
 }
 
 export interface DialogBoxParams

@@ -189,6 +189,20 @@ export const updateBackupConfig = (
   config: BackupMutableConfig
 ) => hass.callWS({ type: "backup/config/update", ...config });
 
+export const saveBackupConfig = (hass: HomeAssistant, config: BackupConfig) =>
+  updateBackupConfig(hass, {
+    create_backup: {
+      agent_ids: config.create_backup.agent_ids,
+      include_folders: config.create_backup.include_folders ?? [],
+      include_database: config.create_backup.include_database,
+      include_addons: config.create_backup.include_addons ?? [],
+      include_all_addons: config.create_backup.include_all_addons,
+      password: config.create_backup.password,
+    },
+    retention: config.retention,
+    schedule: config.schedule,
+  });
+
 export const getBackupDownloadUrl = (
   id: string,
   agentId: string,

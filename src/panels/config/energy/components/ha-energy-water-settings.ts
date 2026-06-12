@@ -95,7 +95,8 @@ export class EnergyWaterSettings extends LitElement {
                             ></ha-icon>`
                           : html`<ha-svg-icon .path=${mdiWater}></ha-svg-icon>`}
                         <span class="content"
-                          >${getStatisticLabel(
+                          >${source.name ||
+                          getStatisticLabel(
                             this.hass,
                             source.stat_energy_from,
                             this.statsMetadata?.[source.stat_energy_from]
@@ -122,11 +123,7 @@ export class EnergyWaterSettings extends LitElement {
               `
             : ""}
           <div class="row">
-            <ha-button
-              @click=${this._addSource}
-              appearance="filled"
-              size="small"
-            >
+            <ha-button @click=${this._addSource} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.water.add_water_source"
@@ -140,6 +137,7 @@ export class EnergyWaterSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsWaterDialog(this, {
+      statsMetadata: this.statsMetadata,
       water_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "water"
       ) as WaterSourceTypeEnergyPreference[],
@@ -157,8 +155,8 @@ export class EnergyWaterSettings extends LitElement {
     const origSource: WaterSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsWaterDialog(this, {
+      statsMetadata: this.statsMetadata,
       source: { ...origSource },
-      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       water_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "water"
       ) as WaterSourceTypeEnergyPreference[],

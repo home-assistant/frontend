@@ -79,6 +79,7 @@ export const computeInitialHaFormData = (
         "attribute" in selector ||
         "file" in selector ||
         "icon" in selector ||
+        "serial_port" in selector ||
         "template" in selector ||
         "text" in selector ||
         "theme" in selector ||
@@ -142,6 +143,19 @@ export const computeInitialHaFormData = (
             ])[firstChoice],
           };
         }
+      } else if ("numeric_threshold" in selector) {
+        const mode = selector.numeric_threshold?.mode ?? "crossed";
+        const type = mode === "changed" ? "any" : "above";
+        data[field.name] =
+          type === "any"
+            ? { type }
+            : {
+                type,
+                value: {
+                  number: selector.numeric_threshold?.number?.min ?? 0,
+                  active_choice: "number",
+                },
+              };
       } else {
         throw new Error(
           `Selector ${Object.keys(selector)[0]} not supported in initial form data`

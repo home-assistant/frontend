@@ -1,5 +1,6 @@
 import colors from "color-name";
 import { expandHex } from "./hex";
+import { resolveThemeColor } from "./compute-color";
 
 const rgb_hex = (component: number): string => {
   const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
@@ -130,26 +131,43 @@ export const rgb2hs = (rgb: [number, number, number]): [number, number] =>
 export const hs2rgb = (hs: [number, number]): [number, number, number] =>
   hsv2rgb([hs[0], hs[1], 255]);
 
-export function theme2hex(themeColor: string): string {
-  if (themeColor.startsWith("#")) {
-    if (themeColor.length === 4 || themeColor.length === 5) {
-      const c = themeColor;
+/**
+ * Attempt to get a HEX color from a color defined in different formats:
+ * HEX, rgb/rgba, named color
+ * @param color - Color (HEX, rgb/rgba, named color) to be converted to HEX
+ * @returns HEX color
+ */
+export function theme2hex(color: string): string {
+  // Attempting to find a HEX pattern in the input string
+  if (color.startsWith("#")) {
+    if (color.length === 4 || color.length === 5) {
+      const c = color;
       // Convert short-form hex (#abc) to 6 digit (#aabbcc). Ignore alpha channel.
       return `#${c[1]}${c[1]}${c[2]}${c[2]}${c[3]}${c[3]}`;
     }
-    if (themeColor.length === 9) {
+    if (color.length === 9) {
       // Ignore alpha channel.
-      return themeColor.substring(0, 7);
+      return color.substring(0, 7);
     }
-    return themeColor;
+    return color;
   }
 
-  const rgbFromColorName = colors[themeColor.toLowerCase()];
-  if (rgbFromColorName) {
-    return rgb2hex(rgbFromColorName);
+  // Attempting to find a match in a HA Frontend theme colors
+  const themeColor = resolveThemeColor(color.toLowerCase());
+  if (themeColor !== color.toLowerCase()) {
+    // theme color is recognized, now re-attempt
+    return theme2hex(themeColor);
   }
 
-  const rgbMatch = themeColor.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
+  // Attempting to find a match in a web colors array
+  const rgbFromWebColor = colors[color.toLowerCase()];
+  if (rgbFromWebColor) {
+    // HEX color is recognized for the input named color
+    return rgb2hex(rgbFromWebColor);
+  }
+
+  // Attempting to find an RGB pattern in the input string
+  const rgbMatch = color.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
   if (rgbMatch) {
     const [, r, g, b] = rgbMatch.map(Number);
     return rgb2hex([r, g, b]);
@@ -158,5 +176,5 @@ export function theme2hex(themeColor: string): string {
   // We have a named color, and there's nothing in the table,
   // so nothing further we can do with it.
   // Compare/border/background color will all be the same.
-  return themeColor;
+  return color;
 }

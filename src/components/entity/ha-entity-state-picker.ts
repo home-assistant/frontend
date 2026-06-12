@@ -115,20 +115,35 @@ export class HaEntityStatePicker extends LitElement {
     return html`<span slot="headline">${item?.primary ?? value}</span>`;
   };
 
+  private _computeDefaultLabel(): string {
+    // When an attribute is configured, default to the attribute's friendly
+    // name (e.g. "Source") instead of the generic "State". Requires a concrete
+    // entity to resolve the translated name; otherwise fall back to "State".
+    if (this.attribute && this.entityId) {
+      const entityId = ensureArray(this.entityId)[0];
+      const stateObj = entityId ? this.hass.states[entityId] : undefined;
+      if (stateObj) {
+        return this.hass.formatEntityAttributeName(stateObj, this.attribute);
+      }
+    }
+    return this.hass.localize("ui.components.entity.entity-state-picker.state");
+  }
+
   protected render() {
     if (!this.hass) {
       return nothing;
     }
 
+    const noEntity = !ensureArray(this.entityId)?.length;
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
-        .disabled=${this.disabled || !this.entityId}
+        .disabled=${this.disabled || noEntity}
         .autofocus=${this.autofocus}
         .required=${this.required}
-        .label=${this.label ??
-        this.hass.localize("ui.components.entity.entity-state-picker.state")}
+        .label=${this.label ?? this._computeDefaultLabel()}
         .helper=${this.helper}
         .value=${this.value}
         .getItems=${this._getFilteredItems}

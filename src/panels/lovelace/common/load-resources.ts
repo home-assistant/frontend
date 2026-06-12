@@ -3,40 +3,65 @@ import type { LovelaceResource } from "../../../data/lovelace/resource";
 import type { HomeAssistant } from "../../../types";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
-const CSS_CACHE = {};
-const JS_CACHE = {};
+const CSS_CACHE: Record<string, Promise<unknown>> = {};
+const JS_CACHE: Record<string, Promise<unknown>> = {};
+
+const _loadLovelaceResource = (
+  resource: LovelaceResource,
+  hass: HomeAssistant
+): Promise<unknown> | undefined => {
+  const normalizedUrl = new URL(
+    resource.url,
+    hass.auth.data.hassUrl
+  ).toString();
+
+  switch (resource.type) {
+    case "css": {
+      if (normalizedUrl in CSS_CACHE) {
+        return CSS_CACHE[normalizedUrl];
+      }
+
+      const loadTask = loadCSS(normalizedUrl);
+      CSS_CACHE[normalizedUrl] = loadTask;
+      return loadTask;
+    }
+
+    case "js": {
+      if (normalizedUrl in JS_CACHE) {
+        return JS_CACHE[normalizedUrl];
+      }
+
+      const loadTask = loadJS(normalizedUrl);
+      JS_CACHE[normalizedUrl] = loadTask;
+      return loadTask;
+    }
+
+    case "module":
+      return loadModule(normalizedUrl);
+
+    default:
+      // eslint-disable-next-line
+      console.warn(`Unknown resource type specified: ${resource.type}`);
+      return undefined;
+  }
+};
 
 export const loadLovelaceResources = (
   resources: NonNullable<LovelaceResource[]>,
   hass: HomeAssistant
 ) => {
   resources.forEach((resource) => {
-    const normalizedUrl = new URL(
-      resource.url,
-      hass.auth.data.hassUrl
-    ).toString();
-    switch (resource.type) {
-      case "css":
-        if (normalizedUrl in CSS_CACHE) {
-          break;
-        }
-        CSS_CACHE[normalizedUrl] = loadCSS(normalizedUrl);
-        break;
-
-      case "js":
-        if (normalizedUrl in JS_CACHE) {
-          break;
-        }
-        JS_CACHE[normalizedUrl] = loadJS(normalizedUrl);
-        break;
-
-      case "module":
-        loadModule(normalizedUrl);
-        break;
-
-      default:
-        // eslint-disable-next-line
-        console.warn(`Unknown resource type specified: ${resource.type}`);
-    }
+    _loadLovelaceResource(resource, hass);
   });
+};
+
+export const loadLovelaceResourcesAndWait = async (
+  resources: NonNullable<LovelaceResource[]>,
+  hass: HomeAssistant
+): Promise<void> => {
+  const loadTasks = resources
+    .map((resource) => _loadLovelaceResource(resource, hass))
+    .filter((task): task is Promise<unknown> => task !== undefined);
+
+  await Promise.allSettled(loadTasks);
 };

@@ -1,25 +1,24 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import "../../components/ha-button";
-import "../../components/ha-alert";
-import "../../components/ha-md-list";
-import "../../components/ha-md-list-item";
-import "../../components/buttons/ha-progress-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-password-field";
-import "../../panels/config/backup/components/ha-backup-data-picker";
-import "../../panels/config/backup/components/ha-backup-formfield-label";
+import { customElement, property, query, state } from "lit/decorators";
+import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
+import "../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
+import "../../components/ha-alert";
+import "../../components/ha-button";
+import "../../components/ha-icon-button-arrow-prev";
+import "../../components/input/ha-input";
+import "../../components/item/ha-row-item";
 import {
   getPreferredAgentForDownload,
   type BackupContentExtended,
   type BackupData,
 } from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
-import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
-import { fireEvent } from "../../common/dom/fire_event";
+import "../../panels/config/backup/components/ha-backup-data-picker";
+import "../../panels/config/backup/components/ha-backup-formfield-label";
 import { onBoardingStyles } from "../styles";
-import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
 
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
@@ -92,33 +91,30 @@ class OnboardingRestoreBackupRestore extends LitElement {
           </ha-alert>`
         : nothing}
 
-      <ha-md-list>
-        <ha-md-list-item>
-          <span slot="headline">
-            ${this.localize(
-              "ui.panel.page-onboarding.restore.details.summary.created"
-            )}
-          </span>
-          <span slot="supporting-text">${formattedDate}</span>
-        </ha-md-list-item>
-        ${onlyHomeAssistantBackup
-          ? html`<ha-md-list-item>
-              <span slot="headline">
-                ${this.localize(
-                  "ui.panel.page-onboarding.restore.details.summary.content"
-                )}
-              </span>
-              <ha-backup-formfield-label
-                slot="supporting-text"
-                .version=${this.backup.homeassistant_version}
-                .label=${this.localize(
-                  `ui.panel.page-onboarding.restore.data_picker.${this.backup.database_included ? "settings_and_history" : "settings"}`
-                )}
-              ></ha-backup-formfield-label>
-            </ha-md-list-item>`
-          : nothing}
-      </ha-md-list>
-
+      <ha-row-item>
+        <span slot="headline">
+          ${this.localize(
+            "ui.panel.page-onboarding.restore.details.summary.created"
+          )}
+        </span>
+        <span slot="supporting-text">${formattedDate}</span>
+      </ha-row-item>
+      ${onlyHomeAssistantBackup
+        ? html`<ha-row-item>
+            <span slot="headline">
+              ${this.localize(
+                "ui.panel.page-onboarding.restore.details.summary.content"
+              )}
+            </span>
+            <ha-backup-formfield-label
+              slot="supporting-text"
+              .version=${this.backup.homeassistant_version}
+              .label=${this.localize(
+                `ui.panel.page-onboarding.restore.data_picker.${this.backup.database_included ? "settings_and_history" : "settings"}`
+              )}
+            ></ha-backup-formfield-label>
+          </ha-row-item>`
+        : nothing}
       ${!onlyHomeAssistantBackup
         ? html`<h2>
             ${this.localize("ui.panel.page-onboarding.restore.select_type")}
@@ -136,7 +132,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
               href="https://www.home-assistant.io/installation/#advanced-installation-methods"
               target="_blank"
               rel="noreferrer noopener"
-              size="small"
+              size="s"
             >
               ${this.localize(
                 "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
@@ -170,7 +166,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
                 `ui.panel.page-onboarding.restore.details.restore.encryption.description${this.mode === "cloud" ? "_cloud" : ""}`
               )}
             </span>
-            <ha-password-field
+            <ha-input
               .disabled=${this._loading}
               @input=${this._encryptionKeyChanged}
               .label=${this.localize(
@@ -178,13 +174,11 @@ class OnboardingRestoreBackupRestore extends LitElement {
               )}
               .value=${this._encryptionKey}
               @keydown=${this._keyDown}
-              .errorMessage=${this._encryptionKeyWrong
-                ? this.localize(
-                    "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
-                  )
-                : ""}
+              .validationMessage=${this.localize(
+                "ui.panel.page-onboarding.restore.details.restore.encryption.incorrect_key"
+              )}
               .invalid=${this._encryptionKeyWrong}
-            ></ha-password-field>
+            ></ha-input>
           </div>`
         : nothing}
 
@@ -314,26 +308,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
           display: block;
           margin-top: 16px;
         }
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-list-item-two-line-container-height: 64px;
-          --md-list-item-supporting-text-size: 1rem;
-          --md-list-item-label-text-size: 0.875rem;
-
-          --md-list-item-label-text-color: var(--secondary-text-color);
-          --md-list-item-supporting-text-color: var(--primary-text-color);
-        }
-        ha-md-list-item [slot="supporting-text"] {
-          display: flex;
-          align-items: center;
-          flex-direction: row;
-          gap: var(--ha-space-2);
-          line-height: var(--ha-line-height-condensed);
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         h2 {
           font-size: var(--ha-font-size-xl);
@@ -353,7 +329,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
         .encryption {
           margin-bottom: 32px;
         }
-        .encryption ha-password-field {
+        .encryption ha-input {
           margin-top: 24px;
         }
         .actions {

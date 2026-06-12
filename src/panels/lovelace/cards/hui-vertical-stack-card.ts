@@ -26,10 +26,16 @@ class HuiVerticalStackCard extends HuiStackCard {
     return [
       super.sharedStyles,
       css`
-        #root {
+        :host {
           display: flex;
           flex-direction: column;
           height: 100%;
+        }
+        #root {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
           gap: var(--vertical-stack-card-gap, var(--stack-card-gap, 8px));
         }
       `,

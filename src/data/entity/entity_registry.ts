@@ -73,7 +73,7 @@ export interface ExtEntityRegistryEntry extends EntityRegistryEntry {
   original_icon?: string;
   device_class?: string;
   original_device_class?: string;
-  aliases: string[];
+  aliases: (string | null)[];
 }
 
 export interface UpdateEntityRegistryEntryResult {
@@ -90,6 +90,41 @@ export interface SensorEntityOptions {
 
 export interface LightEntityOptions {
   favorite_colors?: LightColor[];
+}
+
+export interface ValveEntityOptions {
+  favorite_positions?: number[];
+}
+
+export type FavoriteOption =
+  | "favorite_colors"
+  | "favorite_positions"
+  | "favorite_tilt_positions";
+
+export type FavoritesDomain = "light" | "cover" | "valve";
+
+export type FavoriteOptionValue = LightColor[] | number[];
+
+export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = [
+  "light",
+  "cover",
+  "valve",
+];
+
+export const isFavoritesDomain = (domain: string): domain is FavoritesDomain =>
+  DOMAINS_WITH_FAVORITES.includes(domain as FavoritesDomain);
+
+export const shouldShowFavoriteOptions = (
+  values?: FavoriteOptionValue | null
+): boolean => values == null || values.length > 0;
+
+export const hasCustomFavoriteOptionValues = (
+  values?: FavoriteOptionValue | null
+): boolean => values != null;
+
+export interface CoverEntityOptions {
+  favorite_positions?: number[];
+  favorite_tilt_positions?: number[];
 }
 
 export interface NumberEntityOptions {
@@ -126,6 +161,10 @@ export interface VacuumEntityOptions {
   last_seen_segments?: Segment[];
 }
 
+export interface DeviceTrackerEntityOptions {
+  associated_zone?: string | null;
+}
+
 export interface EntityRegistryOptions {
   number?: NumberEntityOptions;
   sensor?: SensorEntityOptions;
@@ -134,7 +173,10 @@ export interface EntityRegistryOptions {
   lock?: LockEntityOptions;
   weather?: WeatherEntityOptions;
   light?: LightEntityOptions;
+  cover?: CoverEntityOptions;
+  valve?: ValveEntityOptions;
   vacuum?: VacuumEntityOptions;
+  device_tracker?: DeviceTrackerEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
   conversation?: Record<string, unknown>;
   "cloud.alexa"?: Record<string, unknown>;
@@ -158,8 +200,11 @@ export interface EntityRegistryEntryUpdateParams {
     | CalendarEntityOptions
     | WeatherEntityOptions
     | LightEntityOptions
-    | VacuumEntityOptions;
-  aliases?: string[];
+    | CoverEntityOptions
+    | ValveEntityOptions
+    | VacuumEntityOptions
+    | DeviceTrackerEntityOptions;
+  aliases?: (string | null)[];
   labels?: string[];
   categories?: Record<string, string | null>;
 }

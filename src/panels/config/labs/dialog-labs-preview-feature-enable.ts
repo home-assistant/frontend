@@ -39,7 +39,7 @@ export class DialogLabsPreviewFeatureEnable
     this._createBackup = false;
     this._open = true;
     this._fetchBackupConfig();
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchUpdateBackupConfig();
     }
   }
@@ -145,7 +145,6 @@ export class DialogLabsPreviewFeatureEnable
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.panel.config.labs.enable_title")}
         @closed=${this._dialogClosed}

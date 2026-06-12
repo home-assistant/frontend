@@ -68,7 +68,7 @@ class HaPanelApp extends LitElement {
    */
   private _iframeSubscribeUpdates = false;
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     // Send property updates to iframe when narrow or route changes
@@ -143,7 +143,7 @@ class HaPanelApp extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("route") && !changedProps.has("panel")) {
@@ -213,7 +213,7 @@ class HaPanelApp extends LitElement {
     let addon: HassioAddonDetails;
 
     try {
-      addon = await fetchHassioAddonInfo(this.hass, addonSlug);
+      addon = await fetchHassioAddonInfo(this.hass.callWS, addonSlug);
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
@@ -253,7 +253,7 @@ class HaPanelApp extends LitElement {
           );
           // Set auto-retry window for after starting the app
           this._autoRetryUntil = Date.now() + START_WAIT_TIME;
-          await startHassioAddon(this.hass, addonSlug);
+          await startHassioAddon(this.hass.callWS, addonSlug);
           this._fetchData(addonSlug);
           return;
         } catch (_err) {

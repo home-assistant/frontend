@@ -27,7 +27,7 @@ class ZHAConfigSectionPage extends LitElement {
 
   @state() private _configuration?: ZHAConfiguration;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this.hass.loadBackendTranslation("config_panel", "zha", false);

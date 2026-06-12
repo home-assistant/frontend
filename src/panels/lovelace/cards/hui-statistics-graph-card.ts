@@ -4,6 +4,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { theme2hex } from "../../../common/color/convert-color";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -11,6 +12,7 @@ import "../../../components/ha-tooltip";
 import {
   getEnergyDataCollection,
   getSuggestedPeriod,
+  validateEnergyCollectionKey,
 } from "../../../data/energy";
 import type {
   Statistics,
@@ -23,14 +25,12 @@ import {
   getStatisticMetadata,
 } from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { getSuggestedMax } from "./energy/common/energy-chart-options";
-import type { StatisticsGraphCardConfig } from "./types";
+import type { GraphEntityConfig, StatisticsGraphCardConfig } from "./types";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
 
@@ -72,13 +72,15 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _unit?: string;
 
-  private _entities: EntityConfig[] = [];
+  private _entities: GraphEntityConfig[] = [];
 
   private _entityIds: string[] = [];
 
   private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
   private _names: Record<string, string> = {};
+
+  private _colors: Record<string, string | undefined> = {};
 
   private _interval?: number;
 
@@ -105,14 +107,17 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return;
     }
     if (this._config?.energy_date_selection) {
-      this._subscribeEnergy();
+      this._subscribeEnergy(true);
     } else if (this._interval === undefined) {
       this._setFetchStatisticsTimer(true);
     }
   }
 
-  private _subscribeEnergy() {
+  private _subscribeEnergy(performFetch = false) {
     if (!this._energySub) {
+      if (performFetch) {
+        this._fetchInitialStatistics();
+      }
       this._energySub = getEnergyDataCollection(this.hass!, {
         key: this._config?.collection_key,
       }).subscribe((data) => {
@@ -157,6 +162,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
+    if (config.energy_date_selection && config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
+
     this._entities = config.entities
       ? processConfigEntities(config.entities, false)
       : [];
@@ -171,6 +180,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
     this._config = config;
     this._computeNames();
+    this._computeColors();
   }
 
   private _computeNames() {
@@ -180,13 +190,32 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     this._names = {};
     this._entities.forEach((config) => {
       const stateObj = this.hass!.states[config.entity];
-      this._names[config.entity] =
-        computeLovelaceEntityName(this.hass!, stateObj, config.name) ||
-        config.entity;
+      if (stateObj) {
+        this._names[config.entity] =
+          this.hass!.formatEntityName(stateObj, config.name) || config.entity;
+      } else {
+        this._names[config.entity] =
+          (typeof config.name === "string" ? config.name : undefined) ||
+          this._metadata?.[config.entity]?.name ||
+          config.entity;
+      }
     });
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  private _computeColors() {
+    if (!this._config) {
+      return;
+    }
+    this._colors = {};
+    this._entities.forEach((entity) => {
+      // if color = undefined, it is automatically defined inside a chart component
+      this._colors[entity.entity] = entity.color
+        ? theme2hex(entity.color)
+        : undefined;
+    });
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntitiesChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -196,7 +225,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.has("hass") || changedProps.has("_config")) {
+    if (
+      changedProps.has("hass") ||
+      changedProps.has("_config") ||
+      changedProps.has("_metadata")
+    ) {
       this._computeNames();
     }
 
@@ -210,7 +243,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     if (this.hass) {
       if (this._config.energy_date_selection && !this._energySub) {
-        this._subscribeEnergy();
+        this._subscribeEnergy(true);
         return;
       }
       if (!this._config.energy_date_selection && this._energySub) {
@@ -233,7 +266,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       oldConfig?.entities !== this._config.entities
     ) {
-      this._setFetchStatisticsTimer(true);
+      if (this._config.energy_date_selection) {
+        this._fetchInitialStatistics();
+      } else {
+        this._setFetchStatisticsTimer(true);
+      }
       return;
     }
 
@@ -246,6 +283,11 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     ) {
       this._setFetchStatisticsTimer();
     }
+  }
+
+  private async _fetchInitialStatistics() {
+    await this._getStatisticsMetaData(this._entityIds);
+    await this._getStatistics();
   }
 
   private async _setFetchStatisticsTimer(fetchMetadata = false) {
@@ -265,12 +307,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   }
 
   private get _period() {
-    return (
-      this._config?.period ??
-      (this._energyStart && this._energyEnd
-        ? getSuggestedPeriod(this._energyStart, this._energyEnd)
-        : undefined)
-    );
+    const period = this._config?.period;
+    const autoMode = period === "auto";
+    return this._energyStart && this._energyEnd && (!period || autoMode)
+      ? getSuggestedPeriod(this._energyStart, this._energyEnd)
+      : autoMode
+        ? undefined
+        : period;
   }
 
   protected render() {
@@ -330,12 +373,13 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .unit=${this._unit}
             .minYAxis=${this._config.min_y_axis}
             .maxYAxis=${this._config.max_y_axis}
+            .colors=${this._colors}
             .startTime=${this._energyStart}
             .endTime=${this._energyEnd && this._energyStart
               ? getSuggestedMax(
                   this._period!,
                   this._energyEnd,
-                  (this._config.chart_type ?? "line") === "line"
+                  (this._config.chart_type ?? "line").startsWith("line")
                 )
               : undefined}
             .fitYData=${this._config.fit_y_data || false}

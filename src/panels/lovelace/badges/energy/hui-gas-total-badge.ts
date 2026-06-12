@@ -1,3 +1,5 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFire } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -5,14 +7,21 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
-import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import { formatNumber } from "../../../../common/number/format_number";
 import {
-  formatFlowRateShort,
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
+import type { EnergyData } from "../../../../data/energy";
+import {
+  computeTotalFlowRate,
   getEnergyDataCollection,
-  getFlowRateFromState,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../../../types";
 import type { LovelaceBadge } from "../../types";
 import type { GasTotalBadgeConfig } from "../types";
 
@@ -22,6 +31,14 @@ export class HuiGasTotalBadge
   implements LovelaceBadge
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: HomeAssistantInternationalization;
 
   @state() private _config?: GasTotalBadgeConfig;
 
@@ -50,14 +67,16 @@ export class HuiGasTotalBadge
       return true;
     }
 
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || !this._entities.size) {
+    if (changedProps.has("_states")) {
+      const oldStates = changedProps.get("_states") as
+        | ContextType<typeof statesContext>
+        | undefined;
+      if (!oldStates || !this._entities.size) {
         return true;
       }
 
       for (const entityId of this._entities) {
-        if (oldHass.states[entityId] !== this.hass?.states[entityId]) {
+        if (oldStates[entityId] !== this._states?.[entityId]) {
           return true;
         }
       }
@@ -66,41 +85,22 @@ export class HuiGasTotalBadge
     return false;
   }
 
-  private _getCurrentFlowRate(entityId: string): number {
-    this._entities.add(entityId);
-    return getFlowRateFromState(this.hass.states[entityId]) ?? 0;
-  }
-
-  private _computeTotalFlowRate(prefs: EnergyPreferences): number {
-    this._entities.clear();
-
-    let totalFlow = 0;
-
-    prefs.energy_sources.forEach((source) => {
-      if (source.type === "gas" && source.stat_rate) {
-        const value = this._getCurrentFlowRate(source.stat_rate);
-        if (value > 0) totalFlow += value;
-      }
-    });
-
-    return Math.max(0, totalFlow);
-  }
-
   protected render() {
-    if (!this._config || !this._data) {
+    if (!this._config || !this._data || !this._i18n) {
       return nothing;
     }
 
-    const flowRate = this._computeTotalFlowRate(this._data.prefs);
-    const displayValue = formatFlowRateShort(
-      this.hass.locale,
-      this.hass.config.unit_system.length,
-      flowRate
+    const { value, unit } = computeTotalFlowRate(
+      "gas",
+      this._data.prefs,
+      this._states,
+      this._entities
     );
+    const displayValue = `${formatNumber(value, this._i18n.locale, { maximumFractionDigits: 1 })} ${unit}`;
 
     const name =
       this._config.title ||
-      this.hass.localize("ui.panel.lovelace.cards.energy.gas_total_title");
+      this._i18n.localize("ui.panel.lovelace.cards.energy.gas_total_title");
 
     return html`
       <ha-badge .label=${name}>

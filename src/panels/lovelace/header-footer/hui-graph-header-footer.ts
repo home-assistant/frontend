@@ -5,9 +5,12 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-spinner";
+import "../../../components/ha-alert";
 import type { HistoryStates } from "../../../data/history";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import {
+  limitedHistoryFromStateObj,
+  subscribeHistoryStatesTimeWindow,
+} from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
@@ -65,7 +68,9 @@ export class HuiGraphHeaderFooter
 
   @state() private _coordinates?: [number, number][];
 
-  private _error?: string;
+  @state() private _loading = true;
+
+  @state() private _error?: { code: string; message: string };
 
   private _history?: HistoryStates;
 
@@ -106,18 +111,15 @@ export class HuiGraphHeaderFooter
     }
 
     if (this._error) {
-      return html`<div class="errors">${this._error}</div>`;
-    }
-
-    if (!this._coordinates) {
       return html`
-        <div class="container">
-          <ha-spinner size="small"></ha-spinner>
-        </div>
+        <ha-alert alert-type="error">
+          ${this.hass.localize("ui.components.history_charts.error")}:
+          ${this._error.message || this._error.code}
+        </ha-alert>
       `;
     }
 
-    if (!this._coordinates.length) {
+    if (this._coordinates && !this._coordinates.length) {
       return html`
         <div class="container">
           <div class="info">No state history found.</div>
@@ -126,7 +128,10 @@ export class HuiGraphHeaderFooter
     }
 
     return html`
-      <hui-graph-base .coordinates=${this._coordinates}></hui-graph-base>
+      <hui-graph-base
+        ?loading=${this._loading}
+        .coordinates=${this._coordinates}
+      ></hui-graph-base>
     `;
   }
 
@@ -151,12 +156,13 @@ export class HuiGraphHeaderFooter
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!, "history") ||
+      !isComponentLoaded(this.hass!.config, "history") ||
       this._subscribed ||
       !this._config
     ) {
       return;
     }
+    this._setLoadingCoordinates();
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -165,6 +171,13 @@ export class HuiGraphHeaderFooter
           return;
         }
         this._history = combinedHistory;
+        if (!this._history[this._config.entity]?.length) {
+          const stateObj = this.hass!.states[this._config.entity];
+          if (stateObj) {
+            this._history[this._config.entity] =
+              limitedHistoryFromStateObj(stateObj);
+          }
+        }
         this._computeCoordinates();
       },
       this._config.hours_to_show!,
@@ -175,6 +188,28 @@ export class HuiGraphHeaderFooter
       return undefined;
     });
     this._setRedrawTimer();
+  }
+
+  private _setLoadingCoordinates() {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+    const width = this.clientWidth || this.offsetWidth;
+    const { points } = coordinatesMinimalResponseCompressedState(
+      limitedHistoryFromStateObj(stateObj),
+      width,
+      width / 5,
+      10,
+      {
+        minY: this._config.limits?.min,
+        maxY: this._config.limits?.max,
+      }
+    );
+    this._coordinates = points;
   }
 
   private _computeCoordinates() {
@@ -209,6 +244,7 @@ export class HuiGraphHeaderFooter
       useMean
     );
     this._coordinates = points;
+    this._loading = false;
   }
 
   private _redrawGraph() {
@@ -254,24 +290,34 @@ export class HuiGraphHeaderFooter
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
     this._history = undefined;
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!this._config || !this.hass || !changedProps.has("_config")) {
+    if (!this._config || !this.hass) {
       return;
     }
 
-    const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
-    if (
-      !oldConfig ||
-      !this._subscribed ||
-      oldConfig.entity !== this._config.entity
+    if (changedProps.has("_config")) {
+      const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
+      if (
+        !oldConfig ||
+        !this._subscribed ||
+        oldConfig.entity !== this._config.entity
+      ) {
+        this._unsubscribeHistory();
+        this._subscribeHistory();
+      }
+    } else if (
+      this.isConnected &&
+      !this._subscribed &&
+      !this._error &&
+      changedProps.has("hass")
     ) {
-      this._unsubscribeHistory();
+      // Retry subscription when components become available after backend restart
       this._subscribeHistory();
     }
   }
@@ -280,10 +326,6 @@ export class HuiGraphHeaderFooter
     :host {
       display: block;
       cursor: pointer;
-    }
-    ha-spinner {
-      position: absolute;
-      top: calc(50% - 14px);
     }
     .container {
       display: flex;

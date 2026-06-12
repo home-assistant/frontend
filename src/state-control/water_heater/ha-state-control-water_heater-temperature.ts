@@ -4,6 +4,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -38,7 +39,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (changedProp.has("stateObj")) {
       this._targetTemperature = this.stateObj.attributes.temperature;
@@ -60,16 +61,16 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     return this.stateObj.attributes.max_temp;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this._targetTemperature = value;
     this._callService();
   }
 
-  private _valueChanging(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this._targetTemperature = value;
   }
 

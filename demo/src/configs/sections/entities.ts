@@ -141,7 +141,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "device_tracker.car": {
-      entity_id: "sensor.outdoor_humidity",
+      entity_id: "device_tracker.car",
       state: "not_home",
       attributes: {
         friendly_name: "Car",
@@ -199,7 +199,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "binary_sensor.kitchen_motion": {
-      entity_id: "light.kitchen_motion",
+      entity_id: "binary_sensor.kitchen_motion",
       state: "on",
       attributes: {
         device_class: "motion",
@@ -335,7 +335,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "sensor.rain": {
-      entity_id: "sensor.moon_phase",
+      entity_id: "sensor.rain",
       state: "7.2",
       attributes: {
         state_class: "total_increasing",
@@ -565,7 +565,7 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
       },
     },
     "update.home_assistant_core_update": {
-      entity_id: "update.home_assistant_supervisor_update",
+      entity_id: "update.home_assistant_core_update",
       state: "off",
       attributes: {
         auto_update: false,

@@ -30,15 +30,17 @@ import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_displ
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
+import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import {
+  addBrandsAuth,
   clearBrandsTokenRefresh,
   fetchAndScheduleBrandsAccessToken,
 } from "../util/brands-url";
-import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
+import { callWS, setDebugConnection } from "../util/websocket";
 import type { HassBaseEl } from "./hass-base-mixin";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
@@ -78,7 +80,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           time_zone: TimeZone.local,
           first_weekday: FirstWeekday.language,
         },
-        resources: null as any,
         localize: () => "",
         translationMetadata,
         kioskMode: false,
@@ -87,8 +88,11 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         debugConnection: __DEV__,
         suspendWhenHidden: true,
         enableShortcuts: true,
-        moreInfoEntityId: null,
-        hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
+        hassUrl: (path = "") =>
+          addBrandsAuth(
+            new URL(path, auth.data.hassUrl).toString(),
+            auth.data.hassUrl
+          ),
         callService: async (
           domain,
           service,
@@ -182,24 +186,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           conn.sendMessage(msg);
         },
         // For messages that expect a response
-        callWS: <R>(msg) => {
-          if (this.hass?.debugConnection) {
-            // eslint-disable-next-line no-console
-            console.log("Sending", msg);
-          }
-
-          const resp = conn.sendMessagePromise<R>(msg);
-
-          if (this.hass?.debugConnection) {
-            resp.then(
-              // eslint-disable-next-line no-console
-              (result) => console.log("Received", result),
-              // eslint-disable-next-line no-console
-              (err) => console.error("Error", err)
-            );
-          }
-          return resp;
-        },
+        callWS: <R>(msg) => callWS<R>(conn, msg),
         loadBackendTranslation: (category, integration?, configFlow?) =>
           // @ts-ignore
           this._loadHassTranslations(
@@ -233,6 +220,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         ...getState(),
         ...this._pendingHass,
       };
+
+      setDebugConnection(this.hass.debugConnection);
 
       this.hassConnected();
     }
@@ -324,8 +313,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       clearInterval(this.__backendPingInterval);
 
-      // Fetch the brands access token on initial connect and schedule refresh
-      fetchAndScheduleBrandsAccessToken(this.hass!);
+      this._refreshBrandsAccessToken();
 
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
@@ -351,8 +339,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
 
-      // Refresh the brands access token on reconnect and restart refresh schedule
-      fetchAndScheduleBrandsAccessToken(this.hass!);
+      this._refreshBrandsAccessToken();
 
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
@@ -372,5 +359,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       broadcastConnectionStatus("disconnected");
       clearInterval(this.__backendPingInterval);
       clearBrandsTokenRefresh();
+    }
+
+    private async _refreshBrandsAccessToken() {
+      // The brands WS handler may not be registered yet after a server restart;
+      // fetchAndScheduleBrandsAccessToken retries internally. If the token
+      // changed, re-render so any brand <img> elements that rendered against a
+      // different (or missing) token recompute their src and re-fetch.
+      const changed = await fetchAndScheduleBrandsAccessToken(this.hass!);
+      if (changed) {
+        this._updateHass({});
+      }
     }
   };

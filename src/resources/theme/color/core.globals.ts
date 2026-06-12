@@ -10,6 +10,10 @@ import { extractVars } from "../../../common/style/derived-css-vars";
  */
 export const coreColorStyles = css`
   html {
+    /* pure */
+    --ha-color-black: #000000;
+    --ha-color-white: #ffffff;
+
     /* primary */
     --ha-color-primary-05: #001721;
     --ha-color-primary-10: #002e3e;
@@ -74,10 +78,6 @@ export const coreColorStyles = css`
     --ha-color-green-80: #93da98;
     --ha-color-green-90: #c2f2c1;
     --ha-color-green-95: #e3f9e3;
-
-    /* shadow */
-    --ha-color-shadow-light: #00000014;
-    --ha-color-shadow-dark: #00000046;
   }
 `;
 

@@ -6,7 +6,6 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-backup-formfield-label";
 
@@ -42,9 +41,13 @@ export class HaBackupAddonsPicker extends LitElement {
       <div class="items">
         ${this._addons(this.addons).map(
           (item) => html`
-            <ha-formfield>
+            <ha-checkbox
+              .id=${item.slug}
+              .checked=${this.value?.includes(item.slug) || false}
+              @change=${this._checkboxChanged}
+              .disabled=${this.disabled}
+            >
               <ha-backup-formfield-label
-                slot="label"
                 .label=${item.name}
                 .version=${this.hideVersion ? undefined : item.version}
                 .iconPath=${item.iconPath || mdiPuzzle}
@@ -53,13 +56,7 @@ export class HaBackupAddonsPicker extends LitElement {
                   : undefined}
               >
               </ha-backup-formfield-label>
-              <ha-checkbox
-                .id=${item.slug}
-                .checked=${this.value?.includes(item.slug) || false}
-                @change=${this._checkboxChanged}
-                .disabled=${this.disabled}
-              ></ha-checkbox>
-            </ha-formfield>
+            </ha-checkbox>
           `
         )}
       </div>
@@ -83,6 +80,9 @@ export class HaBackupAddonsPicker extends LitElement {
     .items {
       display: flex;
       flex-direction: column;
+      gap: var(--ha-space-2);
+      padding-inline-start: var(--ha-space-2);
+      padding-bottom: var(--ha-space-3);
     }
   `;
 }

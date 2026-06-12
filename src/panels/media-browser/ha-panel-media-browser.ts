@@ -5,7 +5,7 @@ import {
   mdiListBoxOutline,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
@@ -15,7 +15,6 @@ import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/media-player/ha-media-manage-button";
 import "../../components/media-player/ha-media-player-browse";
@@ -100,20 +99,14 @@ class PanelMediaBrowser extends LitElement {
                 @click=${this._goBack}
               ></ha-icon-button-arrow-prev>
             `
-          : html`
-              <ha-menu-button
-                slot="navigationIcon"
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-            `}
-        <div slot="title">
+          : nothing}
+        <h1 class="page-title" slot="title">
           ${!this._currentItem
             ? this.hass.localize(
                 "ui.components.media-browser.media-player-browser"
               )
             : this._currentItem.title}
-        </div>
+        </h1>
         <ha-media-manage-button
           slot="actionItems"
           .hass=${this.hass}
@@ -180,7 +173,7 @@ class PanelMediaBrowser extends LitElement {
     }
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (
@@ -349,6 +342,12 @@ class PanelMediaBrowser extends LitElement {
           );
         }
 
+        .page-title {
+          font-size: inherit;
+          margin: inherit;
+          line-height: inherit;
+        }
+
         :host([narrow]) ha-media-player-browse {
           height: calc(
             100vh -
@@ -372,7 +371,7 @@ class PanelMediaBrowser extends LitElement {
           position: fixed;
           bottom: var(--safe-area-inset-bottom, 0px);
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -380,7 +379,7 @@ class PanelMediaBrowser extends LitElement {
         }
         :host([narrow]) ha-bar-media-player {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)

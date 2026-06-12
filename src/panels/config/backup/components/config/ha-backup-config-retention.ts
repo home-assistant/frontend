@@ -3,11 +3,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-textfield";
-import type { HaMdTextfield } from "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-row-item";
 import type { BackupConfig, Retention } from "../../../../../data/backup";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 
@@ -54,7 +55,7 @@ class HaBackupConfigRetention extends LitElement {
 
   @state() private _value = 3;
 
-  @query("#value") private _customValueField?: HaMdTextfield;
+  @query("#value") private _customValueField?: HaInput;
 
   @query("#type") private _customTypeField?: HaSelect;
 
@@ -104,7 +105,7 @@ class HaBackupConfigRetention extends LitElement {
     }
 
     return html`
-      <ha-md-list-item>
+      <ha-list-item-base>
         <span slot="headline">
           ${this.headline ??
           this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
@@ -125,7 +126,7 @@ class HaBackupConfigRetention extends LitElement {
             ),
           }))}
         ></ha-select>
-      </ha-md-list-item>
+      </ha-list-item-base>
 
       ${this._preset === RetentionPreset.CUSTOM
         ? html`<ha-expansion-panel
@@ -135,13 +136,13 @@ class HaBackupConfigRetention extends LitElement {
             )}
             outlined
           >
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.backup.schedule.custom_retention_label"
                 )}
               </span>
-              <ha-md-textfield
+              <ha-input
                 slot="end"
                 @change=${this._retentionValueChanged}
                 .value=${this._value.toString()}
@@ -151,7 +152,7 @@ class HaBackupConfigRetention extends LitElement {
                 .max=${MAX_VALUE.toString()}
                 step="1"
               >
-              </ha-md-textfield>
+              </ha-input>
               <ha-select
                 slot="end"
                 @selected=${this._retentionTypeChanged}
@@ -171,7 +172,7 @@ class HaBackupConfigRetention extends LitElement {
                     ),
                   },
                 ]}
-              ></ha-select> </ha-md-list-item
+              ></ha-select></ha-row-item
           ></ha-expansion-panel> `
         : nothing}
     `;
@@ -208,8 +209,8 @@ class HaBackupConfigRetention extends LitElement {
 
   private _retentionValueChanged(ev) {
     ev.stopPropagation();
-    const target = ev.currentTarget as HaMdTextfield;
-    const value = parseInt(target.value);
+    const target = ev.currentTarget as HaInput;
+    const value = parseInt(target.value ?? "");
     const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
     target.value = clamped.toString();
 
@@ -244,10 +245,17 @@ class HaBackupConfigRetention extends LitElement {
   }
 
   static styles = css`
-    ha-md-list-item {
-      --md-item-overflow: visible;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-row-item,
+    ha-list-item-base {
+      --ha-row-item-padding-inline: 0;
+    }
+    ha-row-item::part(end) {
+      align-items: flex-start;
+    }
+
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
     }
     ha-select {
       min-width: 210px;
@@ -258,14 +266,14 @@ class HaBackupConfigRetention extends LitElement {
         width: 160px;
       }
     }
-    ha-md-textfield#value {
+    ha-input#value {
       min-width: 70px;
     }
     ha-select#type {
       min-width: 100px;
     }
     @media all and (max-width: 450px) {
-      ha-md-textfield#value {
+      ha-input#value {
         min-width: 60px;
         margin: 0 -8px;
       }
@@ -278,9 +286,6 @@ class HaBackupConfigRetention extends LitElement {
       --expansion-panel-summary-padding: 0 16px;
       --expansion-panel-content-padding: 0 16px;
       margin-bottom: 16px;
-    }
-    ha-md-list-item.days {
-      --md-item-align-items: flex-start;
     }
   `;
 }

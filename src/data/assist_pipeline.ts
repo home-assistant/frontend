@@ -117,6 +117,7 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
 export interface ConversationChatLogAssistantDelta {
   role: "assistant";
   content: string;
+  thinking_content?: string;
   tool_calls: {
     id: string;
     tool_name: string;

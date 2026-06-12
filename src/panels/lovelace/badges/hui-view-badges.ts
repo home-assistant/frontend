@@ -4,12 +4,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
 import "../components/hui-badge-edit-mode";
 import { moveBadge } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
@@ -25,8 +26,6 @@ const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
 
 @customElement("hui-view-badges")
 export class HuiViewBadges extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ attribute: false }) public badges: HuiBadge[] = [];
@@ -35,6 +34,10 @@ export class HuiViewBadges extends LitElement {
 
   @property({ type: Boolean, attribute: "show-add-label" })
   public showAddLabel!: boolean;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() _dragging = false;
 
@@ -66,7 +69,7 @@ export class HuiViewBadges extends LitElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("badges") || changedProperties.has("lovelace")) {
       this._checkAllHidden();
     }
@@ -150,7 +153,6 @@ export class HuiViewBadges extends LitElement {
                         ? html`
                             <hui-badge-edit-mode
                               data-sortable
-                              .hass=${this.hass}
                               .lovelace=${this.lovelace}
                               .path=${badgePath}
                               .hiddenOverlay=${this._dragging}
@@ -168,17 +170,17 @@ export class HuiViewBadges extends LitElement {
                       <button
                         class="add"
                         @click=${this._addBadge}
-                        aria-label=${this.hass.localize(
+                        aria-label=${this._localize(
                           "ui.panel.lovelace.editor.section.add_badge"
                         )}
-                        .title=${this.hass.localize(
+                        .title=${this._localize(
                           "ui.panel.lovelace.editor.section.add_badge"
                         )}
                       >
                         <ha-ripple></ha-ripple>
                         <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
                         ${this.showAddLabel
-                          ? this.hass.localize(
+                          ? this._localize(
                               "ui.panel.lovelace.editor.section.add_badge"
                             )
                           : nothing}

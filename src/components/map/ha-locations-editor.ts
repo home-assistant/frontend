@@ -156,7 +156,7 @@ export class HaLocationsEditor extends LitElement {
     }
   );
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     // Still loading.

@@ -13,6 +13,7 @@ export type CreateBackupStage =
   | "app_repositories"
   | "apps"
   | "await_app_restarts"
+  | "cleaning_up"
   | "docker_config"
   | "finishing_file"
   | "folders"

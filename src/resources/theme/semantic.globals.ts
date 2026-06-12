@@ -7,17 +7,17 @@ import { extractVars } from "../../common/style/derived-css-vars";
  */
 export const semanticStyles = css`
   html {
-    --ha-box-shadow-s: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow-light);
-    --ha-box-shadow-m: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow-light);
-    --ha-box-shadow-l: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow-light);
+    --ha-box-shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    --ha-box-shadow-m: 0 3px 6px -1px rgba(0, 0, 0, 0.1), 0 8px 16px -2px rgba(0, 0, 0, 0.15);
+    --ha-box-shadow-l: 0 6px 12px -3px rgba(0, 0, 0, 0.12), 0 16px 32px -6px rgba(0, 0, 0, 0.2);
   }
 `;
 
 export const darkSemanticStyles = css`
   html {
-    --ha-box-shadow-s: var(--ha-shadow-offset-x-sm) var(--ha-shadow-offset-y-sm) var(--ha-shadow-blur-sm) var(--ha-shadow-spread-sm) var(--ha-color-shadow-dark);
-    --ha-box-shadow-m: var(--ha-shadow-offset-x-md) var(--ha-shadow-offset-y-md) var(--ha-shadow-blur-md) var(--ha-shadow-spread-md) var(--ha-color-shadow-dark);
-    --ha-box-shadow-l: var(--ha-shadow-offset-x-lg) var(--ha-shadow-offset-y-lg) var(--ha-shadow-blur-lg) var(--ha-shadow-spread-lg) var(--ha-color-shadow-dark);
+    --ha-box-shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.4), 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    --ha-box-shadow-m: 0 3px 6px -1px rgba(0, 0, 0, 0.35), 0 8px 16px -2px rgba(0, 0, 0, 0.45);
+    --ha-box-shadow-l: 0 6px 12px -3px rgba(0, 0, 0, 0.4), 0 16px 32px -6px rgba(0, 0, 0, 0.55);
   }
 `;
 

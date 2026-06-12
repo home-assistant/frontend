@@ -6,10 +6,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import "../../../components/ha-textfield";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import { adminChangePassword } from "../../../data/auth";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -44,7 +44,9 @@ interface FormData {
 }
 
 @customElement("dialog-admin-change-password")
-class DialogAdminChangePassword extends LitElement {
+class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: AdminChangePasswordDialogParams;
@@ -66,7 +68,10 @@ class DialogAdminChangePassword extends LitElement {
     this._userId = params.userId;
     this._data = undefined;
     this._error = undefined;
+    this._submitting = false;
+    this._success = false;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, {});
   }
 
   public closeDialog(): void {
@@ -117,9 +122,8 @@ class DialogAdminChangePassword extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.users.change_password.caption"
         )}
@@ -175,6 +179,7 @@ class DialogAdminChangePassword extends LitElement {
 
   private _valueChanged(ev) {
     this._data = ev.detail.value;
+    this._updateDirtyState(this._data ?? {});
     this._validate();
   }
 
@@ -187,6 +192,7 @@ class DialogAdminChangePassword extends LitElement {
         this._userId!,
         this._data.new_password
       );
+      this._markDirtyStateClean();
       this._success = true;
     } catch (err: any) {
       showToast(this, {

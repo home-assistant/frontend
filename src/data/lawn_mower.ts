@@ -24,6 +24,10 @@ export interface LawnMowerEntity extends HassEntityBase {
   attributes: LawnMowerEntityAttributes;
 }
 
+export function isMowing(stateObj: LawnMowerEntity): boolean {
+  return stateObj.state === "mowing";
+}
+
 export function canStartMowing(stateObj: LawnMowerEntity): boolean {
   if (stateObj.state === UNAVAILABLE) {
     return false;

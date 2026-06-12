@@ -6,12 +6,12 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-switch";
+import "../../../../components/item/ha-row-item";
 
 import { formatDate } from "../../../../common/datetime/format_date";
-import "../../../../components/ha-copy-textfield";
 import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/input/ha-input-copy";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import {
   connectCloudRemote,
@@ -130,12 +130,12 @@ export class CloudRemotePref extends LitElement {
                 </p>
               `}
 
-          <ha-copy-textfield
-            .hass=${this.hass}
+          <ha-input-copy
+            readonly
             .value=${`https://${remote_domain}`}
             .maskedValue=${obfuscateUrl(`https://${remote_domain}`)}
             .label=${this.hass!.localize("ui.panel.config.common.copy_link")}
-          ></ha-copy-textfield>
+          ></ha-input-copy>
 
           <ha-expansion-panel
             outlined
@@ -143,7 +143,7 @@ export class CloudRemotePref extends LitElement {
               "ui.panel.config.cloud.account.remote.security_options"
             )}
           >
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.external_activation"
@@ -154,13 +154,15 @@ export class CloudRemotePref extends LitElement {
                   "ui.panel.config.cloud.account.remote.external_activation_secondary"
                 )}</span
               >
-              <ha-switch slot="end">
+              <ha-switch
+                slot="end"
                 .checked=${remote_allow_remote_enable}
                 @change=${this._toggleAllowRemoteEnabledChanged}
+              >
               </ha-switch>
-            </ha-md-list-item>
+            </ha-row-item>
             <hr />
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.certificate_info"
@@ -185,14 +187,14 @@ export class CloudRemotePref extends LitElement {
               <ha-button
                 slot="end"
                 appearance="plain"
-                size="small"
+                size="s"
                 @click=${this._openCertInfo}
               >
                 ${this.hass.localize(
                   "ui.panel.config.cloud.account.remote.more_info"
                 )}
               </ha-button>
-            </ha-md-list-item>
+            </ha-row-item>
           </ha-expansion-panel>
         </div>
       </ha-card>
@@ -279,10 +281,12 @@ export class CloudRemotePref extends LitElement {
     ha-expansion-panel {
       margin-top: 16px;
     }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-item-overflow: visible;
+    ha-row-item {
+      --ha-row-item-padding-inline: 0;
+    }
+    ha-row-item::part(headline),
+    ha-row-item::part(supporting-text) {
+      white-space: wrap;
     }
     ha-expansion-panel {
       --expansion-panel-content-padding: 0 16px;

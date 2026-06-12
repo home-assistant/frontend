@@ -1,13 +1,14 @@
 import "@home-assistant/webawesome/dist/components/drawer/drawer";
 import type WaDrawer from "@home-assistant/webawesome/dist/components/drawer/drawer";
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
+import { configContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
@@ -48,8 +49,6 @@ const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
  */
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: "aria-labelledby" })
   public ariaLabelledBy?: string;
 
@@ -68,9 +67,15 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   @state() private _sliderInteractionActive = false;
 
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
+
   @query("#drawer") private _drawer!: HTMLElement;
 
   @query("#body") private _bodyElement!: HTMLDivElement;
+
+  @query("[autofocus]") private _autofocusElement?: HTMLElement;
 
   protected get scrollableElement(): HTMLElement | null {
     return this._bodyElement;
@@ -90,13 +95,16 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     await this.updateComplete;
 
     requestAnimationFrame(() => {
-      if (this.hass && isIosApp(this.hass.auth.external)) {
-        const element = this.renderRoot.querySelector("[autofocus]");
-        if (element !== null) {
+      const element = this._autofocusElement;
+      if (
+        this._hassConfig?.auth.external &&
+        isIosApp(this._hassConfig.auth.external)
+      ) {
+        if (element) {
           if (!element.id) {
             element.id = "ha-bottom-sheet-autofocus";
           }
-          this.hass.auth.external?.fireMessage({
+          this._hassConfig.auth.external.fireMessage({
             type: "focus_element",
             payload: {
               element_id: element.id,
@@ -105,9 +113,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
         }
         return;
       }
-      (
-        this.renderRoot.querySelector("[autofocus]") as HTMLElement | null
-      )?.focus();
+      element?.focus();
     });
   };
 
@@ -203,7 +209,7 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     );
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("open")) {
       this._drawerOpen = this.open;

@@ -52,6 +52,12 @@ export const VACUUM_COMMANDS_FEATURES: Record<
   return_home: [VacuumEntityFeature.RETURN_HOME],
 };
 
+export const VACUUM_DEFAULT_COMMANDS: VacuumCommand[] = [
+  "start_pause",
+  "stop",
+  "return_home",
+];
+
 export const supportsVacuumCommand = (
   stateObj: HassEntity,
   command: VacuumCommand
@@ -154,20 +160,9 @@ class HuiVacuumCommandCardFeature
       | undefined;
   }
 
-  static getStubConfig(
-    hass: HomeAssistant,
-    context: LovelaceCardFeatureContext
-  ): VacuumCommandsCardFeatureConfig {
-    const stateObj = context.entity_id
-      ? hass.states[context.entity_id]
-      : undefined;
+  static getStubConfig(): VacuumCommandsCardFeatureConfig {
     return {
       type: "vacuum-commands",
-      commands: stateObj
-        ? VACUUM_COMMANDS.filter((c) =>
-            supportsVacuumCommand(stateObj, c)
-          ).slice(0, 3)
-        : [],
     };
   }
 
@@ -204,28 +199,28 @@ class HuiVacuumCommandCardFeature
 
     const stateObj = this._stateObj as VacuumEntity;
 
+    const commands = this._config.commands ?? VACUUM_DEFAULT_COMMANDS;
+
     return html`
       <ha-control-button-group>
-        ${VACUUM_COMMANDS.filter(
-          (command) =>
-            supportsVacuumCommand(stateObj, command) &&
-            this._config?.commands?.includes(command)
-        ).map((command) => {
-          const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
-          return html`
-            <ha-control-button
-              .entry=${button}
-              .label=${this.hass!.localize(
-                // @ts-ignore
-                `ui.dialogs.more_info_control.vacuum.${button.translationKey}`
-              )}
-              @click=${this._onCommandTap}
-              .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
-            >
-              <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-            </ha-control-button>
-          `;
-        })}
+        ${commands
+          .filter((command) => supportsVacuumCommand(stateObj, command))
+          .map((command) => {
+            const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
+            return html`
+              <ha-control-button
+                .entry=${button}
+                .label=${this.hass!.localize(
+                  // @ts-ignore
+                  `ui.dialogs.more_info_control.vacuum.${button.translationKey}`
+                )}
+                @click=${this._onCommandTap}
+                .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
+              >
+                <ha-svg-icon .path=${button.icon}></ha-svg-icon>
+              </ha-control-button>
+            `;
+          })}
       </ha-control-button-group>
     `;
   }

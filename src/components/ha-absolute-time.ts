@@ -1,17 +1,33 @@
+import { consume } from "@lit/context";
 import { addDays, differenceInMilliseconds, startOfDay } from "date-fns";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { transform } from "../common/decorators/transform";
 import { absoluteTime } from "../common/datetime/absolute_time";
-import type { HomeAssistant } from "../types";
+import { configContext, internationalizationContext } from "../data/context";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../types";
 
 const SAFE_MARGIN = 5 * 1000;
 
 @customElement("ha-absolute-time")
 class HaAbsoluteTime extends ReactiveElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public datetime?: string | Date;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config?: HassConfig;
 
   private _timeout?: number;
 
@@ -31,12 +47,12 @@ class HaAbsoluteTime extends ReactiveElement {
     return this;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._updateAbsolute();
   }
 
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
     this._updateAbsolute();
   }
@@ -62,13 +78,17 @@ class HaAbsoluteTime extends ReactiveElement {
   }
 
   private _updateAbsolute(): void {
+    if (!this._i18n || !this._config) {
+      return;
+    }
+
     if (!this.datetime) {
-      this.innerHTML = this.hass.localize("ui.components.absolute_time.never");
+      this.innerHTML = this._i18n.localize("ui.components.absolute_time.never");
     } else {
       this.innerHTML = absoluteTime(
         new Date(this.datetime),
-        this.hass.locale,
-        this.hass.config
+        this._i18n.locale,
+        this._config
       );
     }
   }

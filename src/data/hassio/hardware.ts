@@ -15,7 +15,7 @@ interface HassioHardwareAudioList {
   };
 }
 
-interface HardwareDevice {
+export interface HardwareDevice {
   attributes: Record<string, string>;
   by_id: null | string;
   dev_path: string;

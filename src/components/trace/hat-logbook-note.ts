@@ -1,20 +1,22 @@
 import { css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 @customElement("hat-logbook-note")
 class HatLogbookNote extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public domain: "automation" | "script" = "automation";
+
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   render() {
     if (this.domain === "script") {
-      return this.hass.localize(
+      return this._localize(
         "ui.panel.config.automation.trace.messages.not_all_entries_are_related_script_note"
       );
     }
-    return this.hass.localize(
+    return this._localize(
       "ui.panel.config.automation.trace.messages.not_all_entries_are_related_automation_note"
     );
   }

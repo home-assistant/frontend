@@ -10,6 +10,7 @@ import {
   formatFlowRateShort,
   getEnergyDataCollection,
   getFlowRateFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
@@ -43,11 +44,28 @@ class HuiWaterFlowSankeyCard
   extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-sankey-card-editor");
+    return document.createElement("hui-energy-sankey-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: WaterFlowSankeyCardConfig;
+
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): WaterFlowSankeyCardConfig {
+    return {
+      type: "water-flow-sankey",
+      layout: "auto",
+      ...DEFAULT_CONFIG,
+    };
+  }
 
   @state() private _data?: EnergyData;
 
@@ -56,6 +74,9 @@ class HuiWaterFlowSankeyCard
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: WaterFlowSankeyCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = { ...DEFAULT_CONFIG, ...config };
   }
 
@@ -139,10 +160,14 @@ class HuiWaterFlowSankeyCard
     // When there are no source meters, pre-compute total device flow so the
     // home node has the correct value (sum of all device consumption) rather
     // than 0. This avoids a broken sankey where the root node has value=0
-    // while its children have positive values.
+    // while its children have positive values. Skip sub-trackers so the
+    // total only reflects top-level devices and we don't double-count.
     let totalDeviceFlow = 0;
     if (waterSources.length === 0) {
       prefs.device_consumption_water.forEach((device) => {
+        if (device.included_in_stat) {
+          return;
+        }
         if (device.stat_rate) {
           totalDeviceFlow += this._getCurrentFlowRate(device.stat_rate);
         }
@@ -486,9 +511,11 @@ class HuiWaterFlowSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `<div style="direction:ltr; display: inline;">
-      ${formatFlowRateShort(this.hass.locale, this.hass.config.unit_system.length, value)}
-    </div>`;
+    formatFlowRateShort(
+      this.hass.locale,
+      this.hass.config.unit_system.length,
+      value
+    );
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     const { node } = ev.detail;

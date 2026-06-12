@@ -8,6 +8,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { deepActiveElement } from "../../../common/dom/deep-active-element";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -17,14 +18,13 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-checkbox";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import "../../../components/search-input";
-import "../../../components/search-input-outlined";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
@@ -54,6 +54,7 @@ import {
 import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
+import type { HassTabsSubpage } from "../../../layouts/hass-tabs-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
@@ -68,7 +69,7 @@ import "./ha-integration-card";
 import type { HaIntegrationCard } from "./ha-integration-card";
 import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { showSingleConfigEntryWarning } from "./show-single-config-entry-warning";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {
   entry_id?: string;
@@ -88,6 +89,36 @@ const groupByIntegration = (
   });
   return result;
 };
+
+const getLocalizedDomainName = (
+  entry: ConfigEntryExtended,
+  manifests: Record<string, IntegrationManifest>,
+  localize: HomeAssistant["localize"]
+): string =>
+  entry.localized_domain_name && entry.localized_domain_name !== entry.domain
+    ? entry.localized_domain_name
+    : domainToName(localize, entry.domain, manifests[entry.domain]);
+
+const sortConfigEntriesByName = (
+  entries: ConfigEntryExtended[],
+  manifests: Record<string, IntegrationManifest>,
+  localize: HomeAssistant["localize"],
+  language: string
+): ConfigEntryExtended[] =>
+  entries.sort(
+    (entryA, entryB) =>
+      caseInsensitiveStringCompare(
+        getLocalizedDomainName(entryA, manifests, localize),
+        getLocalizedDomainName(entryB, manifests, localize),
+        language
+      ) ||
+      caseInsensitiveStringCompare(
+        entryA.title || entryA.domain,
+        entryB.title || entryB.domain,
+        language
+      )
+  );
+
 @customElement("ha-config-integrations-dashboard")
 class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   SubscribeMixin(LitElement)
@@ -97,8 +128,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
-  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -138,7 +167,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
-  @query("search-input-outlined") private _searchInput!: HTMLElement;
+  @query("ha-input-search") private _searchInput!: HaInputSearch;
+
+  @query("hass-tabs-subpage") private _tabsSubpage?: HassTabsSubpage;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -202,7 +233,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       const nonConfigEntry: ConfigEntryExtended[] = [...domains].map(
         (domain) => ({
           domain,
-          localized_domain_name: domainToName(localize, domain),
+          localized_domain_name: domainToName(
+            localize,
+            domain,
+            manifests[domain]
+          ),
           title: domain,
           source: "yaml",
           state: "loaded",
@@ -269,8 +304,18 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
             this.hass.locale.language
           )
         ),
-        ignored,
-        disabled,
+        sortConfigEntriesByName(
+          ignored,
+          this._manifests,
+          this.hass.localize,
+          this.hass.locale.language
+        ),
+        sortConfigEntriesByName(
+          disabled,
+          this._manifests,
+          this.hass.localize,
+          this.hass.locale.language
+        ),
       ];
     }
   );
@@ -334,7 +379,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
   );
 
-  protected firstUpdated(changed: PropertyValues) {
+  protected firstUpdated(changed: PropertyValues<this>) {
     super.firstUpdated(changed);
     this._fetchManifests();
     this._fetchEntitySources();
@@ -342,7 +387,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._scanUSBDevices();
     this._scanImprovDevices();
 
-    if (isComponentLoaded(this.hass, "diagnostics")) {
+    if (isComponentLoaded(this.hass.config, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
         for (const info of infos) {
@@ -353,7 +398,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
   }
 
-  protected updated(changed: PropertyValues) {
+  protected updated(changed: PropertyValues<this>) {
     super.updated(changed);
     if (changed.has("route")) {
       this._handleRouteChanged();
@@ -379,6 +424,21 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       this._fetchIntegrationManifests(
         this.configEntries.map((entry) => entry.domain)
       );
+    }
+
+    if (this.configEntries && this.configEntriesInProgress) {
+      const activeElement = deepActiveElement();
+
+      if (
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        (activeElement as HTMLElement | null)?.isContentEditable
+      ) {
+        return;
+      }
+
+      this._tabsSubpage?.focusContentScroller();
     }
   }
 
@@ -451,7 +511,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .backPath=${this._searchParams.has("historyBack")
           ? undefined
           : "/config"}
@@ -462,15 +521,15 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         ${this.narrow
           ? html`
               <div slot="header" class="header">
-                <search-input-outlined
-                  .hass=${this.hass}
-                  .filter=${this._filter}
-                  @value-changed=${this._handleSearchChange}
-                  .label=${this.hass.localize(
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                  .placeholder=${this.hass.localize(
                     "ui.panel.config.integrations.search"
                   )}
                 >
-                </search-input-outlined>
+                </ha-input-search>
               </div>
               ${filterMenu}
             `
@@ -480,15 +539,15 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                 slot="toolbar-icon"
               ></ha-integration-overflow-menu>
               <div class="search">
-                <search-input-outlined
-                  .hass=${this.hass}
-                  .filter=${this._filter}
-                  @value-changed=${this._handleSearchChange}
-                  .label=${this.hass.localize(
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                  .placeholder=${this.hass.localize(
                     "ui.panel.config.integrations.search"
                   )}
                 >
-                </search-input-outlined>
+                </ha-input-search>
                 <div class="filters">
                   ${!this._showDisabled && disabledConfigEntries.length
                     ? html`<div class="active-filters">
@@ -498,7 +557,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         )}
                         <ha-button
                           appearance="plain"
-                          size="small"
+                          size="s"
                           @click=${this._toggleShowDisabled}
                         >
                           ${this.hass.localize(
@@ -618,7 +677,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     <ha-button
                       @click=${this._createFlow}
                       appearance="filled"
-                      size="small"
+                      size="s"
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${this.hass.localize(
@@ -650,7 +709,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         <ha-button
                           @click=${this._createFlow}
                           appearance="filled"
-                          size="small"
+                          size="s"
                         >
                           <ha-svg-icon
                             slot="start"
@@ -664,22 +723,16 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     `
                   : ""}
         </div>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.integrations.add_integration"
-          )}
-          extended
-          @click=${this._createFlow}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._createFlow}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.integrations.add_integration")}
+        </ha-button>
       </hass-tabs-subpage>
     `;
   }
 
   private async _scanUSBDevices() {
-    if (!isComponentLoaded(this.hass, "usb")) {
+    if (!isComponentLoaded(this.hass.config, "usb")) {
       return;
     }
     await scanUSBDevices(this.hass);
@@ -797,8 +850,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._showDisabled = !this._showDisabled;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
     history.replaceState({ filter: this._filter }, "");
   }
 
@@ -859,21 +912,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       if (integration.single_config_entry) {
         const configEntries = await getConfigEntries(this.hass, { domain });
         if (configEntries.length > 0) {
-          const localize = await this.hass.loadBackendTranslation(
-            "title",
-            integration.name
-          );
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.integrations.config_flow.single_config_entry_title"
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.integrations.config_flow.single_config_entry",
-              {
-                integration_name: domainToName(localize, integration.name!),
-              }
-            ),
-          });
+          showSingleConfigEntryWarning(this, { domain });
           return;
         }
       }
@@ -947,7 +986,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
               this.hass,
               integration.supported_by!
             ),
-            showAdvanced: this.hass.userData?.showAdvanced,
           });
         },
       });
@@ -1016,11 +1054,13 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         .empty-message h1 {
           margin: 0;
         }
-        search-input-outlined {
+        ha-input-search {
           flex: 1;
+          min-width: 0;
         }
         .header {
           display: flex;
+          min-width: 0;
         }
         .search {
           display: flex;

@@ -68,7 +68,7 @@ export class HaTemplateSelector extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("value") && this._test) {
       this._subscribeTemplate();
     }
@@ -101,7 +101,6 @@ export class HaTemplateSelector extends LitElement {
         : nothing}
       <ha-code-editor
         mode="jinja2"
-        .hass=${this.hass}
         .value=${this.value}
         .readOnly=${this.disabled}
         .placeholder=${this.placeholder || "{{ ... }}"}

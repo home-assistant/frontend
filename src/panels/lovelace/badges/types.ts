@@ -29,6 +29,15 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface ShortcutBadgeConfig extends LovelaceBadgeConfig {
+  text?: string;
+  icon?: string;
+  color?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
 export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   type: "entity";
   entity?: string;

@@ -9,7 +9,6 @@ import "./ha-expansion-panel";
 import "./ha-items-display-editor";
 import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import "./ha-svg-icon";
-import "./ha-textfield";
 
 export interface AreasDisplayValue {
   hidden?: string[];
@@ -62,7 +61,6 @@ export class HaAreasDisplayEditor extends LitElement {
       >
         <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
         <ha-items-display-editor
-          .hass=${this.hass}
           .items=${items}
           .value=${value}
           @value-changed=${this._areaDisplayChanged}

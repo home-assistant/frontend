@@ -2,7 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-button";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-counter")
@@ -16,13 +16,13 @@ class MoreInfoCounter extends LitElement {
       return nothing;
     }
 
-    const disabled = isUnavailableState(this.stateObj.state);
+    const disabled = this.stateObj.state === UNAVAILABLE;
 
     return html`
       <div class="actions">
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           .action=${"increment"}
           @click=${this._handleActionClick}
           .disabled=${disabled ||
@@ -32,7 +32,7 @@ class MoreInfoCounter extends LitElement {
         </ha-button>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           .action=${"decrement"}
           @click=${this._handleActionClick}
           .disabled=${disabled ||
@@ -42,7 +42,7 @@ class MoreInfoCounter extends LitElement {
         </ha-button>
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           .action=${"reset"}
           @click=${this._handleActionClick}
           .disabled=${disabled}

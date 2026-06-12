@@ -480,6 +480,12 @@ const SCHEMAS: {
       },
       { type: "string", name: "path", default: "/" },
       { type: "boolean", name: "ssl", default: false },
+      {
+        type: "string",
+        name: "comments",
+        default: "disabled field",
+        disabled: true,
+      },
     ],
   },
 ];

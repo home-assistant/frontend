@@ -26,7 +26,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-svg-icon";
@@ -245,7 +244,6 @@ class HaBlueprintOverview extends LitElement {
               ></ha-svg-icon>`
             : html`
                 <ha-icon-overflow-menu
-                  .hass=${this.hass}
                   narrow
                   .items=${[
                     {
@@ -301,7 +299,7 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
     if (this.route.path === "/import") {
@@ -313,7 +311,7 @@ class HaBlueprintOverview extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("blueprints")) {
       this._loadUsageCounts();
@@ -351,7 +349,7 @@ class HaBlueprintOverview extends LitElement {
             href=${documentationUrl(this.hass, "/get-blueprints")}
             target="_blank"
             rel="noreferrer noopener"
-            size="small"
+            size="s"
           >
             ${this.hass.localize(
               "ui.panel.config.blueprint.overview.discover_more"
@@ -377,16 +375,12 @@ class HaBlueprintOverview extends LitElement {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
+        <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
+          <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+          ${this.hass.localize(
             "ui.panel.config.blueprint.overview.add_blueprint"
           )}
-          extended
-          @click=${this._addBlueprintClicked}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
-        </ha-fab>
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

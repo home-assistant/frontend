@@ -5,14 +5,13 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import { cloudRegister, cloudResendVerification } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../ha-config-section";
-import "../../../../components/ha-password-field";
 
 @customElement("cloud-register")
 export class CloudRegister extends LitElement {
@@ -30,9 +29,9 @@ export class CloudRegister extends LitElement {
 
   @state() private _error?: string;
 
-  @query("#email", true) private _emailField!: HaTextField;
+  @query("#email", true) private _emailField!: HaInput;
 
-  @query("#password", true) private _passwordField!: HaTextField;
+  @query("#password", true) private _passwordField!: HaInput;
 
   protected render(): TemplateResult {
     return html`
@@ -131,7 +130,7 @@ export class CloudRegister extends LitElement {
                 ${this._error
                   ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
                   : ""}
-                <ha-textfield
+                <ha-input
                   autofocus
                   id="email"
                   name="email"
@@ -143,12 +142,14 @@ export class CloudRegister extends LitElement {
                   required
                   .value=${this.email ?? ""}
                   @keydown=${this._keyDown}
-                  validationMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.register.email_error_msg"
                   )}
-                ></ha-textfield>
-                <ha-password-field
+                ></ha-input>
+                <ha-input
                   id="password"
+                  type="password"
+                  password-toggle
                   name="password"
                   .label=${this.hass.localize(
                     "ui.panel.config.cloud.register.password"
@@ -158,10 +159,10 @@ export class CloudRegister extends LitElement {
                   minlength="8"
                   required
                   @keydown=${this._keyDown}
-                  validationMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.register.password_error_msg"
                   )}
-                ></ha-password-field>
+                ></ha-input>
               </div>
               <div class="card-actions">
                 <button
@@ -209,14 +210,14 @@ export class CloudRegister extends LitElement {
       return;
     }
 
-    const email = emailField.value.toLowerCase();
-    const password = passwordField.value;
+    const email = emailField.value?.toLowerCase() || "";
+    const password = passwordField.value || "";
 
     this._requestInProgress = true;
 
     try {
       await cloudRegister(this.hass, email, password);
-      this._verificationEmailSent(email);
+      this._verificationEmailSent(email, "account_created");
     } catch (err: any) {
       this._password = "";
       this._requestInProgress = false;
@@ -235,17 +236,20 @@ export class CloudRegister extends LitElement {
       return;
     }
 
-    const email = emailField.value;
+    const email = emailField.value || "";
+
+    this._requestInProgress = true;
 
     const doResend = async (username: string) => {
       try {
         await cloudResendVerification(this.hass, username);
-        this._verificationEmailSent(username);
+        this._verificationEmailSent(username, "verification_email_sent");
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {
           await doResend(username.toLowerCase());
         } else {
+          this._requestInProgress = false;
           this._error =
             err && err.body && err.body.message
               ? err.body.message
@@ -257,13 +261,16 @@ export class CloudRegister extends LitElement {
     await doResend(email);
   }
 
-  private _verificationEmailSent(email: string) {
+  private _verificationEmailSent(
+    email: string,
+    messageKey: "account_created" | "verification_email_sent"
+  ) {
     this._requestInProgress = false;
     this._password = "";
     fireEvent(this, "cloud-email-changed", { value: email });
     fireEvent(this, "cloud-done", {
       flashMessage: this.hass.localize(
-        "ui.panel.config.cloud.register.account_created"
+        `ui.panel.config.cloud.register.${messageKey}`
       ),
     });
   }

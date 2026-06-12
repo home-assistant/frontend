@@ -7,6 +7,7 @@ import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list";
@@ -24,7 +25,6 @@ import "../../ha-config-section";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
 import "./cloud-login";
 import type { CloudLogin } from "./cloud-login";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("cloud-login-panel")
 export class CloudLoginPanel extends LitElement {
@@ -149,7 +149,7 @@ export class CloudLoginPanel extends LitElement {
   private _handleForgotPassword() {
     this._dismissFlash();
     fireEvent(this, "cloud-email-changed", {
-      value: this._cloudLoginElement.emailField.value,
+      value: this._cloudLoginElement.emailField.value ?? "",
     });
     navigate("/config/cloud/forgot-password");
   }
@@ -158,7 +158,7 @@ export class CloudLoginPanel extends LitElement {
     this._dismissFlash();
 
     fireEvent(this, "cloud-email-changed", {
-      value: this._cloudLoginElement.emailField.value,
+      value: this._cloudLoginElement.emailField.value ?? "",
     });
     navigate("/config/cloud/register");
   }

@@ -23,7 +23,7 @@ class HaMfaModulesCard extends LitElement {
               <span slot="heading">${module.name}</span>
               <span slot="description">${module.id}</span>
               <ha-button
-                size="small"
+                size="s"
                 appearance="plain"
                 .module=${module}
                 @click=${module.enabled ? this._disable : this._enable}

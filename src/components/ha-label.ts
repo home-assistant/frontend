@@ -1,17 +1,43 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeCssColor } from "../common/color/compute-color";
+import { getContrastedColorHex } from "../common/color/rgb";
 import { uid } from "../common/util/uid";
 import "./ha-tooltip";
+
+/**
+ * Returns CSS styles for a label's background & icon/text
+ * @param color Label color defined in HEX format
+ * @returns CSS styles
+ */
+export const getLabelColorStyle = (labelColor: string | undefined | null) => {
+  const color = labelColor ? computeCssColor(labelColor) : undefined;
+  return color
+    ? `--ha-label-background-color: ${color};
+       --primary-text-color: ${getContrastedColorHex(labelColor!)};`
+    : `--ha-label-background-color: rgba(var(--rgb-primary-text-color), 0.15);`;
+};
 
 @customElement("ha-label")
 class HaLabel extends LitElement {
   @property({ type: Boolean, reflect: true }) dense = false;
 
+  @property()
+  public color?: string;
+
   @property({ attribute: "description" })
   public description?: string;
 
   private _elementId = "label-" + uid();
+
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("color")) {
+      return;
+    }
+    this.style.cssText = getLabelColorStyle(this.color);
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -24,7 +50,9 @@ class HaLabel extends LitElement {
       <div class="container" .id=${this._elementId}>
         <span class="content">
           <slot name="icon"></slot>
-          <slot></slot>
+          <span class="label-content">
+            <slot></slot>
+          </span>
         </span>
       </div>
     `;
@@ -36,10 +64,6 @@ class HaLabel extends LitElement {
         :host {
           --ha-label-text-color: var(--primary-text-color);
           --ha-label-icon-color: var(--primary-text-color);
-          --ha-label-background-color: rgba(
-            var(--rgb-primary-text-color),
-            0.15
-          );
           --ha-label-background-opacity: 1;
           border: 1px solid var(--outline-color);
           position: relative;
@@ -91,6 +115,10 @@ class HaLabel extends LitElement {
           display: inline-flex;
         }
 
+        .label-content {
+          display: contents;
+        }
+
         :host([dense]) {
           height: 20px;
           border-radius: var(--ha-border-radius-md);
@@ -103,6 +131,29 @@ class HaLabel extends LitElement {
           margin-left: -4px;
           margin-inline-start: -4px;
           margin-inline-end: 4px;
+        }
+
+        :host(.text-ellipsis) {
+          max-width: 100%;
+          min-width: 0;
+        }
+        :host(.text-ellipsis) .container {
+          min-width: 0;
+          overflow: hidden;
+        }
+        :host(.text-ellipsis) span.content {
+          display: flex;
+          width: 100%;
+          min-width: 0;
+        }
+        :host(.text-ellipsis) .label-content {
+          display: block;
+          flex: 1;
+          min-width: 0;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       `,
     ];

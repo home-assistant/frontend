@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/// <reference types="chromecast-caf-sender" />
 
 import type { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";
@@ -58,9 +59,11 @@ export class CastManager {
     this._eventListeners[event].push(listener);
 
     return () => {
-      this._eventListeners[event].splice(
-        this._eventListeners[event].indexOf(listener)
-      );
+      const listeners = this._eventListeners[event];
+      const index = listeners.indexOf(listener);
+      if (index !== -1) {
+        listeners.splice(index, 1);
+      }
     };
   }
 

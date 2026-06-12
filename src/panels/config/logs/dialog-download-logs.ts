@@ -67,7 +67,6 @@ class DownloadLogsDialog extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize("ui.panel.config.logs.download_logs")}
         header-subtitle=${headerSubtitle}

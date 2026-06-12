@@ -58,7 +58,7 @@ export class HaCameraStream extends LitElement {
 
   @state() private _webRtcStreams?: { hasAudio: boolean; hasVideo: boolean };
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     const entityChanged =
       changedProps.has("stateObj") &&
       this.stateObj &&
@@ -112,12 +112,16 @@ export class HaCameraStream extends LitElement {
       return nothing;
     }
     if (stream.type === MJPEG_STREAM) {
+      const streamUrl = __DEMO__
+        ? this.stateObj.attributes.entity_picture
+        : this._connected
+          ? computeMJPEGStreamUrl(this.stateObj)
+          : this._posterUrl;
+      if (!streamUrl) {
+        return nothing;
+      }
       return html`<img
-        .src=${__DEMO__
-          ? this.stateObj.attributes.entity_picture!
-          : this._connected
-            ? computeMJPEGStreamUrl(this.stateObj)
-            : this._posterUrl || ""}
+        .src=${streamUrl}
         style=${styleMap({
           aspectRatio: this.aspectRatio,
           objectFit: this.fitMode,

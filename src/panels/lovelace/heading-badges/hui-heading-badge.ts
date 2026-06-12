@@ -9,6 +9,7 @@ import { checkConditionsMet } from "../common/validate-condition";
 import { createHeadingBadgeElement } from "../create-element/create-heading-badge-element";
 import type { LovelaceHeadingBadge } from "../types";
 import type { LovelaceHeadingBadgeConfig } from "./types";
+import { getConfigEntityId } from "../common/get-config-entity-id";
 
 declare global {
   interface HASSDomEvents {
@@ -92,15 +93,22 @@ export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBad
     this._updateVisibility();
   }
 
-  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+
+    if (changedProps.has("config")) {
+      this._conditionContext = {
+        ...this._conditionContext,
+        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+      };
+    }
 
     if (!this._element) {
       this.load();
     }
   }
 
-  protected update(changedProps: PropertyValues<typeof this>) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
 
     if (this._element) {
@@ -155,7 +163,11 @@ export class HuiHeadingBadge extends ConditionalListenerMixin<LovelaceHeadingBad
     const visible =
       conditionsMet ??
       (!this.config?.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+        checkConditionsMet(
+          this.config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
     this._setElementVisibility(visible);
   }
 

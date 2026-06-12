@@ -9,8 +9,8 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-dialog-footer";
 import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-metric";
 import "../../../components/ha-spinner";
 import type { HassioStats } from "../../../data/hassio/common";
@@ -85,7 +85,7 @@ class DialogSystemInformation extends LitElement {
   }
 
   private _subscribe(): void {
-    if (isComponentLoaded(this.hass, "system_health")) {
+    if (isComponentLoaded(this.hass.config, "system_health")) {
       this._systemHealthSubscription = subscribeSystemHealthInfo(
         this.hass,
         (info) => {
@@ -98,15 +98,15 @@ class DialogSystemInformation extends LitElement {
       );
     }
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._hassIOSubscription = subscribePollingCollection(
         this.hass,
         async () => {
           this._supervisorStats = await fetchHassioStats(
-            this.hass,
+            this.hass.callWS,
             "supervisor"
           );
-          this._coreStats = await fetchHassioStats(this.hass, "core");
+          this._coreStats = await fetchHassioStats(this.hass.callWS, "core");
         },
         10000
       );
@@ -138,7 +138,6 @@ class DialogSystemInformation extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.repairs.system_information"
@@ -152,7 +151,7 @@ class DialogSystemInformation extends LitElement {
                     ${this.hass.localize("ui.dialogs.unhealthy.title")}
                     <ha-button
                       appearance="plain"
-                      size="small"
+                      size="s"
                       variant="danger"
                       slot="action"
                       @click=${this._unhealthyDialog}
@@ -166,7 +165,7 @@ class DialogSystemInformation extends LitElement {
                     ${this.hass.localize("ui.dialogs.unsupported.title")}
                     <ha-button
                       appearance="plain"
-                      size="small"
+                      size="s"
                       variant="warning"
                       slot="action"
                       @click=${this._unsupportedDialog}
@@ -369,7 +368,7 @@ class DialogSystemInformation extends LitElement {
                 : html`
                     <ha-button
                       appearance="plain"
-                      size="small"
+                      size="s"
                       class="manage"
                       href=${domainInfo.manage_url}
                     >

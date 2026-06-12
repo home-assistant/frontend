@@ -293,6 +293,7 @@ export class HuiTileCardEditor
 
     const featureContext = this._featureContext(entityId);
     const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
+    const hasFeatures = (this._config.features?.length ?? 0) > 0;
 
     return html`
       <ha-form
@@ -311,7 +312,14 @@ export class HuiTileCardEditor
           )}
         </h3>
         <div class="content">
-          ${hasCompatibleFeatures
+          <hui-card-features-editor
+            .hass=${this.hass}
+            .context=${featureContext}
+            .features=${this._config!.features ?? []}
+            @features-changed=${this._featuresChanged}
+            @edit-detail-element=${this._editDetailElement}
+          ></hui-card-features-editor>
+          ${hasCompatibleFeatures && hasFeatures
             ? html`
                 <ha-form
                   class="features-form"
@@ -324,13 +332,6 @@ export class HuiTileCardEditor
                 ></ha-form>
               `
             : nothing}
-          <hui-card-features-editor
-            .hass=${this.hass}
-            .context=${featureContext}
-            .features=${this._config!.features ?? []}
-            @features-changed=${this._featuresChanged}
-            @edit-detail-element=${this._editDetailElement}
-          ></hui-card-features-editor>
         </div>
       </ha-expansion-panel>
     `;
@@ -478,7 +479,8 @@ export class HuiTileCardEditor
           margin-bottom: 8px;
         }
         .features-form {
-          margin-bottom: 8px;
+          margin-top: var(--ha-space-6);
+          margin-bottom: 0;
         }
       `,
     ];

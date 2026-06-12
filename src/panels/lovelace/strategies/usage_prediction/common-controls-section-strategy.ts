@@ -2,14 +2,15 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import { getCommonControlUsagePrediction } from "../../../../data/usage_prediction";
+import { getCommonControlsUsagePrediction } from "../../../../data/usage_prediction";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig, TileCardConfig } from "../../cards/types";
 import type { Condition } from "../../common/validate-condition";
+import type { LovelaceStrategyDependency } from "../types";
 
 const DEFAULT_LIMIT = 8;
 
-export interface CommonControlSectionStrategyConfig {
+export interface CommonControlsSectionStrategyConfig {
   type: "common-controls";
   limit?: number;
   exclude_entities?: string[];
@@ -24,10 +25,19 @@ export interface CommonControlSectionStrategyConfig {
   title_visibilty?: Condition[];
 }
 
+const toTileCard = (entity: string): TileCardConfig => ({
+  type: "tile",
+  entity,
+  state_content: ["state", "area_name"],
+  show_entity_picture: true,
+});
+
 @customElement("common-controls-section-strategy")
 export class CommonControlsSectionStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
-    config: CommonControlSectionStrategyConfig,
+    config: CommonControlsSectionStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceSectionConfig> {
     const section: LovelaceSectionConfig = {
@@ -46,7 +56,18 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       } satisfies HeadingCardConfig);
     }
 
-    if (!isComponentLoaded(hass, "usage_prediction")) {
+    const limit = config.limit ?? DEFAULT_LIMIT;
+    const includedEntities = (config.include_entities || []).filter(
+      (entity) => entity in hass.states
+    );
+
+    // Pinned entities already fill the section, skip the prediction call.
+    if (includedEntities.length >= limit) {
+      section.cards!.push(...includedEntities.slice(0, limit).map(toTileCard));
+      return section;
+    }
+
+    if (!isComponentLoaded(hass.config, "usage_prediction")) {
       section.cards!.push({
         type: "markdown",
         content: hass.localize(
@@ -57,44 +78,28 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
       return section;
     }
 
-    const predictedCommonControl = await getCommonControlUsagePrediction(hass);
-    let predictedEntities = predictedCommonControl.entities.filter(
-      (entity) => entity in hass.states
+    const predictedCommonControls =
+      await getCommonControlsUsagePrediction(hass);
+    const predictedEntities = predictedCommonControls.entities.filter(
+      (entity) => {
+        // Non-existing entities should not be shown
+        if (!(entity in hass.states)) return false;
+        // Hidden entities should not be shown
+        if (hass.entities[entity]?.hidden) return false;
+        // Entities explicitly excluded by the user should not be shown
+        if (config.exclude_entities?.includes(entity)) return false;
+        // Avoid duplicates with the included entities
+        if (includedEntities.includes(entity)) return false;
+        return true;
+      }
     );
 
-    if (config.exclude_entities?.length) {
-      predictedEntities = predictedEntities.filter(
-        (entity) => !config.exclude_entities!.includes(entity)
-      );
-    }
+    const entities = [...includedEntities, ...predictedEntities].slice(
+      0,
+      limit
+    );
 
-    if (config.include_entities?.length) {
-      // Remove included entities from predicted list to avoid duplicates
-      predictedEntities = predictedEntities.filter(
-        (entity) => !config.include_entities!.includes(entity)
-      );
-      // Add included entities to the start of the list
-      predictedEntities.unshift(
-        ...config.include_entities!.filter((entity) => entity in hass.states)
-      );
-    }
-
-    const limit = config.limit ?? DEFAULT_LIMIT;
-    predictedEntities = predictedEntities.slice(0, limit);
-
-    if (predictedEntities.length > 0) {
-      section.cards!.push(
-        ...predictedEntities.map(
-          (entityId) =>
-            ({
-              type: "tile",
-              entity: entityId,
-              state_content: ["state", "area_name"],
-              show_entity_picture: true,
-            }) satisfies TileCardConfig
-        )
-      );
-    } else {
+    if (entities.length === 0) {
       section.cards!.push({
         type: "markdown",
         content: hass.localize(
@@ -102,8 +107,10 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
         ),
       });
       section.disabled = config.hide_empty;
+      return section;
     }
 
+    section.cards!.push(...entities.map(toTileCard));
     return section;
   }
 }

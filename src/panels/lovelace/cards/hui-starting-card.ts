@@ -20,7 +20,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceCardConfig): void {}
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (!changedProperties.has("hass") || !this.hass!.config) {
       return;

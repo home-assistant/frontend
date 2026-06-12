@@ -1,3 +1,4 @@
+import { waitForMs } from "../common/util/wait";
 import type { HomeAssistant } from "../types";
 
 export interface BrandsOptions {
@@ -20,15 +21,35 @@ let _brandsRefreshInterval: ReturnType<typeof setInterval> | undefined;
 // Re-fetch every 30 minutes to always have a valid token.
 const TOKEN_REFRESH_MS = 30 * 60 * 1000;
 
-export const fetchAndScheduleBrandsAccessToken = (
+// Delays before each attempt. The first attempt fires immediately; subsequent
+// ones back off to ride through the window after a Home Assistant restart
+// where the WebSocket server accepts connections but the brands integration
+// hasn't registered its WS handler yet. On older backends without the command,
+// every attempt fails and we give up.
+const FETCH_DELAYS_MS = [0, 500, 1000, 2000, 5000, 10000, 15000];
+
+// Returns true if the cached token changed as a result of this call, so
+// callers can decide whether they need to trigger a re-render.
+export const fetchAndScheduleBrandsAccessToken = async (
   hass: HomeAssistant
-): Promise<void> =>
-  fetchBrandsAccessToken(hass).then(
-    () => scheduleBrandsTokenRefresh(hass),
-    () => {
-      // Ignore failures; older backends may not support this command
+): Promise<boolean> => {
+  const previousToken = _brandsAccessToken;
+  /* eslint-disable no-await-in-loop -- retries are intentionally sequential */
+  for (const delay of FETCH_DELAYS_MS) {
+    if (delay) {
+      await waitForMs(delay);
     }
-  );
+    try {
+      await fetchBrandsAccessToken(hass);
+      scheduleBrandsTokenRefresh(hass);
+      return _brandsAccessToken !== previousToken;
+    } catch {
+      // try next delay
+    }
+  }
+  /* eslint-enable no-await-in-loop */
+  return false;
+};
 
 export const fetchBrandsAccessToken = async (
   hass: HomeAssistant
@@ -56,15 +77,19 @@ export const clearBrandsTokenRefresh = (): void => {
 };
 
 export const brandsUrl = (options: BrandsOptions, hassUrl?: string): string => {
+  // The brands API requires a token; without one the request 401s. Return an
+  // empty src so no request fires until the token is available. Components
+  // re-render once the token arrives (see connection-mixin) and recompute this.
+  if (!_brandsAccessToken) {
+    return "";
+  }
   hassUrl = hassUrl ?? location.origin;
   const base = `/api/brands/integration/${options.domain}/${
     options.darkOptimized ? "dark_" : ""
   }${options.type}.png`;
 
   const url = new URL(base, hassUrl);
-  if (_brandsAccessToken) {
-    url.searchParams.set("token", _brandsAccessToken);
-  }
+  url.searchParams.set("token", _brandsAccessToken);
   return url.toString();
 };
 
@@ -72,34 +97,44 @@ export const hardwareBrandsUrl = (
   options: HardwareBrandsOptions,
   hassUrl?: string
 ): string => {
+  // See brandsUrl: wait for the token before producing a loadable URL.
+  if (!_brandsAccessToken) {
+    return "";
+  }
   hassUrl = hassUrl ?? location.origin;
   const base = `/api/brands/hardware/${options.category}/${
     options.darkOptimized ? "dark_" : ""
   }${options.manufacturer}${options.model ? `_${options.model}` : ""}.png`;
 
   const url = new URL(base, hassUrl);
-  if (_brandsAccessToken) {
-    url.searchParams.set("token", _brandsAccessToken);
-  }
+  url.searchParams.set("token", _brandsAccessToken);
   return url.toString();
 };
 
 export const addBrandsAuth = (url: string, hassUrl?: string): string => {
   hassUrl = hassUrl ?? location.origin;
-  if (!_brandsAccessToken) {
-    return url;
-  }
 
+  let parsedUrl: URL;
   try {
-    const parsedUrl = new URL(url, hassUrl);
-    if (!parsedUrl.pathname.startsWith("/api/brands/")) {
-      return url;
-    }
-    parsedUrl.searchParams.set("token", _brandsAccessToken);
-    return parsedUrl.toString();
+    parsedUrl = new URL(url, hassUrl);
   } catch {
     return url;
   }
+
+  // Non-brands URLs (e.g. CDN brands.home-assistant.io or camera proxies) are
+  // returned unchanged; they don't use the brands token.
+  if (!parsedUrl.pathname.startsWith("/api/brands/")) {
+    return url;
+  }
+
+  // Brands API request without a token would 401; return an empty src so it
+  // doesn't fire until the token is available.
+  if (!_brandsAccessToken) {
+    return "";
+  }
+
+  parsedUrl.searchParams.set("token", _brandsAccessToken);
+  return parsedUrl.toString();
 };
 
 export const extractDomainFromBrandUrl = (url: string): string => {

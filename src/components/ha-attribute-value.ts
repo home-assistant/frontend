@@ -1,12 +1,16 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
-import type { HomeAssistant } from "../types";
+import { formattersContext } from "../data/context";
 
 @customElement("ha-attribute-value")
 class HaAttributeValue extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -26,7 +30,7 @@ class HaAttributeValue extends LitElement {
         try {
           // If invalid URL, exception will be raised
           const url = new URL(attributeValue);
-          if (url.protocol === "http:" || url.protocol === "https:")
+          if (url.protocol === "http:" || url.protocol === "https:") {
             return html`
               <a
                 target="_blank"
@@ -36,6 +40,7 @@ class HaAttributeValue extends LitElement {
                 ${attributeValue}
               </a>
             `;
+          }
         } catch {
           // Nothing to do here
         }
@@ -52,14 +57,20 @@ class HaAttributeValue extends LitElement {
     }
 
     if (this.hideUnit) {
-      const parts = this.hass.formatEntityAttributeValueToParts(
+      const parts = this._formatters!.formatEntityAttributeValueToParts(
         this.stateObj!,
         this.attribute
       );
-      return parts.find((part) => part.type === "value")?.value;
+      return parts
+        .filter((part) => part.type === "value")
+        .map((part) => part.value)
+        .join("");
     }
 
-    return this.hass.formatEntityAttributeValue(this.stateObj!, this.attribute);
+    return this._formatters!.formatEntityAttributeValue(
+      this.stateObj!,
+      this.attribute
+    );
   }
 
   static styles = css`

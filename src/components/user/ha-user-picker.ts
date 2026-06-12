@@ -1,5 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -39,7 +39,7 @@ class HaUserPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
       this._fetchUsers();
@@ -64,11 +64,7 @@ class HaUserPicker extends LitElement {
     }
 
     return html`
-      <ha-user-badge
-        slot="start"
-        .hass=${this.hass}
-        .user=${user}
-      ></ha-user-badge>
+      <ha-user-badge slot="start" .user=${user}></ha-user-badge>
       <span slot="headline">${user.name}</span>
     `;
   };
@@ -94,11 +90,7 @@ class HaUserPicker extends LitElement {
 
     return html`
       <ha-combo-box-item type="button" compact>
-        <ha-user-badge
-          slot="start"
-          .hass=${this.hass}
-          .user=${item.user}
-        ></ha-user-badge>
+        <ha-user-badge slot="start" .user=${item.user}></ha-user-badge>
         <span slot="headline">${item.primary}</span>
       </ha-combo-box-item>
     `;

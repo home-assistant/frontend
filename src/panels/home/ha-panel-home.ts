@@ -2,12 +2,11 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
-import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import "../../components/ha-svg-icon";
 import { updateAreaRegistryEntry } from "../../data/area/area_registry";
@@ -26,7 +25,10 @@ import { showDeviceRegistryDetailDialog } from "../config/devices/device-registr
 import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import "../lovelace/hui-root";
 import type { ExtraActionItem } from "../lovelace/hui-root";
-import { expandLovelaceConfigStrategies } from "../lovelace/strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceDashboardStrategy,
+} from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
 import { showEditHomeDialog } from "./dialogs/show-dialog-edit-home";
 import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
@@ -47,6 +49,10 @@ class PanelHome extends LitElement {
   @state() private _config: FrontendSystemData["home"] = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
+
+  @query(".banner") private _banner?: HTMLElement;
+
+  private _loadConfigPromise?: Promise<void>;
 
   private get _showBanner(): boolean {
     // Don't show if already dismissed
@@ -73,7 +79,7 @@ class PanelHome extends LitElement {
       (entries[0]?.target as HTMLElement | undefined)?.offsetHeight ?? 0,
   });
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Initial setup
     if (!this.hasUpdated) {
@@ -89,38 +95,48 @@ class PanelHome extends LitElement {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as this["hass"];
-    if (oldHass && oldHass.localize !== this.hass.localize) {
+    const oldHass = changedProps.get("hass") as this["hass"] | undefined;
+    if (!oldHass) {
+      return;
+    }
+
+    // Locale changed: regenerate to refresh translated content
+    if (oldHass.localize !== this.hass.localize) {
       this._setLovelace();
       return;
     }
 
-    if (oldHass && this.hass) {
-      // If the entity registry changed, ask the user if they want to refresh the config
-      if (
-        oldHass.entities !== this.hass.entities ||
-        oldHass.devices !== this.hass.devices ||
-        oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors ||
-        oldHass.panels !== this.hass.panels
-      ) {
-        if (this.hass.config.state === "RUNNING") {
-          this._debounceRegistriesChanged();
-          return;
-        }
-      }
-      // If ha started, refresh the config
-      if (
-        this.hass.config.state === "RUNNING" &&
-        oldHass.config.state !== "RUNNING"
-      ) {
-        this._setup();
-      }
+    if (this.hass.config.state !== "RUNNING") {
+      return;
+    }
+
+    // Home Assistant just started: run the full setup
+    if (oldHass.config.state !== "RUNNING") {
+      this._setup();
+      return;
+    }
+
+    // A registry the strategy depends on changed: regenerate
+    if (
+      checkStrategyShouldRegenerate(
+        "dashboard",
+        this._strategyConfig.strategy,
+        oldHass,
+        this.hass
+      )
+    ) {
+      this._debounceRegenerateStrategy();
     }
   }
 
   private async _setup() {
     this._updateExtraActionItems();
+    this._loadConfigPromise = this._loadConfig();
+    await this._loadConfigPromise;
+    this._setLovelace();
+  }
+
+  private async _loadConfig() {
     try {
       const [_, data] = await Promise.all([
         this.hass.loadFragmentTranslation("lovelace"),
@@ -132,15 +148,14 @@ class PanelHome extends LitElement {
       console.error("Failed to load favorites:", err);
       this._config = {};
     }
-    this._setLovelace();
   }
 
-  private _debounceRegistriesChanged = debounce(
-    () => this._registriesChanged(),
+  private _debounceRegenerateStrategy = debounce(
+    () => this._regenerateStrategyConfig(),
     200
   );
 
-  private _registriesChanged = async () => {
+  private _regenerateStrategyConfig() {
     // If on an area view that no longer exists, redirect to overview
     const path = this.route?.path?.split("/")[1];
     if (path?.startsWith("areas-")) {
@@ -151,7 +166,7 @@ class PanelHome extends LitElement {
       }
     }
     this._setLovelace();
-  };
+  }
 
   private _updateExtraActionItems() {
     const path = this.route?.path?.split("/")[1];
@@ -281,7 +296,7 @@ class PanelHome extends LitElement {
           </span>
         </div>
         <div class="banner-actions">
-          <ha-button size="small" appearance="filled" @click=${this._learnMore}>
+          <ha-button size="s" appearance="filled" @click=${this._learnMore}>
             ${this.hass.localize("ui.panel.home.banner.learn_more")}
           </ha-button>
         </div>
@@ -292,9 +307,8 @@ class PanelHome extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_showBanner") || changedProps.has("_lovelace")) {
-      const banner = this.shadowRoot?.querySelector(".banner");
-      if (banner) {
-        this._bannerHeight.observe(banner);
+      if (this._banner) {
+        this._bannerHeight.observe(this._banner);
       }
     }
   }
@@ -312,23 +326,27 @@ class PanelHome extends LitElement {
     });
   }
 
-  private async _setLovelace() {
-    const strategyConfig: LovelaceDashboardStrategyConfig = {
+  private get _strategyConfig(): LovelaceDashboardStrategyConfig {
+    return {
       strategy: {
         type: "home",
         favorite_entities: this._config.favorite_entities,
         home_panel: true,
+        hide_welcome_message: this._config.hide_welcome_message,
+        hide_suggested_entities: this._config.hide_suggested_entities,
+        shortcuts: this._config.shortcuts,
       },
     };
+  }
 
-    const config = await expandLovelaceConfigStrategies(
-      strategyConfig,
+  private async _setLovelace() {
+    if (this._loadConfigPromise) {
+      await this._loadConfigPromise;
+    }
+    const config = await generateLovelaceDashboardStrategy(
+      this._strategyConfig,
       this.hass
     );
-
-    if (deepEqual(config, this._lovelace?.config)) {
-      return;
-    }
 
     this._lovelace = {
       config: config,
@@ -379,7 +397,7 @@ class PanelHome extends LitElement {
       gap: var(--ha-space-2);
       position: fixed;
       top: var(--header-height, 56px);
-      left: var(--mdc-drawer-width, 0px);
+      left: var(--ha-sidebar-width, 0px);
       right: 0;
       z-index: 5;
     }

@@ -1,10 +1,43 @@
 import { fromError } from "stacktrace-js";
-import { UAParser } from "ua-parser-js";
 
 // URL paths to remove from filenames and max stack trace lines for brevity
 const REMOVAL_PATHS =
   /^\/(?:home-assistant\/frontend\/[^/]+|unknown|\/{2}\.)\//;
 const MAX_STACK_FRAMES = 10;
+
+// Order matters: more specific UA tokens must come before generic ones
+const BROWSER_PATTERNS: [RegExp, string][] = [
+  [/Edg\/(\S+)/, "Edge"],
+  [/OPR\/(\S+)/, "Opera"],
+  [/Chrome\/(\S+)/, "Chrome"],
+  [/Firefox\/(\S+)/, "Firefox"],
+  [/Version\/(\S+).*Safari/, "Safari"],
+];
+
+const OS_PATTERNS: [RegExp, string][] = [
+  [/CrOS/, "Chrome OS"],
+  [/Windows NT ([\d.]+)/, "Windows"],
+  [/Android ([\d.]+)/, "Android"],
+  [/iPhone OS ([\d_.]+)/, "iOS"],
+  [/iPad; CPU OS ([\d_.]+)/, "iPadOS"],
+  [/Mac OS X ([\d_.]+)/, "macOS"],
+  [/Linux/, "Linux"],
+];
+
+const detectFromUA = (
+  ua: string,
+  patterns: [RegExp, string][],
+  fallback: string
+): string => {
+  for (const [pattern, name] of patterns) {
+    const match = ua.match(pattern);
+    if (match) {
+      const version = match[1]?.replace(/_/g, ".");
+      return version ? `${name} ${version}` : name;
+    }
+  }
+  return fallback;
+};
 
 export const createLogMessage = async (
   error: unknown,
@@ -15,15 +48,9 @@ export const createLogMessage = async (
   const lines: (string | undefined)[] = [];
   // Append the originating browser/OS to any intro for easier identification
   if (intro) {
-    const parser = new UAParser();
-    const {
-      name: browserName = "unknown browser",
-      version: browserVersion = "",
-    } = parser.getBrowser();
-    const { name: osName = "unknown OS", version: osVersion = "" } =
-      parser.getOS();
-    const browser = `${browserName} ${browserVersion}`.trim();
-    const os = `${osName} ${osVersion}`.trim();
+    const ua = navigator.userAgent;
+    const browser = detectFromUA(ua, BROWSER_PATTERNS, "unknown browser");
+    const os = detectFromUA(ua, OS_PATTERNS, "unknown OS");
     lines.push(`${intro} from ${browser} on ${os}`);
   }
   // In most cases, an Error instance will be thrown, which can have many details to log:

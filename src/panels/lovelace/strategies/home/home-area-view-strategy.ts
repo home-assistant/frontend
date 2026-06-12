@@ -15,7 +15,9 @@ import type {
   EmptyStateCardConfig,
   HeadingCardConfig,
 } from "../../cards/types";
+import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
+import type { LovelaceStrategyDependency } from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES,
@@ -32,6 +34,13 @@ export interface HomeAreaViewStrategyConfig {
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "panels",
+  ];
+
   static async generate(
     config: HomeAreaViewStrategyConfig,
     hass: HomeAssistant
@@ -95,6 +104,15 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     } = entitiesBySummary;
 
     if (light.length > 0) {
+      const anyOnCondition = {
+        condition: "or" as const,
+        conditions: light.map((entityId) => ({
+          condition: "state" as const,
+          entity: entityId,
+          state: "on",
+        })),
+      };
+
       sections.push({
         type: "grid",
         cards: [
@@ -108,6 +126,40 @@ export class HomeAreaViewStrategy extends ReactiveElement {
                   navigation_path: "/light?historyBack=1",
                 }
               : undefined,
+            badges: [
+              {
+                type: "button",
+                icon: "mdi:power",
+                text: hass.localize("ui.panel.lovelace.strategy.light.off"),
+                tap_action: {
+                  action: "perform-action",
+                  perform_action: "light.turn_on",
+                  target: {
+                    area_id: config.area,
+                  },
+                },
+                visibility: [
+                  {
+                    condition: "not",
+                    conditions: [anyOnCondition],
+                  },
+                ],
+              } satisfies ButtonHeadingBadgeConfig,
+              {
+                type: "button",
+                icon: "mdi:power",
+                color: "orange",
+                text: hass.localize("ui.panel.lovelace.strategy.light.on"),
+                tap_action: {
+                  action: "perform-action",
+                  perform_action: "light.turn_off",
+                  target: {
+                    area_id: config.area,
+                  },
+                },
+                visibility: [anyOnCondition],
+              } satisfies ButtonHeadingBadgeConfig,
+            ],
           } satisfies HeadingCardConfig,
           ...light.map(computeTileCard),
         ],
@@ -173,8 +225,8 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     }
 
     const deviceSections: LovelaceSectionRawConfig[] = [];
-
-    const summaryEntities = Object.values(entitiesBySummary).flat();
+    const { maintenance, ...partialEntitiesBySummary } = entitiesBySummary;
+    const summaryEntities = Object.values(partialEntitiesBySummary).flat();
 
     // Scenes section
     const sceneFilter = generateEntityFilter(hass, {
@@ -279,7 +331,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
       const deviceId = deviceEntities.device_id;
       const device = hass.devices[deviceId];
-      let heading = "";
+      let heading: string;
       if (device) {
         heading =
           computeDeviceName(device) ||

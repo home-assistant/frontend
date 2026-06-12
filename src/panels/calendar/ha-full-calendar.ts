@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import type { CalendarOptions } from "@fullcalendar/core";
 import { Calendar } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
@@ -14,16 +15,16 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-button";
 import "../../components/ha-button-toggle-group";
-import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
 import "../../components/ha-icon-button-prev";
 import type {
@@ -96,9 +97,13 @@ export class HAFullCalendar extends LitElement {
 
   private calendar?: Calendar;
 
+  private _midnightRefreshTimeout?: number;
+
   private _viewButtons?: ToggleButton[];
 
   @state() private _activeView = this.initialView;
+
+  @query("style[data-fullcalendar]") private _fullCalendarStyle?: HTMLElement;
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
@@ -106,16 +111,19 @@ export class HAFullCalendar extends LitElement {
   });
 
   disconnectedCallback(): void {
+    this._clearMidnightRefreshTimeout();
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
-    this.renderRoot.querySelector("style[data-fullcalendar]")?.remove();
+    this._fullCalendarStyle?.remove();
   }
 
   connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated && !this.calendar) {
       this._loadCalendar(this._activeView);
+    } else if (this.calendar) {
+      this._scheduleMidnightRefresh();
     }
   }
 
@@ -139,7 +147,7 @@ export class HAFullCalendar extends LitElement {
                     <div class="navigation">
                       <ha-button
                         appearance="filled"
-                        size="small"
+                        size="s"
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
@@ -163,7 +171,7 @@ export class HAFullCalendar extends LitElement {
                     <ha-button-toggle-group
                       .buttons=${viewToggleButtons}
                       .active=${this._activeView}
-                      size="small"
+                      size="s"
                       no-wrap
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
@@ -189,7 +197,7 @@ export class HAFullCalendar extends LitElement {
                     <div class="controls buttons">
                       <ha-button
                         appearance="plain"
-                        size="small"
+                        size="s"
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
@@ -199,7 +207,7 @@ export class HAFullCalendar extends LitElement {
                       <ha-button-toggle-group
                         .buttons=${viewToggleButtons}
                         .active=${this._activeView}
-                        size="small"
+                        size="s"
                         no-wrap
                         @value-changed=${this._handleView}
                       ></ha-button-toggle-group>
@@ -211,19 +219,15 @@ export class HAFullCalendar extends LitElement {
 
       <div id="calendar"></div>
       ${this.addFab && this._hasMutableCalendars
-        ? html`<ha-fab
-            slot="fab"
-            .label=${this.hass.localize("ui.components.calendar.event.add")}
-            extended
-            @click=${this._createEvent}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>`
+        ? html`<ha-button size="l" slot="fab" @click=${this._createEvent}>
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.components.calendar.event.add")}
+          </ha-button>`
         : nothing}
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (!this.calendar) {
@@ -380,11 +384,72 @@ export class HAFullCalendar extends LitElement {
   }
 
   private _fireViewChanged(): void {
+    this._scheduleMidnightRefresh();
     fireEvent(this, "view-changed", {
       start: this.calendar!.view.activeStart,
       end: this.calendar!.view.activeEnd,
       view: this.calendar!.view.type,
     });
+  }
+
+  private _scheduleMidnightRefresh(): void {
+    this._clearMidnightRefreshTimeout();
+
+    if (!this.calendar) {
+      return;
+    }
+
+    const wasShowingToday = this._isShowingToday();
+    const nextMidnight = new TZDate(new Date(), this._calendarTimeZone());
+    nextMidnight.setHours(24, 0, 0, 0);
+
+    this._midnightRefreshTimeout = window.setTimeout(() => {
+      if (wasShowingToday) {
+        this.calendar?.today();
+        this._fireViewChanged();
+        return;
+      }
+
+      this._scheduleMidnightRefresh();
+    }, nextMidnight.getTime() - Date.now());
+  }
+
+  private _clearMidnightRefreshTimeout(): void {
+    if (this._midnightRefreshTimeout === undefined) {
+      return;
+    }
+
+    window.clearTimeout(this._midnightRefreshTimeout);
+    this._midnightRefreshTimeout = undefined;
+  }
+
+  private _isShowingToday(): boolean {
+    const calendarDate = this.calendar?.getDate();
+
+    if (!calendarDate) {
+      return false;
+    }
+
+    return (
+      this._formatDateInCalendarTimeZone(calendarDate) ===
+      this._formatDateInCalendarTimeZone(new Date())
+    );
+  }
+
+  private _calendarTimeZone(): string {
+    return resolveTimeZone(
+      this.hass.locale.time_zone,
+      this.hass.config.time_zone
+    );
+  }
+
+  private _formatDateInCalendarTimeZone(date: Date): string {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: this._calendarTimeZone(),
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(date);
   }
 
   private _viewToggleButtons = memoize((views, localize: LocalizeFunc) => {
@@ -491,13 +556,14 @@ export class HAFullCalendar extends LitElement {
           --ha-icon-button-size: 32px;
         }
 
-        ha-fab {
+        ha-button[slot="fab"] {
           position: absolute;
-          bottom: 16px;
-          right: 16px;
-          inset-inline-end: 16px;
+          bottom: var(--ha-space-4);
+          right: var(--ha-space-4);
+          inset-inline-end: var(--ha-space-4);
           inset-inline-start: initial;
           z-index: 1;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
 
         #calendar {

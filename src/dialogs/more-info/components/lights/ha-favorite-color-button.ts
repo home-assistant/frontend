@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -10,17 +9,10 @@ import {
   temperature2rgb,
 } from "../../../../common/color/convert-light-color";
 import { luminosity } from "../../../../common/color/rgb";
-import "../../../../components/ha-outlined-icon-button";
-import type { HaOutlinedIconButton } from "../../../../components/ha-outlined-icon-button";
-import "../../../../components/ha-svg-icon";
 import type { LightColor, LightEntity } from "../../../../data/light";
 
 @customElement("ha-favorite-color-button")
-class MoreInfoViewLightColorPicker extends LitElement {
-  public override focus() {
-    this._button?.focus();
-  }
-
+class HaFavoriteColorButton extends LitElement {
   @property({ attribute: false }) label?: string;
 
   @property({ type: Boolean, reflect: true }) disabled = false;
@@ -29,8 +21,12 @@ class MoreInfoViewLightColorPicker extends LitElement {
 
   @property({ attribute: false }) color!: LightColor;
 
-  @query("ha-outlined-icon-button", true)
-  private _button?: HaOutlinedIconButton;
+  @query("button", true)
+  private _button!: HTMLButtonElement;
+
+  public override focus() {
+    this._button?.focus();
+  }
 
   private get _rgbColor(): [number, number, number] {
     if (this.color) {
@@ -61,66 +57,64 @@ class MoreInfoViewLightColorPicker extends LitElement {
   protected render() {
     const backgroundColor = rgb2hex(this._rgbColor);
     const isLight = luminosity(this._rgbColor) > 0.8;
-    const iconColor = isLight
-      ? ([33, 33, 33] as [number, number, number])
-      : ([255, 255, 255] as [number, number, number]);
-    const hexIconColor = rgb2hex(iconColor);
-    const rgbIconColor = iconColor.join(", ");
+    const borderColor = isLight ? "var(--divider-color)" : "transparent";
 
     return html`
-      <ha-outlined-icon-button
-        no-ripple
+      <button
         .disabled=${this.disabled}
         title=${ifDefined(this.label)}
         aria-label=${ifDefined(this.label)}
         style=${styleMap({
           "background-color": backgroundColor,
-          "--icon-color": hexIconColor,
-          "--rgb-icon-color": rgbIconColor,
+          "border-color": borderColor,
+          "--focus-color": isLight ? borderColor : backgroundColor,
         })}
-      ></ha-outlined-icon-button>
+      ></button>
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      css`
-        :host {
-          display: block;
-        }
-        ha-outlined-icon-button {
-          --ha-icon-display: block;
-          --md-sys-color-on-surface: var(
-            --icon-color,
-            var(--secondary-text-color)
-          );
-          --md-sys-color-on-surface-variant: var(
-            --icon-color,
-            var(--secondary-text-color)
-          );
-          --md-sys-color-on-surface-rgb: var(
-            --rgb-icon-color,
-            var(--rgb-secondary-text-color)
-          );
-          --md-sys-color-outline: var(--divider-color);
-          --md-ripple-focus-color: 0;
-          --md-ripple-hover-opacity: 0;
-          --md-ripple-pressed-opacity: 0;
-          border-radius: var(--ha-border-radius-pill);
-        }
-        :host([disabled]) {
-          pointer-events: none;
-        }
-        ha-outlined-icon-button[disabled] {
-          filter: grayscale(1) opacity(0.5);
-        }
-      `,
-    ];
-  }
+  static readonly styles = css`
+    :host {
+      display: block;
+      width: var(--ha-favorite-color-button-size, 40px);
+      height: var(--ha-favorite-color-button-size, 40px);
+    }
+    button {
+      background-color: var(--color);
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 1px solid transparent;
+      border-radius: var(
+        --ha-favorite-color-button-border-radius,
+        var(--ha-border-radius-pill)
+      );
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      outline: none;
+      transition:
+        box-shadow 180ms ease-in-out,
+        transform 180ms ease-in-out;
+    }
+    button:focus-visible {
+      box-shadow: 0 0 0 2px var(--focus-color);
+    }
+    button:active {
+      transform: scale(1.1);
+    }
+    :host([disabled]) {
+      pointer-events: none;
+    }
+    button:disabled {
+      filter: grayscale(1) opacity(0.5);
+    }
+  `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-favorite-color-button": MoreInfoViewLightColorPicker;
+    "ha-favorite-color-button": HaFavoriteColorButton;
   }
 }

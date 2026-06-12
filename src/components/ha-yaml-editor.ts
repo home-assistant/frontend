@@ -3,15 +3,16 @@ import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import type { ContextType } from "@lit/context";
+import { consume } from "@lit/context";
 import { fireEvent } from "../common/dom/fire_event";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
-import "./ha-alert";
 import "./ha-button";
 import "./ha-code-editor";
 import type { HaCodeEditor } from "./ha-code-editor";
+import { internationalizationContext } from "../data/context";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object" || obj === null) {
@@ -27,8 +28,6 @@ const isEmpty = (obj: Record<string, unknown>): boolean => {
 
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public value?: any;
 
   @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
@@ -58,14 +57,11 @@ export class HaYamlEditor extends LitElement {
   @property({ attribute: "has-extra-actions", type: Boolean })
   public hasExtraActions = false;
 
-  @property({ attribute: "show-errors", type: Boolean })
-  public showErrors = true;
-
   @state() private _yaml = "";
 
-  @state() private _error = "";
-
-  @state() private _showingError = false;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
 
@@ -120,29 +116,26 @@ export class HaYamlEditor extends LitElement {
         ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
         : nothing}
       <ha-code-editor
-        .hass=${this.hass}
         .value=${this._yaml}
         .readOnly=${this.readOnly}
         .disableFullscreen=${this.disableFullscreen}
         .inDialog=${this.inDialog}
         mode="yaml"
+        lint
         autocomplete-entities
         autocomplete-icons
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
-        @blur=${this._onBlur}
+        @editor-save=${this._onEditorSave}
         dir="ltr"
       ></ha-code-editor>
-      ${this._showingError
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
       ${this.copyClipboard || this.hasExtraActions
         ? html`
             <div class="card-actions">
               ${this.copyClipboard
                 ? html`
                     <ha-button appearance="plain" @click=${this._copyYaml}>
-                      ${this.hass.localize(
+                      ${this._i18n!.localize(
                         "ui.components.yaml-editor.copy_to_clipboard"
                       )}
                     </ha-button>
@@ -158,9 +151,13 @@ export class HaYamlEditor extends LitElement {
   private _onChange(ev: CustomEvent): void {
     ev.stopPropagation();
     this._yaml = ev.detail.value;
-    let parsed;
+    let parsed: unknown;
     let isValid = true;
-    let errorMsg;
+    let errorMsg: string | undefined;
+    let yamlError: {
+      mark?: { position: number; line: number; column: number };
+      message?: string;
+    } | null = null;
 
     if (this._yaml) {
       try {
@@ -168,15 +165,13 @@ export class HaYamlEditor extends LitElement {
       } catch (err: any) {
         // Invalid YAML
         isValid = false;
-        errorMsg = `${this.hass.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this.hass.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
+        yamlError = err;
+        errorMsg = `${this._i18n!.localize("ui.components.yaml-editor.error", { reason: err.reason })}${err.mark ? ` (${this._i18n!.localize("ui.components.yaml-editor.error_location", { line: err.mark.line + 1, column: err.mark.column + 1 })})` : ""}`;
       }
     } else {
       parsed = {};
     }
-    this._error = errorMsg ?? "";
-    if (isValid) {
-      this._showingError = false;
-    }
+    this._codeEditor?.setYamlError(yamlError);
 
     this.value = parsed;
     this.isValid = isValid;
@@ -188,21 +183,28 @@ export class HaYamlEditor extends LitElement {
     } as any);
   }
 
-  private _onBlur(): void {
-    if (this.showErrors && this._error) {
-      this._showingError = true;
-    }
-  }
-
   get yaml() {
     return this._yaml;
+  }
+
+  get codemirror() {
+    return this._codeEditor?.codemirror;
+  }
+
+  get hasComments(): boolean {
+    return this._codeEditor?.hasComments ?? false;
+  }
+
+  private _onEditorSave(ev: CustomEvent): void {
+    fireEvent(this, "editor-save");
+    ev.stopPropagation();
   }
 
   private async _copyYaml(): Promise<void> {
     if (this.yaml) {
       await copyToClipboard(this.yaml);
       showToast(this, {
-        message: this.hass.localize("ui.common.copied_clipboard"),
+        message: this._i18n!.localize("ui.common.copied_clipboard"),
       });
     }
   }

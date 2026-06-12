@@ -33,7 +33,9 @@ const isWsl =
  *   compiler: import("@rspack/core").Compiler,
  *   contentBase: string,
  *   port: number,
- *   listenHost?: string
+ *   listenHost?: string,
+ *   open?: boolean,
+ *   logUrlAfterFirstBuild?: boolean,
  * }}
  */
 const runDevServer = async ({
@@ -41,21 +43,42 @@ const runDevServer = async ({
   contentBase,
   port,
   listenHost = undefined,
+  open = true,
+  logUrlAfterFirstBuild = false,
   proxy = undefined,
 }) => {
   if (listenHost === undefined) {
     // For dev container, we need to listen on all hosts
     listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
   }
+  const url = `http://localhost:${port}`;
+  let loggedUrl = false;
+  if (logUrlAfterFirstBuild) {
+    compiler.hooks.done.tap("log-dev-server-url", () => {
+      if (loggedUrl) {
+        return;
+      }
+      loggedUrl = true;
+      setTimeout(() => {
+        log("[rspack-dev-server]", `Project is running at ${url}`);
+      }, 0);
+    });
+  }
   const server = new RspackDevServer(
     {
       hot: false,
-      open: true,
+      open,
       host: listenHost,
       port,
       static: {
         directory: contentBase,
         watch: true,
+      },
+      client: {
+        overlay: {
+          runtimeErrors: (error) =>
+            !error?.message?.includes("ResizeObserver loop"),
+        },
       },
       proxy,
     },
@@ -64,7 +87,9 @@ const runDevServer = async ({
 
   await server.start();
   // Server listening
-  log("[rspack-dev-server]", `Project is running at http://localhost:${port}`);
+  if (!logUrlAfterFirstBuild) {
+    log("[rspack-dev-server]", `Project is running at ${url}`);
+  }
 };
 
 const doneHandler = (done) => (err, stats) => {
@@ -166,6 +191,8 @@ gulp.task("rspack-dev-server-gallery", () =>
     contentBase: paths.gallery_output_root,
     port: 8100,
     listenHost: "0.0.0.0",
+    open: false,
+    logUrlAfterFirstBuild: true,
   })
 );
 

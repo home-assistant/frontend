@@ -11,6 +11,7 @@ import "./ha-svg-icon";
 export interface ControlSelectOption {
   value: string;
   label?: string;
+  ariaLabel?: string;
   icon?: TemplateResult;
   path?: string;
 }
@@ -53,6 +54,7 @@ export class HaControlSelect extends LitElement {
     this._activeIndex = index;
     this.requestUpdate();
     this.updateComplete.then(() => {
+      // eslint-disable-next-line lit/prefer-query-decorators
       const option = this.shadowRoot?.querySelector(
         `#option-${this.options![index].value}`
       ) as HTMLElement;
@@ -161,8 +163,8 @@ export class HaControlSelect extends LitElement {
         tabindex=${isSelected ? "0" : "-1"}
         .value=${option.value}
         aria-checked=${isSelected ? "true" : "false"}
-        aria-label=${ifDefined(option.label)}
-        title=${ifDefined(option.label)}
+        aria-label=${ifDefined(option.ariaLabel ?? option.label)}
+        title=${ifDefined(option.ariaLabel ?? option.label)}
         @click=${this._handleOptionClick}
         @focus=${this._handleOptionFocus}
         @mousedown=${this._handleOptionMouseDown}

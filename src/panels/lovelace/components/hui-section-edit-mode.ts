@@ -1,13 +1,23 @@
-import { mdiDelete, mdiDragHorizontalVariant, mdiPencil } from "@mdi/js";
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import {
+  mdiDelete,
+  mdiDotsVertical,
+  mdiDragHorizontalVariant,
+  mdiPencil,
+  mdiPlusCircleMultipleOutline,
+} from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { deleteSection } from "../editor/config-util";
+import { deleteSection, duplicateSection } from "../editor/config-util";
 import { findLovelaceContainer } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
@@ -31,16 +41,32 @@ export class HuiSectionEditMode extends LitElement {
             class="handle"
             .path=${mdiDragHorizontalVariant}
           ></ha-svg-icon>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.edit")}
-            @click=${this._editSection}
-            .path=${mdiPencil}
-          ></ha-icon-button>
-          <ha-icon-button
-            .label=${this.hass.localize("ui.common.delete")}
-            @click=${this._deleteSection}
-            .path=${mdiDelete}
-          ></ha-icon-button>
+          <ha-dropdown
+            placement="bottom-end"
+            @wa-select=${this._handleDropdownSelect}
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-dropdown-item value="edit">
+              <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+              ${this.hass.localize("ui.common.edit")}
+            </ha-dropdown-item>
+            <ha-dropdown-item value="duplicate">
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiPlusCircleMultipleOutline}
+              ></ha-svg-icon>
+              ${this.hass.localize("ui.common.duplicate")}
+            </ha-dropdown-item>
+            <wa-divider></wa-divider>
+            <ha-dropdown-item value="delete" variant="danger">
+              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+              ${this.hass.localize("ui.common.delete")}
+            </ha-dropdown-item>
+          </ha-dropdown>
         </div>
       </div>
       <div class="section-wrapper">
@@ -49,8 +75,23 @@ export class HuiSectionEditMode extends LitElement {
     `;
   }
 
-  private async _editSection(ev) {
-    ev.stopPropagation();
+  private _handleDropdownSelect(ev: HaDropdownSelectEvent): void {
+    const action = ev.detail?.item?.value;
+    if (!action) return;
+    switch (action) {
+      case "edit":
+        this._editSection();
+        break;
+      case "duplicate":
+        this._duplicateSection();
+        break;
+      case "delete":
+        this._deleteSection();
+        break;
+    }
+  }
+
+  private async _editSection() {
     showEditSectionDialog(this, {
       lovelace: this.lovelace!,
       lovelaceConfig: this.lovelace!.config,
@@ -62,8 +103,16 @@ export class HuiSectionEditMode extends LitElement {
     });
   }
 
-  private async _deleteSection(ev) {
-    ev.stopPropagation();
+  private _duplicateSection(): void {
+    const newConfig = duplicateSection(
+      this.lovelace!.config,
+      this.viewIndex,
+      this.index
+    );
+    this.lovelace!.saveConfig(newConfig);
+  }
+
+  private async _deleteSection() {
     const path = [this.viewIndex, this.index] as [number, number];
 
     const section = findLovelaceContainer(this.lovelace!.config, path);
@@ -118,8 +167,8 @@ export class HuiSectionEditMode extends LitElement {
           justify-content: center;
           transition: opacity 0.2s ease-in-out;
           border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
+            --ha-section-border-radius,
+            var(--ha-border-radius-xl)
           );
           border-bottom-left-radius: 0px;
           border-bottom-right-radius: 0px;
@@ -137,8 +186,8 @@ export class HuiSectionEditMode extends LitElement {
         .section-wrapper {
           padding: 8px;
           border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
+            --ha-section-border-radius,
+            var(--ha-border-radius-xl)
           );
           border-start-end-radius: 0;
           border: 2px dashed var(--divider-color);

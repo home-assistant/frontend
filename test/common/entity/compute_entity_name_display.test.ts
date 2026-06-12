@@ -13,6 +13,27 @@ import {
 } from "./context/context-mock";
 
 describe("computeEntityNameDisplay", () => {
+  it("returns string name directly", () => {
+    const stateObj = mockStateObj({ entity_id: "light.kitchen" });
+    const hass = {
+      entities: {},
+      devices: {},
+      areas: {},
+      floors: {},
+    } as unknown as HomeAssistant;
+
+    const result = computeEntityNameDisplay(
+      stateObj,
+      "Custom Name",
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
+
+    expect(result).toBe("Custom Name");
+  });
+
   it("returns text when all items are text", () => {
     const stateObj = mockStateObj({ entity_id: "light.kitchen" });
     const hass = {

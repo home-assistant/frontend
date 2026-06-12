@@ -15,6 +15,7 @@ import { extractSearchParam } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
@@ -49,7 +50,6 @@ import { brandsUrl } from "../../../../../util/brands-url";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
-import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 export interface ThreadNetwork {
   name: string;
@@ -112,7 +112,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
           >
         </ha-dropdown>
         <div class="content">
-          <h1>${this.hass.localize("ui.panel.config.thread.my_network")}</h1>
+          <h2>${this.hass.localize("ui.panel.config.thread.my_network")}</h2>
           ${networks.preferred
             ? this._renderNetwork(networks.preferred)
             : html`<ha-card>
@@ -125,7 +125,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     href=${documentationUrl(this.hass, `/integrations/thread`)}
                     target="_blank"
                   >
@@ -143,18 +143,31 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   this._renderNetwork(network)
                 )}`
             : ""}
+          ${this.hass.auth.external?.config.canImportThreadCredentials
+            ? html`<h3>
+                  ${this.hass.localize(
+                    "ui.panel.config.thread.thread_network_send_credentials_ha"
+                  )}
+                </h3>
+                <ha-card>
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.thread.thread_network_send_credentials_ha_description"
+                    )}
+                  </div>
+                  <div class="card-actions">
+                    <ha-button
+                      size="s"
+                      @click=${this._importExternalThreadCredentials}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.thread.thread_network_send_credentials_ha"
+                      )}
+                    </ha-button>
+                  </div>
+                </ha-card>`
+            : nothing}
         </div>
-        ${this.hass.auth.external?.config.canImportThreadCredentials
-          ? html`<ha-fab
-              slot="fab"
-              @click=${this._importExternalThreadCredentials}
-              extended
-              .label=${this.hass.localize(
-                "ui.panel.config.thread.thread_network_send_credentials_ha"
-              )}
-              ><ha-svg-icon slot="icon" .path=${mdiCellphoneKey}></ha-svg-icon
-            ></ha-fab>`
-          : nothing}
       </hass-subpage>
     `;
   }
@@ -309,7 +322,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   )}
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     .otbr=${otbrForNetwork}
                     @click=${this._resetBorderRouterEvent}
                     >${this.hass.localize(
@@ -321,6 +334,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ${network.dataset && !network.dataset.preferred
         ? html`<div class="card-actions">
             <ha-button
+              size="s"
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
               >${this.hass.localize(
@@ -333,8 +347,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       network.dataset?.preferred &&
       network.routers?.length
         ? html`<div class="card-actions">
+            <p class="send-to-phone-description">
+              ${this.hass.localize(
+                "ui.panel.config.thread.thread_network_send_credentials_phone_description"
+              )}
+            </p>
             <ha-button
-              size="small"
+              size="s"
               .networkDataset=${network.dataset}
               @click=${this._sendCredentials}
               >${this.hass.localize(
@@ -402,7 +421,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected override firstUpdated(changedProps: PropertyValues) {
+  protected override firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._refresh();
@@ -461,7 +480,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     listThreadDataSets(this.hass).then((datasets) => {
       this._datasets = datasets.datasets;
     });
-    if (!isComponentLoaded(this.hass, "otbr")) {
+    if (!isComponentLoaded(this.hass.config, "otbr")) {
       return;
     }
     try {
@@ -487,7 +506,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         this._refresh();
       },
       startFlowHandler: "otbr",
-      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 
@@ -744,12 +762,20 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ha-card {
         margin-bottom: 16px;
       }
+      h3 {
+        margin-top: var(--ha-space-8);
+      }
       h4 {
         margin: 0;
       }
       .card-header {
         display: flex;
         justify-content: space-between;
+      }
+
+      .send-to-phone-description {
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-s);
       }
     `,
   ];

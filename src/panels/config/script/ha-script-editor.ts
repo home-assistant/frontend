@@ -31,10 +31,10 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -65,12 +65,13 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries } from "../../../types";
 import { isMac } from "../../../util/is_mac";
-import { showToast } from "../../../util/toast";
+import { showEditorToast } from "../automation/editor-toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
+import type { EditorDomainHooks } from "../automation/ha-automation-script-editor-mixin";
 import {
   AutomationScriptEditorMixin,
   automationScriptEditorStyles,
@@ -87,19 +88,30 @@ export class HaScriptEditor extends SubscribeMixin(
 ) {
   @property({ attribute: false }) public scriptId: string | null = null;
 
-  @property({ attribute: false }) public entityRegistry!: EntityRegistryEntry[];
-
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
 
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   private _newScriptId?: string;
+
+  protected domainHooks: EditorDomainHooks<ScriptConfig> = {
+    domain: "script",
+    fetchFileConfig: fetchScriptFileConfig,
+    normalizeConfig: normalizeScriptConfig,
+    checkValidation: () => this._checkValidation(),
+  };
 
   private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
     apply: (config) => this._applyUndoRedo(config),
     currentConfig: () => this.config!,
   });
 
-  protected willUpdate(changedProps) {
+  public override get isDirtyState(): boolean {
+    return super.isDirtyState || !!this.yamlErrors;
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (
@@ -107,7 +119,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this._newScriptId &&
       changedProps.has("entityRegistry")
     ) {
-      const script = this.entityRegistry.find(
+      const script = this.entityRegistry?.find(
         (entity: EntityRegistryEntry) =>
           entity.platform === "script" && entity.unique_id === this._newScriptId
       );
@@ -369,7 +381,6 @@ export class HaScriptEditor extends SubscribeMixin(
                           .config=${this.config}
                           .disabled=${this.readOnly}
                           .saving=${this.saving}
-                          .dirty=${this.dirty}
                           @value-changed=${this._valueChanged}
                           @save-script=${this._handleSaveScript}
                         ></blueprint-script-editor>
@@ -381,7 +392,6 @@ export class HaScriptEditor extends SubscribeMixin(
                           .isWide=${this.isWide}
                           .config=${this.config}
                           .disabled=${this.readOnly}
-                          .dirty=${this.dirty}
                           .saving=${this.saving}
                           @value-changed=${this._valueChanged}
                           @editor-save=${this._handleSaveScript}
@@ -453,34 +463,42 @@ export class HaScriptEditor extends SubscribeMixin(
               `
             : this.mode === "yaml"
               ? html`<ha-yaml-editor
-                    .hass=${this.hass}
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     disable-fullscreen
                     @value-changed=${this._yamlChanged}
                     @editor-save=${this._handleSaveScript}
-                    .showErrors=${false}
                   ></ha-yaml-editor>
-                  <ha-fab
+                  <ha-button
                     slot="fab"
-                    class=${!this.readOnly && this.dirty ? "dirty" : ""}
-                    .label=${this.hass.localize("ui.common.save")}
+                    size="l"
+                    class=${!this.readOnly && this.isDirtyState ? "dirty" : ""}
                     .disabled=${this.saving}
-                    extended
                     @click=${this._handleSaveScript}
                   >
                     <ha-svg-icon
-                      slot="icon"
+                      slot="start"
                       .path=${mdiContentSave}
                     ></ha-svg-icon>
-                  </ha-fab>`
+                    ${this.hass.localize("ui.common.save")}
+                  </ha-button>`
               : nothing}
         </div>
       </hass-subpage>
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  private _setEntityId() {
+    if (!this.entityRegistry) {
+      return;
+    }
+    const entity = this.entityRegistry.find(
+      (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
+    );
+    this.currentEntityId = entity?.entity_id;
+  }
+
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
 
     const oldScript = changedProps.get("scriptId");
@@ -492,7 +510,8 @@ export class HaScriptEditor extends SubscribeMixin(
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
       (!oldScript || oldScript !== this.scriptId)
     ) {
-      this._loadConfig();
+      this._setEntityId();
+      this.loadConfig(this.scriptId);
     }
 
     if (
@@ -500,16 +519,11 @@ export class HaScriptEditor extends SubscribeMixin(
       this.scriptId &&
       this.entityRegistry
     ) {
-      // find entity for when script entity id changed
-      const entity = this.entityRegistry.find(
-        (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
-      );
-      this.currentEntityId = entity?.entity_id;
+      this._setEntityId();
     }
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
-      this.dirty = !!initData;
       const baseConfig: Partial<ScriptConfig> = {};
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
@@ -518,22 +532,24 @@ export class HaScriptEditor extends SubscribeMixin(
         ...baseConfig,
         ...initData,
       } as ScriptConfig;
+      this._initDirtyTracking({ type: "deep" }, baseConfig as ScriptConfig);
+      this._updateDirtyState(this.config);
       this.readOnly = false;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeScriptConfig(c.config);
+        this._initDirtyTracking({ type: "deep" }, this.config);
         this._checkValidation();
       });
-      const regEntry = this.entityRegistry.find(
+      const regEntry = this.entityRegistry?.find(
         (ent) => ent.entity_id === this.entityId
       );
       if (regEntry?.unique_id) {
         this.scriptId = regEntry.unique_id;
       }
       this.currentEntityId = this.entityId;
-      this.dirty = false;
       this.readOnly = true;
     }
   }
@@ -562,43 +578,6 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private async _loadConfig() {
-    fetchScriptFileConfig(this.hass, this.scriptId!).then(
-      (config) => {
-        this.dirty = false;
-        this.readOnly = false;
-        this.config = normalizeScriptConfig(config);
-        const entity = this.entityRegistry.find(
-          (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
-        );
-        this.currentEntityId = entity?.entity_id;
-        this._checkValidation();
-      },
-      (resp) => {
-        const entity = this.entityRegistry.find(
-          (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
-        );
-        if (entity) {
-          navigate(`/config/script/show/${entity.entity_id}`, {
-            replace: true,
-          });
-          return;
-        }
-        alert(
-          resp.status_code === 404
-            ? this.hass.localize(
-                "ui.panel.config.script.editor.load_error_not_editable"
-              )
-            : this.hass.localize(
-                "ui.panel.config.script.editor.load_error_unknown",
-                { err_no: resp.status_code || resp.code }
-              )
-        );
-        goBack("/config");
-      }
-    );
-  }
-
   private _valueChanged(ev) {
     if (this.config) {
       this._undoRedoController.commit(this.config);
@@ -606,7 +585,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
     this.config = ev.detail.value;
     this.errors = undefined;
-    this.dirty = true;
+    this._updateDirtyState(this.config!);
   }
 
   private async _runScript() {
@@ -618,7 +597,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     await triggerScript(this.hass, this.scriptId!);
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.notification_toast.triggered", {
         name: this.config!.alias,
       }),
@@ -657,7 +636,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _idIsUsed(id: string): boolean {
     return (
       `script.${id}` in this.hass.states ||
-      this.entityRegistry.some((ent) => ent.unique_id === id)
+      (this.entityRegistry?.some((ent) => ent.unique_id === id) ?? false)
     );
   }
 
@@ -665,7 +644,7 @@ export class HaScriptEditor extends SubscribeMixin(
     if (!this.scriptId) {
       return;
     }
-    const entity = this.entityRegistry.find(
+    const entity = this.entityRegistry?.find(
       (entry) => entry.unique_id === this.scriptId
     );
     if (!entity) {
@@ -693,7 +672,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     this._manualEditor?.addFields();
-    this.dirty = true;
+    this._updateDirtyState(this.config!);
   }
 
   private _preprocessYaml() {
@@ -702,18 +681,18 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this.dirty = true;
     if (!ev.detail.isValid) {
       this.yamlErrors = ev.detail.errorMsg;
       return;
     }
     this.yamlErrors = undefined;
     this.config = ev.detail.value;
+    this._updateDirtyState(this.config!);
     this.errors = undefined;
   }
 
   protected async confirmUnsavedChanged(): Promise<boolean> {
-    if (!this.dirty) {
+    if (!this.isDirtyState) {
       return true;
     }
 
@@ -724,7 +703,7 @@ export class HaScriptEditor extends SubscribeMixin(
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this.dirty = true;
+          this._updateDirtyState(this.config);
           this.requestUpdate();
 
           const id = this.scriptId || String(Date.now());
@@ -777,7 +756,7 @@ export class HaScriptEditor extends SubscribeMixin(
       this.blueprintConfig = config;
       this.config = newConfig;
       if (this.mode === "yaml") {
-        this.renderRoot.querySelector("ha-yaml-editor")?.setValue(this.config);
+        this._yamlEditor?.setValue(this.config);
       }
       this.readOnly = true;
       this.errors = undefined;
@@ -839,13 +818,13 @@ export class HaScriptEditor extends SubscribeMixin(
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this.dirty = true;
+          this._updateDirtyState(this.config);
           this.requestUpdate();
           resolve(true);
         },
         onClose: () => resolve(false),
         entityRegistryUpdate: this.entityRegistryUpdate,
-        entityRegistryEntry: this.entityRegistry.find(
+        entityRegistryEntry: this.entityRegistry?.find(
           (entry) => entry.unique_id === this.scriptId
         ),
       });
@@ -858,7 +837,7 @@ export class HaScriptEditor extends SubscribeMixin(
         config: this.config!,
         updateConfig: (config) => {
           this.config = config;
-          this.dirty = true;
+          this._updateDirtyState(config);
           this.requestUpdate();
           resolve();
         },
@@ -869,7 +848,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _handleSaveScript() {
     if (this.yamlErrors) {
-      showToast(this, {
+      showEditorToast(this, {
         message: this.yamlErrors,
       });
       return;
@@ -954,10 +933,10 @@ export class HaScriptEditor extends SubscribeMixin(
         }
       }
 
-      this.dirty = false;
+      this._markDirtyStateClean();
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
-      showToast(this, {
+      showEditorToast(this, {
         message: errors.body?.message || errors.error || errors.body,
       });
       throw errors;
@@ -1004,7 +983,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _applyUndoRedo(config: ScriptConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this.config = config;
-    this.dirty = true;
+    this._updateDirtyState(this.config);
   }
 
   private _undo() {
@@ -1102,8 +1081,8 @@ export class HaScriptEditor extends SubscribeMixin(
 
         .alert-wrapper {
           position: sticky;
-          top: -24px;
-          margin-top: -24px;
+          top: 0;
+          margin-top: 0;
           margin-bottom: 8px;
           z-index: 1;
           width: 100%;

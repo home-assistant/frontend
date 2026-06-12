@@ -11,6 +11,7 @@ import type { PlatformTrigger } from "../../../../../data/automation";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
+import { getTargetEntityCount } from "../../../../../data/target";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -28,6 +29,7 @@ const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
   "trigger",
   "target",
   "alias",
+  "note",
   "id",
   "variables",
   "enabled",
@@ -47,6 +49,8 @@ export class HaPlatformTrigger extends LitElement {
   @state() private _checkedKeys = new Set();
 
   @state() private _manifest?: IntegrationManifest;
+
+  @state() private _resolvedTargetEntityCount?: number;
 
   public static get defaultConfig(): PlatformTrigger {
     return { trigger: "" };
@@ -105,13 +109,16 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     if (
-      oldValue?.trigger !== this.trigger?.trigger &&
       this.trigger &&
+      oldValue?.trigger !== this.trigger.trigger &&
       this.description?.fields
     ) {
+      const hadOptions = "options" in this.trigger;
+      const updatedOptions = this.trigger.options
+        ? { ...this.trigger.options }
+        : {};
+      const loadDefaults = !hadOptions;
       let updatedDefaultValue = false;
-      const updatedOptions = {};
-      const loadDefaults = !("options" in this.trigger);
       // Set mandatory bools without a default value to false
       Object.entries(this.description.fields).forEach(([key, field]) => {
         if (
@@ -127,14 +134,20 @@ export class HaPlatformTrigger extends LitElement {
           loadDefaults &&
           field.selector &&
           field.default !== undefined &&
-          updatedOptions[key] === undefined
+          updatedOptions[key] === undefined &&
+          !(
+            field.selector &&
+            "automation_behavior" in field.selector &&
+            this.description?.target &&
+            !this.trigger?.target
+          )
         ) {
           updatedDefaultValue = true;
           updatedOptions[key] = field.default;
         }
       });
 
-      if (updatedDefaultValue) {
+      if (!hadOptions || updatedDefaultValue) {
         fireEvent(this, "value-changed", {
           value: {
             ...this.trigger,
@@ -142,6 +155,10 @@ export class HaPlatformTrigger extends LitElement {
           },
         });
       }
+    }
+
+    if (oldValue?.target !== this.trigger?.target) {
+      this._updateResolvedTargetEntityCount(this.trigger?.target);
     }
   }
 
@@ -190,17 +207,9 @@ export class HaPlatformTrigger extends LitElement {
       </div>
       ${triggerDesc && "target" in triggerDesc
         ? html`<ha-settings-row narrow>
-            ${hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing}
             <span slot="heading"
               >${this.hass.localize(
                 "ui.components.service-control.target"
-              )}</span
-            >
-            <span slot="description"
-              >${this.hass.localize(
-                "ui.components.service-control.target_secondary"
               )}</span
             ><ha-selector
               .hass=${this.hass}
@@ -213,7 +222,6 @@ export class HaPlatformTrigger extends LitElement {
         : nothing}
       ${shouldRenderDataYaml
         ? html`<ha-yaml-editor
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.components.service-control.action_data"
             )}
@@ -250,51 +258,73 @@ export class HaPlatformTrigger extends LitElement {
 
     const showOptional = showOptionalToggle(dataField);
 
-    return dataField.selector
-      ? html`<ha-settings-row narrow>
-          ${!showOptional
-            ? hasOptional
-              ? html`<div slot="prefix" class="checkbox-spacer"></div>`
-              : nothing
-            : html`<ha-checkbox
-                .key=${fieldName}
-                .checked=${this._checkedKeys.has(fieldName) ||
-                (this.trigger?.options &&
-                  this.trigger.options[fieldName] !== undefined)}
-                .disabled=${this.disabled}
-                @change=${this._checkboxChanged}
-                slot="prefix"
-              ></ha-checkbox>`}
-          <span slot="heading"
-            >${this.hass.localize(
-              `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
-            ) || triggerName}</span
-          >
-          <span slot="description"
-            >${this.hass.localize(
-              `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
-            )}</span
-          >
-          <ha-selector
-            .disabled=${this.disabled ||
-            (showOptional &&
-              !this._checkedKeys.has(fieldName) &&
-              (!this.trigger?.options ||
-                this.trigger.options[fieldName] === undefined))}
-            .hass=${this.hass}
-            .selector=${selector}
-            .context=${this._generateContext(dataField)}
+    if (!dataField.selector) {
+      return nothing;
+    }
+
+    if (
+      "automation_behavior" in selector &&
+      this.description?.target &&
+      (!this.trigger?.target ||
+        (this._resolvedTargetEntityCount !== undefined &&
+          this._resolvedTargetEntityCount <= 1))
+    ) {
+      return nothing;
+    }
+
+    const description = this.hass.localize(
+      `component.${domain}.triggers.${triggerName}.fields.${fieldName}.description`
+    );
+
+    return html`<ha-settings-row narrow>
+      ${!showOptional
+        ? hasOptional
+          ? html`<div slot="prefix" class="checkbox-spacer"></div>`
+          : nothing
+        : html`<ha-checkbox
             .key=${fieldName}
-            @value-changed=${this._dataChanged}
-            .value=${this.trigger?.options
-              ? this.trigger.options[fieldName]
-              : undefined}
-            .placeholder=${dataField.default}
-            .localizeValue=${this._localizeValueCallback}
-            .required=${dataField.required}
-          ></ha-selector>
-        </ha-settings-row>`
-      : nothing;
+            .checked=${this._checkedKeys.has(fieldName) ||
+            (this.trigger?.options &&
+              this.trigger.options[fieldName] !== undefined)}
+            .disabled=${this.disabled}
+            @change=${this._checkboxChanged}
+            slot="prefix"
+          ></ha-checkbox>`}
+      <span
+        slot="heading"
+        class=${showOptional ? "clickable" : ""}
+        @click=${showOptional ? this._toggleCheckbox : undefined}
+        >${this.hass.localize(
+          `component.${domain}.triggers.${triggerName}.fields.${fieldName}.name`
+        ) || fieldName}</span
+      >
+      ${description
+        ? html`<span
+            class=${showOptional ? "clickable" : ""}
+            @click=${showOptional ? this._toggleCheckbox : undefined}
+            slot="description"
+            >${description}</span
+          >`
+        : nothing}
+      <ha-selector
+        .disabled=${this.disabled ||
+        (showOptional &&
+          !this._checkedKeys.has(fieldName) &&
+          (!this.trigger?.options ||
+            this.trigger.options[fieldName] === undefined))}
+        .hass=${this.hass}
+        .selector=${selector}
+        .context=${this._generateContext(dataField)}
+        .key=${fieldName}
+        @value-changed=${this._dataChanged}
+        .value=${this.trigger?.options
+          ? this.trigger.options[fieldName]
+          : undefined}
+        .placeholder=${dataField.default}
+        .localizeValue=${this._localizeValueCallback}
+        .required=${dataField.required}
+      ></ha-selector>
+    </ha-settings-row>`;
   };
 
   private _generateContext(
@@ -359,6 +389,13 @@ export class HaPlatformTrigger extends LitElement {
         target: ev.detail.value,
       },
     });
+  }
+
+  private _toggleCheckbox(ev: Event) {
+    const checkbox = (
+      ev.currentTarget as HTMLElement
+    )?.parentElement?.querySelector("ha-checkbox");
+    checkbox?.click();
   }
 
   private _checkboxChanged(ev) {
@@ -431,6 +468,41 @@ export class HaPlatformTrigger extends LitElement {
     }
   }
 
+  private _updateResolvedTargetEntityCount(target: PlatformTrigger["target"]) {
+    this._resolvedTargetEntityCount = getTargetEntityCount(target);
+
+    const behaviorFieldEntry = Object.entries(
+      this.description?.fields ?? {}
+    ).find(
+      ([, field]) => field.selector && "automation_behavior" in field.selector
+    );
+
+    if (!behaviorFieldEntry) {
+      return;
+    }
+
+    const [behaviorFieldName, behaviorField] = behaviorFieldEntry;
+
+    if (
+      target &&
+      this._resolvedTargetEntityCount > 1 &&
+      this.trigger.options?.[behaviorFieldName] === undefined
+    ) {
+      const behaviorDefault = behaviorField.default;
+      if (behaviorDefault !== undefined) {
+        fireEvent(this, "value-changed", {
+          value: {
+            ...this.trigger,
+            options: {
+              ...this.trigger.options,
+              [behaviorFieldName]: behaviorDefault,
+            },
+          },
+        });
+      }
+    }
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -469,11 +541,6 @@ export class HaPlatformTrigger extends LitElement {
     .checkbox-spacer {
       width: 32px;
     }
-    ha-checkbox {
-      margin-left: calc(var(--ha-space-4) * -1);
-      margin-inline-start: calc(var(--ha-space-4) * -1);
-      margin-inline-end: initial;
-    }
     .help-icon {
       color: var(--secondary-text-color);
     }
@@ -487,6 +554,9 @@ export class HaPlatformTrigger extends LitElement {
     }
     .description p {
       direction: ltr;
+    }
+    .clickable {
+      cursor: pointer;
     }
   `;
 }

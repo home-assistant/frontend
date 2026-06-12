@@ -1,14 +1,18 @@
+import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
-import "../../../components/ha-fab";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 import { saveFabStyles } from "./styles";
 
@@ -20,7 +24,9 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   @property({ type: Boolean }) public saving = false;
 
-  @property({ type: Boolean }) public dirty = false;
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext;
 
   protected get _config(): BlueprintAutomationConfig {
     return this.config;
@@ -36,7 +42,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
               )}
               <ha-button
                 appearance="plain"
-                size="small"
+                size="s"
                 slot="action"
                 @click=${this._enable}
               >
@@ -56,16 +62,16 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         : nothing}
       ${this.renderCard()}
 
-      <ha-fab
+      <ha-button
         slot="fab"
-        class=${this.dirty ? "dirty" : ""}
-        .label=${this.hass.localize("ui.common.save")}
+        size="l"
+        class=${this._dirtyState?.isDirty ? "dirty" : ""}
         .disabled=${this.saving}
-        extended
         @click=${this._saveAutomation}
       >
-        <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-      </ha-fab>
+        <ha-svg-icon slot="start" .path=${mdiContentSave}></ha-svg-icon>
+        ${this.hass.localize("ui.common.save")}
+      </ha-button>
     `;
   }
 
@@ -109,8 +115,9 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
               )
           );
         }
-        ha-fab {
+        ha-button[slot="fab"] {
           position: fixed;
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
       `,
     ];

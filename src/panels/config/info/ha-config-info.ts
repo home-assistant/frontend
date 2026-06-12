@@ -8,7 +8,7 @@ import {
   mdiOpenInNew,
   mdiTshirtCrew,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -91,8 +91,6 @@ class HaConfigInfo extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
-  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -262,7 +260,7 @@ class HaConfigInfo extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
 
     // Legacy custom UI can be slow to register, give them time.
@@ -273,7 +271,7 @@ class HaConfigInfo extends LitElement {
       }
     }, 2000);
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._loadSupervisorInfo();
     }
 

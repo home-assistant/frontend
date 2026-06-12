@@ -1,5 +1,6 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
@@ -23,11 +24,12 @@ class HaBluePrintPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @query("ha-select") private _select?: HTMLElement;
+
   public open() {
-    const select = this.shadowRoot?.querySelector("ha-select");
-    if (select) {
+    if (this._select) {
       // @ts-expect-error
-      select.menuOpen = true;
+      this._select.menuOpen = true;
     }
   }
 
@@ -68,7 +70,7 @@ class HaBluePrintPicker extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (this.blueprints === undefined) {
       fetchBlueprints(this.hass!, this.domain).then((blueprints) => {

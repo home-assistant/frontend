@@ -1,17 +1,16 @@
 import { consume } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { labelsContext } from "../data/context";
+import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
@@ -21,7 +20,8 @@ import "./ha-icon-button";
 import "./ha-label";
 import "./ha-list";
 import "./ha-list-item";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends LitElement {
@@ -40,6 +40,8 @@ export class HaFilterLabels extends LitElement {
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
+
+  @query("ha-list") private _list?: HTMLElement;
 
   private _filteredLabels = memoizeOne(
     // `_value` used to recalculate the memoization when the selection changes
@@ -79,12 +81,12 @@ export class HaFilterLabels extends LitElement {
             : nothing}
         </div>
         ${this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+          ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 @selected=${this._labelSelected}
                 class="ha-scrollbar"
@@ -97,17 +99,14 @@ export class HaFilterLabels extends LitElement {
                     this.value
                   ),
                   (label) => label.label_id,
-                  (label) => {
-                    const color = label.color
-                      ? computeCssColor(label.color)
-                      : undefined;
-                    return html`<ha-check-list-item
+                  (label) =>
+                    html`<ha-check-list-item
                       .value=${label.label_id}
                       .selected=${(this.value || []).includes(label.label_id)}
                       hasMeta
                     >
                       <ha-label
-                        style=${color ? `--color: ${color}` : ""}
+                        .color=${label.color}
                         .description=${label.description}
                       >
                         ${label.icon
@@ -118,8 +117,7 @@ export class HaFilterLabels extends LitElement {
                           : nothing}
                         ${label.name}
                       </ha-label>
-                    </ha-check-list-item>`;
-                  }
+                    </ha-check-list-item>`
                 )}
               </ha-list> `
           : nothing}
@@ -137,12 +135,11 @@ export class HaFilterLabels extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
+        this._list!.style.height = `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input
@@ -163,8 +160,9 @@ export class HaFilterLabels extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const value = (ev.target as HaInputSearch).value ?? "";
+    this._filter = value.toLowerCase();
   }
 
   private async _labelSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
@@ -251,17 +249,13 @@ export class HaFilterLabels extends LitElement {
         .warning {
           color: var(--error-color);
         }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
-        }
         .add {
           position: absolute;
           bottom: 0;
           right: 0;
           left: 0;
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

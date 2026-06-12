@@ -16,13 +16,21 @@ import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
-import "../../components/ha-menu-button";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
-import type { Calendar, CalendarEvent } from "../../data/calendar";
-import { fetchCalendarEvents, getCalendars } from "../../data/calendar";
+import type {
+  Calendar,
+  CalendarEvent,
+  CalendarEventApiData,
+  CalendarEventSubscription,
+} from "../../data/calendar";
+import {
+  getCalendars,
+  normalizeSubscriptionEventData,
+  subscribeCalendarEvents,
+} from "../../data/calendar";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
@@ -46,6 +54,8 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   @state() private _error?: string = undefined;
 
+  @state() private _errorCalendars: string[] = [];
+
   @state() private _entityRegistry?: EntityRegistryEntry[];
 
   @state()
@@ -58,6 +68,8 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   private _start?: Date;
 
   private _end?: Date;
+
+  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
 
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
@@ -78,6 +90,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     super.disconnectedCallback();
     this._mql?.removeListener(this._setIsMobile!);
     this._mql = undefined;
+    this._unsubscribeAll();
   }
 
   private _setIsMobile = (ev: MediaQueryListEvent) => {
@@ -90,15 +103,11 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         this._entityRegistry = entities;
         // Refresh calendars when entity registry updates (includes color changes)
         this._calendars = getCalendars(this.hass, this, this._entityRegistry);
-        // Refetch events if view dates are available (handles both initial load and color updates)
+        // Resubscribe events if view dates are available (handles both initial load and color updates)
         if (this._start && this._end) {
-          this._fetchEvents(
-            this._start,
-            this._end,
-            this._selectedCalendars
-          ).then((result) => {
-            this._events = result.events;
-            this._handleErrors(result.errors);
+          this._unsubscribeAll().then(() => {
+            this._events = [];
+            this._subscribeCalendarEvents(this._selectedCalendars);
           });
         }
       }),
@@ -109,11 +118,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     if (!this._entityRegistry) {
       return html`
         <ha-two-pane-top-app-bar-fixed .narrow=${this.narrow}>
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
           <div slot="title">
             ${this.hass.localize("ui.components.calendar.my_calendars")}
           </div>
@@ -134,7 +138,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         >
           <ha-state-icon
             slot="icon"
-            .hass=${this.hass}
             .stateObj=${selCal}
             style="--icon-primary-color: ${selCal.backgroundColor}"
           ></ha-state-icon>
@@ -149,12 +152,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button
-          slot="navigationIcon"
-          .hass=${this.hass}
-          .narrow=${this.narrow}
-        ></ha-menu-button>
-
         ${!showPane
           ? html`<ha-dropdown slot="title">
               <ha-button slot="trigger">
@@ -181,16 +178,20 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.refresh")}
           @click=${this._handleRefresh}
         ></ha-icon-button>
-        ${showPane && this.hass.user?.is_admin
-          ? html`<ha-list slot="pane" multi}>${calendarItems}</ha-list>
-              <ha-list-item
-                graphic="icon"
-                slot="pane-footer"
-                @click=${this._addCalendar}
-              >
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
-                ${this.hass.localize("ui.components.calendar.create_calendar")}
-              </ha-list-item>`
+        ${showPane
+          ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${this
+                .hass.user?.is_admin
+                ? html`<ha-list-item
+                    graphic="icon"
+                    slot="pane-footer"
+                    @click=${this._addCalendar}
+                  >
+                    <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.components.calendar.create_calendar"
+                    )}
+                  </ha-list-item>`
+                : nothing}`
           : nothing}
         <ha-full-calendar
           add-fab
@@ -212,19 +213,95 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       .map((cal) => cal);
   }
 
-  private async _fetchEvents(
-    start: Date | undefined,
-    end: Date | undefined,
-    calendars: Calendar[]
-  ): Promise<{ events: CalendarEvent[]; errors: string[] }> {
-    if (!calendars.length || !start || !end) {
-      return { events: [], errors: [] };
+  private _subscribeCalendarEvents(calendars: Calendar[]): void {
+    if (!this._start || !this._end || calendars.length === 0) {
+      return;
     }
 
-    return fetchCalendarEvents(this.hass, start, end, calendars);
+    this._error = undefined;
+
+    calendars.forEach((calendar) => {
+      // Unsubscribe existing subscription if any
+      if (calendar.entity_id in this._unsubs) {
+        this._unsubs[calendar.entity_id]
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          });
+      }
+
+      const unsub = subscribeCalendarEvents(
+        this.hass,
+        calendar.entity_id,
+        this._start!,
+        this._end!,
+        (update: CalendarEventSubscription) => {
+          this._handleCalendarUpdate(calendar, update);
+        }
+      );
+      this._unsubs[calendar.entity_id] = unsub;
+    });
   }
 
-  private async _requestSelected(ev: Event) {
+  private _handleCalendarUpdate(
+    calendar: Calendar,
+    update: CalendarEventSubscription
+  ): void {
+    // Remove events from this calendar
+    this._events = this._events.filter(
+      (event) => event.calendar !== calendar.entity_id
+    );
+
+    if (update.events === null) {
+      // Error fetching events
+      if (!this._errorCalendars.includes(calendar.entity_id)) {
+        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
+      }
+      this._handleErrors(this._errorCalendars);
+      return;
+    }
+
+    // Remove from error list if successfully loaded
+    this._errorCalendars = this._errorCalendars.filter(
+      (id) => id !== calendar.entity_id
+    );
+    this._handleErrors(this._errorCalendars);
+
+    // Add new events from this calendar
+    const newEvents: CalendarEvent[] = update.events
+      .map((eventData: CalendarEventApiData) =>
+        normalizeSubscriptionEventData(eventData, calendar)
+      )
+      .filter((event): event is CalendarEvent => event !== null);
+
+    this._events = [...this._events, ...newEvents];
+  }
+
+  private async _unsubscribeAll(): Promise<void> {
+    await Promise.all(
+      Object.values(this._unsubs).map((unsub) =>
+        unsub
+          .then((unsubFunc) => unsubFunc())
+          .catch(() => {
+            // Subscription may have already been closed
+          })
+      )
+    );
+    this._unsubs = {};
+  }
+
+  private _unsubscribeCalendar(entityId: string): void {
+    if (entityId in this._unsubs) {
+      this._unsubs[entityId]
+        .then((unsubFunc) => unsubFunc())
+        .catch(() => {
+          // Subscription may have already been closed
+        });
+      delete this._unsubs[entityId];
+    }
+  }
+
+  private _requestSelected(ev: Event) {
     ev.stopPropagation();
     const item = ev.currentTarget as HaDropdownItem;
     const entityId = item.value as string;
@@ -240,13 +317,10 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       if (!calendar) {
         return;
       }
-      const result = await this._fetchEvents(this._start, this._end, [
-        calendar,
-      ]);
-      this._events = [...this._events, ...result.events];
-      this._handleErrors(result.errors);
+      this._subscribeCalendarEvents([calendar]);
     } else {
       this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
+      this._unsubscribeCalendar(entityId);
       this._events = this._events.filter(
         (event) => event.calendar !== entityId
       );
@@ -256,7 +330,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   private _addCalendar = async (): Promise<void> => {
     showConfigFlowDialog(this, {
       startFlowHandler: "local_calendar",
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(this.hass, "local_calendar"),
       dialogClosedCallback: ({ flowFinished }) => {
         if (flowFinished) {
@@ -271,23 +344,15 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    const result = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
-    this._events = result.events;
-    this._handleErrors(result.errors);
+    await this._unsubscribeAll();
+    this._events = [];
+    this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private async _handleRefresh(): Promise<void> {
-    const result = await this._fetchEvents(
-      this._start,
-      this._end,
-      this._selectedCalendars
-    );
-    this._events = result.events;
-    this._handleErrors(result.errors);
+    await this._unsubscribeAll();
+    this._events = [];
+    this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private _handleErrors(error_entity_ids: string[]) {

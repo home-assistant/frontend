@@ -51,7 +51,7 @@ interface FindLovelaceContainer {
     path: LovelaceContainerPath
   ): LovelaceViewRawConfig | LovelaceSectionRawConfig;
 }
-export const findLovelaceContainer: FindLovelaceContainer = (
+export const findLovelaceContainer: FindLovelaceContainer = ((
   config: LovelaceConfig,
   path: LovelaceContainerPath
 ): LovelaceViewRawConfig | LovelaceSectionRawConfig => {
@@ -75,7 +75,7 @@ export const findLovelaceContainer: FindLovelaceContainer = (
     throw new Error("Section does not exist");
   }
   return section;
-};
+}) as FindLovelaceContainer;
 
 export const updateLovelaceContainer = (
   config: LovelaceConfig,
@@ -90,7 +90,7 @@ export const updateLovelaceContainer = (
 
     if (sectionIndex === undefined) {
       updated = true;
-      return containerConfig;
+      return containerConfig as LovelaceViewRawConfig;
     }
 
     if (isStrategyView(view)) {
@@ -104,7 +104,7 @@ export const updateLovelaceContainer = (
     const newSections = view.sections.map((section, sIndex) => {
       if (sIndex !== sectionIndex) return section;
       updated = true;
-      return containerConfig;
+      return containerConfig as LovelaceSectionRawConfig;
     });
     return {
       ...view,

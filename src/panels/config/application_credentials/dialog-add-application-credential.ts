@@ -5,15 +5,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-fade-in";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-generic-picker";
 import "../../../components/ha-markdown";
-import "../../../components/ha-password-field";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
 import type {
   ApplicationCredential,
   ApplicationCredentialsConfig,
@@ -24,10 +23,18 @@ import {
 } from "../../../data/application_credential";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
+
+interface CredentialFormState {
+  domain: string;
+  name: string;
+  clientId: string;
+  clientSecret: string;
+}
 
 interface Domain {
   id: string;
@@ -35,7 +42,9 @@ interface Domain {
 }
 
 @customElement("dialog-add-application-credential")
-export class DialogAddApplicationCredential extends LitElement {
+export class DialogAddApplicationCredential extends DirtyStateProviderMixin<CredentialFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loading = false;
@@ -69,6 +78,7 @@ export class DialogAddApplicationCredential extends LitElement {
     this._params = params;
     this._domain = params.selectedDomain;
     this._manifest = params.manifest;
+    this._invalid = false;
     this._name = "";
     this._description = "";
     this._clientId = "";
@@ -76,6 +86,7 @@ export class DialogAddApplicationCredential extends LitElement {
     this._error = undefined;
     this._loading = false;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, this._currentState());
     this._fetchConfig();
   }
 
@@ -98,13 +109,9 @@ export class DialogAddApplicationCredential extends LitElement {
       : "";
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._abortDialog}
-        .preventScrimClose=${!!this._domain ||
-        !!this._name ||
-        !!this._clientId ||
-        !!this._clientSecret}
+        .preventScrimClose=${this.isDirtyState}
         .headerTitle=${this.hass.localize(
           "ui.panel.config.application_credentials.editor.caption"
         )}
@@ -195,7 +202,7 @@ export class DialogAddApplicationCredential extends LitElement {
                       .content=${this._description}
                     ></ha-markdown>`
                   : nothing}
-                <ha-textfield
+                <ha-input
                   class="name"
                   name="name"
                   .label=${this.hass.localize(
@@ -205,12 +212,12 @@ export class DialogAddApplicationCredential extends LitElement {
                   .invalid=${this._invalid && !this._name}
                   required
                   @input=${this._handleValueChanged}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   dialogInitialFocus
-                ></ha-textfield>
-                <ha-textfield
+                ></ha-input>
+                <ha-input
                   class="clientId"
                   name="clientId"
                   .label=${this.hass.localize(
@@ -220,16 +227,17 @@ export class DialogAddApplicationCredential extends LitElement {
                   .invalid=${this._invalid && !this._clientId}
                   required
                   @input=${this._handleValueChanged}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
                   dialogInitialFocus
-                  .helper=${this.hass.localize(
+                  .hint=${this.hass.localize(
                     "ui.panel.config.application_credentials.editor.client_id_helper"
                   )}
-                  helperPersistent
-                ></ha-textfield>
-                <ha-password-field
+                ></ha-input>
+                <ha-input
+                  type="password"
+                  password-toggle
                   .label=${this.hass.localize(
                     "ui.panel.config.application_credentials.editor.client_secret"
                   )}
@@ -238,14 +246,13 @@ export class DialogAddApplicationCredential extends LitElement {
                   .invalid=${this._invalid && !this._clientSecret}
                   required
                   @input=${this._handleValueChanged}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.common.error_required"
                   )}
-                  .helper=${this.hass.localize(
+                  .hint=${this.hass.localize(
                     "ui.panel.config.application_credentials.editor.client_secret_helper"
                   )}
-                  helperPersistent
-                ></ha-password-field>
+                ></ha-input>
               </div>
 
               <ha-dialog-footer slot="footer">
@@ -285,6 +292,7 @@ export class DialogAddApplicationCredential extends LitElement {
     ev.stopPropagation();
     this._domain = ev.detail.value;
     this._updateDescription();
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateDescription() {
@@ -308,6 +316,16 @@ export class DialogAddApplicationCredential extends LitElement {
     const name = (ev.target as any).name;
     const value = (ev.target as any).value;
     this[`_${name}`] = value;
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _currentState(): CredentialFormState {
+    return {
+      domain: this._domain || "",
+      name: this._name || "",
+      clientId: this._clientId || "",
+      clientSecret: this._clientSecret || "",
+    };
   }
 
   private _abortDialog() {
@@ -376,11 +394,6 @@ export class DialogAddApplicationCredential extends LitElement {
         .row {
           display: flex;
           padding: var(--ha-space-2) 0;
-        }
-        ha-textfield {
-          display: block;
-          margin-top: var(--ha-space-4);
-          margin-bottom: var(--ha-space-4);
         }
         a {
           text-decoration: none;

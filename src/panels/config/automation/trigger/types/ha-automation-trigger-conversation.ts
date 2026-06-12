@@ -1,11 +1,12 @@
-import { mdiClose } from "@mdi/js";
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { mdiClose, mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type { ConversationTrigger } from "../../../../../data/automation";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../types";
@@ -24,7 +25,7 @@ export class HaConversationTrigger
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("#option_input", true) private _optionInput?: HaTextField;
+  @query("#option_input", true) private _optionInput?: HaInput;
 
   public static get defaultConfig(): ConversationTrigger {
     return { trigger: "conversation", command: "" };
@@ -35,31 +36,31 @@ export class HaConversationTrigger
     const commands = command ? ensureArray(command) : [];
 
     return html`${commands.length
-        ? commands.map(
-            (option, index) => html`
-              <ha-textfield
-                class="option"
-                iconTrailing
-                .index=${index}
-                .value=${option}
-                .validationMessage=${this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
-                )}
-                autoValidate
-                validateOnInitialRender
-                pattern=${PATTERN}
-                @change=${this._updateOption}
-              >
-                <ha-icon-button
-                  @click=${this._removeOption}
-                  slot="trailingIcon"
-                  .path=${mdiClose}
-                ></ha-icon-button>
-              </ha-textfield>
-            `
-          )
+        ? html`${commands.map(
+              (option, index) => html`
+                <ha-input
+                  class="option"
+                  iconTrailing
+                  .index=${index}
+                  .value=${option}
+                  .validationMessage=${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
+                  )}
+                  auto-validate
+                  validateOnInitialRender
+                  pattern=${PATTERN}
+                  @change=${this._updateOption}
+                >
+                  <ha-icon-button
+                    @click=${this._removeOption}
+                    slot="end"
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                </ha-input>
+              `
+            )} <wa-divider></wa-divider>`
         : nothing}
-      <ha-textfield
+      <ha-input
         class="flex-auto"
         id="option_input"
         .label=${this.hass.localize(
@@ -68,11 +69,17 @@ export class HaConversationTrigger
         .validationMessage=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
         )}
-        autoValidate
+        auto-validate
         pattern=${PATTERN}
         @keydown=${this._handleKeyAdd}
         @change=${this._addOption}
-      ></ha-textfield>`;
+      >
+        <ha-icon-button
+          @click=${this._addOption}
+          slot="end"
+          .path=${mdiPlus}
+        ></ha-icon-button>
+      </ha-input>`;
   }
 
   private _handleKeyAdd(ev: KeyboardEvent) {
@@ -104,14 +111,14 @@ export class HaConversationTrigger
     input.value = "";
   }
 
-  private async _updateOption(ev: Event) {
+  private async _updateOption(ev: InputEvent) {
     const index = (ev.target as any).index;
     const command = [
       ...(Array.isArray(this.trigger.command)
         ? this.trigger.command
         : [this.trigger.command]),
     ];
-    command.splice(index, 1, (ev.target as HaTextField).value);
+    command.splice(index, 1, (ev.target as HaInput).value ?? "");
     fireEvent(this, "value-changed", {
       value: { ...this.trigger, command },
     });
@@ -155,20 +162,8 @@ export class HaConversationTrigger
     .option {
       margin-top: 4px;
     }
-    ha-textfield {
-      display: block;
-      margin-bottom: 8px;
-      --textfield-icon-trailing-padding: 0;
-    }
-    ha-textfield > ha-icon-button {
-      position: relative;
-      right: -8px;
-      --ha-icon-button-size: 36px;
-      --mdc-icon-size: 20px;
-      color: var(--secondary-text-color);
-      inset-inline-start: initial;
-      inset-inline-end: -8px;
-      direction: var(--direction);
+    ha-input {
+      margin-bottom: var(--ha-space-1);
     }
     #option_input {
       margin-top: 8px;
@@ -176,6 +171,10 @@ export class HaConversationTrigger
     .header {
       margin-top: 8px;
       margin-bottom: 8px;
+    }
+    wa-divider {
+      margin-top: var(--ha-space-2);
+      margin-bottom: var(--ha-space-3);
     }
   `;
 }

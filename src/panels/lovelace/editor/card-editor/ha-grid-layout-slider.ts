@@ -83,7 +83,7 @@ export class HaGridLayoutSlider extends LitElement {
     return Math.min(Math.max(value, this.min), this.max);
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
     this.setAttribute("role", "slider");
@@ -92,7 +92,7 @@ export class HaGridLayoutSlider extends LitElement {
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("value")) {
       const valuenow = this._steppedValue(this.value ?? 0);

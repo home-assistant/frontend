@@ -2,7 +2,10 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { navigate } from "../common/navigate";
 import type { HomeAssistant } from "../types";
-import { subscribeDeviceRegistry } from "./device/device_registry";
+import {
+  subscribeDeviceRegistry,
+  type DeviceRegistryEntry,
+} from "./device/device_registry";
 import { getThreadDataSetTLV, listThreadDataSets } from "./thread";
 
 export enum NetworkType {
@@ -52,7 +55,7 @@ export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
 
 export const startExternalCommissioning = async (hass: HomeAssistant) => {
-  if (isComponentLoaded(hass, "thread")) {
+  if (isComponentLoaded(hass.config, "thread")) {
     const datasets = await listThreadDataSets(hass);
     const preferredDataset = datasets.datasets.find(
       (dataset) => dataset.preferred
@@ -77,9 +80,9 @@ export const startExternalCommissioning = async (hass: HomeAssistant) => {
   });
 };
 
-export const redirectOnNewMatterDevice = (
+export const watchForNewMatterDevice = (
   hass: HomeAssistant,
-  callback?: () => void
+  callback: (device: DeviceRegistryEntry) => void
 ): UnsubscribeFunc => {
   let curMatterDevices: Set<string> | undefined;
   const unsubDeviceReg = subscribeDeviceRegistry(hass.connection, (entries) => {
@@ -101,8 +104,7 @@ export const redirectOnNewMatterDevice = (
     if (newMatterDevices.length) {
       unsubDeviceReg();
       curMatterDevices = undefined;
-      callback?.();
-      navigate(`/config/devices/device/${newMatterDevices[0].id}`);
+      callback(newMatterDevices[0]);
     }
   });
   return () => {
@@ -111,17 +113,28 @@ export const redirectOnNewMatterDevice = (
   };
 };
 
+export const redirectOnNewMatterDevice = (
+  hass: HomeAssistant,
+  callback?: () => void
+): UnsubscribeFunc =>
+  watchForNewMatterDevice(hass, (device) => {
+    callback?.();
+    navigate(`/config/devices/device/${device.id}`);
+  });
+
 export const addMatterDevice = (hass: HomeAssistant) => {
   startExternalCommissioning(hass);
 };
 
 export const commissionMatterDevice = (
   hass: HomeAssistant,
-  code: string
+  code: string,
+  networkOnly: boolean
 ): Promise<void> =>
   hass.callWS({
     type: "matter/commission",
     code,
+    network_only: networkOnly,
   });
 
 export const acceptSharedMatterDevice = (

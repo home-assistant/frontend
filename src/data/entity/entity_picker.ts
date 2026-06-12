@@ -41,19 +41,35 @@ export const entityComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
+export interface GetEntitiesOptions {
+  includeDomains?: string[];
+  excludeDomains?: string[];
+  entityFilter?: HaEntityPickerEntityFilterFunc;
+  includeDeviceClasses?: string[];
+  includeUnitOfMeasurement?: string[];
+  includeEntities?: string[];
+  excludeEntities?: string[];
+  value?: string;
+  idPrefix?: string;
+}
+
 export const getEntities = (
   hass: HomeAssistant,
-  includeDomains?: string[],
-  excludeDomains?: string[],
-  entityFilter?: HaEntityPickerEntityFilterFunc,
-  includeDeviceClasses?: string[],
-  includeUnitOfMeasurement?: string[],
-  includeEntities?: string[],
-  excludeEntities?: string[],
-  value?: string,
-  idPrefix = ""
+  options?: GetEntitiesOptions
 ): EntityComboBoxItem[] => {
-  let items: EntityComboBoxItem[] = [];
+  const {
+    includeDomains,
+    excludeDomains,
+    entityFilter,
+    includeDeviceClasses,
+    includeUnitOfMeasurement,
+    includeEntities,
+    excludeEntities,
+    value,
+    idPrefix = "",
+  } = options ?? {};
+
+  let items: EntityComboBoxItem[];
 
   let entityIds = Object.keys(hass.states);
 
@@ -96,7 +112,10 @@ export const getEntities = (
 
     const domainName = domainToName(hass.localize, computeDomain(entityId));
 
-    const isRTL = computeRTL(hass);
+    const isRTL = computeRTL(
+      hass.language,
+      hass.translationMetadata.translations
+    );
 
     const primary = entityName || deviceName || entityId;
     const secondary = [areaName, entityName ? deviceName : undefined]

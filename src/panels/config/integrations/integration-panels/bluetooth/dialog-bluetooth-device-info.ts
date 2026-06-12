@@ -1,5 +1,5 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
@@ -57,7 +57,6 @@ class DialogBluetoothDeviceInfo extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.bluetooth.device_information"
@@ -122,6 +121,19 @@ class DialogBluetoothDeviceInfo extends LitElement {
             )}
           </tbody>
         </table>
+
+        ${this._params.entry.raw
+          ? html`
+              <h4>
+                ${this.hass.localize(
+                  "ui.panel.config.bluetooth.raw_advertisement"
+                )}
+              </h4>
+              <div class="raw">
+                ${this.showDataAsHex(this._params.entry.raw)}
+              </div>
+            `
+          : nothing}
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
@@ -134,6 +146,14 @@ class DialogBluetoothDeviceInfo extends LitElement {
       </ha-dialog>
     `;
   }
+
+  static readonly styles: CSSResultGroup = css`
+    .raw {
+      word-break: break-all;
+      font-family: var(--ha-font-family-code);
+      font-size: var(--ha-font-size-s);
+    }
+  `;
 }
 
 declare global {

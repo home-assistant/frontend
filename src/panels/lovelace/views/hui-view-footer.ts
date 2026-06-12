@@ -33,7 +33,12 @@ export class HuiViewFooter extends LitElement {
 
   @property({ attribute: false }) public viewIndex!: number;
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener("card-visibility-changed", this._checkHidden);
+  }
+
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("config")) {
       if (this.config?.card) {
         this.card = this._createCardElement(this.config.card);
@@ -58,8 +63,15 @@ export class HuiViewFooter extends LitElement {
     }
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("card-visibility-changed", this._checkHidden);
+  }
+
   private _checkHidden() {
-    const hidden = !this.card && !this.lovelace?.editMode;
+    const hidden =
+      !this.lovelace?.editMode &&
+      (!this.card || this.card.hasAttribute("hidden"));
     this.toggleAttribute("hidden", hidden);
     this.toggleAttribute("sticky", Boolean(this.card));
   }
@@ -153,7 +165,6 @@ export class HuiViewFooter extends LitElement {
               <hui-card-edit-mode
                 @ll-edit-card=${this._editCard}
                 @ll-delete-card=${this._deleteCard}
-                .hass=${this.hass}
                 .lovelace=${this.lovelace!}
                 .path=${[0]}
                 no-duplicate
@@ -173,7 +184,9 @@ export class HuiViewFooter extends LitElement {
     const editMode = Boolean(this.lovelace?.editMode);
     const card = this.card;
 
-    if (!card && !editMode) return nothing;
+    if (!editMode && !card) {
+      return nothing;
+    }
 
     return html`
       <div
@@ -236,11 +249,10 @@ export class HuiViewFooter extends LitElement {
     }
 
     .wrapper:not(.edit-mode) {
-      --ha-card-box-shadow:
-        0px 3px 5px -1px rgba(0, 0, 0, 0.2),
-        0px 6px 10px 0px rgba(0, 0, 0, 0.14),
-        0px 1px 18px 0px rgba(0, 0, 0, 0.12);
-      --ha-card-border-color: var(--divider-color);
+      --ha-card-box-shadow: var(
+        --ha-view-footer-box-shadow,
+        var(--ha-box-shadow-l)
+      );
     }
 
     .container {
@@ -257,7 +269,10 @@ export class HuiViewFooter extends LitElement {
 
     .container.edit-mode {
       padding: var(--ha-space-2);
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border: 2px dashed var(--divider-color);
       border-start-end-radius: 0;
     }
@@ -299,7 +314,10 @@ export class HuiViewFooter extends LitElement {
       align-items: center;
       justify-content: center;
       transition: opacity 0.2s ease-in-out;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
       background: var(--secondary-background-color);
@@ -321,7 +339,10 @@ export class HuiViewFooter extends LitElement {
       height: 36px;
       padding: 6px 20px 6px 20px;
       box-sizing: border-box;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      border-radius: var(
+        --ha-section-border-radius,
+        var(--ha-border-radius-xl)
+      );
       background-color: transparent;
       border-width: 2px;
       border-style: dashed;

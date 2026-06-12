@@ -1,11 +1,11 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-textfield";
-import type { HaMdTextfield } from "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-select";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 
@@ -20,8 +20,8 @@ class HaBackupConfigAddon extends LitElement {
 
   protected render() {
     return html`
-      <ha-md-list>
-        <ha-md-list-item>
+      <ha-list-base>
+        <ha-list-item-base>
           <span slot="headline">
             ${this.hass.localize(
               `ui.panel.config.backup.schedule.update_preference.label`
@@ -52,8 +52,8 @@ class HaBackupConfigAddon extends LitElement {
               },
             ]}
           ></ha-select>
-        </ha-md-list-item>
-        <ha-md-list-item>
+        </ha-list-item-base>
+        <ha-list-item-base>
           <span slot="headline">
             ${this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
           </span>
@@ -62,7 +62,7 @@ class HaBackupConfigAddon extends LitElement {
               `ui.panel.config.backup.settings.app_update_backup.retention_description`
             )}
           </span>
-          <ha-md-textfield
+          <ha-input
             slot="end"
             @change=${this._backupRetentionChanged}
             .value=${this.supervisorUpdateConfig?.add_on_backup_retain_copies?.toString() ||
@@ -70,13 +70,15 @@ class HaBackupConfigAddon extends LitElement {
             type="number"
             min=${MIN_RETENTION_VALUE.toString()}
             step="1"
-            .suffixText=${this.hass.localize(
-              "ui.panel.config.backup.schedule.retention_units.copies"
-            )}
           >
-          </ha-md-textfield>
-        </ha-md-list-item>
-      </ha-md-list>
+            <span slot="end">
+              ${this.hass.localize(
+                "ui.panel.config.backup.schedule.retention_units.copies"
+              )}
+            </span>
+          </ha-input>
+        </ha-list-item-base>
+      </ha-list-base>
     `;
   }
 
@@ -92,7 +94,7 @@ class HaBackupConfigAddon extends LitElement {
   }
 
   private _backupRetentionChanged(ev) {
-    const target = ev.currentTarget as HaMdTextfield;
+    const target = ev.currentTarget as HaInput;
     const add_on_backup_retain_copies = Number(target.value);
     if (add_on_backup_retain_copies >= MIN_RETENTION_VALUE) {
       fireEvent(this, "update-config-changed", {
@@ -104,18 +106,17 @@ class HaBackupConfigAddon extends LitElement {
   }
 
   static styles = css`
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
     }
     ha-select {
       min-width: 210px;
     }
-    ha-md-textfield {
+    ha-input {
       width: 210px;
     }
     @media all and (max-width: 450px) {
@@ -123,7 +124,7 @@ class HaBackupConfigAddon extends LitElement {
         min-width: 160px;
         width: 160px;
       }
-      ha-md-textfield {
+      ha-input {
         width: 160px;
       }
     }

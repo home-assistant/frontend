@@ -8,11 +8,13 @@ import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
 import { LinearGradient } from "../../../../resources/echarts/echarts";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import type { EnergyData } from "../../../../data/energy";
 import {
   getEnergyDataCollection,
   getPowerFromState,
+  validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -22,7 +24,7 @@ import type { LovelaceCard } from "../../types";
 import type { PowerSourcesGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import { getCommonOptions, fillLineGaps } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import { hex2rgb } from "../../../../common/color/convert-color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
@@ -31,11 +33,28 @@ export class HuiPowerSourcesGraphCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
+  public static async getConfigElement() {
+    await import("../../editor/config-elements/hui-energy-graph-card-editor");
+    return document.createElement("hui-energy-graph-card-editor");
+  }
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: PowerSourcesGraphCardConfig;
 
+  public static getStubConfig(
+    _hass: HomeAssistant,
+    _entities: string[],
+    _entitiesFill: string[]
+  ): PowerSourcesGraphCardConfig {
+    return {
+      type: "power-sources-graph",
+    };
+  }
+
   @state() private _chartData: LineSeriesOption[] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _legendData?: CustomLegendOption["data"];
 
@@ -62,10 +81,13 @@ export class HuiPowerSourcesGraphCard
   }
 
   public setConfig(config: PowerSourcesGraphCardConfig): void {
+    if (config.collection_key) {
+      validateEnergyCollectionKey(config.collection_key);
+    }
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -98,7 +120,8 @@ export class HuiPowerSourcesGraphCard
               this.hass.config,
               this._compareStart,
               this._compareEnd,
-              this._legendData
+              this._legendData,
+              this._yAxisFractionDigits
             )}
           ></ha-chart-base>
           ${!this._chartData.some((dataset) => dataset.data!.length)
@@ -121,10 +144,11 @@ export class HuiPowerSourcesGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      compareStart?: Date,
-      compareEnd?: Date,
-      legendData?: CustomLegendOption["data"]
-    ): ECOption => ({
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      legendData: CustomLegendOption["data"] | undefined,
+      yAxisFractionDigits: number
+    ): HaECOption => ({
       ...getCommonOptions(
         start,
         end,
@@ -134,7 +158,8 @@ export class HuiPowerSourcesGraphCard
         compareStart,
         compareEnd,
         undefined,
-        true
+        true,
+        yAxisFractionDigits
       ),
       legend: {
         show: this._config?.show_legend !== false,
@@ -174,6 +199,13 @@ export class HuiPowerSourcesGraphCard
 
     const computedStyles = getComputedStyle(this);
 
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
+
     for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (source.stat_rate) {
@@ -198,7 +230,6 @@ export class HuiPowerSourcesGraphCard
     const commonSeriesOptions: LineSeriesOption = {
       type: "line",
       smooth: 0.4,
-      smoothMonotone: "x",
       lineStyle: {
         width: 1,
       },
@@ -227,7 +258,8 @@ export class HuiPowerSourcesGraphCard
               }
             }
             return stats;
-          })
+          }),
+          trackY
         );
         datasets.push({
           ...commonSeriesOptions,
@@ -289,6 +321,7 @@ export class HuiPowerSourcesGraphCard
     this._end = energyData.end || endOfToday();
 
     this._chartData = fillLineGaps(datasets);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
 
     const usageData: NonNullable<LineSeriesOption["data"]> = [];
     this._chartData[0]?.data!.forEach((item, i) => {
@@ -297,14 +330,18 @@ export class HuiPowerSourcesGraphCard
         typeof item === "object" && "value" in item!
           ? item.value![0]
           : item![0];
-      usageData[i] = [x, 0];
+      let sum = 0;
       this._chartData.forEach((dataset) => {
         const y =
           typeof dataset.data![i] === "object" && "value" in dataset.data![i]!
             ? dataset.data![i].value![1]
             : dataset.data![i]![1];
-        usageData[i]![1] += y as number;
+        sum += y as number;
       });
+      // Consumption can't be negative; sources unaccounted for in the
+      // configuration (e.g. solar exporting to grid without a configured
+      // solar source) would otherwise drag the usage line below zero.
+      usageData[i] = [x, Math.max(0, sum)];
     });
     this._chartData.push({
       ...commonSeriesOptions,
@@ -331,7 +368,7 @@ export class HuiPowerSourcesGraphCard
     });
   }
 
-  private _processData(stats: StatisticValue[][]) {
+  private _processData(stats: StatisticValue[][], trackY: (v: number) => void) {
     const data: Record<number, number[]> = {};
     stats.forEach((statSet) => {
       statSet.forEach((point) => {
@@ -347,8 +384,12 @@ export class HuiPowerSourcesGraphCard
     Object.entries(data).forEach(([x, y]) => {
       const ts = Number(x);
       const sumY = y.reduce((a, b) => a + b, 0);
-      positive.push([ts, Math.max(0, sumY)]);
-      negative.push([ts, Math.min(0, sumY)]);
+      const pos = Math.max(0, sumY);
+      const neg = Math.min(0, sumY);
+      positive.push([ts, pos]);
+      negative.push([ts, neg]);
+      trackY(pos);
+      trackY(neg);
     });
     return { positive, negative };
   }

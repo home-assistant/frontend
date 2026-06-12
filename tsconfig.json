@@ -7,7 +7,7 @@
     "useDefineForClassFields": false,
     // Modules
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
@@ -130,7 +130,32 @@
       ],
       "@formatjs/intl-relativetimeformat/polyfill-force": [
         "./node_modules/@formatjs/intl-relativetimeformat/polyfill-force.js"
-      ]
+      ],
+      "@formatjs/intl-pluralrules/locale-data/en": [
+        "./node_modules/@formatjs/intl-pluralrules/locale-data/en.js"
+      ],
+      "@home-assistant/webawesome/dist/components/*": [
+        "./node_modules/@home-assistant/webawesome/dist/components/*"
+      ],
+      "@home-assistant/webawesome/dist/events/*": [
+        "./node_modules/@home-assistant/webawesome/dist/events/*"
+      ],
+      "@home-assistant/webawesome/dist/internal/*": [
+        "./node_modules/@home-assistant/webawesome/dist/internal/*"
+      ],
+      "@lit-labs/virtualizer/virtualize": [
+        "./node_modules/@lit-labs/virtualizer/virtualize.js"
+      ],
+      "@lit/reactive-element/reactive-controller": [
+        "./node_modules/@lit/reactive-element/reactive-controller.js"
+      ],
+      "echarts/types/src/*": ["./node_modules/echarts/types/src/*.d.ts"],
+      "echarts/lib/*": ["./node_modules/echarts/lib/*"],
+      "home-assistant-js-websocket/dist/*": [
+        "./node_modules/home-assistant-js-websocket/dist/*"
+      ],
+      "lit/directives/join": ["./node_modules/lit/directives/join.js"],
+      "lit/directives/ref": ["./node_modules/lit/directives/ref.js"]
     }
   }
 }

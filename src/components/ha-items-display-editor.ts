@@ -8,10 +8,11 @@ import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
-import type { HomeAssistant } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
@@ -46,7 +47,9 @@ declare global {
 
 @customElement("ha-items-display-editor")
 export class HaItemDisplayEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public items: DisplayItem[] = [];
 
@@ -161,7 +164,7 @@ export class HaItemDisplayEditor extends LitElement {
                     ? html`<ha-icon-button
                         .path=${isVisible ? mdiEye : mdiEyeOff}
                         slot="end"
-                        .label=${this.hass.localize(
+                        .label=${this._localize(
                           `ui.components.items-display-editor.${isVisible ? "hide" : "show"}`,
                           {
                             label: label,
@@ -314,6 +317,7 @@ export class HaItemDisplayEditor extends LitElement {
     // refocus the item after the sort
     setTimeout(async () => {
       await this.updateComplete;
+      // eslint-disable-next-line lit/prefer-query-decorators
       const selectedElement = this.shadowRoot?.querySelector(
         `ha-md-list-item:nth-child(${this._dragIndex! + 1})`
       ) as HTMLElement | null;

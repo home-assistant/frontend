@@ -3,18 +3,24 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import hash from "object-hash";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
+import "../../../components/ha-ripple";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import { CacheManager } from "../../../util/cache-manager";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MarkdownCardConfig } from "./types";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 
 const templateCache = new CacheManager<RenderTemplateResult>(1000);
 
@@ -56,6 +62,14 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         : this._config.card_size;
   }
 
+  private get _interactive() {
+    return (
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
+  }
+
   public setConfig(config: MarkdownCardConfig): void {
     if (!config.content) {
       throw new Error("Content required");
@@ -86,7 +100,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     super.willUpdate(_changedProperties);
     if (!this._config) {
       return;
@@ -104,7 +118,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (!this._config) {
       return nothing;
     }
-
+    const safeHandleAction = this._interactive ? this._handleAction : undefined;
+    const safeActionHandler = this._interactive
+      ? actionHandler({
+          hasHold: hasAction(this._config.hold_action),
+          hasDoubleClick: hasAction(this._config.double_tap_action),
+        })
+      : undefined;
     return html`
       ${this._error
         ? html`
@@ -122,8 +142,22 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         class=${classMap({
           "with-header": !!this._config.title,
           "text-only": this._config.text_only ?? false,
+          action: this._interactive,
         })}
+        tabindex=${ifDefined(this._interactive ? "0" : undefined)}
+        role=${ifDefined(this._interactive ? "button" : undefined)}
+        @action=${safeHandleAction}
+        .actionHandler=${safeActionHandler}
       >
+        ${this._interactive
+          ? html`<div
+              class="background"
+              @focus=${this._handleFocus}
+              @blur=${this._handleBlur}
+            >
+              <ha-ripple></ha-ripple>
+            </div>`
+          : nothing}
         <ha-markdown
           cache
           breaks
@@ -228,10 +262,36 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._errorLevel = undefined;
   }
 
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _handleFocus(ev: FocusEvent) {
+    if ((ev.target as HTMLElement).matches(":focus-visible")) {
+      this.setAttribute("focused", "");
+    }
+  }
+
+  private _handleBlur() {
+    this.removeAttribute("focused");
+  }
+
   static styles = css`
+    :host {
+      -webkit-tap-highlight-color: transparent;
+      --ha-ripple-hover-opacity: 0.04;
+      --ha-ripple-pressed-opacity: 0.12;
+    }
     ha-card {
       height: 100%;
       overflow-y: auto;
+    }
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
     }
     ha-alert {
       margin-bottom: 8px;
@@ -251,6 +311,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
     .text-only ha-markdown {
       padding: 2px 4px;
+    }
+    .action {
+      cursor: pointer;
     }
   `;
 }

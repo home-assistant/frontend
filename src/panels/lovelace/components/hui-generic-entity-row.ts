@@ -18,7 +18,6 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
@@ -66,11 +65,7 @@ export class HuiGenericEntityRow extends LitElement {
     const pointer = hasAnyAction(this.config);
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this.config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this.config.name);
 
     return html`
       <div
@@ -120,7 +115,6 @@ export class HuiGenericEntityRow extends LitElement {
                               </ha-tooltip>
                               <ha-relative-time
                                 id="last-changed${this._secondaryInfoElementId}"
-                                .hass=${this.hass}
                                 .datetime=${stateObj.last_changed}
                                 capitalize
                               ></ha-relative-time>
@@ -141,7 +135,6 @@ export class HuiGenericEntityRow extends LitElement {
                                 <ha-relative-time
                                   id="last-updated${this
                                     ._secondaryInfoElementId}"
-                                  .hass=${this.hass}
                                   .datetime=${stateObj.last_updated}
                                   capitalize
                                 ></ha-relative-time>
@@ -165,7 +158,6 @@ export class HuiGenericEntityRow extends LitElement {
                                     <ha-relative-time
                                       id="last-triggered${this
                                         ._secondaryInfoElementId}"
-                                      .hass=${this.hass}
                                       .datetime=${stateObj.attributes
                                         .last_triggered}
                                       capitalize
@@ -226,7 +218,7 @@ export class HuiGenericEntityRow extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     toggleAttribute(
       this,

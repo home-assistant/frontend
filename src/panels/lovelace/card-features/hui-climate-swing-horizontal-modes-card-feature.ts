@@ -1,20 +1,12 @@
 import { mdiArrowOscillating } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attribute-icon";
-import "../../../components/ha-control-select";
-import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
-import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
-import { filterModes } from "./common/filter-modes";
+import { HuiModeSelectCardFeatureBase } from "./hui-mode-select-card-feature-base";
 import type {
   ClimateSwingHorizontalModesCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -37,33 +29,25 @@ export const supportsClimateSwingHorizontalModesCardFeature = (
 
 @customElement("hui-climate-swing-horizontal-modes-card-feature")
 class HuiClimateSwingHorizontalModesCardFeature
-  extends LitElement
+  extends HuiModeSelectCardFeatureBase<
+    ClimateEntity,
+    ClimateSwingHorizontalModesCardFeatureConfig
+  >
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  protected readonly _attribute = "swing_horizontal_mode";
 
-  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+  protected readonly _modesAttribute = "swing_horizontal_modes";
 
-  @state() private _config?: ClimateSwingHorizontalModesCardFeatureConfig;
-
-  @state() _currentSwingHorizontalMode?: string;
-
-  private _renderSwingHorizontalModeIcon = (value: string) =>
-    html`<ha-attribute-icon
-      .hass=${this.hass}
-      .stateObj=${this._stateObj}
-      attribute="swing_horizontal_mode"
-      .attributeValue=${value}
-    ></ha-attribute-icon>`;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      | ClimateEntity
-      | undefined;
+  protected get _configuredModes() {
+    return this._config?.swing_horizontal_modes;
   }
+
+  protected readonly _dropdownIconPath = mdiArrowOscillating;
+
+  protected readonly _serviceDomain = "climate";
+
+  protected readonly _serviceAction = "set_swing_horizontal_mode";
 
   static getStubConfig(): ClimateSwingHorizontalModesCardFeatureConfig {
     return {
@@ -79,132 +63,12 @@ class HuiClimateSwingHorizontalModesCardFeature
     );
   }
 
-  public setConfig(config: ClimateSwingHorizontalModesCardFeatureConfig): void {
-    if (!config) {
-      throw new Error("Invalid configuration");
-    }
-    this._config = config;
-  }
-
-  protected willUpdate(changedProp: PropertyValues): void {
-    super.willUpdate(changedProp);
-    if (
-      (changedProp.has("hass") || changedProp.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._currentSwingHorizontalMode =
-          this._stateObj.attributes.swing_horizontal_mode;
-      }
-    }
-  }
-
-  private async _valueChanged(
-    ev: CustomEvent<{ value?: string; item?: { value: string } }>
-  ) {
-    const swingHorizontalMode = ev.detail.value ?? ev.detail.item?.value;
-
-    const oldSwingHorizontalMode =
-      this._stateObj!.attributes.swing_horizontal_mode;
-
-    if (
-      swingHorizontalMode === oldSwingHorizontalMode ||
-      !swingHorizontalMode
-    ) {
-      return;
-    }
-
-    this._currentSwingHorizontalMode = swingHorizontalMode;
-
-    try {
-      await this._setMode(swingHorizontalMode);
-    } catch (_err) {
-      this._currentSwingHorizontalMode = oldSwingHorizontalMode;
-    }
-  }
-
-  private async _setMode(mode: string) {
-    await this.hass!.callService("climate", "set_swing_horizontal_mode", {
-      entity_id: this._stateObj!.entity_id,
-      swing_horizontal_mode: mode,
-    });
-  }
-
-  protected render(): TemplateResult | null {
-    if (
-      !this._config ||
-      !this.hass ||
-      !this.context ||
-      !this._stateObj ||
-      !supportsClimateSwingHorizontalModesCardFeature(this.hass, this.context)
-    ) {
-      return null;
-    }
-
-    const stateObj = this._stateObj;
-
-    const options = filterModes(
-      stateObj.attributes.swing_horizontal_modes,
-      this._config!.swing_horizontal_modes
-    ).map((mode) => ({
-      value: mode,
-      label: this.hass!.formatEntityAttributeValue(
-        this._stateObj!,
-        "swing_horizontal_mode",
-        mode
-      ),
-    }));
-
-    if (this._config.style === "icons") {
-      return html`
-        <ha-control-select
-          .options=${options.map((option) => ({
-            ...option,
-            icon: html`<ha-attribute-icon
-              slot="graphic"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-              attribute="swing_horizontal_mode"
-              .attributeValue=${option.value}
-            ></ha-attribute-icon>`,
-          }))}
-          .value=${this._currentSwingHorizontalMode}
-          @value-changed=${this._valueChanged}
-          hide-option-label
-          .label=${this.hass!.formatEntityAttributeName(
-            stateObj,
-            "swing_horizontal_mode"
-          )}
-          .disabled=${this._stateObj!.state === UNAVAILABLE}
-        >
-        </ha-control-select>
-      `;
-    }
-
-    return html`
-      <ha-control-select-menu
-        .hass=${this.hass}
-        show-arrow
-        hide-label
-        .label=${this.hass!.formatEntityAttributeName(
-          stateObj,
-          "swing_horizontal_mode"
-        )}
-        .value=${this._currentSwingHorizontalMode}
-        .disabled=${this._stateObj.state === UNAVAILABLE}
-        @wa-select=${this._valueChanged}
-        .options=${options}
-        .renderIcon=${this._renderSwingHorizontalModeIcon}
-      >
-        <ha-svg-icon slot="icon" .path=${mdiArrowOscillating}></ha-svg-icon>
-      </ha-control-select-menu>
-    `;
-  }
-
-  static get styles() {
-    return cardFeatureStyles;
+  protected _isSupported(): boolean {
+    return !!(
+      this.hass &&
+      this.context &&
+      supportsClimateSwingHorizontalModesCardFeature(this.hass, this.context)
+    );
   }
 }
 
