@@ -832,20 +832,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                   </span>
                   <code slot="headline"> ${this._currentAddon.hostname} </code>
                 </ha-row-item>
-                ${this._currentAddon.network_isolation
-                  ? html`
-                      <ha-row-item>
-                        <span slot="supporting-text">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.network_isolation_ip"
-                          )}
-                        </span>
-                        <code slot="headline">
-                          ${this._currentAddon.network_isolation.ipv4}
-                        </code>
-                      </ha-row-item>
-                    `
-                  : nothing}
+                ${this._renderNetworkIsolationRows()}
                 ${metrics.map(
                   (metric) => html`
                     <supervisor-app-metric
@@ -856,8 +843,43 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                   `
                 )}`
             : nothing}
+          ${this._currentAddon.version &&
+          this._currentAddon.state !== "started" &&
+          this._currentAddon.network_isolation
+            ? html`<wa-divider></wa-divider>
+                ${this._renderNetworkIsolationRows()}`
+            : nothing}
         </div>
       </ha-card>
+    `;
+  }
+
+  private _renderNetworkIsolationRows() {
+    const addon = this._currentAddon;
+    if (!addon.version || !addon.network_isolation) {
+      return nothing;
+    }
+    return html`
+      <ha-row-item>
+        <span slot="supporting-text">
+          ${this.i18n.localize(
+            "ui.panel.config.apps.dashboard.network_isolation_ip"
+          )}
+        </span>
+        <code slot="headline"> ${addon.network_isolation.ipv4} </code>
+      </ha-row-item>
+      ${addon.network_isolation_mac
+        ? html`
+            <ha-row-item>
+              <span slot="supporting-text">
+                ${this.i18n.localize(
+                  "ui.panel.config.apps.dashboard.network_isolation_mac"
+                )}
+              </span>
+              <code slot="headline"> ${addon.network_isolation_mac} </code>
+            </ha-row-item>
+          `
+        : nothing}
     `;
   }
 

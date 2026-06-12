@@ -2905,6 +2905,7 @@
             "changelog": "Changelog",
             "hostname": "Hostname",
             "network_isolation_ip": "IP address on your network",
+            "network_isolation_mac": "MAC address on your network",
             "visit_app_page": "Visit {name} page for more details.",
             "start": "Start",
             "stop": "Stop",

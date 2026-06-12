@@ -111,6 +111,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   network_description: null | Record<string, string>;
   network_isolation: AddonNetworkIsolation | null;
   network_isolation_available: boolean;
+  network_isolation_mac: string | null;
   network: null | Record<string, number>;
   options: Record<string, unknown>;
   privileged: any;
