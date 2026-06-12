@@ -3087,6 +3087,7 @@
                 "interface": "Network interface",
                 "ip_address": "IP address",
                 "ip_address_helper": "Choose an address outside the DHCP range of your router, or reserve it in your router.",
+                "mac_address": "MAC address of this app on your network",
                 "no_interface": "Select a network interface to use isolated network access.",
                 "invalid_ip": "Enter a valid IPv4 address, like 192.168.1.50."
               }

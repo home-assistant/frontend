@@ -188,6 +188,18 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<NetworkConfig>()(
                 .disabled=${this.disabled}
                 @change=${this._isolationAddressChanged}
               ></ha-input>
+              ${this.addon.network_isolation_mac
+                ? html`
+                    <p class="mac">
+                      <span class="secondary">
+                        ${this.hass.localize(
+                          "ui.panel.config.apps.configuration.network.isolation.mac_address"
+                        )}
+                      </span>
+                      <code>${this.addon.network_isolation_mac}</code>
+                    </p>
+                  `
+                : nothing}
             `
           : nothing}
       </div>
@@ -440,6 +452,13 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<NetworkConfig>()(
         }
         .isolation ha-input {
           margin-top: var(--ha-space-4);
+        }
+        .isolation .mac {
+          margin-bottom: 0;
+        }
+        .isolation .mac code {
+          display: block;
+          margin-top: var(--ha-space-1);
         }
       `,
     ];
