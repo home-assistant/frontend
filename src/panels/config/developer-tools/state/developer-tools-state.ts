@@ -169,30 +169,32 @@ class HaPanelDevState extends LitElement {
           )}
         </h1>
         ${!this.narrow
-          ? html`<div class="filters-toggles"><ha-checkbox
-              .checked=${this._showDevice}
-              @change=${this._saveDeviceCheckboxState}
-            >
-              ${this._i18n.localize(
-                "ui.panel.config.entities.picker.headers.device"
-              )}
-            </ha-checkbox>
-            <ha-checkbox
-              .checked=${this._showArea}
-              @change=${this._saveAreaCheckboxState}
-            >
-              ${this._i18n.localize(
-                "ui.panel.config.generic.headers.area"
-              )}
-            </ha-checkbox>
-            </div><ha-checkbox
-              .checked=${this._showAttributes}
-              @change=${this._saveAttributeCheckboxState}
-            >
-              ${this._i18n.localize(
-                "ui.panel.config.developer-tools.tabs.states.attributes"
-              )}
-            </ha-checkbox>`
+          ? html`
+              <div class="filters-toggles">
+                <ha-checkbox
+                  .checked=${this._showDevice}
+                  @change=${this._saveDeviceCheckboxState}
+                >
+                  ${this._i18n.localize(
+                    "ui.panel.config.entities.picker.headers.device"
+                  )}
+                </ha-checkbox>
+                <ha-checkbox
+                  .checked=${this._showArea}
+                  @change=${this._saveAreaCheckboxState}
+                >
+                  ${this._i18n.localize("ui.panel.config.generic.headers.area")}
+                </ha-checkbox>
+              </div>
+              <ha-checkbox
+                .checked=${this._showAttributes}
+                @change=${this._saveAttributeCheckboxState}
+              >
+                ${this._i18n.localize(
+                  "ui.panel.config.developer-tools.tabs.states.attributes"
+                )}
+              </ha-checkbox>
+            `
           : nothing}
       </div>
       <ha-expansion-panel
@@ -625,11 +627,11 @@ class HaPanelDevState extends LitElement {
 
   private _saveDeviceCheckboxState(ev) {
     this._showDevice = ev.target.checked;
-  }  
+  }
 
   private _saveAreaCheckboxState(ev) {
     this._showArea = ev.target.checked;
-  }  
+  }
 
   private _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
@@ -655,12 +657,11 @@ class HaPanelDevState extends LitElement {
 
         .heading {
           display: flex;
-          justify-content: flex-start; /* Aligns title and checkboxes inline left-to-right */
+          justify-content: flex-start;
           align-items: center;
           gap: var(--ha-space-4);
         }
 
-        /* Create a flexible space pusher to slide the checkboxes to the right side together */
         .heading h1 {
           margin-right: auto;
         }
@@ -671,7 +672,6 @@ class HaPanelDevState extends LitElement {
           gap: var(--ha-space-4);
         }
 
-        /* Completely neutralizes the auto-stretching center rule */
         .heading .filters-toggles ha-checkbox {
           margin-right: 0;
           width: max-content;

@@ -41,7 +41,7 @@ class HaPanelDevStateRenderer extends LitElement {
   public showDevice = true;
 
   @property({ attribute: false })
-  public showArea = true;  
+  public showArea = true;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
