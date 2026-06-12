@@ -131,7 +131,7 @@
     "@babel/preset-env": "7.29.7",
     "@bundle-stats/plugin-webpack-filter": "4.22.2",
     "@eslint/js": "10.0.1",
-    "@html-eslint/eslint-plugin": "0.61.0",
+    "@html-eslint/eslint-plugin": "0.62.0",
     "@lokalise/node-api": "16.0.0",
     "@octokit/auth-oauth-device": "8.0.3",
     "@octokit/plugin-retry": "8.1.0",
