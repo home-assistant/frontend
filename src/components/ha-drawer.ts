@@ -298,9 +298,7 @@ export class HaDrawer extends LitElement {
     }
 
     .app-content {
-      overflow: hidden;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
+      overflow: unset;
       min-width: 0;
       padding-inline-start: var(--ha-sidebar-width);
       width: 100%;
