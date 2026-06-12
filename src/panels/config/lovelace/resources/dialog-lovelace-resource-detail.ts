@@ -9,6 +9,7 @@ import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-button";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
@@ -30,7 +31,9 @@ const detectResourceType = (url?: string) => {
 };
 
 @customElement("dialog-lovelace-resource-detail")
-export class DialogLovelaceResourceDetail extends LitElement {
+export class DialogLovelaceResourceDetail extends DirtyStateProviderMixin<
+  Partial<LovelaceResourcesMutableParams>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceResourceDetailsDialogParams;
@@ -57,6 +60,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
       };
     }
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
@@ -83,7 +87,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${dialogTitle}
         @closed=${this._dialogClosed}
       >
@@ -119,7 +123,10 @@ export class DialogLovelaceResourceDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateResource}
-            .disabled=${urlInvalid || !this._data?.res_type || this._submitting}
+            .disabled=${urlInvalid ||
+            !this._data?.res_type ||
+            this._submitting ||
+            !this.isDirtyState}
           >
             ${this._params.resource
               ? this.hass!.localize(
@@ -203,6 +210,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     if (!this._data!.res_type) {
       const type = detectResourceType(this._data!.url);
       if (!type) {
+        this._updateDirtyState(this._data!);
         return;
       }
       this._data = {
@@ -210,6 +218,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         res_type: type,
       };
     }
+    this._updateDirtyState(this._data!);
   }
 
   private async _updateResource() {
@@ -226,7 +235,8 @@ export class DialogLovelaceResourceDetail extends LitElement {
           this._data! as LovelaceResourcesMutableParams
         );
       }
-      this._params = undefined;
+      this._markDirtyStateClean();
+      this.closeDialog();
     } catch (err: any) {
       this._error = { base: err?.message || "Unknown error" };
     } finally {
