@@ -260,11 +260,11 @@ class ErrorLogCard extends LitElement {
                 </div>`
               : nothing}
             ${logFileDownloadUnavailableReason
-              ? html`<div>
+              ? html`<ha-alert alert-type="warning">
                   ${localize(
                     `ui.panel.config.logs.managed_log_file_disabled.${logFileDownloadUnavailableReason}`
                   )}
-                </div>`
+                </ha-alert>`
               : this._loadingState === "loading"
                 ? html`<div>
                     ${localize("ui.panel.config.logs.loading_log")}
