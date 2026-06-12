@@ -3089,7 +3089,13 @@
                 "ip_address_helper": "Choose an address outside the DHCP range of your router, or reserve it in your router.",
                 "mac_address": "MAC address of this app on your network",
                 "no_interface": "Select a network interface to use isolated network access.",
-                "invalid_ip": "Enter a valid IPv4 address, like 192.168.1.50."
+                "invalid_ip": "Enter a valid IPv4 address, like 192.168.1.50.",
+                "info": {
+                  "separate_device": "The app joins the selected network as a separate device with its own IP and MAC address.",
+                  "ipv6": "IPv6 needs no setup: the app automatically gets its IPv6 addresses from your network.",
+                  "host_reachability": "Your Home Assistant system and the app cannot reach each other through their addresses on the selected network. This is part of the isolation — ingress, the web UI link, and other Home Assistant features are not affected.",
+                  "host_interfaces": "Apps that need access to all network interfaces of your system may not work as expected with isolated network access."
+                }
               }
             },
             "audio": {

@@ -200,6 +200,30 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<NetworkConfig>()(
                     </p>
                   `
                 : nothing}
+              <ha-alert alert-type="info">
+                <ul>
+                  <li>
+                    ${this.hass.localize(
+                      "ui.panel.config.apps.configuration.network.isolation.info.separate_device"
+                    )}
+                  </li>
+                  <li>
+                    ${this.hass.localize(
+                      "ui.panel.config.apps.configuration.network.isolation.info.ipv6"
+                    )}
+                  </li>
+                  <li>
+                    ${this.hass.localize(
+                      "ui.panel.config.apps.configuration.network.isolation.info.host_reachability"
+                    )}
+                  </li>
+                  <li>
+                    ${this.hass.localize(
+                      "ui.panel.config.apps.configuration.network.isolation.info.host_interfaces"
+                    )}
+                  </li>
+                </ul>
+              </ha-alert>
             `
           : nothing}
       </div>
@@ -459,6 +483,14 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<NetworkConfig>()(
         .isolation .mac code {
           display: block;
           margin-top: var(--ha-space-1);
+        }
+        .isolation ha-alert {
+          display: block;
+          margin-top: var(--ha-space-4);
+        }
+        .isolation ha-alert ul {
+          margin: 0;
+          padding-inline-start: var(--ha-space-4);
         }
       `,
     ];
