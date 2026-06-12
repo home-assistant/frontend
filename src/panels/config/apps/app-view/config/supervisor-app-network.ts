@@ -9,22 +9,44 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
+import "../../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../../components/ha-switch";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type {
+  AddonNetworkIsolationParams,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
 } from "../../../../../data/hassio/addon";
 import { setHassioAddonOption } from "../../../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
+import type { NetworkInterface } from "../../../../../data/hassio/network";
+import { fetchNetworkInfo } from "../../../../../data/hassio/network";
 import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 
+interface NetworkConfig {
+  ports: Record<string, number | null>;
+  isolation: AddonNetworkIsolationParams | null;
+}
+
+const isValidIpv4 = (address: string): boolean => {
+  const parts = address.split(".");
+  return (
+    parts.length === 4 &&
+    parts.every((part) => /^\d{1,3}$/.test(part) && Number(part) <= 255)
+  );
+};
+
 @customElement("supervisor-app-network")
-class SupervisorAppNetwork extends DirtyStateProviderMixin<
-  Record<string, number | null>
->()(LitElement) {
+class SupervisorAppNetwork extends DirtyStateProviderMixin<NetworkConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -35,17 +57,19 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
 
   @state() private _error?: string;
 
-  @state() private _config?: Record<string, number | null>;
+  @state() private _config?: NetworkConfig;
+
+  @state() private _isolationInterfaces?: NetworkInterface[];
 
   protected render() {
     if (!this._config) {
       return nothing;
     }
 
-    const config = this._config;
+    const ports = this._config.ports;
 
-    const hasHiddenOptions = Object.keys(config).find(
-      (entry) => config[entry] === null
+    const hasHiddenOptions = Object.keys(ports).find(
+      (entry) => ports[entry] === null
     );
 
     return html`
@@ -56,23 +80,29 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
         )}
       >
         <div class="card-content">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.apps.configuration.network.introduction"
-            )}
-          </p>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : nothing}
-
-          <ha-form
-            .disabled=${this.disabled}
-            .data=${this._config}
-            @value-changed=${this._configChanged}
-            .computeLabel=${this._computeLabel}
-            .computeHelper=${this._computeHelper}
-            .schema=${this._createSchema(this._config, this._showOptional)}
-          ></ha-form>
+          ${this.addon.network
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.apps.configuration.network.introduction"
+                  )}
+                </p>
+                <ha-form
+                  .disabled=${this.disabled}
+                  .data=${ports}
+                  @value-changed=${this._configChanged}
+                  .computeLabel=${this._computeLabel}
+                  .computeHelper=${this._computeHelper}
+                  .schema=${this._createSchema(ports, this._showOptional)}
+                ></ha-form>
+              `
+            : nothing}
+          ${this.addon.network_isolation_available
+            ? this._renderIsolation()
+            : nothing}
         </div>
         ${hasHiddenOptions
           ? html`<ha-formfield
@@ -110,21 +140,93 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
     `;
   }
 
+  private _renderIsolation() {
+    const isolation = this._config!.isolation;
+
+    return html`
+      <div class="isolation">
+        <ha-formfield
+          .label=${this.hass.localize(
+            "ui.panel.config.apps.configuration.network.isolation.title"
+          )}
+        >
+          <ha-switch
+            .checked=${isolation !== null}
+            .disabled=${this.disabled}
+            @change=${this._isolationToggled}
+          ></ha-switch>
+        </ha-formfield>
+        <p class="secondary">
+          ${this.hass.localize(
+            "ui.panel.config.apps.configuration.network.isolation.description"
+          )}
+        </p>
+        ${isolation
+          ? html`
+              <ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.network.isolation.interface"
+                )}
+                .value=${isolation.interface}
+                .disabled=${this.disabled}
+                .options=${(this._isolationInterfaces || []).map((iface) => ({
+                  value: iface.interface,
+                  label: iface.ipv4?.address?.length
+                    ? `${iface.interface} (${iface.ipv4.address.join(", ")})`
+                    : iface.interface,
+                }))}
+                @selected=${this._isolationInterfaceChanged}
+              ></ha-select>
+              <ha-input
+                .label=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.network.isolation.ip_address"
+                )}
+                .hint=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.network.isolation.ip_address_helper"
+                )}
+                .value=${isolation.ipv4}
+                .disabled=${this.disabled}
+                @change=${this._isolationAddressChanged}
+              ></ha-input>
+            `
+          : nothing}
+      </div>
+    `;
+  }
+
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("addon")) {
       this._setNetworkConfig();
+      if (
+        this.addon.network_isolation_available &&
+        this._isolationInterfaces === undefined
+      ) {
+        this._loadIsolationInterfaces();
+      }
+    }
+  }
+
+  private async _loadIsolationInterfaces(): Promise<void> {
+    this._isolationInterfaces = [];
+    try {
+      const { interfaces } = await fetchNetworkInfo(this.hass);
+      this._isolationInterfaces = interfaces.filter(
+        (iface) => iface.network_isolation_capable
+      );
+    } catch (err: any) {
+      this._error = extractApiErrorMessage(err);
     }
   }
 
   private _createSchema = memoizeOne(
     (
-      config: Record<string, number | null>,
+      ports: Record<string, number | null>,
       showOptional: boolean
     ): HaFormSchema[] =>
       (showOptional
-        ? Object.keys(config)
-        : Object.keys(config).filter((entry) => config[entry] !== null)
+        ? Object.keys(ports)
+        : Object.keys(ports).filter((entry) => ports[entry] !== null)
       ).map((entry) => ({
         name: entry,
         selector: {
@@ -147,14 +249,58 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
     item.name;
 
   private _setNetworkConfig(): void {
-    const config = this.addon.network || {};
+    const config: NetworkConfig = {
+      ports: this.addon.network || {},
+      isolation: this.addon.network_isolation
+        ? {
+            interface: this.addon.network_isolation.interface,
+            ipv4: this.addon.network_isolation.ipv4,
+          }
+        : null,
+    };
     this._config = config;
-    this._initDirtyTracking({ type: "shallow" }, config);
+    this._initDirtyTracking({ type: "deep" }, config);
   }
 
   private _configChanged(ev: CustomEvent): void {
-    this._config = ev.detail.value;
-    this._updateDirtyState(ev.detail.value);
+    this._config = { ...this._config!, ports: ev.detail.value };
+    this._updateDirtyState(this._config);
+  }
+
+  private _isolationToggled(ev: Event): void {
+    const enabled = (ev.target as HaSwitch).checked;
+    this._config = {
+      ...this._config!,
+      isolation: enabled
+        ? {
+            interface:
+              this.addon.network_isolation?.interface ||
+              this._isolationInterfaces?.[0]?.interface ||
+              "",
+            ipv4: this.addon.network_isolation?.ipv4 || "",
+          }
+        : null,
+    };
+    this._updateDirtyState(this._config);
+  }
+
+  private _isolationInterfaceChanged(ev: HaSelectSelectEvent): void {
+    this._config = {
+      ...this._config!,
+      isolation: { ...this._config!.isolation!, interface: ev.detail.value },
+    };
+    this._updateDirtyState(this._config);
+  }
+
+  private _isolationAddressChanged(ev: Event): void {
+    this._config = {
+      ...this._config!,
+      isolation: {
+        ...this._config!.isolation!,
+        ipv4: (ev.target as HaInput).value || "",
+      },
+    };
+    this._updateDirtyState(this._config);
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
@@ -163,9 +309,13 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
     }
 
     const button = ev.currentTarget as any;
-    const data: HassioAddonSetOptionParams = {
-      network: null,
-    };
+    const data: HassioAddonSetOptionParams = {};
+    if (this.addon.network) {
+      data.network = null;
+    }
+    if (this.addon.network_isolation_available) {
+      data.network_isolation = null;
+    }
 
     try {
       await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
@@ -203,14 +353,36 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
     const button = ev.currentTarget as any;
 
     this._error = undefined;
-    const networkconfiguration: Record<string, number | null> = {};
-    Object.entries(this._config!).forEach(([key, value]) => {
-      networkconfiguration[key] = value ?? null;
-    });
+    const { ports, isolation } = this._config!;
 
-    const data: HassioAddonSetOptionParams = {
-      network: networkconfiguration,
-    };
+    if (this.addon.network_isolation_available && isolation) {
+      if (!isolation.interface) {
+        this._error = this.hass.localize(
+          "ui.panel.config.apps.configuration.network.isolation.no_interface"
+        );
+        button.actionError();
+        return;
+      }
+      if (!isValidIpv4(isolation.ipv4)) {
+        this._error = this.hass.localize(
+          "ui.panel.config.apps.configuration.network.isolation.invalid_ip"
+        );
+        button.actionError();
+        return;
+      }
+    }
+
+    const data: HassioAddonSetOptionParams = {};
+    if (this.addon.network) {
+      const networkconfiguration: Record<string, number | null> = {};
+      Object.entries(ports).forEach(([key, value]) => {
+        networkconfiguration[key] = value ?? null;
+      });
+      data.network = networkconfiguration;
+    }
+    if (this.addon.network_isolation_available) {
+      data.network_isolation = isolation;
+    }
 
     try {
       await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
@@ -253,6 +425,21 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
         }
         .show-optional {
           padding: 16px;
+        }
+        ha-form + .isolation {
+          margin-top: var(--ha-space-6);
+        }
+        .isolation .secondary {
+          margin-top: var(--ha-space-1);
+          color: var(--secondary-text-color);
+        }
+        .isolation ha-select,
+        .isolation ha-input {
+          display: block;
+          width: 100%;
+        }
+        .isolation ha-input {
+          margin-top: var(--ha-space-4);
         }
       `,
     ];

@@ -2904,6 +2904,7 @@
             "current_version": "Current version: {version}",
             "changelog": "Changelog",
             "hostname": "Hostname",
+            "network_isolation_ip": "IP address on your network",
             "visit_app_page": "Visit {name} page for more details.",
             "start": "Start",
             "stop": "Stop",
@@ -3078,7 +3079,16 @@
               "header": "Network",
               "introduction": "Configure the network ports that this app uses.",
               "show_disabled": "Show disabled ports",
-              "reset_defaults": "Reset to defaults"
+              "reset_defaults": "Reset to defaults",
+              "isolation": {
+                "title": "Isolated network access",
+                "description": "Run this app with its own IP address on a selected network instead of sharing the host network. Ingress and the web UI link keep working as before.",
+                "interface": "Network interface",
+                "ip_address": "IP address",
+                "ip_address_helper": "Choose an address outside the DHCP range of your router, or reserve it in your router.",
+                "no_interface": "Select a network interface to use isolated network access.",
+                "invalid_ip": "Enter a valid IPv4 address, like 192.168.1.50."
+              }
             },
             "audio": {
               "header": "Audio",

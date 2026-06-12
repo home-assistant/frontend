@@ -44,6 +44,15 @@ interface AddonTranslations {
   configuration?: Record<string, AddonFieldTranslation>;
 }
 
+export interface AddonNetworkIsolationParams {
+  interface: string;
+  ipv4: string;
+}
+
+export interface AddonNetworkIsolation extends AddonNetworkIsolationParams {
+  driver: "macvlan";
+}
+
 export interface HassioAddonInfo {
   advanced: boolean;
   available: boolean;
@@ -100,6 +109,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   long_description: null | string;
   machine: any;
   network_description: null | Record<string, string>;
+  network_isolation: AddonNetworkIsolation | null;
+  network_isolation_available: boolean;
   network: null | Record<string, number>;
   options: Record<string, unknown>;
   privileged: any;
@@ -143,6 +154,7 @@ export interface HassioAddonSetOptionParams {
   auto_update?: boolean;
   ingress_panel?: boolean;
   network?: Record<string, unknown> | null;
+  network_isolation?: AddonNetworkIsolationParams | null;
   watchdog?: boolean;
 }
 
