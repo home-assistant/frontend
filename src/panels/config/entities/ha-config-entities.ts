@@ -1178,9 +1178,17 @@ export class HaConfigEntities extends LitElement {
       return;
     }
 
+    // Only the *set* of entity ids matters for the list below. A plain state
+    // value change on an existing entity cannot add an "entity without unique
+    // id", so detecting a newly added entity lets us skip the (potentially
+    // large) rebuild on every state update, which fires constantly.
+    const stateEntityAdded =
+      changedProps.has("hass") &&
+      (!oldHass ||
+        Object.keys(this.hass.states).some((id) => !(id in oldHass.states)));
+
     if (
-      (changedProps.has("hass") &&
-        (!oldHass || oldHass.states !== this.hass.states)) ||
+      stateEntityAdded ||
       changedProps.has("_entities") ||
       changedProps.has("_entitySources") ||
       changedProps.has("_exposedEntities")
