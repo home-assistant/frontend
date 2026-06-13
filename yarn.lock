@@ -1352,14 +1352,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/lint@npm:6.9.6, @codemirror/lint@npm:^6.0.0":
-  version: 6.9.6
-  resolution: "@codemirror/lint@npm:6.9.6"
+"@codemirror/lint@npm:6.9.7, @codemirror/lint@npm:^6.0.0":
+  version: 6.9.7
+  resolution: "@codemirror/lint@npm:6.9.7"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.42.0"
     crelt: "npm:^1.0.5"
-  checksum: 10/70ed80eaec81038c014a89d8b4ba17396562b7dd541882fa981e2f81f7cdcbd67725a7c055c7772ece3bd052a276976d873f71746fc550b1aede7e18faa32f93
+  checksum: 10/f1af8295e1741a8d0c155cd7552c35d21c859d8848571fa084f5a6f2a50cac51ed25f04e423cab0f094e11b4828a54de4383a97b6b8cf6a242c5941034bffa04
   languageName: node
   linkType: hard
 
@@ -1383,15 +1383,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/view@npm:6.43.0, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.37.0, @codemirror/view@npm:^6.42.0":
-  version: 6.43.0
-  resolution: "@codemirror/view@npm:6.43.0"
+"@codemirror/view@npm:6.43.1, @codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.37.0, @codemirror/view@npm:^6.42.0":
+  version: 6.43.1
+  resolution: "@codemirror/view@npm:6.43.1"
   dependencies:
     "@codemirror/state": "npm:^6.6.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/7cfeebe1507f71a960dfb2d5152400507d28ed5827680bc73e0a093bfba9a796c2e559c960fd2b046379fac31ff0b59663dfc481baadf1d6ececd71eb5b48014
+  checksum: 10/a867a26cb511f161a8ef60b2574afae2561cfe94abd822e0af2a6e4bd94d1ff46f0d5085428c89f6f6b80a52482c8d23f80362173491903f49fb93462a216b95
   languageName: node
   linkType: hard
 
@@ -1885,73 +1885,73 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@html-eslint/core@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@html-eslint/core@npm:0.61.0"
+"@html-eslint/core@npm:^0.62.0":
+  version: 0.62.0
+  resolution: "@html-eslint/core@npm:0.62.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.61.0"
+    "@html-eslint/types": "npm:^0.62.0"
     html-standard: "npm:^0.0.13"
-  checksum: 10/a464a9d06c808dd13bfb6a5b050d7bd0d51e6d43b239337036296ab01a4e45fac2a98bc8bb0b47894333b57ec35f970d07a5ecafc1be7d116a88801899cac301
+  checksum: 10/8899d20b7b5e0723e0f030b6007855f442633f6eea29835b260aa5f678076d88fb5b2c697b4238b868a5c4c5f929330767022c53a98c3ef21d06b84fa1466431
   languageName: node
   linkType: hard
 
-"@html-eslint/eslint-plugin@npm:0.61.0":
-  version: 0.61.0
-  resolution: "@html-eslint/eslint-plugin@npm:0.61.0"
+"@html-eslint/eslint-plugin@npm:0.62.0":
+  version: 0.62.0
+  resolution: "@html-eslint/eslint-plugin@npm:0.62.0"
   dependencies:
     "@eslint/plugin-kit": "npm:^0.4.1"
-    "@html-eslint/core": "npm:^0.61.0"
-    "@html-eslint/parser": "npm:^0.61.0"
-    "@html-eslint/template-parser": "npm:^0.61.0"
-    "@html-eslint/template-syntax-parser": "npm:^0.61.0"
-    "@html-eslint/types": "npm:^0.61.0"
+    "@html-eslint/core": "npm:^0.62.0"
+    "@html-eslint/parser": "npm:^0.62.0"
+    "@html-eslint/template-parser": "npm:^0.62.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.62.0"
+    "@html-eslint/types": "npm:^0.62.0"
     "@rviscomi/capo.js": "npm:^2.1.0"
     html-standard: "npm:^0.0.13"
   peerDependencies:
     eslint: ">=8.0.0 || ^10.0.0-0"
-  checksum: 10/ef2a4e550ecea2d8dea786a09a68ffbd3cd7fae0d9bed05e012e37dcffaa358aaeba5e61ecae2029e7522e14d709971511d065ada3fd1dd1c0caed8496f4bc3d
+  checksum: 10/3a103e6ea40632a562d9123a3645685c0d986f0ae1794df4d6a074fa40f2ce934059ad49df92d58c00c34d1d59ee7491fa68a74dd3c821a9f9d6105e8f4a608c
   languageName: node
   linkType: hard
 
-"@html-eslint/parser@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@html-eslint/parser@npm:0.61.0"
+"@html-eslint/parser@npm:^0.62.0":
+  version: 0.62.0
+  resolution: "@html-eslint/parser@npm:0.62.0"
   dependencies:
-    "@html-eslint/template-syntax-parser": "npm:^0.61.0"
-    "@html-eslint/types": "npm:^0.61.0"
+    "@html-eslint/template-syntax-parser": "npm:^0.62.0"
+    "@html-eslint/types": "npm:^0.62.0"
     css-tree: "npm:^3.1.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/d0b864b159e2b69ed602a00e1cdfd842b1a67bbc85d5105376090a146da313f47107fb6a265219a9be1e60bcf97f5500637c91aac9abd4b25a873c0d69a5e237
+  checksum: 10/dd248ab52caa4d00c20d57ec9d62c7b677479a0a04809e33324f50bfe0b5cfcafa8d5a84a70eb3d90af2b8c72adc694578033c1d2b3365942eec4dd1c2e432ea
   languageName: node
   linkType: hard
 
-"@html-eslint/template-parser@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@html-eslint/template-parser@npm:0.61.0"
+"@html-eslint/template-parser@npm:^0.62.0":
+  version: 0.62.0
+  resolution: "@html-eslint/template-parser@npm:0.62.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.61.0"
+    "@html-eslint/types": "npm:^0.62.0"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/f44c7e9903366fc0f02c89fdc096e66f26f61d3be5fb88f582d39a5f3d6d831c33a60162005e5fbd643c70368929c6b568c97c5bc2fece5e789c9c2ab7aa9c27
+  checksum: 10/6da6d9ce0fd894a6eeda4d9f3a439aa65281cd84124b724709ea1d09c7bac5c391fef99115e35d2e1e1d3bf2821e315c83a50400c3dd537ef5c266a598ae43d9
   languageName: node
   linkType: hard
 
-"@html-eslint/template-syntax-parser@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@html-eslint/template-syntax-parser@npm:0.61.0"
+"@html-eslint/template-syntax-parser@npm:^0.62.0":
+  version: 0.62.0
+  resolution: "@html-eslint/template-syntax-parser@npm:0.62.0"
   dependencies:
-    "@html-eslint/types": "npm:^0.61.0"
-  checksum: 10/d0b5c3fea0906e23c5cf98efcaee36933cfb2a436a6f3a09aa07854cced4616166827a83853b7f7f6dede0b398cb73dc290086ed0d030781fb68324f0ebcc7d4
+    "@html-eslint/types": "npm:^0.62.0"
+  checksum: 10/a6cd8729be8cca7e923278ffa5ba2c3b9898a9e0d55dc6565319fb411a00079ff64ef702f15dca9be4891d33d720a5f5893fc2b55040d3ad29d91c4754d9af97
   languageName: node
   linkType: hard
 
-"@html-eslint/types@npm:^0.61.0":
-  version: 0.61.0
-  resolution: "@html-eslint/types@npm:0.61.0"
+"@html-eslint/types@npm:^0.62.0":
+  version: 0.62.0
+  resolution: "@html-eslint/types@npm:0.62.0"
   dependencies:
     "@types/css-tree": "npm:^2.3.11"
     "@types/estree": "npm:^1.0.6"
     es-html-parser: "npm:0.3.1"
-  checksum: 10/6c57f3363dc938ecd0cdfce4bd0f38c29aa05a4f80449af9450f2514f8692739af3c4e82a5764707aa2fb92b8442efdc80b2cebfec96060e8957ef5ac72d1aee
+  checksum: 10/4021626f1d075adf3785f6df5496495ffe25ded68dd09eab99dddd6a175e3346aea4370c69cf8f176fc8325510ee8c85733c086c215a6d9f455b55e1cc0fcfdb
   languageName: node
   linkType: hard
 
@@ -8442,10 +8442,10 @@ __metadata:
     "@codemirror/lang-jinja": "npm:6.0.1"
     "@codemirror/lang-yaml": "npm:6.1.3"
     "@codemirror/language": "npm:6.12.3"
-    "@codemirror/lint": "npm:6.9.6"
+    "@codemirror/lint": "npm:6.9.7"
     "@codemirror/search": "npm:6.7.0"
     "@codemirror/state": "npm:6.6.0"
-    "@codemirror/view": "npm:6.43.0"
+    "@codemirror/view": "npm:6.43.1"
     "@date-fns/tz": "npm:1.5.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
@@ -8465,7 +8465,7 @@ __metadata:
     "@fullcalendar/luxon3": "npm:6.1.20"
     "@fullcalendar/timegrid": "npm:6.1.20"
     "@home-assistant/webawesome": "npm:3.7.0-ha.0"
-    "@html-eslint/eslint-plugin": "npm:0.61.0"
+    "@html-eslint/eslint-plugin": "npm:0.62.0"
     "@lezer/highlight": "npm:1.2.3"
     "@lit-labs/motion": "npm:1.1.0"
     "@lit-labs/observers": "npm:2.1.0"
@@ -8570,7 +8570,7 @@ __metadata:
     node-vibrant: "npm:4.0.4"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
-    prettier: "npm:3.8.3"
+    prettier: "npm:3.8.4"
     punycode: "npm:2.3.1"
     qr-scanner: "npm:1.4.2"
     qrcode: "npm:1.5.4"
@@ -11350,12 +11350,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:3.8.3":
-  version: 3.8.3
-  resolution: "prettier@npm:3.8.3"
+"prettier@npm:3.8.4":
+  version: 3.8.4
+  resolution: "prettier@npm:3.8.4"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10/4b3b12cbb29e4c96bed936e5d070167552500c18d37676fb3e0caae6199c42860662608e4dc116230698f6e2bb0267ef2548158224c92d40f188d309d72fdd6f
+  checksum: 10/54684a3cc6689238692b29fab541c01934af7677be94c02293ba49981a1ac121c8bebe2a865f0c3b963e99d208f847c53aed354cc0ce8750e2d45791d64506c5
   languageName: node
   linkType: hard
 

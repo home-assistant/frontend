@@ -29,6 +29,7 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
       <div
         class=${classMap({
           "top-app-bar-fixed-adjust": true,
+          "ha-scrollbar": true,
           "top-app-bar-fixed-adjust--pane": this.pane,
         })}
       >
@@ -130,12 +131,7 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
 
       .top-app-bar-fixed-adjust--pane {
         display: flex;
-        height: calc(
-          100vh - var(--total-top-app-bar-height, 0px) - var(
-              --safe-area-inset-top,
-              0px
-            ) - var(--safe-area-inset-bottom, 0px)
-        );
+        overflow: hidden;
       }
 
       .pane {
@@ -167,6 +163,7 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
         position: relative;
         flex: 1;
         height: 100%;
+        min-width: 0;
       }
 
       .top-app-bar-fixed-adjust--pane .content {
