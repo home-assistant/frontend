@@ -137,7 +137,7 @@
     "@octokit/plugin-retry": "8.1.0",
     "@octokit/rest": "22.0.1",
     "@rsdoctor/rspack-plugin": "1.5.12",
-    "@rspack/core": "2.0.6",
+    "@rspack/core": "2.0.8",
     "@rspack/dev-server": "2.0.3",
     "@types/chromecast-caf-receiver": "6.0.26",
     "@types/chromecast-caf-sender": "1.0.11",
