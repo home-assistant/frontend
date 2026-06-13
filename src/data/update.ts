@@ -231,6 +231,24 @@ export const computeUpdateStateDisplay = (
   const state = stateObj.state;
   const attributes = stateObj.attributes;
 
+  // An install can be in progress even when the state is "off", e.g. when
+  // downgrading firmware (installed_version is newer than latest_version).
+  // Show the installing status regardless of state in that case.
+  if (updateIsInstalling(stateObj)) {
+    const supportsProgress =
+      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
+      attributes.update_percentage !== null;
+    if (supportsProgress) {
+      return hass.localize("ui.card.update.installing_with_progress", {
+        progress: formatNumber(attributes.update_percentage!, hass.locale, {
+          maximumFractionDigits: attributes.display_precision,
+          minimumFractionDigits: attributes.display_precision,
+        }),
+      });
+    }
+    return hass.localize("ui.card.update.installing");
+  }
+
   if (state === "off") {
     const isSkipped =
       attributes.latest_version &&
@@ -239,23 +257,6 @@ export const computeUpdateStateDisplay = (
       return attributes.latest_version!;
     }
     return hass.formatEntityState(stateObj);
-  }
-
-  if (state === "on") {
-    if (updateIsInstalling(stateObj)) {
-      const supportsProgress =
-        supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-        attributes.update_percentage !== null;
-      if (supportsProgress) {
-        return hass.localize("ui.card.update.installing_with_progress", {
-          progress: formatNumber(attributes.update_percentage!, hass.locale, {
-            maximumFractionDigits: attributes.display_precision,
-            minimumFractionDigits: attributes.display_precision,
-          }),
-        });
-      }
-      return hass.localize("ui.card.update.installing");
-    }
   }
 
   return hass.formatEntityState(stateObj);
