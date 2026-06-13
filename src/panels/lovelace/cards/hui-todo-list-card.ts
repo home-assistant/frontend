@@ -1047,7 +1047,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       cursor: move; /* fallback if grab cursor is unsupported */
       cursor: grab;
       height: 24px;
-      padding: 16px 4px;
+      padding: 0 4px;
     }
 
     .deleteItemButton {
