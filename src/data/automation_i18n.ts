@@ -1124,6 +1124,9 @@ const describeLegacyCondition = (
         hasAttribute: attribute !== "" ? "true" : "false",
         attribute: attribute,
         numberOfEntities: entities.length,
+        // With "any", entities are joined with "or", which takes a singular
+        // verb in English even for multiple entities ("A or B is ...").
+        matchAny: condition.match === "any" ? "true" : "false",
         entities:
           condition.match === "any"
             ? formatListWithOrs(hass.locale, entities)
