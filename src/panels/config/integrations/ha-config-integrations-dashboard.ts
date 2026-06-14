@@ -1048,7 +1048,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           gap: var(--ha-space-4);
           padding: var(--ha-space-4);
           margin: var(--ha-space-2);
-          margin-bottom: var(--ha-space-18);
         }
         .empty-message {
           margin: auto;
