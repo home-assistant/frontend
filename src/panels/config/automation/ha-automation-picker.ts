@@ -251,6 +251,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       if (filteredAutomations === null) {
         return [];
       }
+      // Build lookups once instead of scanning the registries for every row.
+      const entityRegLookup = new Map(
+        entityReg.map((reg) => [reg.entity_id, reg])
+      );
+      const labelLookup = labelReg
+        ? new Map(labelReg.map((label) => [label.label_id, label]))
+        : undefined;
       return (
         filteredAutomations
           ? automations.filter((automation) =>
@@ -258,13 +265,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )
           : automations
       ).map((automation) => {
-        const entityRegEntry = entityReg.find(
-          (reg) => reg.entity_id === automation.entity_id
-        );
+        const entityRegEntry = entityRegLookup.get(automation.entity_id);
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
         const label_entries = (labels || [])
-          .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
+          .map((lbl) => labelLookup!.get(lbl)!)
           .filter(Boolean);
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
