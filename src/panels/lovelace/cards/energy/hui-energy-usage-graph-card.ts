@@ -181,15 +181,10 @@ export class HuiEnergyUsageGraphCard
   }
 
   private _formatTotal = (total: number) =>
-    total > 0
-      ? this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
-          { num: formatNumber(total, this.hass.locale) }
-        )
-      : this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_returned",
-          { num: formatNumber(-total, this.hass.locale) }
-        );
+    this.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
+      { num: formatNumber(total, this.hass.locale) }
+    );
 
   private _createOptions = memoizeOne(
     (
