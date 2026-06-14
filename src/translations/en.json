@@ -8735,7 +8735,6 @@
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
-              "total_returned": "Total exported {num} kWh",
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
