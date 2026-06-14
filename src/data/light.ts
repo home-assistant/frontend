@@ -43,11 +43,6 @@ export const lightSupportsColorMode = (
   mode: LightColorMode
 ) => entity.attributes.supported_color_modes?.includes(mode) || false;
 
-export const lightIsInColorMode = (entity: LightEntity) =>
-  (entity.attributes.color_mode &&
-    modesSupportingColor.includes(entity.attributes.color_mode)) ||
-  false;
-
 export const lightSupportsColor = (entity: LightEntity) =>
   entity.attributes.supported_color_modes?.some((mode) =>
     modesSupportingColor.includes(mode)
@@ -159,5 +154,3 @@ export const computeDefaultFavoriteColors = (
 
   return colors;
 };
-
-export const formatTempColor = (value: number) => `${value} K`;
