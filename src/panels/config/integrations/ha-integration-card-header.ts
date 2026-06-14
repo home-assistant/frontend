@@ -8,8 +8,8 @@ import { domainToName } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
-@customElement("ha-integration-header")
-export class HaIntegrationHeader extends LitElement {
+@customElement("ha-integration-card-header")
+export class HaIntegrationCardHeader extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public error?: string;
@@ -151,6 +151,6 @@ export class HaIntegrationHeader extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-integration-header": HaIntegrationHeader;
+    "ha-integration-card-header": HaIntegrationCardHeader;
   }
 }

@@ -17,7 +17,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-card-footer";
-import "./ha-integration-header";
+import "./ha-integration-card-header";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -60,7 +60,7 @@ export class HaIntegrationCard extends LitElement {
         >
           <ha-ripple></ha-ripple>
           <div class="card-content">
-            <ha-integration-header
+            <ha-integration-card-header
               .hass=${this.hass}
               .domain=${this.domain}
               .localizedDomainName=${this.items[0].localized_domain_name}
@@ -80,7 +80,7 @@ export class HaIntegrationCard extends LitElement {
                     )
                   : undefined}
               .manifest=${this.manifest}
-            ></ha-integration-header>
+            ></ha-integration-card-header>
             <ha-integration-card-footer
               .hass=${this.hass}
               .manifest=${this.manifest}
