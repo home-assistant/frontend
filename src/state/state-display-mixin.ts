@@ -35,31 +35,46 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
       }
     }
 
+    // Sensor numeric device classes, fetched once. Until they load we format
+    // with an empty list so entities render formatted instead of raw.
+    private _sensorNumericDeviceClasses?: string[];
+
+    // Guards against a slower, stale computation overwriting a newer one.
+    private _formatFunctionsVersion = 0;
+
     private _updateFormatFunctions = async () => {
-      if (!this.hass || !this.hass.config) {
+      if (!this.hass?.config) {
         return;
       }
 
-      let sensorNumericDeviceClasses: string[] = [];
-
-      if (isComponentLoaded(this.hass.config, "sensor")) {
-        try {
-          sensorNumericDeviceClasses = (
-            await getSensorNumericDeviceClasses(this.hass)
-          ).numeric_device_classes;
-        } catch (_err: any) {
-          // ignore
-        }
+      // Don't block formatting on the device classes round-trip: format with
+      // what we have now and refine once it resolves.
+      if (
+        this._sensorNumericDeviceClasses === undefined &&
+        isComponentLoaded(this.hass.config, "sensor")
+      ) {
+        getSensorNumericDeviceClasses(this.hass)
+          .then((res) => {
+            this._sensorNumericDeviceClasses = res.numeric_device_classes;
+            return this._setFormatFunctions(res.numeric_device_classes);
+          })
+          .catch(() => {
+            // Keep the empty list; it's retried on the next update.
+          });
       }
 
-      const {
-        formatEntityState,
-        formatEntityStateToParts,
-        formatEntityAttributeName,
-        formatEntityAttributeValue,
-        formatEntityAttributeValueToParts,
-        formatEntityName,
-      } = await computeFormatFunctions(
+      await this._setFormatFunctions(this._sensorNumericDeviceClasses ?? []);
+    };
+
+    private _setFormatFunctions = async (
+      sensorNumericDeviceClasses: string[]
+    ) => {
+      if (!this.hass?.config) {
+        return;
+      }
+
+      const version = ++this._formatFunctionsVersion;
+      const formatFunctions = await computeFormatFunctions(
         this.hass.localize,
         this.hass.locale,
         this.hass.config,
@@ -69,14 +84,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         this.hass.floors,
         sensorNumericDeviceClasses
       );
-      this._updateHass({
-        formatEntityState,
-        formatEntityStateToParts,
-        formatEntityAttributeName,
-        formatEntityAttributeValue,
-        formatEntityAttributeValueToParts,
-        formatEntityName,
-      });
+
+      // Ignore the result if a newer computation has since started.
+      if (version === this._formatFunctionsVersion) {
+        this._updateHass(formatFunctions);
+      }
     };
   }
   return StateDisplayMixin;
