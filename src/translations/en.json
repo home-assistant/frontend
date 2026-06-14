@@ -600,7 +600,7 @@
           }
         },
         "template": {
-          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' ).",
+          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (for example, '{{ states(sensor.test) > 0 }}').",
           "learn_more": "Learn more about templating"
         },
         "text": {
@@ -1892,7 +1892,7 @@
         "editor": {
           "name": "Name",
           "icon": "Icon",
-          "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "icon_error": "Icons should be in the format 'prefix:iconname', like 'mdi:home'",
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
           "calendar_color": "Calendar color",
@@ -4280,7 +4280,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
-              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (e.g. `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (like `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
               "cost_entity_helper_energy": "energy",
               "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
@@ -4309,7 +4309,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
-              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (like `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water consumption",
@@ -4439,7 +4439,7 @@
         },
         "url": {
           "caption": "Home Assistant URL",
-          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (e.g. to play text-to-speech or other hosted media).",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (for example, to play text-to-speech or other hosted media).",
           "internal_url_label": "Local network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
@@ -9196,7 +9196,7 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (for example, on mobile devices)",
               "background": "Background options",
               "background_enabled": "Background",
               "background_enabled_helper": "Display a colored background behind the section",
@@ -10009,7 +10009,7 @@
               "name": "Tile",
               "description": "This card gives you a quick overview of an entity. It allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
-              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
+              "color_helper": "Inactive state (for example, off or closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",
