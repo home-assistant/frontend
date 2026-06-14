@@ -1103,6 +1103,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         .title .breadcrumb {
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-m);
+          font-family: var(--ha-font-family-heading, inherit);
           line-height: 16px;
           --mdc-icon-size: 16px;
           padding: var(--ha-space-1);
