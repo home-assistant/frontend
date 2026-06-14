@@ -1259,11 +1259,14 @@ ${rejected
       return;
     }
 
-    const entityIds = Object.keys(this._entitySource);
+    // Use a Set for O(1) lookups: this runs on every state change, and the
+    // filter scans every state, so an array `includes` here is O(states ×
+    // sources).
+    const entityIds = new Set(Object.keys(this._entitySource));
 
     const newHelpers = Object.values(this.hass!.states).filter(
       (entity) =>
-        entityIds.includes(entity.entity_id) ||
+        entityIds.has(entity.entity_id) ||
         isHelperDomain(computeStateDomain(entity))
     );
 
