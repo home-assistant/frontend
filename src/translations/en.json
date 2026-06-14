@@ -1898,6 +1898,8 @@
           "calendar_color": "Calendar color",
           "associated_zone": "Associated zone",
           "entity_id": "Entity ID",
+          "copy_entity_id": "Copy entity ID",
+          "restore_entity_id": "Restore entity ID",
           "unit_of_measurement": "Unit of measurement",
           "precipitation_unit": "Precipitation unit",
           "precision": "Display precision",
