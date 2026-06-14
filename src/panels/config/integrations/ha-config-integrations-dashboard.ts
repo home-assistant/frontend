@@ -27,7 +27,6 @@ import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
-import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
@@ -162,8 +161,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @state() private _searchParams = new URLSearchParams(window.location.search);
 
   @state() private _filter: string = history.state?.filter || "";
-
-  @state() private _diagnosticHandlers?: Record<string, boolean>;
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
@@ -386,16 +383,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._handleRouteChanged();
     this._scanUSBDevices();
     this._scanImprovDevices();
-
-    if (isComponentLoaded(this.hass.config, "diagnostics")) {
-      fetchDiagnosticHandlers(this.hass).then((infos) => {
-        const handlers = {};
-        for (const info of infos) {
-          handlers[info.domain] = info.handlers.config_entry;
-        }
-        this._diagnosticHandlers = handlers;
-      });
-    }
   }
 
   protected updated(changed: PropertyValues<this>) {
@@ -650,9 +637,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
                     .domainEntities=${this._domainEntities[domain] || []}
-                    .supportsDiagnostics=${this._diagnosticHandlers
-                      ? this._diagnosticHandlers[domain]
-                      : false}
                     .logInfo=${this._logInfos
                       ? this._logInfos[domain]
                       : nothing}
