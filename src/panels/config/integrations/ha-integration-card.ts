@@ -4,9 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
@@ -65,36 +63,36 @@ export class HaIntegrationCard extends LitElement {
           class="ripple-anchor"
         >
           <ha-ripple></ha-ripple>
-          <ha-integration-header
-            .hass=${this.hass}
-            .domain=${this.domain}
-            .localizedDomainName=${this.items[0].localized_domain_name}
-            .error=${ERROR_STATES.includes(entryState)
-              ? this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.state.${entryState}`
-                )
-              : undefined}
-            .warning=${entryState !== "loaded" &&
-            !ERROR_STATES.includes(entryState)
-              ? this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.state.${entryState}`
-                )
-              : debugLoggingEnabled
+          <div class="card-content">
+            <ha-integration-header
+              .hass=${this.hass}
+              .domain=${this.domain}
+              .localizedDomainName=${this.items[0].localized_domain_name}
+              .error=${ERROR_STATES.includes(entryState)
                 ? this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                    `ui.panel.config.integrations.config_entry.state.${entryState}`
                   )
                 : undefined}
-            .manifest=${this.manifest}
-          >
-          </ha-integration-header>
+              .warning=${entryState !== "loaded" &&
+              !ERROR_STATES.includes(entryState)
+                ? this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.state.${entryState}`
+                  )
+                : debugLoggingEnabled
+                  ? this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                    )
+                  : undefined}
+              .manifest=${this.manifest}
+            ></ha-integration-header>
+            ${this._renderSingleEntry()}
+          </div>
         </a>
-
-        ${this._renderSingleEntry()}
       </ha-card>
     `;
   }
 
-  private _renderSingleEntry(): TemplateResult {
+  private _renderSingleEntry(): TemplateResult | typeof nothing {
     const devices = this._getDevices(this.items, this.hass.devices);
     const entitiesCount = devices.length
       ? 0
@@ -106,49 +104,46 @@ export class HaIntegrationCard extends LitElement {
 
     const services = !devices.some((device) => device.entry_type !== "service");
 
+    const hasIcons =
+      Boolean(this.manifest && !this.manifest.is_built_in) ||
+      Boolean(this.manifest?.iot_class?.startsWith("cloud_")) ||
+      Boolean(
+        this.manifest &&
+        !this.manifest.config_flow &&
+        !this.items.every((itm) => itm.source === "system")
+      );
+
+    let countBadge: TemplateResult | typeof nothing = nothing;
+    if (devices.length > 0) {
+      countBadge = html`<span class="count-badge"
+        >${this.hass.localize(
+          `ui.panel.config.integrations.config_entry.${services ? "services" : "devices"}`,
+          { count: devices.length }
+        )}</span
+      >`;
+    } else if (entitiesCount > 0) {
+      countBadge = html`<span class="count-badge"
+        >${this.hass.localize(
+          `ui.panel.config.integrations.config_entry.entities`,
+          { count: entitiesCount }
+        )}</span
+      >`;
+    } else if (this.items.find((itm) => itm.source !== "yaml")) {
+      countBadge = html`<span class="count-badge"
+        >${this.hass.localize(
+          `ui.panel.config.integrations.config_entry.entries`,
+          {
+            count: this.items.filter((itm) => itm.source !== "yaml").length,
+          }
+        )}</span
+      >`;
+    }
+
+    if (countBadge === nothing && !hasIcons) return nothing;
+
     return html`
-      <div class="card-actions">
-        ${devices.length > 0
-          ? html`<ha-button
-              appearance="plain"
-              href=${devices.length === 1 &&
-              // Always link to device page for protocol integrations to show Add Device button
-              // @ts-expect-error
-              !PROTOCOL_INTEGRATIONS.includes(this.domain)
-                ? `/config/devices/device/${devices[0].id}`
-                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
-            >
-              ${this.hass.localize(
-                `ui.panel.config.integrations.config_entry.${
-                  services ? "services" : "devices"
-                }`,
-                { count: devices.length }
-              )}
-            </ha-button>`
-          : entitiesCount > 0
-            ? html`<ha-button
-                appearance="plain"
-                href=${`/config/entities?historyBack=1&domain=${this.domain}`}
-              >
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entities`,
-                  { count: entitiesCount }
-                )}
-              </ha-button>`
-            : this.items.find((itm) => itm.source !== "yaml")
-              ? html`<ha-button
-                  appearance="plain"
-                  href=${`/config/integrations/integration/${this.domain}`}
-                >
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entries`,
-                    {
-                      count: this.items.filter((itm) => itm.source !== "yaml")
-                        .length,
-                    }
-                  )}
-                </ha-button>`
-              : html`<div class="spacer"></div>`}
+      <div class="footer">
+        ${countBadge}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
             ? html`<span
@@ -300,16 +295,24 @@ export class HaIntegrationCard extends LitElement {
         ha-card {
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
           height: 100%;
           overflow: hidden;
+          cursor: pointer;
           --state-color: var(--divider-color, #e0e0e0);
           --state-message-color: var(--state-color);
         }
+        ha-card:hover {
+          background-color: var(--ha-color-fill-neutral-quiet-resting);
+        }
         .ripple-anchor {
-          flex-grow: 1;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
           position: relative;
           outline: none;
+          /* ha-ripple adds a hover overlay that conflicts with ha-card:hover background change;
+             neutralize it so hover matches the apps card (background-color only) */
+          --ha-ripple-hover-color: transparent;
         }
         .ripple-anchor:focus-visible:before {
           position: absolute;
@@ -319,13 +322,20 @@ export class HaIntegrationCard extends LitElement {
           background-color: var(--secondary-text-color);
           opacity: 0.08;
         }
-        ha-integration-header {
-          height: 100%;
+        .card-content {
+          padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
         }
-        .card-actions {
+        .footer {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          border-top: var(--ha-border-width-sm) solid
+            var(--ha-color-border-neutral-quiet);
+          padding-top: var(--ha-space-2);
+        }
+        .count-badge {
+          color: var(--ha-color-text-secondary);
+          font-size: var(--ha-font-size-m);
         }
         .debug-logging {
           --state-color: var(--warning-color);
@@ -357,22 +367,16 @@ export class HaIntegrationCard extends LitElement {
           --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--text-primary-color);
         }
-        .content {
-          flex: 1;
-          --mdc-list-side-padding-right: 20px;
-          --mdc-list-side-padding-left: 24px;
-          --mdc-list-item-graphic-margin: 24px;
-        }
         a {
           text-decoration: none;
           color: var(--primary-text-color);
         }
         .icons {
           display: flex;
+          margin-inline-start: auto;
         }
         .icon {
           color: var(--label-badge-grey);
-          padding: 4px;
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;
@@ -387,9 +391,6 @@ export class HaIntegrationCard extends LitElement {
           width: 24px;
           height: 24px;
           display: block;
-        }
-        .spacer {
-          height: 36px;
         }
       `,
     ];

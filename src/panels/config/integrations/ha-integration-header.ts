@@ -2,7 +2,6 @@ import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
@@ -69,12 +68,6 @@ export class HaIntegrationHeader extends LitElement {
                 `
               : nothing}
         </div>
-        <ha-icon-next
-          class="header-button"
-          .label=${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.configure"
-          )}
-        ></ha-icon-next>
       </div>
     `;
   }
@@ -88,16 +81,14 @@ export class HaIntegrationHeader extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      padding-bottom: var(--ha-space-2);
+    }
     .header {
       display: flex;
       align-items: center;
-      position: relative;
-      padding-top: 16px;
-      padding-bottom: 16px;
-      padding-inline-start: 16px;
-      padding-inline-end: 8px;
       direction: var(--direction);
-      box-sizing: border-box;
       min-width: 0;
     }
     .header img {
@@ -107,16 +98,12 @@ export class HaIntegrationHeader extends LitElement {
       height: 40px;
       direction: var(--direction);
     }
-    .header .info {
-      position: relative;
+    .info {
       display: flex;
       flex-direction: column;
       flex: 1;
       align-self: center;
       min-width: 0;
-    }
-    ha-icon-next {
-      color: var(--secondary-text-color);
     }
     .primary {
       overflow: hidden;
