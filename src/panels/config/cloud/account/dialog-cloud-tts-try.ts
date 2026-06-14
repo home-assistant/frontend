@@ -92,7 +92,6 @@ export class DialogTryTts extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.cloud.account.tts.dialog.header"
@@ -101,7 +100,7 @@ export class DialogTryTts extends LitElement {
       >
         <div>
           <ha-textarea
-            autogrow
+            resize="auto"
             id="message"
             autofocus
             .label=${this.hass.localize(
@@ -168,14 +167,15 @@ export class DialogTryTts extends LitElement {
     }
     this._message = message;
 
-    if (this._target === "browser") {
+    const target = this._target || "browser";
+    if (target === "browser") {
       // We create the audio element here + do a play, because iOS requires it to be done by user action
       const audio = new Audio();
       audio.play();
       this._playBrowser(message, audio);
     } else {
       this.hass.callService("tts", "cloud_say", {
-        entity_id: this._target,
+        entity_id: target,
         message,
       });
     }

@@ -57,7 +57,9 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
       if (descriptionContent === "") {
         hasDescription = false;
       } else {
-        descriptionContent = marked(descriptionContent).replace(/`/g, "\\`");
+        descriptionContent = marked(descriptionContent)
+          .replace(/\\/g, "\\\\")
+          .replace(/`/g, "\\`");
         fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
         fs.writeFileSync(
           path.resolve(galleryBuild, `${pageId}-description.ts`),

@@ -1,7 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -49,17 +49,18 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
 
   @state() private _displayActions?: string[];
 
+  @query("ha-form") private _form?: HaForm;
+
   public async focus() {
     await this.updateComplete;
-    this.renderRoot.querySelector("ha-form")?.focus();
+    this._form?.focus();
   }
 
   public reportValidity(): boolean {
-    const form = this.renderRoot.querySelector<HaForm>("ha-form");
-    return form ? form.reportValidity() : true;
+    return this._form ? this._form.reportValidity() : true;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     if (changedProps.has("data")) {
       const displayActions = this._displayActions ?? NO_ACTIONS;
@@ -128,7 +129,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
               @wa-select=${this._handleAddAction}
               @closed=${stopPropagation}
             >
-              <ha-button slot="trigger" appearance="filled" size="small">
+              <ha-button slot="trigger" appearance="filled" size="s">
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.localize?.("ui.components.form-optional-actions.add") ||
                 "Add interaction"}

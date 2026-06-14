@@ -137,7 +137,7 @@ export class HaBaseTimeInput extends LitElement {
   @property({ attribute: "placeholder-labels", type: Boolean })
   public placeholderLabels = false;
 
-  @queryAll("ha-input") private _inputs?: HaInput[];
+  @queryAll("ha-input") private _inputs?: NodeListOf<HaInput>;
 
   static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -145,7 +145,9 @@ export class HaBaseTimeInput extends LitElement {
   };
 
   public reportValidity(): boolean {
-    return this._inputs?.every((input) => input.reportValidity()) ?? true;
+    const inputs = this._inputs;
+    if (!inputs) return true;
+    return [...inputs].every((input) => input.reportValidity());
   }
 
   protected render(): TemplateResult {
@@ -399,7 +401,7 @@ export class HaBaseTimeInput extends LitElement {
 
     .time-separator,
     ha-icon-button {
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
+      background-color: var(--ha-color-form-background);
       color: var(--ha-color-text-secondary);
       border-bottom: 1px solid var(--ha-color-border-neutral-loud);
       box-sizing: border-box;

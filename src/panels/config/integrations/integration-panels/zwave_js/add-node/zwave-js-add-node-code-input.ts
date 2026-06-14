@@ -1,11 +1,11 @@
-import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 
 import { fireEvent } from "../../../../../../common/dom/fire_event";
-import type { HaTextField } from "../../../../../../components/ha-textfield";
+import type { HaInput } from "../../../../../../components/input/ha-input";
 
-import "../../../../../../components/ha-textfield";
 import "../../../../../../components/ha-alert";
+import "../../../../../../components/input/ha-input";
 
 @customElement("zwave-js-add-node-code-input")
 export class ZWaveJsAddNodeCodeInput extends LitElement {
@@ -27,14 +27,14 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
       ${this.error
         ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
         : nothing}
-      <ha-textfield
+      <ha-input
         .placeholder=${this.placeholder}
         .value=${this.value}
         @input=${this._handleChange}
         @keyup=${this._handleKeyup}
         required
         autofocus
-      ></ha-textfield>
+      ></ha-input>
       ${this.referenceKey
         ? html`<div>
             <span>${this.value.padEnd(5, "·")}</span>${this.referenceKey}
@@ -50,24 +50,24 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
   }
 
   private _handleChange(ev: InputEvent): void {
-    const inputElement = ev.target as HaTextField;
+    const inputElement = ev.target as HaInput;
     if (
       this.numeric &&
-      (isNaN(Number(inputElement.value)) || inputElement.value.length > 5)
+      (isNaN(Number(inputElement.value)) || inputElement.value!.length > 5)
     ) {
       inputElement.value = this.value;
       return;
     }
 
-    this.value = (ev.target as HaTextField).value;
+    this.value = (ev.target as HaInput).value ?? "";
 
     fireEvent(this, "value-changed", {
-      value: (ev.target as HaTextField).value,
+      value: (ev.target as HaInput).value,
     });
   }
 
   static styles = css`
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
     ha-alert {

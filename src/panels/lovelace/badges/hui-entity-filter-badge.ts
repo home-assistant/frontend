@@ -79,7 +79,7 @@ export class HuiEntityFilterBadge
     return false;
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
     if (!this.hass || !this._configEntities) {
       return;
@@ -100,7 +100,7 @@ export class HuiEntityFilterBadge
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entityConf.entity)
         );
-        return checkConditionsMet(conditionWithEntity, this.hass!);
+        return checkConditionsMet(conditionWithEntity, this.hass!, {});
       }
 
       const filters = entityConf.state_filter ?? this._config!.state_filter;

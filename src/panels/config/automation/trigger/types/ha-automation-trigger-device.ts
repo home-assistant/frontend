@@ -64,7 +64,7 @@ export class HaDeviceTrigger extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
       return true;
     }
@@ -117,11 +117,11 @@ export class HaDeviceTrigger extends LitElement {
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
               .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
+                this.hass.localize,
                 this.trigger
               )}
               .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
+                this.hass.localize,
                 this.trigger
               )}
               @value-changed=${this._extraFieldsChanged}
@@ -141,7 +141,7 @@ export class HaDeviceTrigger extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (!changedProps.has("trigger")) {
       return;
     }
@@ -158,7 +158,7 @@ export class HaDeviceTrigger extends LitElement {
     const trigger = this.trigger;
 
     this._capabilities = trigger.domain
-      ? await fetchDeviceTriggerCapabilities(this.hass, trigger)
+      ? await fetchDeviceTriggerCapabilities(this.hass.callWS, trigger)
       : undefined;
 
     if (this._capabilities) {
@@ -212,6 +212,10 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

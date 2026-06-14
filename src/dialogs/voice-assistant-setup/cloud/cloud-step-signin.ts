@@ -216,9 +216,6 @@ export class CloudStepSignin extends LitElement {
       :host {
         display: block;
       }
-      ha-textfield {
-        display: block;
-      }
     `,
   ];
 }

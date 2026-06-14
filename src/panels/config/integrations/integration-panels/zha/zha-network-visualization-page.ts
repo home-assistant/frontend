@@ -4,12 +4,14 @@ import type {
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type { NetworkData } from "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -38,7 +40,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @state()
   private _devices: ZHADevice[] = [];
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  @state() private _searchFilter = "";
+
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
     if (this.hass) {
@@ -55,12 +59,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
+        ${this.narrow
+          ? html`<div slot="header">${this._renderInputSearch()}</div>`
+          : nothing}
         <ha-network-graph
           .hass=${this.hass}
+          .searchFilter=${this._searchFilter}
           .data=${this._networkData}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
+          ${!this.narrow ? this._renderInputSearch("search") : nothing}
           <ha-icon-button
             slot="button"
             class="refresh-button"
@@ -75,6 +85,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
     `;
   }
 
+  private _renderInputSearch(slot = "") {
+    return html`<ha-input-search
+      appearance="outlined"
+      slot=${slot}
+      .value=${this._searchFilter}
+      @input=${this._handleSearchChange}
+    ></ha-input-search>`;
+  }
+
   private async _fetchData() {
     this._devices = await fetchDevices(this.hass!);
     this._networkData = createZHANetworkChartData(
@@ -84,7 +103,35 @@ export class ZHANetworkVisualizationPage extends LitElement {
     );
   }
 
-  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const device = this._devices.find((d) => d.ieee === nodeId);
+    if (!device) {
+      return [];
+    }
+    const attributes: string[] = [];
+    if (device.user_given_name) {
+      attributes.push(device.user_given_name);
+    }
+    if (device.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device.model) {
+      attributes.push(device.model);
+    }
+    if (device.device_type) {
+      attributes.push(device.device_type);
+    }
+    if (device.nwk != null) {
+      attributes.push(formatAsPaddedHex(device.nwk));
+    }
+    return attributes;
+  };
+
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
+  private _tooltipFormatter = (params: TopLevelFormatterParams) => {
     const { dataType, data, name } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
@@ -94,40 +141,45 @@ export class ZHANetworkVisualizationPage extends LitElement {
       const sourceName = this._networkData.nodes.find(
         (node) => node.id === source
       )!.name;
-      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
-
       const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
-      if (reverseValue) {
-        return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
-      }
-      return tooltipText;
+      return html`${sourceName} →
+      ${targetName}${value
+        ? html` <b>LQI:</b> ${value}`
+        : nothing}${reverseValue
+        ? html`<br />${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`
+        : nothing}`;
     }
     const device = this._devices.find((d) => d.ieee === (data as any).id);
     if (!device) {
-      return name;
-    }
-    let label = `<b>IEEE: </b>${device.ieee}`;
-    label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b>${device.device_type.replace("_", " ")}`;
-    if (device.nwk != null) {
-      label += `<br><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
-    }
-    if (device.manufacturer != null && device.model != null) {
-      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device")}: </b>${device.manufacturer} ${device.model}`;
-    } else {
-      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_not_in_db")}</b>`;
+      return html`${name}`;
     }
     const haDevice = this.hass.devices[device.device_reg_id] as
       | DeviceRegistryEntry
       | undefined;
-    if (haDevice) {
-      const area = getDeviceContext(haDevice, this.hass).area;
-      if (area) {
-        label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
-      }
-    }
-    return label;
+    const area = haDevice
+      ? getDeviceArea(haDevice, this.hass.areas)
+      : undefined;
+    return html`<b>IEEE: </b>${device.ieee}<br /><b
+        >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
+      >${device.device_type.replace("_", " ")}${device.nwk != null
+        ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
+        : nothing}${device.manufacturer != null && device.model != null
+        ? html`<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zha.visualization.device"
+              )}: </b
+            >${device.manufacturer} ${device.model}`
+        : html`<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zha.visualization.device_not_in_db"
+              )}</b
+            >`}${area
+        ? html`<br /><b
+              >${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b
+            >${area.name}`
+        : nothing}`;
   };
 
   private async _refreshTopology(): Promise<void> {
@@ -153,6 +205,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
       css`
         ha-network-graph {
           height: 100%;
+        }
+        [slot="header"] {
+          display: flex;
+          align-items: center;
+        }
+        ha-input-search {
+          flex: 1;
         }
       `,
     ];

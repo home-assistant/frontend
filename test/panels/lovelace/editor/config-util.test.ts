@@ -1,7 +1,10 @@
 import { assert, describe, it } from "vitest";
 
 import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
+import type { LovelaceSectionConfig } from "../../../../src/data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import {
+  duplicateSection,
   moveCardToContainer,
   swapView,
 } from "../../../../src/panels/lovelace/editor/config-util";
@@ -139,5 +142,86 @@ describe("swapView", () => {
       ],
     };
     assert.deepEqual(expected, result);
+  });
+});
+
+describe("duplicateSection", () => {
+  it("inserts a clone immediately after the original section", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          sections: [
+            { type: "grid", cards: [{ type: "button" }] },
+            { type: "grid", cards: [{ type: "heading" }] },
+          ],
+        },
+      ],
+    };
+
+    const result = duplicateSection(config, 0, 0);
+
+    const expected: LovelaceConfig = {
+      views: [
+        {
+          sections: [
+            { type: "grid", cards: [{ type: "button" }] },
+            { type: "grid", cards: [{ type: "button" }] },
+            { type: "grid", cards: [{ type: "heading" }] },
+          ],
+        },
+      ],
+    };
+    assert.deepEqual(expected, result);
+  });
+
+  it("preserves all cards and properties within the cloned section", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          sections: [
+            {
+              type: "grid",
+              column_span: 2,
+              cards: [{ type: "button" }, { type: "heading" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = duplicateSection(config, 0, 0);
+    const view = result.views[0] as LovelaceViewConfig;
+
+    assert.equal(view.sections!.length, 2);
+    assert.deepEqual(view.sections![0], view.sections![1]);
+  });
+
+  it("produces a deep clone, changes do not affect the original", () => {
+    const config: LovelaceConfig = {
+      views: [
+        {
+          sections: [
+            {
+              type: "grid",
+              column_span: 2,
+              cards: [{ type: "button" }, { type: "heading" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    const result = duplicateSection(config, 0, 0);
+    const resultSections = (result.views[0] as LovelaceViewConfig).sections!;
+
+    assert.equal(resultSections.length, 2);
+    assert.deepEqual(resultSections[0], resultSections[1]);
+
+    (resultSections[1] as LovelaceSectionConfig).cards![0].type = "heading";
+
+    assert.equal(
+      (resultSections[0] as LovelaceSectionConfig).cards![0].type,
+      "button"
+    );
   });
 });

@@ -6,7 +6,6 @@ import presetEnv from "@babel/preset-env";
 import compilationTargets from "@babel/helper-compilation-targets";
 import coreJSCompat from "core-js-compat";
 import { logPlugin } from "@babel/preset-env/lib/debug.js";
-// eslint-disable-next-line import/no-relative-packages
 import shippedPolyfills from "../node_modules/babel-plugin-polyfill-corejs3/lib/shipped-proposals.js";
 import { babelOptions } from "./bundle.cjs";
 

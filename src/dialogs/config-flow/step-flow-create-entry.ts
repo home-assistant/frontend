@@ -10,7 +10,8 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
-import "../../components/ha-button";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
@@ -22,12 +23,16 @@ import {
   type EntityRegistryDisplayEntry,
 } from "../../data/entity/entity_registry";
 import { domainToName } from "../../data/integration";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+
+interface DeviceTarget {
+  device: string;
+}
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -61,12 +66,12 @@ class StepFlowCreateEntry extends LitElement {
       )
   );
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadDomains();
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
       return;
     }
@@ -162,21 +167,21 @@ class StepFlowCreateEntry extends LitElement {
                               : nothing}
                           </div>
                         </div>
-                        <ha-textfield
+                        <ha-input
                           .label=${localize(
                             "ui.panel.config.integrations.config_flow.device_name"
                           )}
                           .placeholder=${computeDeviceNameDisplay(
                             device,
-                            this.hass
+                            this.hass.localize,
+                            this.hass.states
                           )}
                           .value=${this._deviceUpdate[device.id]?.name ??
                           computeDeviceName(device)}
                           @change=${this._deviceNameChanged}
                           .device=${device.id}
-                        ></ha-textfield>
+                        ></ha-input>
                         <ha-area-picker
-                          .hass=${this.hass}
                           .device=${device.id}
                           .value=${this._deviceUpdate[device.id]?.area ??
                           device.area_id ??
@@ -189,18 +194,16 @@ class StepFlowCreateEntry extends LitElement {
                 </div>
               `}
       </div>
-      <div class="buttons">
-        <ha-button @click=${this._flowDone}
-          >${localize(
-            `ui.panel.config.integrations.config_flow.${
-              !this.devices.length || Object.keys(this._deviceUpdate).length
-                ? "finish"
-                : "finish_skip"
-            }`
-          )}</ha-button
-        >
-      </div>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_deviceUpdate")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        hasPendingUpdates: Object.keys(this._deviceUpdate).length > 0,
+      });
+    }
   }
 
   private async _loadDomains() {
@@ -221,18 +224,20 @@ class StepFlowCreateEntry extends LitElement {
           return updateDeviceRegistryEntry(this.hass, deviceId, {
             name_by_user: update.name,
             area_id: update.area,
-          }).catch((err: any) => {
+          }).catch((err: unknown) => {
+            const message =
+              err instanceof Error ? err.message : "Unknown error";
             showAlertDialog(this, {
               text: this.hass.localize(
                 "ui.panel.config.integrations.config_flow.error_saving_device",
-                { error: err.message }
+                { error: message }
               ),
             });
           });
         }
       );
       await Promise.allSettled(deviceUpdates);
-      const entityUpdates: Promise<any>[] = [];
+      const entityUpdates: Promise<unknown>[] = [];
       const entityIds: string[] = [];
       renamedDevices.forEach((deviceId) => {
         const entities = this._deviceEntities(
@@ -278,8 +283,15 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  private async _areaPicked(ev: CustomEvent) {
-    const picker = ev.currentTarget as any;
+  public finish(): Promise<void> {
+    return this._flowDone();
+  }
+
+  private async _areaPicked(ev: ValueChangedEvent<string>) {
+    const picker = ev.currentTarget as DeviceTarget | null;
+    if (!picker) {
+      return;
+    }
     const device = picker.device;
     const area = ev.detail.value;
 
@@ -290,8 +302,11 @@ class StepFlowCreateEntry extends LitElement {
     this.requestUpdate("_deviceUpdate");
   }
 
-  private _deviceNameChanged(ev): void {
-    const picker = ev.currentTarget as any;
+  private _deviceNameChanged(ev: InputEvent): void {
+    const picker = ev.currentTarget as (HaInput & DeviceTarget) | null;
+    if (!picker) {
+      return;
+    }
     const device = picker.device;
     const name = picker.value;
 
@@ -308,22 +323,13 @@ class StepFlowCreateEntry extends LitElement {
       css`
         .devices {
           display: flex;
-          margin: -4px;
-          max-height: 600px;
-          overflow-y: auto;
+          gap: var(--ha-space-2);
           flex-direction: column;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .devices {
-            /* header - margin content - footer */
-            max-height: calc(100vh - 52px - 20px - 52px);
-          }
         }
         .device {
           border: 1px solid var(--divider-color);
           padding: 6px;
           border-radius: var(--ha-border-radius-sm);
-          margin: 4px;
           display: inline-block;
         }
         .device-info {
@@ -343,17 +349,11 @@ class StepFlowCreateEntry extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-textfield,
         ha-area-picker {
           display: block;
         }
-        ha-textfield {
-          margin: 8px 0;
-        }
-        .buttons > *:last-child {
-          margin-left: auto;
-          margin-inline-start: auto;
-          margin-inline-end: initial;
+        ha-input {
+          margin: var(--ha-space-2) 0;
         }
         .error {
           color: var(--error-color);

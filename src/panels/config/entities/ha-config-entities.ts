@@ -23,7 +23,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -32,10 +31,7 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   deleteEntity,
@@ -59,8 +55,10 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
@@ -112,6 +110,14 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import {
+  getAreaTableColumn,
+  getCreatedAtTableColumn,
+  getDomainTableColumn,
+  getEntityIdTableColumn,
+  getLabelsTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import type { Helper } from "../helpers/const";
 import { isHelperDomain } from "../helpers/const";
@@ -119,19 +125,10 @@ import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
-  getEntityIdTableColumn,
-  getDomainTableColumn,
-  getAreaTableColumn,
-  getLabelsTableColumn,
-  getCreatedAtTableColumn,
-  getModifiedAtTableColumn,
-} from "../common/data-table-columns";
-import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -202,13 +199,15 @@ export class HaConfigEntities extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
 
   @state() private _filteredItems: DataTableFiltersItems = {};
 
@@ -255,6 +254,8 @@ export class HaConfigEntities extends LitElement {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  private _fromUrl = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -348,12 +349,10 @@ export class HaConfigEntities extends LitElement {
                         : undefined
                     )}
                     slot="item-icon"
-                    .hass=${this.hass}
                     .stateObj=${entry.entity}
                   ></ha-state-icon>
                 `
               : html`<ha-domain-icon
-                  .hass=${this.hass}
                   .domain=${computeDomain(entry.entity_id)}
                 ></ha-domain-icon>`,
       },
@@ -693,9 +692,11 @@ export class HaConfigEntities extends LitElement {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
-        const entityName = entity
-          ? computeEntityName(entity, this.hass.entities)
-          : computeEntityEntryName(entry as EntityRegistryEntry);
+        const entityName = computeEntityEntryName(
+          entry as EntityRegistryEntry,
+          this.hass.devices,
+          entity
+        );
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
@@ -755,7 +756,6 @@ export class HaConfigEntities extends LitElement {
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this.hass.entities[entityId]?.labels.includes(label.label_id)
         );
@@ -773,11 +773,11 @@ export class HaConfigEntities extends LitElement {
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label
-            style=${color ? `--color: ${color}` : ""}
+            .color=${label.color}
             .description=${label.description}
+            class="text-ellipsis"
           >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
@@ -1014,7 +1014,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-domains>
         <ha-filter-integrations
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1054,14 +1053,10 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         ${includeAddDeviceFab
-          ? html`<ha-fab
-              .label=${this.hass.localize("ui.panel.config.devices.add_device")}
-              extended
-              @click=${this._addDevice}
-              slot="fab"
-            >
-              <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </ha-fab>`
+          ? html`<ha-button size="l" @click=${this._addDevice} slot="fab">
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.panel.config.devices.add_device")}
+            </ha-button>`
           : nothing}
       </hass-tabs-subpage-data-table>
     `;
@@ -1080,6 +1075,9 @@ export class HaConfigEntities extends LitElement {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   protected firstUpdated() {
@@ -1097,6 +1095,7 @@ export class HaConfigEntities extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
@@ -1104,14 +1103,16 @@ export class HaConfigEntities extends LitElement {
     const label = this._searchParms.get("label");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!domain && !configEntry && !label && !device) {
+    if (!area && !domain && !configEntry && !label && !device) {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
       "ha-filter-states": [],
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
       "ha-filter-integrations": domain ? [domain] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
@@ -1124,6 +1125,9 @@ export class HaConfigEntities extends LitElement {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _fetchExposedEntities = async () => {
@@ -1164,6 +1168,7 @@ export class HaConfigEntities extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
 
@@ -1173,9 +1178,17 @@ export class HaConfigEntities extends LitElement {
       return;
     }
 
+    // Only the *set* of entity ids matters for the list below. A plain state
+    // value change on an existing entity cannot add an "entity without unique
+    // id", so detecting a newly added entity lets us skip the (potentially
+    // large) rebuild on every state update, which fires constantly.
+    const stateEntityAdded =
+      changedProps.has("hass") &&
+      (!oldHass ||
+        Object.keys(this.hass.states).some((id) => !(id in oldHass.states)));
+
     if (
-      (changedProps.has("hass") &&
-        (!oldHass || oldHass.states !== this.hass.states)) ||
+      stateEntityAdded ||
       changedProps.has("_entities") ||
       changedProps.has("_entitySources") ||
       changedProps.has("_exposedEntities")
@@ -1672,16 +1685,16 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-dropdown::part(menu),
-        ha-dropdown::part(submenu) {
+        ha-dropdown::part(menu) {
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
+        }
+        ha-dropdown-item::part(submenu) {
+          max-width: calc(60vw - var(--ha-space-8));
+          max-height: calc(100vh - var(--ha-space-8));
+          overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
       `,
     ];

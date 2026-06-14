@@ -73,7 +73,7 @@ export class HuiCardOptions extends LitElement {
       : 1;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (!changedProps.has("path") || !this.path) {
       return;
     }

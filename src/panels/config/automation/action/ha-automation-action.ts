@@ -16,7 +16,9 @@ import {
 } from "../../../../data/action";
 import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -31,12 +33,16 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 ) {
   @property({ type: Boolean }) public root = false;
 
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
+
   @property({ attribute: false }) public actions!: Action[];
 
   @property({ attribute: false }) public highlightedActions?: Action[];
 
   @queryAll("ha-automation-action-row")
   private _actionRowElements?: HaAutomationActionRow[];
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Action[] {
     return this.actions;
@@ -77,6 +83,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
                 .narrow=${this.narrow}
                 .disabled=${this.disabled}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
@@ -113,7 +120,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
               .disabled=${this.disabled}
               @click=${this._addActionDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -126,8 +133,36 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (!this.hass) {
+      return;
+    }
+
+    const addActionTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      "action"
+    );
+
+    if (changedProps.has("actions") && addActionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.actions.length === 0 &&
+      addActionTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addActionDialog());
+    } else if (this._openedAddDialogFromQuery && !addActionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
 
     if (
       changedProps.has("actions") &&
@@ -161,6 +196,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
 
         if (mode === "new") {
           row.expand();
+          row.markAsNew();
         }
 
         if (!this.optionsInSidebar) {
@@ -191,13 +227,16 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
       type: "action",
       add: this._addAction,
       clipboardItem: getAutomationActionType(this._clipboard?.action),
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
     });
   }
 
   private _addAction = (action: string, target?: HassServiceTarget) => {
     let actions: Action[];
     if (action === PASTE_VALUE) {
-      actions = this.actions.concat(deepClone(this._clipboard!.action));
+      actions = this.actions.concat(deepClone(this._clipboard!.action!));
     } else if (action in VIRTUAL_ACTIONS) {
       actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
     } else if (isDynamic(action)) {

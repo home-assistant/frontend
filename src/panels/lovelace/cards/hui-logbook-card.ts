@@ -158,7 +158,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
-  protected update(changedProperties) {
+  protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
     if (changedProperties.has("layout")) {
       this.toggleAttribute("ispanel", this.layout === "panel");
@@ -189,7 +189,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    if (!isComponentLoaded(this.hass, "logbook")) {
+    if (!isComponentLoaded(this.hass.config, "logbook")) {
       return html`
         <hui-warning .hass=${this.hass}>
           ${this.hass.localize("ui.components.logbook.not_loaded", {

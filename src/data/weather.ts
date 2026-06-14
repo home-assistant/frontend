@@ -21,6 +21,7 @@ import {
   mdiWeatherWindyVariant,
 } from "@mdi/js";
 import type {
+  Connection,
   HassConfig,
   HassEntityAttributeBase,
   HassEntityBase,
@@ -28,6 +29,13 @@ import type {
 import type { SVGTemplateResult, TemplateResult } from "lit";
 import { css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
+import {
+  UNIT_HPA,
+  UNIT_IN,
+  UNIT_INHG,
+  UNIT_KM,
+  UNIT_MM,
+} from "../common/const";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { round } from "../common/number/round";
 import "../components/ha-svg-icon";
@@ -55,6 +63,16 @@ export interface ForecastAttribute {
   pressure?: number;
   wind_speed?: string;
 }
+
+export type ForecastPrecipitationType = "amount" | "probability";
+
+export const getForecastPrecipitation = (
+  entry: ForecastAttribute,
+  type: ForecastPrecipitationType
+) =>
+  type === "probability"
+    ? entry.precipitation_probability
+    : entry.precipitation;
 
 interface WeatherEntityAttributes extends HassEntityAttributeBase {
   attribution?: string;
@@ -234,12 +252,12 @@ export const getWeatherUnit = (
     case "precipitation":
       return (
         stateObj.attributes.precipitation_unit ||
-        (lengthUnit === "km" ? "mm" : "in")
+        (lengthUnit === UNIT_KM ? UNIT_MM : UNIT_IN)
       );
     case "pressure":
       return (
         stateObj.attributes.pressure_unit ||
-        (lengthUnit === "km" ? "hPa" : "inHg")
+        (lengthUnit === UNIT_KM ? UNIT_HPA : UNIT_INHG)
       );
     case "apparent_temperature":
     case "dew_point":
@@ -667,12 +685,12 @@ export const getForecast = (
 };
 
 export const subscribeForecast = (
-  hass: HomeAssistant,
+  connection: Connection,
   entity_id: string,
   forecast_type: ModernForecastType,
   callback: (forecastevent: ForecastEvent) => void
 ) =>
-  hass.connection.subscribeMessage<ForecastEvent>(callback, {
+  connection.subscribeMessage<ForecastEvent>(callback, {
     type: "weather/subscribe_forecast",
     forecast_type,
     entity_id,

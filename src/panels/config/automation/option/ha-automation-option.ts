@@ -92,7 +92,7 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
           <div class="buttons">
             <ha-button
               appearance="filled"
-              size="small"
+              size="s"
               .disabled=${this.disabled}
               @click=${this._addOption}
             >
@@ -104,7 +104,7 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
             ${!this.showDefaultActions
               ? html`<ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   .disabled=${this.disabled}
                   @click=${this._showDefaultActions}
                 >
@@ -120,7 +120,7 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     if (

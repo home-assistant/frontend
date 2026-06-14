@@ -13,6 +13,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-dialog";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { PanelMutableParams } from "../../../../data/panel";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { PanelDetailDialogParams } from "./show-dialog-panel-detail";
@@ -25,7 +26,9 @@ interface PanelDetailData {
 }
 
 @customElement("dialog-panel-detail")
-export class DialogPanelDetail extends LitElement {
+export class DialogPanelDetail extends DirtyStateProviderMixin<PanelDetailData>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: PanelDetailDialogParams;
@@ -48,6 +51,7 @@ export class DialogPanelDetail extends LitElement {
       show_in_sidebar: params.showInSidebar,
     };
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
@@ -69,9 +73,8 @@ export class DialogPanelDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.panel_detail.edit_panel"
         )}
@@ -115,7 +118,7 @@ export class DialogPanelDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updatePanel}
-            .disabled=${titleInvalid || this._submitting}
+            .disabled=${titleInvalid || this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize(
               "ui.panel.config.lovelace.dashboards.detail.update"
@@ -172,6 +175,7 @@ export class DialogPanelDetail extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     this._error = undefined;
     this._data = ev.detail.value;
+    this._updateDirtyState(this._data!);
   }
 
   private async _handleError(err: any) {
@@ -229,6 +233,7 @@ export class DialogPanelDetail extends LitElement {
       if (Object.keys(updates).length > 0) {
         await this._params!.updatePanel(updates);
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._handleError(err);

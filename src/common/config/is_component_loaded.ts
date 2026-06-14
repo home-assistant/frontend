@@ -2,6 +2,6 @@ import type { HomeAssistant } from "../../types";
 
 /** Return if a component is loaded. */
 export const isComponentLoaded = (
-  hass: HomeAssistant,
+  hassConfig: HomeAssistant["config"],
   component: string
-): boolean => hass && hass.config.components.includes(component);
+): boolean => hassConfig && hassConfig.components.includes(component);

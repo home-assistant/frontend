@@ -22,7 +22,6 @@ import {
 } from "lit";
 import { classMap } from "lit/directives/class-map";
 
-// eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../components/chips/ha-assist-chip";
@@ -126,7 +125,7 @@ class ErrorLogCard extends LitElement {
     const streaming =
       this._streamSupported &&
       this.provider &&
-      isComponentLoaded(this.hass, "hassio") &&
+      isComponentLoaded(this.hass.config, "hassio") &&
       this._loadingState !== "loading";
 
     const hasBoots = this._streamSupported && Array.isArray(this._boots);
@@ -275,7 +274,7 @@ class ErrorLogCard extends LitElement {
                   !this._scrolledToBottomController.value) ||
                 false,
             })}"
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._scrollToBottom}
           >
@@ -297,7 +296,7 @@ class ErrorLogCard extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._streamSupported = atLeastVersion(
@@ -323,7 +322,7 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);
@@ -332,7 +331,7 @@ class ErrorLogCard extends LitElement {
     this._scrolledToTopController.observe(this._scrollTopMarkerElement!);
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
     if (this._newLogsIndicator && this._scrolledToBottomController.value) {
@@ -403,7 +402,7 @@ class ErrorLogCard extends LitElement {
 
     const streamLogs =
       this._streamSupported &&
-      isComponentLoaded(this.hass, "hassio") &&
+      isComponentLoaded(this.hass.config, "hassio") &&
       this.provider;
 
     try {
@@ -512,7 +511,7 @@ class ErrorLogCard extends LitElement {
         // fallback to old method
         this._streamSupported = false;
         let logs = "";
-        if (isComponentLoaded(this.hass, "hassio") && this.provider) {
+        if (isComponentLoaded(this.hass.config, "hassio") && this.provider) {
           logs = await fetchHassioLogsLegacy(this.hass, this.provider);
         } else {
           logs = await fetchErrorLog(this.hass);
@@ -647,7 +646,10 @@ class ErrorLogCard extends LitElement {
   };
 
   private async _loadBoots() {
-    if (this._streamSupported && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      this._streamSupported &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
       try {
         const { data } = await fetchHassioBoots(this.hass);
         const boots = Object.keys(data.boots)
@@ -762,17 +764,10 @@ class ErrorLogCard extends LitElement {
       padding-top: 16px;
       padding-bottom: 16px;
       overflow: auto;
-      min-height: var(--error-log-card-height, calc(100vh - 244px));
-      max-height: var(--error-log-card-height, calc(100vh - 244px));
+      min-height: var(--error-log-card-height, calc(100vh - 255px));
+      max-height: var(--error-log-card-height, calc(100vh - 255px));
       border-top: 1px solid var(--divider-color);
       direction: ltr;
-    }
-
-    @media all and (max-width: 870px) {
-      .error-log {
-        min-height: var(--error-log-card-height, calc(100vh - 190px));
-        max-height: var(--error-log-card-height, calc(100vh - 190px));
-      }
     }
 
     .error-log > div {

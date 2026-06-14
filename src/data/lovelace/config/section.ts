@@ -14,11 +14,12 @@ export interface LovelaceBaseSectionConfig {
   disabled?: boolean;
   column_span?: number;
   row_span?: number;
-  background?: LovelaceSectionBackgroundConfig;
+  background?: boolean | LovelaceSectionBackgroundConfig;
   /**
    * @deprecated Use heading card instead.
    */
   title?: string;
+  theme?: string;
 }
 
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
@@ -33,6 +34,15 @@ export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig
 export type LovelaceSectionRawConfig =
   | LovelaceSectionConfig
   | LovelaceStrategySectionConfig;
+
+export function resolveSectionBackground(
+  background: boolean | LovelaceSectionBackgroundConfig | undefined
+): LovelaceSectionBackgroundConfig | undefined {
+  if (typeof background === "boolean") {
+    return background ? {} : undefined;
+  }
+  return background;
+}
 
 export function isStrategySection(
   section: LovelaceSectionRawConfig

@@ -72,7 +72,7 @@ class MoreInfoClimate extends LitElement {
       .attributeValue=${value}
     ></ha-attribute-icon>`;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     if (
       changedProps.has("stateObj") &&
       this.stateObj &&

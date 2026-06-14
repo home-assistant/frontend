@@ -41,20 +41,22 @@ const cardConfigStruct = assign(
   })
 );
 
-const SUB_SCHEMA = [
-  { name: "entity", selector: { entity: {} }, required: true },
-  {
-    name: "name",
-    selector: { entity_name: {} },
-    context: {
-      entity: "entity",
+const SUB_FORM = {
+  schema: [
+    { name: "entity", selector: { entity: {} }, required: true },
+    {
+      name: "name",
+      selector: { entity_name: {} },
+      context: {
+        entity: "entity",
+      },
     },
-  },
-  {
-    name: "color",
-    selector: { ui_color: {} },
-  },
-] as const;
+    {
+      name: "color",
+      selector: { ui_color: {} },
+    },
+  ] as const,
+};
 
 const SCHEMA = [{ name: "title", selector: { text: {} } }] as const;
 
@@ -127,7 +129,7 @@ export class HuiDistributionCardEditor
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${SUB_SCHEMA}
+          .form=${SUB_FORM}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubElementChanged}
         >

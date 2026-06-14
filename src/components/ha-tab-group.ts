@@ -13,6 +13,24 @@ export class HaTabGroup extends TabGroup {
 
   @property({ attribute: "tab-only", type: Boolean }) tabOnly = true;
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    // Prevent the tab group from consuming Alt+Arrow and Cmd+Arrow keys,
+    // which browsers use for back/forward navigation.
+    this.addEventListener("keydown", this._handleKeyDown, true);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener("keydown", this._handleKeyDown, true);
+  }
+
+  private _handleKeyDown = (event: KeyboardEvent) => {
+    if (event.altKey || event.metaKey) {
+      event.stopPropagation();
+    }
+  };
+
   protected override handleClick(event: MouseEvent) {
     if (this._dragScrollController.scrolled) {
       return;

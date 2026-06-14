@@ -94,7 +94,7 @@ class HaAddonPicker extends LitElement {
 
   private async _getApps() {
     try {
-      if (isComponentLoaded(this.hass, "hassio")) {
+      if (isComponentLoaded(this.hass.config, "hassio")) {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = addonsInfo.addons
           .filter((addon) => addon.version)

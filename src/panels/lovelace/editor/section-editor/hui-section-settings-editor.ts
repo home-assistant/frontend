@@ -3,17 +3,18 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import "../../../../components/ha-form/ha-form";
 import {
   DEFAULT_SECTION_BACKGROUND_OPACITY,
+  resolveSectionBackground,
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../types";
 
 interface SettingsData {
@@ -21,6 +22,7 @@ interface SettingsData {
   background_enabled?: boolean;
   background_color?: string;
   background_opacity?: number;
+  theme?: string;
 }
 
 @customElement("hui-section-settings-editor")
@@ -90,18 +92,26 @@ export class HuiDialogEditSection extends LitElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
+        {
+          name: "theme",
+          selector: {
+            theme: {},
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
   render() {
     const backgroundEnabled = this.config.background !== undefined;
+    const background = resolveSectionBackground(this.config.background);
 
     const data: SettingsData = {
       column_span: this.config.column_span || 1,
       background_enabled: backgroundEnabled,
-      background_color: this.config.background?.color ?? "default",
+      background_color: background?.color ?? "default",
       background_opacity:
-        this.config.background?.opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
+        background?.opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
+      theme: this.config.theme,
     };
 
     const schema = this._schema(
@@ -146,15 +156,23 @@ export class HuiDialogEditSection extends LitElement {
     };
 
     if (newData.background_enabled) {
+      const hasCustomColor =
+        newData.background_color !== undefined &&
+        newData.background_color !== "default";
+
       newConfig.background = {
-        ...(newData.background_color && newData.background_color !== "default"
-          ? { color: newData.background_color }
-          : {}),
-        opacity:
-          newData.background_opacity ?? DEFAULT_SECTION_BACKGROUND_OPACITY,
+        ...(hasCustomColor ? { color: newData.background_color } : {}),
+        opacity: newData.background_opacity!,
       };
     } else {
       delete newConfig.background;
+    }
+
+    // Only include theme if it's set.
+    if (newData.theme) {
+      newConfig.theme = newData.theme;
+    } else {
+      delete newConfig.theme;
     }
 
     fireEvent(this, "value-changed", { value: newConfig });

@@ -41,56 +41,58 @@ const cardConfigStruct = assign(
   })
 );
 
-const SUB_SCHEMA = [
-  { name: "entity", selector: { entity: {} }, required: true },
-  {
-    name: "name",
-    selector: { entity_name: {} },
-    context: {
-      entity: "entity",
-    },
-  },
-  {
-    type: "grid",
-    name: "",
-    schema: [
-      {
-        name: "icon",
-        selector: {
-          icon: {},
-        },
-        context: {
-          icon_entity: "entity",
-        },
-      },
-      { name: "show_last_changed", selector: { boolean: {} } },
-      { name: "show_state", selector: { boolean: {} }, default: true },
-    ],
-  },
-  {
-    name: "tap_action",
-    selector: {
-      ui_action: {
-        default_action: "more-info",
+const SUB_FORM = {
+  schema: [
+    { name: "entity", selector: { entity: {} }, required: true },
+    {
+      name: "name",
+      selector: { entity_name: {} },
+      context: {
+        entity: "entity",
       },
     },
-    context: ACTION_RELATED_CONTEXT,
-  },
-  {
-    name: "",
-    type: "optional_actions",
-    flatten: true,
-    schema: (["hold_action", "double_tap_action"] as const).map((action) => ({
-      name: action,
+    {
+      type: "grid",
+      name: "",
+      schema: [
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
+          context: {
+            icon_entity: "entity",
+          },
+        },
+        { name: "show_last_changed", selector: { boolean: {} } },
+        { name: "show_state", selector: { boolean: {} }, default: true },
+      ],
+    },
+    {
+      name: "tap_action",
       selector: {
         ui_action: {
-          default_action: "none" as const,
+          default_action: "more-info",
         },
       },
       context: ACTION_RELATED_CONTEXT,
-    })),
-  },
-] as const;
+    },
+    {
+      name: "",
+      type: "optional_actions",
+      flatten: true,
+      schema: (["hold_action", "double_tap_action"] as const).map((action) => ({
+        name: action,
+        selector: {
+          ui_action: {
+            default_action: "none" as const,
+          },
+        },
+        context: ACTION_RELATED_CONTEXT,
+      })),
+    },
+  ] as const,
+};
 
 const SCHEMA = [
   { name: "title", selector: { text: {} } },
@@ -144,7 +146,7 @@ export class HuiGlanceCardEditor
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}
-          .schema=${SUB_SCHEMA}
+          .form=${SUB_FORM}
           @go-back=${this._goBack}
           @config-changed=${this._handleSubEntityChanged}
         >

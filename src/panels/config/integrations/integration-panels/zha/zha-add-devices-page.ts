@@ -60,7 +60,7 @@ class ZHAAddDevicesPage extends LitElement {
     this._formattedEvents = "";
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (
       changedProps.has("hass") &&
@@ -80,7 +80,7 @@ class ZHAAddDevicesPage extends LitElement {
       >
         <ha-button
           appearance="plain"
-          size="small"
+          size="s"
           slot="toolbar-icon"
           @click=${this._toggleLogs}
           >${this._showLogs ? "Hide logs" : "Show logs"}</ha-button
@@ -161,7 +161,7 @@ class ZHAAddDevicesPage extends LitElement {
           ? html`<ha-textarea
               readonly
               class="log"
-              autogrow
+              resize="auto"
               .value=${this._formattedEvents}
             >
             </ha-textarea>`

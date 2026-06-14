@@ -40,6 +40,25 @@ export const numberFormatToLocale = (
   }
 };
 
+// Constructing an Intl.NumberFormat is comparatively expensive, and these
+// formatters are created on every numeric state render. The number of distinct
+// (locale, options) combinations is small and bounded in practice, so cache the
+// instances instead of rebuilding them on every call.
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
+
+const getNumberFormatter = (
+  locale: string | string[] | undefined,
+  options: Intl.NumberFormatOptions
+): Intl.NumberFormat => {
+  const key = JSON.stringify([locale, options]);
+  let formatter = numberFormatCache.get(key);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, options);
+    numberFormatCache.set(key, formatter);
+  }
+  return formatter;
+};
+
 /**
  * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
  *
@@ -71,18 +90,11 @@ export const formatNumberToParts = (
     ? numberFormatToLocale(localeOptions)
     : undefined;
 
-  // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
-  Number.isNaN =
-    Number.isNaN ||
-    function isNaN(input) {
-      return typeof input === "number" && isNaN(input);
-    };
-
   if (
     localeOptions?.number_format !== NumberFormat.none &&
     !Number.isNaN(Number(num))
   ) {
-    return new Intl.NumberFormat(
+    return getNumberFormatter(
       locale,
       getDefaultFormatOptions(num, options)
     ).formatToParts(Number(num));
@@ -94,7 +106,7 @@ export const formatNumberToParts = (
     localeOptions?.number_format === NumberFormat.none
   ) {
     // If NumberFormat is none, use en-US format without grouping.
-    return new Intl.NumberFormat(
+    return getNumberFormatter(
       "en-US",
       getDefaultFormatOptions(num, {
         ...options,

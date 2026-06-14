@@ -9,7 +9,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import type { HassioAddonDetails } from "../../../data/hassio/addon";
 import { fetchHassioAddonInfo } from "../../../data/hassio/addon";
@@ -72,7 +72,7 @@ class HaConfigAppDashboard extends LitElement {
     this._loading = false;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("route") && this.route) {
       const oldRoute = changedProperties.get("route") as Route | undefined;
       const oldSlug = oldRoute?.path.split("/")[1];
@@ -135,7 +135,6 @@ class HaConfigAppDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${route}
         .tabs=${addonTabs}
         back-path=${this._fromStore ? "/config/apps/available" : "/config/apps"}
@@ -161,7 +160,7 @@ class HaConfigAppDashboard extends LitElement {
     }
 
     try {
-      this._addon = await fetchHassioAddonInfo(this.hass, slug);
+      this._addon = await fetchHassioAddonInfo(this.hass.callWS, slug);
     } catch (err: any) {
       if (repositoryUrl) {
         try {
@@ -210,7 +209,7 @@ class HaConfigAppDashboard extends LitElement {
     }
 
     await addStoreRepository(this.hass, repositoryUrl);
-    this._addon = await fetchHassioAddonInfo(this.hass, slug);
+    this._addon = await fetchHassioAddonInfo(this.hass.callWS, slug);
   }
 
   private async _apiCalled(ev): Promise<void> {
@@ -234,7 +233,7 @@ class HaConfigAppDashboard extends LitElement {
 
     if (path === "uninstall") {
       // Navigate back to installed apps after uninstall
-      window.history.back();
+      goBack(this._fromStore ? "/config/apps/available" : "/config/apps");
     } else {
       // Reload app info
       await this._loadAddon();

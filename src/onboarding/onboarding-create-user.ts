@@ -91,7 +91,7 @@ class OnboardingCreateUser extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     setTimeout(() => this._form?.focus(), 100);
     this.addEventListener("keypress", (ev) => {

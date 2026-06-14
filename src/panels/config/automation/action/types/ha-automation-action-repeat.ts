@@ -1,9 +1,8 @@
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
 import type { RepeatAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -172,14 +171,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        ha-textfield {
-          margin-top: 16px;
-        }
-      `,
-    ];
+    return [haStyle];
   }
 
   private _getSelectorElements() {

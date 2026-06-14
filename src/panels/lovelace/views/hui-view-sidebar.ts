@@ -27,7 +27,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
 
   private _visible = true;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("hass") || changedProperties.has("config")) {
       this._updateVisibility();
@@ -40,7 +40,11 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
     const visible =
       conditionsMet ??
       (!this.config.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+        checkConditionsMet(
+          this.config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
 
     if (visible !== this._visible) {
       this._visible = visible;

@@ -1,11 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import type { HomeAssistant } from "../../types";
 import "../ha-relative-time";
-import "./state-badge";
 import "../ha-tooltip";
+import "./state-badge";
 
 @customElement("state-info")
 class StateInfo extends LitElement {
@@ -22,7 +21,7 @@ class StateInfo extends LitElement {
       return nothing;
     }
 
-    const name = computeStateName(this.stateObj);
+    const name = this.hass.formatEntityName(this.stateObj, { type: "entity" });
 
     return html`<state-badge
         .hass=${this.hass}
@@ -44,7 +43,6 @@ class StateInfo extends LitElement {
                     )}:
                   </span>
                   <ha-relative-time
-                    .hass=${this.hass}
                     .datetime=${this.stateObj.last_changed}
                     capitalize
                   ></ha-relative-time>
@@ -56,7 +54,6 @@ class StateInfo extends LitElement {
                     )}:
                   </span>
                   <ha-relative-time
-                    .hass=${this.hass}
                     .datetime=${this.stateObj.last_updated}
                     capitalize
                   ></ha-relative-time>
@@ -64,7 +61,6 @@ class StateInfo extends LitElement {
               </ha-tooltip>
               <ha-relative-time
                 id="relative-time"
-                .hass=${this.hass}
                 .datetime=${this.stateObj.last_changed}
                 capitalize
               ></ha-relative-time>

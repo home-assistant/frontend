@@ -15,7 +15,9 @@ import {
   mdiPlaylistMusic,
   mdiPlayPause,
   mdiPodcast,
-  mdiPower,
+  mdiPowerStandby,
+  mdiPowerOff,
+  mdiPowerOn,
   mdiRepeat,
   mdiRepeatOff,
   mdiRepeatOnce,
@@ -36,7 +38,7 @@ import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { isUnavailableState } from "./entity/entity";
+import { UNAVAILABLE } from "./entity/entity";
 import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
@@ -192,6 +194,7 @@ export interface ControlButton {
   icon: string;
   // Used as key for action as well as tooltip and aria-label translation key
   action: keyof TranslationDict["ui"]["card"]["media_player"];
+  disabled?: boolean;
 }
 
 export interface MediaPlayerItem {
@@ -282,15 +285,18 @@ export const computeMediaControls = (
 
   const state = stateObj.state;
 
-  if (isUnavailableState(state)) {
+  // We only filter out `unavailable`, not `unknown`
+  if (state === UNAVAILABLE) {
     return undefined;
   }
 
-  if (!stateActive(stateObj)) {
+  const assumedState = stateObj.attributes.assumed_state === true;
+
+  if (!stateActive(stateObj) && !assumedState) {
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
-            icon: mdiPower,
+            icon: mdiPowerStandby,
             action: "turn_on",
           },
         ]
@@ -299,14 +305,23 @@ export const computeMediaControls = (
 
   const buttons: ControlButton[] = [];
 
+  if (
+    assumedState &&
+    supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
+  ) {
+    buttons.push({
+      icon: mdiPowerOn,
+      action: "turn_on",
+    });
+  }
+
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPowerStandby,
       action: "turn_off",
     });
   }
 
-  const assumedState = stateObj.attributes.assumed_state === true;
   const stateAttr = stateObj.attributes;
 
   if (

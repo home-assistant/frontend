@@ -1,4 +1,4 @@
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -31,7 +31,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
   @state() protected _blueprints?: Blueprints;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._getBlueprints();
   }
@@ -250,7 +250,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .blueprint-picker-container {
           padding: 0 16px 16px;
         }
-        ha-textfield,
         ha-blueprint-picker {
           display: block;
         }

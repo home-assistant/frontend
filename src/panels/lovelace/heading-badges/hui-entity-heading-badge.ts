@@ -15,7 +15,6 @@ import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -154,11 +153,7 @@ export class HuiEntityHeadingBadge
       "--icon-color": color,
     };
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     return html`
       <ha-heading-badge
@@ -175,7 +170,6 @@ export class HuiEntityHeadingBadge
           ? html`
               <ha-state-icon
                 slot="icon"
-                .hass=${this.hass}
                 .icon=${config.icon}
                 .stateObj=${stateObj}
               ></ha-state-icon>

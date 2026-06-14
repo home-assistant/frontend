@@ -57,7 +57,6 @@ class DialogAutomationSaveTimeout extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._opened}
         header-title=${title}
         @closed=${this._dialogClosed}

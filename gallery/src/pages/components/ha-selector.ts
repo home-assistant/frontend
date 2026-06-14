@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
@@ -692,7 +692,11 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                 ([key, value]) => html`
                   <ha-settings-row narrow slot=${slot}>
                     <span slot="heading">${value?.name || key}</span>
-                    <span slot="description">${value?.description}</span>
+                    ${value?.description
+                      ? html`<span slot="description"
+                          >${value?.description}</span
+                        >`
+                      : nothing}
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}

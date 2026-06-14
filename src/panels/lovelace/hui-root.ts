@@ -35,11 +35,10 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
-import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
+import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -70,6 +69,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { isMoreInfoView } from "../../dialogs/more-info/const";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showQuickBar } from "../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
@@ -156,7 +156,7 @@ class HUIRoot extends LitElement {
 
   private _configChangedByUndo = false;
 
-  private _viewCache?: Record<string, HUIView>;
+  private _viewCache: Record<string, HUIView> = {};
 
   private _viewScrollPositions: Record<string, number> = {};
 
@@ -170,22 +170,9 @@ class HUIRoot extends LitElement {
     }),
   });
 
-  private _debouncedConfigChanged: () => void;
-
   private _conversation = memoizeOne((_components) =>
-    isComponentLoaded(this.hass, "conversation")
+    isComponentLoaded(this.hass.config, "conversation")
   );
-
-  constructor() {
-    super();
-    // The view can trigger a re-render when it knows that certain
-    // web components have been loaded.
-    this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
-      100,
-      false
-    );
-  }
 
   private _renderActionItems(): TemplateResult {
     const result: TemplateResult[] = [];
@@ -216,7 +203,7 @@ class HUIRoot extends LitElement {
           </ha-tooltip>
           <ha-button
             appearance="filled"
-            size="small"
+            size="s"
             class="exit-edit-mode"
             @click=${this._editModeDisable}
           >
@@ -260,7 +247,7 @@ class HUIRoot extends LitElement {
         icon: mdiFileMultiple,
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
-        visible: this._editMode && this.hass.userData?.showAdvanced,
+        visible: this._editMode,
         overflow: true,
       },
       {
@@ -422,6 +409,8 @@ class HUIRoot extends LitElement {
               slot="actionItems"
               .id="button-${index}"
               .path=${item.icon}
+              .label=${label}
+              hide-title
               @click=${item.buttonAction}
             ></ha-icon-button>
             <ha-tooltip placement="bottom" .for="button-${index}">
@@ -499,7 +488,6 @@ class HUIRoot extends LitElement {
             ${this._editMode
               ? html`
                   <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_view.move_left"
                     )}
@@ -534,7 +522,6 @@ class HUIRoot extends LitElement {
                     @click=${this._editView}
                   ></ha-icon-button>
                   <ha-icon-button-arrow-next
-                    .hass=${this.hass}
                     .label=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_view.move_right"
                     )}
@@ -583,7 +570,6 @@ class HUIRoot extends LitElement {
                     ${isSubview || this.backButton
                       ? html`
                           <ha-icon-button-arrow-prev
-                            .hass=${this.hass}
                             slot="navigationIcon"
                             @click=${this._goBack}
                           ></ha-icon-button-arrow-prev>
@@ -591,8 +577,6 @@ class HUIRoot extends LitElement {
                       : html`
                           <ha-menu-button
                             slot="navigationIcon"
-                            .hass=${this.hass}
-                            .narrow=${this.narrow}
                           ></ha-menu-button>
                         `}
                     ${isSubview
@@ -632,7 +616,6 @@ class HUIRoot extends LitElement {
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
           id="view"
-          @ll-rebuild=${this._debouncedConfigChanged}
         >
           <hui-view-background .hass=${this.hass} .background=${background}>
           </hui-view-background>
@@ -671,7 +654,7 @@ class HUIRoot extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
@@ -716,16 +699,23 @@ class HUIRoot extends LitElement {
       this._showVoiceCommandDialog();
     } else if (searchParams["more-info-entity-id"]) {
       const entityId = searchParams["more-info-entity-id"];
+      const view = searchParams["more-info-view"];
       this._clearParam("more-info-entity-id");
+      if (view) {
+        this._clearParam("more-info-view");
+      }
       // Wait for the next render to ensure the view is fully loaded
       // because the more info dialog is closed when the url changes
       afterNextRender(() => {
-        this._showMoreInfoDialog(entityId);
+        showMoreInfoDialog(this, {
+          entityId,
+          view: isMoreInfoView(view) ? view : undefined,
+        });
       });
     }
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("lovelace")) {
       const oldLovelace = changedProperties.get("lovelace") as
         | Lovelace
@@ -747,7 +737,7 @@ class HUIRoot extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
@@ -762,7 +752,6 @@ class HUIRoot extends LitElement {
     }
 
     let newSelectView;
-    let force = false;
 
     let viewPath: string | undefined = this.route!.path.split("/")[1];
     viewPath = viewPath ? decodeURI(viewPath) : undefined;
@@ -794,9 +783,8 @@ class HUIRoot extends LitElement {
         | Lovelace
         | undefined;
 
-      if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        // On config change, recreate the current view from scratch.
-        force = true;
+      if (oldLovelace && oldLovelace.config !== this.lovelace!.config) {
+        this._cleanupViewCache();
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -815,15 +803,12 @@ class HUIRoot extends LitElement {
         }
       }
 
-      if (!force && huiView) {
+      if (huiView) {
         huiView.lovelace = this.lovelace!;
       }
     }
 
-    if (newSelectView !== undefined || force) {
-      if (force && newSelectView === undefined) {
-        newSelectView = this._curView;
-      }
+    if (newSelectView !== undefined) {
       // Will allow for ripples to start rendering
       afterNextRender(() => {
         if (changedProperties.has("route")) {
@@ -835,7 +820,7 @@ class HUIRoot extends LitElement {
             scrollTo({ behavior: "auto", top: position })
           );
         }
-        this._selectView(newSelectView, force);
+        this._selectView(newSelectView);
       });
     }
   }
@@ -974,10 +959,6 @@ class HUIRoot extends LitElement {
   private _showVoiceCommandDialog = () => {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
   };
-
-  private _showMoreInfoDialog(entityId: string): void {
-    showMoreInfoDialog(this, { entityId });
-  }
 
   private _enableEditMode = async () => {
     if (this._yamlMode) {
@@ -1119,11 +1100,11 @@ class HUIRoot extends LitElement {
     const lovelace = this.lovelace!;
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) - 1;
-    this._curView = newIndex;
     if (!this.config.views[oldIndex].path) {
       this._navigateToView(newIndex, true);
     }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
+    this._selectView(newIndex);
   }
 
   private _moveViewRight(ev) {
@@ -1134,11 +1115,11 @@ class HUIRoot extends LitElement {
     const lovelace = this.lovelace!;
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) + 1;
-    this._curView = newIndex;
     if (!this.config.views[oldIndex].path) {
       this._navigateToView(newIndex, true);
     }
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
+    this._selectView(newIndex);
   }
 
   private _addView() {
@@ -1162,8 +1143,19 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
-    if (!force && this._curView === viewIndex) {
+  private _cleanupViewCache(): void {
+    // Keep only the currently displayed view to avoid UI flash.
+    // All other cached views are cleared and will be recreated on next visit.
+    const currentView =
+      this._curView != null ? this._viewCache[this._curView] : undefined;
+    this._viewCache = {};
+    if (currentView && this._curView != null) {
+      this._viewCache[this._curView] = currentView;
+    }
+  }
+
+  private _selectView(viewIndex: HUIRoot["_curView"]): void {
+    if (this._curView === viewIndex) {
       return;
     }
 
@@ -1175,11 +1167,6 @@ class HUIRoot extends LitElement {
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
 
     this._curView = viewIndex;
-
-    if (force) {
-      this._viewCache = {};
-      this._viewScrollPositions = {};
-    }
 
     // Recreate a new element to clear the applied themes.
     const root = this._viewRoot;
@@ -1208,12 +1195,12 @@ class HUIRoot extends LitElement {
       return;
     }
 
-    if (!force && this._viewCache![viewIndex]) {
-      view = this._viewCache![viewIndex];
+    if (this._viewCache[viewIndex]) {
+      view = this._viewCache[viewIndex];
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
-      this._viewCache![viewIndex] = view;
+      this._viewCache[viewIndex] = view;
     }
 
     view.lovelace = this.lovelace;
@@ -1253,8 +1240,10 @@ class HUIRoot extends LitElement {
     this._undoRedoController.redo();
   }
 
-  private _handleSubItemSelect(ev: HaDropdownSelectEvent) {
-    const subItem = (ev.detail?.item as any)?.data as SubActionItem;
+  private _handleSubItemSelect(
+    ev: HaDropdownSelectEvent<SubActionItem["key"], SubActionItem>
+  ) {
+    const subItem = ev.detail.item.data;
     if (subItem?.action) {
       subItem.action();
     } else if (subItem?.overflowAction) {
@@ -1262,8 +1251,10 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _handleOverflowItemSelect(ev: HaDropdownSelectEvent) {
-    const item = (ev.detail?.item as any)?.data as ActionItem;
+  private _handleOverflowItemSelect(
+    ev: HaDropdownSelectEvent<ActionItem["key"], ActionItem>
+  ) {
+    const item = ev.detail.item.data;
     if (item?.subItems) {
       const title = [this.hass!.localize(item.key), item.suffix].join(" ");
       showListItemsDialog(this, {
@@ -1295,7 +1286,7 @@ class HUIRoot extends LitElement {
           position: fixed;
           top: 0;
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-right,
                 0px
               )
@@ -1308,7 +1299,7 @@ class HUIRoot extends LitElement {
         }
         .narrow .header {
           width: calc(
-            var(--mdc-top-app-bar-width, 100%) - var(
+            var(--ha-top-app-bar-width, 100%) - var(
                 --safe-area-inset-left,
                 0px
               ) - var(--safe-area-inset-right, 0px)
@@ -1317,7 +1308,7 @@ class HUIRoot extends LitElement {
         }
         :host([scrolled]) .header {
           box-shadow: var(
-            --mdc-top-app-bar-fixed-box-shadow,
+            --bar-box-shadow,
             0px 2px 4px -1px rgba(0, 0, 0, 0.2),
             0px 4px 5px 0px rgba(0, 0, 0, 0.14),
             0px 1px 10px 0px rgba(0, 0, 0, 0.12)
@@ -1359,6 +1350,13 @@ class HUIRoot extends LitElement {
           white-space: nowrap;
           display: flex;
           align-items: center;
+        }
+        .edit-mode .action-items ha-icon-button[disabled] {
+          --ha-color-on-disabled-quiet: color-mix(
+            in srgb,
+            var(--app-header-edit-text-color, #fff) 50%,
+            transparent
+          );
         }
         ha-tab-group {
           --ha-tab-indicator-color: var(

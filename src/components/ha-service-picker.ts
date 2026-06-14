@@ -1,6 +1,7 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiRoomService } from "@mdi/js";
-import { html, LitElement, nothing, type TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -50,10 +51,10 @@ class HaServicePicker extends LitElement {
     await this._picker?.open();
   }
 
-  protected firstUpdated(props) {
+  protected firstUpdated(props: PropertyValues<this>) {
     super.firstUpdated(props);
     this.hass.loadBackendTranslation("services");
-    getServiceIcons(this.hass);
+    getServiceIcons(this.hass.connection, this.hass.config);
   }
 
   private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (

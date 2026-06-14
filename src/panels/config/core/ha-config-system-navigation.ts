@@ -1,5 +1,5 @@
 import { mdiPower } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
@@ -8,7 +8,6 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-navigation-list";
 import type { BackupContent } from "../../../data/backup";
 import { fetchBackupInfo } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
@@ -29,6 +28,7 @@ import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart"
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../components/ha-config-navigation-list";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
@@ -41,8 +41,6 @@ class HaConfigSystemNavigation extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
-
-  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _latestBackupDate?: Date;
 
@@ -58,7 +56,7 @@ class HaConfigSystemNavigation extends LitElement {
     const pages = configSections.general
       .filter((page) => canShowPage(this.hass, page))
       .map((page) => {
-        let description = "";
+        let description: string;
 
         switch (page.translationKey) {
           case "backup":
@@ -146,7 +144,7 @@ class HaConfigSystemNavigation extends LitElement {
           full-width
         >
           <ha-card outlined>
-            <ha-navigation-list
+            <ha-config-navigation-list
               .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
@@ -154,18 +152,18 @@ class HaConfigSystemNavigation extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.dashboard.system.main"
               )}
-            ></ha-navigation-list>
+            ></ha-config-navigation-list>
           </ha-card>
         </ha-config-section>
       </hass-subpage>
     `;
   }
 
-  protected firstUpdated(_changedProperties): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
 
     this._fetchNetworkStatus();
-    const isHassioLoaded = isComponentLoaded(this.hass, "hassio");
+    const isHassioLoaded = isComponentLoaded(this.hass.config, "hassio");
     this._fetchBackupInfo();
     this._fetchHardwareInfo(isHassioLoaded);
     this._fetchLabFeatures();
@@ -175,7 +173,10 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchBackupInfo() {
-    const backups: BackupContent[] = isComponentLoaded(this.hass, "backup")
+    const backups: BackupContent[] = isComponentLoaded(
+      this.hass.config,
+      "backup"
+    )
       ? await fetchBackupInfo(this.hass).then(
           (backupData) => backupData.backups
         )
@@ -189,7 +190,7 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchHardwareInfo(isHassioLoaded: boolean) {
-    if (isComponentLoaded(this.hass, "hardware")) {
+    if (isComponentLoaded(this.hass.config, "hardware")) {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
@@ -214,18 +215,18 @@ class HaConfigSystemNavigation extends LitElement {
   }
 
   private async _fetchNetworkStatus() {
-    if (isComponentLoaded(this.hass, "cloud")) {
+    if (isComponentLoaded(this.hass.config, "cloud")) {
       const cloudStatus = await fetchCloudStatus(this.hass);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
         return;
       }
     }
-    this._externalAccess = this.hass.config.external_url !== null;
+    this._externalAccess = this.hass.config.external_url != null;
   }
 
   private async _fetchLabFeatures() {
-    if (isComponentLoaded(this.hass, "labs")) {
+    if (isComponentLoaded(this.hass.config, "labs")) {
       this._labFeatures = await fetchLabFeatures(this.hass);
     }
   }
@@ -282,10 +283,6 @@ class HaConfigSystemNavigation extends LitElement {
           ha-config-section {
             margin-top: -42px;
           }
-        }
-
-        ha-navigation-list {
-          --navigation-list-item-title-font-size: var(--ha-font-size-l);
         }
       `,
     ];

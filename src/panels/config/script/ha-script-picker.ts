@@ -23,7 +23,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -42,9 +41,10 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-blueprints";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -107,9 +107,9 @@ import { showNewAutomationDialog } from "../automation/show-dialog-new-automatio
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
-  getEntityIdHiddenTableColumn,
   getAreaTableColumn,
   getCategoryTableColumn,
+  getEntityIdHiddenTableColumn,
   getLabelsTableColumn,
   getTriggeredAtTableColumn,
 } from "../common/data-table-columns";
@@ -120,7 +120,6 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type ScriptItem = ScriptEntity & {
   name: string;
@@ -128,6 +127,7 @@ type ScriptItem = ScriptEntity & {
   last_triggered: string | undefined;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
 };
@@ -164,15 +164,19 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   private _filter = "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "script-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
+
+  private _fromUrl = false;
 
   @state() private _expandedFilter?: string;
 
@@ -246,6 +250,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.script;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || []).map(
+          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        );
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           script.entity_id
@@ -260,9 +267,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -285,7 +291,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           type: "icon",
           template: (script) =>
             html`<ha-state-icon
-              .hass=${this.hass}
               .stateObj=${script}
               style=${styleMap({
                 color:
@@ -321,7 +326,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           showNarrow: true,
           template: (script) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {
@@ -426,7 +430,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.automations}
         .searchLabel=${this.hass.localize(
@@ -670,25 +676,17 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 href=${documentationUrl(this.hass, "/docs/script/editor/")}
                 target="_blank"
                 rel="noreferrer"
-                size="small"
+                size="s"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
                 <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}
-        <ha-fab
-          slot="fab"
-          ?is-wide=${this.isWide}
-          ?narrow=${this.narrow}
-          .label=${this.hass.localize(
-            "ui.panel.config.script.picker.add_script"
-          )}
-          extended
-          @click=${this._createNew}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._createNew}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.script.picker.add_script")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -714,17 +712,26 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         items: undefined,
       },
     };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   };
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 
@@ -773,6 +780,32 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     this._filteredEntityIds = filteredEntityIds;
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      const hasUrlFilter =
+        this._searchParms.has("area") ||
+        this._searchParms.has("blueprint") ||
+        this._searchParms.has("device") ||
+        this._searchParms.has("label");
+      if (!hasUrlFilter) {
+        this._filters = this._storageFilters;
+      }
+      if (this._searchParms.has("area")) {
+        this._filterArea();
+      }
+      if (this._searchParms.has("device")) {
+        this._filterDevice();
+      }
+      if (this._searchParms.has("blueprint")) {
+        this._filterBlueprint();
+      }
+      if (this._searchParms.has("label")) {
+        this._filterLabel();
+      }
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_entityReg")) {
@@ -780,13 +813,36 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  firstUpdated() {
-    if (this._searchParms.has("blueprint")) {
-      this._filterBlueprint();
+  private _filterArea() {
+    const area = this._searchParms.get("area");
+    if (!area) {
+      return;
     }
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-floor-areas": {
+        value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
+  private _filterDevice() {
+    const device = this._searchParms.get("device");
+    if (!device) {
+      return;
     }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-devices": {
+        value: [device],
+        items: undefined,
+      },
+    };
+    this._applyFilters();
   }
 
   private _filterLabel() {
@@ -794,6 +850,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     if (!label) {
       return;
     }
+    this._fromUrl = true;
     this._filters = {
       ...this._filters,
       "ha-filter-labels": {
@@ -809,6 +866,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     if (!blueprint) {
       return;
     }
+    this._fromUrl = true;
     const related = await findRelated(this.hass, "script_blueprint", blueprint);
     this._filters = {
       ...this._filters,
@@ -940,7 +998,7 @@ ${rejected
   }
 
   private _createNew() {
-    if (isComponentLoaded(this.hass, "blueprint")) {
+    if (isComponentLoaded(this.hass.config, "blueprint")) {
       showNewAutomationDialog(this, { mode: "script" });
     } else {
       navigate("/config/script/edit/new");
@@ -1175,7 +1233,6 @@ ${rejected
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this.hass.entities[entityId]?.labels.includes(label.label_id)
         );
@@ -1193,12 +1250,8 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
-          <ha-label
-            style=${color ? `--color: ${color}` : ""}
-            .description=${label.description}
-          >
+          <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1329,10 +1382,6 @@ ${rejected
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
       `,
     ];

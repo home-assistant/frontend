@@ -22,6 +22,8 @@ import type {
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
 
+export type ThresholdMode = "crossed" | "changed" | "is";
+
 export type Selector =
   | ActionSelector
   | AddonSelector
@@ -29,6 +31,7 @@ export type Selector =
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
+  | AutomationBehaviorSelector
   | BooleanSelector
   | ButtonToggleSelector
   | ChooseSelector
@@ -56,7 +59,9 @@ export type Selector =
   | MediaSelector
   | NavigationSelector
   | NumberSelector
+  | NumericThresholdSelector
   | ObjectSelector
+  | PeriodSelector
   | AssistPipelineSelector
   | QRCodeSelector
   | SelectSelector
@@ -73,6 +78,7 @@ export type Selector =
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
+  | SerialPortSelector
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
@@ -117,6 +123,21 @@ export interface AttributeSelector {
 
 export interface BooleanSelector {
   boolean: {} | null;
+}
+
+export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
+
+export type AutomationBehaviorConditionMode = "all" | "any";
+
+export type AutomationBehavior =
+  | AutomationBehaviorTriggerMode
+  | AutomationBehaviorConditionMode;
+
+export interface AutomationBehaviorSelector {
+  automation_behavior: {
+    mode: "trigger" | "condition";
+    translation_key?: string;
+  } | null;
 }
 
 export interface ButtonToggleSelector {
@@ -240,8 +261,18 @@ interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
-  unit_of_measurement?: string | readonly string[];
   supported_features?: number | [number];
+  unit_of_measurement?: string | readonly string[];
+}
+
+export interface EntitySelectorExtraOption {
+  id: string;
+  primary: string;
+  secondary?: string;
+  icon?: string;
+  icon_path?: string;
+  entity_id?: string;
+  hide_clear?: boolean;
 }
 
 export interface EntitySelector {
@@ -251,6 +282,7 @@ export interface EntitySelector {
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     reorder?: boolean;
+    extra_options?: EntitySelectorExtraOption[];
   } | null;
 }
 
@@ -363,6 +395,15 @@ export interface NumberSelector {
   } | null;
 }
 
+export interface NumericThresholdSelector {
+  numeric_threshold: {
+    mode?: ThresholdMode;
+    unit_of_measurement?: readonly string[];
+    number?: NumberSelector["number"];
+    entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+  } | null;
+}
+
 interface ObjectSelectorField {
   selector: Selector;
   label?: string;
@@ -377,6 +418,27 @@ export interface ObjectSelector {
     translation_key?: string;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
+  } | null;
+}
+
+export type PeriodKey =
+  | "today"
+  | "yesterday"
+  | "tomorrow"
+  | "this_week"
+  | "last_week"
+  | "next_week"
+  | "this_month"
+  | "last_month"
+  | "next_month"
+  | "this_year"
+  | "last_year"
+  | "next_7d"
+  | "next_30d"
+  | "none";
+export interface PeriodSelector {
+  period: {
+    options: readonly PeriodKey[];
   } | null;
 }
 
@@ -415,6 +477,12 @@ export interface SelectSelector {
 
 export interface SelectorSelector {
   selector: {} | null;
+}
+
+export interface SerialPortSelector {
+  serial_port: {
+    extra_recommended_domains?: string[];
+  } | null;
 }
 
 export interface StateSelector {
@@ -459,6 +527,7 @@ export interface StringSelector {
       | "color";
     prefix?: string;
     suffix?: string;
+    placeholder?: string;
     autocomplete?: string;
     multiple?: true;
   } | null;
@@ -472,6 +541,7 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    primary_entities_only?: boolean;
   } | null;
 }
 
@@ -571,7 +641,7 @@ export const expandLabelTarget = (
     if (
       device.labels.includes(labelId) &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -638,7 +708,7 @@ export const expandAreaTarget = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -698,7 +768,7 @@ export const areaMeetsTargetSelector = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -728,7 +798,7 @@ export const areaMeetsTargetSelector = (
 };
 
 export const deviceMeetsTargetSelector = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector,
@@ -752,7 +822,7 @@ export const deviceMeetsTargetSelector = (
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
-      const entityState = hass.states[entity.entity_id];
+      const entityState = states[entity.entity_id];
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,

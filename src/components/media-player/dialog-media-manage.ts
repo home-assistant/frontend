@@ -1,10 +1,10 @@
 import { animate } from "@lit-labs/motion";
 
 import {
-  mdiClose,
-  mdiDelete,
   mdiCheckboxBlankOutline,
   mdiCheckboxMarkedOutline,
+  mdiClose,
+  mdiDelete,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -26,8 +26,8 @@ import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
 import "../ha-dialog";
-import "../ha-dialog-header";
 import "../ha-dialog-footer";
+import "../ha-dialog-header";
 import "../ha-icon-button";
 import "../ha-list";
 import "../ha-spinner";
@@ -100,7 +100,6 @@ class DialogMediaManage extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         ?prevent-scrim-close=${this._uploading || this._deleting}
         @closed=${this._dialogClosed}
@@ -115,11 +114,11 @@ class DialogMediaManage extends LitElement {
                 ></ha-icon-button
               ></slot>`
             : nothing}
-          <span class="title" slot="title" id="dialog-box-title">
+          <h1 class="title" slot="title" id="dialog-box-title">
             ${this.hass.localize(
               "ui.components.media-browser.file_management.title"
             )}
-          </span>
+          </h1>
           ${this._selected.size === 0
             ? html`<ha-media-upload-button
                 .hass=${this.hass}
@@ -227,8 +226,8 @@ class DialogMediaManage extends LitElement {
                   )}
                 </ha-list>
               `}
-        ${isComponentLoaded(this.hass, "hassio")
-          ? html`<ha-tip .hass=${this.hass}>
+        ${isComponentLoaded(this.hass.config, "hassio")
+          ? html`<ha-tip>
               ${this.hass.localize(
                 "ui.components.media-browser.file_management.tip_media_storage",
                 {
@@ -365,6 +364,11 @@ class DialogMediaManage extends LitElement {
         .folders {
           color: var(--secondary-text-color);
           font-style: italic;
+        }
+        .title {
+          font: inherit;
+          font-size: inherit;
+          margin: inherit;
         }
       `,
     ];

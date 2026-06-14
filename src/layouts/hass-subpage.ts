@@ -33,22 +33,15 @@ class HassSubpage extends LitElement {
       <div class="toolbar ${classMap({ narrow: this.narrow })}">
         <div class="toolbar-content">
           ${this.mainPage || history.state?.root
-            ? html`
-                <ha-menu-button
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></ha-menu-button>
-              `
+            ? html`<ha-menu-button></ha-menu-button>`
             : this.backPath
               ? html`
                   <ha-icon-button-arrow-prev
                     href=${this.backPath}
-                    .hass=${this.hass}
                   ></ha-icon-button-arrow-prev>
                 `
               : html`
                   <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
                     @click=${this._backTapped}
                   ></ha-icon-button-arrow-prev>
                 `}
@@ -199,6 +192,7 @@ class HassSubpage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow]) #fab.tabs {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));

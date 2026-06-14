@@ -1,12 +1,14 @@
+import { consume } from "@lit/context";
 import { mdiContentPaste, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
@@ -15,19 +17,25 @@ import type {
   Condition,
   LegacyCondition,
 } from "../../common/validate-condition";
+import type { ConditionsEntityContext } from "./context";
+import { conditionsEntityContext } from "./context";
 import "./ha-card-condition-editor";
-import type { HaCardConditionEditor } from "./ha-card-condition-editor";
+import {
+  type HaCardConditionEditor,
+  getConditionClassName,
+} from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
 import "./types/ha-card-condition-location";
 import "./types/ha-card-condition-not";
 import "./types/ha-card-condition-numeric_state";
+import "./types/ha-card-condition-numeric_state-no_entity";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
+import "./types/ha-card-condition-state-no_entity";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 const UI_CONDITION = [
   "location",
@@ -58,6 +66,14 @@ export class HaCardConditionsEditor extends LitElement {
     | LegacyCondition
   )[];
 
+  @state()
+  @consume({ context: conditionsEntityContext, subscribe: true })
+  private _entityContext?: ConditionsEntityContext;
+
+  private get _noEntity(): boolean {
+    return this._entityContext?.mode === "filter";
+  }
+
   private _focusLastConditionOnChange = false;
 
   protected firstUpdated() {
@@ -72,7 +88,7 @@ export class HaCardConditionsEditor extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("conditions")) {
       return;
     }
@@ -153,16 +169,15 @@ export class HaCardConditionsEditor extends LitElement {
     }
 
     if (condition === "paste") {
-      const newCondition = deepClone(this._clipboard);
+      const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
     } else {
-      const elClass = customElements.get(`ha-card-condition-${condition}`) as
-        | LovelaceConditionEditorConstructor
-        | undefined;
+      const elClass = customElements.get(
+        getConditionClassName(condition, this._noEntity)
+      ) as LovelaceConditionEditorConstructor | undefined;
 
-      conditions.push(
-        elClass?.defaultConfig ? { ...elClass.defaultConfig } : { condition }
-      );
+      const defaultConfig = elClass?.defaultConfig;
+      conditions.push(defaultConfig ? { ...defaultConfig } : { condition });
     }
 
     this._focusLastConditionOnChange = true;

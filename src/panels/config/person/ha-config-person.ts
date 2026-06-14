@@ -1,10 +1,10 @@
 import { mdiPlus } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
@@ -39,8 +39,6 @@ export class HaConfigPerson extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public route!: Route;
 
   @state() private _storageItems?: Person[];
@@ -61,7 +59,6 @@ export class HaConfigPerson extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.persons}
@@ -102,7 +99,6 @@ export class HaConfigPerson extends LitElement {
                     .entry=${entry}
                   >
                     <ha-person-badge
-                      .hass=${this.hass}
                       .person=${entry}
                       slot="graphic"
                     ></ha-person-badge>
@@ -120,7 +116,7 @@ export class HaConfigPerson extends LitElement {
                     <ha-button
                       @click=${this._createPerson}
                       appearance="filled"
-                      size="small"
+                      size="s"
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${hass.localize(
@@ -139,7 +135,6 @@ export class HaConfigPerson extends LitElement {
                       (entry) => html`
                         <ha-list-item graphic="avatar">
                           <ha-person-badge
-                            .hass=${this.hass}
                             .person=${entry}
                             slot="graphic"
                           ></ha-person-badge>
@@ -152,19 +147,15 @@ export class HaConfigPerson extends LitElement {
               `
             : nothing}
         </ha-config-section>
-        <ha-fab
-          slot="fab"
-          .label=${hass.localize("ui.panel.config.person.add_person")}
-          extended
-          @click=${this._createPerson}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._createPerson}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${hass.localize("ui.panel.config.person.add_person")}
+        </ha-button>
       </hass-tabs-subpage>
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._fetchData();
     loadPersonDetailDialog();

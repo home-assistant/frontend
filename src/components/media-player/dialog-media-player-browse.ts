@@ -77,8 +77,8 @@ class DialogMediaPlayerBrowse extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
+        width="large"
         flexcontent
         @closed=${this.closeDialog}
         @opened=${this._dialogOpened}
@@ -230,6 +230,8 @@ class DialogMediaPlayerBrowse extends LitElement {
           --media-browser-max-height: calc(
             100vh - 65px - var(--safe-area-inset-y)
           );
+          height: 100vh;
+          height: 100dvh;
         }
 
         :host(.opened) ha-media-player-browse {
@@ -248,7 +250,6 @@ class DialogMediaPlayerBrowse extends LitElement {
             --media-browser-max-height: calc(
               100vh - 145px - var(--safe-area-inset-y)
             );
-            width: 700px;
           }
         }
 

@@ -1,19 +1,19 @@
-import type { PropertyValues } from "lit";
-import { html, css, LitElement, nothing } from "lit";
 import { mdiStarFourPoints } from "@mdi/js";
+import type { PropertyValues } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 
-import { customElement, state, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { fireEvent } from "../common/dom/fire_event";
 import type {
   AITaskPreferences,
   GenDataTask,
   GenDataTaskResult,
 } from "../data/ai_task";
 import { fetchAITaskPreferences, generateDataAITask } from "../data/ai_task";
+import type { HomeAssistant } from "../types";
 import "./chips/ha-assist-chip";
 import "./ha-svg-icon";
-import type { HomeAssistant } from "../types";
-import { fireEvent } from "../common/dom/fire_event";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 declare global {
   interface HASSDomEvents {
@@ -52,11 +52,15 @@ export class HaSuggestWithAIButton extends LitElement {
   @state()
   private _minWidth?: string;
 
+  @query("ha-assist-chip") private _chip?: HTMLElement & {
+    offsetWidth: number;
+  };
+
   private _intervalId?: number;
 
-  protected firstUpdated(_changedProperties: PropertyValues): void {
+  protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
-    if (!this.hass || !isComponentLoaded(this.hass, "ai_task")) {
+    if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;
     }
     fetchAITaskPreferences(this.hass).then((prefs) => {
@@ -109,9 +113,8 @@ export class HaSuggestWithAIButton extends LitElement {
     }
 
     // Capture current width before changing state
-    const chip = this.shadowRoot?.querySelector("ha-assist-chip");
-    if (chip) {
-      this._minWidth = `${chip.offsetWidth}px`;
+    if (this._chip) {
+      this._minWidth = `${this._chip.offsetWidth}px`;
     }
 
     // Reset to suggesting state

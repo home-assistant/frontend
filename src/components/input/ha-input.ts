@@ -2,57 +2,92 @@ import "@home-assistant/webawesome/dist/components/animation/animation";
 import "@home-assistant/webawesome/dist/components/input/input";
 import type WaInput from "@home-assistant/webawesome/dist/components/input/input";
 import { HasSlotController } from "@home-assistant/webawesome/dist/internal/slot";
+import { consume, type ContextType } from "@lit/context";
 import { mdiClose, mdiEye, mdiEyeOff } from "@mdi/js";
-import { LitElement, type PropertyValues, css, html, nothing } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { internationalizationContext } from "../../data/context";
 import "../ha-icon-button";
+import "../ha-svg-icon";
 import "../ha-tooltip";
+import { WaInputMixin, waInputStyles } from "./wa-input-mixin";
 
+export type InputType =
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "number"
+  | "password"
+  | "search"
+  | "tel"
+  | "text"
+  | "time"
+  | "color"
+  | "url";
+
+/**
+ * Home Assistant input component
+ *
+ * @element ha-input
+ * @extends {LitElement}
+ *
+ * @summary
+ * A text input component supporting Home Assistant theming and validation, based on webawesome input.
+ * Supports multiple input types including text, number, password, email, search, and more.
+ *
+ * @slot start - Content placed before the input (usually for icons or prefixes).
+ * @slot end - Content placed after the input (usually for icons or suffixes).
+ * @slot label - Custom label content. Overrides the `label` property.
+ * @slot hint - Custom hint content. Overrides the `hint` property.
+ * @slot clear-icon - Custom clear icon. Defaults to a close icon button.
+ * @slot show-password-icon - Custom show password icon. Defaults to an eye icon button.
+ * @slot hide-password-icon - Custom hide password icon. Defaults to an eye-off icon button.
+ *
+ * @csspart wa-base - The underlying wa-input base wrapper.
+ * @csspart wa-hint - The underlying wa-input hint container.
+ * @csspart wa-input - The underlying wa-input input element.
+ *
+ * @cssprop --ha-input-padding-top - Padding above the input.
+ * @cssprop --ha-input-padding-bottom - Padding below the input. Defaults to `var(--ha-space-2)`.
+ * @cssprop --ha-input-text-align - Text alignment of the input. Defaults to `start`.
+ * @cssprop --ha-input-required-marker - The marker shown after the label for required fields. Defaults to `"*"`.
+ *
+ * @attr {("material"|"outlined")} appearance - Sets the input appearance style. "material" is the default filled style, "outlined" uses a bordered style.
+ * @attr {("date"|"datetime-local"|"email"|"number"|"password"|"search"|"tel"|"text"|"time"|"color"|"url")} type - Sets the input type.
+ * @attr {string} label - The input's label text.
+ * @attr {string} hint - The input's hint/helper text.
+ * @attr {string} placeholder - Placeholder text shown when the input is empty.
+ * @attr {boolean} with-clear - Adds a clear button when the input is not empty.
+ * @attr {boolean} readonly - Makes the input readonly.
+ * @attr {boolean} disabled - Disables the input and prevents user interaction.
+ * @attr {boolean} required - Makes the input a required field.
+ * @attr {boolean} password-toggle - Adds a button to toggle the password visibility.
+ * @attr {boolean} without-spin-buttons - Hides the browser's built-in spin buttons for number inputs.
+ * @attr {boolean} auto-validate - Validates the input on blur instead of on form submit.
+ * @attr {boolean} invalid - Marks the input as invalid.
+ * @attr {boolean} inset-label - Uses an inset label style where the label stays inside the input.
+ * @attr {string} validation-message - Custom validation message shown when the input is invalid.
+ */
 @customElement("ha-input")
-export class HaInput extends LitElement {
+export class HaInput extends WaInputMixin(LitElement) {
+  @property({ reflect: true }) appearance: "material" | "outlined" = "material";
+
   @property({ reflect: true })
-  public type:
-    | "date"
-    | "datetime-local"
-    | "email"
-    | "number"
-    | "password"
-    | "search"
-    | "tel"
-    | "text"
-    | "time"
-    | "url" = "text";
-
-  @property()
-  public value?: string;
-
-  /** Draws a pill-style input with rounded edges. */
-  @property({ type: Boolean })
-  public pill = false;
-
-  /** The input's label. */
-  @property()
-  public label = "";
-
-  /** The input's hint. */
-  @property()
-  public hint? = "";
+  public type: InputType = "text";
 
   /** Adds a clear button when the input is not empty. */
   @property({ type: Boolean, attribute: "with-clear" })
   public withClear = false;
-
-  /** Placeholder text to show as a hint when the input is empty. */
-  @property()
-  public placeholder = "";
-
-  /** Makes the input readonly. */
-  @property({ type: Boolean })
-  public readonly = false;
 
   /** Adds a button to toggle the password's visibility. */
   @property({ type: Boolean, attribute: "password-toggle" })
@@ -66,21 +101,9 @@ export class HaInput extends LitElement {
   @property({ type: Boolean, attribute: "without-spin-buttons" })
   public withoutSpinButtons = false;
 
-  /** Makes the input a required field. */
-  @property({ type: Boolean, reflect: true })
-  public required = false;
-
   /** A regular expression pattern to validate input against. */
   @property()
   public pattern?: string;
-
-  /** The minimum length of input that will be considered valid. */
-  @property({ type: Number })
-  public minlength?: number;
-
-  /** The maximum length of input that will be considered valid. */
-  @property({ type: Number })
-  public maxlength?: number;
 
   /** The input's minimum value. Only applies to date and number input types. */
   @property()
@@ -94,129 +117,30 @@ export class HaInput extends LitElement {
   @property()
   public step?: number | "any";
 
-  /** Controls whether and how text input is automatically capitalized. */
-  @property()
-  // eslint-disable-next-line lit/no-native-attributes
-  public autocapitalize:
-    | "off"
-    | "none"
-    | "on"
-    | "sentences"
-    | "words"
-    | "characters"
-    | "" = "";
-
   /** Indicates whether the browser's autocorrect feature is on or off. */
   @property({ type: Boolean })
   public autocorrect = false;
 
-  /** Specifies what permission the browser has to provide assistance in filling out form field values. */
-  @property()
-  public autocomplete?: string;
-
-  /** Indicates that the input should receive focus on page load. */
-  @property({ type: Boolean })
-  // eslint-disable-next-line lit/no-native-attributes
-  public autofocus = false;
-
-  /** Used to customize the label or icon of the Enter key on virtual keyboards. */
-  @property()
-  // eslint-disable-next-line lit/no-native-attributes
-  public enterkeyhint:
-    | "enter"
-    | "done"
-    | "go"
-    | "next"
-    | "previous"
-    | "search"
-    | "send"
-    | "" = "";
-
-  /** Enables spell checking on the input. */
-  @property({ type: Boolean })
-  // eslint-disable-next-line lit/no-native-attributes
-  public spellcheck = true;
-
-  /** Tells the browser what type of data will be entered by the user. */
-  @property()
-  // eslint-disable-next-line lit/no-native-attributes
-  public inputmode:
-    | "none"
-    | "text"
-    | "decimal"
-    | "numeric"
-    | "tel"
-    | "search"
-    | "email"
-    | "url"
-    | "" = "";
-
-  /** The name of the input, submitted as a name/value pair with form data. */
-  @property()
-  public name?: string;
-
-  /** Disables the form control. */
-  @property({ type: Boolean })
-  public disabled = false;
-
-  /** Custom validation message to show when the input is invalid. */
-  @property({ attribute: "validation-message" })
-  public validationMessage? = "";
-
-  /** When true, validates the input on blur instead of on form submit. */
-  @property({ type: Boolean, attribute: "auto-validate" })
-  public autoValidate = false;
-
-  @property({ type: Boolean })
-  public invalid = false;
-
   @property({ type: Boolean, attribute: "inset-label" })
   public insetLabel = false;
 
-  @state()
-  private _invalid = false;
-
   @query("wa-input")
   private _input?: WaInput;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  protected i18n?: ContextType<typeof internationalizationContext>;
 
   private readonly _hasSlotController = new HasSlotController(
     this,
     "label",
     "hint",
-    "input"
+    "input",
+    "start"
   );
 
-  static shadowRootOptions: ShadowRootInit = {
-    mode: "open",
-    delegatesFocus: true,
-  };
-
-  /** Selects all the text in the input. */
-  public select(): void {
-    this._input?.select();
-  }
-
-  /** Sets the start and end positions of the text selection (0-based). */
-  public setSelectionRange(
-    selectionStart: number,
-    selectionEnd: number,
-    selectionDirection?: "forward" | "backward" | "none"
-  ): void {
-    this._input?.setSelectionRange(
-      selectionStart,
-      selectionEnd,
-      selectionDirection
-    );
-  }
-
-  /** Replaces a range of text with a new string. */
-  public setRangeText(
-    replacement: string,
-    start?: number,
-    end?: number,
-    selectMode?: "select" | "start" | "end" | "preserve"
-  ): void {
-    this._input?.setRangeText(replacement, start, end, selectMode);
+  protected get _formControl(): WaInput | undefined {
+    return this._input;
   }
 
   /** Displays the browser picker for an input element. */
@@ -234,19 +158,8 @@ export class HaInput extends LitElement {
     this._input?.stepDown();
   }
 
-  public checkValidity(): boolean {
-    return this._input?.checkValidity() ?? true;
-  }
-
-  public reportValidity(): boolean {
-    const valid = this.checkValidity();
-
-    this._invalid = !valid;
-    return valid;
-  }
-
   protected override async firstUpdated(
-    changedProperties: PropertyValues
+    changedProperties: PropertyValues<this>
   ): Promise<void> {
     super.firstUpdated(changedProperties);
 
@@ -265,6 +178,8 @@ export class HaInput extends LitElement {
     const hasHintSlot = this.hint
       ? false
       : this._hasSlotController.test("hint");
+
+    const hasStartSlot = this._hasSlotController.test("start");
 
     return html`
       <wa-input
@@ -293,9 +208,19 @@ export class HaInput extends LitElement {
         .name=${this.name}
         .disabled=${this.disabled}
         class=${classMap({
+          input: true,
           invalid: this.invalid || this._invalid,
-          "label-raised": this.value || (this.label && this.placeholder),
+          "label-raised":
+            (this.value !== undefined && this.value !== "") ||
+            (this.label && this.placeholder) ||
+            (hasStartSlot && this.insetLabel),
           "no-label": !this.label,
+          "hint-hidden":
+            !this.hint &&
+            !hasHintSlot &&
+            !this.required &&
+            !this._invalid &&
+            !this.invalid,
         })}
         @input=${this._handleInput}
         @change=${this._handleChange}
@@ -305,33 +230,38 @@ export class HaInput extends LitElement {
       >
         ${this.label || hasLabelSlot
           ? html`<slot name="label" slot="label"
-              >${this._renderLabel(this.label, this.required)}</slot
+              >${this.label
+                ? this._renderLabel(this.label, this.required)
+                : nothing}</slot
             >`
           : nothing}
-        <slot
-          name="start"
-          slot="start"
-          @slotchange=${this._syncStartSlotWidth}
-        ></slot>
-        <slot name="end" slot="end"></slot>
-        <slot name="clear-icon" slot="clear-icon">
-          <ha-icon-button .path=${mdiClose}></ha-icon-button>
+        <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
+          ${this.renderStartDefault()}
         </slot>
-        <slot name="show-password-icon" slot="show-password-icon">
+        <slot name="end" slot="end"> ${this.renderEndDefault()} </slot>
+        <slot name="clear-button" slot="clear-button">
           <ha-icon-button
-            @keydown=${stopPropagation}
-            .path=${mdiEye}
+            @click=${this._handleClearClick}
+            .label=${this.i18n?.localize?.("ui.components.input.clear") ||
+            "Clear"}
+            .path=${mdiClose}
           ></ha-icon-button>
         </slot>
-        <slot name="hide-password-icon" slot="hide-password-icon">
+        <slot name="password-toggle-button" slot="password-toggle-button">
           <ha-icon-button
             @keydown=${stopPropagation}
-            .path=${mdiEyeOff}
+            @click=${this._handlePasswordToggle}
+            .label=${this.i18n?.localize?.(
+              `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
+            ) || (this.passwordVisible ? "Hide password" : "Show password")}
+            .path=${this.passwordVisible ? mdiEyeOff : mdiEye}
           ></ha-icon-button>
         </slot>
         <div
           slot="hint"
-          class=${this.invalid || this._invalid ? "error" : ""}
+          class=${classMap({
+            error: this.invalid || this._invalid,
+          })}
           role=${ifDefined(this.invalid || this._invalid ? "alert" : undefined)}
           aria-live="polite"
         >
@@ -344,25 +274,12 @@ export class HaInput extends LitElement {
     `;
   }
 
-  private _handleInput() {
-    this.value = this._input?.value ?? undefined;
-    if (this._invalid && this._input?.checkValidity()) {
-      this._invalid = false;
-    }
+  protected renderStartDefault(): TemplateResult | typeof nothing {
+    return nothing;
   }
 
-  private _handleChange() {
-    this.value = this._input?.value ?? undefined;
-  }
-
-  private _handleBlur() {
-    if (this.autoValidate) {
-      this._invalid = !this._input?.checkValidity();
-    }
-  }
-
-  private _handleInvalid() {
-    this._invalid = true;
+  protected renderEndDefault(): TemplateResult | typeof nothing {
+    return nothing;
   }
 
   private _syncStartSlotWidth = () => {
@@ -385,158 +302,147 @@ export class HaInput extends LitElement {
     }
   };
 
-  private _renderLabel = memoizeOne((label: string, required: boolean) => {
-    if (!required) {
-      return label;
-    }
+  private _handleClearClick() {
+    this._input?.clear();
+  }
 
-    let marker = getComputedStyle(this).getPropertyValue(
-      "--ha-input-required-marker"
-    );
+  private _handlePasswordToggle() {
+    this.passwordVisible = !this.passwordVisible;
+  }
 
-    if (!marker) {
-      marker = "*";
-    }
+  static styles = [
+    waInputStyles,
+    css`
+      :host {
+        display: flex;
+        align-items: flex-start;
+        padding-top: var(--ha-input-padding-top);
+        padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-2));
+        text-align: var(--ha-input-text-align, start);
+      }
+      :host([appearance="outlined"]) {
+        padding-bottom: var(--ha-input-padding-bottom);
+      }
 
-    if (marker.startsWith('"') && marker.endsWith('"')) {
-      marker = marker.slice(1, -1);
-    }
+      wa-input::part(label) {
+        padding-inline-start: calc(
+          var(--start-slot-width, 0px) + var(--ha-space-4)
+        );
+        padding-inline-end: var(--ha-space-4);
+        padding-top: var(--ha-space-5);
+      }
 
-    if (!marker) {
-      return label;
-    }
+      :host([appearance="material"]:focus-within) wa-input::part(label) {
+        color: var(--primary-color);
+      }
 
-    return `${label}${marker}`;
-  });
+      wa-input.label-raised::part(label),
+      :host(:focus-within) wa-input::part(label),
+      :host([type="date"]) wa-input::part(label) {
+        padding-top: var(--ha-space-3);
+        font-size: var(--ha-font-size-xs);
+      }
 
-  static styles = css`
-    :host {
-      display: flex;
-      align-items: flex-start;
-      padding-top: var(--ha-input-padding-top, var(--ha-space-2));
-      padding-bottom: var(--ha-input-padding-bottom, var(--ha-space-2));
-      text-align: var(--ha-input-text-align, start);
-    }
-    wa-input {
-      flex: 1;
-      min-width: 0;
-      height: 76px;
-      --wa-transition-fast: var(--wa-transition-normal);
-      position: relative;
-    }
+      wa-input::part(base) {
+        height: 56px;
+        padding: 0 var(--ha-space-4);
+      }
 
-    wa-input::part(label) {
-      position: absolute;
-      top: 0;
-      font-weight: var(--ha-font-weight-normal);
-      font-family: var(--ha-font-family-body);
-      transition: all var(--wa-transition-normal) ease-in-out;
-      color: var(--secondary-text-color);
-      line-height: var(--ha-line-height-condensed);
-      z-index: 1;
-      padding-inline-start: calc(
-        var(--start-slot-width, 0px) + var(--ha-space-4)
-      );
-      padding-inline-end: var(--ha-space-4);
-      padding-top: var(--ha-space-5);
-      font-size: var(--ha-font-size-m);
-    }
+      :host([appearance="outlined"]) wa-input.no-label::part(base) {
+        height: 32px;
+        padding: 0 var(--ha-space-2);
+      }
 
-    :host(:focus-within) wa-input::part(label) {
-      color: var(--primary-color);
-    }
+      :host([appearance="outlined"]) wa-input::part(base) {
+        border: 1px solid var(--ha-color-border-neutral-quiet);
+        background-color: var(--card-background-color);
+        border-radius: var(--ha-border-radius-md);
+        transition: border-color var(--wa-transition-normal) ease-in-out;
+      }
 
-    :host(:focus-within) wa-input.invalid::part(label),
-    wa-input.invalid:not([disabled])::part(label) {
-      color: var(--ha-color-fill-danger-loud-resting);
-    }
+      :host([appearance="material"]) ::part(base)::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: var(--ha-color-border-neutral-loud);
+        transition:
+          height var(--wa-transition-normal) ease-in-out,
+          background-color var(--wa-transition-normal) ease-in-out;
+      }
 
-    wa-input.label-raised::part(label),
-    :host(:focus-within) wa-input::part(label) {
-      padding-top: var(--ha-space-3);
-      font-size: var(--ha-font-size-xs);
-    }
+      :host([appearance="material"]:focus-within) wa-input::part(base)::after {
+        height: 2px;
+        background-color: var(--primary-color);
+      }
 
-    wa-input::part(base) {
-      height: 56px;
-      background-color: var(--ha-color-fill-neutral-quiet-resting);
-      border-top-left-radius: var(--ha-border-radius-sm);
-      border-top-right-radius: var(--ha-border-radius-sm);
-      border-bottom-left-radius: var(--ha-border-radius-square);
-      border-bottom-right-radius: var(--ha-border-radius-square);
-      border: none;
-      padding: 0 var(--ha-space-4);
-      position: relative;
-      transition: background-color var(--wa-transition-normal) ease-in-out;
-    }
+      :host([appearance="material"]:focus-within)
+        wa-input.invalid::part(base)::after,
+      :host([appearance="material"])
+        wa-input.invalid:not([disabled])::part(base)::after {
+        background-color: var(--ha-color-border-danger-normal);
+      }
 
-    wa-input::part(base)::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background-color: var(--ha-color-border-neutral-loud);
-      transition:
-        height var(--wa-transition-normal) ease-in-out,
-        background-color var(--wa-transition-normal) ease-in-out;
-    }
+      wa-input::part(input) {
+        padding-top: var(--ha-space-3);
+        padding-inline-start: var(--input-padding-inline-start, 0);
+      }
 
-    :host(:focus-within) wa-input::part(base)::after {
-      height: 2px;
-      background-color: var(--primary-color);
-    }
+      wa-input.no-label::part(input) {
+        padding-top: 0;
+      }
+      :host([type="color"]) wa-input::part(input) {
+        padding-top: var(--ha-space-6);
+        padding-bottom: 2px;
+        cursor: pointer;
+      }
+      :host([type="color"]) wa-input.no-label::part(input) {
+        padding: var(--ha-space-2);
+      }
+      :host([type="color"]) wa-input.no-label::part(base) {
+        padding: 0;
+      }
+      wa-input::part(input)::placeholder {
+        color: var(--ha-color-neutral-60);
+      }
 
-    :host(:focus-within) wa-input.invalid::part(base)::after,
-    wa-input.invalid:not([disabled])::part(base)::after {
-      background-color: var(--ha-color-border-danger-normal);
-    }
+      wa-input::part(base):hover {
+        background-color: var(--ha-color-form-background-hover);
+      }
 
-    wa-input::part(input) {
-      padding-top: var(--ha-space-3);
-      padding-inline-start: var(--input-padding-inline-start, 0);
-    }
-    wa-input.no-label::part(input) {
-      padding-top: 0;
-    }
-    :host([type="color"]) wa-input::part(input) {
-      padding-top: var(--ha-space-6);
-    }
-    wa-input::part(input)::placeholder {
-      color: var(--ha-color-neutral-60);
-    }
+      :host([appearance="outlined"]) wa-input::part(base):hover {
+        border-color: var(--ha-color-border-neutral-normal);
+      }
+      :host([appearance="outlined"]:focus-within) wa-input::part(base) {
+        border-color: var(--primary-color);
+      }
 
-    :host(:focus-within) wa-input::part(base) {
-      outline: none;
-    }
+      wa-input:disabled::part(base) {
+        background-color: var(--ha-color-form-background-disabled);
+      }
 
-    wa-input::part(base):hover {
-      background-color: var(--ha-color-fill-neutral-quiet-hover);
-    }
+      wa-input:disabled::part(label) {
+        opacity: 0.5;
+      }
 
-    wa-input:disabled::part(base) {
-      background-color: var(--ha-color-fill-disabled-quiet-resting);
-    }
+      wa-input::part(end) {
+        color: var(--ha-color-text-secondary);
+      }
 
-    wa-input::part(hint) {
-      height: var(--ha-space-5);
-      margin-block-start: 0;
-      margin-inline-start: var(--ha-space-3);
-      font-size: var(--ha-font-size-xs);
-      display: flex;
-      align-items: center;
-      color: var(--ha-color-text-secondary);
-    }
+      ha-icon-button {
+        display: flex;
+        align-items: center;
+        color: var(--ha-color-text-secondary);
+      }
 
-    .error {
-      color: var(--ha-color-on-danger-quiet);
-    }
-
-    wa-input::part(end) {
-      color: var(--ha-color-text-secondary);
-    }
-  `;
+      :host([appearance="outlined"]) wa-input.no-label {
+        --ha-icon-button-size: 24px;
+        --mdc-icon-size: 18px;
+      }
+    `,
+  ];
 }
 
 declare global {

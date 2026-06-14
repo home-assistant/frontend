@@ -137,7 +137,6 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
         @closed=${this._dialogClosed}
@@ -316,7 +315,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         }
       },
       async () => {
-        if (isComponentLoaded(this.hass, "backup")) {
+        if (isComponentLoaded(this.hass.config, "backup")) {
           return true;
         }
         return (await waitForIntegrationSetup(this.hass, "backup"))
@@ -364,7 +363,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       restore_homeassistant: homeassistant_included,
     };
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       restoreParams.restore_addons = addons.map((addon) => addon.slug);
       restoreParams.restore_folders = folders;
     }

@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -75,7 +76,7 @@ class HuiTargetHumidityCardFeature
     } as TargetHumidityCardFeatureConfig;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (
       (changedProp.has("hass") || changedProp.has("context")) &&
@@ -99,9 +100,9 @@ class HuiTargetHumidityCardFeature
     return this._stateObj!.attributes.max_humidity ?? 100;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this._targetHumidity = value;
     this._callService();
   }

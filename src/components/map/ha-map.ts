@@ -12,7 +12,7 @@ import type {
 } from "leaflet";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
@@ -23,6 +23,7 @@ import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
 import { filterXSS } from "../../common/util/xss";
 import type { HomeAssistant, ThemeMode } from "../../types";
@@ -104,6 +105,8 @@ export class HaMap extends ReactiveElement {
   public clusterMarkers = true;
 
   @state() private _loaded = false;
+
+  @query("#map") private _mapElement?: HTMLElement;
 
   public leafletMap?: Map;
 
@@ -235,11 +238,11 @@ export class HaMap extends ReactiveElement {
   }
 
   private _updateMapStyle(): void {
-    const map = this.renderRoot.querySelector("#map");
-    map!.classList.toggle("clickable", this.clickable);
-    map!.classList.toggle("dark", this._darkMode);
-    map!.classList.toggle("forced-dark", this.themeMode === "dark");
-    map!.classList.toggle("forced-light", this.themeMode === "light");
+    const map = this._mapElement!;
+    map.classList.toggle("clickable", this.clickable);
+    map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("forced-dark", this.themeMode === "dark");
+    map.classList.toggle("forced-light", this.themeMode === "light");
   }
 
   private _loading = false;
@@ -254,7 +257,11 @@ export class HaMap extends ReactiveElement {
     }
     this._loading = true;
     try {
-      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map);
+      [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
+        latitude: this.hass?.config.latitude ?? 52.3731339,
+        longitude: this.hass?.config.longitude ?? 4.8903147,
+        zoom: this.zoom,
+      });
       this._updateMapStyle();
       this.leafletMap.on("click", (ev) => {
         if (this._clickCount === 0) {
@@ -578,18 +585,17 @@ export class HaMap extends ReactiveElement {
       const customTitle = typeof entity !== "string" ? entity.name : undefined;
       const title = customTitle ?? computeStateName(stateObj);
       const {
-        latitude,
-        longitude,
         passive,
         icon,
         radius,
         entity_picture: entityPicture,
-        gps_accuracy: gpsAccuracy,
       } = stateObj.attributes;
 
-      if (!(latitude && longitude)) {
+      const location = getEntityLocation(stateObj, hass.states);
+      if (!location) {
         continue;
       }
+      const { latitude, longitude, gpsAccuracy } = location;
 
       if (computeStateDomain(stateObj) === "zone") {
         // DRAW ZONE
@@ -598,7 +604,7 @@ export class HaMap extends ReactiveElement {
         }
 
         // create icon
-        let iconHTML = "";
+        let iconHTML: string;
         if (icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", icon);

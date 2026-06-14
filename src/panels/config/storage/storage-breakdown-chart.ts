@@ -78,7 +78,6 @@ export class StorageBreakdownChart extends LitElement {
               )}
             ></ha-segmented-bar>`
           : html`<ha-sunburst-chart
-              .hass=${this.hass}
               .data=${this._transformToSunburstData(this.storageInfo!)}
               .valueFormatter=${this._formatBytes}
             ></ha-sunburst-chart>`}

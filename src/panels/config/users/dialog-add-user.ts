@@ -7,11 +7,11 @@ import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/item/ha-row-item";
 import { createAuthForUser } from "../../../data/auth";
 import type { User } from "../../../data/user";
 import {
@@ -20,12 +20,24 @@ import {
   createUser,
   deleteUser,
 } from "../../../data/user";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import type { AddUserDialogParams } from "./show-dialog-add-user";
 
+interface AddUserFormState {
+  name?: string;
+  username?: string;
+  password?: string;
+  passwordConfirm?: string;
+  isAdmin?: boolean;
+  localOnly?: boolean;
+}
+
 @customElement("dialog-add-user")
-export class DialogAddUser extends LitElement {
+export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loading = false;
@@ -70,9 +82,21 @@ export class DialogAddUser extends LitElement {
     }
 
     this._open = true;
+
+    this._initDirtyTracking(
+      { type: "shallow" },
+      {
+        name: this._name,
+        username: this._username,
+        password: "",
+        passwordConfirm: "",
+        isAdmin: false,
+        localOnly: false,
+      }
+    );
   }
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.addEventListener("keypress", (ev) => {
       if (ev.key === "Enter") {
@@ -88,9 +112,8 @@ export class DialogAddUser extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.users.add_user.caption"
         )}
@@ -158,7 +181,7 @@ export class DialogAddUser extends LitElement {
               "ui.panel.config.users.add_user.password_not_match"
             )}
           ></ha-input>
-          <ha-md-list-item>
+          <ha-row-item>
             <span slot="headline"
               >${this.hass.localize(
                 "ui.panel.config.users.editor.local_access_only"
@@ -174,8 +197,8 @@ export class DialogAddUser extends LitElement {
               .checked=${this._localOnly}
               @change=${this._localOnlyChanged}
             ></ha-switch>
-          </ha-md-list-item>
-          <ha-md-list-item>
+          </ha-row-item>
+          <ha-row-item>
             <span slot="headline"
               >${this.hass.localize("ui.panel.config.users.editor.admin")}</span
             >
@@ -189,7 +212,7 @@ export class DialogAddUser extends LitElement {
               .checked=${this._isAdmin}
               @change=${this._adminChanged}
             ></ha-switch>
-          </ha-md-list-item>
+          </ha-row-item>
           ${!this._isAdmin
             ? html`
                 <ha-alert alert-type="info">
@@ -243,6 +266,7 @@ export class DialogAddUser extends LitElement {
 
     if (parts.length) {
       this._username = parts[0].toLowerCase();
+      this._publishDirtyState();
     }
   }
 
@@ -250,16 +274,30 @@ export class DialogAddUser extends LitElement {
     this._error = undefined;
     const target = ev.target as HaInput;
     this[`_${target.name}`] = target.value;
+    this._publishDirtyState();
   }
 
   private async _adminChanged(ev: Event): Promise<void> {
     const target = ev.target as HaSwitch;
     this._isAdmin = target.checked;
+    this._publishDirtyState();
   }
 
   private _localOnlyChanged(ev: Event): void {
     const target = ev.target as HaSwitch;
     this._localOnly = target.checked;
+    this._publishDirtyState();
+  }
+
+  private _publishDirtyState(): void {
+    this._updateDirtyState({
+      name: this._name,
+      username: this._username,
+      password: this._password,
+      passwordConfirm: this._passwordConfirm,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+    });
   }
 
   private async _createUser(ev: Event) {
@@ -307,6 +345,7 @@ export class DialogAddUser extends LitElement {
       },
     ];
     this._params!.userAddedCallback(user);
+    this._markDirtyStateClean();
     this._close();
   }
 
@@ -321,10 +360,8 @@ export class DialogAddUser extends LitElement {
           display: flex;
           padding: 8px 0;
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
       `,
     ];

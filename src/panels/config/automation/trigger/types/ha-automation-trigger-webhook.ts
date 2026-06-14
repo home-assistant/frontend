@@ -11,14 +11,14 @@ import "../../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
+import type { HaInput } from "../../../../../components/input/ha-input";
 import type {
   AutomationConfig,
   WebhookTrigger,
 } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import { showToast } from "../../../../../util/toast";
+import { showEditorToast } from "../../editor-toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 const SUPPORTED_METHODS = ["GET", "HEAD", "POST", "PUT"];
@@ -79,7 +79,7 @@ export class HaWebhookTrigger extends LitElement {
     return `${urlSafeAlias}-${urlSafeId}`;
   }
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has("trigger")) {
       if (this.trigger.allowed_methods === undefined) {
@@ -103,28 +103,27 @@ export class HaWebhookTrigger extends LitElement {
 
     return html`
       <div class="flex">
-        <ha-textfield
+        <ha-input
           name="webhook_id"
           .label=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id"
           )}
-          .helper=${this.hass.localize(
+          .hint=${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.webhook.webhook_id_helper"
           )}
           .disabled=${this.disabled}
-          iconTrailing
           .value=${webhookId || ""}
           @input=${this._valueChanged}
         >
           <ha-icon-button
             @click=${this._copyUrl}
-            slot="trailingIcon"
+            slot="end"
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.triggers.type.webhook.copy_url"
             )}
             .path=${mdiContentCopy}
           ></ha-icon-button>
-        </ha-textfield>
+        </ha-input>
         <ha-dropdown
           @wa-select=${this._handleDropdownSelect}
           placement="bottom-end"
@@ -199,11 +198,11 @@ export class HaWebhookTrigger extends LitElement {
   }
 
   private async _copyUrl(ev): Promise<void> {
-    const inputElement = ev.target.parentElement as HaTextField;
+    const inputElement = ev.target.parentElement as HaInput;
     const url = this.hass.hassUrl(`/api/webhook/${inputElement.value}`);
 
     await copyToClipboard(url);
-    showToast(this, {
+    showEditorToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }
@@ -229,11 +228,11 @@ export class HaWebhookTrigger extends LitElement {
       display: flex;
     }
 
-    ha-textfield {
+    ha-input {
       flex: 1;
     }
 
-    ha-textfield > ha-icon-button {
+    ha-input > ha-icon-button {
       --ha-icon-button-size: 24px;
       --mdc-icon-size: 18px;
       color: var(--secondary-text-color);

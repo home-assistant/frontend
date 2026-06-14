@@ -1,10 +1,18 @@
 import { consume } from "@lit/context";
-import type { CSSResult, TemplateResult, LitElement } from "lit";
+import type {
+  CSSResult,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/animation/ha-fade-in";
+import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -12,10 +20,9 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
-import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
 
 /** Minimum config shape shared by both AutomationConfig and ScriptConfig. */
 interface BaseEditorConfig {
@@ -50,13 +57,14 @@ export const automationScriptEditorStyles: CSSResult = css`
   p {
     margin-bottom: 0;
   }
-  ha-fab {
+  ha-button[slot="fab"] {
     position: fixed;
     right: calc(16px + var(--safe-area-inset-right, 0px));
     bottom: calc(-80px - var(--safe-area-inset-bottom));
     transition: bottom 0.3s;
+    --ha-button-box-shadow: var(--ha-box-shadow-l);
   }
-  ha-fab.dirty {
+  ha-button[slot="fab"].dirty {
     bottom: calc(16px + var(--safe-area-inset-bottom, 0px));
   }
   ha-tooltip ha-svg-icon {
@@ -80,7 +88,9 @@ export interface EditorDomainHooks<TConfig> {
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
-  class AutomationScriptEditorClass extends superClass {
+  class AutomationScriptEditorClass extends DirtyStateProviderMixin<TConfig>()(
+    superClass
+  ) {
     @property({ attribute: false }) public hass!: HomeAssistant;
 
     @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -93,9 +103,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     @state()
     @consume({ context: fullEntitiesContext, subscribe: true })
-    entityRegistry!: EntityRegistryEntry[];
-
-    @state() protected dirty = false;
+    entityRegistry?: EntityRegistryEntry[];
 
     @state() protected errors?: string;
 
@@ -119,7 +127,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @consume({ context: fullEntitiesContext, subscribe: true })
     @transform<EntityRegistryEntry[], EntityRegistryEntry>({
       transformer: function (this: { currentEntityId?: string }, value) {
-        return value.find(
+        return value?.find(
           ({ entity_id }) => entity_id === this.currentEntityId
         );
       },
@@ -134,6 +142,42 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected entityRegCreated?: (
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
+
+    private _relatedContextAreaId?: string;
+
+    protected willUpdate(changedProps: PropertyValues): void {
+      super.willUpdate(changedProps);
+      if (
+        changedProps.has("currentEntityId") ||
+        changedProps.has("entityRegistry")
+      ) {
+        this._setRelatedContext();
+      }
+    }
+
+    private _setRelatedContext(): void {
+      const areaId = this.currentEntityId
+        ? this.entityRegistry?.find(
+            ({ entity_id }) => entity_id === this.currentEntityId
+          )?.area_id || undefined
+        : undefined;
+
+      if (areaId === this._relatedContextAreaId) {
+        return;
+      }
+
+      this._relatedContextAreaId = areaId;
+      fireEvent(
+        this,
+        "hass-related-context",
+        areaId
+          ? {
+              itemType: "area",
+              itemId: areaId,
+            }
+          : undefined
+      );
+    }
 
     protected renderLoading(): TemplateResult {
       return html`
@@ -174,7 +218,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     protected takeControlSave() {
       this.readOnly = false;
-      this.dirty = true;
+      // Force dirty: set baseline to null so current config always differs
+      this._initDirtyTracking({ type: "deep" }, null as unknown as TConfig);
+      this._updateDirtyState(this.config!);
       this.blueprintConfig = undefined;
     }
 
@@ -194,10 +240,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
     };
 
-    protected get isDirty() {
-      return this.dirty;
-    }
-
     protected async promptDiscardChanges() {
       return this.confirmUnsavedChanged();
     }
@@ -216,9 +258,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       const domain = hooks.domain;
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
-        this.dirty = false;
         this.readOnly = false;
         this.config = hooks.normalizeConfig(config);
+        this._initDirtyTracking({ type: "deep" }, this.config);
         hooks.checkValidation();
       } catch (err: any) {
         if (err.status_code !== 404) {
@@ -234,7 +276,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
           goBack("/config");
           return;
         }
-        const entity = this.entityRegistry.find(
+        const entity = this.entityRegistry?.find(
           (ent) => ent.platform === domain && ent.unique_id === id
         );
         if (entity) {

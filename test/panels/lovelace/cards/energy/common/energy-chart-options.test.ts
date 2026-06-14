@@ -31,10 +31,10 @@ describe("getSuggestedMax", () => {
     assert.equal(result.getTime(), end.getTime());
   });
 
-  it("rounds down to start of hour for hour period", () => {
+  it("rounds down to middle of hour for hour period", () => {
     const end = new Date("2024-03-15T14:37:22.000");
     const result = getSuggestedMax("hour", end, false);
-    assert.equal(result.getMinutes(), 0);
+    assert.equal(result.getMinutes(), 30);
     assert.equal(result.getSeconds(), 0);
     assert.equal(result.getMilliseconds(), 0);
     assert.equal(result.getHours(), 14);
@@ -531,5 +531,43 @@ describe("getCompareTransform", () => {
     // Should shift by 3 months
     assert.equal(result.getMonth(), 5); // June
     assert.equal(result.getDate(), 20);
+  });
+
+  it("falls back to day shift when month shift would clamp end-of-month days", () => {
+    // Comparing Feb 2025 (28d) to Jan 2025 (31d): Jan 29/30/31 don't have a
+    // matching day in Feb, so addMonths would clamp them all to Feb 28 and
+    // stack them on top of the last main-range bar. Day-shift keeps them
+    // unique past the main range.
+    const start = new Date("2025-02-01T00:00:00");
+    const compareStart = new Date("2025-01-01T00:00:00");
+    const transform = getCompareTransform(start, compareStart);
+
+    const jan31 = new Date("2025-01-31T00:00:00");
+    const result = transform(jan31);
+    // Jan 31 + 31 days = Mar 3 (not clamped to Feb 28)
+    assert.equal(result.getMonth(), 2); // March
+    assert.equal(result.getDate(), 3);
+
+    // Jan 28 still maps to Feb 28 via the normal month shift
+    const jan28 = new Date("2025-01-28T00:00:00");
+    const inRange = transform(jan28);
+    assert.equal(inRange.getMonth(), 1); // February
+    assert.equal(inRange.getDate(), 28);
+  });
+
+  it("falls back to day shift when year shift would clamp Feb 29 in a non-leap year", () => {
+    // Comparing 2025 (non-leap) to 2024 (leap): Feb 29 2024 has no match in
+    // 2025, so addYears would clamp it to Feb 28 2025 and stack it on top of
+    // that day's main bar.
+    const start = new Date("2025-01-01T00:00:00");
+    const compareStart = new Date("2024-01-01T00:00:00");
+    const transform = getCompareTransform(start, compareStart);
+
+    const feb29 = new Date("2024-02-29T00:00:00");
+    const result = transform(feb29);
+    // Feb 29 2024 + 366 days = Mar 1 2025 (not clamped to Feb 28 2025)
+    assert.equal(result.getFullYear(), 2025);
+    assert.equal(result.getMonth(), 2); // March
+    assert.equal(result.getDate(), 1);
   });
 });

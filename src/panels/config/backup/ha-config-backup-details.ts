@@ -5,22 +5,24 @@ import {
   mdiHarddisk,
   mdiNas,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fade-in";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import type {
   BackupAgent,
   BackupConfig,
@@ -43,7 +45,6 @@ import "./components/ha-backup-details-restore";
 import "./components/ha-backup-details-summary";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { downloadBackup } from "./helper/download_backup";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface Agent extends BackupContentAgent {
   id: string;
@@ -89,7 +90,7 @@ class HaConfigBackupDetails extends LitElement {
 
   @state() private _error?: string;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (this.backupId) {
@@ -104,7 +105,7 @@ class HaConfigBackupDetails extends LitElement {
       return nothing;
     }
 
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
 
     return html`
       <hass-subpage
@@ -170,7 +171,7 @@ class HaConfigBackupDetails extends LitElement {
                       )}
                     </div>
                     <div class="card-content">
-                      <ha-md-list>
+                      <ha-list-base>
                         ${this._agents.map((agent) => {
                           const agentId = agent.id;
 
@@ -185,7 +186,7 @@ class HaConfigBackupDetails extends LitElement {
                           const unencrypted = !agent.protected;
 
                           return html`
-                            <ha-md-list-item>
+                            <ha-list-item-base>
                               ${
                                 isLocalAgent(agentId)
                                   ? html`
@@ -281,10 +282,10 @@ class HaConfigBackupDetails extends LitElement {
                                     `
                                   : nothing
                               }
-                            </ha-md-list-item>
+                            </ha-list-item-base>
                           `;
                         })}
-                      </ha-md-list>
+                      </ha-list-base>
                     </div>
                   </ha-card>
                 `}
@@ -373,26 +374,20 @@ class HaConfigBackupDetails extends LitElement {
       display: flex;
       justify-content: flex-end;
     }
-    ha-md-list {
-      background: none;
-      padding: 0;
+    ha-list-item-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-list-item-two-line-container-height: 64px;
-    }
-    ha-md-list-item img {
+    ha-list-item-base img {
       width: 48px;
     }
-    ha-md-list-item ha-svg-icon[slot="start"] {
+    ha-list-item-base ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
     }
     ha-button.danger {
       --mdc-theme-primary: var(--error-color);
     }
-    ha-md-list-item [slot="supporting-text"] {
+    ha-list-item-base [slot="supporting-text"] {
       display: flex;
       align-items: center;
       flex-direction: row;

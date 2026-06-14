@@ -29,7 +29,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -69,7 +69,6 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
                 <ha-attribute-value
                   .hideUnit=${this._config.suffix !== undefined &&
                   this._config.suffix !== ""}
-                  .hass=${this.hass}
                   .stateObj=${stateObj}
                   .attribute=${this._config.attribute}
                 >

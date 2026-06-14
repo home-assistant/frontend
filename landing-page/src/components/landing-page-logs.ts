@@ -1,7 +1,5 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
-// eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -119,7 +117,7 @@ class LandingPageLogs extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
 
     this._scrolledToBottomController.observe(this._scrollBottomMarkerElement!);

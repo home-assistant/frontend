@@ -11,7 +11,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-markdown";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
@@ -120,7 +120,6 @@ class MoreInfoScript extends LitElement {
                   ...(this.data ? { data: this.data } : {}),
                   ...this._scriptData,
                 }}
-                .showAdvanced=${this.hass.userData?.showAdvanced}
                 .narrow=${this.narrow}
                 @value-changed=${this._scriptDataChanged}
               ></ha-service-control>
@@ -142,7 +141,7 @@ class MoreInfoScript extends LitElement {
         <ha-control-button
           class="run-button"
           @click=${this._runScript}
-          .disabled=${isUnavailableState(stateObj.state) || !this._canRun()}
+          .disabled=${stateObj.state === UNAVAILABLE || !this._canRun()}
         >
           <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
           ${this.hass!.localize("ui.card.script.run")}
@@ -151,7 +150,7 @@ class MoreInfoScript extends LitElement {
     `;
   }
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has("stateObj")) {

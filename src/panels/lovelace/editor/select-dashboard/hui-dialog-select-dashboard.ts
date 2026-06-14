@@ -68,7 +68,6 @@ export class HuiDialogSelectDashboard extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${dialogTitle}
         .preventScrimClose=${this._saving}

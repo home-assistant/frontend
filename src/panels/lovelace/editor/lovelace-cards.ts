@@ -137,6 +137,10 @@ export const coreCards: Card[] = [
     type: "heading",
     showElement: true,
   },
+  {
+    type: "shortcut",
+    showElement: true,
+  },
 ];
 
 export const energyCards: Card[] = [
@@ -206,6 +210,10 @@ export const energyCards: Card[] = [
   },
   {
     type: "energy-grid-neutrality-gauge",
+    showElement: false,
+  },
+  {
+    type: "energy-grid-balance",
     showElement: false,
   },
   {

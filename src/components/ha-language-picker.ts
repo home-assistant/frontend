@@ -111,7 +111,7 @@ export class HaLanguagePicker extends LitElement {
 
   @query("ha-generic-picker", true) public genericPicker!: HaGenericPicker;
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._computeDefaultLanguageOptions();
   }
@@ -152,7 +152,6 @@ export class HaLanguagePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
-        popover-placement="bottom-end"
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${this.hass?.localize(
           "ui.components.language-picker.no_languages"

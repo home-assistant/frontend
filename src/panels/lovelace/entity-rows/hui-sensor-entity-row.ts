@@ -1,8 +1,11 @@
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { isUnavailableState } from "../../../data/entity/entity";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import {
+  SENSOR_DEVICE_CLASS_UPTIME,
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+} from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -29,7 +32,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -50,13 +53,19 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_TIMESTAMP &&
-        !isUnavailableState(stateObj.state)
+        ${SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+          stateObj.attributes.device_class
+        ) &&
+        stateObj.state !== UNAVAILABLE &&
+        stateObj.state !== UNKNOWN
           ? html`
               <hui-timestamp-display
                 .hass=${this.hass}
                 .ts=${new Date(stateObj.state)}
-                .format=${this._config.format}
+                .format=${this._config.format ??
+                (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_UPTIME
+                  ? "total"
+                  : undefined)}
                 capitalize
               ></hui-timestamp-display>
             `

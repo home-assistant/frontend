@@ -1,12 +1,10 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import { consume } from "@lit/context";
-// @ts-ignore
-import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing, unsafeCSS } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -87,6 +85,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public createDomains?: string[];
 
+  @property({ type: Boolean, attribute: "primary-entities-only" })
+  public primaryEntitiesOnly?: boolean;
+
   /**
    * Show only targets with entities from specific domains.
    * @type {Array}
@@ -129,11 +130,56 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _newTarget?: TargetItem;
 
-  private _getDevicesMemoized = memoizeOne(getDevices);
+  private _getDevicesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      configEntryLookup: Record<string, ConfigEntry>,
+      includeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeDevices?: string[],
+      value?: string,
+      idPrefix?: string
+    ) =>
+      getDevices(hass, configEntryLookup, {
+        includeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value,
+        idPrefix,
+      })
+  );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getEntitiesMemoized = memoizeOne(getEntities);
+  private _getEntitiesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      includeDeviceClasses?: string[],
+      includeUnitOfMeasurement?: string[],
+      includeEntities?: string[],
+      excludeEntities?: string[],
+      value?: string,
+      idPrefix?: string
+    ) =>
+      getEntities(hass, {
+        includeDomains,
+        excludeDomains,
+        entityFilter,
+        includeDeviceClasses,
+        includeUnitOfMeasurement,
+        includeEntities,
+        excludeEntities,
+        value,
+        idPrefix,
+      })
+  );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
@@ -156,11 +202,23 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ),
   };
 
-  public willUpdate(changedProps: PropertyValues) {
+  @state() private _pendingEntityId?: string;
+
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
       this._loadConfigEntries();
+    }
+
+    if (
+      this._pendingEntityId &&
+      changedProps.has("hass") &&
+      this.hass.states !== changedProps.get("hass")?.states &&
+      this.hass.states[this._pendingEntityId]
+    ) {
+      this._addTarget(this._pendingEntityId, "entity");
+      this._pendingEntityId = undefined;
     }
   }
 
@@ -200,7 +258,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
 
     return html`
-      <div class="mdc-chip-set items">
+      <div class="items">
         ${floorIds.length
           ? floorIds.map(
               (floor_id) => html`
@@ -309,6 +367,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -325,6 +384,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -344,6 +404,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -360,6 +421,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .entityFilter=${this.entityFilter}
                 .includeDomains=${this.includeDomains}
                 .includeDeviceClasses=${this.includeDeviceClasses}
+                .primaryEntitiesOnly=${this.primaryEntitiesOnly}
               >
               </ha-target-picker-item-group>
             `
@@ -469,6 +531,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     fireEvent(this, "value-changed", { value });
 
+    // eslint-disable-next-line lit/prefer-query-decorators
     this.shadowRoot
       ?.querySelector(
         `ha-target-picker-item-group[type='${this._newTarget?.type}']`
@@ -527,10 +590,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       domain,
       dialogClosedCallback: (item) => {
         if (item.entityId) {
-          // prevent error that new entity_id isn't in hass object
-          requestAnimationFrame(() => {
-            this._addTarget(item.entityId!, "entity");
-          });
+          if (this.hass.states[item.entityId]) {
+            this._addTarget(item.entityId, "entity");
+          } else {
+            this._pendingEntityId = item.entityId;
+          }
         }
       },
     });
@@ -900,7 +964,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           this.hass,
           configEntryLookup,
           includeDomains,
-          undefined,
           includeDeviceClasses,
           deviceFilter,
           entityFilter,
@@ -1118,7 +1181,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     let rtl = false;
     let showEntityId = false;
     if (type === "area" || type === "floor") {
-      rtl = computeRTL(this.hass);
+      rtl = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      );
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
     }
@@ -1233,34 +1299,30 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this.hass?.locale.language ?? navigator.language
     );
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .add-target-wrapper {
-        display: flex;
-        justify-content: flex-start;
-        margin-top: var(--ha-space-3);
-      }
+  static styles = css`
+    .add-target-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: var(--ha-space-3);
+    }
 
-      ha-generic-picker {
-        width: 100%;
-      }
+    ha-generic-picker {
+      width: 100%;
+    }
 
-      ${unsafeCSS(chipStyles)}
-      .items {
-        z-index: 2;
-      }
-      .mdc-chip-set {
-        padding: var(--ha-space-1) 0;
-        gap: var(--ha-space-2);
-      }
-
-      .item-groups {
-        overflow: hidden;
-        border: 2px solid var(--divider-color);
-        border-radius: var(--ha-border-radius-lg);
-      }
-    `;
-  }
+    .items {
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      padding: var(--ha-space-2) 0;
+      gap: var(--ha-space-2);
+    }
+    .item-groups {
+      overflow: hidden;
+      border: 2px solid var(--divider-color);
+      border-radius: var(--ha-border-radius-lg);
+    }
+  `;
 }
 
 declare global {

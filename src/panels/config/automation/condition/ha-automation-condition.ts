@@ -25,7 +25,9 @@ import {
 } from "../../../../data/condition";
 import { subscribeLabFeature } from "../../../../data/labs";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -44,6 +46,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
   @property({ type: Boolean }) public root = false;
 
+  @property({ type: Boolean, attribute: false }) public editorDirty = false;
+
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @queryAll("ha-automation-condition-row")
@@ -53,6 +57,8 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Condition[] {
     return this.conditions;
@@ -109,12 +115,40 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("conditions");
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
+    if (!this.hass) {
+      return;
+    }
+
+    const addConditionTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      "condition"
+    );
+
+    if (changedProperties.has("conditions") && addConditionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.conditions.length === 0 &&
+      addConditionTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addConditionDialog());
+    } else if (this._openedAddDialogFromQuery && !addConditionTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
     if (!changedProperties.has("conditions")) {
       return;
     }
@@ -169,6 +203,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
         if (mode === "new") {
           row.expand();
+          row.markAsNew();
         }
 
         if (!this.optionsInSidebar) {
@@ -222,6 +257,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                 .disabled=${this.disabled}
                 .narrow=${this.narrow}
                 @duplicate=${this.duplicateItem}
+                @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
@@ -258,7 +294,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
               .disabled=${this.disabled}
               @click=${this._addConditionDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -279,6 +315,9 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
       type: "condition",
       add: this._addCondition,
       clipboardItem: this._clipboard?.condition?.condition,
+      clipboardPasteToastBottomOffset: this.editorDirty
+        ? EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET
+        : undefined,
     });
   }
 
@@ -286,7 +325,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
     let conditions: Condition[];
     if (value === PASTE_VALUE) {
       conditions = this.conditions.concat(
-        deepClone(this._clipboard!.condition)
+        deepClone(this._clipboard!.condition!)
       );
     } else if (isDynamic(value)) {
       conditions = this.conditions.concat({

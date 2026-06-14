@@ -11,13 +11,14 @@ import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { updateAreaRegistryEntry } from "../../../data/area/area_registry";
 import type {
   FloorRegistryEntry,
@@ -107,7 +108,6 @@ class DialogFloorDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${entry
           ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
@@ -133,7 +133,7 @@ class DialogFloorDetail extends LitElement {
                 `
               : nothing}
 
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._name}
               @input=${this._nameChanged}
@@ -142,20 +142,20 @@ class DialogFloorDetail extends LitElement {
                 "ui.panel.config.floors.editor.name_required"
               )}
               required
-            ></ha-textfield>
+              auto-validate
+            ></ha-input>
 
-            <ha-textfield
+            <ha-input
               .value=${this._level}
               @input=${this._levelChanged}
               .label=${this.hass.localize(
                 "ui.panel.config.floors.editor.level"
               )}
               type="number"
-              .helper=${this.hass.localize(
+              .hint=${this.hass.localize(
                 "ui.panel.config.floors.editor.level_helper"
               )}
-              helperPersistent
-            ></ha-textfield>
+            ></ha-input>
 
             <ha-icon-picker
               .hass=${this.hass}
@@ -210,7 +210,6 @@ class DialogFloorDetail extends LitElement {
                 </p>`}
             <ha-area-picker
               no-add
-              .hass=${this.hass}
               @value-changed=${this._addArea}
               .excludeAreas=${areas.map((a) => a.area_id)}
               .addButtonLabel=${this.hass.localize(
@@ -230,7 +229,6 @@ class DialogFloorDetail extends LitElement {
               )}
             </p>
             <ha-aliases-editor
-              .hass=${this.hass}
               .aliases=${this._aliases}
               @value-changed=${this._aliasesChanged}
             ></ha-aliases-editor>
@@ -293,14 +291,17 @@ class DialogFloorDetail extends LitElement {
     this._addedAreas = new Set(this._addedAreas);
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HaInput).value ?? "";
   }
 
-  private _levelChanged(ev) {
+  private _levelChanged(ev: InputEvent) {
     this._error = undefined;
-    this._level = ev.target.value === "" ? null : Number(ev.target.value);
+    this._level =
+      (ev.target as HaInput).value === ""
+        ? null
+        : Number((ev.target as HaInput).value);
   }
 
   private _iconChanged(ev) {
@@ -355,9 +356,8 @@ class DialogFloorDetail extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        ha-textfield {
-          display: block;
-          margin-bottom: var(--ha-space-4);
+        ha-input {
+          --ha-input-padding-bottom: var(--ha-space-4);
         }
         ha-floor-icon {
           color: var(--secondary-text-color);

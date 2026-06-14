@@ -79,7 +79,6 @@ export default class HaAutomationConditionEditor extends LitElement {
                   `
                 : nothing}
               <ha-yaml-editor
-                .hass=${this.hass}
                 .defaultValue=${this.condition}
                 @value-changed=${this._onYamlChange}
                 .readOnly=${this.disabled}
@@ -124,6 +123,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...(this.condition.alias ? { alias: this.condition.alias } : {}),
+      ...(this.condition.note ? { note: this.condition.note } : {}),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

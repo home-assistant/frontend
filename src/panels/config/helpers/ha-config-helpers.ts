@@ -19,7 +19,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -43,9 +42,10 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
@@ -113,15 +113,15 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import {
-  getEntityIdTableColumn,
-  getAreaTableColumn,
-  getCategoryTableColumn,
-  getLabelsTableColumn,
-  getEditableTableColumn,
-} from "../common/data-table-columns";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
+import {
+  getAreaTableColumn,
+  getCategoryTableColumn,
+  getEditableTableColumn,
+  getEntityIdTableColumn,
+  getLabelsTableColumn,
+} from "../common/data-table-columns";
 import { configSections } from "../ha-panel-config";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import "../integrations/ha-integration-overflow-menu";
@@ -133,7 +133,6 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface HelperItem {
   id: string;
@@ -147,6 +146,7 @@ interface HelperItem {
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   disabled?: boolean;
@@ -221,7 +221,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities: HassEntity[] = [];
+  @state() private _helperEntities?: HassEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -229,7 +229,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
-  @state() private _entitySource: Record<string, string> = {};
+  @state() private _entitySource?: Record<string, string>;
 
   @state() private _selected: string[] = [];
 
@@ -241,13 +241,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
 
   @state() private _filteredItems: DataTableFiltersItems = {};
 
@@ -335,10 +338,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         moveable: false,
         template: (helper) =>
           helper.entity
-            ? html`<ha-state-icon
-                .hass=${this.hass}
-                .stateObj=${helper.entity}
-              ></ha-state-icon>`
+            ? html`<ha-state-icon .stateObj=${helper.entity}></ha-state-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
                 style="color: var(--error-color)"
@@ -382,7 +382,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         showNarrow: true,
         template: (helper) => html`
           <ha-icon-overflow-menu
-            .hass=${this.hass}
             narrow
             .items=${[
               ...(helper.configEntry &&
@@ -500,7 +499,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             configEntry !== undefined || entityState.attributes.editable,
           type: configEntry
             ? configEntry.domain
-            : this._entitySource[entityState.entity_id] ||
+            : this._entitySource![entityState.entity_id] ||
               computeStateDomain(entityState),
           configEntry,
           entity: entityState,
@@ -553,6 +552,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
+          const label_entries = (labels || []).map(
+            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+          );
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
           const areaId =
@@ -573,9 +575,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 `ui.panel.config.helpers.types.${item.type}` as LocalizeKeys
               ) ||
               item.type,
-            label_entries: (labels || []).map(
-              (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-            ),
+            label_entries,
+            labels: label_entries.map((lbl) => lbl.name),
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
@@ -623,7 +624,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.devices}
         .searchLabel=${this.hass.localize(
@@ -799,16 +802,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.helpers.picker.create_helper"
-          )}
-          extended
-          @click=${this._createHelper}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._createHelper}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -826,10 +823,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
   private _applyFilters() {
+    if (!this._helperEntities) {
+      return;
+    }
     const filters = Object.entries(this._filters);
 
     let items: Set<string> | undefined;
@@ -936,6 +939,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
+  private _fromUrl = false;
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
@@ -963,18 +968,21 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   };
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const device = this._searchParms.get("device");
     const label = this._searchParms.get("label");
     const category = this._searchParms.get("category");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!category && !label && !device) {
+    if (!area && !category && !label && !device && !voiceAssistant) {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
       "ha-filter-categories": category ? [category] : [],
@@ -985,6 +993,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 
@@ -995,10 +1006,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     if (!entityReg) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.automation.picker.no_category_support"
+          "ui.panel.config.helpers.picker.no_category_support"
         ),
         text: this.hass.localize(
-          "ui.panel.config.automation.picker.no_category_entity_reg"
+          "ui.panel.config.helpers.picker.no_category_entity_reg"
         ),
       });
       return;
@@ -1097,12 +1108,12 @@ ${rejected
     this._selected = ev.detail.value;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setFiltersFromUrl();
     this._fetchEntitySources();
 
-    if (isComponentLoaded(this.hass, "diagnostics")) {
+    if (isComponentLoaded(this.hass.config, "diagnostics")) {
       fetchDiagnosticHandlers(this.hass).then((infos) => {
         const handlers = {};
         for (const info of infos) {
@@ -1205,7 +1216,6 @@ ${rejected
     showConfigFlowDialog(this, {
       startFlowHandler: domain,
       manifest: await fetchIntegrationManifest(this.hass, domain),
-      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 
@@ -1213,10 +1223,11 @@ ${rejected
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
 
-    if (!this._entityEntries || !this._configEntries) {
+    if (!this._entityEntries || !this._configEntries || !this._entitySource) {
       return;
     }
 
@@ -1248,19 +1259,26 @@ ${rejected
       return;
     }
 
-    const entityIds = Object.keys(this._entitySource);
+    // Use a Set for O(1) lookups: this runs on every state change, and the
+    // filter scans every state, so an array `includes` here is O(states ×
+    // sources).
+    const entityIds = new Set(Object.keys(this._entitySource));
 
     const newHelpers = Object.values(this.hass!.states).filter(
       (entity) =>
-        entityIds.includes(entity.entity_id) ||
+        entityIds.has(entity.entity_id) ||
         isHelperDomain(computeStateDomain(entity))
     );
 
     if (
+      !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
       !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {
       this._helperEntities = newHelpers;
+      if (Object.keys(this._filters).length > 0) {
+        this._applyFilters();
+      }
     }
   }
 
@@ -1350,7 +1368,7 @@ ${rejected
         );
         if (
           !entityReg?.unique_id ||
-          !isComponentLoaded(this.hass, helper.type)
+          !isComponentLoaded(this.hass.config, helper.type)
         ) {
           throw new Error(
             this.hass.localize("ui.panel.config.helpers.picker.delete_failed")
@@ -1429,7 +1447,6 @@ ${rejected
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this._labelsForEntity(entityId).includes(label.label_id)
         );
@@ -1447,12 +1464,8 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
-          <ha-label
-            style=${color ? `--color: ${color}` : ""}
-            .description=${label.description}
-          >
+          <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1537,10 +1550,6 @@ ${rejected
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
       `,
     ];

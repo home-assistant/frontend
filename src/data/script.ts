@@ -36,6 +36,7 @@ export const isMaxMode = arrayLiteralIncludes(MODES_MAX);
 
 export const baseActionStruct = object({
   alias: optional(string()),
+  note: optional(string()),
   continue_on_error: optional(boolean()),
   enabled: optional(boolean()),
 });
@@ -105,6 +106,7 @@ export interface Field {
 
 interface BaseAction {
   alias?: string;
+  note?: string;
   continue_on_error?: boolean;
   enabled?: boolean;
 }
@@ -195,6 +197,7 @@ export interface ForEachRepeat extends BaseRepeat {
 
 export interface Option {
   alias?: string;
+  note?: string;
   conditions: string | Condition[];
   sequence: Action | Action[];
 }

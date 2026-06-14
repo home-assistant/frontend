@@ -75,17 +75,12 @@ class HuiTimestampDisplay extends LitElement {
     )}`;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (!changedProperties.has("format") || !this._connected) {
       return;
     }
-
-    if (INTERVAL_FORMAT.includes("relative")) {
-      this._startInterval();
-    } else {
-      this._clearInterval();
-    }
+    this._startInterval();
   }
 
   private get _format(): string {

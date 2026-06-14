@@ -6,13 +6,14 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import "../../../components/ha-md-list-item";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
+import "../../../components/item/ha-row-item";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { adminChangeUsername } from "../../../data/auth";
 import type { PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
@@ -44,8 +45,20 @@ const cropOptions: CropOptions = {
   aspectRatio: 1,
 };
 
+interface PersonFormState {
+  name: string;
+  picture: string | null;
+  userId: string | undefined;
+  deviceTrackers: string[];
+  isAdmin: boolean | undefined;
+  localOnly: boolean | undefined;
+}
+
 @customElement("dialog-person-detail")
-class DialogPersonDetail extends LitElement implements HassDialog {
+class DialogPersonDetail
+  extends DirtyStateProviderMixin<PersonFormState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
@@ -104,7 +117,19 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._picture = null;
     }
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
+  }
+
+  private _currentState(): PersonFormState {
+    return {
+      name: this._name,
+      picture: this._picture,
+      userId: this._userId,
+      deviceTrackers: this._deviceTrackers,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+    };
   }
 
   public closeDialog() {
@@ -133,9 +158,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     const nameInvalid = this._name.trim() === "";
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this._params.entry
           ? this._params.entry.name
           : this.hass!.localize("ui.panel.config.person.detail.new_person")}
@@ -144,7 +168,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._name}
               @input=${this._nameChanged}
@@ -153,7 +177,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                 "ui.panel.config.person.detail.name_error_msg"
               )}
               required
-            ></ha-textfield>
+            ></ha-input>
 
             <ha-picture-upload
               .hass=${this.hass}
@@ -164,7 +188,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               @change=${this._pictureChanged}
             ></ha-picture-upload>
 
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass!.localize(
                   "ui.panel.config.person.detail.allow_login"
@@ -178,13 +202,13 @@ class DialogPersonDetail extends LitElement implements HassDialog {
               <ha-switch
                 slot="end"
                 @change=${this._allowLoginChanged}
-                .disabled=${this._user &&
+                ?disabled=${this._user &&
                 (this._user.id === this.hass.user?.id ||
                   this._user.system_generated ||
                   this._user.is_owner)}
                 .checked=${this._userId}
               ></ha-switch>
-            </ha-md-list-item>
+            </ha-row-item>
 
             ${this._renderUserFields()}
             ${this._deviceTrackersAvailable(this.hass)
@@ -263,7 +287,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
+            .disabled=${nameInvalid || this._submitting || !this.isDirtyState}
           >
             ${this._params.entry
               ? this.hass!.localize("ui.common.save")
@@ -280,7 +304,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     return html`
       ${!user.system_generated
         ? html`
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.person.detail.username"
@@ -300,12 +324,12 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                     </ha-icon-button>
                   `
                 : nothing}
-            </ha-md-list-item>
+            </ha-row-item>
           `
         : nothing}
       ${!user.system_generated && this.hass.user?.is_owner
         ? html`
-            <ha-md-list-item>
+            <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
                   "ui.panel.config.person.detail.password"
@@ -325,10 +349,10 @@ class DialogPersonDetail extends LitElement implements HassDialog {
                     </ha-icon-button>
                   `
                 : nothing}
-            </ha-md-list-item>
+            </ha-row-item>
           `
         : nothing}
-      <ha-md-list-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(
             "ui.panel.config.person.detail.local_access_only"
@@ -345,8 +369,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           .checked=${this._localOnly}
           @change=${this._localOnlyChanged}
         ></ha-switch>
-      </ha-md-list-item>
-      <ha-md-list-item>
+      </ha-row-item>
+      <ha-row-item>
         <span slot="headline"
           >${this.hass.localize("ui.panel.config.person.detail.admin")}</span
         >
@@ -361,21 +385,24 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           .checked=${this._isAdmin}
           @change=${this._adminChanged}
         ></ha-switch>
-      </ha-md-list-item>
+      </ha-row-item>
     `;
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HTMLInputElement).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private _localOnlyChanged(ev): void {
     this._localOnly = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _allowLoginChanged(ev): Promise<void> {
@@ -394,6 +421,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
             this._userId = user.id;
             this._isAdmin = user.group_ids.includes(SYSTEM_GROUP_ID_ADMIN);
             this._localOnly = user.local_only;
+            this._updateDirtyState(this._currentState());
           }
         },
         name: this._name,
@@ -422,17 +450,20 @@ class DialogPersonDetail extends LitElement implements HassDialog {
       this._user = undefined;
       this._isAdmin = undefined;
       this._localOnly = undefined;
+      this._updateDirtyState(this._currentState());
     }
   }
 
   private _deviceTrackersChanged(ev: ValueChangedEvent<string[]>) {
     this._error = undefined;
     this._deviceTrackers = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _pictureChanged(ev: ValueChangedEvent<string | null>) {
     this._error = undefined;
     this._picture = (ev.target as HaPictureUpload).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _changePassword() {
@@ -528,6 +559,7 @@ class DialogPersonDetail extends LitElement implements HassDialog {
         await this._params!.createEntry?.(values);
         this._personExists = true;
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
@@ -554,18 +586,15 @@ class DialogPersonDetail extends LitElement implements HassDialog {
     return [
       haStyleDialog,
       css`
-        ha-picture-upload,
-        ha-textfield {
+        ha-picture-upload {
           display: block;
         }
         ha-picture-upload {
           margin-bottom: 16px;
           --file-upload-image-border-radius: var(--ha-border-radius-circle);
         }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         a {
           color: var(--primary-color);

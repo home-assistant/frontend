@@ -1,23 +1,24 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-yaml-editor";
-import "../../../../components/ha-textfield";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("developer-tools-event")
 class HaPanelDevEvent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _eventType = "";
 
@@ -55,7 +56,7 @@ class HaPanelDevEvent extends LitElement {
                 </a>
               </p>
               <div class="inputs">
-                <ha-textfield
+                <ha-input
                   .label=${this.hass.localize(
                     "ui.panel.config.developer-tools.tabs.events.type"
                   )}
@@ -63,7 +64,7 @@ class HaPanelDevEvent extends LitElement {
                   required
                   .value=${this._eventType}
                   @change=${this._eventTypeChanged}
-                ></ha-textfield>
+                ></ha-input>
                 <p>
                   ${this.hass.localize(
                     "ui.panel.config.developer-tools.tabs.events.data"
@@ -72,7 +73,6 @@ class HaPanelDevEvent extends LitElement {
               </div>
               <div class="code-editor">
                 <ha-yaml-editor
-                  .hass=${this.hass}
                   .value=${this._eventData}
                   .error=${!this._isValid}
                   @value-changed=${this._yamlChanged}
@@ -93,6 +93,7 @@ class HaPanelDevEvent extends LitElement {
 
           <event-subscribe-card
             .hass=${this.hass}
+            .narrow=${this.narrow}
             .selectedEventType=${this._selectedEventType}
           ></event-subscribe-card>
         </div>
@@ -117,8 +118,8 @@ class HaPanelDevEvent extends LitElement {
     this._selectedEventType = ev.detail.eventType;
   }
 
-  private _eventTypeChanged(ev) {
-    this._eventType = ev.target.value;
+  private _eventTypeChanged(ev: InputEvent) {
+    this._eventType = (ev.target as HaInput).value ?? "";
   }
 
   private _yamlChanged(ev) {
@@ -157,6 +158,8 @@ class HaPanelDevEvent extends LitElement {
           padding: var(--ha-space-4);
           max-width: 1200px;
           margin: auto;
+          height: 100%;
+          box-sizing: border-box;
         }
 
         :host {
@@ -164,10 +167,26 @@ class HaPanelDevEvent extends LitElement {
           -webkit-user-select: initial;
           -moz-user-select: initial;
           display: block;
+          height: 100%;
+        }
+
+        :host([narrow]) {
+          height: auto;
+        }
+
+        :host([narrow]) .content {
+          height: auto;
         }
 
         .flex {
           min-width: 0;
+          min-height: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        :host([narrow]) .flex {
+          min-height: auto;
         }
 
         .inputs {
@@ -178,14 +197,18 @@ class HaPanelDevEvent extends LitElement {
           margin-top: var(--ha-space-2);
         }
 
-        ha-textfield {
-          display: block;
-        }
-
         event-subscribe-card {
-          display: block;
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+          flex: 1;
           margin-top: var(--ha-space-4);
           direction: var(--direction);
+        }
+
+        :host([narrow]) event-subscribe-card {
+          flex: none;
+          min-height: auto;
         }
 
         a {

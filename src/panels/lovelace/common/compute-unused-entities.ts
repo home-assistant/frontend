@@ -49,6 +49,9 @@ const addEntityId = (entities: Set<string>, entity) => {
 };
 
 const addEntities = (entities: Set<string>, obj) => {
+  if (!obj) {
+    return;
+  }
   if (obj.entity) {
     addEntityId(entities, obj.entity);
   }

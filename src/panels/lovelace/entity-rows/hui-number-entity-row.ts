@@ -3,7 +3,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
 import type { HomeAssistant } from "../../../types";
@@ -52,7 +53,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     this._attachObserver();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -96,18 +97,21 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <div class="flex state">
-                <ha-textfield
-                  autoValidate
+                <ha-input
+                  auto-validate
                   .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step=${Number(stateObj.attributes.step)}
                   .min=${Number(stateObj.attributes.min)}
                   .max=${Number(stateObj.attributes.max)}
                   .value=${stateObj.state}
-                  .suffix=${stateObj.attributes.unit_of_measurement}
                   type="number"
                   @change=${this._selectedValueChanged}
-                ></ha-textfield>
+                >
+                  <span slot="end"
+                    >${stateObj.attributes.unit_of_measurement}</span
+                  >
+                </ha-input>
               </div>
             `}
       </hui-generic-entity-row>
@@ -128,7 +132,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
       min-width: 45px;
       text-align: end;
     }
-    ha-textfield {
+    ha-input::part(wa-input) {
       text-align: end;
       direction: ltr !important;
     }
@@ -166,11 +170,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     }
   }
 
-  private _selectedValueChanged(ev): void {
+  private _selectedValueChanged(ev: InputEvent): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    if (ev.target.value !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, ev.target.value!);
+    if ((ev.target as HaInput).value !== stateObj.state) {
+      setValue(this.hass!, stateObj.entity_id, (ev.target as HaInput).value!);
     }
   }
 }

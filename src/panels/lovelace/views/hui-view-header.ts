@@ -73,7 +73,7 @@ export class HuiViewHeader extends LitElement {
     );
   }
 
-  willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  willUpdate(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("badges") ||
       changedProperties.has("lovelace") ||
@@ -242,7 +242,6 @@ export class HuiViewHeader extends LitElement {
                           <hui-card-edit-mode
                             @ll-edit-card=${this._editCard}
                             @ll-delete-card=${this._deleteCard}
-                            .hass=${this.hass}
                             .lovelace=${this.lovelace!}
                             .path=${[0]}
                             no-duplicate
@@ -271,7 +270,6 @@ export class HuiViewHeader extends LitElement {
                 >
                   <hui-view-badges
                     .badges=${this.badges}
-                    .hass=${this.hass}
                     .lovelace=${this.lovelace!}
                     .viewIndex=${this.viewIndex!}
                     .showAddLabel=${this.badges.length === 0}
@@ -332,10 +330,6 @@ export class HuiViewHeader extends LitElement {
       flex-direction: column;
       gap: 16px 8px;
       --spacing: 8px;
-    }
-
-    .layout.has-heading {
-      margin-top: var(--spacing);
     }
 
     .heading {
@@ -438,15 +432,10 @@ export class HuiViewHeader extends LitElement {
       flex-direction: column-reverse;
     }
 
-    .layout.badges-top.has-badges {
-      margin-top: 0;
-    }
-
     @media (min-width: 768px) {
       .layout.responsive.badges-top.has-heading {
         flex-direction: row;
         align-items: flex-start;
-        margin-top: var(--spacing);
       }
     }
 

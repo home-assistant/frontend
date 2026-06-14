@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { guard } from "lit/directives/guard";
@@ -28,7 +29,7 @@ class HaUsersPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
       this._fetchUsers();

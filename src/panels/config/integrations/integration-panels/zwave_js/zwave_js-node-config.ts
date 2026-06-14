@@ -23,7 +23,7 @@ import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import type {
   ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
@@ -88,7 +88,7 @@ class ZWaveJSNodeConfig extends LitElement {
     this.deviceId = this.route.path.substr(1);
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (!this._config || changedProps.has("deviceId")) {
       this._fetchData();
     }
@@ -111,7 +111,7 @@ class ZWaveJSNodeConfig extends LitElement {
     const device = this.hass.devices[this.deviceId];
 
     const deviceName = device
-      ? computeDeviceNameDisplay(device, this.hass)
+      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
       : "";
 
     return html`
@@ -355,7 +355,7 @@ class ZWaveJSNodeConfig extends LitElement {
         `;
       }
       return html`${labelAndDescription}
-        <ha-textfield
+        <ha-input
           type="number"
           .value=${item.value}
           .min=${item.metadata.min}
@@ -366,11 +366,12 @@ class ZWaveJSNodeConfig extends LitElement {
           .key=${id}
           .disabled=${!item.metadata.writeable}
           @change=${this._numericInputChanged}
-          .suffix=${item.metadata.unit}
-          .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
-          helperPersistent
+          .hint=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
         >
-        </ha-textfield>`;
+          ${item.metadata.unit
+            ? html`<span slot="end">${item.metadata.unit}</span>`
+            : nothing}
+        </ha-input>`;
     }
 
     if (
@@ -757,7 +758,7 @@ class ZWaveJSNodeConfig extends LitElement {
           white-space: normal;
         }
 
-        :host(:not([narrow])) ha-settings-row ha-textfield {
+        :host(:not([narrow])) ha-settings-row ha-input {
           text-align: right;
         }
 

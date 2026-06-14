@@ -96,7 +96,6 @@ export class HuiButtonCardFeatureEditor
               hide-description
               .hass=${this.hass}
               .value=${scriptData}
-              .showAdvanced=${this.hass.userData?.showAdvanced}
               .narrow=${false}
               @value-changed=${this._scriptFieldVariablesChanged}
             ></ha-service-control

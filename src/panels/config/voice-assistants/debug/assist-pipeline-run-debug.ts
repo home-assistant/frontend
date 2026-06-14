@@ -7,9 +7,8 @@ import "../../../../components/ha-assist-pipeline-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type {
   PipelineRun,
   PipelineRunOptions,
@@ -40,7 +39,7 @@ export class AssistPipelineRunDebug extends LitElement {
   private _continueConversationCheckbox!: HaCheckbox;
 
   @query("#continue-conversation-text")
-  private _continueConversationTextField?: HaTextField;
+  private _continueConversationTextField?: HaInput;
 
   private _audioBuffer?: Int16Array[];
 
@@ -129,14 +128,14 @@ export class AssistPipelineRunDebug extends LitElement {
                 `
               : this._pipelineRuns[0].init_options!.start_stage === "intent"
                 ? html`
-                    <ha-textfield
+                    <ha-input
                       id="continue-conversation-text"
                       .label=${this.hass.localize(
                         "ui.panel.config.voice_assistants.debug.pipeline.response"
                       )}
                       .disabled=${!this._finished}
                       @keydown=${this._handleContinueKeyDown}
-                    ></ha-textfield>
+                    ></ha-input>
                     <ha-button
                       @click=${this._runTextPipeline}
                       .disabled=${!this._finished}
@@ -168,16 +167,11 @@ export class AssistPipelineRunDebug extends LitElement {
                         )}
                       </ha-button>`
                   : html`
-                      <ha-formfield
-                        .label=${this.hass.localize(
+                      <ha-checkbox id="continue-conversation" checked>
+                        ${this.hass.localize(
                           "ui.panel.config.voice_assistants.debug.pipeline.continue_conversation"
                         )}
-                      >
-                        <ha-checkbox
-                          id="continue-conversation"
-                          checked
-                        ></ha-checkbox>
-                      </ha-formfield>
+                      </ha-checkbox>
                     `}
           </div>
 
@@ -217,7 +211,7 @@ export class AssistPipelineRunDebug extends LitElement {
     let text: string | null;
 
     if (textfield) {
-      text = textfield.value;
+      text = textfield.value ?? null;
     } else {
       text = await showPromptDialog(this, {
         title: this.hass.localize(
@@ -532,7 +526,7 @@ export class AssistPipelineRunDebug extends LitElement {
         width: 100%;
         margin-bottom: 16px;
       }
-      .start-row ha-textfield {
+      .start-row ha-input {
         flex: 1;
       }
       assist-render-pipeline-run {

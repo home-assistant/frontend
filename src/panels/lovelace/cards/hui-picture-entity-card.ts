@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,14 +7,12 @@ import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
-import type { CameraEntity } from "../../../data/camera";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { PersonEntity } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
@@ -73,7 +72,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       !["camera", "image", "person"].includes(computeDomain(config.entity)) &&
       !config.image &&
       !config.state_image &&
-      !config.camera_image
+      !config.camera_image &&
+      !config.show_entity_picture
     ) {
       throw new Error("No image source configured");
     }
@@ -86,7 +86,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -115,7 +115,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
-    const stateObj: CameraEntity | ImageEntity | PersonEntity | undefined =
+    const stateObj: HassEntity | undefined =
       this.hass.states[this._config.entity];
 
     if (!stateObj) {
@@ -126,11 +126,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass,
-      stateObj,
-      this._config.name
-    );
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
     const entityState = this.hass.formatEntityState(stateObj);
 
     let footer: TemplateResult | string = "";
@@ -148,10 +144,23 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const domain: string = computeDomain(this._config.entity);
-    let image: string | undefined =
-      (typeof this._config?.image === "object" &&
-        this._config.image.media_content_id) ||
-      (this._config.image as string | undefined);
+    let image: string | undefined;
+
+    // When show_entity_picture is enabled, try entity_picture first
+    if (this._config.show_entity_picture) {
+      image =
+        stateObj.attributes.entity_picture_local ||
+        stateObj.attributes.entity_picture;
+    }
+
+    // Fall back to configured image
+    if (!image) {
+      image =
+        (typeof this._config?.image === "object" &&
+          this._config.image.media_content_id) ||
+        (this._config.image as string | undefined);
+    }
+
     if (!image) {
       switch (domain) {
         case "image":

@@ -1,6 +1,6 @@
 import type { Auth, Connection, HassUser } from "home-assistant-js-websocket";
 import { getUser } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
+import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
@@ -53,7 +53,7 @@ class HcLayout extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     if (this.connection) {

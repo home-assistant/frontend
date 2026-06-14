@@ -108,7 +108,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (!this._config || hasConfigOrEntityChanged(this, changedProps)) {
       return true;
     }
@@ -307,7 +307,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           <ha-state-icon
             .icon=${entityConf.icon}
             .stateObj=${stateObj}
-            .hass=${this.hass}
           ></ha-state-icon>
         </ha-icon-button>
 

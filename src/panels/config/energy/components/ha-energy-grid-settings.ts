@@ -124,13 +124,16 @@ export class EnergyGridSettings extends LitElement {
                             ></ha-svg-icon>`}
                         <div class="content">
                           <span class="label"
-                            >${getStatisticLabel(
+                            >${source.name ||
+                            getStatisticLabel(
                               this.hass,
                               primaryStat,
                               this.statsMetadata?.[primaryStat]
                             )}</span
                           >
-                          ${source.stat_energy_from && source.stat_energy_to
+                          ${source.stat_energy_from &&
+                          source.stat_energy_to &&
+                          !source.name
                             ? html`<span class="label secondary"
                                 >${getStatisticLabel(
                                   this.hass,
@@ -161,11 +164,7 @@ export class EnergyGridSettings extends LitElement {
               `
             : nothing}
           <div class="row">
-            <ha-button
-              @click=${this._addSource}
-              appearance="filled"
-              size="small"
-            >
+            <ha-button @click=${this._addSource} appearance="filled" size="s">
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.energy.grid.add_connection"
@@ -216,7 +215,7 @@ export class EnergyGridSettings extends LitElement {
                   <ha-button
                     @click=${this._addCO2Sensor}
                     appearance="filled"
-                    size="small"
+                    size="s"
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                     ${this.hass.localize(
@@ -266,6 +265,7 @@ export class EnergyGridSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGridDialog(this, {
+      statsMetadata: this.statsMetadata,
       grid_sources: this._getGridSources(),
       saveCallback: async (source) => {
         const preferences: EnergyPreferences = {
@@ -283,6 +283,7 @@ export class EnergyGridSettings extends LitElement {
     const sourceIndex: number = row.sourceIndex;
 
     showEnergySettingsGridDialog(this, {
+      statsMetadata: this.statsMetadata,
       source: { ...origSource },
       grid_sources: this._getGridSources(),
       saveCallback: async (newSource) => {

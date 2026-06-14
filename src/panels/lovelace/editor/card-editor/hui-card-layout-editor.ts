@@ -123,7 +123,6 @@ export class HuiCardLayoutEditor extends LitElement {
       ${this._yamlMode
         ? html`
             <ha-yaml-editor
-              .hass=${this.hass}
               .defaultValue=${configOptions}
               @value-changed=${this._yamlChanged}
             ></ha-yaml-editor>
@@ -134,7 +133,6 @@ export class HuiCardLayoutEditor extends LitElement {
                 "max-width": `${(this.sectionConfig.column_span ?? 1) * 250 + 40}px`,
               })}
               .columns=${gridTotalColumns}
-              .hass=${this.hass}
               .value=${gridValue}
               .isDefault=${this._isDefault(configOptions)}
               @value-changed=${this._gridSizeChanged}

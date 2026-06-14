@@ -1,7 +1,7 @@
 import { mdiContentCopy } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-alert";
@@ -35,6 +35,8 @@ class DialogSystemLogDetail extends LitElement {
 
   @state() private _open = false;
 
+  @query(".contents") private _contents?: HTMLElement;
+
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
     this._manifest = undefined;
@@ -51,7 +53,7 @@ class DialogSystemLogDetail extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (!changedProps.has("_params") || !this._params) {
       return;
@@ -84,7 +86,6 @@ class DialogSystemLogDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="large"
         @closed=${this._dialogClosed}
@@ -206,9 +207,7 @@ class DialogSystemLogDetail extends LitElement {
   }
 
   private async _copyLog(): Promise<void> {
-    const copyElement = this.shadowRoot?.querySelector(
-      ".contents"
-    ) as HTMLElement;
+    const copyElement = this._contents!;
 
     let text = copyElement.innerText;
 

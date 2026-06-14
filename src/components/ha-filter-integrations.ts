@@ -1,39 +1,60 @@
+import type { SelectedDetail } from "@material/mwc-list";
+import { consume, type ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { internationalizationContext, manifestsContext } from "../data/context";
 import type { IntegrationManifest } from "../data/integration";
-import { domainToName, fetchIntegrationManifests } from "../data/integration";
+import { domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
 import "./ha-list";
-import "./search-input-outlined";
+import "./input/ha-input-search";
+import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public value?: string[];
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
-  @state() private _manifests?: IntegrationManifest[];
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: manifestsContext, subscribe: true })
+  @state()
+  private _manifests?: ContextType<typeof manifestsContext>;
+
+  private _manifestList = memoizeOne(
+    (manifests: ContextType<typeof manifestsContext>) =>
+      Object.values(manifests)
+  );
 
   @state() private _shouldRender = false;
 
   @state() private _filter?: string;
 
+  @query("ha-list") private _list?: HTMLElement;
+
   protected render() {
+    const manifests = this._manifests
+      ? this._manifestList(this._manifests)
+      : undefined;
+
     return html`
       <ha-expansion-panel
         left-chevron
@@ -42,7 +63,7 @@ export class HaFilterIntegrations extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.integrations.caption")}
+          ${this._localize("ui.panel.config.integrations.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -51,24 +72,25 @@ export class HaFilterIntegrations extends LitElement {
                 ></ha-icon-button>`
             : nothing}
         </div>
-        ${this._manifests && this._shouldRender
-          ? html`<search-input-outlined
-                .hass=${this.hass}
-                .filter=${this._filter}
-                @value-changed=${this._handleSearchChange}
+        ${manifests && this._shouldRender
+          ? html`<ha-input-search
+                appearance="outlined"
+                .value=${this._filter}
+                @input=${this._handleSearchChange}
               >
-              </search-input-outlined>
+              </ha-input-search>
               <ha-list
                 class="ha-scrollbar"
-                @click=${this._handleItemClick}
+                @selected=${this._itemSelected}
                 multi
               >
                 ${repeat(
                   this._integrations(
-                    this.hass.localize,
-                    this._manifests,
+                    this._localize,
+                    manifests,
                     this._filter,
-                    this.value
+                    this.value,
+                    this._i18n.locale.language
                   ),
                   (i) => i.domain,
                   (integration) =>
@@ -81,7 +103,6 @@ export class HaFilterIntegrations extends LitElement {
                     >
                       <ha-domain-icon
                         slot="graphic"
-                        .hass=${this.hass}
                         .domain=${integration.domain}
                         brand-fallback
                       ></ha-domain-icon>
@@ -94,12 +115,11 @@ export class HaFilterIntegrations extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 4 - 32}px`;
+        this._list!.style.height = `${this.clientHeight - 49 - 4 - 32}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input
@@ -115,9 +135,8 @@ export class HaFilterIntegrations extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  protected async firstUpdated() {
-    this._manifests = await fetchIntegrationManifests(this.hass);
-    this.hass.loadBackendTranslation("title");
+  protected firstUpdated() {
+    this._i18n.loadBackendTranslation("title");
   }
 
   private _integrations = memoizeOne(
@@ -125,7 +144,8 @@ export class HaFilterIntegrations extends LitElement {
       localize: LocalizeFunc,
       manifest: IntegrationManifest[],
       filter: string | undefined,
-      _value
+      _value: string[] | undefined,
+      language: string
     ) =>
       manifest
         .map((mnfst) => ({
@@ -142,26 +162,32 @@ export class HaFilterIntegrations extends LitElement {
               mnfst.name.toLowerCase().includes(filter) ||
               mnfst.domain.toLowerCase().includes(filter))
         )
-        .sort((a, b) =>
-          stringCompare(a.name, b.name, this.hass.locale.language)
-        )
+        .sort((a, b) => stringCompare(a.name, b.name, language))
   );
 
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    const value = listItem?.value;
-    if (!value) {
+  private _itemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
+    if (!this._manifests) {
       return;
     }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
-    } else {
-      this.value = [...(this.value || []), value];
-    }
-    listItem.selected = this.value?.includes(value);
+
+    const integrations = this._integrations(
+      this._localize,
+      this._manifestList(this._manifests),
+      this._filter,
+      this.value,
+      this._i18n.locale.language
+    );
+
+    const visibleDomains = new Set(integrations.map((i) => i.domain));
+    const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));
+    const selected = [...ev.detail.index]
+      .map((i) => integrations[i]?.domain)
+      .filter((d): d is string => !!d);
+
+    this.value = [...preserved, ...selected];
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: this.value.length ? this.value : undefined,
       items: undefined,
     });
   }
@@ -175,8 +201,9 @@ export class HaFilterIntegrations extends LitElement {
     });
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value.toLowerCase();
+  private _handleSearchChange(ev: InputEvent) {
+    const target = ev.target as HaInputSearch;
+    this._filter = (target.value ?? "").toLowerCase();
   }
 
   static get styles(): CSSResultGroup {
@@ -221,7 +248,7 @@ export class HaFilterIntegrations extends LitElement {
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        search-input-outlined {
+        ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }

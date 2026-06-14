@@ -1,3 +1,4 @@
+/* global require, module, __dirname, process */
 const path = require("path");
 const env = require("./env.cjs");
 const paths = require("./paths.cjs");
@@ -176,11 +177,14 @@ module.exports.babelOptions = ({
     {
       // Use unambiguous for dependencies so that require() is correctly injected into CommonJS files
       // Exclusions are needed in some cases where ES modules have no static imports or exports, such as polyfills
+      // (otherwise babel-plugin-polyfill-corejs3 injects bare require("core-js/modules/...") calls
+      // that rspack does not transform, causing ReferenceError in browsers like Safari 14).
       sourceType: "unambiguous",
       include: /\/node_modules\//,
       exclude: [
         "element-internals-polyfill",
         "@?lit(?:-labs|-element|-html)?",
+        "@formatjs/(?:ecma402-abstract|intl-\\w+)",
       ].map((p) => new RegExp(`/node_modules/${p}/`)),
     },
   ],

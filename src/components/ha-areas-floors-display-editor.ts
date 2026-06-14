@@ -15,7 +15,6 @@ import "./ha-floor-icon";
 import "./ha-items-display-editor";
 import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import "./ha-svg-icon";
-import "./ha-textfield";
 
 export interface AreasFloorsDisplayValue {
   areas_display?: {
@@ -108,7 +107,6 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                       ></ha-svg-icon>
                     `}
                 <ha-items-display-editor
-                  .hass=${this.hass}
                   .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}
                   .floorId=${floor.floor_id}

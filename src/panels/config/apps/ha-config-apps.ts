@@ -1,4 +1,5 @@
 import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../../types";
@@ -15,6 +16,12 @@ class HaConfigApps extends HassRouterPage {
 
   protected routerOptions: RouterOptions = {
     defaultPage: "installed",
+    beforeRender: () => {
+      if (!isComponentLoaded(this.hass.config, "hassio")) {
+        return "info";
+      }
+      return undefined;
+    },
     routes: {
       installed: {
         tag: "ha-config-apps-installed",
@@ -31,6 +38,10 @@ class HaConfigApps extends HassRouterPage {
       registries: {
         tag: "ha-config-apps-registries",
         load: () => import("./ha-config-apps-registries"),
+      },
+      info: {
+        tag: "ha-config-apps-info",
+        load: () => import("./ha-config-apps-info"),
       },
     },
   };

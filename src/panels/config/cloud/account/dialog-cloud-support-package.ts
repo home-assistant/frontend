@@ -8,7 +8,6 @@ import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-textarea";
 import { fetchSupportPackage } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
@@ -40,7 +39,6 @@ export class DialogSupportPackage extends LitElement {
   protected render() {
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="full"
         header-title="Download support package"

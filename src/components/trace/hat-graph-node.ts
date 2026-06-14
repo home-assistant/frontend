@@ -27,7 +27,7 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Number }) badge?: number;
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("noFocus")) {
       if (!this.hasAttribute("tabindex") && !this.noFocus) {
         this.setAttribute("tabindex", "0");

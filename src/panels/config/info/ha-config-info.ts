@@ -8,17 +8,15 @@ import {
   mdiOpenInNew,
   mdiTshirtCrew,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-logo-svg";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
+import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
@@ -91,8 +89,6 @@ class HaConfigInfo extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
-
-  @property({ attribute: false }) public showAdvanced = false;
 
   @property({ attribute: false }) public route!: Route;
 
@@ -202,8 +198,8 @@ class HaConfigInfo extends LitElement {
           </ha-card>
 
           <ha-card outlined class="pages">
-            <ha-md-list>
-              <ha-md-list-item type="button" @click=${this._showShortcuts}>
+            <ha-list-base>
+              <ha-list-item-button @click=${this._showShortcuts}>
                 <div
                   slot="start"
                   class="icon-background"
@@ -211,15 +207,14 @@ class HaConfigInfo extends LitElement {
                 >
                   <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
                 </div>
-                <span
+                <span slot="headline"
                   >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
                 >
-              </ha-md-list-item>
+              </ha-list-item-button>
 
               ${PAGES.map(
                 (page) => html`
-                  <ha-md-list-item
-                    type="link"
+                  <ha-list-item-button
                     .href=${documentationUrl(this.hass, page.path)}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -227,20 +222,20 @@ class HaConfigInfo extends LitElement {
                     <div
                       slot="start"
                       class="icon-background"
-                      .style="background-color: ${page.iconColor}"
+                      style=${`background-color: ${page.iconColor};`}
                     >
                       <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
                     </div>
-                    <span>
+                    <span slot="headline">
                       ${this.hass.localize(
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
                     <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-                  </ha-md-list-item>
+                  </ha-list-item-button>
                 `
               )}
-            </ha-md-list>
+            </ha-list-base>
             ${customUiList.length
               ? html`
                   <div class="custom-ui">
@@ -262,7 +257,7 @@ class HaConfigInfo extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
 
     // Legacy custom UI can be slow to register, give them time.
@@ -273,7 +268,7 @@ class HaConfigInfo extends LitElement {
       }
     }, 2000);
 
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._loadSupervisorInfo();
     }
 
@@ -393,12 +388,15 @@ class HaConfigInfo extends LitElement {
         .icon-background ha-svg-icon {
           height: 24px;
           width: 24px;
-          display: block;
-          padding: 8px;
           color: #fff;
         }
 
         .icon-background {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
           border-radius: var(--ha-border-radius-circle);
         }
 

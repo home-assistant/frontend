@@ -1,13 +1,13 @@
-import "@material/mwc-linear-progress";
 import { mdiOpenInNew } from "@mdi/js";
 import { css, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { extractSearchParam } from "../../src/common/url/search-params";
+import "../../src/components/animation/ha-fade-in";
 import "../../src/components/ha-alert";
 import "../../src/components/ha-button";
-import "../../src/components/ha-fade-in";
 import "../../src/components/ha-spinner";
 import "../../src/components/ha-svg-icon";
+import "../../src/components/progress/ha-progress-bar";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import "../../src/onboarding/onboarding-welcome-links";
 import { onBoardingStyles } from "../../src/onboarding/styles";
@@ -15,6 +15,7 @@ import { haStyle } from "../../src/resources/styles";
 import "./components/landing-page-logs";
 import "./components/landing-page-network";
 import {
+  getSupervisorJobsInfo,
   getSupervisorNetworkInfo,
   pingSupervisor,
   type NetworkInfo,
@@ -24,6 +25,7 @@ import { LandingPageBaseElement } from "./landing-page-base-element";
 export const ASSUME_CORE_START_SECONDS = 60;
 const SCHEDULE_CORE_CHECK_SECONDS = 1;
 const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
+const SCHEDULE_FETCH_JOBS_INFO_SECONDS = 2;
 
 @customElement("ha-landing-page")
 class HaLandingPage extends LandingPageBaseElement {
@@ -38,6 +40,8 @@ class HaLandingPage extends LandingPageBaseElement {
   @state() private _networkInfoError = false;
 
   @state() private _coreCheckActive = false;
+
+  @state() private _progress = -1;
 
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
@@ -60,7 +64,14 @@ class HaLandingPage extends LandingPageBaseElement {
           ${!networkIssue && !this._supervisorError
             ? html`
                 <p>${this.localize("subheader")}</p>
-                <mwc-linear-progress indeterminate></mwc-linear-progress>
+                <ha-progress-bar
+                  .indeterminate=${this._progress <= 0}
+                  .value=${this._progress > 0 ? this._progress : undefined}
+                  .loading=${this._progress >= 0}
+                  >${this._progress > 0
+                    ? `${Math.round(this._progress)}%`
+                    : nothing}</ha-progress-bar
+                >
               `
             : nothing}
           ${networkIssue || this._networkInfoError
@@ -115,7 +126,7 @@ class HaLandingPage extends LandingPageBaseElement {
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     makeDialogManager(this);
@@ -126,6 +137,7 @@ class HaLandingPage extends LandingPageBaseElement {
     import("../../src/components/ha-language-picker");
 
     this._fetchSupervisorInfo(true);
+    this._fetchSupervisorJobsInfo();
   }
 
   private _scheduleFetchSupervisorInfo() {
@@ -135,6 +147,13 @@ class HaLandingPage extends LandingPageBaseElement {
       (this._coreCheckActive
         ? SCHEDULE_CORE_CHECK_SECONDS
         : SCHEDULE_FETCH_NETWORK_INFO_SECONDS) * 1000
+    );
+  }
+
+  private _scheduleFetchSupervisorJobsInfo() {
+    setTimeout(
+      () => this._fetchSupervisorJobsInfo(),
+      SCHEDULE_FETCH_JOBS_INFO_SECONDS * 1000
     );
   }
 
@@ -165,7 +184,7 @@ class HaLandingPage extends LandingPageBaseElement {
       // assume supervisor update if ping fails -> don't show an error
       if (!this._coreCheckActive && err.message !== "ping-failed") {
         // eslint-disable-next-line no-console
-        console.error(err);
+        console.error("Failed to fetch supervisor info", err);
         this._networkInfoError = true;
       }
     }
@@ -173,6 +192,33 @@ class HaLandingPage extends LandingPageBaseElement {
     if (schedule) {
       this._scheduleFetchSupervisorInfo();
     }
+  }
+
+  private async _fetchSupervisorJobsInfo() {
+    try {
+      const jobsInfo = await getSupervisorJobsInfo();
+      const coreInstallJob =
+        jobsInfo.result === "ok"
+          ? jobsInfo.data.jobs.find(
+              (job) => job.name === "home_assistant_core_install"
+            )
+          : undefined;
+      if (coreInstallJob) {
+        this._progress = coreInstallJob.progress;
+      } else {
+        this._progress = -1;
+      }
+    } catch (err: any) {
+      await this._checkCoreAvailability();
+
+      if (!this._coreCheckActive) {
+        this._progress = -1;
+        // eslint-disable-next-line no-console
+        console.error("Failed to fetch supervisor jobs info", err);
+      }
+    }
+
+    this._scheduleFetchSupervisorJobsInfo();
   }
 
   private async _checkCoreAvailability() {
@@ -222,20 +268,26 @@ class HaLandingPage extends LandingPageBaseElement {
         flex-direction: column;
         gap: var(--ha-space-4);
       }
-      ha-language-picker {
-        min-width: 200px;
-      }
       ha-alert p {
         text-align: unset;
       }
       .footer ha-svg-icon {
         --mdc-icon-size: var(--ha-space-5);
       }
+      ha-language-picker {
+        margin-inline-start: calc(-1 * var(--ha-space-4));
+      }
+      ha-button {
+        margin-inline-end: calc(-1 * var(--ha-space-2));
+      }
       ha-fade-in {
         min-height: calc(100vh - 64px - 88px);
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+      ha-progress-bar {
+        --ha-progress-bar-track-height: 20px;
       }
     `,
   ];

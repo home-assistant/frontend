@@ -3,10 +3,9 @@ import type { CoverEntity } from "../../../data/cover";
 import {
   DEFAULT_COVER_FAVORITE_POSITIONS,
   coverSupportsTiltPosition,
-  normalizeCoverFavoritePositions,
 } from "../../../data/cover";
+import { normalizeFavoritePositions } from "../../../data/favorite_positions";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeatureEditor } from "../types";
 import {
   HuiNumericFavoriteCardFeatureBase,
   type NumericFavoriteCardFeatureDefinition,
@@ -16,6 +15,7 @@ import type {
   CoverTiltFavoriteCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feature-editor";
 
 const coverTiltFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefinition<CoverEntity> =
   {
@@ -24,7 +24,7 @@ const coverTiltFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefiniti
     getFavoritePositions: (entry) =>
       entry?.options?.cover?.favorite_tilt_positions,
     getCurrentValue: (stateObj) => stateObj.attributes.current_tilt_position,
-    normalizeFavoritePositions: normalizeCoverFavoritePositions,
+    normalizeFavoritePositions,
     defaultFavoritePositions: DEFAULT_COVER_FAVORITE_POSITIONS,
     setPositionService: "set_cover_tilt_position",
     serviceDataKey: "tilt_position",
@@ -59,12 +59,7 @@ class HuiCoverTiltFavoriteCardFeature extends HuiNumericFavoriteCardFeatureBase<
     };
   }
 
-  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
-    await import("../editor/config-elements/hui-cover-tilt-favorite-card-feature-editor");
-    return document.createElement(
-      "hui-cover-tilt-favorite-card-feature-editor"
-    );
-  }
+  public static getConfigElement = getMoreInfoHintCardFeatureEditor;
 }
 
 declare global {

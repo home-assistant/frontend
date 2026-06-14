@@ -39,7 +39,12 @@ export class HaEntitiesDisplayEditor extends LitElement {
     const items: DisplayItem[] = entities.map((entity) => ({
       value: entity.entity_id,
       label: computeStateName(entity),
-      icon: entityIcon(this.hass, entity),
+      icon: entityIcon(
+        this.hass.entities,
+        this.hass.config,
+        this.hass.connection,
+        entity
+      ),
     }));
 
     const value: DisplayValue = {
@@ -49,7 +54,6 @@ export class HaEntitiesDisplayEditor extends LitElement {
 
     return html`
       <ha-items-display-editor
-        .hass=${this.hass}
         .items=${items}
         .value=${value}
         @value-changed=${this._itemDisplayChanged}

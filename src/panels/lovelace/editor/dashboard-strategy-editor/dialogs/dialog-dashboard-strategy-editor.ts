@@ -12,6 +12,7 @@ import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -27,7 +28,9 @@ import type { DashboardStrategyEditorDialogParams } from "./show-dialog-dashboar
 import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
 
 @customElement("dialog-dashboard-strategy-editor")
-class DialogDashboardStrategyEditor extends LitElement {
+class DialogDashboardStrategyEditor extends DirtyStateProviderMixin<LovelaceStrategyConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DashboardStrategyEditorDialogParams;
@@ -49,6 +52,7 @@ class DialogDashboardStrategyEditor extends LitElement {
     this._params = params;
     this._strategyConfig = params.config.strategy;
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._strategyConfig);
     await this.updateComplete;
   }
 
@@ -68,6 +72,7 @@ class DialogDashboardStrategyEditor extends LitElement {
     ev.stopPropagation();
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     this._strategyConfig = ev.detail.config as LovelaceStrategyConfig;
+    this._updateDirtyState(this._strategyConfig);
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
@@ -82,6 +87,7 @@ class DialogDashboardStrategyEditor extends LitElement {
       strategy: this._strategyConfig!,
     });
     showSaveSuccessToast(this, this.hass);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
@@ -136,8 +142,8 @@ class DialogDashboardStrategyEditor extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
         header-title=${title || "-"}
         header-subtitle=${ifDefined(this._params.title)}
         width="large"
@@ -196,7 +202,11 @@ class DialogDashboardStrategyEditor extends LitElement {
           >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            ?disabled=${!this.isDirtyState}
+          >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>

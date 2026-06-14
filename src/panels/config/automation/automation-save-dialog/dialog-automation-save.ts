@@ -7,6 +7,7 @@ import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-expansion-panel";
@@ -16,8 +17,7 @@ import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
+import "../../../../components/input/ha-input";
 import "../../category/ha-category-picker";
 
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
@@ -25,21 +25,32 @@ import type { GenDataTaskResult } from "../../../../data/ai_task";
 import type { AutomationConfig } from "../../../../data/automation";
 import type { ScriptConfig } from "../../../../data/script";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  EntityRegistryUpdate,
-  SaveDialogParams,
-} from "./show-dialog-automation-save";
 import {
   type MetadataSuggestionResult,
   generateMetadataSuggestionTask,
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
 import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
+import type {
+  EntityRegistryUpdate,
+  SaveDialogParams,
+} from "./show-dialog-automation-save";
+
+interface AutomationSaveState {
+  name?: string;
+  description?: string;
+  icon?: string;
+  entryUpdates: EntityRegistryUpdate;
+}
 
 @customElement("ha-dialog-automation-save")
-class DialogAutomationSave extends LitElement implements HassDialog {
+class DialogAutomationSave
+  extends DirtyStateProviderMixin<AutomationSaveState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -81,6 +92,16 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       this._entryUpdates.labels.length > 0 ? "labels" : "",
       this._entryUpdates.area ? "area" : "",
     ].filter(Boolean);
+
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        name: this._newName,
+        description: this._newDescription,
+        icon: this._newIcon,
+        entryUpdates: this._entryUpdates,
+      }
+    );
   }
 
   public closeDialog(): boolean {
@@ -129,7 +150,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     }
 
     return html`
-      <ha-textfield
+      <ha-input
         autofocus
         .value=${this._newName}
         .placeholder=${this.hass.localize(
@@ -137,26 +158,21 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         )}
         .label=${this.hass.localize("ui.panel.config.automation.editor.alias")}
         required
-        type="string"
+        type="text"
         @input=${this._valueChanged}
-      ></ha-textfield>
+      ></ha-input>
 
       ${this._params.domain === "script" &&
       this._visibleOptionals.includes("icon")
         ? html`
             <ha-icon-picker
-              .hass=${this.hass}
               .label=${this.hass.localize(
                 "ui.panel.config.automation.editor.icon"
               )}
               .value=${this._newIcon}
               @value-changed=${this._iconChanged}
             >
-              <ha-domain-icon
-                slot="start"
-                domain=${this._params.domain}
-                .hass=${this.hass}
-              >
+              <ha-domain-icon slot="start" domain=${this._params.domain}>
               </ha-domain-icon>
             </ha-icon-picker>
           `
@@ -170,10 +186,9 @@ class DialogAutomationSave extends LitElement implements HassDialog {
               "ui.panel.config.automation.editor.description.placeholder"
             )}
             name="description"
-            autogrow
+            resize="auto"
             .value=${this._newDescription}
-            .helper=${supportsMarkdownHelper(this.hass.localize)}
-            helperPersistent
+            .hint=${supportsMarkdownHelper(this.hass.localize)}
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}
@@ -200,7 +215,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       ${this._visibleOptionals.includes("area")
         ? html` <ha-area-picker
             id="area"
-            .hass=${this.hass}
             .value=${this._entryUpdates.area}
             @value-changed=${this._registryEntryChanged}
           ></ha-area-picker>`
@@ -256,14 +270,14 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
         header-title=${this._params.title || title}
+        .preventScrimClose=${this.isDirtyState}
       >
         ${this._params.hideInputs
           ? nothing
-          : html` <ha-suggest-with-ai-button
+          : html`<ha-suggest-with-ai-button
               slot="headerActionItems"
               .hass=${this.hass}
               .generateTask=${this._generateTask}
@@ -289,7 +303,11 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!!this._params.config.alias && !this.isDirtyState}
+          >
             ${this.hass.localize(
               this._params.config.alias && !this._params.onDiscard
                 ? "ui.panel.config.automation.editor.rename"
@@ -307,17 +325,28 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
+  private _trackDirtyState() {
+    this._updateDirtyState({
+      name: this._newName,
+      description: this._newDescription,
+      icon: this._newIcon,
+      entryUpdates: this._entryUpdates,
+    });
+  }
+
   private _registryEntryChanged(ev) {
     ev.stopPropagation();
     const id: string = ev.target.id;
     const value = ev.detail.value;
 
     this._entryUpdates = { ...this._entryUpdates, [id]: value };
+    this._trackDirtyState();
   }
 
   private _iconChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._newIcon = ev.detail.value || undefined;
+    this._trackDirtyState();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -328,6 +357,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     } else {
       this._newName = target.value;
     }
+    this._trackDirtyState();
   }
 
   private _handleDiscard() {
@@ -395,6 +425,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         this._visibleOptionals = [...this._visibleOptionals, "labels"];
       }
     }
+    this._trackDirtyState();
   }
 
   private async _save(): Promise<void> {
@@ -441,7 +472,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             var(--ha-space-6);
         }
 
-        ha-textfield,
         ha-textarea,
         ha-icon-picker,
         ha-category-picker,

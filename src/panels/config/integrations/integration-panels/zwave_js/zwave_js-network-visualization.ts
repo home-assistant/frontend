@@ -2,18 +2,21 @@ import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import type {
   NetworkData,
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
@@ -49,6 +52,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
+  @state() private _searchFilter = "";
+
   public hassSubscribe() {
     const devices = Object.values(this.hass.devices).filter((device) =>
       device.config_entries.some((entry) => entry === this.configEntryId)
@@ -80,21 +85,37 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         back-path="/config/zwave_js/dashboard?config_entry=${this
           .configEntryId}"
       >
+        ${this.narrow
+          ? html`<div slot="header">${this._renderInputSearch()}</div>`
+          : nothing}
         <ha-network-graph
           .hass=${this.hass}
+          .searchFilter=${this._searchFilter}
           .data=${this._getNetworkData(
             this._nodeStatuses,
             this._nodeStatistics
           )}
+          .searchableAttributes=${this._getSearchableAttributes}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        ></ha-network-graph>
+        >
+          ${!this.narrow ? this._renderInputSearch("search") : nothing}
+        </ha-network-graph>
       </hass-subpage>
     `;
   }
 
+  private _renderInputSearch(slot = "") {
+    return html`<ha-input-search
+      appearance="outlined"
+      slot=${slot}
+      .value=${this._searchFilter}
+      @input=${this._handleSearchChange}
+    ></ha-input-search>`;
+  }
+
   private async _fetchNetworkStatus() {
-    const network = await fetchZwaveNetworkStatus(this.hass!, {
+    const network = await fetchZwaveNetworkStatus(this.hass!.connection, {
       entry_id: this.configEntryId,
     });
     const nodeStatuses: Record<number, ZWaveJSNodeStatus> = {};
@@ -105,7 +126,32 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     this._nodeStatuses = nodeStatuses;
   }
 
-  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+  private _getSearchableAttributes = (nodeId: string): string[] => {
+    const device = this._devices[Number(nodeId)];
+    const nodeStatus = this._nodeStatuses[Number(nodeId)];
+    const attributes: string[] = [];
+    if (device?.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device?.model) {
+      attributes.push(device.model);
+    }
+    if (nodeStatus) {
+      const statusText = this.hass.localize(
+        `ui.panel.config.zwave_js.node_status.${nodeStatus.status}` as any
+      );
+      if (statusText) {
+        attributes.push(statusText);
+      }
+    }
+    return attributes;
+  };
+
+  private _handleSearchChange(ev: InputEvent): void {
+    this._searchFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
+  private _tooltipFormatter = (params: TopLevelFormatterParams) => {
     const { dataType, data } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
@@ -115,39 +161,66 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         sourceDevice?.name_by_user ?? sourceDevice?.name ?? source;
       const targetName =
         targetDevice?.name_by_user ?? targetDevice?.name ?? target;
-      let tip = `${sourceName} → ${targetName}`;
       const route =
         this._nodeStatistics[source]?.lwr || this._nodeStatistics[source]?.nlwr;
-      if (route?.protocol_data_rate) {
-        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.data_rate")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}`)}`;
-      }
-      if (value) {
-        tip += `<br><b>RSSI:</b> ${value}`;
-      }
-      return tip;
+      return html`${sourceName} →
+      ${targetName}${route?.protocol_data_rate
+        ? html`<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.visualization.data_rate"
+              )}:</b
+            >
+            ${this.hass.localize(
+              `ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}` as any
+            )}`
+        : nothing}${value ? html`<br /><b>RSSI:</b> ${value}` : nothing}`;
     }
     const { id, name } = data as any;
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
-    let tip = `${(params as any).marker} ${name}`;
-    tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.node_id")}:</b> ${id}`;
-    if (device) {
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.manufacturer")}:</b> ${device.manufacturer || "-"}`;
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.model")}:</b> ${device.model || "-"}`;
-    }
-    if (nodeStatus) {
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.status")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.node_status.${nodeStatus.status}`)}`;
-      if (nodeStatus.zwave_plus_version) {
-        tip += `<br><b>Z-Wave Plus:</b> ${this.hass.localize("ui.panel.config.zwave_js.visualization.version")} ${nodeStatus.zwave_plus_version}`;
-      }
-    }
-    if (device) {
-      const area = getDeviceContext(device, this.hass).area;
-      if (area) {
-        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
-      }
-    }
-    return tip;
+    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    return html`<ha-chart-tooltip-marker
+        .color=${String((params as CallbackDataParams).color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${name}<br /><b
+        >${this.hass.localize(
+          "ui.panel.config.zwave_js.visualization.node_id"
+        )}:</b
+      >
+      ${id}${device
+        ? html`<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.visualization.manufacturer"
+              )}:</b
+            >
+            ${device.manufacturer || "-"}<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.visualization.model"
+              )}:</b
+            >
+            ${device.model || "-"}`
+        : nothing}${nodeStatus
+        ? html`<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.visualization.status"
+              )}:</b
+            >
+            ${this.hass.localize(
+              `ui.panel.config.zwave_js.node_status.${nodeStatus.status}` as any
+            )}${nodeStatus.zwave_plus_version
+              ? html`<br /><b>Z-Wave Plus:</b> ${this.hass.localize(
+                    "ui.panel.config.zwave_js.visualization.version"
+                  )}
+                  ${nodeStatus.zwave_plus_version}`
+              : nothing}`
+        : nothing}${area
+        ? html`<br /><b
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.visualization.area"
+              )}:</b
+            >
+            ${area.name}`
+        : nothing}`;
   };
 
   private _getNetworkData = memoizeOne(
@@ -210,7 +283,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           | DeviceRegistryEntry
           | undefined;
         const area = device
-          ? getDeviceContext(device, this.hass).area
+          ? getDeviceArea(device, this.hass.areas)
           : undefined;
         nodes.push({
           id: String(node.node_id),
@@ -329,6 +402,13 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       css`
         ha-network-graph {
           height: 100%;
+        }
+        [slot="header"] {
+          display: flex;
+          align-items: center;
+        }
+        ha-input-search {
+          flex: 1;
         }
       `,
     ];

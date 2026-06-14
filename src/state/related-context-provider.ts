@@ -1,0 +1,116 @@
+import { ContextProvider } from "@lit/context";
+import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
+import { buildRelatedIdSets } from "../common/search/related-context";
+import { relatedContext, type RelatedContextItem } from "../data/context";
+import { findRelated } from "../data/search";
+import type { HassBaseEl } from "./hass-base-mixin";
+
+/**
+ * Standalone context provider for `relatedContext`.
+ *
+ * Listens for `hass-related-context` events fired by child components,
+ * resolves the related entities/devices/areas via `findRelated`, and
+ * provides the resolved `RelatedIdSets` to context consumers.
+ *
+ * Clears on actual page navigation (pathname change), not on dialog
+ * history manipulation (`popstate` from dialog close).
+ *
+ * Instantiated from `context-mixin.ts` alongside other providers.
+ */
+export class RelatedContextProvider {
+  private _relatedContext?: RelatedContextItem;
+
+  private _provider: ContextProvider<typeof relatedContext>;
+
+  private _contextPathname?: string;
+
+  private _fetchRelatedMemoized = memoizeOne(
+    (itemType: RelatedContextItem["itemType"], itemId: string) =>
+      findRelated(this._host.hass!, itemType, itemId)
+  );
+
+  constructor(private _host: HassBaseEl) {
+    this._provider = new ContextProvider(_host, { context: relatedContext });
+  }
+
+  /**
+   * Set up event listeners. Call from `firstUpdated` or `hassConnected`.
+   */
+  public connect(): void {
+    this._host.addEventListener("hass-related-context", this._onRelatedContext);
+    mainWindow.addEventListener(
+      "location-changed",
+      this._maybeClearRelatedContext
+    );
+    mainWindow.addEventListener("popstate", this._maybeClearRelatedContext);
+  }
+
+  /**
+   * Clean up event listeners. Call from `disconnectedCallback`.
+   */
+  public disconnect(): void {
+    this._host.removeEventListener(
+      "hass-related-context",
+      this._onRelatedContext
+    );
+    mainWindow.removeEventListener(
+      "location-changed",
+      this._maybeClearRelatedContext
+    );
+    mainWindow.removeEventListener("popstate", this._maybeClearRelatedContext);
+  }
+
+  private _onRelatedContext = (
+    ev: HASSDomEvent<RelatedContextItem | undefined>
+  ): void => {
+    this._relatedContext = ev.detail;
+    this._contextPathname = mainWindow.location.pathname;
+    this._resolveRelatedContext(this._relatedContext);
+  };
+
+  /**
+   * Only clear context when the actual page pathname changes.
+   * Dialog open/close manipulates history state without changing the URL,
+   * so we ignore those popstate/location-changed events.
+   */
+  private _maybeClearRelatedContext = (): void => {
+    if (
+      this._contextPathname &&
+      mainWindow.location.pathname === this._contextPathname
+    ) {
+      return;
+    }
+    this._relatedContext = undefined;
+    this._contextPathname = undefined;
+    this._provider.setValue(undefined);
+  };
+
+  private _contextMatches = (context?: RelatedContextItem): boolean =>
+    context?.itemType === this._relatedContext?.itemType &&
+    context?.itemId === this._relatedContext?.itemId;
+
+  private _resolveRelatedContext = async (
+    context?: RelatedContextItem
+  ): Promise<void> => {
+    if (!context || !this._host.hass) {
+      this._provider.setValue(undefined);
+      return;
+    }
+
+    try {
+      const related = await this._fetchRelatedMemoized(
+        context.itemType,
+        context.itemId
+      );
+      if (this._contextMatches(context)) {
+        this._provider.setValue(buildRelatedIdSets(related));
+      }
+    } catch (_err) {
+      if (this._contextMatches(context)) {
+        this._provider.setValue(undefined);
+      }
+    }
+  };
+}

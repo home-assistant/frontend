@@ -1,16 +1,22 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
 import "../../../../../components/ha-button";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../../../data/context/dirty-state";
 import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
 import "../../../helpers/forms/ha-counter-form";
 import "../../../helpers/forms/ha-input_boolean-form";
@@ -24,12 +30,17 @@ import "../../../helpers/forms/ha-timer-form";
 import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
+import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
 
 @customElement("entity-settings-helper-tab")
 export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<Helper | null, "helper">;
 
   @state() private _error?: string;
 
@@ -42,22 +53,21 @@ export class EntitySettingsHelperTab extends LitElement {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    this._componentLoaded = isComponentLoaded(this.hass, this.entry.platform);
+    this._componentLoaded = isComponentLoaded(
+      this.hass.config,
+      this.entry.platform
+    );
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has("entry")) {
       this._error = undefined;
-      if (
-        this.entry.unique_id !==
-        (changedProperties.get("entry") as ExtEntityRegistryEntry)?.unique_id
-      ) {
+      if (this.entry.unique_id !== changedProperties.get("entry")?.unique_id) {
         this._item = undefined;
       }
-
       this._getItem();
     }
   }
@@ -98,7 +108,6 @@ export class EntitySettingsHelperTab extends LitElement {
           .hass=${this.hass}
           .entry=${this.entry}
           .disabled=${!!this._submitting}
-          @change=${this._entityRegistryChanged}
           hide-name
           hide-icon
         ></entity-registry-settings-editor>
@@ -115,7 +124,9 @@ export class EntitySettingsHelperTab extends LitElement {
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${!!this._submitting || !!(this._item && !this._item.name)}
+          .disabled=${!this._dirtyState?.isDirty ||
+          !!this._submitting ||
+          !!(this._item && !this._item.name)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
@@ -123,34 +134,36 @@ export class EntitySettingsHelperTab extends LitElement {
     `;
   }
 
-  private _entityRegistryChanged() {
-    this._error = undefined;
-  }
-
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<Helper>): void {
     if (this._item === null) {
       return;
     }
     this._error = undefined;
     this._item = ev.detail.value;
+    this._dirtyState?.setState(this._item, "helper");
   }
 
   private async _getItem() {
     const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
-    this._item = items.find((item) => item.id === this.entry.unique_id) || null;
+    const item =
+      items.find((helper) => helper.id === this.entry.unique_id) || null;
+    this._item = item;
+    this._dirtyState?.setState(item, "helper");
   }
 
   private async _updateItem(): Promise<void> {
     this._submitting = true;
+    this._error = undefined;
     try {
       if (this._componentLoaded && this._item) {
         await HELPERS_CRUD[this.entry.platform].update(
-          this.hass!,
+          this.hass,
           this._item.id,
           this._item
         );
       }
       const result = await this._registryEditor!.updateEntry();
+      this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
       }
@@ -162,11 +175,19 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
+    const name = computeEntityEntryName(this.entry, this.hass.devices);
+    const confirmationText = await getDeleteConfirmationText(
+      this.hass,
+      this.entry,
+      name
+    );
+
     if (
       !(await showConfirmationDialog(this, {
-        text: this.hass.localize(
-          "ui.dialogs.entity_registry.editor.confirm_delete"
+        title: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete_title"
         ),
+        text: confirmationText,
         confirmText: this.hass.localize("ui.common.delete"),
         dismissText: this.hass.localize("ui.common.cancel"),
         destructive: true,

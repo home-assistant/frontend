@@ -11,7 +11,7 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
 import type {
@@ -115,7 +115,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     }
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (this.hasUpdated) {
@@ -173,7 +173,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           defaultHidden: false,
           template: (ad) =>
             html`<ha-relative-time
-              .hass=${this.hass}
               .datetime=${ad.datetime}
               capitalize
             ></ha-relative-time>`,

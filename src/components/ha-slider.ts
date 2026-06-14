@@ -5,7 +5,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-slider")
 export class HaSlider extends Slider {
-  @property({ reflect: true }) size: "small" | "medium" = "small";
+  @property({ reflect: true }) size: "s" | "m" = "s";
 
   @property({ type: Boolean, attribute: "with-tooltip" }) withTooltip = true;
 
@@ -23,7 +23,10 @@ export class HaSlider extends Slider {
           --marker-height: calc(var(--ha-slider-track-size, 4px) / 2);
           --marker-width: calc(var(--ha-slider-track-size, 4px) / 2);
           --wa-color-surface-default: var(--card-background-color);
-          --wa-color-neutral-fill-normal: var(--disabled-color);
+          --wa-color-neutral-fill-normal: var(
+            --ha-slider-track-color,
+            var(--disabled-color)
+          );
           --wa-tooltip-background-color: var(
             --ha-tooltip-background-color,
             var(--secondary-background-color)
@@ -53,7 +56,7 @@ export class HaSlider extends Slider {
             --ha-tooltip-border-radius,
             var(--ha-border-radius-sm)
           );
-          --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
+          --wa-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 0px);
           --wa-tooltip-border-width: 0px;
           --wa-z-index-tooltip: 1000;
           min-width: 100px;
@@ -107,12 +110,12 @@ export class HaSlider extends Slider {
           );
         }
 
-        :host([size="medium"]) {
+        :host([size="m"]) {
           --thumb-width: 20px;
           --thumb-height: 20px;
         }
 
-        :host([size="small"]) {
+        :host([size="s"]) {
           --thumb-width: 16px;
           --thumb-height: 16px;
         }

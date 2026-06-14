@@ -2,18 +2,18 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-expansion-panel";
-import "../../../../components/search-input";
-import { haStyleScrollbar } from "../../../../resources/styles";
-import { isUnavailableState } from "../../../../data/entity/entity";
+import "../../../../components/ha-spinner";
+import "../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomCardEntry } from "../../../../data/lovelace_custom_cards";
@@ -22,6 +22,7 @@ import {
   customCards,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
@@ -61,18 +62,17 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _filter = "";
 
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
 
   public async focus(): Promise<void> {
-    const searchInput = this.renderRoot.querySelector("search-input");
-    if (searchInput) {
-      searchInput.focus();
-    } else {
-      await this.updateComplete;
-      this.focus();
-    }
+    await this.updateComplete;
+    // Wait for the input's inner wa-input to render so focus delegation works.
+    await this._searchInput?.updateComplete;
+    this._searchInput?.focus();
   }
 
   private _filterCards = memoizeOne(
@@ -89,6 +89,7 @@ export class HuiCardPicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        ignoreLocation: true,
       };
       const fuse = new Fuse(cards, options);
       cards = fuse.search(filter).map((result) => result.item);
@@ -146,14 +147,14 @@ export class HuiCardPicker extends LitElement {
     const customCardsItems = this._customCards(this._cards);
 
     return html`
-      <search-input
-        .hass=${this.hass}
-        .filter=${this._filter}
-        @value-changed=${this._handleSearchChange}
-        .label=${this.hass.localize(
+      <ha-input-search
+        appearance="outlined"
+        .value=${this._filter}
+        @input=${this._handleSearchChange}
+        .placeholder=${this.hass.localize(
           "ui.panel.lovelace.editor.edit_card.search_cards"
         )}
-      ></search-input>
+      ></ha-input-search>
       <div id="content" class="ha-scrollbar">
         ${this._filter
           ? html`<div class="cards-container">
@@ -244,7 +245,7 @@ export class HuiCardPicker extends LitElement {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass) {
       return true;
@@ -268,21 +269,23 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
 
     this._loadCards();
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_filter")) {
-      const div = this.parentElement!.shadowRoot!.getElementById("content");
+      const div = this.shadowRoot!.getElementById("content");
       if (div) {
         div.scrollTo({ behavior: "auto", top: 0 });
       }
@@ -391,8 +394,8 @@ export class HuiCardPicker extends LitElement {
     )}`;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
+  private _handleSearchChange(ev: Event) {
+    this._filter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _cardPicked(ev: Event): void {
@@ -514,18 +517,11 @@ export class HuiCardPicker extends LitElement {
           overflow: auto;
         }
 
-        search-input {
-          display: block;
-          width: 100%;
-          --mdc-shape-small: var(--card-picker-search-shape);
-          margin: var(--card-picker-search-margin);
+        ha-input-search {
+          padding: var(--ha-space-3) var(--ha-space-3) 0;
           position: sticky;
           top: 0;
           z-index: 10;
-          background-color: var(
-            --ha-dialog-surface-background,
-            var(--mdc-theme-surface, #fff)
-          );
         }
 
         .cards-container-header {

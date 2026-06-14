@@ -32,6 +32,7 @@ import {
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import type { ObjectSelector, Selector } from "../../../../../data/selector";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
@@ -56,14 +57,14 @@ const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
 const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("supervisor-app-config")
-class SupervisorAppConfig extends LitElement {
+class SupervisorAppConfig extends DirtyStateProviderMixin<
+  Record<string, unknown>
+>()(LitElement) {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @state() private _configHasChanged = false;
 
   @state() private _valid = true;
 
@@ -115,26 +116,51 @@ class SupervisorAppConfig extends LitElement {
 
   private _convertSchema = memoizeOne(
     // Convert supervisor schema to selectors
-    (schema: readonly HaFormSchema[]): HaFormSchema[] =>
-      this._convertSchemaElements(schema)
+    (
+      schema: readonly HaFormSchema[],
+      language: string,
+      translations: HassioAddonDetails["translations"]
+    ): HaFormSchema[] =>
+      this._convertSchemaElements(schema, language, translations)
   );
 
   private _convertSchemaElements(
-    schema: readonly HaFormSchema[]
+    schema: readonly HaFormSchema[],
+    language: string,
+    translations: HassioAddonDetails["translations"],
+    path: string[] = []
   ): HaFormSchema[] {
-    return schema.map((entry) => this._convertSchemaElement(entry));
+    return schema.map((entry) =>
+      this._convertSchemaElement(entry, language, translations, path)
+    );
   }
 
-  private _convertSchemaElement(entry: any): HaFormSchema {
+  private _convertSchemaElement(
+    entry: any,
+    language: string,
+    translations: HassioAddonDetails["translations"],
+    path: string[]
+  ): HaFormSchema {
     if (entry.type === "schema" && !entry.multiple) {
       return {
         name: entry.name,
         type: "expandable",
         required: entry.required,
-        schema: this._convertSchemaElements(entry.schema),
+        schema: this._convertSchemaElements(
+          entry.schema,
+          language,
+          translations,
+          [...path, entry.name]
+        ),
       };
     }
-    const selector = this._convertSchemaElementToSelector(entry, false);
+    const selector = this._convertSchemaElementToSelector(
+      entry,
+      false,
+      language,
+      translations,
+      path
+    );
     if (selector) {
       return {
         name: entry.name,
@@ -147,10 +173,13 @@ class SupervisorAppConfig extends LitElement {
 
   private _convertSchemaElementToSelector(
     entry: any,
-    force: boolean
+    force: boolean,
+    language: string,
+    translations: HassioAddonDetails["translations"],
+    path: string[]
   ): Selector | null {
     if (entry.type === "select") {
-      return { select: { options: entry.options } };
+      return { select: { options: entry.options, multiple: entry.multiple } };
     }
     if (entry.type === "string") {
       return entry.multiple
@@ -170,10 +199,25 @@ class SupervisorAppConfig extends LitElement {
     }
     if (entry.type === "schema") {
       const fields: NonNullable<ObjectSelector["object"]>["fields"] = {};
-      for (const child_entry of entry.schema) {
-        fields[child_entry.name] = {
-          required: child_entry.required,
-          selector: this._convertSchemaElementToSelector(child_entry, true)!,
+      const childPath = [...path, entry.name];
+      for (const childEntry of entry.schema) {
+        const translation =
+          this._getTranslationEntry(language, childEntry, {
+            path: childPath,
+          }) ||
+          this._getTranslationEntry("en", childEntry, { path: childPath });
+
+        fields[childEntry.name] = {
+          required: childEntry.required,
+          label: translation?.name,
+          description: translation?.description,
+          selector: this._convertSchemaElementToSelector(
+            childEntry,
+            true,
+            language,
+            translations,
+            childPath
+          )!,
         };
       }
       return {
@@ -267,7 +311,9 @@ class SupervisorAppConfig extends LitElement {
                     : this._filteredSchema(
                         this.addon.options,
                         this.addon.schema!
-                      )
+                      ),
+                  this.hass.language,
+                  this.addon.translations
                 )}
               ></ha-form>`
             : html`<ha-yaml-editor
@@ -306,9 +352,7 @@ class SupervisorAppConfig extends LitElement {
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${this.disabled ||
-            !this._configHasChanged ||
-            !this._valid}
+            .disabled=${this.disabled || !this.isDirtyState || !this._valid}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-progress-button>
@@ -317,7 +361,7 @@ class SupervisorAppConfig extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._canShowSchema =
       this.addon.schema !== null &&
@@ -332,6 +376,7 @@ class SupervisorAppConfig extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("addon")) {
       this._options = { ...this.addon.options };
+      this._initDirtyTracking({ type: "deep" }, this.addon.options);
     }
     super.updated(changedProperties);
     if (
@@ -370,11 +415,13 @@ class SupervisorAppConfig extends LitElement {
   private _configChanged(ev): void {
     if (this.addon.schema && this._canShowSchema && !this._yamlMode) {
       this._valid = true;
-      this._configHasChanged = true;
       this._options = ev.detail.value;
+      this._updateDirtyState(ev.detail.value);
     } else {
-      this._configHasChanged = true;
       this._valid = ev.detail.isValid;
+      if (ev.detail.isValid) {
+        this._updateDirtyState(ev.detail.value);
+      }
     }
   }
 
@@ -404,8 +451,8 @@ class SupervisorAppConfig extends LitElement {
       options: null,
     };
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
-      this._configHasChanged = false;
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
+      this._markDirtyStateClean();
       const eventdata = {
         success: true,
         response: undefined,
@@ -424,7 +471,7 @@ class SupervisorAppConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    if (this.disabled || !this._configHasChanged || !this._valid) {
+    if (this.disabled || !this.isDirtyState || !this._valid) {
       return;
     }
 
@@ -443,18 +490,18 @@ class SupervisorAppConfig extends LitElement {
 
     try {
       const validation = await validateHassioAddonOption(
-        this.hass,
+        this.hass.callWS,
         this.addon.slug,
         options
       );
       if (!validation.valid) {
         throw Error(validation.message);
       }
-      await setHassioAddonOption(this.hass, this.addon.slug, {
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, {
         options,
       });
 
-      this._configHasChanged = false;
+      this._markDirtyStateClean();
       if (this.addon?.state === "started") {
         await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }

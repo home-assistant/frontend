@@ -4,21 +4,24 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   CallServiceActionConfig,
   MoreInfoActionConfig,
 } from "../../../data/lovelace/config/action";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import {
+  SENSOR_DEVICE_CLASS_UPTIME,
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+} from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { computeLovelaceEntityName } from "../common/entity/compute-lovelace-entity-name";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
@@ -114,7 +117,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
@@ -252,11 +255,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       </div>`;
     }
 
-    const name = computeLovelaceEntityName(
-      this.hass!,
-      stateObj,
-      entityConf.name
-    );
+    const name = this.hass!.formatEntityName(stateObj, entityConf.name);
 
     return html`
       <div
@@ -292,21 +291,26 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           ? html`
               <div>
                 ${computeDomain(entityConf.entity) === "sensor" &&
-                stateObj.attributes.device_class ===
-                  SENSOR_DEVICE_CLASS_TIMESTAMP &&
-                !isUnavailableState(stateObj.state)
+                SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+                  stateObj.attributes.device_class
+                ) &&
+                stateObj.state !== UNAVAILABLE &&
+                stateObj.state !== UNKNOWN
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}
                         .ts=${new Date(stateObj.state)}
-                        .format=${entityConf.format}
+                        .format=${entityConf.format ??
+                        (stateObj.attributes.device_class ===
+                        SENSOR_DEVICE_CLASS_UPTIME
+                          ? "total"
+                          : undefined)}
                         capitalize
                       ></hui-timestamp-display>
                     `
                   : entityConf.show_last_changed
                     ? html`
                         <ha-relative-time
-                          .hass=${this.hass}
                           .datetime=${stateObj.last_changed}
                           capitalize
                         ></ha-relative-time>
@@ -319,8 +323,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
+  private _handleAction(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { config: GlanceConfigEntity }
+    > &
+      ActionHandlerEvent
+  ) {
+    const { config } = ev.currentTarget;
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
 }

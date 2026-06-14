@@ -1,22 +1,24 @@
 import { mdiAlertOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
-import "../../../components/ha-list";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import "../../../components/ha-dialog";
-import "../../../components/search-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -33,13 +35,13 @@ import {
 import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 type HelperCreators = Record<
   HelperDomain,
@@ -100,7 +102,9 @@ const HELPERS: HelperCreators = {
 };
 
 @customElement("dialog-helper-detail")
-export class DialogHelperDetail extends LitElement {
+export class DialogHelperDetail extends DirtyStateProviderMixin<
+  Helper | undefined
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _item?: Helper;
@@ -119,6 +123,9 @@ export class DialogHelperDetail extends LitElement {
 
   @state() private _filter?: string;
 
+  @query("ha-input-search")
+  private _searchInput?: HTMLElement & { updateComplete?: Promise<unknown> };
+
   private _pendingConfigFlow?: {
     startFlowHandler: string;
     manifest: IntegrationManifest;
@@ -133,6 +140,7 @@ export class DialogHelperDetail extends LitElement {
     this._item = undefined;
     if (this._domain && this._domain in HELPERS) {
       await HELPERS[this._domain].import();
+      this._initDirtyTracking({ type: "deep" }, undefined);
     }
     this._open = true;
     await this.updateComplete;
@@ -219,15 +227,15 @@ export class DialogHelperDetail extends LitElement {
       );
 
       content = html`
-        <search-input
+        <ha-input-search
+          appearance="outlined"
           autofocus
-          .hass=${this.hass}
-          .filter=${this._filter}
-          @value-changed=${this._filterChanged}
-          .label=${this.hass.localize(
+          .value=${this._filter}
+          @input=${this._filterChanged}
+          .placeholder=${this.hass.localize(
             "ui.panel.config.integrations.search_helper"
           )}
-        ></search-input>
+        ></ha-input-search>
         <ha-list
           class="ha-scrollbar"
           innerRole="listbox"
@@ -240,7 +248,8 @@ export class DialogHelperDetail extends LitElement {
           ${items.map(([domain, label]) => {
             // Only OG helpers need to be loaded prior adding one
             const isLoaded =
-              !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+              !(domain in HELPERS) ||
+              isComponentLoaded(this.hass.config, domain);
             return html`
               <ha-list-item
                 hasmeta
@@ -287,8 +296,8 @@ export class DialogHelperDetail extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this._domain
           ? this.hass.localize(
               "ui.panel.config.helpers.dialog.create_platform",
@@ -353,12 +362,14 @@ export class DialogHelperDetail extends LitElement {
     }
   );
 
-  private async _filterChanged(e) {
-    this._filter = e.detail.value;
+  private async _filterChanged(e: InputEvent) {
+    const target = e.target as HaInputSearch;
+    this._filter = target.value;
   }
 
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
+    this._updateDirtyState(this._item);
   }
 
   private async _createItem(): Promise<void> {
@@ -378,6 +389,7 @@ export class DialogHelperDetail extends LitElement {
           entityId: `${this._domain}.${createdEntity.id}`,
         });
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message || "Unknown error";
@@ -389,7 +401,7 @@ export class DialogHelperDetail extends LitElement {
   private async _domainPicked(ev): Promise<void> {
     const domain = ev.target.closest("ha-list-item").domain;
     const isLoaded =
-      !(domain in HELPERS) || isComponentLoaded(this.hass, domain);
+      !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
     if (!isLoaded) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -405,6 +417,7 @@ export class DialogHelperDetail extends LitElement {
       try {
         await HELPERS[domain].import();
         this._domain = domain;
+        this._initDirtyTracking({ type: "deep" }, undefined);
       } finally {
         this._loading = false;
       }
@@ -427,9 +440,7 @@ export class DialogHelperDetail extends LitElement {
   }
 
   private async _focusSearchInput() {
-    const searchInput = this.shadowRoot?.querySelector("search-input") as
-      | (HTMLElement & { updateComplete?: Promise<unknown> })
-      | null;
+    const searchInput = this._searchInput;
 
     if (!searchInput) {
       return;
@@ -456,9 +467,8 @@ export class DialogHelperDetail extends LitElement {
         .form {
           padding: var(--ha-space-6);
         }
-        search-input {
-          display: block;
-          margin: 0 var(--ha-space-4) 0;
+        ha-input-search {
+          margin: 0 var(--ha-space-4) var(--ha-space-3);
         }
         ha-list {
           height: calc(60vh - 184px);

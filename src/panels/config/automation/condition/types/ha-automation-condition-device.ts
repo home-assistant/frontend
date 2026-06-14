@@ -60,7 +60,7 @@ export class HaDeviceCondition extends LitElement {
     }
   );
 
-  public shouldUpdate(changedProperties: PropertyValues) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("condition")) {
       return true;
     }
@@ -113,11 +113,11 @@ export class HaDeviceCondition extends LitElement {
               .schema=${this._capabilities.extra_fields}
               .disabled=${this.disabled}
               .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
+                this.hass.localize,
                 this.condition
               )}
               .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
+                this.hass.localize,
                 this.condition
               )}
               @value-changed=${this._extraFieldsChanged}
@@ -137,7 +137,7 @@ export class HaDeviceCondition extends LitElement {
     }
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues<this>) {
     const prevCondition = changedProps.get("condition");
     if (
       prevCondition &&
@@ -151,7 +151,7 @@ export class HaDeviceCondition extends LitElement {
     const condition = this.condition;
 
     this._capabilities = condition.domain
-      ? await fetchDeviceConditionCapabilities(this.hass, condition)
+      ? await fetchDeviceConditionCapabilities(this.hass.callWS, condition)
       : undefined;
   }
 
@@ -188,6 +188,10 @@ export class HaDeviceCondition extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

@@ -9,7 +9,7 @@ import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
-import { isUnavailableState, UNAVAILABLE } from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import type { HomeAssistant } from "../../types";
@@ -130,7 +130,6 @@ export class HaStateLabelBadge extends LitElement {
           ? html`<ha-state-icon
               .icon=${this.icon}
               .stateObj=${entityState}
-              .hass=${this.hass}
             ></ha-state-icon>`
           : ""}
         ${value && !image && !showIcon
@@ -142,7 +141,7 @@ export class HaStateLabelBadge extends LitElement {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
     if (this._connected && changedProperties.has("state")) {
@@ -171,7 +170,8 @@ export class HaStateLabelBadge extends LitElement {
         }
       // eslint-disable-next-line: disable=no-fallthrough
       default:
-        return isUnavailableState(entityState.state)
+        return entityState.state === UNAVAILABLE ||
+          entityState.state === UNKNOWN
           ? "—"
           : this.hass!.formatEntityStateToParts(entityState).find(
               (part) => part.type === "value"
@@ -210,7 +210,7 @@ export class HaStateLabelBadge extends LitElement {
     _timerTimeRemaining = 0
   ) {
     // For unavailable states or certain domains, use a special translation that is truncated to fit within the badge label
-    if (isUnavailableState(entityState.state)) {
+    if (entityState.state === UNAVAILABLE || entityState.state === UNKNOWN) {
       return this.hass!.localize(`state_badge.default.${entityState.state}`);
     }
     const domainStateKey = getTruncatedKey(domain, entityState.state);

@@ -9,6 +9,7 @@ import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import type {
   EnergyData,
@@ -30,11 +31,13 @@ import type { LovelaceCard } from "../../types";
 import type { EnergySolarGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import {
+  computeStatMidpoint,
+  type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
 
@@ -62,7 +65,9 @@ export class HuiEnergySolarGraphCard
     };
   }
 
-  @state() private _chartData: ECOption["series"][] = [];
+  @state() private _chartData: (BarSeriesOption | LineSeriesOption)[] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _start = startOfToday();
 
@@ -95,7 +100,7 @@ export class HuiEnergySolarGraphCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -136,7 +141,8 @@ export class HuiEnergySolarGraphCard
               this.hass.locale,
               this.hass.config,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -166,9 +172,10 @@ export class HuiEnergySolarGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      compareStart?: Date,
-      compareEnd?: Date
-    ): ECOption =>
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
+    ): HaECOption =>
       getCommonOptions(
         start,
         end,
@@ -177,7 +184,9 @@ export class HuiEnergySolarGraphCard
         "kWh",
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       )
   );
 
@@ -204,9 +213,16 @@ export class HuiEnergySolarGraphCard
       }
     }
 
-    const datasets: ECOption["series"] = [];
+    const datasets: (BarSeriesOption | LineSeriesOption)[] = [];
 
     const computedStyles = getComputedStyle(this);
+
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
 
     if (energyData.statsCompare) {
       datasets.push(
@@ -215,6 +231,7 @@ export class HuiEnergySolarGraphCard
           energyData.statsMetadata,
           solarSources,
           computedStyles,
+          trackY,
           true
         )
       );
@@ -235,7 +252,8 @@ export class HuiEnergySolarGraphCard
         energyData.stats,
         energyData.statsMetadata,
         solarSources,
-        computedStyles
+        computedStyles,
+        trackY
       )
     );
 
@@ -249,11 +267,13 @@ export class HuiEnergySolarGraphCard
           solarSources,
           computedStyles.getPropertyValue("--primary-text-color"),
           energyData.start,
-          energyData.end
+          energyData.end,
+          trackY
         )
       );
     }
 
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, solarSources);
   }
@@ -280,6 +300,7 @@ export class HuiEnergySolarGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     solarSources: SolarSourceTypeEnergyPreference[],
     computedStyles: CSSStyleDeclaration,
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -287,6 +308,7 @@ export class HuiEnergySolarGraphCard
       this._start,
       this._compareStart!
     );
+    const period = getSuggestedPeriod(this._start, this._end);
 
     solarSources.forEach((source, idx) => {
       let prevStart: number | null = null;
@@ -308,15 +330,18 @@ export class HuiEnergySolarGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint: (Date | string | number)[] = [
-            point.start,
+          const dataPoint: EnergyDataPoint = [
+            computeStatMidpoint(
+              point.start,
+              point.end,
+              period,
+              compare ? compareTransform : undefined
+            ),
             point.change,
+            point.start,
           ];
-          if (compare) {
-            dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(new Date(point.start));
-          }
           solarProductionData.push(dataPoint);
+          trackY(point.change);
           prevStart = point.start;
         }
       }
@@ -330,11 +355,13 @@ export class HuiEnergySolarGraphCard
         name: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
           {
-            name: getStatisticLabel(
-              this.hass,
-              source.stat_energy_from,
-              statisticsMetaData[source.stat_energy_from]
-            ),
+            name:
+              source.name ||
+              getStatisticLabel(
+                this.hass,
+                source.stat_energy_from,
+                statisticsMetaData[source.stat_energy_from]
+              ),
           }
         ),
         barMaxWidth: 50,
@@ -370,7 +397,8 @@ export class HuiEnergySolarGraphCard
     solarSources: SolarSourceTypeEnergyPreference[],
     borderColor: string,
     start: Date,
-    end?: Date
+    end: Date | undefined,
+    trackY: (v: number) => void
   ) {
     const data: LineSeriesOption[] = [];
 
@@ -410,8 +438,23 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const solarForecastData: LineSeriesOption["data"] = [];
+          // Only center forecast points for sub-daily periods to align with bars.
+          // Only start timestamps available, so estimate midpoint from the gap
+          // between the first two entries. Assumes uniform spacing.
+          let forecastOffset = 0;
+          if (period === "hour" || period === "5minute") {
+            const forecastTimes = Object.keys(forecastsData)
+              .map(Number)
+              .sort((a, b) => a - b);
+            forecastOffset =
+              forecastTimes.length >= 2
+                ? (forecastTimes[1] - forecastTimes[0]) / 2
+                : 0;
+          }
           for (const [time, value] of Object.entries(forecastsData)) {
-            solarForecastData.push([Number(time), value / 1000]);
+            const kWh = value / 1000;
+            solarForecastData.push([Number(time) + forecastOffset, kWh]);
+            trackY(kWh);
           }
 
           if (solarForecastData.length) {
@@ -422,11 +465,13 @@ export class HuiEnergySolarGraphCard
               name: this.hass.localize(
                 "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
                 {
-                  name: getStatisticLabel(
-                    this.hass,
-                    source.stat_energy_from,
-                    statisticsMetaData[source.stat_energy_from]
-                  ),
+                  name:
+                    source.name ||
+                    getStatisticLabel(
+                      this.hass,
+                      source.stat_energy_from,
+                      statisticsMetaData[source.stat_energy_from]
+                    ),
                 }
               ),
               step: false,

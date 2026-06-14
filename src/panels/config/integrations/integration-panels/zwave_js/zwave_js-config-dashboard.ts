@@ -17,18 +17,17 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { goBack } from "../../../../../common/navigate";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-progress-ring";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/progress/ha-progress-ring";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -84,6 +83,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   @state() private _dataCollectionOptIn?: boolean;
 
   @state() private _multipleNetworks = false;
+
+  @query("#nvm-restore-file") private _restoreFileInput?: HTMLInputElement;
 
   private _dialogOpen = false;
 
@@ -167,20 +168,18 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               `
             : nothing}
         </div>
-        <ha-fab
+        <ha-button
           slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.zwave_js.common.add_node"
-          )}
-          extended
+          size="l"
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
             this._network?.controller.inclusion_state !==
               InclusionState.SmartStart)}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.zwave_js.common.add_node")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -483,7 +482,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._downloadBackup}
                     >
                       <ha-svg-icon
@@ -509,7 +508,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._restoreButtonClick}
                     >
                       ${this.hass.localize(
@@ -538,7 +537,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._openConfigFlow}
                     >
                       ${this.hass.localize(
@@ -636,7 +635,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
 
     const [network, provisioningEntries] = await Promise.all([
-      fetchZwaveNetworkStatus(this.hass!, { entry_id: this.configEntryId }),
+      fetchZwaveNetworkStatus(this.hass!.connection, {
+        entry_id: this.configEntryId,
+      }),
       fetchZwaveProvisioningEntries(this.hass!, this.configEntryId),
     ]);
 
@@ -703,10 +704,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   }
 
   private _restoreButtonClick() {
-    const fileInput = this.shadowRoot?.querySelector(
-      "#nvm-restore-file"
-    ) as HTMLInputElement;
-    fileInput?.click();
+    this._restoreFileInput?.click();
   }
 
   private async _handleRestoreFileSelected(ev: Event) {
@@ -806,7 +804,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           url,
           `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
         );
-        URL.revokeObjectURL(url);
       } catch (err: any) {
         showAlertDialog(this, {
           title: this.hass.localize(
@@ -981,7 +978,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           gap: var(--ha-space-4);
         }
 
-        ha-button[size="small"] ha-svg-icon {
+        ha-button[size="s"] ha-svg-icon {
           --mdc-icon-size: 16px;
         }
 

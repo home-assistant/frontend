@@ -1,4 +1,4 @@
-import { getDeviceContext } from "../../../../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
   NetworkLink,
@@ -65,7 +65,7 @@ export function createZHANetworkChartData(
     const haDevice = hass.devices[device.device_reg_id] as
       | DeviceRegistryEntry
       | undefined;
-    const area = haDevice ? getDeviceContext(haDevice, hass).area : undefined;
+    const area = haDevice ? getDeviceArea(haDevice, hass.areas) : undefined;
     // Create node
     nodes.push({
       id: device.ieee,

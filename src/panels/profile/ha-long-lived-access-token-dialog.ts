@@ -6,19 +6,22 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { withViewTransition } from "../../common/util/view-transition";
 import "../../components/ha-alert";
-import "../../components/ha-textfield";
 import "../../components/ha-button";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-svg-icon";
-import "../../components/ha-dialog";
+import "../../components/input/ha-input";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../types";
-import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
 import { showToast } from "../../util/toast";
+import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 
 @customElement("ha-long-lived-access-token-dialog")
-export class HaLongLivedAccessTokenDialog extends LitElement {
+export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _qrCode?: TemplateResult;
@@ -46,6 +49,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     );
     this._renderDialog = true;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, "");
   }
 
   public closeDialog() {
@@ -71,7 +75,6 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._token
           ? this.hass.localize(
@@ -81,7 +84,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
           : this.hass.localize(
               "ui.panel.profile.long_lived_access_tokens.create"
             )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -98,12 +101,12 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
                   )}
                 </p>
                 <div class="token-row">
-                  <ha-textfield
+                  <ha-input
                     autofocus
                     .value=${this._token}
                     type="text"
-                    readOnly
-                  ></ha-textfield>
+                    readonly
+                  ></ha-input>
                   <ha-button appearance="plain" @click=${this._copyToken}>
                     <ha-svg-icon
                       slot="start"
@@ -132,19 +135,19 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
                 </div>
               `
             : html`
-                <ha-textfield
+                <ha-input
                   autofocus
                   .value=${this._name}
                   .label=${this.hass.localize(
                     "ui.panel.profile.long_lived_access_tokens.name"
                   )}
                   .invalid=${this._hasDuplicateName()}
-                  .errorMessage=${this.hass.localize(
+                  .validationMessage=${this.hass.localize(
                     "ui.panel.profile.long_lived_access_tokens.name_exists"
                   )}
                   required
                   @input=${this._nameChanged}
-                ></ha-textfield>
+                ></ha-input>
               `}
         </div>
         <ha-dialog-footer slot="footer">
@@ -178,10 +181,16 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
   private _nameChanged(ev: Event) {
     this._name = (ev.currentTarget as HTMLInputElement).value;
     this._errorMessage = undefined;
+    this._updateDirtyState(this._name);
   }
 
   private _isCreateDisabled() {
-    return this._loading || !this._name.trim() || this._hasDuplicateName();
+    return (
+      this._loading ||
+      !this._name.trim() ||
+      this._hasDuplicateName() ||
+      !this.isDirtyState
+    );
   }
 
   private async _createToken(): Promise<void> {
@@ -201,6 +210,7 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
         client_name: name,
       });
       this._name = name;
+      this._markDirtyStateClean();
       this._createdCallback();
     } catch (err: unknown) {
       this._errorMessage = err instanceof Error ? err.message : String(err);
@@ -285,14 +295,11 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
           gap: var(--ha-space-2);
           align-items: center;
         }
-        .token-row ha-textfield {
+        .token-row ha-input {
           flex: 1;
         }
         p {
           margin: 0;
-        }
-        ha-textfield {
-          display: block;
         }
       `,
     ];

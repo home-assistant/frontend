@@ -53,7 +53,11 @@ class MoreInfoContent extends LitElement {
 
     if (!moreInfoType) return nothing;
 
-    const memberIds = this._getEntityMemberIds(this.stateObj);
+    const memberIds = this._getEntityMemberIds(
+      this.stateObj,
+      this.entry,
+      this.hass.entities
+    );
 
     return html`
       ${dynamicElement(moreInfoType, {
@@ -75,23 +79,27 @@ class MoreInfoContent extends LitElement {
     `;
   }
 
-  private _getEntityMemberIds(stateObj: HassEntity): string[] | undefined {
-    if (computeStateDomain(stateObj) === "group") {
-      // Don't show entity members for legacy groups as they already show
-      // the members in their more info dialog.
-      return undefined;
+  private _getEntityMemberIds = memoizeOne(
+    (
+      stateObj: HassEntity,
+      entry: ExtEntityRegistryEntry | null | undefined,
+      entities: HomeAssistant["entities"]
+    ): string[] | undefined => {
+      if (computeStateDomain(stateObj) === "group") {
+        // Don't show entity members for legacy groups as they already show
+        // the members in their more info dialog.
+        return undefined;
+      }
+
+      const memberIds =
+        (entry?.capabilities?.group_entities as string[] | undefined) ??
+        (Array.isArray(stateObj.attributes.entity_id)
+          ? (stateObj.attributes.entity_id as string[])
+          : undefined);
+
+      return memberIds?.filter((entityId) => !entities[entityId]?.hidden);
     }
-
-    const memberIds =
-      (this.entry?.capabilities?.group_entities as string[] | undefined) ??
-      (Array.isArray(stateObj.attributes.entity_id)
-        ? (stateObj.attributes.entity_id as string[])
-        : undefined);
-
-    return memberIds?.filter(
-      (entityId) => !this.hass!.entities[entityId]?.hidden
-    );
-  }
+  );
 
   private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => {
     const hass = this.hass!;
@@ -107,7 +115,11 @@ class MoreInfoContent extends LitElement {
         if (!stateObj) {
           return null;
         }
-        const entityName = computeEntityName(stateObj, hass.entities);
+        const entityName = computeEntityName(
+          stateObj,
+          hass.entities,
+          hass.devices
+        );
         const { area } = getEntityContext(
           stateObj,
           hass.entities,

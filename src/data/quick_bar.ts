@@ -5,11 +5,11 @@ import {
   mdiServerNetwork,
   mdiStorePlus,
 } from "@mdi/js";
+import { componentsWithService } from "../common/config/components_with_service";
 import {
   filterNavigationPages,
   type NavigationFilterOptions,
 } from "../common/config/filter_navigation_pages";
-import { componentsWithService } from "../common/config/components_with_service";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
@@ -18,7 +18,11 @@ import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
 import { domainToName } from "./integration";
-import { getPanelIcon, getPanelNameTranslationKey } from "./panel";
+import {
+  getPanelIcon,
+  getPanelNameTranslationKey,
+  SYSTEM_PANELS,
+} from "./panel";
 
 export interface NavigationComboBoxItem extends PickerComboBoxItem {
   path: string;
@@ -51,12 +55,7 @@ const generateNavigationPanelCommands = (
   apps?: HassioAddonInfo[]
 ): BaseNavigationCommand[] =>
   Object.entries(panels)
-    .filter(
-      ([panelKey]) =>
-        panelKey !== "_my_redirect" &&
-        panelKey !== "hassio" &&
-        panelKey !== "app"
-    )
+    .filter(([panelKey]) => !SYSTEM_PANELS.includes(panelKey))
     .map(([_panelKey, panel]) => {
       const translationKey = getPanelNameTranslationKey(panel);
       const icon = getPanelIcon(panel) || "mdi:view-dashboard";
@@ -105,10 +104,6 @@ const generateNavigationConfigSectionCommands = (
   hass: HomeAssistant,
   filterOptions: NavigationFilterOptions = {}
 ): BaseNavigationCommand[] => {
-  if (!hass.user?.is_admin) {
-    return [];
-  }
-
   const items: NavigationInfo[] = [];
   const allPages = Object.values(configSections).flat();
   const visiblePages = filterNavigationPages(hass, allPages, filterOptions);
@@ -163,7 +158,7 @@ export const generateNavigationCommands = (
     filterOptions
   );
   const appItems: BaseNavigationCommand[] = [];
-  if (hass.user?.is_admin && isComponentLoaded(hass, "hassio")) {
+  if (hass.user?.is_admin && isComponentLoaded(hass.config, "hassio")) {
     appItems.push({
       path: "/config/apps/available",
       icon_path: mdiStorePlus,

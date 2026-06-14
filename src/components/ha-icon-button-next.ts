@@ -3,13 +3,12 @@ import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
-import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 @customElement("ha-icon-button-next")
 export class HaIconButtonNext extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Boolean }) public disabled = false;
 
   @property() public label?: string;
@@ -25,11 +24,15 @@ export class HaIconButtonNext extends LitElement {
   @state() private _icon =
     mainWindow.document.dir === "rtl" ? mdiChevronLeft : mdiChevronRight;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   protected render(): TemplateResult {
     return html`
       <ha-icon-button
         .disabled=${this.disabled}
-        .label=${this.label || this.hass?.localize("ui.common.next") || "Next"}
+        .label=${this.label || this._localize("ui.common.next") || "Next"}
         .path=${this._icon}
         .href=${this.href}
         .target=${this.target}

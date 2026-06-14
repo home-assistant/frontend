@@ -2,7 +2,7 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
@@ -11,9 +11,9 @@ import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
-import "../../../../components/search-input";
-import { haStyleScrollbar } from "../../../../resources/styles";
-import { isUnavailableState } from "../../../../data/entity/entity";
+import "../../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../../components/input/ha-input-search";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomBadgeEntry } from "../../../../data/lovelace_custom_cards";
@@ -22,6 +22,7 @@ import {
   customBadges,
   getCustomBadgeEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
@@ -65,9 +66,18 @@ export class HuiBadgePicker extends LitElement {
 
   @state() private _height?: number;
 
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
+
+  public async focus(): Promise<void> {
+    await this.updateComplete;
+    // Wait for the input's inner wa-input to render so focus delegation works.
+    await this._searchInput?.updateComplete;
+    this._searchInput?.focus();
+  }
 
   private _filterBadges = memoizeOne(
     (badgeElements: BadgeElement[], filter?: string): BadgeElement[] => {
@@ -83,6 +93,7 @@ export class HuiBadgePicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        ignoreLocation: true,
       };
       const fuse = new Fuse(badges, options);
       badges = fuse.search(filter).map((result) => result.item);
@@ -130,14 +141,11 @@ export class HuiBadgePicker extends LitElement {
     const customBadgesItems = this._customBadges(this._badges);
 
     return html`
-      <search-input
-        .hass=${this.hass}
-        .filter=${this._filter}
-        @value-changed=${this._handleSearchChange}
-        .label=${this.hass.localize(
-          "ui.panel.lovelace.editor.edit_badge.search_badgess"
-        )}
-      ></search-input>
+      <ha-input-search
+        appearance="outlined"
+        .value=${this._filter}
+        @input=${this._handleSearchChange}
+      ></ha-input-search>
       <div
         id="content"
         class="ha-scrollbar"
@@ -213,7 +221,7 @@ export class HuiBadgePicker extends LitElement {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass) {
       return true;
@@ -237,12 +245,14 @@ export class HuiBadgePicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
 
     this._loadBages();
@@ -337,8 +347,8 @@ export class HuiBadgePicker extends LitElement {
     )}`;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
-    const value = ev.detail.value;
+  private _handleSearchChange(ev: InputEvent) {
+    const value = (ev.target as HaInputSearch).value;
 
     if (!value) {
       // Reset when we no longer filter
@@ -361,7 +371,7 @@ export class HuiBadgePicker extends LitElement {
       }
     }
 
-    this._filter = value;
+    this._filter = value ?? "";
   }
 
   private _badgePicked(ev: Event): void {
@@ -444,11 +454,7 @@ export class HuiBadgePicker extends LitElement {
           .config=${badgeConfig}
         ></div>
         <div class="badge-header">
-          ${customBadge
-            ? `${this.hass!.localize(
-                "ui.panel.lovelace.editor.badge_picker.custom_badge"
-              )}: ${customBadge.name || customBadge.type}`
-            : name}
+          ${customBadge ? customBadge.name || customBadge.type : name}
         </div>
         <div
           class="preview ${classMap({
@@ -484,11 +490,8 @@ export class HuiBadgePicker extends LitElement {
           overflow: auto;
         }
 
-        search-input {
-          display: block;
-          width: 100%;
-          --mdc-shape-small: var(--badge-picker-search-shape);
-          margin: var(--badge-picker-search-margin);
+        ha-input-search {
+          padding: var(--ha-space-3) var(--ha-space-3) 0;
         }
 
         .badges-container-header {

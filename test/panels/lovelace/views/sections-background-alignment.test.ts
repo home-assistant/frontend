@@ -4,7 +4,7 @@ import { computeSectionsBackgroundAlignment } from "../../../../src/panels/lovel
 
 function mockSection(
   opts: {
-    background?: {};
+    background?: boolean;
     column_span?: number;
     hidden?: boolean;
   } = {}
@@ -20,7 +20,7 @@ function mockSection(
 
 describe("computeSectionsBackgroundAlignment", () => {
   it("returns empty set for single column layout", () => {
-    const sections = [mockSection(), mockSection({ background: {} })];
+    const sections = [mockSection(), mockSection({ background: true })];
     const result = computeSectionsBackgroundAlignment(sections, 1);
     expect(result.size).toBe(0);
   });
@@ -33,15 +33,15 @@ describe("computeSectionsBackgroundAlignment", () => {
 
   it("returns empty set when all sections have background", () => {
     const sections = [
-      mockSection({ background: {} }),
-      mockSection({ background: {} }),
+      mockSection({ background: true }),
+      mockSection({ background: true }),
     ];
     const result = computeSectionsBackgroundAlignment(sections, 2);
     expect(result.size).toBe(0);
   });
 
   it("marks section without background on same row as one with background", () => {
-    const sections = [mockSection(), mockSection({ background: {} })];
+    const sections = [mockSection(), mockSection({ background: true })];
     const result = computeSectionsBackgroundAlignment(sections, 2);
     expect(result.has(0)).toBe(true);
     expect(result.has(1)).toBe(false);
@@ -49,7 +49,7 @@ describe("computeSectionsBackgroundAlignment", () => {
 
   it("does not mark sections on different rows", () => {
     // Row 1: section 0 (no bg), Row 2: section 1 (bg)
-    const sections = [mockSection(), mockSection({ background: {} })];
+    const sections = [mockSection(), mockSection({ background: true })];
     const result = computeSectionsBackgroundAlignment(sections, 1);
     expect(result.size).toBe(0);
   });
@@ -59,7 +59,7 @@ describe("computeSectionsBackgroundAlignment", () => {
     // section 2 (span 1, no bg) = row 2
     const sections = [
       mockSection({ column_span: 2 }),
-      mockSection({ column_span: 2, background: {} }),
+      mockSection({ column_span: 2, background: true }),
       mockSection(),
     ];
     const result = computeSectionsBackgroundAlignment(sections, 4);
@@ -71,7 +71,7 @@ describe("computeSectionsBackgroundAlignment", () => {
   it("wraps to new row when column_span exceeds remaining space", () => {
     // 2 columns: section 0 (span 1, bg) on row 1, section 1 (span 2, no bg) on row 2
     const sections = [
-      mockSection({ background: {} }),
+      mockSection({ background: true }),
       mockSection({ column_span: 2 }),
     ];
     const result = computeSectionsBackgroundAlignment(sections, 2);
@@ -81,7 +81,7 @@ describe("computeSectionsBackgroundAlignment", () => {
   it("skips hidden sections", () => {
     // section 0 (hidden, bg) should not cause section 1 to need margin
     const sections = [
-      mockSection({ hidden: true, background: {} }),
+      mockSection({ hidden: true, background: true }),
       mockSection(),
     ];
     const result = computeSectionsBackgroundAlignment(sections, 2);
@@ -94,7 +94,7 @@ describe("computeSectionsBackgroundAlignment", () => {
     // Row 2: section 2 (no bg) + section 3 (no bg) -> no margin needed
     const sections = [
       mockSection(),
-      mockSection({ background: {} }),
+      mockSection({ background: true }),
       mockSection(),
       mockSection(),
     ];
@@ -114,7 +114,7 @@ describe("computeSectionsBackgroundAlignment", () => {
     // section with span 10 in a 2-column layout should be treated as span 2
     // Row 1: section 0 (span clamped to 2, bg), Row 2: section 1 (no bg)
     const sections = [
-      mockSection({ column_span: 10, background: {} }),
+      mockSection({ column_span: 10, background: true }),
       mockSection(),
     ];
     const result = computeSectionsBackgroundAlignment(sections, 2);
@@ -125,7 +125,7 @@ describe("computeSectionsBackgroundAlignment", () => {
     // 3 columns: section 0 (no bg) + section 1 (bg) + section 2 (no bg)
     const sections = [
       mockSection(),
-      mockSection({ background: {} }),
+      mockSection({ background: true }),
       mockSection(),
     ];
     const result = computeSectionsBackgroundAlignment(sections, 3);
