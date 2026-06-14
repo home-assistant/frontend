@@ -236,7 +236,17 @@ export class HuiPowerSourcesGraphCard
     };
 
     const now = Date.now();
-    Object.keys(statIds).forEach((key, keyIndex) => {
+    const seriesData: Record<
+      string,
+      {
+        colorHex: string;
+        rgb: [number, number, number];
+        positive: [number, number][];
+        negative: [number, number][];
+      }
+    > = {};
+
+    Object.keys(statIds).forEach((key) => {
       if (statIds[key].stats.length) {
         const colorHex = computedStyles.getPropertyValue(statIds[key].color);
         const rgb = hex2rgb(colorHex);
@@ -261,14 +271,32 @@ export class HuiPowerSourcesGraphCard
           }),
           trackY
         );
-        datasets.push({
-          ...commonSeriesOptions,
-          id: key,
-          name: statIds[key].name,
-          color: colorHex,
-          stack: "positive",
-          areaStyle: {
-            color: new LinearGradient(0, 0, 0, 1, [
+
+        seriesData[key] = { colorHex, rgb, positive, negative };
+      }
+    });
+
+    const pushSeries = (
+      key: string,
+      data: [number, number][],
+      stack: "positive" | "negative",
+      z: number
+    ) => {
+      const { colorHex, rgb } = seriesData[key];
+
+      datasets.push({
+        ...commonSeriesOptions,
+        id: stack === "positive" ? key : `${key}-negative`,
+        name: statIds[key].name,
+        color: colorHex,
+        stack,
+        areaStyle: {
+          color: new LinearGradient(
+            0,
+            stack === "positive" ? 0 : 1,
+            0,
+            stack === "positive" ? 1 : 0,
+            [
               {
                 offset: 0,
                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
@@ -277,34 +305,32 @@ export class HuiPowerSourcesGraphCard
                 offset: 1,
                 color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.25)`,
               },
-            ]),
-          },
-          data: positive,
-          z: 3 - keyIndex, // draw in reverse order so 0 value lines are overwritten
-        });
-        if (key !== "solar") {
-          datasets.push({
-            ...commonSeriesOptions,
-            id: `${key}-negative`,
-            name: statIds[key].name,
-            color: colorHex,
-            stack: "negative",
-            areaStyle: {
-              color: new LinearGradient(0, 1, 0, 0, [
-                {
-                  offset: 0,
-                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
-                },
-                {
-                  offset: 1,
-                  color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.25)`,
-                },
-              ]),
-            },
-            data: negative,
-            z: 4 - keyIndex, // draw in reverse order but above positive series
-          });
-        }
+            ]
+          ),
+        },
+        data,
+        z,
+      });
+    };
+
+    // Draw in reverse order so 0 value lines are overwritten
+    ["solar", "battery", "grid"].forEach((key, i) => {
+      if (seriesData[key]) {
+        pushSeries(key, seriesData[key].positive, "positive", 3 - i);
+      }
+    });
+
+    // Draw in reverse order but above positive series
+    ["battery", "grid"].forEach((key, i) => {
+      if (seriesData[key]) {
+        pushSeries(key, seriesData[key].negative, "negative", 4 - i);
+      }
+    });
+
+    Object.keys(statIds).forEach((key) => {
+      if (seriesData[key]) {
+        const { colorHex, rgb } = seriesData[key];
+
         this._legendData!.push({
           id: key,
           secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
