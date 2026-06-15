@@ -162,35 +162,40 @@ export function generateStatisticsChartData(
         // endTime is "now" and client time is not in sync with server time.
         return;
       }
-      statDataSets.forEach((d, i) => {
-        if (chartType === "line") {
-          if (
-            prevEndTime &&
-            prevValues &&
-            prevEndTime.getTime() !== start.getTime()
-          ) {
+      const isLineChart = chartType === "line";
+      // For bar charts, optionally center the bar within its time range. The
+      // centered time is shared by every series of this data point.
+      const barTime =
+        !isLineChart && centerBars
+          ? new Date((start.getTime() + end.getTime()) / 2)
+          : start;
+      // Whether a gap needs to be drawn before this data point (line charts).
+      const drawGap =
+        isLineChart &&
+        !!prevEndTime &&
+        !!prevValues &&
+        prevEndTime.getTime() !== start.getTime();
+      for (let i = 0; i < statDataSets.length; i++) {
+        const d = statDataSets[i];
+        const dataValue = dataValues[i];
+        if (isLineChart) {
+          if (drawGap) {
             // if the end of the previous data doesn't match the start of the current data,
             // we have to draw a gap so add a value at the end time, and then an empty value.
-            d.data!.push([prevEndTime, ...prevValues[i]!]);
-            d.data!.push([prevEndTime, null]);
+            d.data!.push([prevEndTime!, ...prevValues![i]!]);
+            d.data!.push([prevEndTime!, null]);
           }
-          d.data!.push([start, ...dataValues[i]!]);
+          d.data!.push([start, ...dataValue!]);
           // For band-top rows dataValues[i] is [diff, top]; the actual Y is
           // the last element. For regular rows it's [value]. Same call works.
-          trackY(dataValues[i][dataValues[i].length - 1]);
+          trackY(dataValue[dataValue.length - 1]);
         } else {
-          let time = start;
-          if (centerBars) {
-            // If centering bars, set the time to the midpoint between start and end instead
-            // of the start time.
-            time = new Date((start.getTime() + end.getTime()) / 2);
-          }
           // Data value should always be a scalar for bar charts. Pass in
           // real start time as extra value to allow formatting tooltip.
-          d.data!.push([time, dataValues[i][0]!, start, end]);
-          trackY(dataValues[i][0]);
+          d.data!.push([barTime, dataValue[0]!, start, end]);
+          trackY(dataValue[0]);
         }
-      });
+      }
       prevValues = dataValues;
       prevEndTime = limit;
     };
@@ -317,41 +322,62 @@ export function generateStatisticsChartData(
     let prevDate: Date | null = null;
     // Process chart data.
     let firstSum: number | null | undefined = null;
-    stats.forEach((stat) => {
+
+    // The per-type branch decisions in the inner loop are invariant across all
+    // stats of this statistic, so classify each type once up front.
+    // kind: 0 = sum (cumulative diff), 1 = band-top ([diff, top]), 2 = plain.
+    const SUM_KIND = 0;
+    const BAND_KIND = 1;
+    const PLAIN_KIND = 2;
+    const bandBottomHidden = hiddenStats.has(`${statistic_id}-${bandBottom}`);
+    const isLine = chartType === "line";
+    const typeKinds = statTypes.map((type) => {
+      if (type === "sum") {
+        return SUM_KIND;
+      }
+      if (type === bandTop && isLine && drawBands && !bandBottomHidden) {
+        return BAND_KIND;
+      }
+      return PLAIN_KIND;
+    });
+    const numTypes = statTypes.length;
+    const statHidden = hiddenStats.has(statistic_id);
+
+    for (const stat of stats) {
       const startDate = new Date(stat.start);
       const endDate = new Date(stat.end);
       if (prevDate === startDate) {
-        return;
+        continue;
       }
       prevDate = startDate;
       const dataValues: (number | null)[][] = [];
-      statTypes.forEach((type) => {
+      for (let t = 0; t < numTypes; t++) {
+        const type = statTypes[t];
         const val: (number | null)[] = [];
-        if (type === "sum") {
-          if (firstSum === null || firstSum === undefined) {
-            val.push(0);
-            firstSum = stat.sum;
-          } else {
-            val.push((stat.sum || 0) - firstSum);
+        switch (typeKinds[t]) {
+          case SUM_KIND:
+            if (firstSum === null || firstSum === undefined) {
+              val.push(0);
+              firstSum = stat.sum;
+            } else {
+              val.push((stat.sum || 0) - firstSum);
+            }
+            break;
+          case BAND_KIND: {
+            const top = stat[bandTop] || 0;
+            val.push(Math.abs(top - (stat[bandBottom] || 0)));
+            val.push(top);
+            break;
           }
-        } else if (
-          type === bandTop &&
-          chartType === "line" &&
-          drawBands &&
-          !hiddenStats.has(`${statistic_id}-${bandBottom}`)
-        ) {
-          const top = stat[bandTop] || 0;
-          val.push(Math.abs(top - (stat[bandBottom] || 0)));
-          val.push(top);
-        } else {
-          val.push(stat[type] ?? null);
+          default:
+            val.push(stat[type] ?? null);
         }
         dataValues.push(val);
-      });
-      if (!hiddenStats.has(statistic_id)) {
+      }
+      if (!statHidden) {
         pushData(startDate, endDate, endTime, dataValues);
       }
-    });
+    }
 
     // For line charts, close out the last stat segment at prevEndTime
     const lastEndTime = prevEndTime;
