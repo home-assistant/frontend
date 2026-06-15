@@ -304,38 +304,34 @@ function formatTooltip(
       : nothing}`;
 }
 
-function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
-  const item =
-    datapoint && typeof datapoint === "object" && "value" in datapoint
-      ? datapoint
-      : { value: datapoint };
-  return Number(item.value?.[0]);
-}
-
 export function fillLineGaps(datasets: LineSeriesOption[]) {
-  const buckets = Array.from(
-    new Set(
-      datasets
-        .map((dataset) =>
-          dataset.data!.map((datapoint) => getDatapointX(datapoint))
-        )
-        .flat()
-    )
-  ).sort((a, b) => a - b);
+  // Single pass per datapoint: normalise it to a LineDataItemOption, compute
+  // its x once, collect every x into the shared bucket set, and build each
+  // dataset's lookup map at the same time. This avoids re-deriving x and
+  // re-discriminating the tuple/object shape in a separate pass.
+  const bucketSet = new Set<number>();
+  const dataMaps: Map<number, LineDataItemOption>[] = [];
 
-  datasets.forEach((dataset) => {
+  for (const dataset of datasets) {
     const dataMap = new Map<number, LineDataItemOption>();
-    dataset.data!.forEach((datapoint) => {
+    for (const datapoint of dataset.data!) {
       const item: LineDataItemOption =
         datapoint && typeof datapoint === "object" && "value" in datapoint
           ? datapoint
           : ({ value: datapoint } as LineDataItemOption);
-      const x = getDatapointX(datapoint);
+      const x = Number(item.value?.[0]);
+      bucketSet.add(x);
       if (!Number.isNaN(x)) {
         dataMap.set(x, item);
       }
-    });
+    }
+    dataMaps.push(dataMap);
+  }
 
+  const buckets = Array.from(bucketSet).sort((a, b) => a - b);
+
+  datasets.forEach((dataset, index) => {
+    const dataMap = dataMaps[index];
     dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
   });
 
