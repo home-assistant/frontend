@@ -8,6 +8,7 @@ import type { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
+import { mockCloud } from "./stubs/cloud";
 import { mockConfigEntries } from "./stubs/config_entries";
 import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
@@ -61,6 +62,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
+    mockCloud(hass);
     mockConfigEntries(hass);
     mockAreaRegistry(hass);
     mockDeviceRegistry(hass);
