@@ -4,21 +4,30 @@ title: Home
 
 # Welcome to Home Assistant Design
 
-This portal aims to aid designers and developers on improving the Home Assistant interface. It consists of working code, resources and guidelines.
+This is the design gallery for the Home Assistant frontend: a living reference of working components, dashboard cards, and brand and copy guidance. Every page runs outside a Home Assistant instance, so you can explore the interface, try components in isolation, and review changes against a consistent baseline.
 
-## Home Assistant interface
+## Browse the gallery
 
-The Home Assistant frontend allows users to browse and control the state of their home, manage their automations and configure integrations. The frontend is designed as a mobile-first experience. It is a progressive web application and offers an app-like experience to our users. The Home Assistant frontend needs to be fast. But it also needs to work on a wide range of old devices.
+- [Brand](#brand/logo): the logo, personality, and the story behind the Open Home.
+- [Components](#components/ha-button): the `ha-*` component library with live demos and API notes.
+- [Dashboards](#lovelace/introduction): Lovelace cards rendered from real card configuration.
+- [More Info dialogs](#more-info/light): the more-info experience for each entity type.
+- [Automation](#automation/editor-trigger): trigger, condition, and action editors, plus trace views.
+- [Users](#user-test/user-types): the audiences we design for.
+- [Date and time](#date-time/date): date and time formatting examples.
+- [Miscellaneous](#misc/entity-state): smaller utilities and patterns, plus how to edit this gallery.
 
-### Material Design
+## Testing and playground
 
-The Home Assistant interface is based on Material Design. It's a design system created by Google to quickly build high-quality digital experiences. Components and guidelines that are custom made for Home Assistant are documented on this portal. For all other components check <a href="https://material.io" rel="noopener noreferrer" target="_blank">material.io</a>.
+Every page runs against fake state, so you can interact with components safely and reproducibly. Treat the demo pages as a playground: change a value, resize the window, or switch the layout to right-to-left to check spacing and direction. Use the gallery to reproduce a UI state in isolation before debugging it in a full Home Assistant setup.
+
+Open **Settings** from the gear icon in the sidebar to switch between light and dark themes or preview the interface in right-to-left.
 
 ## Designers
 
-We want to make it as easy for designers to contribute as it is for developers. There’s a lot a designer can contribute to:
+We want to make it as easy for designers to contribute as it is for developers. There's a lot a designer can contribute to:
 
-- Meet us at <a href="https://www.home-assistant.io/join-chat-design" rel="noopener noreferrer" target="_blank">Discord #designers channel</a>. If you can't see the channel, make sure you set the correct role in Channels & Roles.
+- Meet us in the <a href="https://www.home-assistant.io/join-chat-design" rel="noopener noreferrer" target="_blank">Discord #designers channel</a>. If you can't see the channel, make sure you set the correct role in Channels & Roles.
 - Start designing with our <a href="https://www.figma.com/design/2WGI8IDGyxINjSV6NRvPur/Home-Assistant-Design-Kit" rel="noopener noreferrer" target="_blank">Figma DesignKit</a>.
 - Find the latest UX <a href="https://github.com/home-assistant/frontend/discussions?discussions_q=label%3Aux" rel="noopener noreferrer" target="_blank">discussions</a> and <a href="https://github.com/home-assistant/frontend/labels/ux" rel="noopener noreferrer" target="_blank">issues</a> on GitHub. Everyone can start a new issue or discussion!
 
