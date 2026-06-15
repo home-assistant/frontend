@@ -288,29 +288,28 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
       Object.values(this.hass.devices),
       this._entityReg
     );
-    const { devices, entities } = memberships;
     const quickLinkCounts = this._getQuickLinkCounts(
       memberships,
       this._related
     );
 
-    // Pre-compute the entity and device names, so we can sort by them
-    if (devices) {
-      devices.forEach((entry) => {
-        entry.name = computeDeviceNameDisplay(
-          entry,
-          this.hass.localize,
-          this.hass.states
-        );
-      });
-      sortDeviceRegistryByName(devices, this.hass.locale.language);
-    }
-    if (entities) {
-      entities.forEach((entry) => {
-        entry.name = computeEntityRegistryName(this.hass, entry);
-      });
-      sortEntityRegistryByName(entities, this.hass.locale.language);
-    }
+    // Compute the display names on shallow copies so we can sort and render by
+    // them without mutating the shared registry objects.
+    const devices = memberships.devices.map((entry) => ({
+      ...entry,
+      name: computeDeviceNameDisplay(
+        entry,
+        this.hass.localize,
+        this.hass.states
+      ),
+    }));
+    sortDeviceRegistryByName(devices, this.hass.locale.language);
+
+    const entities = memberships.entities.map((entry) => ({
+      ...entry,
+      name: computeEntityRegistryName(this.hass, entry),
+    }));
+    sortEntityRegistryByName(entities, this.hass.locale.language);
 
     // Group entities by domain
     const groupedEntities = groupBy(entities, (entity) =>
