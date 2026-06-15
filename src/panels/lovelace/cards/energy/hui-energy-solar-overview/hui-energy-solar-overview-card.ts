@@ -1,6 +1,7 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import {
   startOfDay,
   endOfDay,
@@ -26,6 +27,7 @@ import type { SolarOverviewEngine } from "./hui-energy-solar-overview-engine";
 import type { SolarOverviewCardConfig } from "./constants";
 import type { ChangeBucket } from "./card/energy-stats";
 import {
+  DEFAULT_CLOUD_COLOR_HEX,
   DEFAULT_SUN_COLOR_HEX,
   VALUE_DECIMALS,
   OUTLINE_FAR,
@@ -37,7 +39,8 @@ import {
   SUN_RIM_WIDTH,
   SUN_FILL_OPACITY_BG,
   NIGHT_STROKE_FACTOR,
-  HOME_PILL_RADIUS_PX,
+  HOME_PILL_HALF_HEIGHT_PX,
+  HOME_PILL_HALF_WIDTH_PX,
   TIMELINE_MAX_TICKS,
   HOUR_MS,
   DAY_MS,
@@ -145,9 +148,16 @@ function buildTimelineModel(
 
   if (spanDays <= 2.05) {
     kind = "intraday";
-    const h6 = Math.ceil((start.getHours() + 1) / 6) * 6;
-    firstTick = new Date(startOfDay(start).getTime() + h6 * HOUR_MS);
-    next = (d) => new Date(d.getTime() + 6 * HOUR_MS);
+    // Finest "nice" hour step that keeps the tick count within the width budget,
+    // so a wide card shows 2 h / 3 h ticks instead of always 6 h.
+    const spanHours = total / HOUR_MS;
+    const stepH =
+      [1, 2, 3, 4, 6, 12].find((h) => spanHours / h <= maxTicks) ?? 12;
+    const firstStep =
+      Math.ceil((start.getHours() + start.getMinutes() / 60 + 1e-3) / stepH) *
+      stepH;
+    firstTick = new Date(startOfDay(start).getTime() + firstStep * HOUR_MS);
+    next = (d) => new Date(d.getTime() + stepH * HOUR_MS);
     periodStart = null;
     labelMode = "boundary";
   } else if (spanDays <= 14.05) {
@@ -291,6 +301,9 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   // Screen-space solar arc / sun / incidence ray, reprojected on every map
   // transform and clock tick (the sun moves with time).
   @state() _sunScene: SunScene | null = null;
+  // Current total cloud cover (0-100 %) at the home, fed by the engine weather
+  // feed. Drives the cloud chip's dynamic weather icon.
+  @state() _cloudCover = 0;
   // Per-polygon home silhouettes (projected base + top ring of each polygon),
   // painted into the cloud-disc SVG mask. Reprojected on every map transform.
   @state() _homeSilhouettes: HomeSilhouette[] = [];
@@ -312,7 +325,6 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   @state() _haGridExportTodayKwh: number | null = null;
   @state() _haBatteryChargedKwh: number | null = null;
   @state() _haBatteryDischargedKwh: number | null = null;
-  @state() _homeHover = false;
   @state() _dashRadialHoverHour: number | null = null;
   // Not a @state on purpose: every wheel event mutates this and a @state would
   // re-render on every tick.
@@ -330,6 +342,17 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   private _energyCollectionUnsub?: () => void;
   // Solar production series (ms + kWh per bucket) over the selected window.
   @state() private _productionSeries: { t: number; v: number }[] = [];
+  // Hourly global shortwave irradiance (W/m²) over the window, for the irradiance
+  // chip's chart. Fed by the engine weather feed.
+  @state() _irradianceSeries: { t: number; v: number }[] = [];
+  // Which chip series the bottom chart draws. "production" is the default; the
+  // PV chip resets to it, the grid / battery / irradiance chips re-target.
+  @state() private _chartTarget:
+    | "production"
+    | "grid"
+    | "battery-power"
+    | "battery-soc"
+    | "irradiance" = "production";
   private _solarStatIds: string[] = [];
   // True while dragging the timeline, so the clock tick doesn't fight the cursor.
   private _timelineScrubbing = false;
@@ -391,15 +414,6 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   private _arcBackBuf: ArcSegment[] = [];
   private _arcFrontBuf: ArcSegment[] = [];
   private _arcFrontNearBuf: ArcSegment[] = [];
-
-  // Cached SVG point strings for the home silhouettes, keyed by reference on
-  // host._homeSilhouettes so a fresh array rebuilds and reuse is free otherwise.
-  private _silhouetteCacheKey: unknown = null;
-  private _silhouettePtsCache: ({
-    base: string;
-    top: string;
-    walls: string[];
-  } | null)[] = [];
 
   //HA card lifecycle
 
@@ -774,75 +788,31 @@ export class HuiEnergySolarOverviewCard extends LitElement {
 
   // Nudge a leader endpoint to the border of the central home pill, so all chip
   // leaders dock against a single focal energy node.
-  private _nudgeToHomeCircle(
+  // Nearest point on the home pill's stadium outline to (chipX, chipY): the
+  // straight top/bottom edge over the middle, the rounded end-cap arc beyond it.
+  // The home is a horizontal pill now, so leaders dock to this shape, not a circle.
+  private _nudgeToHomePill(
     chipX: number,
     chipY: number,
     homeX: number,
     homeY: number
   ): { x: number; y: number } {
-    const dx = chipX - homeX;
+    const halfW = HOME_PILL_HALF_WIDTH_PX;
+    const halfH = HOME_PILL_HALF_HEIGHT_PX;
+    const ex = chipX - homeX;
+    const ey = chipY - homeY;
+    // Width of the straight middle (between the two end-cap semicircles).
+    const straightHalfW = Math.max(0, halfW - halfH);
+    if (Math.abs(ex) <= straightHalfW) {
+      // Over the straight middle: dock on the nearest top/bottom edge.
+      return { x: chipX, y: homeY + (ey >= 0 ? 1 : -1) * halfH };
+    }
+    // Over an end cap: dock on the matching semicircle arc.
+    const cornerX = homeX + (ex >= 0 ? 1 : -1) * straightHalfW;
+    const dx = chipX - cornerX;
     const dy = chipY - homeY;
-    const len = Math.sqrt(dx * dx + dy * dy) || 1;
-    return {
-      x: homeX + (dx / len) * HOME_PILL_RADIUS_PX,
-      y: homeY + (dy / len) * HOME_PILL_RADIUS_PX,
-    };
-  }
-
-  // Build (or return cached) SVG point strings for the home silhouette layer,
-  // keyed by _homeSilhouettes identity.
-  private _getSilhouettePoints(): ({
-    base: string;
-    top: string;
-    walls: string[];
-  } | null)[] {
-    const sils = this._homeSilhouettes;
-    if (this._silhouetteCacheKey === sils) {
-      return this._silhouettePtsCache;
-    }
-
-    const out: ({ base: string; top: string; walls: string[] } | null)[] = [];
-    for (const sil of sils) {
-      const N = Math.min(sil.base.length, sil.top.length);
-      if (N < 3) {
-        out.push(null);
-        continue;
-      }
-      let basePts = "";
-      let topPts = "";
-      for (let i = 0; i < N; i++) {
-        if (i > 0) {
-          basePts += " ";
-          topPts += " ";
-        }
-        basePts += sil.base[i].x + "," + sil.base[i].y;
-        topPts += sil.top[i].x + "," + sil.top[i].y;
-      }
-      const walls: string[] = new Array(N);
-      for (let i = 0; i < N; i++) {
-        const j = (i + 1) % N;
-        walls[i] =
-          sil.base[i].x +
-          "," +
-          sil.base[i].y +
-          " " +
-          sil.base[j].x +
-          "," +
-          sil.base[j].y +
-          " " +
-          sil.top[j].x +
-          "," +
-          sil.top[j].y +
-          " " +
-          sil.top[i].x +
-          "," +
-          sil.top[i].y;
-      }
-      out.push({ base: basePts, top: topPts, walls });
-    }
-    this._silhouetteCacheKey = sils;
-    this._silhouettePtsCache = out;
-    return out;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    return { x: cornerX + (halfH * dx) / dist, y: homeY + (halfH * dy) / dist };
   }
 
   //Render
@@ -1079,20 +1049,13 @@ export class HuiEnergySolarOverviewCard extends LitElement {
       const dirV = homeY > chipY ? 1 : -1;
       const sx = chipX + dirH * chipNudgePx;
       const sy = chipY;
-      // Land the vertical leg ~25% of the pill width off-centre so two leaders on
-      // the same row don't collide on the central axis.
-      const HOME_PILL_VISIBLE_RADIUS = 26;
+      // Land the vertical leg a little off-centre so two leaders on the same row
+      // do not collide on the central axis. The offset stays inside the home
+      // pill's straight middle, so it docks on the flat top/bottom edge at
+      // y = home.y ± half-height (the pill is a horizontal stadium now).
       const HOME_PILL_QUARTER_X = 13;
       const ex = homeX - dirH * HOME_PILL_QUARTER_X;
-      // Vertical leg crosses the pill outline at y = home.y ± sqrt(R² - offsetX²).
-      const yIntersect = Math.sqrt(
-        Math.max(
-          0,
-          HOME_PILL_VISIBLE_RADIUS * HOME_PILL_VISIBLE_RADIUS -
-            HOME_PILL_QUARTER_X * HOME_PILL_QUARTER_X
-        )
-      );
-      const ey = homeY - dirV * yIntersect;
+      const ey = homeY - dirV * HOME_PILL_HALF_HEIGHT_PX;
       // Fillet radius, clamped to fit inside both legs of the L.
       const FILLET_R = 12;
       const r = Math.min(
@@ -1195,8 +1158,10 @@ export class HuiEnergySolarOverviewCard extends LitElement {
       lowCarbonWatts !== null;
     // Straight vertical leader from the low-carbon chip down into the grid chip
     // below it; each end nudged ~16 px so the line meets the pill edges.
+    // Vertical connector from the low-carbon chip's bottom edge to the grid
+    // chip's top edge. 13 px = the chip half-height, so it touches both borders.
     const lowCarbonLeaderPath = layout
-      ? `M ${layout.lowCarbonLabel.x.toFixed(1)},${(layout.lowCarbonLabel.y + 16).toFixed(1)} L ${layout.gridLabel.x.toFixed(1)},${(layout.gridLabel.y - 16).toFixed(1)}`
+      ? `M ${layout.lowCarbonLabel.x.toFixed(1)},${(layout.lowCarbonLabel.y + 13).toFixed(1)} L ${layout.gridLabel.x.toFixed(1)},${(layout.gridLabel.y - 13).toFixed(1)}`
       : "";
     const lowCarbonBeadDur =
       lowCarbonWatts === null || lowCarbonWatts < GRID_BEAD_IDLE_W
@@ -1255,7 +1220,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     let sunRayTargetY = sunScene?.home.y ?? 0;
     if (layout && sunScene && !showPvLabel) {
       // PV chip hidden: dock the ray on the home pill facing the sun (sun -> home).
-      const docked = this._nudgeToHomeCircle(
+      const docked = this._nudgeToHomePill(
         sunScene.sun.x,
         sunScene.sun.y,
         layout.home.x,
@@ -1406,13 +1371,12 @@ export class HuiEnergySolarOverviewCard extends LitElement {
 
         <!-- PV → home animated leader: vertical dashed line flowing toward the
              home at a pace proportional to live production. Hidden when no PV. -->
-        ${nothing}
         ${showPvLabel
           ? (() => {
               // Leader stops at the home disc border via a fixed radius nudge.
               const pvX1 = layout!.pvLabel.x;
               const pvY1 = layout!.pvLabel.y + PV_HALF_HEIGHT_PX;
-              const pvHomeEnd = this._nudgeToHomeCircle(
+              const pvHomeEnd = this._nudgeToHomePill(
                 pvX1,
                 pvY1,
                 layout!.home.x,
@@ -1449,9 +1413,17 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         ${showPvLabel
           ? html`
               <div
-                class="pv-pct-label ${isPvPredicted ? "is-predicted" : ""}"
+                class="pv-pct-label is-clickable ${isPvPredicted
+                  ? "is-predicted"
+                  : ""} ${this._chartTarget === "production"
+                  ? "is-chart-active"
+                  : ""}"
                 style="left:${layout!.pvLabel.x}px; top:${layout!.pvLabel
                   .y}px; --pv-leader-color:${pvColor}"
+                role="button"
+                tabindex="0"
+                aria-label="Show production in chart"
+                @click=${this._onPvChipClick}
               >
                 <ha-icon icon="mdi:solar-power"></ha-icon>
                 <span>${pvDisplayValue}</span>
@@ -1502,10 +1474,17 @@ export class HuiEnergySolarOverviewCard extends LitElement {
               ${showSocChip
                 ? html`
                     <div
-                      class="battery-pct-label"
+                      class="battery-pct-label is-clickable ${this
+                        ._chartTarget === "battery-soc"
+                        ? "is-chart-active"
+                        : ""}"
                       style="left:${layout!.batterySocLabel.x}px; top:${layout!
                         .batterySocLabel
                         .y}px; --battery-leader-color:${batteryLeaderColor}"
+                      role="button"
+                      tabindex="0"
+                      aria-label="Show battery charge in chart"
+                      @click=${this._onBatterySocChipClick}
                     >
                       <ha-icon icon="mdi:battery"></ha-icon>
                       <span>${batterySocText}</span>
@@ -1515,10 +1494,17 @@ export class HuiEnergySolarOverviewCard extends LitElement {
               ${showPowerChip
                 ? html`
                     <div
-                      class="battery-pct-label"
+                      class="battery-pct-label is-clickable ${this
+                        ._chartTarget === "battery-power"
+                        ? "is-chart-active"
+                        : ""}"
                       style="left:${layout!.batteryPowerLabel
                         .x}px; top:${layout!.batteryPowerLabel
                         .y}px; --battery-leader-color:${batteryLeaderColor}"
+                      role="button"
+                      tabindex="0"
+                      aria-label="Show battery power in chart"
+                      @click=${this._onBatteryPowerChipClick}
                     >
                       <ha-icon icon="mdi:lightning-bolt"></ha-icon>
                       <span>${batteryPowerText}</span>
@@ -1561,9 +1547,15 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   : nothing}
               </svg>
               <div
-                class="grid-label"
+                class="grid-label is-clickable ${this._chartTarget === "grid"
+                  ? "is-chart-active"
+                  : ""}"
                 style="left:${layout!.gridLabel.x}px; top:${layout!.gridLabel
                   .y}px; --grid-leader-color:${gridLeaderColor}"
+                role="button"
+                tabindex="0"
+                aria-label="Show grid in chart"
+                @click=${this._onGridChipClick}
               >
                 <ha-icon
                   icon=${gridImporting
@@ -1731,6 +1723,29 @@ export class HuiEnergySolarOverviewCard extends LitElement {
               </svg>
             `
           : nothing}
+
+        <!-- Cloud chip: icon-only weather glyph on the sun -> PV/home lead,
+             reflecting the current cloud cover with a cloud-coloured border.
+             Shown only while the lead exists (sun above the horizon); it is the
+             entry point to weather mode. -->
+        ${showRay
+          ? (() => {
+              const cloudChipX = (sunScene!.sun.x + sunRayTargetX) / 2;
+              const cloudChipY = (sunScene!.sun.y + sunRayTargetY) / 2;
+              return html`
+                <div
+                  class="cloud-chip is-clickable"
+                  style="left:${cloudChipX}px; top:${cloudChipY}px; --cloud-chip-color:${DEFAULT_CLOUD_COLOR_HEX}"
+                  role="button"
+                  tabindex="0"
+                  aria-label="Open weather mode"
+                  @click=${this._onCloudChipClick}
+                >
+                  <ha-icon icon=${this._cloudIcon(this._cloudCover)}></ha-icon>
+                </div>
+              `;
+            })()
+          : nothing}
         ${showSun
           ? html`
               <svg
@@ -1795,12 +1810,20 @@ export class HuiEnergySolarOverviewCard extends LitElement {
             `
           : nothing}
 
-        <!-- W/m² label, pinned above the sun disc. -->
+        <!-- W/m² label, pinned above the sun disc. Clickable: re-targets the
+             chart to the irradiance series. -->
         ${showSunLabel
           ? html`
               <div
-                class="solar-pct-label"
+                class="solar-pct-label is-clickable ${this._chartTarget ===
+                "irradiance"
+                  ? "is-chart-active"
+                  : ""}"
                 style="left:${sunScene!.sun.x}px; top:${sunScene!.sun.y - 22}px"
+                role="button"
+                tabindex="0"
+                aria-label="Show irradiance in chart"
+                @click=${this._onIrradianceChipClick}
               >
                 <ha-icon icon="mdi:white-balance-sunny"></ha-icon>
                 <span>${sunWm2Round} W/m²</span>
@@ -1808,96 +1831,41 @@ export class HuiEnergySolarOverviewCard extends LitElement {
             `
           : nothing}
 
-        <!-- Home hover glow: sun-coloured halo around the home silhouette, reusing
-             the cloud-disc mask rings so it tracks rotation. Opacity toggled via
-             a class for a pure-CSS fade. -->
-        ${hasHomeCoords && this._homeSilhouettes.length > 0
-          ? (() => {
-              const glowSunColor = DEFAULT_SUN_COLOR_HEX;
-              const silhouettePts = this._getSilhouettePoints();
-              const glowClasses = [
-                "home-glow-svg",
-                this._homeHover ? "is-hovered" : "",
-              ]
-                .filter(Boolean)
-                .join(" ");
-              return html`
-                <svg
-                  class=${glowClasses}
-                  style="--sun-color:${glowSunColor};--pv-leader-color:${pvColor};--pv-flow-duration:${pvFlowDuration}s"
-                  @mouseenter=${this._onHomeEnter}
-                  @mouseleave=${this._onHomeLeave}
-                >
-                  ${silhouettePts.map((sil) =>
-                    sil === null
-                      ? nothing
-                      : svg`
-                                <polygon class="home-glow-shape" points="${sil.base}" />
-                                <polygon class="home-glow-shape" points="${sil.top}" />
-                                ${sil.walls.map(
-                                  (w) => svg`
-                                    <polygon class="home-glow-shape" points="${w}" />
-                                `
-                                )}
-                            `
-                  )}
-                </svg>
-              `;
-            })()
-          : nothing}
-
-        <!-- Home pill: the central energy hub every chip leader docks against. -->
+        <!-- Home pill: the central energy hub every chip leader docks against.
+             A horizontal chip in the same recipe as the others (icon + live
+             home consumption). Not interactive. -->
         ${hasHomeCoords && layout !== null
           ? html`
-              <!-- Drop leader tethering the floating pill down to the building. -->
-              ${(() => {
-                const end = this._nudgeToHomeCircle(
-                  layout!.homeBase.x,
-                  layout!.homeBase.y,
-                  layout!.home.x,
-                  layout!.home.y
-                );
-                return html`
-                  <svg class="pv-home-leader-svg">
-                    <line
-                      x1=${layout!.homeBase.x}
-                      y1=${layout!.homeBase.y}
-                      x2=${end.x}
-                      y2=${end.y}
-                      style="stroke: var(--primary-color, #03a9f4); stroke-width: 2; stroke-linecap: round; opacity: 0.85;"
-                    ></line>
-                  </svg>
-                `;
-              })()}
-              <!-- Invisible hitbox over the home node: hover lights the glow,
-                   click enters weather mode (the pill is pointer-events:none). -->
               <div
-                class="home-hitbox"
-                style="left:${layout!.home.x}px; top:${layout!.home.y}px"
-                role="button"
-                tabindex="0"
-                aria-label="Weather mode"
-                @click=${this._onHomeClick}
-                @mouseenter=${this._onHomeEnter}
-                @mouseleave=${this._onHomeLeave}
-              ></div>
-              <div
-                class="home-pill ${showHomeUsageChip ? "has-usage" : ""} ${this
-                  ._homeHover
-                  ? "is-hovered"
-                  : ""}"
+                class="home-pill"
                 style="left:${layout!.home.x}px; top:${layout!.home.y}px"
               >
                 <ha-icon icon="mdi:home"></ha-icon>
                 ${showHomeUsageChip
-                  ? html`<span class="home-pill-usage">${homeUsageText}</span>`
+                  ? html`<span>${homeUsageText}</span>`
                   : nothing}
               </div>
             `
           : nothing}
 
         <div class="bottom">
-          <div class="timelines">${this._renderTimeline()}</div>
+          ${(() => {
+            const chart = this._activeChartSeries();
+            return html`<div class="timelines">
+              <div class="chart-indicator">
+                <hui-energy-graph-chip>
+                  ${keyed(
+                    this._chartTarget,
+                    html`<ha-icon
+                      class="chart-indicator-icon"
+                      icon=${this._chartTargetIcon()}
+                    ></ha-icon>`
+                  )}
+                </hui-energy-graph-chip>
+              </div>
+              ${this._renderTimeline(chart)}
+            </div>`;
+          })()}
           ${this._renderTimelineFooter()}
         </div>
       </ha-card>
@@ -1959,7 +1927,107 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   // Scrubbable timeline bound to the Energy date pick: production curve (+ dashed
   // forecast) backdrop, adaptive gridlines, live + scrub cursors. Dragging scrubs
   // the engine instant so the map reflects the selected moment.
-  private _renderTimeline(): TemplateResult | typeof nothing {
+  // Resolve the series the chart draws for the active chip target. Grid and the
+  // battery-power chip carry TWO series (import + export, discharge + charge) each
+  // in its own colour. `accentColor` (timeline border + fill) is the chip colour,
+  // and for the two-state chips the dominant flow over the window. Production keeps
+  // the dashed solar forecast; the re-targeted series do not.
+  private _activeChartSeries(): {
+    series: { pts: { t: number; v: number }[]; color: string }[];
+    accentColor: string;
+    showForecast: boolean;
+  } {
+    const bucketsToPts = (
+      bk: ChangeBucket[] | null
+    ): { t: number; v: number }[] =>
+      (bk ?? []).map((b) => {
+        const hours = (b.endMs - b.startMs) / 3_600_000 || 1;
+        return { t: b.startMs, v: b.kwh / hours };
+      });
+    const sumKwh = (bk: ChangeBucket[] | null): number =>
+      (bk ?? []).reduce((s, b) => s + (b.kwh || 0), 0);
+    const gridImportColor = "var(--energy-grid-consumption-color, #488fc2)";
+    const gridExportColor = "var(--energy-grid-return-color, #8353d1)";
+    const batteryOutColor = "var(--energy-battery-out-color, #4db6ac)";
+    const batteryInColor = "var(--energy-battery-in-color, #f06292)";
+    const solarColor = "var(--energy-solar-color, #ff9800)";
+    // Sun identity amber, distinct from the production orange.
+    const irradianceColor = "var(--amber-color, #ffc107)";
+    switch (this._chartTarget) {
+      case "grid": {
+        const exportDominant =
+          sumKwh(this._gridExportChangeSeries) >
+          sumKwh(this._gridImportChangeSeries);
+        return {
+          series: [
+            {
+              pts: bucketsToPts(this._gridImportChangeSeries),
+              color: gridImportColor,
+            },
+            {
+              pts: bucketsToPts(this._gridExportChangeSeries),
+              color: gridExportColor,
+            },
+          ],
+          accentColor: exportDominant ? gridExportColor : gridImportColor,
+          showForecast: false,
+        };
+      }
+      // Both battery chips (SoC + power) chart the discharge + charge flows.
+      case "battery-soc":
+      case "battery-power": {
+        const chargeDominant =
+          sumKwh(this._batteryChargeChangeSeries) >
+          sumKwh(this._batteryDischargeChangeSeries);
+        return {
+          series: [
+            {
+              pts: bucketsToPts(this._batteryDischargeChangeSeries),
+              color: batteryOutColor,
+            },
+            {
+              pts: bucketsToPts(this._batteryChargeChangeSeries),
+              color: batteryInColor,
+            },
+          ],
+          accentColor: chargeDominant ? batteryInColor : batteryOutColor,
+          showForecast: false,
+        };
+      }
+      case "irradiance":
+        return {
+          series: [{ pts: this._irradianceSeries, color: irradianceColor }],
+          accentColor: irradianceColor,
+          showForecast: false,
+        };
+      default:
+        return {
+          series: [{ pts: this._productionSeries, color: solarColor }],
+          accentColor: solarColor,
+          showForecast: true,
+        };
+    }
+  }
+
+  // Icon of what the chart currently shows, for the timeline indicator chip
+  // (mirrors the source chip's glyph).
+  private _chartTargetIcon(): string {
+    switch (this._chartTarget) {
+      case "grid":
+        return "mdi:transmission-tower";
+      case "battery-soc":
+      case "battery-power":
+        return "mdi:battery";
+      case "irradiance":
+        return "mdi:white-balance-sunny";
+      default:
+        return "mdi:solar-power";
+    }
+  }
+
+  private _renderTimeline(
+    chart: ReturnType<HuiEnergySolarOverviewCard["_activeChartSeries"]>
+  ): TemplateResult | typeof nothing {
     const model = this._timelineModel();
     if (!model) {
       return nothing;
@@ -1974,47 +2042,55 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     const H = 100;
     // Top padding so the curve peak never touches the top edge.
     const TOP_PAD = 14;
-    const pts = this._productionSeries.filter((p) => p.t >= t0 && p.t <= t1);
+    const winSeries = chart.series.map((s) => ({
+      color: s.color,
+      pts: s.pts.filter((p) => p.t >= t0 && p.t <= t1),
+    }));
     // Forecast curve across the whole window, independent of production, so the
-    // future forecast shows where no production exists yet. Wh/hour read as avg watts.
-    const fpts = this._haSolarForecast
-      .filter((p) => p.tMs >= t0 && p.tMs <= t1)
-      .map((p) => ({ t: p.tMs, v: p.wh / 1000 }));
-    let area = "";
-    let line = "";
-    let fline = "";
-    if (pts.length > 0 || fpts.length > 0) {
-      // Shared vertical scale so production and forecast read against each other.
-      const maxV = Math.max(
-        ...pts.map((p) => p.v),
-        ...fpts.map((p) => p.v),
-        1e-6
-      );
-      const toXY = (p: { t: number; v: number }) => ({
-        x: ((p.t - t0) / span) * W,
-        y: H - (p.v / maxV) * (H - TOP_PAD),
-      });
-      if (pts.length > 0) {
-        const xy = pts.map(toXY);
-        line = xy
+    // future forecast shows where no production exists yet. Wh/hour read as avg
+    // watts. Only the production target carries the solar forecast.
+    const fpts = chart.showForecast
+      ? this._haSolarForecast
+          .filter((p) => p.tMs >= t0 && p.tMs <= t1)
+          .map((p) => ({ t: p.tMs, v: p.wh / 1000 }))
+      : [];
+    // Shared vertical scale across every series + forecast so they read against
+    // each other (e.g. import vs export on the same axis).
+    const maxV = Math.max(
+      ...winSeries.flatMap((s) => s.pts.map((p) => p.v)),
+      ...fpts.map((p) => p.v),
+      1e-6
+    );
+    const toXY = (p: { t: number; v: number }): { x: number; y: number } => ({
+      x: ((p.t - t0) / span) * W,
+      y: H - (p.v / maxV) * (H - TOP_PAD),
+    });
+    const drawnSeries = winSeries
+      .map((s) => {
+        if (s.pts.length === 0) {
+          return null;
+        }
+        const xy = s.pts.map(toXY);
+        const line = xy
           .map(
             (p, i) =>
               `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)},${p.y.toFixed(2)}`
           )
           .join(" ");
-        area = `M ${xy[0].x.toFixed(2)},${H} ${xy
+        const area = `M ${xy[0].x.toFixed(2)},${H} ${xy
           .map((p) => `L ${p.x.toFixed(2)},${p.y.toFixed(2)}`)
           .join(" ")} L ${xy[xy.length - 1].x.toFixed(2)},${H} Z`;
-      }
-      if (fpts.length > 1) {
-        const fxy = fpts.map(toXY);
-        fline = fxy
-          .map(
-            (p, i) =>
-              `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)},${p.y.toFixed(2)}`
-          )
-          .join(" ");
-      }
+        return { color: s.color, area, line };
+      })
+      .filter((s): s is { color: string; area: string; line: string } => !!s);
+    let fline = "";
+    if (fpts.length > 1) {
+      const fxy = fpts.map(toXY);
+      fline = fxy
+        .map(
+          (p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(2)},${p.y.toFixed(2)}`
+        )
+        .join(" ");
     }
 
     const now = Date.now();
@@ -2031,6 +2107,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     return html`
       <div
         class="timeline"
+        style="--timeline-accent:${chart.accentColor}"
         @pointerdown=${this._onTimelinePointerDown}
         @pointermove=${this._onTimelinePointerMove}
         @pointerup=${this._onTimelinePointerUp}
@@ -2044,23 +2121,35 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   style="width:${(cursorFrac * 100).toFixed(3)}%"
                 ></div>`
               : nothing}
-            ${area || fline
-              ? html`<svg
-                  class="chart-svg"
-                  viewBox="0 0 ${W} ${H}"
-                  preserveAspectRatio="none"
-                >
-                  ${area
-                    ? svg`<path class="chart-prod-area" d="${area}"></path>
-                        <path class="chart-prod-line" d="${line}"></path>`
-                    : nothing}
-                  ${fline
-                    ? svg`<path
+            ${drawnSeries.length > 0 || fline
+              ? keyed(
+                  this._chartTarget,
+                  html`<svg
+                    class="chart-svg"
+                    viewBox="0 0 ${W} ${H}"
+                    preserveAspectRatio="none"
+                  >
+                    ${drawnSeries.map(
+                      (s) =>
+                        svg`<path
+                          class="chart-prod-area"
+                          style="--chart-color:${s.color}"
+                          d="${s.area}"
+                        ></path>
+                        <path
+                          class="chart-prod-line"
+                          style="--chart-color:${s.color}"
+                          d="${s.line}"
+                        ></path>`
+                    )}
+                    ${fline
+                      ? svg`<path
                         class="chart-forecast-line"
                         d="${fline}"
                       ></path>`
-                    : nothing}
-                </svg>`
+                      : nothing}
+                  </svg>`
+                )
               : nothing}
             ${seps.map(
               (s) =>
@@ -2069,13 +2158,17 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   style="left:${(s.frac * 100).toFixed(3)}%"
                 ></div>`
             )}
+            <!-- Live "now" marker lives INSIDE the bar so the bar's rounded
+                 overflow clips it; at the far right it never spills past the
+                 rounded corner. The scrub cursor stays outside (its handle
+                 must overflow vertically). -->
+            ${liveFrac !== null && selFrac !== null
+              ? html`<div
+                  class="timeline-now"
+                  style="left:${(liveFrac * 100).toFixed(3)}%"
+                ></div>`
+              : nothing}
           </div>
-          ${liveFrac !== null && selFrac !== null
-            ? html`<div
-                class="timeline-now"
-                style="left:${(liveFrac * 100).toFixed(3)}%"
-              ></div>`
-            : nothing}
           ${cursorFrac !== null
             ? html`<div
                 class="timeline-cursor"
@@ -2096,14 +2189,16 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     const labels = model.labels.filter((s) => s.frac > 0.02 && s.frac < 0.98);
     return html`
       <div class="timeline-footer">
-        ${labels.map(
-          (s) =>
-            html`<span
-              class="timeline-label"
-              style="left:${(s.frac * 100).toFixed(3)}%"
-              >${this._timelineSepLabel(model.kind, s.date)}</span
-            >`
-        )}
+        <div class="timeline-footer-inner">
+          ${labels.map(
+            (s) =>
+              html`<span
+                class="timeline-label"
+                style="left:${(s.frac * 100).toFixed(3)}%"
+                >${this._timelineSepLabel(model.kind, s.date)}</span
+              >`
+          )}
+        </div>
       </div>
     `;
   }
@@ -2296,26 +2391,40 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   // Per-card unique id namespacing SVG <defs> ids so multiple cards don't clash.
   _instanceId = `h${Math.floor(Math.random() * 1e9).toString(36)}`;
 
-  // Hover handlers on the home hitbox toggling the glow halo.
-  private _onHomeEnter = (): void => {
-    this._homeHover = true;
-  };
-  private _onHomeLeave = (): void => {
-    this._homeHover = false;
-  };
-
-  // Click the home node to enter the weather overlay.
-  private _onHomeClick = (): void => {
+  // Enter the weather overlay (opened from the cloud chip).
+  private _enterWeatherMode(): void {
     if (this._cardMode !== "weather") {
       this._cardMode = "weather";
-      this._homeHover = false;
     }
-  };
+  }
   private _onWeatherHomeReturn = (): void => {
     if (this._cardMode === "weather") {
       this._cardMode = "base";
     }
   };
+
+  // Re-target the bottom chart to a chip's series (PV resets to production).
+  private _setChartTarget(
+    target:
+      | "production"
+      | "grid"
+      | "battery-power"
+      | "battery-soc"
+      | "irradiance"
+  ): void {
+    if (this._chartTarget !== target) {
+      this._chartTarget = target;
+    }
+  }
+  private _onPvChipClick = (): void => this._setChartTarget("production");
+  private _onGridChipClick = (): void => this._setChartTarget("grid");
+  private _onBatterySocChipClick = (): void =>
+    this._setChartTarget("battery-soc");
+  private _onBatteryPowerChipClick = (): void =>
+    this._setChartTarget("battery-power");
+  private _onIrradianceChipClick = (): void =>
+    this._setChartTarget("irradiance");
+  private _onCloudChipClick = (): void => this._enterWeatherMode();
 
   // Toggle one of the three weather cloud layers (shader bands sync in updated()).
   private _onCloudBandClick(ev: Event): void {
@@ -2337,6 +2446,22 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     } else {
       this._weatherShowHigh = !this._weatherShowHigh;
     }
+  }
+
+  // Dynamic weather glyph for the cloud chip: maps total cloud cover (0-100 %) to
+  // an mdi weather icon. Only used while the sun is above the horizon (the chip
+  // hides at night), so no night variants.
+  private _cloudIcon(cloudPct: number): string {
+    if (cloudPct < 12) {
+      return "mdi:weather-sunny";
+    }
+    if (cloudPct < 50) {
+      return "mdi:weather-partly-cloudy";
+    }
+    if (cloudPct < 85) {
+      return "mdi:weather-cloudy";
+    }
+    return "mdi:weather-fog";
   }
 
   private _cloudBandLabel(band: "low" | "mid" | "high"): string {
@@ -2544,6 +2669,10 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         right: 0;
         bottom: 0;
         z-index: 20;
+        /* Transparent to the pointer so the map stays rotatable everywhere except
+           the scrub bar + footer (re-enabled below). The legend chip and the
+           padding around the timeline no longer eat into the rotate area. */
+        pointer-events: none;
       }
       .timelines {
         padding: var(--ha-space-3, 12px) var(--ha-space-4, 16px)
@@ -2553,15 +2682,48 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         flex-direction: column;
         gap: var(--ha-space-3, 12px);
       }
+      /* What the chart currently shows, top-left of the timeline and aligned to
+         its left edge (shares the .timelines left padding). Same chip frame as
+         the date chip; the label takes the active series colour. */
+      .chart-indicator {
+        align-self: flex-start;
+      }
+      .chart-indicator ha-icon {
+        --mdc-icon-size: 18px;
+        display: block;
+        /* Fade in on each target change (the icon is keyed, so it re-mounts). */
+        animation: chip-icon-fade 250ms ease;
+      }
+      @keyframes chip-icon-fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .chart-indicator ha-icon {
+          animation: none;
+        }
+      }
       /* Footer: time labels on a solid theme surface so they stay readable over
          any basemap, with a hairline separating them from the timelines. */
       .timeline-footer {
-        position: relative;
         height: 34px;
         padding: 0 var(--ha-space-4, 16px);
         box-sizing: border-box;
         background: var(--card-background-color, #fff);
         border-top: 1px solid var(--divider-color);
+        /* Re-enabled over the .bottom pointer-events:none container. */
+        pointer-events: auto;
+      }
+      /* Inner box inset by the footer padding so a label's left:% resolves against
+         the SAME width/origin as the bar's gridlines (the bar sits inside .timelines'
+         16px padding). Without this the two frames only coincide at 50%. */
+      .timeline-footer-inner {
+        position: relative;
+        height: 100%;
       }
       .timeline {
         position: relative;
@@ -2570,6 +2732,10 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         gap: var(--ha-space-1, 4px);
         touch-action: none;
         cursor: ew-resize;
+        /* Re-enabled over the .bottom pointer-events:none container so the scrub
+           bar still captures drags while the legend chip + padding stay
+           click-through to the map. */
+        pointer-events: auto;
       }
       /* Production curve: SVG stretched to the bar, solar-coloured area
          + line. preserveAspectRatio:none stretches the viewBox, so the line uses
@@ -2580,18 +2746,36 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         width: 100%;
         height: 100%;
         display: block;
+        /* Grow the curve up from the baseline when the chip target changes
+           (the SVG is keyed on the target, so it re-mounts and replays). Matches
+           the 500 ms animation of Home Assistant's own graph cards. */
+        transform-origin: bottom;
+        animation: chart-grow 500ms ease-out;
+      }
+      @keyframes chart-grow {
+        from {
+          transform: scaleY(0);
+        }
+        to {
+          transform: scaleY(1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .chart-svg {
+          animation: none;
+        }
       }
       .chart-prod-area {
         fill: color-mix(
           in srgb,
-          var(--energy-solar-color, #ff9800) 28%,
+          var(--chart-color, var(--energy-solar-color, #ff9800)) 28%,
           transparent
         );
         stroke: none;
       }
       .chart-prod-line {
         fill: none;
-        stroke: var(--energy-solar-color, #ff9800);
+        stroke: var(--chart-color, var(--energy-solar-color, #ff9800));
         stroke-width: 1.5px;
         vector-effect: non-scaling-stroke;
       }
@@ -2623,7 +2807,11 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         border: var(--ha-border-width-sm, 1px) solid
           color-mix(
             in srgb,
-            var(--sun-color, var(--amber-color, #f59e0b)) 60%,
+            var(
+                --timeline-accent,
+                var(--sun-color, var(--amber-color, #f59e0b))
+              )
+              60%,
             transparent
           );
         overflow: hidden;
@@ -2637,7 +2825,8 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         height: 100%;
         background: color-mix(
           in srgb,
-          var(--sun-color, var(--amber-color, #f59e0b)) 12%,
+          var(--timeline-accent, var(--sun-color, var(--amber-color, #f59e0b)))
+            12%,
           transparent
         );
         pointer-events: none;

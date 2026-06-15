@@ -94,9 +94,11 @@ export const SUN_FILL_OPACITY_BG = 0.2;
 //Below-horizon segments are dots whose diameter IS the stroke width; scaled down vs daytime.
 export const NIGHT_STROKE_FACTOR = 0.5;
 
-//Leader-dock radius for the home pill (52 px wide, 2 px border => 26 px); 28 px nudges the hairline
-//just outside the pill so the leader docks against the edge.
-export const HOME_PILL_RADIUS_PX = 28;
+//Leader-dock half-extents for the home pill, now a horizontal stadium chip like the others.
+//Half-height = pill height (26 px) / 2 + 1 px so leaders dock just outside the top/bottom edge;
+//half-width is the nominal min-width (76 px) / 2. Leaders dock to this stadium outline.
+export const HOME_PILL_HALF_HEIGHT_PX = 14;
+export const HOME_PILL_HALF_WIDTH_PX = 38;
 
 //Timeline: max axis ticks; the list is thinned by stride to stay under this cap.
 export const TIMELINE_MAX_TICKS = 7;
@@ -109,3 +111,9 @@ export const DAY_MS = 86_400_000;
 export const CAMERA_PITCH_MIN_DEG = 15;
 export const CAMERA_PITCH_MAX_DEG = 55;
 export const CAMERA_PITCH_REST_DEG = 50;
+
+//Camera look-target height (m) above the home on the ground->home vertical line.
+//The camera frames this point instead of the ground, freeing vertical room above
+//the house for the sun arc + chip cluster. Applied as MapLibre top padding sized
+//to this height's on-screen projection; collapses to ~0 at top-down pitch.
+export const CAMERA_TARGET_HEIGHT_M = 10;

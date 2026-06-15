@@ -14,6 +14,9 @@ export type CardMode = "base" | "weather";
 //Enter ramps the overlay in over 600 ms while the HUD fades out; exit ramps out in 280 ms.
 const WEATHER_FADE_IN_MS = 600;
 const WEATHER_FADE_OUT_MS = 280;
+//Mount the cloud shader layer this long after enter, i.e. near the tail of the engine's
+//1200 ms dezoom ease, so it never flickers on the still-moving top edge mid-animation.
+const CLOUD_LAYER_MOUNT_AFTER_MS = 950;
 
 export interface WeatherModeHost extends OverlaysHost {
   readonly _engine?: SolarOverviewEngine;
@@ -53,6 +56,7 @@ export function enterWeatherMode(host: WeatherModeHost): boolean {
   host._weatherShowMid = true;
   host._weatherShowLow = true;
   host._weatherShownTimeIdx = undefined;
+  const enterStartMs = performance.now();
   host._engine.enterWeatherCamera();
   void host._engine.ensureWeatherCloudGrid().then(() => {
     if (host._weatherFadeOutStartMs !== null) {
@@ -61,23 +65,40 @@ export function enterWeatherMode(host: WeatherModeHost): boolean {
     if (!host._weatherOverlayVisible) {
       return;
     }
-    const engine = host._engine;
-    if (!engine) {
-      return;
-    }
-    engine.startWeatherCloudRefresh();
-    const cssHost = getCssHost(host);
-    const activeTime =
-      host._isLiveMode || !host._selectedTime ? new Date() : host._selectedTime;
-    const timeIdx = engine.getWeatherCloudGridTimeIndex(activeTime);
-    const bands: [boolean, boolean, boolean] = [
-      host._weatherShowLow,
-      host._weatherShowMid,
-      host._weatherShowHigh,
-    ];
-    engine.addCloudShaderLayer(cssHost, bands, timeIdx >= 0 ? timeIdx : 0);
-    host._weatherShownTimeIdx = timeIdx >= 0 ? timeIdx : 0;
-    host.requestUpdate();
+    //Mount the shader layer at the tail of the dezoom, not mid-animation: a layer
+    //appearing while the camera still sweeps flickers on the moving top edge. By
+    //the time it lands the camera has all but settled, so it reads as a clean
+    //fade-in near the end of the ease. If the grid fetch itself outlasts the ease,
+    //the delay collapses to 0 and it mounts immediately.
+    const elapsed = performance.now() - enterStartMs;
+    const delay = Math.max(0, CLOUD_LAYER_MOUNT_AFTER_MS - elapsed);
+    window.setTimeout(() => {
+      if (
+        host._weatherFadeOutStartMs !== null ||
+        !host._weatherOverlayVisible
+      ) {
+        return;
+      }
+      const engine = host._engine;
+      if (!engine) {
+        return;
+      }
+      engine.startWeatherCloudRefresh();
+      const cssHost = getCssHost(host);
+      const activeTime =
+        host._isLiveMode || !host._selectedTime
+          ? new Date()
+          : host._selectedTime;
+      const timeIdx = engine.getWeatherCloudGridTimeIndex(activeTime);
+      const bands: [boolean, boolean, boolean] = [
+        host._weatherShowLow,
+        host._weatherShowMid,
+        host._weatherShowHigh,
+      ];
+      engine.addCloudShaderLayer(cssHost, bands, timeIdx >= 0 ? timeIdx : 0);
+      host._weatherShownTimeIdx = timeIdx >= 0 ? timeIdx : 0;
+      host.requestUpdate();
+    }, delay);
   });
   refreshOverlays(host);
   startWeatherFadeLoop(host);

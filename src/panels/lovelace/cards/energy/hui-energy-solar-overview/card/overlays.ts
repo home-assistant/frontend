@@ -43,10 +43,6 @@ export interface LabelLayout {
   gridLabel: { x: number; y: number };
   lowCarbonLabel: { x: number; y: number };
   home: { x: number; y: number };
-  //Ground anchor the floating-pill leader drops to (`home` is lifted a few metres up).
-  homeBase: { x: number; y: number };
-  //Home roof top; the drop leader lands here so it follows the roof under resize / pitch.
-  homeRoof: { x: number; y: number };
   //Perspective-projected ground disc around the home; pulses with bead arrival.
   homeAnchorPoints: string;
 }

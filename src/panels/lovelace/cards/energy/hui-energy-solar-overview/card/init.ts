@@ -141,6 +141,8 @@ export interface InitHost extends OverlaysHost {
   _engine?: SolarOverviewEngine;
   _timeRange: { start: Date; end: Date } | null;
   _isLiveMode: boolean;
+  _cloudCover: number;
+  _irradianceSeries: { t: number; v: number }[];
 
   _lastHomeKey: string;
   _initInflight: boolean;
@@ -346,6 +348,8 @@ function wireEngineCallbacks(host: InitHost): void {
   host._engine.onWeatherUpdate = (data) => {
     host._timeRange = data.timeRange;
     host._isLiveMode = data.isLiveTime;
+    host._cloudCover = data.cloudCover;
+    host._irradianceSeries = host._engine?.getIrradianceSeries() ?? [];
     //First weather update is the cue for the initial label layout: the map style has loaded and the
     //projection matrix is available. Later transforms refresh via onMapTransform.
     refreshOverlays(host);

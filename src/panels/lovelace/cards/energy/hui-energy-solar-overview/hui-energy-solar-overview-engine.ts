@@ -30,6 +30,7 @@ import {
   CAMERA_PITCH_MIN_DEG,
   CAMERA_PITCH_MAX_DEG,
   CAMERA_PITCH_REST_DEG,
+  CAMERA_TARGET_HEIGHT_M,
   type SolarOverviewCardConfig,
   DISPLAY_FADE_DELTA_M,
   displayRadiusM,
@@ -179,9 +180,10 @@ const PV_CHIP_OFFSET_PX = 70;
 
 //Sun-arc parameters. The arc traces the sun's 24h trajectory projected via
 //MapLibre's camera matrices. Radius is the metres of the imaginary celestial
-//hemisphere centred on the home; 40 m keeps the whole arc inside a card-sized
-//canvas even at low solar altitudes.
-const SUN_ARC_RADIUS_M = 40;
+//hemisphere centred on the home; 48 m uses the headroom freed by aiming the
+//camera above the house (CAMERA_TARGET_HEIGHT_M) while keeping the whole arc
+//inside a card-sized canvas even at low solar altitudes.
+const SUN_ARC_RADIUS_M = 48;
 //Samples uniformly spaced over the 24h day (one per 15 min); smooth yet cheap to
 //re-project on every map transform.
 const SUN_ARC_SAMPLES = 96;
@@ -518,6 +520,9 @@ export class SolarOverviewEngine {
     locked: boolean;
     minZoom: number;
     maxZoom: number;
+    //Camera-target top padding active before weather mode, restored (animated)
+    //on exit so the zoom-in lands on the framed point with no end-of-ease snap.
+    paddingTop: number;
     //Captured maxBounds so the exit restores the tight building-radius clamp;
     //without it _applyMapBounds would race the easeTo and clamp mid-animation.
     maxBoundsWest: number | null;
@@ -553,6 +558,7 @@ export class SolarOverviewEngine {
       locked: prevLocked,
       minZoom: this.map.getMinZoom(),
       maxZoom: this.map.getMaxZoom(),
+      paddingTop: Math.max(0, this._appliedPaddingTop),
       maxBoundsWest: mb ? mb.getWest() : null,
       maxBoundsSouth: mb ? mb.getSouth() : null,
       maxBoundsEast: mb ? mb.getEast() : null,
@@ -571,11 +577,16 @@ export class SolarOverviewEngine {
       this.setCameraLocked(true);
     }
     this.map.stop();
+    //Animate the camera-target padding back to zero alongside the dezoom so the
+    //top-down weather view is centred (the moveend handler would otherwise snap it
+    //at the end). _appliedPaddingTop tracks it so the guard stays consistent.
+    this._appliedPaddingTop = 0;
     this.map.easeTo({
       center: [this.homeLon, this.homeLat],
       bearing: 0,
       pitch: 0,
       zoom: 11,
+      padding: { top: 0, bottom: 0, left: 0, right: 0 },
       duration: 1200,
     });
   }
@@ -590,11 +601,16 @@ export class SolarOverviewEngine {
     }
     this._preWeatherPose = null;
     this.map.stop();
+    //Restore the camera-target padding in lock-step with the zoom-in so the view
+    //animates straight to the framed-above-house point, with no end-of-ease snap.
+    //_appliedPaddingTop is pre-set so the settling moveend handler is a no-op.
+    this._appliedPaddingTop = pose.paddingTop;
     this.map.easeTo({
       center: pose.center,
       bearing: pose.bearing,
       pitch: pose.pitch,
       zoom: pose.zoom,
+      padding: { top: pose.paddingTop, bottom: 0, left: 0, right: 0 },
       duration: 1200,
     });
     //Restore the pre-enter rotation-lock state (also persisted to localStorage).
@@ -1199,6 +1215,7 @@ export class SolarOverviewEngine {
   private _mapStyleLoadHandler?: () => void;
   private _mapLoadHandler?: () => void;
   private _mapMoveHandler?: () => void;
+  private _mapMoveEndHandler?: () => void;
   private _mapStyleImageMissingHandler?: (e: { id?: string }) => void;
   private _mapErrorHandler?: (e: { error?: { message?: string } }) => void;
   private _webglLostHandler?: (e: Event) => void;
@@ -1451,6 +1468,16 @@ export class SolarOverviewEngine {
       this.onMapTransform?.();
     };
     this.map.on("move", this._mapMoveHandler);
+
+    //Re-aim the camera target only once the camera settles (moveend), never
+    //frame-by-frame: setPadding mid-`move` would interrupt programmatic eases
+    //(e.g. the weather-mode dezoom). The target depends on pitch/zoom, not
+    //bearing, so it does not need to track auto-rotate.
+    this._mapMoveEndHandler = () => {
+      this._invalidateProjCache();
+      this._applyCameraTargetPadding();
+    };
+    this.map.on("moveend", this._mapMoveEndHandler);
 
     const canvas = this.map.getCanvas();
     this._mapCanvas = canvas;
@@ -2737,12 +2764,6 @@ export class SolarOverviewEngine {
     gridLabel: { x: number; y: number };
     lowCarbonLabel: { x: number; y: number };
     home: { x: number; y: number };
-    //Home projected on the ground (altitude 0). `home` above is lifted
-    //RAISE_HOME_M up, so this is the bottom endpoint of the tether leader.
-    homeBase: { x: number; y: number };
-    //Home roof projection (altitude render_height), the drop-leader endpoint;
-    //falls back to the ground home position when no home building is resolved.
-    homeRoof: { x: number; y: number };
     //SVG `points` for the PV home-anchor ground disc: points on a circle around
     //the home, expressed relative to the home so the SVG can translate-to-home and
     //scale-pulse around the origin.
@@ -2765,7 +2786,10 @@ export class SolarOverviewEngine {
     //Steeper vertical-lift ramp than the horizontal spread so the leaders stay
     //readable on a fullscreen canvas (1.0 at standard card sizes).
     const liftScale = this._clusterLiftScale();
-    const CHIP_SIDE_X_OFFSET_PX = 70 * scale;
+    //Wide side columns: the card is markedly landscape, so push the grid /
+    //low-carbon column further left and the battery column further right to use
+    //the horizontal room and keep the leaders legible.
+    const CHIP_SIDE_X_OFFSET_PX = 100 * scale;
     //Vertical gap between the chip rows; 60 leaves room for the L-leader fillets.
     const CHIP_STACK_GAP_PX = 60 * scale;
     //Home roof Y, projected at the home's tallest render_height. Anchors the
@@ -2797,18 +2821,11 @@ export class SolarOverviewEngine {
       }
     }
 
-    //Raise the whole cluster (pill + chips + leaders) RAISE_HOME_M metres straight
-    //up from the home, projected through the live camera so the lift stays
-    //perspective-correct under rotation; a leader drops back to homeBase. Falls
-    //back to a static screen lift before the 3D projection is ready.
-    const RAISE_HOME_M = 10.0;
-    const raised = this._projectScenePoint(
-      this.homeLon,
-      this.homeLat,
-      RAISE_HOME_M
-    ) ?? { x: home.x, y: home.y - 28 * liftScale };
-    const anchorX = raised.x;
-    const clusterY = raised.y;
+    //Anchor the whole cluster (pill + chips + leaders) ON the home roof, centred on
+    //the home, so it sits on the house instead of floating above it. roofY falls
+    //back to the ground home position before the building geometry lands.
+    const anchorX = home.x;
+    const clusterY = roofY;
     const pvX = anchorX;
     const pvY = clusterY - PV_CHIP_OFFSET_PX * liftScale;
     //Battery column on the right: SoC on top, Power on the bottom.
@@ -2855,8 +2872,6 @@ export class SolarOverviewEngine {
       gridLabel: { x: gridXLeft, y: gridY },
       lowCarbonLabel: { x: gridXLeft, y: lowCarbonY },
       home: { x: anchorX, y: clusterY },
-      homeBase: { x: home.x, y: home.y },
-      homeRoof: { x: home.x, y: roofY },
       homeAnchorPoints: anchorPts.join(" "),
     };
   }
@@ -2884,6 +2899,56 @@ export class SolarOverviewEngine {
 
   private _invalidateProjCache(): void {
     this._projCache = null;
+  }
+
+  //Last applied top padding (px), the pitch/zoom it was computed for, and a
+  //re-entrancy guard for the setPadding call.
+  private _appliedPaddingTop = -1;
+  private _lastPaddingPitch = -1;
+  private _lastPaddingZoom = -1;
+  private _applyingPadding = false;
+
+  //Aim the camera at a point CAMERA_TARGET_HEIGHT_M above the home (on the
+  //ground->home vertical) by sizing MapLibre top padding to that height's on-screen
+  //projection, shifting the focal point down so the house sits lower with headroom
+  //above. The padding depends ONLY on pitch + zoom, so it is gated on those: a
+  //bearing change (rotate / auto-rotate) leaves it untouched, and crucially the
+  //setPadding call's own `moveend` carries the same pitch/zoom, so this never loops
+  //or jitters the overlay. Self-collapses to ~0 at top-down pitch.
+  private _applyCameraTargetPadding(): void {
+    if (!this.map || this._applyingPadding) {
+      return;
+    }
+    const pitch = this.map.getPitch();
+    const zoom = this.map.getZoom();
+    if (
+      Math.abs(pitch - this._lastPaddingPitch) < 0.5 &&
+      Math.abs(zoom - this._lastPaddingZoom) < 0.01
+    ) {
+      return;
+    }
+    this._lastPaddingPitch = pitch;
+    this._lastPaddingZoom = zoom;
+    const ground = this._projectScenePoint(this.homeLon, this.homeLat, 0);
+    const elevated = this._projectScenePoint(
+      this.homeLon,
+      this.homeLat,
+      CAMERA_TARGET_HEIGHT_M
+    );
+    if (!ground || !elevated) {
+      return;
+    }
+    const targetTop = Math.max(0, Math.round((ground.y - elevated.y) * 2));
+    if (Math.abs(targetTop - this._appliedPaddingTop) <= 1) {
+      return;
+    }
+    this._appliedPaddingTop = targetTop;
+    this._applyingPadding = true;
+    try {
+      this.map.setPadding({ top: targetTop, bottom: 0, left: 0, right: 0 });
+    } finally {
+      this._applyingPadding = false;
+    }
   }
 
   //Linear ramp on the card's min CSS dimension so the chip cluster expands on a
@@ -3358,15 +3423,16 @@ export class SolarOverviewEngine {
       //enough" guard.
       this._lastAtmosphereAlt = -999;
       this._renderForCurrentSelection();
-      //Coalesce rapid scrub moves into one shadow paint every ~100 ms; the light
-      //visuals already updated above, only the costly raster paint is deferred.
+      //Coalesce rapid scrub moves into one shadow paint; the light visuals already
+      //updated above, only the raster paint is deferred. 40 ms keeps the shadows
+      //close behind the cursor while still merging a fast drag into ~25 paints/s.
       if (this._selectedTimeShadowTimer !== null) {
         window.clearTimeout(this._selectedTimeShadowTimer);
       }
       this._selectedTimeShadowTimer = window.setTimeout(() => {
         this._selectedTimeShadowTimer = null;
         this._refreshShadowsAndAtmosphere();
-      }, 100);
+      }, 40);
     }
   }
 
@@ -3387,6 +3453,24 @@ export class SolarOverviewEngine {
       temperature: home.temperature,
       windSpeed: home.windSpeed,
     };
+  }
+
+  //Hourly global shortwave irradiance (W/m²) over the loaded window, as {t, v}
+  //points for the chart. Drops the -1 entries the model omitted. Null before the
+  //first weather fetch or when no usable sample exists.
+  public getIrradianceSeries(): { t: number; v: number }[] | null {
+    const home = this._homeHourlyData;
+    if (!home || !home.times.length) {
+      return null;
+    }
+    const out: { t: number; v: number }[] = [];
+    for (let i = 0; i < home.times.length; i++) {
+      const v = home.shortwave[i];
+      if (typeof v === "number" && v >= 0) {
+        out.push({ t: home.times[i].getTime(), v });
+      }
+    }
+    return out.length ? out : null;
   }
 
   //JSON-safe snapshot of the engine's live state for in-browser debugging. No
@@ -3623,6 +3707,9 @@ export class SolarOverviewEngine {
         if (this._mapMoveHandler) {
           this.map.off("move", this._mapMoveHandler);
         }
+        if (this._mapMoveEndHandler) {
+          this.map.off("moveend", this._mapMoveEndHandler);
+        }
         if (this._mapErrorHandler) {
           this.map.off("error", this._mapErrorHandler);
         }
@@ -3686,6 +3773,7 @@ export class SolarOverviewEngine {
     this._mapStyleLoadHandler = undefined;
     this._mapLoadHandler = undefined;
     this._mapMoveHandler = undefined;
+    this._mapMoveEndHandler = undefined;
     this._mapErrorHandler = undefined;
     this._mapStyleImageMissingHandler = undefined;
     this._webglLostHandler = undefined;

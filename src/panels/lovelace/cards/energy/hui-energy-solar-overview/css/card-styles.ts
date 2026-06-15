@@ -145,17 +145,12 @@ export const solarOverviewCardStyles = css`
     cursor: default !important;
   }
 
-  /*  Home hitbox, invisible circular click target centred on the
-        home's projected screen position. Sits above every overlay
-        SVG (z 12) so a click
-        always reaches it, regardless of which chip / leader happens
-        to sit underneath at that moment. */
-  /*  Home click target. Sized to comfortably overlap the 3D
-        building silhouette on a typical residential footprint
-        (40-50 m at home altitude after the projection), and z-index
-        bumped above every chip + leader cluster so the click reliably
-        lands on the home regardless of which decoration happens to
-        sit under the pointer at that moment.                       */
+  /*  Home hover region, an invisible circle centred on the home's
+        projected screen position, sized to overlap the 3D building
+        silhouette on a typical residential footprint (40-50 m at home
+        altitude after the projection). The home is NOT clickable, so it
+        sits BELOW the chips (z 8+) and only lights the hover glow; chip
+        clicks win over it. */
   .home-hitbox {
     position: absolute;
     transform: translate(-50%, -50%);
@@ -163,9 +158,10 @@ export const solarOverviewCardStyles = css`
     height: 120px;
     border-radius: 50%;
     background: transparent;
-    cursor: pointer;
+    /*  Hover-only region (home is not clickable). Sits BELOW the chips
+          (z 8+) so their clicks win, above the leaders / map. */
     pointer-events: auto;
-    z-index: 55;
+    z-index: 7;
   }
 
   /*  Home hover glow. Base + top + side-quad polygons projected from
@@ -254,6 +250,7 @@ export const solarOverviewCardStyles = css`
   .grid-label,
   .low-carbon-leader-svg,
   .low-carbon-label,
+  .cloud-chip,
   .home-pill {
     transition: opacity 0.35s ease;
   }
@@ -274,6 +271,7 @@ export const solarOverviewCardStyles = css`
   ha-card.overlay-masked .grid-label,
   ha-card.overlay-masked .low-carbon-leader-svg,
   ha-card.overlay-masked .low-carbon-label,
+  ha-card.overlay-masked .cloud-chip,
   ha-card.overlay-masked .home-pill {
     will-change: opacity;
   }
@@ -291,7 +289,8 @@ export const solarOverviewCardStyles = css`
   ha-card.overlay-masked .grid-leader-svg,
   ha-card.overlay-masked .grid-label,
   ha-card.overlay-masked .low-carbon-leader-svg,
-  ha-card.overlay-masked .low-carbon-label {
+  ha-card.overlay-masked .low-carbon-label,
+  ha-card.overlay-masked .cloud-chip {
     opacity: 0;
     pointer-events: none;
   }
@@ -406,6 +405,152 @@ export const solarOverviewCardStyles = css`
   .pv-pct-label.is-predicted {
     opacity: 0.55;
     font-style: italic;
+  }
+
+  /*  Cloud chip: icon-only circular pill riding the sun -> PV/home
+        lead. The dynamic weather glyph carries the cloud state; the
+        ring is tinted in the cloud colour (--cloud-chip-color, set
+        inline by the renderer). Same plate + shadow language as the
+        value chips so it reads as part of the same family. */
+  .cloud-chip {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    /* Sun (near z 12) > cloud > home (z 9) > the value chips (z 8). */
+    z-index: 10;
+    /* Same flex centring as the value chips, proven to centre the glyph. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    box-sizing: border-box;
+    /* A touch larger than the value chips: being round, matching their 26 px
+       height would crowd the glyph. Stays round (width === height). */
+    width: 32px;
+    height: 32px;
+    background: var(--card-background-color, #ffffff);
+    color: var(--primary-text-color, #212121);
+    border: 2px solid var(--cloud-chip-color, #727272);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px var(--shadow-color);
+  }
+
+  .cloud-chip ha-icon {
+    --mdc-icon-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /*  Clickable chips re-target the bottom chart (or open weather mode for the
+        cloud chip). They capture pointer events while the rest of the overlay
+        stays pass-through to the map, and ease a hover glow in/out like the home
+        pill. In a masked mode (weather) the fade rule wins on specificity, so
+        faded chips stop capturing clicks. */
+  /* Compound selectors (0,2,0) so they beat the base chip rules' own
+     pointer-events:none regardless of source order. */
+  .pv-pct-label.is-clickable,
+  .battery-pct-label.is-clickable,
+  .grid-label.is-clickable,
+  .solar-pct-label.is-clickable,
+  .cloud-chip.is-clickable {
+    pointer-events: auto;
+    cursor: pointer;
+    transition:
+      opacity 0.35s ease,
+      box-shadow 0.25s ease;
+  }
+  .solar-pct-label.is-clickable:hover {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 12px color-mix(in srgb, var(--amber-color, #ffc107) 60%, transparent);
+  }
+  .solar-pct-label.is-chart-active {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 9px color-mix(in srgb, var(--amber-color, #ffc107) 45%, transparent);
+  }
+  .pv-pct-label.is-clickable:hover {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 12px
+        color-mix(
+          in srgb,
+          var(--pv-leader-color, var(--energy-solar-color, #ff9800)) 60%,
+          transparent
+        );
+  }
+  .battery-pct-label.is-clickable:hover {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 12px
+        color-mix(
+          in srgb,
+          var(--battery-leader-color, var(--energy-battery-out-color, #4db6ac))
+            60%,
+          transparent
+        );
+  }
+  .grid-label.is-clickable:hover {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 12px
+        color-mix(
+          in srgb,
+          var(
+              --grid-leader-color,
+              var(--energy-grid-consumption-color, #488fc2)
+            )
+            60%,
+          transparent
+        );
+  }
+  .cloud-chip.is-clickable:hover {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 12px
+        color-mix(in srgb, var(--cloud-chip-color, #727272) 60%, transparent);
+  }
+
+  /*  Active chart target: a steady, softer glow marks which chip the chart
+        currently mirrors. The hover rules above are more specific so they win. */
+  .pv-pct-label.is-chart-active {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 9px
+        color-mix(
+          in srgb,
+          var(--pv-leader-color, var(--energy-solar-color, #ff9800)) 45%,
+          transparent
+        );
+  }
+  .battery-pct-label.is-chart-active {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 9px
+        color-mix(
+          in srgb,
+          var(--battery-leader-color, var(--energy-battery-out-color, #4db6ac))
+            45%,
+          transparent
+        );
+  }
+  .grid-label.is-chart-active {
+    box-shadow:
+      0 1px 3px var(--shadow-color),
+      0 0 9px
+        color-mix(
+          in srgb,
+          var(
+              --grid-leader-color,
+              var(--energy-grid-consumption-color, #488fc2)
+            )
+            45%,
+          transparent
+        );
   }
 
   /*  Battery SoC and Power chips, same compact pill recipe as the
@@ -628,67 +773,40 @@ export const solarOverviewCardStyles = css`
     opacity: var(--solar-daylight, 1);
     transition: opacity 600ms ease-out;
   }
-  /*  Central home pill, a circular node painted at the projected
-        home centre. Every chip leader (PV, battery, grid) docks
-        against its border so the home reads as the single energy
-        hub the way HA's Energy distribution card does.            */
+  /*  Central home hub, the energy-distribution node every chip leader docks
+        against. Same horizontal pill recipe as the other chips (icon + live
+        home consumption) now that there is room; the primary-colour ring keeps
+        its hub identity. The leaders dock to its stadium outline (see
+        _nudgeToHomePill / buildLPathToHome in the card). */
   .home-pill {
     position: absolute;
-    width: 52px;
-    height: 52px;
     transform: translate(-50%, -50%);
-    background: var(--card-background-color, #ffffff);
-    border: 2px solid var(--primary-color, #03a9f4);
-    border-radius: 50%;
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0px;
+    gap: 4px;
+    min-width: 76px;
+    box-sizing: border-box;
+    background: var(--card-background-color, #ffffff);
+    color: var(--primary-text-color, #212121);
+    border: 2px solid var(--primary-color, #03a9f4);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: var(--ha-font-size-s, 12px);
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
     z-index: 9;
     pointer-events: none;
     box-shadow: 0 1px 3px var(--shadow-color);
-    color: var(--primary-color, #03a9f4);
-    /*  Keep the mask fade AND ease the hover glow in/out. */
-    transition:
-      opacity 0.35s ease,
-      box-shadow 0.2s ease;
-  }
-  /*  Very light glow on home hover: a soft halo in the primary colour,
-        the hover state is driven from the hitbox by the card. */
-  .home-pill.is-hovered {
-    box-shadow:
-      0 1px 3px var(--shadow-color),
-      0 0 7px 1px
-        color-mix(in srgb, var(--primary-color, #03a9f4) 28%, transparent);
+    transition: opacity 0.35s ease;
   }
   .home-pill ha-icon {
-    --mdc-icon-size: 20px;
-    color: inherit;
+    --mdc-icon-size: 16px;
+    color: var(--primary-text-color, #212121);
     display: inline-flex;
     align-items: center;
-  }
-  /*  With the consumption line present the home glyph shrinks so both
-        lines breathe inside the circle. */
-  .home-pill.has-usage ha-icon {
-    --mdc-icon-size: 15px;
-  }
-  /*  Live home consumption, second line inside the hub. Same text
-        size as the surrounding chips so the cluster reads uniform;
-        tabular figures keep the digits steady, regular text ink keeps
-        it readable against the card background. */
-  .home-pill-usage {
-    font-size: var(--ha-font-size-s, 12px);
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--primary-text-color, #212121);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    letter-spacing: -0.2px;
-    /*  Phantom space below the value so the centred icon + value block
-            sits a touch higher in the circle (raises the visible content by
-            half this margin without changing the pill size). */
-    margin-bottom: 8px;
   }
 
   .solar-svg-back {
