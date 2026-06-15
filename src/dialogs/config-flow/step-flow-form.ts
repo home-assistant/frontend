@@ -35,6 +35,10 @@ class StepFlowForm extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // The integration domain this flow belongs to. Unlike `step.handler`, this is
+  // the domain even for options flows (where the handler is the config entry id).
+  @property({ attribute: false }) public domain?: string;
+
   @state() private _loading = false;
 
   @state() private _stepData?: Record<string, any>;
@@ -108,7 +112,7 @@ class StepFlowForm extends LitElement {
               .computeHelper=${this._helperCallback}
               .computeError=${this._errorCallback}
               .localizeValue=${this._localizeValueCallback}
-              .context=${{ handler: step.handler }}
+              .context=${{ handler: step.handler, domain: this.domain }}
             ></ha-form>`
           : nothing}
       </div>

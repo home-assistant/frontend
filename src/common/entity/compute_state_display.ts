@@ -19,6 +19,40 @@ import type { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../data/sensor";
 
+// Domains whose state is a timezone-agnostic date and/or time string.
+const DATE_TIME_DOMAINS = new Set(["date", "input_datetime", "time"]);
+
+// Domains whose state is a timestamp.
+const TIMESTAMP_DOMAINS = new Set([
+  "ai_task",
+  "button",
+  "conversation",
+  "event",
+  "image",
+  "infrared",
+  "input_button",
+  "notify",
+  "radio_frequency",
+  "scene",
+  "stt",
+  "tag",
+  "tts",
+  "wake_word",
+  "datetime",
+]);
+
+// Maps Intl.NumberFormat part types to ValuePart types for monetary states.
+const MONETARY_TYPE_MAP: Record<string, ValuePart["type"]> = {
+  integer: "value",
+  group: "value",
+  decimal: "value",
+  fraction: "value",
+  minusSign: "value",
+  plusSign: "value",
+  literal: "literal",
+  currency: "unit",
+};
+
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
@@ -138,21 +172,10 @@ const computeStateToPartsFromEntityAttributes = (
       }
 
       if (parts.length) {
-        const TYPE_MAP: Record<string, ValuePart["type"]> = {
-          integer: "value",
-          group: "value",
-          decimal: "value",
-          fraction: "value",
-          minusSign: "value",
-          plusSign: "value",
-          literal: "literal",
-          currency: "unit",
-        };
-
         const valueParts: ValuePart[] = [];
 
         for (const part of parts) {
-          const type = TYPE_MAP[part.type];
+          const type = MONETARY_TYPE_MAP[part.type];
           if (!type) continue;
           const last = valueParts[valueParts.length - 1];
           // Merge consecutive value parts (e.g. "-" + "12" + "." + "00" → "-12.00")
@@ -191,7 +214,7 @@ const computeStateToPartsFromEntityAttributes = (
     return [{ type: "value", value: value }];
   }
 
-  if (["date", "input_datetime", "time"].includes(domain)) {
+  if (DATE_TIME_DOMAINS.has(domain)) {
     // If trying to display an explicit state, need to parse the explicit state to `Date` then format.
     // Attributes aren't available, we have to use `state`.
 
@@ -250,23 +273,7 @@ const computeStateToPartsFromEntityAttributes = (
 
   // state is a timestamp
   if (
-    [
-      "ai_task",
-      "button",
-      "conversation",
-      "event",
-      "image",
-      "infrared",
-      "input_button",
-      "notify",
-      "radio_frequency",
-      "scene",
-      "stt",
-      "tag",
-      "tts",
-      "wake_word",
-      "datetime",
-    ].includes(domain) ||
+    TIMESTAMP_DOMAINS.has(domain) ||
     (domain === "sensor" &&
       SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(attributes.device_class))
   ) {

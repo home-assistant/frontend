@@ -600,7 +600,7 @@
           }
         },
         "template": {
-          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' ).",
+          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (for example, '{{ states(sensor.test) > 0 }}').",
           "learn_more": "Learn more about templating"
         },
         "text": {
@@ -1892,12 +1892,14 @@
         "editor": {
           "name": "Name",
           "icon": "Icon",
-          "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "icon_error": "Icons should be in the format 'prefix:iconname', like 'mdi:home'",
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
           "calendar_color": "Calendar color",
           "associated_zone": "Associated zone",
           "entity_id": "Entity ID",
+          "copy_entity_id": "Copy entity ID",
+          "restore_entity_id": "Restore entity ID",
           "unit_of_measurement": "Unit of measurement",
           "precipitation_unit": "Precipitation unit",
           "precision": "Display precision",
@@ -2750,7 +2752,6 @@
           "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
-          "update_all_failed": "Failed to start updates",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -4281,7 +4282,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
-              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (e.g. `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (like `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
               "cost_entity_helper_energy": "energy",
               "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
@@ -4310,7 +4311,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
-              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (like `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water consumption",
@@ -4440,7 +4441,7 @@
         },
         "url": {
           "caption": "Home Assistant URL",
-          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (e.g. to play text-to-speech or other hosted media).",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (for example, to play text-to-speech or other hosted media).",
           "internal_url_label": "Local network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
@@ -5328,9 +5329,9 @@
                   "type_input": "Numeric value of another entity",
                   "description": {
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
                 "persistent_notification": {
@@ -5642,7 +5643,7 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
                     "picker": "Tests if someone (or something) is in a zone.",
-                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
               }
@@ -8734,7 +8735,6 @@
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
-              "total_returned": "Total exported {num} kWh",
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
@@ -9052,7 +9052,7 @@
                 "top": "Top",
                 "bottom": "Bottom"
               },
-              "badges_wrap": "Badges behaviour",
+              "badges_wrap": "Badges behavior",
               "badges_wrap_options": {
                 "wrap": "Wrap",
                 "scroll": "Scroll",
@@ -9197,7 +9197,7 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (for example, on mobile devices)",
               "background": "Background options",
               "background_enabled": "Background",
               "background_enabled_helper": "Display a colored background behind the section",
@@ -10010,7 +10010,7 @@
               "name": "Tile",
               "description": "This card gives you a quick overview of an entity. It allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
-              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
+              "color_helper": "Inactive state (for example, off or closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",

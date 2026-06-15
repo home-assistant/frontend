@@ -894,11 +894,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
           slot="end"
           @click=${this._restoreEntityId}
           .path=${mdiRestore}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.restore_entity_id"
+          )}
         ></ha-icon-button>
         <ha-icon-button
           slot="end"
           @click=${this._copyEntityId}
           .path=${mdiContentCopy}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.copy_entity_id"
+          )}
         ></ha-icon-button>
       </ha-input>
       ${!this.entry.device_id

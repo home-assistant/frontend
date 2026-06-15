@@ -267,8 +267,6 @@ function formatTooltip(
 
   let sumPositive = 0;
   let countPositive = 0;
-  let sumNegative = 0;
-  let countNegative = 0;
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
@@ -280,14 +278,12 @@ function formatTooltip(
     if (value === "0") {
       continue;
     }
-    if (param.componentSubType === "bar") {
-      if (y > 0) {
-        sumPositive += y;
-        countPositive++;
-      } else {
-        sumNegative += y;
-        countNegative++;
-      }
+    // Only the positive bars (consumption) are summed into a total. Negative
+    // bars mix unrelated categories (grid export and battery charge), so they
+    // are not totaled.
+    if (param.componentSubType === "bar" && y > 0) {
+      sumPositive += y;
+      countPositive++;
     }
     rows.push(
       html`<ha-chart-tooltip-marker
@@ -305,8 +301,6 @@ function formatTooltip(
       (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
     )}${sumPositive !== 0 && countPositive > 1 && formatTotal
       ? html`<br /><b>${formatTotal(sumPositive)}</b>`
-      : nothing}${sumNegative !== 0 && countNegative > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumNegative)}</b>`
       : nothing}`;
 }
 

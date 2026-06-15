@@ -92,6 +92,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               this._configEntryId || ""
             )}
             target="_blank"
+            rel="noreferrer"
             @click=${this._signUrl}
           >
             <ha-dropdown-item>

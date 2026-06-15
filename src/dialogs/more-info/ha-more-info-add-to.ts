@@ -40,7 +40,9 @@ export class HaMoreInfoAddTo extends LitElement {
   @state() private _loading = true;
 
   private async _loadActions() {
-    this._defaultActions = getDefaultAddToActions();
+    this._defaultActions = this._config?.user?.is_admin
+      ? getDefaultAddToActions()
+      : [];
     this._externalActions = [];
 
     if (this._config?.auth.external?.config.hasEntityAddTo) {

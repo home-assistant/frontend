@@ -211,7 +211,7 @@ class MatterOptionsPage extends LitElement {
     this._error = undefined;
     this._redirectOnNewMatterDevice();
     try {
-      await commissionMatterDevice(this.hass, code);
+      await commissionMatterDevice(this.hass, code, false);
     } catch (err: any) {
       this._error = err.message;
       this._stopRedirect();
