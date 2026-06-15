@@ -115,6 +115,54 @@ describe("computeHistory characterization", () => {
       )
     ).toMatchSnapshot();
   });
+
+  it("resolves non-numeric domain units (zone, humidifier, water_heater)", () => {
+    // Pins the per-domain unit lookup for non-numeric line entities, which the
+    // mixed/climate fixtures above do not exercise.
+    const history = {
+      "zone.home": [
+        { s: "2", a: { friendly_name: "Home zone" }, lu: 1_700_000_000 },
+        { s: "3", a: {}, lu: 1_700_000_060 },
+      ],
+      "humidifier.bedroom": [
+        {
+          s: "on",
+          a: {
+            friendly_name: "Bedroom humidifier",
+            humidity: 45,
+            mode: "auto",
+          },
+          lu: 1_700_000_000,
+        },
+        { s: "on", a: { humidity: 50, mode: "auto" }, lu: 1_700_000_060 },
+      ],
+      "water_heater.tank": [
+        {
+          s: "eco",
+          a: {
+            friendly_name: "Water heater",
+            temperature: 50,
+            current_temperature: 48,
+          },
+          lu: 1_700_000_000,
+        },
+        {
+          s: "eco",
+          a: { temperature: 55, current_temperature: 49 },
+          lu: 1_700_000_060,
+        },
+      ],
+    };
+    expect(
+      computeHistory(
+        hass,
+        history,
+        [],
+        mockLocalize,
+        SENSOR_NUMERIC_DEVICE_CLASSES
+      )
+    ).toMatchSnapshot();
+  });
 });
 
 describe("HistoryStream characterization", () => {
@@ -182,6 +230,58 @@ describe("HistoryStream characterization", () => {
       },
     });
     expect(result).toMatchSnapshot();
+  });
+
+  it("adds a new entity, keeps an absent one, and sorts out-of-order states", () => {
+    const nowMs = FIXED_EPOCH_MS + 24 * 60 * 60 * 1000;
+    vi.useFakeTimers();
+    vi.setSystemTime(nowMs);
+
+    const hoursToShow = 2;
+    const stream = new HistoryStream(createMockHass(), hoursToShow);
+    const windowStartMs = nowMs - hoursToShow * 60 * 60 * 1000;
+
+    // Initial chunk with two entities.
+    const initial = stream.processMessage({
+      states: {
+        "sensor.power_a": generateNumericSensorStates(21, {
+          count: 60,
+          startMs: windowStartMs + 5 * 60 * 1000,
+          intervalMs: 60 * 1000,
+          jitter: 0,
+        }),
+        "sensor.power_b": generateNumericSensorStates(22, {
+          count: 60,
+          startMs: windowStartMs + 5 * 60 * 1000,
+          intervalMs: 60 * 1000,
+          jitter: 0,
+        }),
+      },
+    });
+    expect(digestResult(initial)).toMatchSnapshot("multi-initial");
+
+    // Incremental update that:
+    //  - updates only sensor.power_a (sensor.power_b is absent and must be kept)
+    //  - introduces a brand-new entity sensor.power_c (stream-only branch)
+    //  - delivers sensor.power_a states out of order (older lu than the last
+    //    combined state) to exercise the sort path
+    const incremental = stream.processMessage({
+      states: {
+        "sensor.power_a": generateNumericSensorStates(23, {
+          count: 10,
+          startMs: nowMs - 90 * 60 * 1000,
+          intervalMs: 30 * 1000,
+          jitter: 0,
+        }),
+        "sensor.power_c": generateNumericSensorStates(24, {
+          count: 15,
+          startMs: nowMs - 10 * 60 * 1000,
+          intervalMs: 30 * 1000,
+          jitter: 0,
+        }),
+      },
+    });
+    expect(incremental).toMatchSnapshot("multi-incremental");
   });
 });
 
