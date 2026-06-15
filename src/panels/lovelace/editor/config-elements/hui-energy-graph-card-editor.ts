@@ -77,7 +77,7 @@ export class HuiEnergyGraphCardEditor
       ...(type !== "energy-compare"
         ? [{ name: "title", selector: { text: {} } }]
         : []),
-      ...(type === "power-sources-graph"
+      ...(type === "power-sources-graph" || type === "energy-usage-graph"
         ? [
             {
               name: "show_legend",
