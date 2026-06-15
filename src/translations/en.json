@@ -1524,7 +1524,7 @@
         "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
       "http_pending_config": {
-        "title": "Confirm new network configuration",
+        "title": "Confirm new HTTP server configuration",
         "description": "Home Assistant has restarted with new HTTP server settings. Confirm to keep them, or revert to undo the change.",
         "changes_label": "Changed settings:",
         "confirm": "Confirm",
