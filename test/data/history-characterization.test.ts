@@ -183,6 +183,58 @@ describe("HistoryStream characterization", () => {
     });
     expect(result).toMatchSnapshot();
   });
+
+  it("adds a new entity, keeps an absent one, and sorts out-of-order states", () => {
+    const nowMs = FIXED_EPOCH_MS + 24 * 60 * 60 * 1000;
+    vi.useFakeTimers();
+    vi.setSystemTime(nowMs);
+
+    const hoursToShow = 2;
+    const stream = new HistoryStream(createMockHass(), hoursToShow);
+    const windowStartMs = nowMs - hoursToShow * 60 * 60 * 1000;
+
+    // Initial chunk with two entities.
+    const initial = stream.processMessage({
+      states: {
+        "sensor.power_a": generateNumericSensorStates(21, {
+          count: 60,
+          startMs: windowStartMs + 5 * 60 * 1000,
+          intervalMs: 60 * 1000,
+          jitter: 0,
+        }),
+        "sensor.power_b": generateNumericSensorStates(22, {
+          count: 60,
+          startMs: windowStartMs + 5 * 60 * 1000,
+          intervalMs: 60 * 1000,
+          jitter: 0,
+        }),
+      },
+    });
+    expect(digestResult(initial)).toMatchSnapshot("multi-initial");
+
+    // Incremental update that:
+    //  - updates only sensor.power_a (sensor.power_b is absent and must be kept)
+    //  - introduces a brand-new entity sensor.power_c (stream-only branch)
+    //  - delivers sensor.power_a states out of order (older lu than the last
+    //    combined state) to exercise the sort path
+    const incremental = stream.processMessage({
+      states: {
+        "sensor.power_a": generateNumericSensorStates(23, {
+          count: 10,
+          startMs: nowMs - 90 * 60 * 1000,
+          intervalMs: 30 * 1000,
+          jitter: 0,
+        }),
+        "sensor.power_c": generateNumericSensorStates(24, {
+          count: 15,
+          startMs: nowMs - 10 * 60 * 1000,
+          intervalMs: 30 * 1000,
+          jitter: 0,
+        }),
+      },
+    });
+    expect(incremental).toMatchSnapshot("multi-incremental");
+  });
 });
 
 describe("convertStatisticsToHistory characterization", () => {
