@@ -243,8 +243,9 @@ class HaConfigInfo extends LitElement {
                     ${customUiList.map(
                       (item) => html`
                         <div>
-                          <a href=${item.url} target="_blank"> ${item.name}</a>:
-                          ${item.version}
+                          <a href=${item.url} target="_blank" rel="noreferrer">
+                            ${item.name}</a
+                          >: ${item.version}
                         </div>
                       `
                     )}
