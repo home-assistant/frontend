@@ -27,7 +27,8 @@ import {
   TimeZone,
 } from "../data/translation";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
-import { preserveUnchangedEntityRegistryDisplay } from "../data/entity/entity_registry";
+import { deepEqual } from "../common/util/deep-equal";
+import { preserveUnchangedRecord } from "../common/util/preserve-unchanged-record";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -266,9 +267,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             display_precision: entity.dp,
           };
         }
-        const updatedEntities = preserveUnchangedEntityRegistryDisplay(
+        const updatedEntities = preserveUnchangedRecord(
           this.hass?.entities,
-          entities
+          entities,
+          deepEqual
         );
         // When the display payload is unchanged (a registry event that doesn't
         // touch it), skip the update entirely instead of churning a new hass.
