@@ -81,27 +81,33 @@ export const demoConfigEntries: {
   },
 ];
 
-const filterEntries = (typeFilter?: IntegrationType[]): ConfigEntry[] =>
+const filterEntries = (filters?: {
+  type_filter?: IntegrationType[];
+  domain?: string;
+}): ConfigEntry[] =>
   demoConfigEntries
-    .filter((e) => !typeFilter || typeFilter.includes(e.type))
+    .filter(
+      (e) =>
+        (!filters?.type_filter || filters.type_filter.includes(e.type)) &&
+        (!filters?.domain || filters.domain === e.entry.domain)
+    )
     .map((e) => e.entry);
 
 export const mockConfigEntries = (hass: MockHomeAssistant) => {
   hass.mockWS(
     "config_entries/get",
-    (msg: { type_filter?: IntegrationType[] }) => filterEntries(msg.type_filter)
+    (msg: { type_filter?: IntegrationType[]; domain?: string }) =>
+      filterEntries(msg)
   );
 
   hass.mockWS(
     "config_entries/subscribe",
     (
-      msg: { type_filter?: IntegrationType[] },
+      msg: { type_filter?: IntegrationType[]; domain?: string },
       _hass,
       onChange?: (updates: ConfigEntryUpdate[]) => void
     ) => {
-      onChange?.(
-        filterEntries(msg.type_filter).map((entry) => ({ type: null, entry }))
-      );
+      onChange?.(filterEntries(msg).map((entry) => ({ type: null, entry })));
       return () => undefined;
     }
   );
