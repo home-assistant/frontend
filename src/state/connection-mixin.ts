@@ -27,6 +27,8 @@ import {
   TimeZone,
 } from "../data/translation";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { deepEqual } from "../common/util/deep-equal";
+import { preserveUnchangedRecord } from "../common/util/preserve-unchanged-record";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -265,7 +267,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             display_precision: entity.dp,
           };
         }
-        this._updateHass({ entities });
+        const updatedEntities = preserveUnchangedRecord(
+          this.hass?.entities,
+          entities,
+          deepEqual
+        );
+        // When the display payload is unchanged (a registry event that doesn't
+        // touch it), skip the update entirely instead of churning a new hass.
+        if (updatedEntities !== this.hass?.entities) {
+          this._updateHass({ entities: updatedEntities });
+        }
       });
       subscribeDeviceRegistry(conn, (deviceReg) => {
         const devices: HomeAssistant["devices"] = {};
