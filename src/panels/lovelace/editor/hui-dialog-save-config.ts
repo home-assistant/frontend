@@ -12,6 +12,7 @@ import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -20,8 +21,15 @@ import type { SaveDialogParams } from "./show-save-config-dialog";
 
 const EMPTY_CONFIG: LovelaceConfig = { views: [{ title: "Home" }] };
 
+interface SaveConfigDirtyState {
+  emptyConfig: boolean;
+}
+
 @customElement("hui-dialog-save-config")
-export class HuiSaveConfig extends LitElement implements HassDialog {
+export class HuiSaveConfig
+  extends DirtyStateProviderMixin<SaveConfigDirtyState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: SaveDialogParams;
@@ -41,6 +49,10 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     this._params = params;
     this._emptyConfig = false;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      { emptyConfig: this._emptyConfig }
+    );
   }
 
   public closeDialog(): boolean {
@@ -65,7 +77,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       <ha-dialog
         .open=${this._open}
         header-title=${heading}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
           <ha-icon-button
@@ -165,6 +177,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
 
   private _emptyConfigChanged(ev) {
     this._emptyConfig = ev.target.checked;
+    this._updateDirtyState({ emptyConfig: this._emptyConfig });
   }
 
   private async _saveConfig(): Promise<void> {
@@ -181,6 +194,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       );
       lovelace.setEditMode(true);
       this._saving = false;
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       alert(`Saving failed: ${err.message}`);

@@ -25,6 +25,7 @@ import type {
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
 import { waitForIntegrationSetup } from "../../../../data/integration";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
@@ -32,6 +33,10 @@ import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
 interface FormData {
   encryption_key_type: "config" | "custom";
   custom_encryption_key: string;
+}
+
+interface RestoreBackupDirtyState {
+  userPassword: string;
 }
 
 const INITIAL_DATA: FormData = {
@@ -42,7 +47,10 @@ const INITIAL_DATA: FormData = {
 const STEPS = ["confirm", "encryption", "progress"] as const;
 
 @customElement("ha-dialog-restore-backup")
-class DialogRestoreBackup extends LitElement implements HassDialog {
+class DialogRestoreBackup
+  extends DirtyStateProviderMixin<RestoreBackupDirtyState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _step?: "confirm" | "encryption" | "progress";
@@ -76,6 +84,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
     this._error = undefined;
     this._state = undefined;
     this._stage = undefined;
+    this._initDirtyTracking({ type: "deep" }, { userPassword: "" });
 
     const agentIds = Object.keys(this._params.backup.agents);
     const preferedAgent = getPreferredAgentForDownload(agentIds);
@@ -139,6 +148,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
       <ha-dialog
         .open=${this._open}
         header-title=${dialogTitle}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -261,6 +271,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   private _passwordChanged(ev): void {
     this._userPassword = ev.target.value;
+    this._updateDirtyState({ userPassword: this._userPassword || "" });
   }
 
   private async _restoreBackup() {

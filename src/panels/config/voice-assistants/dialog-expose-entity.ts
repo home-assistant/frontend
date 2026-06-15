@@ -26,6 +26,7 @@ import {
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
 import "./entity-voice-settings";
@@ -37,14 +38,19 @@ interface FilteredEntity {
 }
 
 @customElement("dialog-expose-entity")
-class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
-  LitElement
+class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
+  DialogMixin<ExposeEntityDialogParams>(LitElement)
 ) {
   @state() private _filter?: string;
 
   @state() private _selected: string[] = [];
 
   @state() private _dialogReady = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._initDirtyTracking({ type: "deep" }, this._selected);
+  }
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -87,7 +93,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
         open
         header-title=${header}
         header-subtitle=${subtitle}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @after-show=${this._loadVirtualizer}
       >
         <ha-input-search
@@ -149,6 +155,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
     } else {
       this._selected = this._selected.filter((item) => item !== entityId);
     }
+    this._updateDirtyState(this._selected);
   };
 
   private _handleItemKeydown(ev: KeyboardEvent) {
@@ -272,6 +279,7 @@ class DialogExposeEntity extends DialogMixin<ExposeEntityDialogParams>(
 
   private _expose() {
     this.params!.exposeEntities(this._selected);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
