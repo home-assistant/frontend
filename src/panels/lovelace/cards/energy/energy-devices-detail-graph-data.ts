@@ -112,7 +112,7 @@ function processDataSet(
 
   devices.forEach((source, idx) => {
     const order = sorted_devices.indexOf(source.stat_consumption);
-    if (ctx.config?.max_devices && order >= ctx.config.max_devices) {
+    if (ctx.config.max_devices && order >= ctx.config.max_devices) {
       // eslint-disable-next-line no-console
       console.warn(
         `Max devices exceeded for ${source.name} (${order} >= ${ctx.config.max_devices})`
