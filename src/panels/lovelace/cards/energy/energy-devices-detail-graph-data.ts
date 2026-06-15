@@ -83,6 +83,33 @@ function processDataSet(
   const compareTransform = getCompareTransform(ctx.start, ctx.compareStart!);
   const period = getSuggestedPeriod(ctx.start, ctx.end);
 
+  // Lazily memoize a start -> change lookup per child stat so the per-point
+  // child summation is O(1) instead of a linear `.find` scan. Mirrors the
+  // original `cStats.find((s) => s.start === start)?.change` first-match
+  // semantics (only the first entry for a given start is kept).
+  const childStartChange = new Map<
+    string,
+    Map<number, number | null | undefined>
+  >();
+  const getChildStartChange = (
+    childId: string
+  ): Map<number, number | null | undefined> => {
+    let byStart = childStartChange.get(childId);
+    if (byStart === undefined) {
+      byStart = new Map<number, number | null | undefined>();
+      const cStats = statistics[childId];
+      if (cStats) {
+        for (const cStat of cStats) {
+          if (!byStart.has(cStat.start)) {
+            byStart.set(cStat.start, cStat.change);
+          }
+        }
+      }
+      childStartChange.set(childId, byStart);
+    }
+    return byStart;
+  };
+
   devices.forEach((source, idx) => {
     const order = sorted_devices.indexOf(source.stat_consumption);
     if (ctx.config?.max_devices && order >= ctx.config.max_devices) {
@@ -101,6 +128,7 @@ function processDataSet(
     // Process device consumption data.
     if (source.stat_consumption in statistics) {
       const stats = statistics[source.stat_consumption];
+      const children = childMap[source.stat_consumption] || [];
 
       for (const point of stats) {
         if (
@@ -114,11 +142,8 @@ function processDataSet(
           continue;
         }
         let sumChildren = 0;
-        const children = childMap[source.stat_consumption] || [];
         children.forEach((c) => {
-          const cStats = statistics[c];
-          sumChildren +=
-            cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
+          sumChildren += getChildStartChange(c).get(point.start) || 0;
         });
 
         const y = point.change - sumChildren;
@@ -166,9 +191,17 @@ function processDataSet(
       stack: compare ? "devicesCompare" : "devices",
     });
   });
-  return sorted_devices
-    .map((device) => data.find((d) => getStatIdFromId(d.id as string) === device)!)
-    .filter(Boolean);
+  // Index built series by their stat id (first match wins, matching the
+  // original `data.find`) so the reorder is a single map lookup per device
+  // instead of an O(devices^2) scan with a regex per comparison.
+  const byStatId = new Map<string, BarSeriesOption>();
+  for (const d of data) {
+    const statId = getStatIdFromId(d.id as string);
+    if (!byStatId.has(statId)) {
+      byStatId.set(statId, d);
+    }
+  }
+  return sorted_devices.map((device) => byStatId.get(device)!).filter(Boolean);
 }
 
 function processUntracked(
