@@ -47,9 +47,66 @@ export function fillDataGapsAndRoundCaps(
     )
   ).sort((a, b) => a - b);
 
-  // make sure all datasets have the same buckets
-  // otherwise the chart will render incorrectly in some cases
-  buckets.forEach((bucket, index) => {
+  // Phase 1: align every dataset to the shared buckets, inserting zero-valued
+  // gap fillers. The original implementation spliced gaps in-place while
+  // iterating bucket-by-bucket, which shifts the whole tail of the array on
+  // every gap (O(points * gaps) in the worst case). Rebuilding each dataset in
+  // a single forward merge against the bucket axis yields the byte-identical
+  // aligned array without the per-gap shifting cost.
+  const bucketCount = buckets.length;
+  for (let i = datasets.length - 1; i >= 0; i--) {
+    const data = datasets[i].data;
+    if (!data || data.length === 0) {
+      continue;
+    }
+    const dataLength = data.length;
+    const aligned: typeof data = [];
+    let srcIdx = 0;
+    // The original loop runs once per bucket index and reads data[index],
+    // which (thanks to the in-place splices) always points at the next
+    // unconsumed source element. A defined element with a non-matching x
+    // inserts a gap and keeps the element for the next index; a matching or
+    // otherwise-defined element is kept and the pointer advances; once the
+    // source is exhausted, no further gaps are added.
+    for (let index = 0; index < bucketCount; index++) {
+      if (srcIdx >= dataLength) {
+        break;
+      }
+      const dataPoint = data[srcIdx];
+      const item: any =
+        dataPoint && typeof dataPoint === "object" && "value" in dataPoint
+          ? dataPoint
+          : { value: dataPoint };
+      const x = item.value?.[0];
+      if (x === undefined) {
+        // Malformed element: left untouched in place, pointer advances.
+        aligned.push(dataPoint);
+        srcIdx++;
+      } else if (Number(x) !== buckets[index]) {
+        aligned.push({
+          value: [buckets[index], 0],
+          itemStyle: {
+            borderWidth: 0,
+          },
+        } as (typeof data)[number]);
+      } else {
+        aligned.push(dataPoint);
+        srcIdx++;
+      }
+    }
+    // Trailing source elements past the last consumed bucket index are never
+    // reached by the original loop and stay in place unchanged.
+    for (; srcIdx < dataLength; srcIdx++) {
+      aligned.push(data[srcIdx]);
+    }
+    datasets[i].data = aligned;
+  }
+
+  // Phase 2: per bucket, mark only the uppermost positive and lowermost
+  // negative bar of each stack with a rounded cap, and strip the border from
+  // zero values. Datasets are now aligned, so data[index] always corresponds
+  // to buckets[index] (or is undefined past the dataset's last point).
+  for (let index = 0; index < bucketCount; index++) {
     const capRounded = {};
     const capRoundedNegative = {};
     for (let i = datasets.length - 1; i >= 0; i--) {
@@ -63,14 +120,7 @@ export function fillDataGapsAndRoundCaps(
       if (x === undefined) {
         continue;
       }
-      if (Number(x) !== bucket) {
-        datasets[i].data?.splice(index, 0, {
-          value: [bucket, 0],
-          itemStyle: {
-            borderWidth: 0,
-          },
-        });
-      } else if (item.value?.[1] === 0) {
+      if (item.value?.[1] === 0) {
         // remove the border for zero values or it will be rendered
         datasets[i].data![index] = {
           ...item,
@@ -99,5 +149,5 @@ export function fillDataGapsAndRoundCaps(
         capRoundedNegative[stack] = true;
       }
     }
-  });
+  }
 }

@@ -441,6 +441,166 @@ describe("fillDataGapsAndRoundCaps", () => {
 
     assert.equal(datasets[0].data!.length, 0);
   });
+
+  it("fills several consecutive gaps for one dataset", () => {
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [
+          [1000, 1],
+          [4000, 4],
+        ],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [[2000, 2]],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [
+          [1000, 1],
+          [2000, 2],
+          [3000, 3],
+          [4000, 4],
+        ],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets);
+
+    // First dataset is aligned across all four buckets with 2 zero gaps.
+    assert.equal(datasets[0].data!.length, 4);
+    assert.equal(getBarItem(datasets[0], 0).value[0], 1000);
+    assert.equal(getBarItem(datasets[0], 1).value[0], 2000);
+    assert.equal(getBarItem(datasets[0], 1).value[1], 0);
+    assert.equal(getBarItem(datasets[0], 1).itemStyle.borderWidth, 0);
+    assert.equal(getBarItem(datasets[0], 2).value[0], 3000);
+    assert.equal(getBarItem(datasets[0], 2).value[1], 0);
+    assert.equal(getBarItem(datasets[0], 3).value[0], 4000);
+
+    // Second dataset only has a point at bucket 2000; the leading 1000 bucket
+    // is filled and no trailing buckets are added past its last point.
+    assert.equal(datasets[1].data!.length, 2);
+    assert.equal(getBarItem(datasets[1], 0).value[0], 1000);
+    assert.equal(getBarItem(datasets[1], 0).value[1], 0);
+    assert.equal(getBarItem(datasets[1], 1).value[0], 2000);
+  });
+
+  it("does not grow a dataset past its last bucket (duplicate x)", () => {
+    // Only one unique bucket exists, so the second duplicate point is never
+    // reached by the alignment loop and is left in place untouched.
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [
+          [1000, 1],
+          [1000, 2],
+        ],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets);
+
+    assert.equal(datasets[0].data!.length, 2);
+    const first = getBarItem(datasets[0], 0);
+    assert.equal(first.value[0], 1000);
+    assert.deepEqual(first.itemStyle.borderRadius, [4, 4, 0, 0]);
+    // The duplicate stays as a raw tuple, untouched.
+    assert.deepEqual(datasets[0].data![1], [1000, 2]);
+  });
+
+  it("rounds only the first positive and first negative scanned from the top per stack", () => {
+    // Datasets are scanned from last to first, so the first positive and first
+    // negative encountered from the top of the stack receive the rounded caps;
+    // the remaining bars in the same stack are left untouched.
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, -10]],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, -5]],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, 5]],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, 10]],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets);
+
+    // First positive scanned from the top (last dataset) rounds the top.
+    assert.deepEqual(
+      getBarItem(datasets[3], 0).itemStyle.borderRadius,
+      [4, 4, 0, 0]
+    );
+    // Lower positive is left untouched.
+    assert.equal(getBarItem(datasets[2], 0).itemStyle?.borderRadius, undefined);
+    // First negative scanned from the top rounds the bottom.
+    assert.deepEqual(
+      getBarItem(datasets[1], 0).itemStyle.borderRadius,
+      [0, 0, 4, 4]
+    );
+    // Lower negative is left untouched.
+    assert.equal(getBarItem(datasets[0], 0).itemStyle?.borderRadius, undefined);
+  });
+});
+
+describe("fillDataGapsAndRoundCaps non-stacked", () => {
+  it("rounds the top of every series and bottom of negative points", () => {
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        data: [
+          [1000, 5],
+          [2000, -3],
+          [3000, 0],
+        ],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets, false);
+
+    // The series gets an overall top border radius.
+    assert.deepEqual(datasets[0].itemStyle!.borderRadius, [4, 4, 0, 0]);
+    // Negative point is overridden to a bottom border radius.
+    const negative = getBarItem(datasets[0], 1);
+    assert.deepEqual(negative.itemStyle.borderRadius, [0, 0, 4, 4]);
+    // Positive and zero points stay as raw tuples (no per-point override).
+    assert.deepEqual(datasets[0].data![0], [1000, 5]);
+    assert.deepEqual(datasets[0].data![2], [3000, 0]);
+  });
+
+  it("preserves existing series itemStyle and per-point style", () => {
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        itemStyle: { color: "red" },
+        data: [{ value: [1000, -2], itemStyle: { opacity: 0.5 } }],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets, false);
+
+    assert.equal(datasets[0].itemStyle!.color, "red");
+    assert.deepEqual(datasets[0].itemStyle!.borderRadius, [4, 4, 0, 0]);
+    const point = getBarItem(datasets[0], 0);
+    assert.equal(point.itemStyle.opacity, 0.5);
+    assert.deepEqual(point.itemStyle.borderRadius, [0, 0, 4, 4]);
+  });
 });
 
 describe("getCompareTransform", () => {
