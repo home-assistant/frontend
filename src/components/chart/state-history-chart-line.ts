@@ -147,6 +147,14 @@ export class StateHistoryChartLine extends LitElement {
       this.hass.config
     );
     const datapoints: Record<string, any>[] = [];
+    // Index the hovered points by series so the per-dataset lookup below is
+    // O(1) instead of scanning `params` for every dataset on each mouse move.
+    const paramsBySeriesIndex = new Map<number, Record<string, any>>();
+    for (const p of params) {
+      if (!paramsBySeriesIndex.has(p.seriesIndex)) {
+        paramsBySeriesIndex.set(p.seriesIndex, p);
+      }
+    }
     this._chartData.forEach((dataset, index) => {
       if (
         dataset.tooltip?.show === false ||
@@ -154,9 +162,7 @@ export class StateHistoryChartLine extends LitElement {
       ) {
         return;
       }
-      const param = params.find(
-        (p: Record<string, any>) => p.seriesIndex === index
-      );
+      const param = paramsBySeriesIndex.get(index);
       if (param) {
         datapoints.push(param);
         return;
