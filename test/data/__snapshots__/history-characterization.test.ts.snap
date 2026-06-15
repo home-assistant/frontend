@@ -3835,6 +3835,98 @@ exports[`computeHistory characterization > matches snapshot with splitDeviceClas
 }
 `;
 
+exports[`computeHistory characterization > resolves non-numeric domain units (zone, humidifier, water_heater) 1`] = `
+{
+  "line": [
+    {
+      "data": [
+        {
+          "domain": "zone",
+          "entity_id": "zone.home",
+          "name": "Home zone",
+          "states": [
+            {
+              "attributes": {},
+              "last_changed": 1700000000000,
+              "state": "2",
+            },
+            {
+              "attributes": {},
+              "last_changed": 1700000060000,
+              "state": "3",
+            },
+          ],
+        },
+      ],
+      "device_class": "info_control.zone.graph_unit",
+      "identifier": "zone.home",
+      "unit": "ui.dialogs.more",
+    },
+    {
+      "data": [
+        {
+          "domain": "humidifier",
+          "entity_id": "humidifier.bedroom",
+          "name": "Bedroom humidifier",
+          "states": [
+            {
+              "attributes": {
+                "humidity": 45,
+                "mode": "auto",
+              },
+              "last_changed": 1700000000000,
+              "state": "on",
+            },
+            {
+              "attributes": {
+                "humidity": 50,
+                "mode": "auto",
+              },
+              "last_changed": 1700000060000,
+              "state": "on",
+            },
+          ],
+        },
+      ],
+      "device_class": undefined,
+      "identifier": "humidifier.bedroom",
+      "unit": "%",
+    },
+    {
+      "data": [
+        {
+          "domain": "water_heater",
+          "entity_id": "water_heater.tank",
+          "name": "Water heater",
+          "states": [
+            {
+              "attributes": {
+                "current_temperature": 48,
+                "temperature": 50,
+              },
+              "last_changed": 1700000000000,
+              "state": "eco",
+            },
+            {
+              "attributes": {
+                "current_temperature": 49,
+                "temperature": 55,
+              },
+              "last_changed": 1700000060000,
+              "state": "eco",
+            },
+          ],
+        },
+      ],
+      "device_class": undefined,
+      "identifier": "water_heater.tank",
+      "unit": "°C",
+    },
+  ],
+  "timeline": [],
+}
+`;
+
 exports[`convertStatisticsToHistory characterization > converts mean-based statistics 1`] = `
 {
   "line": [

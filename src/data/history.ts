@@ -391,16 +391,18 @@ const processLineChartEntities = (
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
 
-  Object.keys(entities).forEach((entityId) => {
+  const entityIds = Object.keys(entities);
+  entityIds.forEach((entityId) => {
     const states = entities[entityId];
     const first: EntityHistoryState = states[0];
     const domain = computeDomain(entityId);
+    const useLastUpdated = DOMAINS_USE_LAST_UPDATED.includes(domain);
     const processedStates: LineChartState[] = [];
 
     for (const state of states) {
       let processedState: LineChartState;
 
-      if (DOMAINS_USE_LAST_UPDATED.includes(domain)) {
+      if (useLastUpdated) {
         processedState = {
           state: state.s,
           last_changed: state.lu * 1000,
@@ -422,13 +424,11 @@ const processLineChartEntities = (
         };
       }
 
+      const len = processedStates.length;
       if (
-        processedStates.length > 1 &&
-        equalState(
-          processedState,
-          processedStates[processedStates.length - 1]
-        ) &&
-        equalState(processedState, processedStates[processedStates.length - 2])
+        len > 1 &&
+        equalState(processedState, processedStates[len - 1]) &&
+        equalState(processedState, processedStates[len - 2])
       ) {
         continue;
       }
@@ -454,9 +454,15 @@ const processLineChartEntities = (
   return {
     unit,
     device_class,
-    identifier: Object.keys(entities).join(""),
+    identifier: entityIds.join(""),
     data,
   };
+};
+
+const SPECIAL_DOMAIN_CLASSES: Record<string, string | undefined> = {
+  climate: "temperature",
+  humidifier: "humidity",
+  water_heater: "temperature",
 };
 
 const NUMERICAL_DOMAINS = ["counter", "input_number", "number"];
@@ -603,14 +609,8 @@ export const computeHistory = (
       }[domain];
     }
 
-    const specialDomainClasses = {
-      climate: "temperature",
-      humidifier: "humidity",
-      water_heater: "temperature",
-    };
-
     const deviceClass: string | undefined =
-      specialDomainClasses[domain] ||
+      SPECIAL_DOMAIN_CLASSES[domain] ||
       (currentState?.attributes || numericStateFromHistory?.a)?.device_class;
 
     const key = computeGroupKey(unit, deviceClass, splitDeviceClasses);
