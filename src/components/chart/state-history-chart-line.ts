@@ -440,6 +440,10 @@ export class StateHistoryChartLine extends LitElement {
 
     this._chartTime = new Date();
     const endTime = this.endTime;
+    // Work with numeric epoch timestamps (ms) instead of Date objects below.
+    // Charts can hold a huge number of points, and allocating a Date per point
+    // is needless GC pressure; the "time" axis consumes numbers natively.
+    const endTimeMs = endTime.getTime();
     const names = this.names || {};
     const colors = this.colors || {};
     entityStates.forEach((states, dataIdx) => {
@@ -451,9 +455,9 @@ export class StateHistoryChartLine extends LitElement {
 
       const data: LineSeriesOption[] = [];
 
-      const pushData = (timestamp: Date, datavalues: any[] | null) => {
+      const pushData = (timestamp: number, datavalues: any[] | null) => {
         if (!datavalues) return;
-        if (timestamp > endTime) {
+        if (timestamp > endTimeMs) {
           // Drop data points that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
@@ -624,11 +628,11 @@ export class StateHistoryChartLine extends LitElement {
               entityState.attributes.target_temp_low
             );
             series.push(targetHigh, targetLow);
-            pushData(new Date(entityState.last_changed), series);
+            pushData(entityState.last_changed, series);
           } else {
             const target = safeParseFloat(entityState.attributes.temperature);
             series.push(target);
-            pushData(new Date(entityState.last_changed), series);
+            pushData(entityState.last_changed, series);
           }
         });
       } else if (domain === "humidifier") {
@@ -746,31 +750,27 @@ export class StateHistoryChartLine extends LitElement {
           } else {
             series.push(entityState.state === "on" ? current : null);
           }
-          pushData(new Date(entityState.last_changed), series);
+          pushData(entityState.last_changed, series);
         });
       } else {
         addDataSet(states.entity_id, name, color);
 
         let lastValue: number;
-        let lastDate: Date;
-        let lastNullDate: Date | null = null;
+        let lastDate: number;
+        let lastNullDate: number | null = null;
 
         // Process chart data.
         // When state is `unknown`, calculate the value and break the line.
         const processData = (entityState: LineChartState) => {
           const value = safeParseFloat(entityState.state);
-          const date = new Date(entityState.last_changed);
+          const date = entityState.last_changed;
           if (value !== null && lastNullDate) {
-            const dateTime = date.getTime();
-            const lastNullDateTime = lastNullDate.getTime();
-            const lastDateTime = lastDate?.getTime();
             const tmpValue =
               (value - lastValue) *
-                ((lastNullDateTime - lastDateTime) /
-                  (dateTime - lastDateTime)) +
+                ((lastNullDate - lastDate) / (date - lastDate)) +
               lastValue;
             pushData(lastNullDate, [tmpValue]);
-            pushData(new Date(lastNullDateTime + 1), [null]);
+            pushData(lastNullDate + 1, [null]);
             pushData(date, [value]);
             lastDate = date;
             lastValue = value;
@@ -809,17 +809,17 @@ export class StateHistoryChartLine extends LitElement {
       }
 
       // Add an entry for final values
-      pushData(endTime, prevValues);
+      pushData(endTimeMs, prevValues);
 
       // For sensors, append current state if viewing recent data
-      const now = new Date();
+      const nowMs = Date.now();
       // allow 1s of leeway for "now"
-      const isUpToNow = now.getTime() - endTime.getTime() <= 1000;
+      const isUpToNow = nowMs - endTimeMs <= 1000;
       if (domain === "sensor" && isUpToNow && data.length === 1) {
         const stateObj = this.hass.states[states.entity_id];
         const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
         if (currentValue !== null) {
-          data[0].data!.push([now, currentValue]);
+          data[0].data!.push([nowMs, currentValue]);
           trackY(currentValue);
         }
       }
