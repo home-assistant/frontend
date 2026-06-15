@@ -289,6 +289,7 @@ For browser support, API details, and current specifications, refer to these aut
 - **Test with Vitest**: Use the established test framework
 - **Mock appropriately**: Mock WebSocket connections and API calls
 - **Test accessibility**: Ensure components are accessible
+- **Optimizing chart data processing**: When optimizing chart data transforms (history, statistics, energy, downsampling), follow the playbook in [`test/benchmarks/README.md`](test/benchmarks/README.md) — it has seeded fixtures, characterization (snapshot) tests that pin current output, and `vitest bench` benchmarks (`yarn test:bench`) for before/after comparison. Optimizations must keep output bit-identical.
 
 ## Component Library
 

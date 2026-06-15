@@ -2,6 +2,7 @@ import { assert, describe, it } from "vitest";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 
 import {
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   fillLineGaps,
   getCompareTransform,
@@ -569,5 +570,39 @@ describe("getCompareTransform", () => {
     assert.equal(result.getFullYear(), 2025);
     assert.equal(result.getMonth(), 2); // March
     assert.equal(result.getDate(), 1);
+  });
+});
+
+describe("computeStatMidpoint", () => {
+  const start = Date.UTC(2024, 0, 1, 10, 0, 0);
+  const end = Date.UTC(2024, 0, 1, 11, 0, 0);
+
+  it("returns midpoint for hour period", () => {
+    assert.equal(computeStatMidpoint(start, end, "hour"), (start + end) / 2);
+  });
+
+  it("returns midpoint for 5minute period", () => {
+    assert.equal(computeStatMidpoint(start, end, "5minute"), (start + end) / 2);
+  });
+
+  it("returns start for day and month periods", () => {
+    assert.equal(computeStatMidpoint(start, end, "day"), start);
+    assert.equal(computeStatMidpoint(start, end, "month"), start);
+  });
+
+  it("applies compare transform to start for non-centered periods", () => {
+    const transform = (ts: Date) => new Date(ts.getTime() + 1000);
+    assert.equal(
+      computeStatMidpoint(start, end, "day", transform),
+      start + 1000
+    );
+  });
+
+  it("applies compare transform to both ends for centered periods", () => {
+    const transform = (ts: Date) => new Date(ts.getTime() + 1000);
+    assert.equal(
+      computeStatMidpoint(start, end, "hour", transform),
+      (start + end) / 2 + 1000
+    );
   });
 });
