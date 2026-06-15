@@ -319,7 +319,7 @@ export function generateStatisticsChartData(
       }
     });
 
-    let prevDate: Date | null = null;
+    let prevStart: number | null = null;
     // Process chart data.
     let firstSum: number | null | undefined = null;
 
@@ -344,12 +344,15 @@ export function generateStatisticsChartData(
     const statHidden = hiddenStats.has(statistic_id);
 
     for (const stat of stats) {
-      const startDate = new Date(stat.start);
-      const endDate = new Date(stat.end);
-      if (prevDate === startDate) {
+      // Skip consecutive stats that share the same start time. Compare the raw
+      // numeric start so the dedup actually fires (a `Date` reference compare
+      // never would) and so we skip allocating a `Date` on the dropped path.
+      if (prevStart === stat.start) {
         continue;
       }
-      prevDate = startDate;
+      prevStart = stat.start;
+      const startDate = new Date(stat.start);
+      const endDate = new Date(stat.end);
       const dataValues: (number | null)[][] = [];
       for (let t = 0; t < numTypes; t++) {
         const type = statTypes[t];
