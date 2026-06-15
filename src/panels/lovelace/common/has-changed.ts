@@ -4,6 +4,22 @@ import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_reg
 import type { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "./process-config-entities";
 
+// `hasConfigOrEntitiesChanged` runs in `shouldUpdate` on every state change, but
+// the entities config only changes on (re)configure. Cache the parsed result per
+// config array so it is parsed once and reused instead of re-allocated on every
+// state change. A new config array misses the cache; a non-array still throws via
+// `processConfigEntities`.
+const processedConfigEntitiesCache = new WeakMap<object, any[]>();
+
+const getConfigEntities = (entities: any): any[] => {
+  let processed = processedConfigEntitiesCache.get(entities);
+  if (!processed) {
+    processed = processConfigEntities(entities, false);
+    processedConfigEntitiesCache.set(entities, processed);
+  }
+  return processed;
+};
+
 export function hasConfigChanged(
   element: any,
   changedProps: PropertyValues
@@ -102,7 +118,7 @@ export function hasConfigOrEntitiesChanged(
   const oldHass = changedProps.get("hass") as HomeAssistant;
   const newHass = element.hass as HomeAssistant;
 
-  const entities = processConfigEntities(element._config!.entities, false);
+  const entities = getConfigEntities(element._config!.entities);
 
   return entities.some((entity) => {
     if (!("entity" in entity)) {
