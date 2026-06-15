@@ -381,16 +381,17 @@ const entityDisplayEntriesEqual = (
   a: EntityRegistryDisplayEntry,
   b: EntityRegistryDisplayEntry
 ): boolean =>
-  // `platform`, `translation_key`, `has_entity_name` and `entity_category` are
-  // baked into the integration source and can't change for an existing entity,
-  // so they're intentionally left out of this comparison.
   a.entity_id === b.entity_id &&
   a.name === b.name &&
   a.icon === b.icon &&
   a.device_id === b.device_id &&
   a.area_id === b.area_id &&
   a.hidden === b.hidden &&
+  a.entity_category === b.entity_category &&
+  a.translation_key === b.translation_key &&
+  a.platform === b.platform &&
   a.display_precision === b.display_precision &&
+  a.has_entity_name === b.has_entity_name &&
   stringArraysEqual(a.labels, b.labels);
 
 /**

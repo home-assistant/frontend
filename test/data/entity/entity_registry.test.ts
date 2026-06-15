@@ -66,29 +66,25 @@ describe("preserveUnchangedEntityRegistryDisplay", () => {
     );
   });
 
-  it("ignores immutable source-defined fields", () => {
-    // platform, translation_key, has_entity_name and entity_category can't
-    // change for an existing entity, so a difference there is treated as equal.
-    const previous = record(
-      entry("light.kitchen", {
-        platform: "hue",
-        translation_key: "old",
-        has_entity_name: false,
-        entity_category: "config",
-      })
-    );
-    const next = record(
-      entry("light.kitchen", {
-        platform: "deconz",
-        translation_key: "new",
-        has_entity_name: true,
-        entity_category: "diagnostic",
-      })
-    );
-    expect(preserveUnchangedEntityRegistryDisplay(previous, next)).toBe(
-      previous
-    );
-  });
+  it.each([
+    ["platform", { platform: "hue" }, { platform: "deconz" }],
+    ["translation_key", { translation_key: "old" }, { translation_key: "new" }],
+    ["has_entity_name", { has_entity_name: false }, { has_entity_name: true }],
+    [
+      "entity_category",
+      { entity_category: "config" as const },
+      { entity_category: "diagnostic" as const },
+    ],
+  ])(
+    "detects a change in source-defined field %s (can change on integration reload)",
+    (_field, previousOverride, nextOverride) => {
+      const previous = record(entry("light.kitchen", previousOverride));
+      const next = record(entry("light.kitchen", nextOverride));
+      const result = preserveUnchangedEntityRegistryDisplay(previous, next);
+      expect(result).toBe(next);
+      expect(result["light.kitchen"]).toBe(next["light.kitchen"]);
+    }
+  );
 
   it("returns next when an entity is added", () => {
     const previous = record(entry("light.kitchen"));
