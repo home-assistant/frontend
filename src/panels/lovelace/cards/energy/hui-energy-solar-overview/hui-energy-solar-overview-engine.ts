@@ -7,7 +7,6 @@ import {
 } from "./engine/sun";
 import {
   fetchHomePointData,
-  getWeatherFetchStats,
   RATE_LIMIT_BACKOFF_MS,
   OTHER_ERROR_BACKOFF_MS,
   type SampleHourly,
@@ -52,29 +51,6 @@ import {
 //per-pixel coverage avoids the alpha-compositing saturation many overlapping
 //fill polygons produce in a dense neighbourhood.
 export const SHADOW_LAYER_IDS: readonly string[] = ["sol-building-shadows"];
-
-//Module-level lifecycle counters for debugging engine teardown / re-init churn.
-interface EngineLifecycleStats {
-  enginesCreated: number;
-  enginesCleanedUp: number;
-  updateConfigCalls: number;
-  styleReloads: number;
-  addBuildingsCalls: number;
-  buildingFetchStarts: number;
-  contextLostEvents: number;
-}
-const _lifecycleStats: EngineLifecycleStats = {
-  enginesCreated: 0,
-  enginesCleanedUp: 0,
-  updateConfigCalls: 0,
-  styleReloads: 0,
-  addBuildingsCalls: 0,
-  buildingFetchStarts: 0,
-  contextLostEvents: 0,
-};
-function bumpStat(key: keyof EngineLifecycleStats): void {
-  _lifecycleStats[key] = (_lifecycleStats[key] ?? 0) + 1;
-}
 
 //Cap on live engine instances. The HA editor spawns fresh preview cards on every
 //edit without reliably tearing down the previous one, and each holds a WebGL
@@ -381,7 +357,6 @@ export class SolarOverviewEngine {
   private _readStoredPose(): {
     bearing?: number;
     pitch?: number;
-    locked?: boolean;
   } | null {
     try {
       const raw = window.localStorage.getItem(this._cameraPoseStorageKey());
@@ -390,18 +365,14 @@ export class SolarOverviewEngine {
       }
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object") {
-        return parsed as { bearing?: number; pitch?: number; locked?: boolean };
+        return parsed as { bearing?: number; pitch?: number };
       }
     } catch {
       //Quota / disabled storage / private windows: degrade to defaults.
     }
     return null;
   }
-  private _writeStoredPose(pose: {
-    bearing: number;
-    pitch: number;
-    locked: boolean;
-  }): void {
+  private _writeStoredPose(pose: { bearing: number; pitch: number }): void {
     try {
       window.localStorage.setItem(
         this._cameraPoseStorageKey(),
@@ -411,17 +382,14 @@ export class SolarOverviewEngine {
       //Silent degrade: only persistence across reloads is lost.
     }
   }
-  //Resting pose applied on map init: localStorage, then legacy YAML keys, then
-  //the hemisphere-aware default (south-up in NH, north-up in SH). Wrapped/clamped
-  //so a stale read can't yield an unrenderable pose.
+  //Resting pose applied on map init: localStorage, then the hemisphere-aware
+  //default (faces south, the closest grazing angle our pitch clamp allows:
+  //south-up bearing in NH, north-up in SH). Wrapped/clamped so a stale read can't
+  //yield an unrenderable pose.
   private _initialBearing(): number {
     const stored = this._readStoredPose();
-    const rawStored =
+    const raw =
       stored && typeof stored.bearing === "number" ? stored.bearing : NaN;
-    const rawCfg = Number(
-      (this.cfg as Record<string, unknown>)["camera-bearing-deg"]
-    );
-    const raw = Number.isFinite(rawStored) ? rawStored : rawCfg;
     if (Number.isFinite(raw)) {
       return ((raw % 360) + 360) % 360;
     }
@@ -429,12 +397,7 @@ export class SolarOverviewEngine {
   }
   private _initialPitch(): number {
     const stored = this._readStoredPose();
-    const rawStored =
-      stored && typeof stored.pitch === "number" ? stored.pitch : NaN;
-    const rawCfg = Number(
-      (this.cfg as Record<string, unknown>)["camera-pitch-deg"]
-    );
-    const raw = Number.isFinite(rawStored) ? rawStored : rawCfg;
+    const raw = stored && typeof stored.pitch === "number" ? stored.pitch : NaN;
     if (Number.isFinite(raw)) {
       return Math.max(
         CAMERA_PITCH_MIN_DEG,
@@ -443,71 +406,34 @@ export class SolarOverviewEngine {
     }
     return CAMERA_PITCH_REST_DEG;
   }
-  //True when the user opted into a locked camera pose (manual rotate/pitch
-  //suppressed). Reads localStorage first, then the legacy YAML key.
-  public isCameraLocked(): boolean {
-    const stored = this._readStoredPose();
-    if (stored && typeof stored.locked === "boolean") {
-      return stored.locked;
-    }
-    return (this.cfg as Record<string, unknown>)["camera-locked"] === true;
-  }
-  //Live setter for the editor's bearing slider. Wraps to [0, 360).
-  public setCameraBearing(deg: number): void {
-    if (!this.map || !Number.isFinite(deg)) {
+  //Save the current base-view pose so a reload restores it. Skipped while weather
+  //mode owns the camera (its top-down pose is transient).
+  private _persistPose(): void {
+    if (!this.map || this._preWeatherPose) {
       return;
     }
-    const wrapped = ((deg % 360) + 360) % 360;
-    this.map.setBearing(wrapped);
-  }
-  //Live setter for the editor's pitch slider, clamped to the session bounds.
-  public setCameraPitch(deg: number): void {
-    if (!this.map || !Number.isFinite(deg)) {
-      return;
-    }
-    const clamped = Math.max(
-      CAMERA_PITCH_MIN_DEG,
-      Math.min(CAMERA_PITCH_MAX_DEG, deg)
-    );
-    this.map.setPitch(clamped);
-  }
-  //Toggle the lock at runtime without a respawn: flips the pinch-rotate handler
-  //(the drag-rotate gate re-reads isCameraLocked() per pointerdown), mutates cfg
-  //in place and refreshes localStorage so the next boot restores the same state.
-  public setCameraLocked(locked: boolean): void {
-    if (!this.map) {
-      return;
-    }
-    (this.cfg as Record<string, unknown>)["camera-locked"] = locked;
     this._writeStoredPose({
       bearing: this.map.getBearing(),
       pitch: this.map.getPitch(),
-      locked,
     });
+  }
+  //Runtime rotation lock. Weather mode force-locks rotation while the top-down
+  //cloud overlay is shown and restores the prior state on exit; it is not
+  //user-configurable, so it lives purely in memory.
+  private _cameraLocked = false;
+  public isCameraLocked(): boolean {
+    return this._cameraLocked;
+  }
+  public setCameraLocked(locked: boolean): void {
+    this._cameraLocked = locked;
+    if (!this.map) {
+      return;
+    }
     if (locked) {
       this.map.touchZoomRotate.disable();
     } else {
       this.map.touchZoomRotate.enable({ around: "center" });
     }
-  }
-  //Hemisphere-aware boot pose the editor's reset button restores (never the
-  //user's customised values).
-  public getDefaultBearing(): number {
-    return this.homeLat >= 0 ? 180 : 0;
-  }
-  public getDefaultPitch(): number {
-    return CAMERA_PITCH_REST_DEG;
-  }
-  //Live camera pose readers so the editor pre-fills its sliders with what the
-  //user is currently looking at.
-  public getCameraBearing(): number {
-    return this.map ? this.map.getBearing() : this.getDefaultBearing();
-  }
-  public getCameraPitch(): number {
-    return this.map ? this.map.getPitch() : this.getDefaultPitch();
-  }
-  public getCameraZoom(): number {
-    return this.map ? this.map.getZoom() : 18;
   }
 
   //Snapshot of the pose captured on enterWeatherCamera() so exitWeatherCamera()
@@ -613,7 +539,7 @@ export class SolarOverviewEngine {
       padding: { top: pose.paddingTop, bottom: 0, left: 0, right: 0 },
       duration: 1200,
     });
-    //Restore the pre-enter rotation-lock state (also persisted to localStorage).
+    //Restore the pre-enter runtime rotation-lock state.
     if (this.isCameraLocked() !== pose.locked) {
       this.setCameraLocked(pose.locked);
     }
@@ -1272,8 +1198,6 @@ export class SolarOverviewEngine {
         : undefined;
     this.cfg = { ...config };
 
-    bumpStat("enginesCreated");
-
     //Evict the oldest live engine at the cap. Set iteration is insertion order,
     //so the first value is the longest-lived (usually an orphaned preview).
     while (_liveEngines.size >= MAX_LIVE_ENGINES) {
@@ -1476,6 +1400,7 @@ export class SolarOverviewEngine {
     this._mapMoveEndHandler = () => {
       this._invalidateProjCache();
       this._applyCameraTargetPadding();
+      this._persistPose();
     };
     this.map.on("moveend", this._mapMoveEndHandler);
 
@@ -1572,7 +1497,6 @@ export class SolarOverviewEngine {
     //_mapReady off and emit onContextLost so the card tears down and re-inits.
     this._webglLostHandler = (e: Event) => {
       e.preventDefault();
-      bumpStat("contextLostEvents");
       this._mapReady = false;
       this.onContextLost?.();
     };
@@ -2131,7 +2055,6 @@ export class SolarOverviewEngine {
   //radius, configured opacity) and sol-buildings-home (the home polygon at full
   //opacity). GeoJSON is fetched once per (home, radius) and reused across reloads.
   private _addBuildings(): void {
-    bumpStat("addBuildingsCalls");
     if (!this.map) {
       return;
     }
@@ -2394,7 +2317,6 @@ export class SolarOverviewEngine {
     const ac = new AbortController();
     this._buildingsAbort = ac;
     this._buildingsFetchKey = key;
-    bumpStat("buildingFetchStarts");
 
     try {
       this.onBuildingsFetchStart?.();
@@ -3004,11 +2926,20 @@ export class SolarOverviewEngine {
     if (!Number.isFinite(minDim) || minDim <= 0) {
       return 1.0;
     }
+    //Below FLOOR the arc scales DOWN so its full width keeps fitting a small
+    //(phone) card instead of spilling past the edges, clamped at MIN so it always
+    //stays clear of the central chip cluster. Above FLOOR it scales UP to keep its
+    //canvas share on kiosk layouts. Stays circular either way (uniform scale).
+    const SMALL = 360;
     const FLOOR = 600;
     const TOP = 1200;
+    const MIN = 0.72;
     const MAX = 2.2;
-    if (minDim <= FLOOR) {
-      return 1.0;
+    if (minDim <= SMALL) {
+      return MIN;
+    }
+    if (minDim < FLOOR) {
+      return MIN + ((1.0 - MIN) * (minDim - SMALL)) / (FLOOR - SMALL);
     }
     if (minDim >= TOP) {
       return MAX;
@@ -3436,25 +3367,6 @@ export class SolarOverviewEngine {
     }
   }
 
-  //Hourly air temperature + wind speed aligned with the weather `times` array.
-  //Arrays may hold NaN where the model omitted a value; null before the first
-  //weather fetch.
-  public getAmbientSeries(): {
-    times: Date[];
-    temperature: number[];
-    windSpeed: number[];
-  } | null {
-    const home = this._homeHourlyData;
-    if (!home || !home.times.length) {
-      return null;
-    }
-    return {
-      times: home.times,
-      temperature: home.temperature,
-      windSpeed: home.windSpeed,
-    };
-  }
-
   //Hourly global shortwave irradiance (W/m²) over the loaded window, as {t, v}
   //points for the chart. Drops the -1 entries the model omitted. Null before the
   //first weather fetch or when no usable sample exists.
@@ -3473,67 +3385,7 @@ export class SolarOverviewEngine {
     return out.length ? out : null;
   }
 
-  //JSON-safe snapshot of the engine's live state for in-browser debugging. No
-  //PII: home lat/lon and elevation are stripped (only the hemisphere is kept).
-  public getStatsSnapshot(): Record<string, unknown> {
-    const shadowsOn = this._shadowsEnabled();
-    const buildingsFootprints = this._buildingsData
-      ? {
-          home: this._buildingsData.home.features.length,
-          surroundings: this._buildingsData.surroundings.features.length,
-        }
-      : null;
-    let shadowSource: string;
-    if (!shadowsOn) {
-      shadowSource = "disabled";
-    } else if (this._buildingsData) {
-      shadowSource = "maptiler";
-    } else {
-      shadowSource = "pending";
-    }
-
-    return {
-      mapReady: this._mapReady,
-      //Home position omitted; hemisphere is enough for sun-arc debugging.
-      hemisphere: this.homeLat >= 0 ? "N" : "S",
-      shadows: {
-        enabled: shadowsOn,
-        source: shadowSource,
-        opacity: this._shadowOpacity(),
-        clipRadiusM: this._buildingRadiusMeters(),
-        lastSigCached: this._lastShadowSig !== undefined,
-      },
-      buildings: {
-        radiusM: this._buildingRadiusMeters(),
-        clusterRadiusM: this._buildingClusterRadiusMeters(),
-        opacity: this._buildingOpacity(),
-        color: this._buildingColor(),
-        footprints: buildingsFootprints,
-      },
-      weather: {
-        samples: this._homeHourlyData?.times.length ?? 0,
-        rateLimitStreak: this._rateLimitStreak,
-        //Module-level counters: combined Open-Meteo traffic across every card on
-        //the page this session.
-        openMeteoStats: getWeatherFetchStats(),
-      },
-      timeline: {
-        //ISO strings, not Date, so the snapshot round-trips through JSON.stringify.
-        rangeStart: this._getTimeRange()?.start?.toISOString() ?? null,
-        rangeEnd: this._getTimeRange()?.end?.toISOString() ?? null,
-        selectedTime: this._selectedTime?.toISOString() ?? null,
-      },
-      caches: {
-        arcCacheDay: this._arcInputsCache
-          ? new Date(this._arcInputsCache.dayStartMs).toISOString().slice(0, 10)
-          : null,
-        arcCacheCloudPct: this._arcInputsCache?.cloudPctInt ?? null,
-      },
-    };
-  }
-
   public updateConfig(cfg: SolarOverviewCardConfig): void {
-    bumpStat("updateConfigCalls");
     const prevStyleUrl = this._resolveMapStyle().url;
     const prevPixelR = this._pixelRatio();
     const prevRadius = this._buildingRadiusMeters();
@@ -3553,7 +3405,6 @@ export class SolarOverviewEngine {
     const nextStyleInfo = this._resolveMapStyle();
     const styleNeedsReload = nextStyleInfo.url !== prevStyleUrl;
     if (styleNeedsReload) {
-      bumpStat("styleReloads");
       this._mapReady = false;
       this.map.setStyle(nextStyleInfo.url);
       return;
@@ -3638,7 +3489,6 @@ export class SolarOverviewEngine {
   }
 
   public cleanup(): void {
-    bumpStat("enginesCleanedUp");
     _liveEngines.delete(this);
     this._clearWeatherTimer();
     if (this._selectedTimeShadowTimer !== null) {

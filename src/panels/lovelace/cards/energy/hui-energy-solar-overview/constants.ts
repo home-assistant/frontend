@@ -10,12 +10,6 @@ export interface SolarOverviewCardConfig {
   //OpenFreeMap base style: 'streets' (Liberty) or 'minimal' (Positron). Dark HA theme auto-selects
   //the Fiord dark style.
   "map-style"?: unknown;
-  //Camera pose pinned at engine init, degrees. pitch 15..85, bearing 0..359. Drag-rotate / pitch
-  //still allowed at runtime unless camera-locked.
-  "camera-pitch-deg"?: unknown;
-  "camera-bearing-deg"?: unknown;
-  //When true, drag-rotate, drag-pitch and idle auto-orbit are all disabled. Default false.
-  "camera-locked"?: unknown;
   //Display radius (m) for buildings + raster shadows. Clamped [50, 500], default 200. Primary perf
   //lever on older phones.
   "display-radius"?: unknown;
@@ -45,7 +39,9 @@ export const MAX_DISPLAY_RADIUS_M = 500;
 export const DISPLAY_FADE_DELTA_M = 50;
 export const DEFAULT_BUILDING_OPACITY = 0.25;
 export const DEFAULT_BUILDING_CLUSTER_RADIUS_M = 0;
-export const DEFAULT_BUILDING_COLOR_HEX = "#d2d2d7";
+//HA neutral-80 from the frontend palette (src/resources/theme/color): a clean,
+//theme-neutral building grey that reads on the slate basemap in light and dark.
+export const DEFAULT_BUILDING_COLOR_HEX = "#cccccc";
 
 //Resolve the display radius (m) from `display-radius`, clamped to [MIN, MAX], default DEFAULT.
 export function displayRadiusM(

@@ -131,24 +131,6 @@ const CACHE_TTL_MS = 45 * 60_000;
 //precision so the edge CDN also sees one canonical request.
 const CACHE_KEY_DECIMALS = 3;
 
-//Diagnostics counters surfaced in the engine stats snapshot. No behavioural effect.
-const _weatherStats = {
-  cacheHits: 0,
-  networkFetches: 0,
-  inflightDedups: 0,
-  rateLimit429: 0,
-  otherErrors: 0,
-};
-export function getWeatherFetchStats(): {
-  cacheHits: number;
-  networkFetches: number;
-  inflightDedups: number;
-  rateLimit429: number;
-  otherErrors: number;
-} {
-  return { ..._weatherStats };
-}
-
 //Inflight Promise map keyed on cache key: concurrent callers for the same tuple await
 //one Promise instead of each firing a network round-trip. Cleared in a finally block.
 const _inflightFetches = new Map<string, Promise<SampleHourly | null>>();
@@ -351,7 +333,6 @@ export async function fetchHomePointData(
 
   const cached = readCache(fLat, fLon, precision);
   if (cached) {
-    _weatherStats.cacheHits++;
     return cached;
   }
 
@@ -360,7 +341,6 @@ export async function fetchHomePointData(
   const inflightKey = cacheKey(fLat, fLon, precision);
   const pending = _inflightFetches.get(inflightKey);
   if (pending) {
-    _weatherStats.inflightDedups++;
     return pending;
   }
 
@@ -381,21 +361,18 @@ export async function fetchHomePointData(
     }
 
     try {
-      _weatherStats.networkFetches++;
       const res = await fetch(url, { signal });
       if (!res.ok) {
         //Re-throw 429 with the status attached so the engine catch arms the back-off
         //table; returning null would skip it and keep hammering the API. Other non-OK
         //statuses fall through to the silent null path.
         if (res.status === 429) {
-          _weatherStats.rateLimit429++;
           const err: Error & { status?: number } = new Error(
             "Open-Meteo rate limit (HTTP 429)"
           );
           err.status = 429;
           throw err;
         }
-        _weatherStats.otherErrors++;
         return null;
       }
       const json = await res.json();
@@ -451,13 +428,6 @@ export async function fetchHomePointData(
         (e as { status?: number }).status === 429
       ) {
         throw e;
-      }
-      if (
-        e &&
-        typeof e === "object" &&
-        (e as { name?: string }).name !== "AbortError"
-      ) {
-        _weatherStats.otherErrors++;
       }
       return null;
     }

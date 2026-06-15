@@ -142,6 +142,9 @@ export interface InitHost extends OverlaysHost {
   _timeRange: { start: Date; end: Date } | null;
   _isLiveMode: boolean;
   _cloudCover: number;
+  _cloudLow: number;
+  _cloudMid: number;
+  _cloudHigh: number;
   _irradianceSeries: { t: number; v: number }[];
 
   _lastHomeKey: string;
@@ -349,6 +352,9 @@ function wireEngineCallbacks(host: InitHost): void {
     host._timeRange = data.timeRange;
     host._isLiveMode = data.isLiveTime;
     host._cloudCover = data.cloudCover;
+    host._cloudLow = data.cloudLow;
+    host._cloudMid = data.cloudMid;
+    host._cloudHigh = data.cloudHigh;
     host._irradianceSeries = host._engine?.getIrradianceSeries() ?? [];
     //First weather update is the cue for the initial label layout: the map style has loaded and the
     //projection matrix is available. Later transforms refresh via onMapTransform.

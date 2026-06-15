@@ -46,7 +46,7 @@ import {
   DAY_MS,
 } from "./constants";
 import { solarOverviewCardStyles } from "./css/card-styles";
-import { darkenHex } from "./card/format";
+import { darkenHex, formatLocalisedNumber } from "./card/format";
 import {
   refreshPv,
   currentPvRate,
@@ -112,6 +112,14 @@ declare global {
 // dashboard (no aggregation/capping); only tick granularity adapts so the axis
 // stays readable: <=2d -> 6h, <=14d -> day, <=120d -> ISO week, else month.
 type TimelineKind = "intraday" | "days" | "weeks" | "months";
+
+// What the bottom chart draws for the active chip target.
+interface ChartSeriesResult {
+  series: { pts: { t: number; v: number }[]; color: string; icon: string }[];
+  accentColor: string;
+  showForecast: boolean;
+  valueUnit: string;
+}
 
 interface TimelineSeparator {
   // Position across the window, as a fraction in [0, 1].
@@ -304,6 +312,10 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   // Current total cloud cover (0-100 %) at the home, fed by the engine weather
   // feed. Drives the cloud chip's dynamic weather icon.
   @state() _cloudCover = 0;
+  // Per-altitude cloud cover (0-100 %) for the weather-mode band chips.
+  @state() _cloudLow = 0;
+  @state() _cloudMid = 0;
+  @state() _cloudHigh = 0;
   // Per-polygon home silhouettes (projected base + top ring of each polygon),
   // painted into the cloud-disc SVG mask. Reprojected on every map transform.
   @state() _homeSilhouettes: HomeSilhouette[] = [];
@@ -1295,38 +1307,33 @@ export class HuiEnergySolarOverviewCard extends LitElement {
             </button>`
           : nothing}
 
-        <!-- Weather mode: segmented control toggling the low / mid / high cloud layers. -->
+        <!-- Weather mode: three altitude band chips stacked above the home (low
+             nearest, then mid, then high). Each toggles its cloud layer; active =
+             value + glow, inactive = dimmed icon only. -->
         ${this._cardMode === "weather"
-          ? html`<div
-              class="cloud-bands"
-              role="group"
-              aria-label="Cloud layers"
-            >
-              <button
-                class="cloud-band ${this._weatherShowLow ? "is-on" : ""}"
-                aria-pressed=${this._weatherShowLow}
-                data-band="low"
-                @click=${this._onCloudBandClick}
-              >
-                ${this._cloudBandLabel("low")}
-              </button>
-              <button
-                class="cloud-band ${this._weatherShowMid ? "is-on" : ""}"
-                aria-pressed=${this._weatherShowMid}
-                data-band="mid"
-                @click=${this._onCloudBandClick}
-              >
-                ${this._cloudBandLabel("mid")}
-              </button>
-              <button
-                class="cloud-band ${this._weatherShowHigh ? "is-on" : ""}"
-                aria-pressed=${this._weatherShowHigh}
-                data-band="high"
-                @click=${this._onCloudBandClick}
-              >
-                ${this._cloudBandLabel("high")}
-              </button>
-            </div>`
+          ? html`
+              ${this._renderCloudBandChip(
+                "low",
+                "mdi:format-vertical-align-bottom",
+                this._cloudLow,
+                this._weatherShowLow,
+                55
+              )}
+              ${this._renderCloudBandChip(
+                "mid",
+                "mdi:format-vertical-align-center",
+                this._cloudMid,
+                this._weatherShowMid,
+                92
+              )}
+              ${this._renderCloudBandChip(
+                "high",
+                "mdi:format-vertical-align-top",
+                this._cloudHigh,
+                this._weatherShowHigh,
+                129
+              )}
+            `
           : nothing}
 
         <!-- Solar arc, BACK pass: dotted below-horizon segments, behind the chips. -->
@@ -1730,8 +1737,12 @@ export class HuiEnergySolarOverviewCard extends LitElement {
              entry point to weather mode. -->
         ${showRay
           ? (() => {
-              const cloudChipX = (sunScene!.sun.x + sunRayTargetX) / 2;
-              const cloudChipY = (sunScene!.sun.y + sunRayTargetY) / 2;
+              // 1/3 of the way from the sun toward the PV/home target (closer to
+              // the sun) rather than the midpoint.
+              const cloudChipX =
+                sunScene!.sun.x + (sunRayTargetX - sunScene!.sun.x) / 3;
+              const cloudChipY =
+                sunScene!.sun.y + (sunRayTargetY - sunScene!.sun.y) / 3;
               return html`
                 <div
                   class="cloud-chip is-clickable"
@@ -1932,11 +1943,32 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   // in its own colour. `accentColor` (timeline border + fill) is the chip colour,
   // and for the two-state chips the dominant flow over the window. Production keeps
   // the dashed solar forecast; the re-targeted series do not.
-  private _activeChartSeries(): {
-    series: { pts: { t: number; v: number }[]; color: string }[];
-    accentColor: string;
-    showForecast: boolean;
-  } {
+  // Memoised across renders: rebuilds the series arrays only when the target or
+  // any source series reference changes (they are reassigned on every data
+  // update), so frequent re-renders (scrub, drag-rotate, clock tick) reuse them.
+  private _chartSeriesCache: {
+    sig: readonly unknown[];
+    result: ChartSeriesResult;
+  } | null = null;
+  private _activeChartSeries(): ChartSeriesResult {
+    const sig: readonly unknown[] = [
+      this._chartTarget,
+      this._productionSeries,
+      this._gridImportChangeSeries,
+      this._gridExportChangeSeries,
+      this._batteryChargeChangeSeries,
+      this._batteryDischargeChangeSeries,
+      this._irradianceSeries,
+    ];
+    const cached = this._chartSeriesCache;
+    if (cached && sig.every((v, i) => v === cached.sig[i])) {
+      return cached.result;
+    }
+    const result = this._computeChartSeries();
+    this._chartSeriesCache = { sig, result };
+    return result;
+  }
+  private _computeChartSeries(): ChartSeriesResult {
     const bucketsToPts = (
       bk: ChangeBucket[] | null
     ): { t: number; v: number }[] =>
@@ -1963,14 +1995,17 @@ export class HuiEnergySolarOverviewCard extends LitElement {
             {
               pts: bucketsToPts(this._gridImportChangeSeries),
               color: gridImportColor,
+              icon: "mdi:transmission-tower-export",
             },
             {
               pts: bucketsToPts(this._gridExportChangeSeries),
               color: gridExportColor,
+              icon: "mdi:transmission-tower-import",
             },
           ],
           accentColor: exportDominant ? gridExportColor : gridImportColor,
           showForecast: false,
+          valueUnit: "kW",
         };
       }
       // Both battery chips (SoC + power) chart the discharge + charge flows.
@@ -1984,29 +2019,66 @@ export class HuiEnergySolarOverviewCard extends LitElement {
             {
               pts: bucketsToPts(this._batteryDischargeChangeSeries),
               color: batteryOutColor,
+              icon: "mdi:battery-arrow-down",
             },
             {
               pts: bucketsToPts(this._batteryChargeChangeSeries),
               color: batteryInColor,
+              icon: "mdi:battery-arrow-up",
             },
           ],
           accentColor: chargeDominant ? batteryInColor : batteryOutColor,
           showForecast: false,
+          valueUnit: "kW",
         };
       }
       case "irradiance":
         return {
-          series: [{ pts: this._irradianceSeries, color: irradianceColor }],
+          series: [
+            {
+              pts: this._irradianceSeries,
+              color: irradianceColor,
+              icon: "mdi:white-balance-sunny",
+            },
+          ],
           accentColor: irradianceColor,
           showForecast: false,
+          valueUnit: "W/m²",
         };
       default:
         return {
-          series: [{ pts: this._productionSeries, color: solarColor }],
+          series: [
+            {
+              pts: this._productionSeries,
+              color: solarColor,
+              icon: "mdi:solar-power",
+            },
+          ],
           accentColor: solarColor,
           showForecast: true,
+          valueUnit: "kW",
         };
     }
+  }
+
+  // Linear interpolation of a sorted {t, v} series at tMs; null outside its range.
+  private _interpolateAt(
+    pts: { t: number; v: number }[],
+    tMs: number
+  ): number | null {
+    const n = pts.length;
+    if (n === 0 || tMs < pts[0].t || tMs > pts[n - 1].t) {
+      return null;
+    }
+    for (let i = 1; i < n; i++) {
+      if (tMs <= pts[i].t) {
+        const a = pts[i - 1];
+        const b = pts[i];
+        const dt = b.t - a.t || 1;
+        return a.v + ((b.v - a.v) * (tMs - a.t)) / dt;
+      }
+    }
+    return pts[n - 1].v;
   }
 
   // Icon of what the chart currently shows, for the timeline indicator chip
@@ -2026,7 +2098,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   }
 
   private _renderTimeline(
-    chart: ReturnType<HuiEnergySolarOverviewCard["_activeChartSeries"]>
+    chart: ChartSeriesResult
   ): TemplateResult | typeof nothing {
     const model = this._timelineModel();
     if (!model) {
@@ -2104,12 +2176,66 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     // centred on its own separator.
     const seps = model.labels.filter((s) => s.frac > 0.02 && s.frac < 0.98);
 
+    // Hover tooltip: interpolate every active series (+ forecast) at the hovered
+    // instant. Only shown where at least one curve has data there. y is in viewBox
+    // units (0..H), i.e. a percentage of the bar height for the bead overlay.
+    const hoverFrac = this._chartHoverPct;
+    interface HoverRow {
+      icon: string;
+      color: string;
+      text: string;
+      y: number;
+    }
+    let hover: { frac: number; title: string; rows: HoverRow[] } | null = null;
+    if (hoverFrac !== null && (drawnSeries.length > 0 || fpts.length > 1)) {
+      const tHover = t0 + hoverFrac * span;
+      const fmt = (v: number): string =>
+        `${formatLocalisedNumber(
+          this.hass,
+          v,
+          chart.valueUnit === "kW" ? 1 : 0
+        )} ${chart.valueUnit}`;
+      const rows: HoverRow[] = [];
+      winSeries.forEach((s, i) => {
+        const v = this._interpolateAt(s.pts, tHover);
+        if (v !== null) {
+          rows.push({
+            icon: chart.series[i].icon,
+            color: s.color,
+            text: fmt(v),
+            y: H - (v / maxV) * (H - TOP_PAD),
+          });
+        }
+      });
+      if (chart.showForecast && fpts.length > 1) {
+        const v = this._interpolateAt(fpts, tHover);
+        if (v !== null) {
+          rows.push({
+            icon: "mdi:weather-sunny",
+            color: "var(--energy-solar-color, #ff9800)",
+            text: fmt(v),
+            y: H - (v / maxV) * (H - TOP_PAD),
+          });
+        }
+      }
+      if (rows.length > 0) {
+        hover = {
+          frac: hoverFrac,
+          title: this._formatRepresentedTime(model.kind, new Date(tHover)),
+          rows,
+        };
+      }
+    }
+    // Keep the tooltip box from spilling past the card edges (the line stays exact).
+    const hoverBoxFrac = hover ? Math.min(0.85, Math.max(0.15, hover.frac)) : 0;
+
     return html`
       <div
         class="timeline"
         style="--timeline-accent:${chart.accentColor}"
         @pointerdown=${this._onTimelinePointerDown}
         @pointermove=${this._onTimelinePointerMove}
+        @pointerleave=${this._onTimelinePointerLeave}
         @pointerup=${this._onTimelinePointerUp}
         @pointercancel=${this._onTimelinePointerUp}
       >
@@ -2168,12 +2294,47 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   style="left:${(liveFrac * 100).toFixed(3)}%"
                 ></div>`
               : nothing}
+            <!-- Hover marker + beads inside the bar so they clip to the rounded
+                 overflow like the now-marker. -->
+            ${hover
+              ? html`<div
+                    class="timeline-hover-line"
+                    style="left:${(hover.frac * 100).toFixed(3)}%"
+                  ></div>
+                  ${hover.rows.map(
+                    (r) =>
+                      html`<div
+                        class="timeline-hover-bead"
+                        style="left:${(hover!.frac * 100).toFixed(
+                          3
+                        )}%; top:${r.y.toFixed(2)}%; background:${r.color}"
+                      ></div>`
+                  )}`
+              : nothing}
           </div>
           ${cursorFrac !== null
             ? html`<div
                 class="timeline-cursor"
                 style="left:${(cursorFrac * 100).toFixed(3)}%"
               ></div>`
+            : nothing}
+          ${hover
+            ? html`<div
+                class="timeline-tooltip"
+                style="left:${(hoverBoxFrac * 100).toFixed(3)}%"
+              >
+                <div class="timeline-tooltip-title">${hover.title}</div>
+                ${hover.rows.map(
+                  (r) =>
+                    html`<div class="timeline-tooltip-row">
+                      <ha-icon
+                        icon=${r.icon}
+                        style="color:${r.color}"
+                      ></ha-icon>
+                      <span>${r.text}</span>
+                    </div>`
+                )}
+              </div>`
             : nothing}
         </div>
       </div>
@@ -2356,29 +2517,63 @@ export class HuiEnergySolarOverviewCard extends LitElement {
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     this._applyTimelineScrub(e);
   };
+  // rAF-coalesced hover: pointermove fires at 60-120 Hz and each _chartHoverPct
+  // write forces a full render, so we collapse them to one update per frame.
+  private _chartHoverRaf = 0;
+  private _chartHoverNext: number | null = null;
   private _onTimelinePointerMove = (e: PointerEvent): void => {
+    // Hover tooltip follows the pointer whether scrubbing or just moving over the
+    // bar; scrubbing additionally drives the selected time (kept immediate).
+    this._chartHoverNext = this._fracFromEvent(e);
+    if (this._chartHoverRaf === 0) {
+      this._chartHoverRaf = requestAnimationFrame(() => {
+        this._chartHoverRaf = 0;
+        if (this._chartHoverPct !== this._chartHoverNext) {
+          this._chartHoverPct = this._chartHoverNext;
+        }
+      });
+    }
     if (this._timelineScrubbing) {
       this._applyTimelineScrub(e);
     }
   };
+  private _onTimelinePointerLeave = (): void => {
+    if (this._chartHoverRaf !== 0) {
+      cancelAnimationFrame(this._chartHoverRaf);
+      this._chartHoverRaf = 0;
+    }
+    this._chartHoverNext = null;
+    this._chartHoverPct = null;
+  };
   private _onTimelinePointerUp = (e: PointerEvent): void => {
+    // Touch has no lingering hover, so drop the tooltip on release; a mouse keeps
+    // it (the next move re-sets it, and pointerleave clears it on exit).
+    if (e.pointerType === "touch") {
+      this._chartHoverPct = null;
+    }
     if (!this._timelineScrubbing) {
       return;
     }
     this._timelineScrubbing = false;
     (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
   };
-  private _applyTimelineScrub(e: PointerEvent): void {
-    const model = this._timelineModel();
+  private _fracFromEvent(e: PointerEvent): number | null {
     const track = e.currentTarget as HTMLElement | null;
-    if (!model || !track) {
-      return;
+    if (!track) {
+      return null;
     }
     const rect = track.getBoundingClientRect();
-    const frac = Math.min(
-      1,
-      Math.max(0, (e.clientX - rect.left) / (rect.width || 1))
-    );
+    if (!rect.width) {
+      return null;
+    }
+    return Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+  }
+  private _applyTimelineScrub(e: PointerEvent): void {
+    const model = this._timelineModel();
+    const frac = this._fracFromEvent(e);
+    if (!model || frac === null) {
+      return;
+    }
     const t = new Date(
       model.start.getTime() +
         frac * (model.end.getTime() - model.start.getTime())
@@ -2427,6 +2622,32 @@ export class HuiEnergySolarOverviewCard extends LitElement {
   private _onCloudChipClick = (): void => this._enterWeatherMode();
 
   // Toggle one of the three weather cloud layers (shader bands sync in updated()).
+  // One altitude band chip (weather mode): same pill recipe as the UI chips.
+  // Active shows the coverage value + a glow; inactive dims to the PV-prediction
+  // look (icon only, reduced opacity). offsetPx = distance above the card centre.
+  private _renderCloudBandChip(
+    band: "low" | "mid" | "high",
+    icon: string,
+    value: number,
+    active: boolean,
+    offsetPx: number
+  ): TemplateResult {
+    return html`
+      <div
+        class="cloud-band-chip ${active ? "is-active" : "is-inactive"}"
+        style="top:calc(50% - ${offsetPx}px); --cloud-chip-color:${DEFAULT_CLOUD_COLOR_HEX}"
+        role="button"
+        tabindex="0"
+        aria-pressed=${active}
+        data-band=${band}
+        @click=${this._onCloudBandClick}
+      >
+        <ha-icon icon=${icon}></ha-icon>
+        ${active ? html`<span>${Math.round(value)} %</span>` : nothing}
+      </div>
+    `;
+  }
+
   private _onCloudBandClick(ev: Event): void {
     const band = (ev.currentTarget as HTMLElement | null)?.dataset.band as
       | "low"
@@ -2462,26 +2683,6 @@ export class HuiEnergySolarOverviewCard extends LitElement {
       return "mdi:weather-cloudy";
     }
     return "mdi:weather-fog";
-  }
-
-  private _cloudBandLabel(band: "low" | "mid" | "high"): string {
-    const l = this.hass?.localize;
-    if (band === "low") {
-      return (
-        l?.("ui.panel.energy.cards.energy_solar_overview.cloud_band_low") ??
-        "Low"
-      );
-    }
-    if (band === "mid") {
-      return (
-        l?.("ui.panel.energy.cards.energy_solar_overview.cloud_band_mid") ??
-        "Mid"
-      );
-    }
-    return (
-      l?.("ui.panel.energy.cards.energy_solar_overview.cloud_band_high") ??
-      "High"
-    );
   }
 
   // Mode-transition state machine called from updated(): drives _overlayMaskActive
@@ -2604,43 +2805,56 @@ export class HuiEnergySolarOverviewCard extends LitElement {
           animation: none;
         }
       }
-      /* Cloud-layer segmented control: one rounded container, three toggle
-         segments in the HA segmented-control vocabulary, active segment filled
-         with the primary colour. Centred at the top of the card. */
-      .cloud-bands {
+      /* Weather-mode altitude band chips: same pill recipe as the UI value chips,
+         stacked above the home button (positioned inline). Active carries a cloud
+         glow; inactive dims to the PV-prediction look. */
+      .cloud-band-chip {
         position: absolute;
-        top: var(--ha-space-3, 12px);
         left: 50%;
-        transform: translateX(-50%);
-        z-index: 22;
+        transform: translate(-50%, -50%);
+        z-index: 26;
         display: inline-flex;
-        gap: 2px;
-        padding: 3px;
+        align-items: center;
+        justify-content: center;
+        gap: var(--ha-space-1, 4px);
+        /* Fixed width so the three bands line up regardless of active/inactive
+           content (icon only vs icon + value). */
+        width: 84px;
+        box-sizing: border-box;
+        background: var(--card-background-color, #ffffff);
+        color: var(--primary-text-color, #212121);
+        border: 2px solid var(--cloud-chip-color, #727272);
         border-radius: 999px;
-        background: var(--card-background-color, #1c1c1c);
-        border: 1px solid var(--divider-color);
-        box-shadow: var(--ha-card-box-shadow, 0 2px 6px rgba(0, 0, 0, 0.2));
-      }
-      .cloud-band {
-        appearance: none;
-        -webkit-appearance: none;
-        border: none;
-        background: transparent;
-        color: var(--secondary-text-color);
-        font-family: inherit;
+        padding: 3px 10px;
         font-size: var(--ha-font-size-s, 12px);
-        font-weight: var(--ha-font-weight-medium, 500);
-        line-height: 1;
-        padding: var(--ha-space-1, 4px) var(--ha-space-3, 12px);
-        border-radius: 999px;
+        font-weight: 600;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        box-shadow: 0 1px 3px var(--shadow-color);
         cursor: pointer;
         transition:
-          background 0.15s ease,
-          color 0.15s ease;
+          opacity 0.2s ease,
+          box-shadow 0.2s ease;
       }
-      .cloud-band.is-on {
-        background: var(--primary-color, #03a9f4);
-        color: var(--text-primary-color, #fff);
+      .cloud-band-chip ha-icon {
+        --mdc-icon-size: 16px;
+        color: inherit;
+        display: inline-flex;
+        align-items: center;
+      }
+      .cloud-band-chip.is-active {
+        box-shadow:
+          0 1px 3px var(--shadow-color),
+          0 0 12px
+            color-mix(
+              in srgb,
+              var(--cloud-chip-color, #727272) 70%,
+              transparent
+            );
+      }
+      .cloud-band-chip.is-inactive {
+        opacity: 0.55;
       }
       .live-chip {
         appearance: none;
@@ -2866,6 +3080,58 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         background: var(--primary-text-color);
         z-index: 1;
         pointer-events: none;
+      }
+      /* Hover indicator: thin vertical line inside the bar (clipped to the
+         rounded overflow), beads riding each curve, and a tooltip above the bar
+         in the same frame as HA's energy graph tooltips. */
+      .timeline-hover-line {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 1px;
+        transform: translateX(-50%);
+        background: var(--primary-text-color);
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .timeline-hover-bead {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 1.5px solid var(--card-background-color, #fff);
+        box-shadow: 0 0 0 0.5px var(--shadow-color);
+        pointer-events: none;
+      }
+      .timeline-tooltip {
+        position: absolute;
+        bottom: calc(100% + 6px);
+        transform: translateX(-50%);
+        z-index: 5;
+        pointer-events: none;
+        background: var(--card-background-color, #fff);
+        border: 1px solid var(--divider-color);
+        border-radius: var(--ha-border-radius-md, 8px);
+        box-shadow: 0 2px 8px var(--shadow-color);
+        padding: var(--ha-space-2, 8px);
+        font-size: var(--ha-font-size-s, 12px);
+        white-space: nowrap;
+      }
+      .timeline-tooltip-title {
+        font-weight: var(--ha-font-weight-medium, 500);
+        margin-bottom: var(--ha-space-1, 4px);
+        color: var(--primary-text-color);
+      }
+      .timeline-tooltip-row {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-1, 4px);
+        color: var(--primary-text-color);
+        font-variant-numeric: tabular-nums;
+      }
+      .timeline-tooltip-row ha-icon {
+        --mdc-icon-size: 16px;
       }
       .timeline-label {
         position: absolute;
