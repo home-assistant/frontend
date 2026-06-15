@@ -11,7 +11,6 @@ import { getStatisticLabel } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
 import {
-  computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCompareTransform,
@@ -62,6 +61,13 @@ export function generateEnergySolarGraphData(
       (source) => source.type === "solar"
     ) as SolarSourceTypeEnergyPreference[];
 
+  // Both processDataSet calls below receive identical start/end/compareStart,
+  // so the compare transform and the suggested period are loop-invariant across
+  // them; compute each once instead of rebuilding the date-fns-heavy values per
+  // call.
+  const compareTransform = getCompareTransform(start, compareStart!);
+  const period = getSuggestedPeriod(start, end);
+
   const datasets: (BarSeriesOption | LineSeriesOption)[] = [];
 
   let yMin = Infinity;
@@ -75,9 +81,8 @@ export function generateEnergySolarGraphData(
     datasets.push(
       ...processDataSet(
         hass,
-        start,
-        end,
-        compareStart,
+        compareTransform,
+        period,
         energyData.statsCompare,
         energyData.statsMetadata,
         solarSources,
@@ -101,9 +106,8 @@ export function generateEnergySolarGraphData(
   datasets.push(
     ...processDataSet(
       hass,
-      start,
-      end,
-      compareStart,
+      compareTransform,
+      period,
       energyData.stats,
       energyData.statsMetadata,
       solarSources,
@@ -159,9 +163,8 @@ function processTotal(
 
 function processDataSet(
   hass: HomeAssistant,
-  start: Date,
-  end: Date,
-  compareStart: Date | undefined,
+  compareTransform: (ts: Date) => Date,
+  period: "5minute" | "hour" | "day" | "month",
   statistics: Statistics,
   statisticsMetaData: Record<string, StatisticsMetaData>,
   solarSources: SolarSourceTypeEnergyPreference[],
@@ -170,8 +173,14 @@ function processDataSet(
   compare = false
 ) {
   const data: BarSeriesOption[] = [];
-  const compareTransform = getCompareTransform(start, compareStart!);
-  const period = getSuggestedPeriod(start, end);
+  // The compare transform only applies to the compare dataset; for the main
+  // dataset computeStatMidpoint receives `undefined` (loop-invariant).
+  const midpointTransform = compare ? compareTransform : undefined;
+  // `period` is fixed for the whole call, so resolve the midpoint mode once
+  // instead of re-deriving it (and re-comparing the period string) per point.
+  const center = period === "hour" || period === "5minute";
+  // hass.themes.darkMode is read twice per source below; cache it once.
+  const darkMode = hass.themes.darkMode;
 
   solarSources.forEach((source, idx) => {
     let prevStart: number | null = null;
@@ -183,29 +192,35 @@ function processDataSet(
       const stats = statistics[source.stat_energy_from];
 
       for (const point of stats) {
-        if (
-          point.change === null ||
-          point.change === undefined ||
-          point.change === 0
-        ) {
+        const change = point.change;
+        // change is `number | null | undefined`; `== null` matches both null
+        // and undefined in one comparison.
+        if (change == null || change === 0) {
           continue;
         }
-        if (prevStart === point.start) {
+        const pointStart = point.start;
+        if (prevStart === pointStart) {
           continue;
         }
-        const dataPoint: EnergyDataPoint = [
-          computeStatMidpoint(
-            point.start,
-            point.end,
-            period,
-            compare ? compareTransform : undefined
-          ),
-          point.change,
-          point.start,
-        ];
+        // Inlined computeStatMidpoint with the period branch hoisted out of the
+        // loop. Arithmetic and operand order are preserved exactly.
+        let midpoint: number;
+        if (!center) {
+          midpoint = midpointTransform
+            ? midpointTransform(new Date(pointStart)).getTime()
+            : pointStart;
+        } else if (midpointTransform) {
+          midpoint =
+            (midpointTransform(new Date(pointStart)).getTime() +
+              midpointTransform(new Date(point.end)).getTime()) /
+            2;
+        } else {
+          midpoint = (pointStart + point.end) / 2;
+        }
+        const dataPoint: EnergyDataPoint = [midpoint, change, pointStart];
         solarProductionData.push(dataPoint);
-        trackY(point.change);
-        prevStart = point.start;
+        trackY(change);
+        prevStart = pointStart;
       }
     }
 
@@ -231,7 +246,7 @@ function processDataSet(
       itemStyle: {
         borderColor: getEnergyColor(
           computedStyles,
-          hass.themes.darkMode,
+          darkMode,
           false,
           compare,
           "--energy-solar-color",
@@ -240,7 +255,7 @@ function processDataSet(
       },
       color: getEnergyColor(
         computedStyles,
-        hass.themes.darkMode,
+        darkMode,
         true,
         compare,
         "--energy-solar-color",
@@ -266,6 +281,11 @@ function processForecast(
 ) {
   const data: LineSeriesOption[] = [];
 
+  // Recompute the period here intentionally — do NOT reuse the hoisted period
+  // from the entry function. processForecast receives the raw `energyData.end`
+  // (which may be undefined) whereas the entry function uses `energyData.end ||
+  // now`, so the two periods can legitimately differ; collapsing them would
+  // change the forecast hour-flooring near an undefined end.
   const period = getSuggestedPeriod(start, end);
 
   // Process solar forecast data.
@@ -273,31 +293,30 @@ function processForecast(
     if (source.config_entry_solar_forecast) {
       const forecastsData: Record<string, number> | undefined = {};
       source.config_entry_solar_forecast.forEach((configEntryId) => {
-        if (!forecasts![configEntryId]) {
+        const forecast = forecasts![configEntryId];
+        if (!forecast) {
           return;
         }
-        Object.entries(forecasts![configEntryId].wh_hours).forEach(
-          ([date, value]) => {
-            const dateObj = new Date(date);
-            if (dateObj < start || (end && dateObj > end)) {
-              return;
-            }
-            if (period === "month") {
-              dateObj.setDate(1);
-            }
-            if (period === "month" || period === "day") {
-              dateObj.setHours(0, 0, 0, 0);
-            } else {
-              dateObj.setMinutes(0, 0, 0);
-            }
-            const time = dateObj.getTime();
-            if (time in forecastsData) {
-              forecastsData[time] += value;
-            } else {
-              forecastsData[time] = value;
-            }
+        Object.entries(forecast.wh_hours).forEach(([date, value]) => {
+          const dateObj = new Date(date);
+          if (dateObj < start || (end && dateObj > end)) {
+            return;
           }
-        );
+          if (period === "month") {
+            dateObj.setDate(1);
+          }
+          if (period === "month" || period === "day") {
+            dateObj.setHours(0, 0, 0, 0);
+          } else {
+            dateObj.setMinutes(0, 0, 0);
+          }
+          const time = dateObj.getTime();
+          if (time in forecastsData) {
+            forecastsData[time] += value;
+          } else {
+            forecastsData[time] = value;
+          }
+        });
       });
 
       if (forecastsData) {
