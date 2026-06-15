@@ -2,23 +2,16 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../../types";
+import { weakMemoize } from "../../../common/util/weak-memoize";
 import { processConfigEntities } from "./process-config-entities";
 
 // `hasConfigOrEntitiesChanged` runs in `shouldUpdate` on every state change, but
-// the entities config only changes on (re)configure. Cache the parsed result per
-// config array so it is parsed once and reused instead of re-allocated on every
-// state change. A new config array misses the cache; a non-array still throws via
-// `processConfigEntities`.
-const processedConfigEntitiesCache = new WeakMap<object, any[]>();
-
-const getConfigEntities = (entities: any): any[] => {
-  let processed = processedConfigEntitiesCache.get(entities);
-  if (!processed) {
-    processed = processConfigEntities(entities, false);
-    processedConfigEntitiesCache.set(entities, processed);
-  }
-  return processed;
-};
+// the entities config only changes on (re)configure. Memoize the parsed result
+// per config array so it is parsed once and reused instead of re-allocated on
+// every state change.
+const getConfigEntities = weakMemoize((entities: any[]) =>
+  processConfigEntities(entities, false)
+);
 
 export function hasConfigChanged(
   element: any,
