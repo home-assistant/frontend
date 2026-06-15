@@ -11,7 +11,6 @@ import { getStatisticLabel } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
 import {
-  computeStatMidpoint,
   type EnergyDataPoint,
   getCompareTransform,
 } from "./common/energy-chart-options";
@@ -68,13 +67,19 @@ export function generateEnergyGasGraphData(
     if (v > yMax) yMax = v;
   };
 
+  // `compareTransform` and `period` depend only on start/end/compareStart,
+  // which are identical for both the compare and main passes. Compute them
+  // once here instead of recomputing (and re-allocating the transform
+  // closure) inside each processDataSet call.
+  const compareTransform = getCompareTransform(start, compareStart!);
+  const period = getSuggestedPeriod(start, end);
+
   if (energyData.statsCompare) {
     datasets.push(
       ...processDataSet(
         hass,
-        start,
-        end,
-        compareStart,
+        compareTransform,
+        period,
         energyData.statsCompare,
         energyData.statsMetadata,
         gasSources,
@@ -98,9 +103,8 @@ export function generateEnergyGasGraphData(
   datasets.push(
     ...processDataSet(
       hass,
-      start,
-      end,
-      compareStart,
+      compareTransform,
+      period,
       energyData.stats,
       energyData.statsMetadata,
       gasSources,
@@ -145,9 +149,8 @@ function processTotal(
 
 function processDataSet(
   hass: HomeAssistant,
-  start: Date,
-  end: Date,
-  compareStart: Date | undefined,
+  compareTransform: (ts: Date) => Date,
+  period: ReturnType<typeof getSuggestedPeriod>,
   statistics: Statistics,
   statisticsMetaData: Record<string, StatisticsMetaData>,
   gasSources: GasSourceTypeEnergyPreference[],
@@ -156,57 +159,61 @@ function processDataSet(
   compare = false
 ) {
   const data: BarSeriesOption[] = [];
-  const compareTransform = getCompareTransform(start, compareStart!);
-  const period = getSuggestedPeriod(start, end);
+
+  // `center` (sub-daily midpoint) and the active compare transform depend only
+  // on the call-level `period`/`compare` args, so they are loop-invariant.
+  // Hoist them once and inline computeStatMidpoint below, choosing the branch
+  // from these two booleans, to avoid a per-point function call, a per-point
+  // `center` recompute and a per-point `compare ? … : undefined` ternary in the
+  // hottest loop. The arithmetic and addition order are kept identical so the
+  // resulting timestamps are bit-identical to computeStatMidpoint.
+  const center = period === "hour" || period === "5minute";
+  const transform = compare ? compareTransform : undefined;
 
   gasSources.forEach((source, idx) => {
+    const statId = source.stat_energy_from;
     let prevStart: number | null = null;
 
     const gasConsumptionData: BarSeriesOption["data"] = [];
 
     // Process gas consumption data.
-    if (source.stat_energy_from in statistics) {
-      const stats = statistics[source.stat_energy_from];
+    if (statId in statistics) {
+      const stats = statistics[statId];
       for (const point of stats) {
-        if (
-          point.change === null ||
-          point.change === undefined ||
-          point.change === 0
-        ) {
+        const change = point.change;
+        if (change === null || change === undefined || change === 0) {
           continue;
         }
-        if (prevStart === point.start) {
+        const pointStart = point.start;
+        if (prevStart === pointStart) {
           continue;
         }
-        const dataPoint: EnergyDataPoint = [
-          computeStatMidpoint(
-            point.start,
-            point.end,
-            period,
-            compare ? compareTransform : undefined
-          ),
-          point.change,
-          point.start,
-        ];
+        let midpoint: number;
+        if (center) {
+          midpoint = transform
+            ? (transform(new Date(pointStart)).getTime() +
+                transform(new Date(point.end)).getTime()) /
+              2
+            : (pointStart + point.end) / 2;
+        } else {
+          midpoint = transform
+            ? transform(new Date(pointStart)).getTime()
+            : pointStart;
+        }
+        const dataPoint: EnergyDataPoint = [midpoint, change, pointStart];
         gasConsumptionData.push(dataPoint);
-        trackY(point.change);
-        prevStart = point.start;
+        trackY(change);
+        prevStart = pointStart;
       }
     }
 
     data.push({
       type: "bar",
       cursor: "default",
-      id: compare
-        ? "compare-" + source.stat_energy_from
-        : source.stat_energy_from,
+      id: compare ? "compare-" + statId : statId,
       name:
         source.name ||
-        getStatisticLabel(
-          hass,
-          source.stat_energy_from,
-          statisticsMetaData[source.stat_energy_from]
-        ),
+        getStatisticLabel(hass, statId, statisticsMetaData[statId]),
       barMaxWidth: 50,
       itemStyle: {
         borderColor: getEnergyColor(
