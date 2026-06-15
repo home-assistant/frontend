@@ -1,4 +1,4 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-tooltip";
 
@@ -12,7 +12,11 @@ export class HuiEnergyGraphChip extends LitElement {
       <div class="chip" id=${id}>
         <slot></slot>
       </div>
-      <ha-tooltip for=${id} placement="top">${this.tooltip}</ha-tooltip>
+      ${this.tooltip
+        ? html`<ha-tooltip for=${id} placement="top"
+            >${this.tooltip}</ha-tooltip
+          >`
+        : nothing}
     `;
   }
 

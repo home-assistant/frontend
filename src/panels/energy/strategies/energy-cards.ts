@@ -140,6 +140,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
   // --- Electricity ---
   entry(
     "electricity",
+    "energy-solar-overview",
+    "ui.panel.energy.cards.energy_solar_overview_title",
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
+  ),
+  entry(
+    "electricity",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
     (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
