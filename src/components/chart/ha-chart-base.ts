@@ -394,6 +394,18 @@ export class HaChartBase extends LitElement {
       return nothing;
     }
     const datasets = ensureArray(this.data!);
+    // Index datasets by id and name so each legend item is an O(1) lookup
+    // instead of scanning every dataset twice. Charts can have many series.
+    const datasetById = new Map<unknown, (typeof datasets)[number]>();
+    const datasetByName = new Map<unknown, (typeof datasets)[number]>();
+    for (const dataset of datasets) {
+      if (dataset.id !== undefined && !datasetById.has(dataset.id)) {
+        datasetById.set(dataset.id, dataset);
+      }
+      if (dataset.name !== undefined && !datasetByName.has(dataset.name)) {
+        datasetByName.set(dataset.name, dataset);
+      }
+    }
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -413,10 +425,10 @@ export class HaChartBase extends LitElement {
             return nothing;
           }
           let itemStyle: Record<string, any> = {};
-          let id = "";
           let value = "";
           let noLabelClick = false;
           const name = typeof item === "string" ? item : (item.name ?? "");
+          let id: string;
           if (typeof item === "string") {
             id = item;
           } else {
@@ -426,9 +438,7 @@ export class HaChartBase extends LitElement {
             noLabelClick = item.noLabelClick ?? false;
           }
           const labelClickable = this.clickLabelForMoreInfo && !noLabelClick;
-          const dataset =
-            datasets.find((d) => d.id === id) ??
-            datasets.find((d) => d.name === id);
+          const dataset = datasetById.get(id) ?? datasetByName.get(id);
           itemStyle = {
             color: dataset?.color as string,
             ...(dataset?.itemStyle as { borderColor?: string }),
