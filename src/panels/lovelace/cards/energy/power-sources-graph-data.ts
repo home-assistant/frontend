@@ -43,14 +43,25 @@ function processData(
         return;
       }
       const x = (point.start + point.end) / 2;
-      data[x] = [...(data[x] ?? []), point.mean];
+      // Append in place instead of rebuilding the bucket array with a spread
+      // on every point (which is O(n^2) for repeated timestamps). Insertion
+      // order is preserved, so the later reduce() sum is bit-identical.
+      (data[x] ??= []).push(point.mean);
     });
   });
   const positive: [number, number][] = [];
   const negative: [number, number][] = [];
   Object.entries(data).forEach(([x, y]) => {
     const ts = Number(x);
-    const sumY = y.reduce((a, b) => a + b, 0);
+    // Sum the bucket with a plain left-to-right loop (initial 0) instead of
+    // reduce(): most buckets hold a single mean, so reduce() is pure
+    // closure/call overhead per timestamp. The IEEE-754 addition order is
+    // identical, so sumY (and the downstream Math.max/Math.min) is
+    // bit-identical.
+    let sumY = 0;
+    for (const value of y) {
+      sumY += value;
+    }
     const pos = Math.max(0, sumY);
     const neg = Math.min(0, sumY);
     positive.push([ts, pos]);
@@ -131,6 +142,10 @@ export function generatePowerSourcesGraphData(
   };
 
   const now = params.now;
+  // Whether we are showing "today" is independent of the stat id, so compute
+  // it once instead of inside the per-id map below.
+  const showingToday =
+    isSameDay(now, params.start) && isSameDay(now, params.end);
   const seriesData: Record<
     string,
     {
@@ -142,15 +157,16 @@ export function generatePowerSourcesGraphData(
   > = {};
 
   Object.keys(statIds).forEach((key) => {
-    if (statIds[key].stats.length) {
-      const colorHex = computedStyles.getPropertyValue(statIds[key].color);
+    const meta = statIds[key];
+    if (meta.stats.length) {
+      const colorHex = computedStyles.getPropertyValue(meta.color);
       const rgb = hex2rgb(colorHex);
       // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
       // The interpolation breaks the stacking, so this positive/negative is a workaround
       const { positive, negative } = processData(
-        statIds[key].stats.map((id: string) => {
+        meta.stats.map((id: string) => {
           const stats = energyData.stats[id] ?? [];
-          if (isSameDay(now, params.start) && isSameDay(now, params.end)) {
+          if (showingToday) {
             // Append current state if we are showing today
             const currentStateWatts = getPowerFromState(states[id]);
             if (currentStateWatts !== undefined) {
@@ -245,23 +261,43 @@ export function generatePowerSourcesGraphData(
   const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
 
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
-  chartData[0]?.data!.forEach((item, i) => {
-    // fillLineGaps ensures all datasets have the same x values
-    const x =
-      typeof item === "object" && "value" in item! ? item.value![0] : item![0];
-    let sum = 0;
-    chartData.forEach((dataset) => {
-      const y =
-        typeof dataset.data![i] === "object" && "value" in dataset.data![i]!
-          ? dataset.data![i].value![1]
-          : dataset.data![i]![1];
-      sum += y as number;
-    });
-    // Consumption can't be negative; sources unaccounted for in the
-    // configuration (e.g. solar exporting to grid without a configured
-    // solar source) would otherwise drag the usage line below zero.
-    usageData[i] = [x, Math.max(0, sum)];
-  });
+  // fillLineGaps ensures all datasets share the same x values, so iterate the
+  // P points of the first dataset and sum across the D datasets per point.
+  // Use indexed for-loops and cache the per-dataset `data` arrays once
+  // (instead of re-dereferencing `dataset.data![i]` up to four times and
+  // allocating a closure per element) — this P x D loop is the dominant cost
+  // and the savings grow with the series count. Evaluation order, the
+  // typeof/`in` branch outcome, and the float-addition order are all
+  // unchanged, so `usageData` is bit-identical.
+  const firstData = chartData[0]?.data;
+  if (firstData) {
+    const numDatasets = chartData.length;
+    const datasetData: NonNullable<LineSeriesOption["data"]>[] = [];
+    for (let d = 0; d < numDatasets; d++) {
+      datasetData.push(chartData[d].data!);
+    }
+    const numPoints = firstData.length;
+    for (let i = 0; i < numPoints; i++) {
+      const item = firstData[i];
+      const x =
+        typeof item === "object" && "value" in item!
+          ? item.value![0]
+          : item![0];
+      let sum = 0;
+      for (let d = 0; d < numDatasets; d++) {
+        const point = datasetData[d][i];
+        const y =
+          typeof point === "object" && "value" in point!
+            ? point.value![1]
+            : point![1];
+        sum += y as number;
+      }
+      // Consumption can't be negative; sources unaccounted for in the
+      // configuration (e.g. solar exporting to grid without a configured
+      // solar source) would otherwise drag the usage line below zero.
+      usageData[i] = [x, Math.max(0, sum)];
+    }
+  }
   chartData.push({
     ...commonSeriesOptions,
     id: "usage",
