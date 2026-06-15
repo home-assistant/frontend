@@ -725,16 +725,18 @@ export const mergeHistoryResults = (
     }
 
     const newLineItem: LineChartUnit = { ...historyItem, data: [] };
+    const historyDataByEntity = new Map(
+      historyItem.data.map((d) => [d.entity_id, d])
+    );
+    const ltsDataByEntity = new Map(ltsItem.data.map((d) => [d.entity_id, d]));
     const entities = new Set([
-      ...historyItem.data.map((d) => d.entity_id),
-      ...ltsItem.data.map((d) => d.entity_id),
+      ...historyDataByEntity.keys(),
+      ...ltsDataByEntity.keys(),
     ]);
 
     for (const entity of entities) {
-      const historyDataItem = historyItem.data.find(
-        (d) => d.entity_id === entity
-      );
-      const ltsDataItem = ltsItem.data.find((d) => d.entity_id === entity);
+      const historyDataItem = historyDataByEntity.get(entity);
+      const ltsDataItem = ltsDataByEntity.get(entity);
 
       if (!historyDataItem || !ltsDataItem) {
         newLineItem.data.push(historyDataItem || ltsDataItem!);
