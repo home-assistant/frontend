@@ -87,19 +87,26 @@ export function generateStateHistoryChartLineData(
         // endTime is "now" and client time is not in sync with server time.
         return;
       }
-      data.forEach((d, i) => {
-        if (datavalues[i] === null && prevValues && prevValues[i] !== null) {
+      const prev = prevValues;
+      for (let i = 0, len = data.length; i < len; i++) {
+        const seriesData = data[i].data!;
+        const value = datavalues[i];
+        if (value === null && prev && prev[i] !== null) {
           // null data values show up as gaps in the chart.
           // If the current value for the dataset is null and the previous
           // value of the data set is not null, then add an 'end' point
           // to the chart for the previous value. Otherwise the gap will
           // be too big. It will go from the start of the previous data
           // value until the start of the next data value.
-          d.data!.push([timestamp, prevValues[i]]);
+          seriesData.push([timestamp, prev[i]]);
         }
-        d.data!.push([timestamp, datavalues[i]]);
-        trackY(datavalues[i]);
-      });
+        seriesData.push([timestamp, value]);
+        // inlined trackY (still used as a function for the sensor append below)
+        if (typeof value === "number" && Number.isFinite(value)) {
+          if (value < yMin) yMin = value;
+          if (value > yMax) yMax = value;
+        }
+      }
       prevValues = datavalues;
     };
 
