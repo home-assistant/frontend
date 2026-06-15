@@ -16,12 +16,20 @@ import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
+interface BlueprintImportState {
+  value: string;
+  hasResult: boolean;
+}
+
 @customElement("ha-dialog-import-blueprint")
-class DialogImportBlueprint extends LitElement {
+class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
@@ -51,6 +59,10 @@ class DialogImportBlueprint extends LitElement {
     this._sourceUrlWarning = !this._isTrustedBlueprintUrl(this._url);
     this.large = false;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { value: this._url ?? "", hasResult: false }
+    );
   }
 
   public closeDialog(): void {
@@ -75,6 +87,7 @@ class DialogImportBlueprint extends LitElement {
       <ha-dialog
         .open=${this._open}
         width=${this.large ? "full" : "medium"}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-dialog-header slot="header">
@@ -138,6 +151,7 @@ class DialogImportBlueprint extends LitElement {
                         .label=${this.hass.localize(
                           "ui.panel.config.blueprint.add.file_name"
                         )}
+                        @input=${this._inputChanged}
                         autofocus
                       ></ha-input>
                     `}
@@ -191,6 +205,7 @@ class DialogImportBlueprint extends LitElement {
                     "ui.panel.config.blueprint.add.url"
                   )}
                   .value=${this._url || ""}
+                  @input=${this._inputChanged}
                   autofocus
                 ></ha-input>
               `}
@@ -250,6 +265,13 @@ class DialogImportBlueprint extends LitElement {
     });
   }
 
+  private _inputChanged(ev: Event) {
+    this._updateDirtyState({
+      value: (ev.target as HaInput).value ?? "",
+      hasResult: !!this._result,
+    });
+  }
+
   private async _import() {
     this._url = undefined;
     this._importing = true;
@@ -269,6 +291,10 @@ class DialogImportBlueprint extends LitElement {
         !this._isTrustedBlueprintUrl(
           this._result.blueprint.metadata.source_url
         );
+      this._updateDirtyState({
+        value: this._result.suggested_filename || "",
+        hasResult: true,
+      });
     } catch (err: any) {
       this._error = err.message;
     } finally {
@@ -313,6 +339,7 @@ class DialogImportBlueprint extends LitElement {
         this._result!.exists
       );
       this._params.importedCallback();
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
