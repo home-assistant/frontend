@@ -283,21 +283,42 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         for (const device of deviceReg) {
           devices[device.id] = device;
         }
-        this._updateHass({ devices });
+        const updatedDevices = preserveUnchangedRecord(
+          this.hass?.devices,
+          devices,
+          deepEqual
+        );
+        if (updatedDevices !== this.hass?.devices) {
+          this._updateHass({ devices: updatedDevices });
+        }
       });
       subscribeAreaRegistry(conn, (areaReg) => {
         const areas: HomeAssistant["areas"] = {};
         for (const area of areaReg) {
           areas[area.area_id] = area;
         }
-        this._updateHass({ areas });
+        const updatedAreas = preserveUnchangedRecord(
+          this.hass?.areas,
+          areas,
+          deepEqual
+        );
+        if (updatedAreas !== this.hass?.areas) {
+          this._updateHass({ areas: updatedAreas });
+        }
       });
       subscribeFloorRegistry(conn, (floorReg) => {
         const floors: HomeAssistant["floors"] = {};
         for (const floor of floorReg) {
           floors[floor.floor_id] = floor;
         }
-        this._updateHass({ floors });
+        const updatedFloors = preserveUnchangedRecord(
+          this.hass?.floors,
+          floors,
+          deepEqual
+        );
+        if (updatedFloors !== this.hass?.floors) {
+          this._updateHass({ floors: updatedFloors });
+        }
       });
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
