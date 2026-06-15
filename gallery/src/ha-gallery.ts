@@ -40,15 +40,26 @@ interface GalleryPage {
   demo?: unknown;
 }
 
+interface GallerySidebarSubsection {
+  header: string;
+  pages: string[];
+}
+
 interface GallerySidebarGroup {
   category: string;
   header?: string;
   icon?: string;
-  pages: string[];
+  pages?: string[];
+  subsections?: GallerySidebarSubsection[];
 }
 
+const groupPages = (group: GallerySidebarGroup): string[] =>
+  group.subsections
+    ? group.subsections.flatMap((subsection) => subsection.pages)
+    : (group.pages ?? []);
+
 const GALLERY_SIDEBAR = SIDEBAR as GallerySidebarGroup[];
-const DEFAULT_PAGE = `${GALLERY_SIDEBAR[0].category}/${GALLERY_SIDEBAR[0].pages[0]}`;
+const DEFAULT_PAGE = `${GALLERY_SIDEBAR[0].category}/${groupPages(GALLERY_SIDEBAR[0])[0]}`;
 
 const mql = matchMedia("(prefers-color-scheme: dark)");
 
@@ -284,26 +295,15 @@ class HaGallery extends LitElement {
     const sidebar: unknown[] = [];
 
     for (const group of GALLERY_SIDEBAR) {
-      const links: unknown[] = [];
-      const expanded = group.pages.some(
+      const expanded = groupPages(group).some(
         (page) => this._page === `${group.category}/${page}`
       );
 
-      for (const page of group.pages) {
-        const key = `${group.category}/${page}`;
-        if (!(key in PAGES)) {
-          console.error("Undefined page referenced in sidebar.js:", key);
-          continue;
-        }
-        links.push(
-          this._renderPageLink(
-            key,
-            PAGES[key].metadata.title || page,
-            group.header ? undefined : "main-navigation",
-            group.header ? undefined : group.icon
+      const content = group.subsections
+        ? group.subsections.map((subsection) =>
+            this._renderSidebarSubsection(group, subsection)
           )
-        );
-      }
+        : this._renderPageLinks(group, group.pages ?? []);
 
       sidebar.push(
         group.header
@@ -321,14 +321,44 @@ class HaGallery extends LitElement {
                       .path=${group.icon}
                     ></ha-svg-icon>`
                   : nothing}
-                ${links}
+                ${content}
               </ha-expansion-panel>
             `
-          : links
+          : content
       );
     }
 
     return sidebar;
+  }
+
+  private _renderSidebarSubsection(
+    group: GallerySidebarGroup,
+    subsection: GallerySidebarSubsection
+  ) {
+    return html`
+      <div class="gallery-sidebar-subheader">${subsection.header}</div>
+      ${this._renderPageLinks(group, subsection.pages)}
+    `;
+  }
+
+  private _renderPageLinks(group: GallerySidebarGroup, pages: string[]) {
+    const links: unknown[] = [];
+    for (const page of pages) {
+      const key = `${group.category}/${page}`;
+      if (!(key in PAGES)) {
+        console.error("Undefined page referenced in sidebar.js:", key);
+        continue;
+      }
+      links.push(
+        this._renderPageLink(
+          key,
+          PAGES[key].metadata.title || page,
+          group.header ? undefined : "main-navigation",
+          group.header ? undefined : group.icon
+        )
+      );
+    }
+    return links;
   }
 
   private _renderPageLink(
@@ -583,6 +613,16 @@ class HaGallery extends LitElement {
       .gallery-sidebar-section .gallery-nav-item {
         margin-inline-start: var(--ha-space-4);
         width: var(--ha-sidebar-expanded-section-item-width, 248px);
+      }
+
+      .gallery-sidebar-subheader {
+        margin: var(--ha-space-2) var(--ha-space-4) var(--ha-space-1);
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-s);
+        font-weight: var(--ha-font-weight-medium);
+        line-height: var(--ha-line-height-condensed);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
 
       .gallery-sidebar-icon,
