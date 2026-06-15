@@ -193,7 +193,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    // Helios 3D solar card: pinned to the top of the main column, full width,
+    // Solar overview 3D card: pinned to the top of the main column, full width,
     // alongside the energy graphs. It needs the landscape width for its
     // scrubbable timeline, and it will host graphs of its own later, so it
     // belongs with the graph stack rather than the narrow sidebar.
@@ -203,14 +203,10 @@ export class EnergyViewStrategy extends ReactiveElement {
     ) {
       mainCards.push({
         type: "energy-solar-overview",
-        title: hass.localize("ui.panel.energy.cards.energy_solar_overview_title"),
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_solar_overview_title"
+        ),
         collection_key: collectionKey,
-        // Street name / POI labels stay off in the energy-panel build of the
-        // card; the 3D view reads cleaner without the basemap text.
-        "show-labels": false,
-        // Buildings within 10 m of the home (or containing it) read as one
-        // with the house, so attached outbuildings join the home group.
-        "building-cluster-radius": 10,
         grid_options: { columns: 36 },
       });
     }

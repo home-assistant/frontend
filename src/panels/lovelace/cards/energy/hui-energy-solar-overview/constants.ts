@@ -22,7 +22,9 @@ export const DEFAULT_DISPLAY_RADIUS_M = 200;
 //Fade band width, measured INWARD from DEFAULT_DISPLAY_RADIUS_M.
 export const DISPLAY_FADE_DELTA_M = 50;
 export const DEFAULT_BUILDING_OPACITY = 0.25;
-export const DEFAULT_BUILDING_CLUSTER_RADIUS_M = 0;
+//Buildings within this radius (m) of the home, or containing the home point, render at full opacity
+//as part of the house, so attached outbuildings join the home group.
+export const DEFAULT_BUILDING_CLUSTER_RADIUS_M = 10;
 export const DEFAULT_SHADOW_OPACITY = 0.32;
 
 //Decimal places every value readout prints (kW / kWh). Fixed; no config override.

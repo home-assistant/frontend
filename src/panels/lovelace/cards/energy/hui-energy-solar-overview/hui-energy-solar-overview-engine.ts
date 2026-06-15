@@ -1791,7 +1791,7 @@ export class SolarOverviewEngine {
     //by MapLibre's compositor).
     this._initNightShade();
     this._addBuildings();
-    this._applyLabelVisibility();
+    this._hideBasemapLabels();
 
     window.clearInterval(this._skyTimer);
     this._lastAtmosphereAlt = -999;
@@ -1940,9 +1940,10 @@ export class SolarOverviewEngine {
     return [Math.max(0, radius - DISPLAY_FADE_DELTA_M), radius];
   }
 
-  //Keep the basemap's symbol layers (road names, POIs, ...) visible. Our own
-  //sol-* layers are skipped defensively.
-  private _applyLabelVisibility(): void {
+  //Hide the basemap's symbol layers (road names, POIs, ...) so the 3D view reads
+  //clean, with no street text bleeding through on zoom or in weather mode. Our
+  //own sol-* layers are skipped defensively.
+  private _hideBasemapLabels(): void {
     if (!this.map) {
       return;
     }
@@ -1952,7 +1953,7 @@ export class SolarOverviewEngine {
         continue;
       }
       try {
-        this.map.setLayoutProperty(l.id, "visibility", "visible");
+        this.map.setLayoutProperty(l.id, "visibility", "none");
       } catch (_) {
         /* best-effort: layer visibility */
       }

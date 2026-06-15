@@ -3089,15 +3089,21 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         height: 100%;
         width: 1px;
         transform: translateX(-50%);
-        background: var(--primary-text-color);
-        opacity: 0.5;
+        /* Dashed line in --info-color to mirror the ECharts axisPointer used by
+           the dashboard energy graphs (e.g. Electricity usage). */
+        background-image: repeating-linear-gradient(
+          to bottom,
+          var(--info-color) 0 3px,
+          transparent 3px 6px
+        );
         pointer-events: none;
       }
       .timeline-hover-bead {
         position: absolute;
         transform: translate(-50%, -50%);
-        width: 8px;
-        height: 8px;
+        /* Match the leader flow beads (SVG circle r=3 -> 6px diameter). */
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
         border: 1.5px solid var(--card-background-color, #fff);
         box-shadow: 0 0 0 0.5px var(--shadow-color);
