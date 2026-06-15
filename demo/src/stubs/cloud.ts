@@ -109,6 +109,8 @@ export const mockCloud = (hass: MockHomeAssistant) => {
 
   hass.mockWS("cloud/remove_data", () => null);
   hass.mockWS("cloud/google_assistant/entities/update", () => null);
+  hass.mockWS("cloud/alexa/entities", () => []);
+  hass.mockWS("cloud/google_assistant/entities", () => []);
 
   hass.mockAPI("cloud/logout", () => ({}));
   hass.mockAPI("cloud/google_actions/sync", () => ({}));
