@@ -18,7 +18,6 @@ import {
   type HistoryResult,
 } from "../../../data/history";
 import { fetchStatistics } from "../../../data/recorder";
-import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -150,30 +149,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    // Mark as subscribing before the first await to prevent re-entrant calls
-    const sentinel = Promise.resolve(undefined) as NonNullable<
-      typeof this._subscribed
-    >;
-    this._subscribed = sentinel;
-
-    let sensorNumericDeviceClasses: string[];
-    try {
-      ({ numeric_device_classes: sensorNumericDeviceClasses } =
-        await getSensorNumericDeviceClasses(this.hass!));
-    } catch (_err) {
-      if (this._subscribed === sentinel) {
-        this._subscribed = undefined;
-      }
-      return;
-    }
-
-    if (!this.isConnected || this._subscribed !== sentinel) {
-      if (this._subscribed === sentinel) {
-        this._subscribed = undefined;
-      }
-      return;
-    }
-
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -187,7 +162,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           combinedHistory,
           this._entityIds,
           this.hass!.localize,
-          sensorNumericDeviceClasses,
           this._config?.split_device_classes
         );
 
@@ -201,7 +175,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       return undefined;
     });
 
-    await this._fetchStatistics(sensorNumericDeviceClasses);
+    await this._fetchStatistics();
 
     this._setRedrawTimer();
   }
@@ -216,7 +190,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
+  private async _fetchStatistics() {
     if (this._hoursToShow < 1) {
       // Statistics are hourly aggregates, not useful for sub-hour windows
       return;
@@ -239,7 +213,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this.hass!,
       statistics,
       this._entityIds,
-      sensorNumericDeviceClasses,
       this._config?.split_device_classes
     );
 

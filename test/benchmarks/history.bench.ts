@@ -7,7 +7,6 @@ import {
 import { createMockHass, mockLocalize } from "../fixtures/hass";
 import type { HistoryStates } from "../../src/data/history";
 
-const SENSOR_NUMERIC_DEVICE_CLASSES = ["power", "energy", "temperature"];
 const hass = createMockHass();
 
 const medium = generateMixedHistory(1, "medium");
@@ -24,17 +23,13 @@ for (let i = 0; i < 20; i++) {
 
 describe("computeHistory", () => {
   bench("mixed medium (10k states)", () => {
-    computeHistory(hass, medium, [], mockLocalize, [
-      ...SENSOR_NUMERIC_DEVICE_CLASSES,
-    ]);
+    computeHistory(hass, medium, [], mockLocalize);
   });
 
   bench(
     "mixed large (100k states)",
     () => {
-      computeHistory(hass, large, [], mockLocalize, [
-        ...SENSOR_NUMERIC_DEVICE_CLASSES,
-      ]);
+      computeHistory(hass, large, [], mockLocalize);
     },
     { time: 1000, warmupIterations: 2 }
   );
@@ -42,14 +37,7 @@ describe("computeHistory", () => {
   bench(
     "mixed large with splitDeviceClasses (100k states)",
     () => {
-      computeHistory(
-        hass,
-        large,
-        [],
-        mockLocalize,
-        [...SENSOR_NUMERIC_DEVICE_CLASSES],
-        true
-      );
+      computeHistory(hass, large, [], mockLocalize, true);
     },
     { time: 1000, warmupIterations: 2 }
   );
@@ -57,9 +45,7 @@ describe("computeHistory", () => {
   bench(
     "single dense sensor (100k states)",
     () => {
-      computeHistory(hass, singleDense, [], mockLocalize, [
-        ...SENSOR_NUMERIC_DEVICE_CLASSES,
-      ]);
+      computeHistory(hass, singleDense, [], mockLocalize);
     },
     { time: 1000, warmupIterations: 2 }
   );
@@ -67,9 +53,7 @@ describe("computeHistory", () => {
   bench(
     "many entities (20 x 5k states)",
     () => {
-      computeHistory(hass, manyEntities, [], mockLocalize, [
-        ...SENSOR_NUMERIC_DEVICE_CLASSES,
-      ]);
+      computeHistory(hass, manyEntities, [], mockLocalize);
     },
     { time: 1000, warmupIterations: 2 }
   );

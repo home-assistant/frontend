@@ -9,19 +9,14 @@ import {
   generateMixedHistory,
 } from "../fixtures/history-states";
 
-const SENSOR_NUMERIC_DEVICE_CLASSES = ["power", "energy", "temperature"];
 const computedStyles = createMockComputedStyle();
 const hass = createMockHass();
 const dayMs = 24 * 60 * 60 * 1000;
 
 const toLineChartEntities = (history) =>
-  computeHistory(
-    hass,
-    history,
-    [],
-    mockLocalize,
-    SENSOR_NUMERIC_DEVICE_CLASSES
-  ).line.flatMap((unit) => unit.data);
+  computeHistory(hass, history, [], mockLocalize).line.flatMap(
+    (unit) => unit.data
+  );
 
 const medium = toLineChartEntities(generateMixedHistory(1, "medium"));
 const large = toLineChartEntities(generateMixedHistory(2, "large"));

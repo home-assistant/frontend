@@ -17,7 +17,10 @@ import {
 import { blankBeforeUnit } from "../translations/blank_before_unit";
 import type { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
-import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../data/sensor";
+import {
+  isNumericSensorDeviceClass,
+  SENSOR_TIMESTAMP_DEVICE_CLASSES,
+} from "../../data/sensor";
 
 // Domains whose state is a timezone-agnostic date and/or time string.
 const DATE_TIME_DOMAINS = new Set(["date", "input_datetime", "time"]);
@@ -53,11 +56,12 @@ const MONETARY_TYPE_MAP: Record<string, ValuePart["type"]> = {
   currency: "unit",
 };
 
+const NUMERICAL_DOMAINS = ["counter", "input_number", "number"];
+
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
-  sensorNumericDeviceClasses: string[],
   config: HassConfig,
   entities: HomeAssistant["entities"],
   state?: string
@@ -68,7 +72,6 @@ export const computeStateDisplay = (
   return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
-    sensorNumericDeviceClasses,
     config,
     entity,
     stateObj.entity_id,
@@ -80,7 +83,6 @@ export const computeStateDisplay = (
 export const computeStateDisplayFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
-  sensorNumericDeviceClasses: string[],
   config: HassConfig,
   entity: EntityRegistryDisplayEntry | undefined,
   entityId: string,
@@ -90,7 +92,6 @@ export const computeStateDisplayFromEntityAttributes = (
   const parts = computeStateToPartsFromEntityAttributes(
     localize,
     locale,
-    sensorNumericDeviceClasses,
     config,
     entity,
     entityId,
@@ -103,7 +104,6 @@ export const computeStateDisplayFromEntityAttributes = (
 const computeStateToPartsFromEntityAttributes = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
-  sensorNumericDeviceClasses: string[],
   config: HassConfig,
   entity: EntityRegistryDisplayEntry | undefined,
   entityId: string,
@@ -120,15 +120,15 @@ const computeStateToPartsFromEntityAttributes = (
   }
 
   const domain = computeDomain(entityId);
-  const is_number_domain =
-    domain === "counter" || domain === "number" || domain === "input_number";
-  // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
+  const isNumberDomain = NUMERICAL_DOMAINS.includes(domain);
+  const isSensorDomain = domain === "sensor";
+
+  // Numeric values (by attributes, number domain,
+  // or numeric sensor device class) use formatNumber.
   if (
-    isNumericFromAttributes(
-      attributes,
-      domain === "sensor" ? sensorNumericDeviceClasses : []
-    ) ||
-    is_number_domain
+    isNumericFromAttributes(attributes) ||
+    isNumberDomain ||
+    (isSensorDomain && isNumericSensorDeviceClass(attributes.device_class))
   ) {
     // state is duration
     if (
@@ -314,7 +314,6 @@ export const computeStateToParts = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
-  sensorNumericDeviceClasses: string[],
   config: HassConfig,
   entities: HomeAssistant["entities"],
   state?: string
@@ -325,7 +324,6 @@ export const computeStateToParts = (
   return computeStateToPartsFromEntityAttributes(
     localize,
     locale,
-    sensorNumericDeviceClasses,
     config,
     entity,
     stateObj.entity_id,

@@ -28,8 +28,6 @@ import {
 } from "../fixtures/hass";
 import { generateStatistics } from "../fixtures/statistics";
 
-const SENSOR_NUMERIC_DEVICE_CLASSES = ["power", "energy", "temperature"];
-
 const buildTinyHistory = () => ({
   "sensor.power_meter": generateNumericSensorStates(1, { count: 40 }),
   "binary_sensor.motion_hall": generateBinarySensorStates(2, { count: 30 }),
@@ -53,40 +51,19 @@ describe("computeHistory characterization", () => {
 
   it("matches snapshot for a mixed payload", () => {
     expect(
-      computeHistory(
-        hass,
-        buildTinyHistory(),
-        [],
-        mockLocalize,
-        SENSOR_NUMERIC_DEVICE_CLASSES
-      )
+      computeHistory(hass, buildTinyHistory(), [], mockLocalize)
     ).toMatchSnapshot();
   });
 
   it("matches snapshot with splitDeviceClasses enabled", () => {
     expect(
-      computeHistory(
-        hass,
-        buildTinyHistory(),
-        [],
-        mockLocalize,
-        SENSOR_NUMERIC_DEVICE_CLASSES,
-        true
-      )
+      computeHistory(hass, buildTinyHistory(), [], mockLocalize, true)
     ).toMatchSnapshot();
   });
 
   it("matches snapshot with forceNumeric enabled", () => {
     expect(
-      computeHistory(
-        hass,
-        buildTinyHistory(),
-        [],
-        mockLocalize,
-        SENSOR_NUMERIC_DEVICE_CLASSES,
-        false,
-        true
-      )
+      computeHistory(hass, buildTinyHistory(), [], mockLocalize, false, true)
     ).toMatchSnapshot();
   });
 
@@ -96,8 +73,7 @@ describe("computeHistory characterization", () => {
         hass,
         {},
         ["sensor.power_meter", "sensor.not_present"],
-        mockLocalize,
-        SENSOR_NUMERIC_DEVICE_CLASSES
+        mockLocalize
       )
     ).toMatchSnapshot();
   });
@@ -109,8 +85,7 @@ describe("computeHistory characterization", () => {
           hass,
           generateMixedHistory(42, "large"),
           [],
-          mockLocalize,
-          SENSOR_NUMERIC_DEVICE_CLASSES
+          mockLocalize
         )
       )
     ).toMatchSnapshot();
@@ -153,15 +128,7 @@ describe("computeHistory characterization", () => {
         },
       ],
     };
-    expect(
-      computeHistory(
-        hass,
-        history,
-        [],
-        mockLocalize,
-        SENSOR_NUMERIC_DEVICE_CLASSES
-      )
-    ).toMatchSnapshot();
+    expect(computeHistory(hass, history, [], mockLocalize)).toMatchSnapshot();
   });
 });
 
@@ -295,12 +262,9 @@ describe("convertStatisticsToHistory characterization", () => {
       days: 2,
     });
     expect(
-      convertStatisticsToHistory(
-        hass,
-        statistics,
-        ["sensor.temperature_indoor"],
-        SENSOR_NUMERIC_DEVICE_CLASSES
-      )
+      convertStatisticsToHistory(hass, statistics, [
+        "sensor.temperature_indoor",
+      ])
     ).toMatchSnapshot();
   });
 
@@ -316,7 +280,6 @@ describe("convertStatisticsToHistory characterization", () => {
         hass,
         statistics,
         ["sensor.energy_b", "sensor.energy_a"],
-        SENSOR_NUMERIC_DEVICE_CLASSES,
         true
       )
     ).toMatchSnapshot();
@@ -335,8 +298,7 @@ describe("mergeHistoryResults characterization", () => {
         period: "hour",
         days: 2,
       }),
-      ["sensor.power_meter"],
-      SENSOR_NUMERIC_DEVICE_CLASSES
+      ["sensor.power_meter"]
     );
     const historyResult = computeHistory(
       hass,
@@ -347,8 +309,7 @@ describe("mergeHistoryResults characterization", () => {
         }),
       },
       [],
-      mockLocalize,
-      SENSOR_NUMERIC_DEVICE_CLASSES
+      mockLocalize
     );
 
     expect(mergeHistoryResults(historyResult, ltsResult)).toMatchSnapshot();

@@ -1,10 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../common/entity/compute_domain";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import type { HomeAssistant } from "../../types";
 import {
   computeShowHistoryComponent,
@@ -29,18 +27,6 @@ export class MoreInfoInfo extends LitElement {
   @property({ attribute: false }) public editMode?: boolean;
 
   @property({ attribute: false }) public data?: Record<string, any>;
-
-  @state() private _sensorNumericDeviceClasses?: string[] = [];
-
-  private async _loadNumericDeviceClasses() {
-    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
-    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this._loadNumericDeviceClasses();
-  }
 
   protected render() {
     const entityId = this.entityId;
@@ -92,11 +78,7 @@ export class MoreInfoInfo extends LitElement {
                 .entityId=${this.entityId}
               ></ha-more-info-history>`}
           ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
-          !computeShowLogBookComponent(
-            this.hass,
-            entityId,
-            this._sensorNumericDeviceClasses
-          )
+          !computeShowLogBookComponent(this.hass, entityId)
             ? ""
             : html`<ha-more-info-logbook
                 .hass=${this.hass}

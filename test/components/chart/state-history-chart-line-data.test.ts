@@ -24,20 +24,15 @@ import {
 } from "../../fixtures/history-states";
 import { generateStatistics } from "../../fixtures/statistics";
 
-const SENSOR_NUMERIC_DEVICE_CLASSES = ["power", "energy", "temperature"];
 const computedStyles = createMockComputedStyle();
 const hass = createMockHass();
 const dayMs = 24 * 60 * 60 * 1000;
 
 /** Run history fixtures through computeHistory to get LineChartEntity[] */
 const toLineChartEntities = (history) =>
-  computeHistory(
-    hass,
-    history,
-    [],
-    mockLocalize,
-    SENSOR_NUMERIC_DEVICE_CLASSES
-  ).line.flatMap((unit) => unit.data);
+  computeHistory(hass, history, [], mockLocalize).line.flatMap(
+    (unit) => unit.data
+  );
 
 describe("generateStateHistoryChartLineData", () => {
   const baseParams = {
@@ -103,8 +98,7 @@ describe("generateStateHistoryChartLineData", () => {
         period: "hour",
         days: 1,
       }),
-      ["sensor.power_meter"],
-      SENSOR_NUMERIC_DEVICE_CLASSES
+      ["sensor.power_meter"]
     );
     const recent = toLineChartEntities({
       "sensor.power_meter": generateNumericSensorStates(6, {

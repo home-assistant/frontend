@@ -11,7 +11,6 @@ import {
 } from "../fixtures/history-states";
 import { generateStatistics } from "../fixtures/statistics";
 
-const SENSOR_NUMERIC_DEVICE_CLASSES = ["power", "energy", "temperature"];
 const hass = createMockHass();
 const dayMs = 24 * 60 * 60 * 1000;
 
@@ -32,8 +31,7 @@ const fiveMinuteWeek = generateStatistics(2, {
 const ltsResult = convertStatisticsToHistory(
   hass,
   generateStatistics(3, { ids: idsFor(10), period: "hour", days: 31 }),
-  idsFor(10),
-  SENSOR_NUMERIC_DEVICE_CLASSES
+  idsFor(10)
 );
 const recentStates = {};
 idsFor(10).forEach((id, i) => {
@@ -42,25 +40,15 @@ idsFor(10).forEach((id, i) => {
     startMs: FIXED_EPOCH_MS + 31 * dayMs,
   });
 });
-const historyResult = computeHistory(
-  hass,
-  recentStates,
-  [],
-  mockLocalize,
-  SENSOR_NUMERIC_DEVICE_CLASSES
-);
+const historyResult = computeHistory(hass, recentStates, [], mockLocalize);
 
 describe("convertStatisticsToHistory", () => {
   bench("hourly statistics, month, 5 entities", () => {
-    convertStatisticsToHistory(hass, hourlyMonth, idsFor(5), [
-      ...SENSOR_NUMERIC_DEVICE_CLASSES,
-    ]);
+    convertStatisticsToHistory(hass, hourlyMonth, idsFor(5));
   });
 
   bench("5-minute statistics, week, 5 entities", () => {
-    convertStatisticsToHistory(hass, fiveMinuteWeek, idsFor(5), [
-      ...SENSOR_NUMERIC_DEVICE_CLASSES,
-    ]);
+    convertStatisticsToHistory(hass, fiveMinuteWeek, idsFor(5));
   });
 });
 

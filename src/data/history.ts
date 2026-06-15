@@ -10,6 +10,7 @@ import { computeStateDisplayFromEntityAttributes } from "../common/entity/comput
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
 import type { Statistics } from "./recorder";
 
@@ -356,7 +357,6 @@ const processTimelineEntity = (
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         locale,
-        [], // numeric device classes not used for Timeline
         config,
         entities[entityId],
         entityId,
@@ -473,20 +473,12 @@ const isNumericFromDomain = (domain: string) =>
 const isNumericFromAttributes = (attributes: Record<string, any>) =>
   "unit_of_measurement" in attributes || "state_class" in attributes;
 
-const isNumericSensorEntity = (
-  stateObj: HassEntity,
-  sensorNumericalDeviceClasses: string[]
-) =>
-  stateObj.attributes.device_class != null &&
-  sensorNumericalDeviceClasses.includes(stateObj.attributes.device_class);
-
 const BLANK_UNIT = " ";
 
 export const convertStatisticsToHistory = (
   hass: HomeAssistant,
   statistics: Statistics,
   statisticIds: string[],
-  sensorNumericDeviceClasses: string[],
   splitDeviceClasses = false
 ): HistoryResult => {
   // Maintain the statistic id ordering
@@ -514,7 +506,6 @@ export const convertStatisticsToHistory = (
     statsHistoryStates,
     [],
     hass.localize,
-    sensorNumericDeviceClasses,
     splitDeviceClasses,
     true
   );
@@ -544,7 +535,6 @@ export const computeHistory = (
   stateHistory: HistoryStates,
   entityIds: string[],
   localize: LocalizeFunc,
-  sensorNumericalDeviceClasses: string[],
   splitDeviceClasses = false,
   forceNumeric = false
 ): HistoryResult => {
@@ -591,7 +581,6 @@ export const computeHistory = (
       domain,
       currentState,
       numericStateFromHistory,
-      sensorNumericalDeviceClasses,
       forceNumeric
     );
 
@@ -666,7 +655,6 @@ export const isNumericEntity = (
   domain: string,
   currentState: HassEntity | undefined,
   numericStateFromHistory: EntityHistoryState | undefined,
-  sensorNumericalDeviceClasses: string[],
   forceNumeric = false
 ): boolean =>
   forceNumeric ||
@@ -674,7 +662,7 @@ export const isNumericEntity = (
   (currentState != null && isNumericFromAttributes(currentState.attributes)) ||
   (currentState != null &&
     domain === "sensor" &&
-    isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
+    isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
 
 export const mergeHistoryResults = (
