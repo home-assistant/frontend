@@ -95,7 +95,6 @@ import {
   type SolarForecastPoint,
 } from "./card/energy-forecast";
 import {
-  computeConfigSig,
   getHomeCoords,
   initEngine,
   cancelPendingRespawn,
@@ -402,7 +401,6 @@ export class HuiEnergySolarOverviewCard extends LitElement {
 
   private _timer?: number;
   _lastHomeKey = "";
-  _lastConfigSig = "";
   _initInflight = false;
   // Last engine spawn time; onContextLost bails when losses arrive < ~2 s apart
   // (browser thrashing the WebGL pool), since respawning just feeds the fire.
@@ -415,7 +413,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
 
   // Refresh-chain gate: re-run the PV/Battery/Grid refreshers only when hass,
   // config or the time range change identity, so the chain doesn't re-run on
-  // every overlay @state mutation during auto-rotate.
+  // every overlay @state mutation during a camera rotation.
   private _lastRefreshHassRef: unknown = undefined;
   private _lastRefreshConfigRef: unknown = undefined;
   private _lastRefreshTimeRangeRef: unknown = undefined;
@@ -689,21 +687,12 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         this._weatherOverlayVisible = false;
       }
       this._lastHomeKey = homeKey;
-      this._lastConfigSig = computeConfigSig(this.config);
       initEngine(this);
       return;
     }
 
-    // Identity stable: push config down only when the visual config changed,
-    // else updateConfig() would rebuild the GeoJSON on every clock tick.
-    const sig = computeConfigSig(this.config);
-    if (sig !== this._lastConfigSig) {
-      this._lastConfigSig = sig;
-      this._engine.updateConfig(this.config);
-    }
-
     // Refresh-chain gate (see the *Ref fields): skip when nothing the refreshers
-    // depend on moved, so the chain doesn't re-run at 60+ Hz during auto-rotate.
+    // depend on moved, so the chain doesn't re-run at 60+ Hz during a rotation.
     if (
       this.hass === this._lastRefreshHassRef &&
       this.config === this._lastRefreshConfigRef &&
@@ -1300,7 +1289,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         ${this._cardMode === "weather"
           ? html`<button
               class="weather-home"
-              aria-label="Back to overview"
+              aria-label=${this._l("weather_back")}
               @click=${this._onWeatherHomeReturn}
             >
               <ha-icon icon="mdi:home"></ha-icon>
@@ -1429,7 +1418,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   .y}px; --pv-leader-color:${pvColor}"
                 role="button"
                 tabindex="0"
-                aria-label="Show production in chart"
+                aria-label=${this._l("chart_production")}
                 @click=${this._onPvChipClick}
               >
                 <ha-icon icon="mdi:solar-power"></ha-icon>
@@ -1490,7 +1479,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                         .y}px; --battery-leader-color:${batteryLeaderColor}"
                       role="button"
                       tabindex="0"
-                      aria-label="Show battery charge in chart"
+                      aria-label=${this._l("chart_battery_charge")}
                       @click=${this._onBatterySocChipClick}
                     >
                       <ha-icon icon="mdi:battery"></ha-icon>
@@ -1510,7 +1499,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                         .y}px; --battery-leader-color:${batteryLeaderColor}"
                       role="button"
                       tabindex="0"
-                      aria-label="Show battery power in chart"
+                      aria-label=${this._l("chart_battery_power")}
                       @click=${this._onBatteryPowerChipClick}
                     >
                       <ha-icon icon="mdi:lightning-bolt"></ha-icon>
@@ -1561,7 +1550,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   .y}px; --grid-leader-color:${gridLeaderColor}"
                 role="button"
                 tabindex="0"
-                aria-label="Show grid in chart"
+                aria-label=${this._l("chart_grid")}
                 @click=${this._onGridChipClick}
               >
                 <ha-icon
@@ -1749,7 +1738,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                   style="left:${cloudChipX}px; top:${cloudChipY}px; --cloud-chip-color:${DEFAULT_CLOUD_COLOR_HEX}"
                   role="button"
                   tabindex="0"
-                  aria-label="Open weather mode"
+                  aria-label=${this._l("weather_open")}
                   @click=${this._onCloudChipClick}
                 >
                   <ha-icon icon=${this._cloudIcon(this._cloudCover)}></ha-icon>
@@ -1833,7 +1822,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
                 style="left:${sunScene!.sun.x}px; top:${sunScene!.sun.y - 22}px"
                 role="button"
                 tabindex="0"
-                aria-label="Show irradiance in chart"
+                aria-label=${this._l("chart_irradiance")}
                 @click=${this._onIrradianceChipClick}
               >
                 <ha-icon icon="mdi:white-balance-sunny"></ha-icon>
@@ -1906,7 +1895,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         ${showLive
           ? html`<button
               class="live-chip"
-              aria-label="Live"
+              aria-label=${this._l("live")}
               @click=${this._backToLive}
             >
               <hui-energy-graph-chip>
@@ -2079,6 +2068,15 @@ export class HuiEnergySolarOverviewCard extends LitElement {
       }
     }
     return pts[n - 1].v;
+  }
+
+  // Localised string for one of the card's own translation keys.
+  private _l(key: string): string {
+    return (
+      this.hass?.localize(
+        `ui.panel.energy.cards.energy_solar_overview.${key}`
+      ) ?? ""
+    );
   }
 
   // Icon of what the chart currently shows, for the timeline indicator chip
@@ -2639,6 +2637,7 @@ export class HuiEnergySolarOverviewCard extends LitElement {
         role="button"
         tabindex="0"
         aria-pressed=${active}
+        aria-label=${this._l(`band_${band}`)}
         data-band=${band}
         @click=${this._onCloudBandClick}
       >

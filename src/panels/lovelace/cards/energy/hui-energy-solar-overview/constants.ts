@@ -1,25 +1,11 @@
 //Card-level tunables: config schema, defaults, geometry, timeline and timing constants.
 
-//User-facing config passed to setConfig(), read by the engine and editor. Every key is optional and
-//typed unknown; callers must validate / coerce before use. DEFAULT_* below supply absent values.
+//Card config passed to setConfig(). All visual tunables are hardcoded to the DEFAULT_* constants
+//below, so the only honoured keys are `title` (set by the energy strategy, read via the index
+//signature) and the optional home-location override. Every key is optional and typed unknown.
 export interface SolarOverviewCardConfig {
-  //Index signature lets legacy YAML with retired keys pass through without widening errors.
+  //Index signature lets the strategy's `title` and any legacy YAML key pass through.
   [key: string]: unknown;
-  //When false, all OpenFreeMap label layers are hidden. Default true.
-  "show-labels"?: unknown;
-  //OpenFreeMap base style: 'streets' (Liberty) or 'minimal' (Positron). Dark HA theme auto-selects
-  //the Fiord dark style.
-  "map-style"?: unknown;
-  //Display radius (m) for buildings + raster shadows. Clamped [50, 500], default 200. Primary perf
-  //lever on older phones.
-  "display-radius"?: unknown;
-  //Opacity 0..1 of surrounding buildings; home stays at 1.0. Default 0.25.
-  "building-opacity"?: unknown;
-  //Cluster radius (m): buildings within it (or containing the home point) render at full opacity as
-  //part of the home. Default 0.
-  "building-cluster-radius"?: unknown;
-  "shadows-enabled"?: unknown;
-  "shadow-opacity"?: unknown;
   //Home location override. Used only when BOTH parse as finite, in-range numbers (lat -90..90, lon
   //-180..180); otherwise falls back to hass.config.{latitude, longitude}.
   "home-latitude"?: unknown;
@@ -29,44 +15,14 @@ export interface SolarOverviewCardConfig {
 //Sun identity (arc + ray + disc) uses HA amber so it stays distinct from the PV production orange.
 export const DEFAULT_SUN_COLOR_HEX = "#ffc107"; //--amber-color
 export const DEFAULT_CLOUD_COLOR_HEX = "#727272"; //--secondary-text-color (neutral)
-//PV / battery / grid colours are not duplicated here; their use sites read the HA Energy palette
-//directly via var(--energy-*-color, #fallback).
+export const DEFAULT_BUILDING_COLOR_HEX = "#cccccc"; //HA neutral-80 from the frontend palette (src/resources/theme/color)
 
+//Global display radius (m) for buildings + raster shadows; bounds every layer.
 export const DEFAULT_DISPLAY_RADIUS_M = 200;
-export const MIN_DISPLAY_RADIUS_M = 50;
-export const MAX_DISPLAY_RADIUS_M = 500;
 //Fade band width, measured INWARD from DEFAULT_DISPLAY_RADIUS_M.
 export const DISPLAY_FADE_DELTA_M = 50;
 export const DEFAULT_BUILDING_OPACITY = 0.25;
 export const DEFAULT_BUILDING_CLUSTER_RADIUS_M = 0;
-//HA neutral-80 from the frontend palette (src/resources/theme/color): a clean,
-//theme-neutral building grey that reads on the slate basemap in light and dark.
-export const DEFAULT_BUILDING_COLOR_HEX = "#cccccc";
-
-//Resolve the display radius (m) from `display-radius`, clamped to [MIN, MAX], default DEFAULT.
-export function displayRadiusM(
-  config: SolarOverviewCardConfig | undefined
-): number {
-  const raw = config?.["display-radius"];
-  const n =
-    typeof raw === "number"
-      ? raw
-      : typeof raw === "string"
-        ? parseFloat(raw)
-        : NaN;
-  if (!Number.isFinite(n)) {
-    return DEFAULT_DISPLAY_RADIUS_M;
-  }
-  const r = Math.round(n);
-  if (r < MIN_DISPLAY_RADIUS_M) {
-    return MIN_DISPLAY_RADIUS_M;
-  }
-  if (r > MAX_DISPLAY_RADIUS_M) {
-    return MAX_DISPLAY_RADIUS_M;
-  }
-  return r;
-}
-
 export const DEFAULT_SHADOW_OPACITY = 0.32;
 
 //Decimal places every value readout prints (kW / kWh). Fixed; no config override.

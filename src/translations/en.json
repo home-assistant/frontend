@@ -11221,9 +11221,17 @@
           "energy_distribution_title": "Energy distribution",
           "energy_solar_overview_title": "Solar overview",
           "energy_solar_overview": {
-            "cloud_band_low": "Low",
-            "cloud_band_mid": "Mid",
-            "cloud_band_high": "High"
+            "chart_production": "Show production in chart",
+            "chart_grid": "Show grid in chart",
+            "chart_battery_charge": "Show battery charge in chart",
+            "chart_battery_power": "Show battery power in chart",
+            "chart_irradiance": "Show irradiance in chart",
+            "weather_open": "Open weather mode",
+            "weather_back": "Back to overview",
+            "live": "Live",
+            "band_low": "Low clouds",
+            "band_mid": "Mid clouds",
+            "band_high": "High clouds"
           },
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",

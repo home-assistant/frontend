@@ -9,18 +9,6 @@ import {
   type OverlaysHost,
 } from "./overlays";
 
-//Visual config keys the engine reacts to via updateConfig() without a full respawn. Exhaustive: a
-//missing key would leave the engine on stale values until the next natural respawn.
-//camera-* keys are deliberately excluded (a slider drag would respawn the WebGL context every
-//frame); the editor pushes those through engine.setCamera* and bakes them into the config instead.
-export const VISUAL_CONFIG_KEYS = [
-  "show-labels",
-  "map-style",
-  "display-radius",
-  "building-cluster-radius",
-  "building-opacity",
-] as const;
-
 //Defensive coord parser: bare Number() coerces '', false, [], null all to 0 (a valid latitude) and
 //would silently win the range check, so accept numbers and numeric strings only; reject the rest.
 function parseConfigCoord(raw: unknown): number | null {
@@ -104,27 +92,6 @@ function _resolveHomeCoords(
     return null;
   }
   return { lat, lon };
-}
-
-//Stable signature of the visual config, used to skip updateConfig() when nothing the engine cares
-//about changed. WeakMap-cached on config identity to avoid re-allocating the join string per cycle.
-const _configSigCache = new WeakMap<SolarOverviewCardConfig, string>();
-
-export function computeConfigSig(
-  config: SolarOverviewCardConfig | undefined
-): string {
-  if (!config) {
-    return "";
-  }
-  const cached = _configSigCache.get(config);
-  if (cached !== undefined) {
-    return cached;
-  }
-  const sig = VISUAL_CONFIG_KEYS.map((k) => `${k}=${config[k] ?? ""}`).join(
-    "|"
-  );
-  _configSigCache.set(config, sig);
-  return sig;
 }
 
 //Document-level visibilitychange listener stored on the host.
@@ -310,12 +277,7 @@ export function initEngineNow(host: InitHost): void {
         host._initInflight = false;
         return;
       }
-      host._engine = new SolarOverviewEngine(
-        container,
-        host.config,
-        [lon, lat],
-        elevation
-      );
+      host._engine = new SolarOverviewEngine(container, [lon, lat], elevation);
       host._lastEngineSpawnAt = performance.now();
       wireEngineCallbacks(host);
       //Seed the timeline window from the engine's synthetic fallback so the time-bar renders from

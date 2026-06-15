@@ -1,5 +1,5 @@
-//Small formatting helpers shared by the card render path and the visual editor. Free of Lit /
-//engine symbols so any card-side module can import them cheaply.
+//Small formatting helpers for the card render path. Free of Lit / engine symbols
+//so any card-side module can import them cheaply.
 
 import { hexBlend } from "../../../../../../common/color/hex";
 import { formatNumber } from "../../../../../../common/number/format_number";

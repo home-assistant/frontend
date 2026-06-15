@@ -22,7 +22,6 @@ import {
   shadowBoundsCornersLL,
   paintShadowRaster,
   type ShadowBoundsCorners,
-  type ShadowPrecisionLevel,
 } from "./engine/shadows";
 import { WeatherCloudLayer } from "./engine/weather-cloud-layer";
 import {
@@ -30,9 +29,8 @@ import {
   CAMERA_PITCH_MAX_DEG,
   CAMERA_PITCH_REST_DEG,
   CAMERA_TARGET_HEIGHT_M,
-  type SolarOverviewCardConfig,
   DISPLAY_FADE_DELTA_M,
-  displayRadiusM,
+  DEFAULT_DISPLAY_RADIUS_M,
   DEFAULT_BUILDING_OPACITY,
   DEFAULT_BUILDING_CLUSTER_RADIUS_M,
   DEFAULT_BUILDING_COLOR_HEX,
@@ -195,7 +193,6 @@ export class SolarOverviewEngine {
   //Home altitude (m a.s.l.), forwarded to Open-Meteo via &elevation=. Undefined
   //falls back to the API's global 90 m DEM.
   private homeElevation?: number;
-  cfg: SolarOverviewCardConfig;
 
   private _fetchLat = 0;
   private _fetchLon = 0;
@@ -341,7 +338,7 @@ export class SolarOverviewEngine {
 
   //False once cleanup() has run. The card polls this so it can detect when its
   //engine was force-evicted by the MAX_LIVE_ENGINES cap (otherwise it keeps a
-  //stale reference and calls updateConfig() on a destroyed map).
+  //stale reference and drives a destroyed map).
   public isAlive(): boolean {
     return this.map !== undefined;
   }
@@ -1186,7 +1183,6 @@ export class SolarOverviewEngine {
 
   constructor(
     container: HTMLElement,
-    config: SolarOverviewCardConfig,
     haCoords: [number, number],
     haElevation?: number
   ) {
@@ -1196,7 +1192,6 @@ export class SolarOverviewEngine {
       typeof haElevation === "number" && Number.isFinite(haElevation)
         ? haElevation
         : undefined;
-    this.cfg = { ...config };
 
     //Evict the oldest live engine at the cap. Set iteration is insertion order,
     //so the first value is the longest-lived (usually an orphaned preview).
@@ -1395,8 +1390,8 @@ export class SolarOverviewEngine {
 
     //Re-aim the camera target only once the camera settles (moveend), never
     //frame-by-frame: setPadding mid-`move` would interrupt programmatic eases
-    //(e.g. the weather-mode dezoom). The target depends on pitch/zoom, not
-    //bearing, so it does not need to track auto-rotate.
+    //(like the weather-mode dezoom). The target depends on pitch/zoom, not
+    //bearing, so bearing-only camera rotation does not affect it.
     this._mapMoveEndHandler = () => {
       this._invalidateProjCache();
       this._applyCameraTargetPadding();
@@ -1520,11 +1515,9 @@ export class SolarOverviewEngine {
     this._refreshWeather();
   }
 
-  //Resolves the OpenFreeMap style URL from `map-style` + theme polarity:
-  //  streets + light → liberty   streets + dark → fiord
-  //  minimal + light → positron  minimal + dark → fiord
-  //fiord is used for dark over OFM's near-black `dark` style, too oppressive at
-  //the card viewport. _cardIsDark is pushed by the card on every Lit update.
+  //Theme polarity drives the basemap (light → liberty, dark → fiord; fiord reads
+  //better than OFM's near-black `dark` at the card viewport). Pushed by the card
+  //on every Lit update.
   private _cardIsDark = false;
   //URL last passed to setStyle. _onStyleLoad re-fires setStyle if it diverges from
   //the desired URL (a polarity change that landed before the first style.load),
@@ -1557,18 +1550,8 @@ export class SolarOverviewEngine {
   }
 
   private _resolveMapStyle(): { url: string; styleName: string } {
-    const raw = String(this.cfg["map-style"] ?? "streets").toLowerCase();
-    const isDark = this._cardIsDark;
-
-    let styleName: string;
-    if (isDark) {
-      styleName = "fiord";
-    } else if (raw === "minimal") {
-      styleName = "positron";
-    } else {
-      styleName = "liberty";
-    }
-
+    //Dark HA theme uses the Fiord dark basemap, light theme the Liberty streets.
+    const styleName = this._cardIsDark ? "fiord" : "liberty";
     return {
       url: `https://tiles.openfreemap.org/styles/${styleName}`,
       styleName,
@@ -1581,24 +1564,6 @@ export class SolarOverviewEngine {
     return IS_MOBILE
       ? Math.min(Math.max(dpr, 1), 1.25)
       : Math.min(Math.max(dpr, 1.5), 2);
-  }
-
-  //Fixed precision the cast-shadow raster is sized for.
-  private _shadowPrecisionLevel(): ShadowPrecisionLevel {
-    return "medium";
-  }
-
-  //Master shadow toggle.
-  private _shadowsEnabled(): boolean {
-    return this.cfg["shadows-enabled"] !== false;
-  }
-
-  private _shadowOpacity(): number {
-    const raw = Number(this.cfg["shadow-opacity"]);
-    if (!Number.isFinite(raw)) {
-      return DEFAULT_SHADOW_OPACITY;
-    }
-    return Math.max(0, Math.min(1, raw));
   }
 
   private _findHourIndex(t: Date): number {
@@ -1971,46 +1936,37 @@ export class SolarOverviewEngine {
   //Cast-shadow opacity fall-off: full up to one fade-band inside the display
   //radius, ramping to 0 at the radius so buildings and shadows share a boundary.
   private _shadowFadeRange(): [fullMeters: number, fadeMeters: number] {
-    const radius = this._buildingRadiusMeters();
+    const radius = DEFAULT_DISPLAY_RADIUS_M;
     return [Math.max(0, radius - DISPLAY_FADE_DELTA_M), radius];
   }
 
-  //Toggle the basemap's symbol layers (road names, POIs, ...) per `show-labels`
-  //by flipping their visibility. Our own sol-* layers are skipped defensively.
+  //Keep the basemap's symbol layers (road names, POIs, ...) visible. Our own
+  //sol-* layers are skipped defensively.
   private _applyLabelVisibility(): void {
     if (!this.map) {
       return;
     }
-    const showLabels = this.cfg["show-labels"] !== false;
-    const visibility = showLabels ? "visible" : "none";
     const layers = this.map.getStyle().layers ?? [];
     for (const l of layers) {
       if (l.type !== "symbol" || l.id.startsWith("sol-")) {
         continue;
       }
       try {
-        this.map.setLayoutProperty(l.id, "visibility", visibility);
+        this.map.setLayoutProperty(l.id, "visibility", "visible");
       } catch (_) {
         /* best-effort: layer visibility */
       }
     }
   }
 
-  //Global display radius shared by every layer + the MapLibre bounds so they all
-  //stop at the same boundary. From the `display-radius` slider; the primary perf
-  //lever on old phones.
-  private _buildingRadiusMeters(): number {
-    return displayRadiusM(this.cfg);
-  }
-
   //Clamp the camera bounds to a bbox ~2x the display radius around the home so
   //MapLibre treats the area outside the disc as unreachable, dampening
-  //speculative tile fetches during rotation. Re-called on a radius edit.
+  //speculative tile fetches during rotation.
   private _applyMapBounds(): void {
     if (!this.map) {
       return;
     }
-    const radiusM = this._buildingRadiusMeters();
+    const radiusM = DEFAULT_DISPLAY_RADIUS_M;
     const halfBbox = radiusM * 2; //2 x radius keeps the pitched horizon inside
     const D = Math.PI / 180;
     const mPerDegLat = 111_320;
@@ -2027,33 +1983,9 @@ export class SolarOverviewEngine {
     }
   }
 
-  //Configured surroundings opacity (0..1); DEFAULT_BUILDING_OPACITY on bad input.
-  private _buildingOpacity(): number {
-    const v = Number(this.cfg["building-opacity"]);
-    if (!Number.isFinite(v)) {
-      return DEFAULT_BUILDING_OPACITY;
-    }
-    return Math.min(1, Math.max(0, v));
-  }
-
-  //Cluster radius (m): buildings within it (or containing the home) join the home
-  //group at full opacity, so attached outbuildings read as one. 0 = single polygon.
-  private _buildingClusterRadiusMeters(): number {
-    const v = Number(this.cfg["building-cluster-radius"]);
-    if (!Number.isFinite(v) || v < 0) {
-      return DEFAULT_BUILDING_CLUSTER_RADIUS_M;
-    }
-    return Math.min(100, v);
-  }
-
-  //Building base colour (fixed neutral grey; colour configs no longer consulted).
-  private _buildingColor(): string {
-    return DEFAULT_BUILDING_COLOR_HEX;
-  }
-
   //Adds the two custom building layers: sol-buildings-surroundings (within the
-  //radius, configured opacity) and sol-buildings-home (the home polygon at full
-  //opacity). GeoJSON is fetched once per (home, radius) and reused across reloads.
+  //radius, at the fixed surroundings opacity) and sol-buildings-home (the home
+  //polygon at full opacity). GeoJSON is fetched once per home and reused.
   private _addBuildings(): void {
     if (!this.map) {
       return;
@@ -2183,8 +2115,8 @@ export class SolarOverviewEngine {
       }
     }
 
-    const opacity = this._buildingOpacity();
-    const baseColor = this._buildingColor();
+    const opacity = DEFAULT_BUILDING_OPACITY;
+    const baseColor = DEFAULT_BUILDING_COLOR_HEX;
     const homeData =
       this._buildingsData?.home ??
       ({
@@ -2228,7 +2160,7 @@ export class SolarOverviewEngine {
     const shadowBounds: ShadowBoundsCorners = shadowBoundsCornersLL(
       this.homeLat,
       this.homeLon,
-      this._buildingRadiusMeters()
+      DEFAULT_DISPLAY_RADIUS_M
     );
     if (!this.map.getSource("sol-building-shadows-src")) {
       this.map.addSource("sol-building-shadows-src", {
@@ -2237,7 +2169,7 @@ export class SolarOverviewEngine {
         coordinates: shadowBounds,
       });
     }
-    const shadowOpa = this._shadowOpacity();
+    const shadowOpa = DEFAULT_SHADOW_OPACITY;
     if (!this.map.getLayer("sol-building-shadows")) {
       this.map.addLayer({
         id: "sol-building-shadows",
@@ -2291,8 +2223,8 @@ export class SolarOverviewEngine {
     if (!this.map) {
       return;
     }
-    const radius = this._buildingRadiusMeters();
-    const clusterRadius = this._buildingClusterRadiusMeters();
+    const radius = DEFAULT_DISPLAY_RADIUS_M;
+    const clusterRadius = DEFAULT_BUILDING_CLUSTER_RADIUS_M;
     const key = `${this.homeLat.toFixed(6)}|${this.homeLon.toFixed(6)}|${radius}|${clusterRadius}`;
 
     if (this._buildingsData && this._buildingsFetchKey === key) {
@@ -2413,7 +2345,7 @@ export class SolarOverviewEngine {
     //sunrise/sunset).
     try {
       const buildingHex = buildingColorForAltitude(
-        this._buildingColor(),
+        DEFAULT_BUILDING_COLOR_HEX,
         altitude
       );
       for (const lid of ["sol-buildings-surroundings", "sol-buildings-home"]) {
@@ -2440,16 +2372,14 @@ export class SolarOverviewEngine {
       /* best-effort: directional light update */
     }
 
-    //Cast-shadow polygons (empty when the toggle is off).
+    //Cast-shadow polygons.
     try {
-      const shadowsOn = this._shadowsEnabled();
-      const radius = this._buildingRadiusMeters();
+      const radius = DEFAULT_DISPLAY_RADIUS_M;
       //Signature of every shadow-raster input; an unchanged signature skips the
       //project + paint + PNG-encode. Altitude/azimuth rounded to 0.1 deg (~6 min)
       //so a scrub no longer triggers a PNG encode every half-second.
       const sig =
-        `${shadowsOn ? "1" : "0"}` +
-        `|${altitude.toFixed(1)}|${azimuth.toFixed(1)}` +
+        `${altitude.toFixed(1)}|${azimuth.toFixed(1)}` +
         `|${this.homeLat.toFixed(6)}|${this.homeLon.toFixed(6)}` +
         `|${radius}` +
         `|B${
@@ -2464,7 +2394,7 @@ export class SolarOverviewEngine {
           type: "FeatureCollection",
           features: [],
         };
-        if (shadowsOn && this._buildingsData) {
+        if (this._buildingsData) {
           input = {
             type: "FeatureCollection",
             features: [
@@ -2485,13 +2415,13 @@ export class SolarOverviewEngine {
         if (this.map) {
           //Reuse the backing canvas across refreshes (recreate only if the
           //precision-derived size changed) to avoid allocating 16 MB per minute.
-          const rasterSize = shadowRasterSizeFor(this._shadowPrecisionLevel());
+          const rasterSize = shadowRasterSizeFor("medium");
           if (!this._shadowCanvas || this._shadowCanvas.width !== rasterSize) {
             this._shadowCanvas = document.createElement("canvas");
             this._shadowCanvas.width = rasterSize;
             this._shadowCanvas.height = rasterSize;
           }
-          const radiusM = this._buildingRadiusMeters();
+          const radiusM = DEFAULT_DISPLAY_RADIUS_M;
           const [fullR, fadeR] = this._shadowFadeRange();
           paintShadowRaster(
             this.map,
@@ -2767,8 +2697,8 @@ export class SolarOverviewEngine {
     const ANCHOR_SAMPLES = 48;
     const anchorLatPerM = 1 / 111_320;
     const anchorLonPerM = anchorLatPerM / cosLat;
-    //Reuse an instance-level scratch buffer; this fires on every move during
-    //auto-rotate and the per-call string allocations were a measurable freeze.
+    //Reuse an instance-level scratch buffer; this fires on every move during a
+    //camera rotation and the per-call string allocations were a measurable freeze.
     const anchorPts = this._anchorPtsBuf;
     if (anchorPts.length !== ANCHOR_SAMPLES) {
       anchorPts.length = ANCHOR_SAMPLES;
@@ -2800,7 +2730,7 @@ export class SolarOverviewEngine {
 
   //Per-frame projection cache + scratch buffers, mutated in place by
   //_projectScenePoint(), which runs hundreds of times per transform. Naive
-  //allocation here is the dominant GC-pressure source under auto-rotate.
+  //allocation here is the dominant GC-pressure source under continuous rotation.
   //_projCache holds the camera-side data for the current frame (invalidated on
   //every move/render/resize); _mvpBuf and _llBuf are reused matrix/coord scratch.
   private _projCache: {
@@ -2830,13 +2760,10 @@ export class SolarOverviewEngine {
   private _lastPaddingZoom = -1;
   private _applyingPadding = false;
 
-  //Aim the camera at a point CAMERA_TARGET_HEIGHT_M above the home (on the
-  //ground->home vertical) by sizing MapLibre top padding to that height's on-screen
-  //projection, shifting the focal point down so the house sits lower with headroom
-  //above. The padding depends ONLY on pitch + zoom, so it is gated on those: a
-  //bearing change (rotate / auto-rotate) leaves it untouched, and crucially the
-  //setPadding call's own `moveend` carries the same pitch/zoom, so this never loops
-  //or jitters the overlay. Self-collapses to ~0 at top-down pitch.
+  //Frame a point CAMERA_TARGET_HEIGHT_M above the home: size the MapLibre top
+  //padding to that height's on-screen projection so the house sits lower with
+  //headroom above. Gated on pitch/zoom (the only inputs) so rotation never moves
+  //it and setPadding's own moveend can't loop. Collapses to ~0 at top-down pitch.
   private _applyCameraTargetPadding(): void {
     if (!this.map || this._applyingPadding) {
       return;
@@ -3383,109 +3310,6 @@ export class SolarOverviewEngine {
       }
     }
     return out.length ? out : null;
-  }
-
-  public updateConfig(cfg: SolarOverviewCardConfig): void {
-    const prevStyleUrl = this._resolveMapStyle().url;
-    const prevPixelR = this._pixelRatio();
-    const prevRadius = this._buildingRadiusMeters();
-    const prevCluster = this._buildingClusterRadiusMeters();
-    const prevOpacity = this._buildingOpacity();
-    const prevColor = this._buildingColor();
-    const prevShadowOpa = this._shadowOpacity();
-    const prevShadowsOn = this._shadowsEnabled();
-    this.cfg = { ...cfg };
-
-    if (!this.map) {
-      return;
-    }
-
-    //Map-style change → reload the basemap. setStyle() wipes our custom sources;
-    //_onStyleLoad re-adds them. Drop _mapReady while the new style is in flight.
-    const nextStyleInfo = this._resolveMapStyle();
-    const styleNeedsReload = nextStyleInfo.url !== prevStyleUrl;
-    if (styleNeedsReload) {
-      this._mapReady = false;
-      this.map.setStyle(nextStyleInfo.url);
-      return;
-    }
-
-    //Pixel-ratio toggle: apply in-place.
-    const nextPixelR = this._pixelRatio();
-    if (nextPixelR !== prevPixelR) {
-      try {
-        this.map.setPixelRatio(nextPixelR);
-      } catch (_) {
-        /* best-effort: pixel ratio update */
-      }
-    }
-
-    this._applyLabelVisibility();
-
-    //Building updates: radius/cluster changes invalidate the cached GeoJSON and
-    //refetch; opacity/colour are cheap paint updates.
-    const nextRadius = this._buildingRadiusMeters();
-    const nextCluster = this._buildingClusterRadiusMeters();
-    const nextOpacity = this._buildingOpacity();
-    const nextColor = this._buildingColor();
-    if (nextRadius !== prevRadius || nextCluster !== prevCluster) {
-      this._buildingsData = null;
-      this._buildingsFetchKey = "";
-      this._addBuildings();
-      if (nextRadius !== prevRadius) {
-        //The display radius also drives the camera bounds + shadow fade, so
-        //re-clamp and invalidate the shadow signature to resize in lockstep.
-        this._applyMapBounds();
-        this._lastShadowSig = undefined;
-      }
-    } else {
-      if (
-        nextOpacity !== prevOpacity &&
-        this.map.getLayer("sol-buildings-surroundings")
-      ) {
-        this.map.setPaintProperty(
-          "sol-buildings-surroundings",
-          "fill-extrusion-opacity",
-          nextOpacity
-        );
-      }
-      if (nextColor !== prevColor) {
-        for (const lid of [
-          "sol-buildings-surroundings",
-          "sol-buildings-home",
-        ]) {
-          if (this.map.getLayer(lid)) {
-            this.map.setPaintProperty(lid, "fill-extrusion-color", nextColor);
-          }
-        }
-      }
-    }
-
-    //Shadow opacity is a paint-level update on the raster layer.
-    const nextShadowOpa = this._shadowOpacity();
-    if (nextShadowOpa !== prevShadowOpa) {
-      for (const lid of SHADOW_LAYER_IDS) {
-        if (this.map.getLayer(lid)) {
-          try {
-            this.map.setPaintProperty(lid, "raster-opacity", nextShadowOpa);
-          } catch (_) {
-            /* best-effort: shadow raster opacity */
-          }
-        }
-      }
-    }
-
-    //Master shadow toggle: force a fresh paint so the polygons appear or clear.
-    const nextShadowsOn = this._shadowsEnabled();
-    if (nextShadowsOn !== prevShadowsOn) {
-      this._lastShadowSig = undefined;
-      this._lastAtmosphereAlt = -999;
-      this._refreshShadowsAndAtmosphere();
-    }
-
-    if (this._homeHourlyData && this._mapReady) {
-      this._renderForCurrentSelection();
-    }
   }
 
   public cleanup(): void {
