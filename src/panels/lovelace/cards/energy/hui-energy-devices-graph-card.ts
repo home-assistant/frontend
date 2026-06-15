@@ -568,8 +568,11 @@ export class HuiEnergyDevicesGraphCard
     }
 
     if (compareData) {
+      const compareById = new Map(
+        chartDataCompare.map((d2) => [(d2 as any).id as string, d2] as const)
+      );
       datasets[1].data = chartData.map((d) =>
-        chartDataCompare.find((d2) => (d2 as any).id === d.id)
+        compareById.get(d.id)
       ) as typeof chartDataCompare;
     }
 
