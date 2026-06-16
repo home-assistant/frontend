@@ -95,7 +95,7 @@ jobs:
             // Content of a "## <name>" section, or null when the heading is absent.
             const section = (name) => {
               const match = body.match(
-                new RegExp(`##\\s*${name}([\\s\\S]*?)(?=\\n##\\s|$)`, "i")
+                new RegExp(`##\\s${name}([\\s\\S]*?)(?=\\n##\\s|$)`, "i")
               );
               return match ? match[1] : null;
             };
