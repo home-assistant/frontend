@@ -1,5 +1,6 @@
+import memoizeOne from "memoize-one";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
@@ -100,6 +101,7 @@ export const stateContentHasTimestamp = (
   }
   return (
     TIMESTAMP_DOMAIN_CONTENTS[domain] &&
+    content &&
     contentArray.some((c) => TIMESTAMP_DOMAIN_CONTENTS[domain].includes(c))
   );
 };
@@ -119,31 +121,25 @@ class StateDisplay extends LitElement {
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
 
-  private _normalizedContent?: StateContent;
-
   protected createRenderRoot() {
     return this;
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>) {
-    if (changedProps.has("content")) {
-      const migrateKey = (s) => {
-        if (s === "last-updated") return "last_updated";
-        if (s === "last-changed") return "last_changed";
-        return s;
-      };
-      if (typeof this.content === "string") {
-        this._normalizedContent = migrateKey(this.content);
-      } else if (Array.isArray(this.content)) {
-        this._normalizedContent = this.content.map(migrateKey);
-      }
-    }
-  }
+  private _normalizeContent = memoizeOne(
+    (content?: StateContent): StateContent | undefined =>
+      content == null
+        ? undefined
+        : ensureArray(content).map((s) => {
+            if (s === "last-updated") return "last_updated";
+            if (s === "last-changed") return "last_changed";
+            return s;
+          })
+  );
 
   private get _content(): StateContent {
     const domain = computeStateDomain(this.stateObj);
     return (
-      this._normalizedContent ??
+      this._normalizeContent(this.content) ??
       DEFAULT_STATE_CONTENT_DOMAINS[domain] ??
       "state"
     );
@@ -197,12 +193,12 @@ class StateDisplay extends LitElement {
       return this.hass.formatEntityName(stateObj, { type }) || undefined;
     }
 
-    let relativeDateTime: string | Date | undefined;
+    let relativeDateTime: string | number | undefined;
 
     if (TIMESTAMP_STATE_PROPS.includes(content)) {
       relativeDateTime = stateObj[content];
     } else if (domain === "input_datetime" && content === "timestamp") {
-      relativeDateTime = new Date(stateObj.attributes.timestamp * 1000);
+      relativeDateTime = stateObj.attributes.timestamp * 1000;
     } else if (
       TIMESTAMP_CONTENTS.includes(content) ||
       TIMESTAMP_DOMAIN_CONTENTS[domain]?.includes(content)
@@ -210,20 +206,10 @@ class StateDisplay extends LitElement {
       relativeDateTime = stateObj.attributes[content];
     }
 
-    if (relativeDateTime) {
-      if (!this.timeFormat) {
-        return html`
-          <ha-relative-time
-            .datetime=${relativeDateTime}
-            capitalize
-          ></ha-relative-time>
-        `;
-      }
+    if (relativeDateTime !== undefined) {
       return html`<hui-timestamp-display
         .hass=${this.hass}
-        .ts=${relativeDateTime instanceof Date
-          ? relativeDateTime
-          : new Date(relativeDateTime)}
+        .ts=${new Date(relativeDateTime)}
         .format=${this.timeFormat}
         capitalize
       ></hui-timestamp-display>`;

@@ -665,6 +665,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

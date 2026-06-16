@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
@@ -20,19 +21,18 @@ export class HaTimeFormatPicker extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  protected render() {
-    const OPTIONS = [
-      { label: this._localize("ui.common.auto"), value: "auto" },
-    ].concat(
+  private _options = memoizeOne((localize: LocalizeFunc) =>
+    [{ label: localize("ui.common.auto"), value: "auto" }].concat(
       TIMESTAMP_RENDERING_FORMATS.map((format) => ({
         label:
-          this._localize(
-            `ui.components.time-format-picker.formats.${format}`
-          ) || format,
+          localize(`ui.components.time-format-picker.formats.${format}`) ||
+          format,
         value: format,
       }))
-    );
+    )
+  );
 
+  protected render() {
     return html`
       <ha-select
         .label=${this.label ?? ""}
@@ -40,7 +40,7 @@ export class HaTimeFormatPicker extends LitElement {
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         @selected=${this._selectChanged}
-        .options=${OPTIONS}
+        .options=${this._options(this._localize)}
       >
       </ha-select>
     `;
