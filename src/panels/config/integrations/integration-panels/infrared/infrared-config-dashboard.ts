@@ -1,25 +1,25 @@
-import { mdiRemote, mdiRemoteTv } from "@mdi/js";
-import type {
-  CSSResultGroup,
-  PropertyValues,
-  TemplateResult,
-  nothing,
-} from "lit";
+import {
+  mdiAlertCircleOutline,
+  mdiCheck,
+  mdiCloseCircleOutline,
+  mdiRemote,
+} from "@mdi/js";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-relative-time";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import type { InfraredProxy } from "../../../../../data/infrared";
-import { listInfraredProxies } from "../../../../../data/infrared";
+import {
+  computeInfraredDevices,
+  listInfraredProxies,
+} from "../../../../../data/infrared";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 
 @customElement("infrared-config-dashboard")
 export class InfraredConfigDashboard extends LitElement {
@@ -33,9 +33,11 @@ export class InfraredConfigDashboard extends LitElement {
 
   @state() private _proxies: InfraredProxy[] = [];
 
-  public firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._fetchProxies();
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass) {
+      this._fetchProxies();
+    }
   }
 
   private async _fetchProxies(): Promise<void> {
@@ -44,8 +46,22 @@ export class InfraredConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const emitters = this._proxies.filter((p) => p.type === "emitter");
-    const receivers = this._proxies.filter((p) => p.type === "receiver");
+    const devices = computeInfraredDevices(this._proxies, this.hass);
+    const deviceCount = devices.length;
+    const onlineCount = devices.filter((d) => d.online).length;
+
+    const status =
+      deviceCount === 0
+        ? "offline"
+        : onlineCount === deviceCount
+          ? "online"
+          : "warning";
+    const statusIcon =
+      status === "offline"
+        ? mdiCloseCircleOutline
+        : status === "warning"
+          ? mdiAlertCircleOutline
+          : mdiCheck;
 
     return html`
       <hass-subpage
@@ -55,93 +71,49 @@ export class InfraredConfigDashboard extends LitElement {
         back-path="/config"
       >
         <div class="container">
+          <ha-card class="content network-status">
+            <div class="card-content">
+              <div class="heading">
+                <div class="icon ${status}">
+                  <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
+                </div>
+                <div class="details">
+                  ${this.hass.localize(
+                    `ui.panel.config.infrared.status_${status}`
+                  )}<br />
+                  <small>
+                    ${this.hass.localize(
+                      "ui.panel.config.infrared.devices_online_summary",
+                      { online: onlineCount, total: deviceCount }
+                    )}
+                  </small>
+                </div>
+                <ha-svg-icon class="logo" .path=${mdiRemote}></ha-svg-icon>
+              </div>
+            </div>
+          </ha-card>
+
           <ha-card class="network-card">
             <div class="card-header">
-              ${this.hass.localize("ui.panel.config.infrared.proxies")}
+              ${this.hass.localize("ui.panel.config.infrared.my_devices")}
             </div>
             <div class="card-content network-card-content">
-              <div class="subheader">
-                ${this.hass.localize("ui.panel.config.infrared.emitters")}
-              </div>
               <ha-md-list>
-                ${emitters.length === 0
-                  ? html`<div class="no-proxies">
-                      ${this.hass.localize(
-                        "ui.panel.config.infrared.no_proxies"
-                      )}
-                    </div>`
-                  : emitters.map((entity) =>
-                      this._renderProxy(mdiRemote, entity)
+                <ha-md-list-item type="link" href="/config/infrared/devices">
+                  <ha-svg-icon slot="start" .path=${mdiRemote}></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.infrared.devices_count",
+                      { count: deviceCount }
                     )}
-              </ha-md-list>
-
-              <div class="subheader">
-                ${this.hass.localize("ui.panel.config.infrared.receivers")}
-              </div>
-              <ha-md-list>
-                ${emitters.length === 0
-                  ? html`<div class="no-proxies">
-                      ${this.hass.localize(
-                        "ui.panel.config.infrared.no_proxies"
-                      )}
-                    </div>`
-                  : receivers.map((entity) =>
-                      this._renderProxy(mdiRemoteTv, entity)
-                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
               </ha-md-list>
             </div>
           </ha-card>
         </div>
       </hass-subpage>
-    `;
-  }
-
-  private _renderProxy(
-    icon: string,
-    proxy: InfraredProxy
-  ): TemplateResult | typeof nothing {
-    const entityState = this.hass.states[proxy.entity_id];
-    const entity = this.hass.entities[proxy.entity_id];
-    const device = proxy.device_id
-      ? this.hass.devices[proxy.device_id]
-      : undefined;
-    if (!device) {
-      return html`
-        <ha-md-list-item>
-          <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
-          <div slot="headline">${computeStateName(entityState)}</div>
-        </ha-md-list-item>
-      `;
-    }
-
-    const name = computeDeviceName(device) || computeStateName(entityState);
-    const areaId = entity.area_id || device.area_id;
-    const area = areaId ? this.hass.areas[areaId] : undefined;
-
-    const secondary = area ? area.name : "";
-
-    return html`
-      <ha-md-list-item
-        type="link"
-        href="/config/devices/device/${proxy.device_id}"
-      >
-        <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
-        <div slot="headline">${name}</div>
-        <div slot="supporting-text">${secondary}</div>
-        <div slot="end">
-          ${this.hass.localize("ui.panel.config.infrared.last_used")}:
-          <br />
-          ${entityState.state === "unavailable" ||
-          entityState.state === "unknown"
-            ? this.hass.localize(`state.default.${entityState.state}`)
-            : html`
-                <ha-relative-time
-                  .hass=${this.hass}
-                  .datetime=${entityState.state}
-                ></ha-relative-time>
-              `}
-        </div>
-      </ha-md-list-item>
     `;
   }
 
@@ -179,18 +151,6 @@ export class InfraredConfigDashboard extends LitElement {
           padding-bottom: var(--ha-space-2);
         }
 
-        .subheader {
-          padding: var(--ha-space-2) var(--ha-space-4);
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-          color: var(--secondary-text-color);
-        }
-
-        .no-proxies {
-          padding: var(--ha-space-4);
-          color: var(--secondary-text-color);
-        }
-
         .network-status div.heading {
           display: flex;
           align-items: center;
@@ -219,6 +179,10 @@ export class InfraredConfigDashboard extends LitElement {
 
         .network-status div.heading .icon.online {
           --icon-color: var(--success-color);
+        }
+
+        .network-status div.heading .icon.warning {
+          --icon-color: var(--warning-color);
         }
 
         .network-status div.heading .icon.offline {

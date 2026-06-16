@@ -740,9 +740,9 @@ class HaPanelConfig extends HassRouterPage {
           import("./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"),
       },
       infrared: {
-        tag: "infrared-config-dashboard",
+        tag: "infrared-config-dashboard-router",
         load: () =>
-          import("./integrations/integration-panels/infrared/infrared-config-dashboard"),
+          import("./integrations/integration-panels/infrared/infrared-config-dashboard-router"),
       },
       dhcp: {
         tag: "dhcp-config-panel",

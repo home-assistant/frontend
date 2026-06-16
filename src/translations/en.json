@@ -7133,12 +7133,19 @@
         "infrared": {
           "title": "Infrared",
           "status_online": "Online",
+          "status_warning": "Warning",
           "status_offline": "Offline",
-          "proxies": "Proxies",
-          "emitters": "Emitters",
-          "receivers": "Receivers",
-          "no_proxies": "No infrared proxies found",
-          "last_used": "Last used"
+          "devices_online_summary": "{online}/{total} devices online",
+          "my_devices": "My devices",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "devices_navigation": "Devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "type_emitter": "Emitter",
+          "type_receiver": "Receiver",
+          "type_both": "Receiver, Emitter",
+          "no_devices": "No infrared proxies found"
         },
         "bluetooth": {
           "title": "Bluetooth",
