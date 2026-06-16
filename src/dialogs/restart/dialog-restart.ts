@@ -170,7 +170,7 @@ class DialogRestart extends LitElement {
                 </ha-list-base>
                 <ha-expansion-panel
                   .header=${this.hass.localize(
-                    "ui.dialogs.restart.advanced_options"
+                    "ui.dialogs.restart.more_options"
                   )}
                 >
                   <ha-list-base>
