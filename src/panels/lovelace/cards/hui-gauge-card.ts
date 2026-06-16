@@ -115,10 +115,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     } else {
       parts = this.hass.formatEntityStateToParts(stateObj);
     }
-    const currency_sign =
+    const currencySign =
       parts.find((part) => part.type === "currency_sign")?.value ?? "";
     const val = parts.find((part) => part.type === "value")?.value;
-    const valueToDisplay = `${currency_sign}${val}`;
+    const valueToDisplay = `${currencySign}${val}`;
     const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
