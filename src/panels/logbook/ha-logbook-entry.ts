@@ -125,17 +125,6 @@ class HaLogbookEntry extends LitElement {
           [`category-${model.category}`]: true,
         })}"
       >
-        ${layout === "wide"
-          ? html`<div
-              class="time"
-              role="button"
-              tabindex="0"
-              @click=${this._toggleTime}
-              @keydown=${this._timeKeydown}
-            >
-              <span class="time-primary">${timeLabel}</span>
-            </div>`
-          : nothing}
         <div
           class="node ${classMap({
             "rail-trim-top": this.firstOfDay,
@@ -165,15 +154,28 @@ class HaLogbookEntry extends LitElement {
                   model.what?.text,
                   model.cause,
                   model.context,
-                  timeLabel
+                  timeLabel,
+                  model.category === "entity"
                 )
               : this._renderInline(
                   whatHappened,
                   model.cause,
                   traceLink,
-                  timeLabel
+                  timeLabel,
+                  model.category === "entity"
                 )}
         </div>
+        ${layout === "wide"
+          ? html`<div
+              class="time"
+              role="button"
+              tabindex="0"
+              @click=${this._toggleTime}
+              @keydown=${this._timeKeydown}
+            >
+              <span class="time-primary">${timeLabel}</span>
+            </div>`
+          : nothing}
       </div>
     `;
   }
@@ -231,13 +233,14 @@ class HaLogbookEntry extends LitElement {
     whatHappened: TemplateResult | string,
     cause: LogbookCause | undefined,
     traceLink: string | undefined,
-    timeLabel: string
+    timeLabel: string,
+    showCause: boolean
   ) {
     return html`
       <div class="headline">
         <span class="headline-main">${whatHappened}</span>
         <span class="trailing">
-          ${cause
+          ${showCause && cause
             ? html`<span class="cause-icon-only" title=${cause.name}
                 >${this._causeIcon(cause)}</span
               >`
@@ -264,25 +267,42 @@ class HaLogbookEntry extends LitElement {
     whatText: string | undefined,
     cause: LogbookCause | undefined,
     contextText: string | undefined,
-    timeLabel: string
+    timeLabel: string,
+    showCause: boolean
   ) {
+    const hasCauseRow = !this.noIcon && !!(traceLink || (showCause && cause));
+    // When icon mode has a cause row but no context, skip the standalone
+    // meta/time row and put the time on the cause row instead.
+    const timeInMeta = !hasCauseRow || !!contextText;
     return html`
       <div class="headline">
-        <span class="entity-name"
-          >${this._renderEntity(entityId, name, !!traceLink)}</span
-        >
+        <span class="entity-name">${this._renderEntity(entityId, name)}</span>
         <span class="state-value" title=${whatText ?? ""}>${whatHappened}</span>
       </div>
-      ${this._renderMeta(
-        this.noIcon ? cause : undefined,
-        contextText,
-        traceLink,
-        timeLabel
-      )}
-      ${!this.noIcon && (cause || traceLink)
+      ${timeInMeta
+        ? this._renderMeta(
+            this.noIcon && showCause ? cause : undefined,
+            contextText,
+            this.noIcon ? traceLink : undefined,
+            timeLabel
+          )
+        : nothing}
+      ${hasCauseRow
         ? html`<div class="meta">
-            ${cause ? this._renderCauseLabel(cause) : nothing}
-            ${traceLink ? this._renderTraceLink(traceLink) : nothing}
+            <span class="meta-main">
+              ${showCause && cause ? this._renderCauseLabel(cause) : nothing}
+              ${traceLink ? this._renderTraceLink(traceLink) : nothing}
+            </span>
+            ${!timeInMeta
+              ? html`<span
+                  class="time-inline"
+                  role="button"
+                  tabindex="0"
+                  @click=${this._toggleTime}
+                  @keydown=${this._timeKeydown}
+                  >${timeLabel}</span
+                >`
+              : nothing}
           </div>`
         : nothing}
     `;
@@ -307,7 +327,7 @@ class HaLogbookEntry extends LitElement {
         <span class="headline-main"
           >${!hideName
             ? html`<span class="entity-name"
-                  >${this._renderEntity(entityId, name, !!traceLink)}</span
+                  >${this._renderEntity(entityId, name)}</span
                 >${whatHappened
                   ? whatIsValue
                     ? html`<span class="state-arrow">${rtl ? "←" : "→"}</span>`
@@ -582,9 +602,9 @@ class HaLogbookEntry extends LitElement {
           align-items: stretch;
         }
 
-        /* Wide: time column + node + content, taller to fit three lines. */
+        /* Wide: node + content + time column on the right, taller to fit three lines. */
         .entry.layout-wide {
-          grid-template-columns: 72px 36px minmax(0, 1fr);
+          grid-template-columns: 36px minmax(0, 1fr) 72px;
           grid-auto-rows: minmax(72px, auto);
         }
 
