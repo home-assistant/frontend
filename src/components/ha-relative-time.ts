@@ -38,13 +38,15 @@ class HaRelativeTime extends ReactiveElement {
     return this;
   }
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    this._updateRelative();
-  }
-
   protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
+    if (changedProps.has("datetime")) {
+      if (this.datetime) {
+        this._startInterval();
+      } else {
+        this._clearInterval();
+      }
+    }
     this._updateRelative();
   }
 
@@ -68,7 +70,9 @@ class HaRelativeTime extends ReactiveElement {
     }
 
     if (!this.datetime) {
-      this.innerHTML = this._i18n.localize("ui.components.relative_time.never");
+      this.textContent = this._i18n.localize(
+        "ui.components.relative_time.never"
+      );
     } else {
       const date =
         typeof this.datetime === "string"
@@ -82,7 +86,7 @@ class HaRelativeTime extends ReactiveElement {
         true,
         this.format
       );
-      this.innerHTML = this.capitalize
+      this.textContent = this.capitalize
         ? capitalizeFirstLetter(relTime)
         : relTime;
     }
