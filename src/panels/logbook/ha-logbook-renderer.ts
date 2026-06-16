@@ -1,4 +1,5 @@
 import type { VisibilityChangedEvent } from "@lit-labs/virtualizer";
+import memoizeOne from "memoize-one";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
@@ -96,18 +97,20 @@ class HaLogbookRenderer extends LitElement {
               scroller
               class="ha-scrollbar"
               .items=${this.entries}
-              .renderItem=${this._renderRow}
+              .renderItem=${this._getRenderRow(this._showRelative) as any}
             >
             </lit-virtualizer>`
-          : this.entries.map((item, index) => this._renderRow(item, index))}
+          : this.entries.map((item, index) => this._renderItem(item, index))}
       </div>
     `;
   }
 
-  private _renderRow = (item: LogbookEntry, index: number) => {
-    if (!item) {
-      return nothing;
-    }
+  private _getRenderRow = memoizeOne(
+    (_showRelative: boolean) => (item: LogbookEntry, index: number) =>
+      this._renderItem(item, index)
+  );
+
+  private _renderItem = (item: LogbookEntry, index: number) => {
     const previous = this.entries[index - 1] as LogbookEntry | undefined;
     const next = this.entries[index + 1] as LogbookEntry | undefined;
     const firstOfDay = index === 0 || !sameDay(item, previous);
