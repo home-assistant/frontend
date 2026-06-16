@@ -183,3 +183,10 @@ jobs:
                 owner, repo, issue_number, body: message,
               });
             }
+
+            // Fail this check so it can block the merge directly. The label
+            // alone cannot: a label added by GITHUB_TOKEN does not trigger the
+            // blocking-labels workflow.
+            core.setFailed(
+              `Pull request standards not met:\n- ${problems.join("\n- ")}`
+            );
