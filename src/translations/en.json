@@ -2683,7 +2683,7 @@
           },
           "developer_tools": {
             "main": "Developer tools",
-            "secondary": "Advanced tools for inspecting and debugging your system"
+            "secondary": "Tools to inspect and debug your system"
           },
           "about": {
             "main": "About",
