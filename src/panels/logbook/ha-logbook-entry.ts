@@ -115,7 +115,13 @@ class HaLogbookEntry extends LitElement {
       this.hass.locale,
       this.hass.config
     );
-    const relativeLabel = relativeTime(when, this.hass.locale);
+    const relativeLabel = relativeTime(
+      when,
+      this.hass.locale,
+      undefined,
+      true,
+      "short"
+    );
 
     return html`
       <div
@@ -127,7 +133,10 @@ class HaLogbookEntry extends LitElement {
         })}"
       >
         ${layout === "wide"
-          ? html`<div class="time" title=${relativeLabel}>${timeLabel}</div>`
+          ? html`<div class="time">
+              <span class="time-primary">${timeLabel}</span>
+              <span class="time-secondary">${relativeLabel}</span>
+            </div>`
           : nothing}
         <div
           class="node ${classMap({
@@ -155,6 +164,7 @@ class HaLogbookEntry extends LitElement {
                   model.name,
                   traceLink,
                   whatHappened,
+                  model.what?.text,
                   model.cause,
                   model.context,
                   timeLabel,
@@ -170,6 +180,14 @@ class HaLogbookEntry extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private _renderInlineTime(timeLabel: string, relativeLabel: string) {
+    return html`<span class="time-inline"
+      ><span class="time-primary">${relativeLabel}</span
+      ><span class="time-separator" aria-hidden="true">·</span
+      ><span class="time-secondary">${timeLabel}</span></span
+    >`;
   }
 
   private _renderTraceLink(traceLink: string) {
@@ -226,7 +244,7 @@ class HaLogbookEntry extends LitElement {
               >`
             : nothing}
           ${traceLink ? this._renderTraceLink(traceLink) : nothing}
-          <span class="time-inline" title=${relativeLabel}>${timeLabel}</span>
+          ${this._renderInlineTime(timeLabel, relativeLabel)}
         </span>
       </div>
     `;
@@ -237,6 +255,7 @@ class HaLogbookEntry extends LitElement {
     name: string | undefined,
     traceLink: string | undefined,
     whatHappened: TemplateResult | string,
+    whatText: string | undefined,
     cause: LogbookCause | undefined,
     contextText: string | undefined,
     timeLabel: string,
@@ -247,15 +266,21 @@ class HaLogbookEntry extends LitElement {
         <span class="entity-name"
           >${this._renderEntity(entityId, name, !!traceLink)}</span
         >
-        <span class="state-value">${whatHappened}</span>
+        <span class="state-value" title=${whatText ?? ""}>${whatHappened}</span>
       </div>
       ${this._renderMeta(
-        cause,
+        this.noIcon ? cause : undefined,
         contextText,
         traceLink,
         timeLabel,
         relativeLabel
       )}
+      ${!this.noIcon && (cause || traceLink)
+        ? html`<div class="meta">
+            ${cause ? this._renderCauseLabel(cause) : nothing}
+            ${traceLink ? this._renderTraceLink(traceLink) : nothing}
+          </div>`
+        : nothing}
     `;
   }
 
@@ -381,7 +406,7 @@ class HaLogbookEntry extends LitElement {
     cause: LogbookCause | undefined,
     contextText: string | undefined,
     traceLink: string | undefined,
-    timeLabel: TemplateResult | string,
+    timeLabel: string,
     relativeLabel: string
   ) {
     return html`<div class="meta">
@@ -393,7 +418,7 @@ class HaLogbookEntry extends LitElement {
             >`
           : nothing}
         ${traceLink ? this._renderTraceLink(traceLink) : nothing}
-        <span class="time-inline" title=${relativeLabel}>${timeLabel}</span>
+        ${this._renderInlineTime(timeLabel, relativeLabel)}
       </span>
     </div>`;
   }
@@ -586,11 +611,24 @@ class HaLogbookEntry extends LitElement {
 
         .time {
           display: flex;
-          align-items: center;
-          justify-content: flex-end;
+          flex-direction: column;
+          align-items: flex-end;
+          justify-content: center;
+          gap: 2px;
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
+          overflow: hidden;
+        }
+
+        .time-primary {
           white-space: nowrap;
+        }
+
+        .time-secondary {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
         }
 
         .node {
@@ -812,11 +850,15 @@ class HaLogbookEntry extends LitElement {
         }
 
         .time-inline {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--ha-space-1);
           flex-shrink: 0;
           line-height: 1;
+          font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
-          white-space: nowrap;
           font-variant-numeric: tabular-nums;
+          overflow: hidden;
         }
 
         .cause-avatar {
