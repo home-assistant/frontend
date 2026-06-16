@@ -6,6 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -344,8 +345,14 @@ class HaLogbookEntry extends LitElement {
     const stateObj =
       model.glyph.type === "state" ? model.glyph.stateObj : undefined;
     const isUnavailable = this.item.state === UNAVAILABLE;
+    const domain = stateObj ? computeDomain(stateObj.entity_id) : undefined;
+    const isEnumDomain =
+      domain === "select" ||
+      domain === "input_select" ||
+      (domain === "sensor" && stateObj!.attributes.device_class === "enum");
+    const useGraphColor = this.graphColor || !isEnumDomain;
     const color =
-      this.noIcon && this.graphColor && !isUnavailable && this.item.state
+      this.noIcon && !isUnavailable && this.item.state && useGraphColor
         ? computeTimelineColor(
             this.item.state,
             (this._computedStyle ??= getComputedStyle(this)),
@@ -708,7 +715,7 @@ class HaLogbookEntry extends LitElement {
         }
 
         .dot {
-          --node-color: var(--category-color, var(--disabled-color));
+          --node-color: var(--category-color, var(--secondary-text-color));
           position: relative;
           z-index: 1;
           width: 10px;

@@ -79,10 +79,11 @@ function computeTimelineEnumColor(
   const domain = computeStateDomain(stateObj);
   const states =
     FIXED_DOMAIN_STATES[domain] ||
-    (((domain === "sensor" && stateObj.attributes.device_class === "enum") ||
-      domain === "select" ||
-      domain === "input_select") &&
-      stateObj.attributes.options) ||
+    ((domain === "sensor" && stateObj.attributes.device_class === "enum") ||
+    domain === "select" ||
+    domain === "input_select"
+      ? stateObj.attributes.options
+      : undefined) ||
     [];
   const idx = states.indexOf(state);
   if (idx === -1) {
