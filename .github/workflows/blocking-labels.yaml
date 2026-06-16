@@ -30,7 +30,6 @@ jobs:
               "Do Not Review",
               "Blocked",
               "has-parent",
-              "Needs Template",
             ];
             const prLabels = context.payload.pull_request.labels.map(
               (l) => l.name
