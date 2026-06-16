@@ -3437,7 +3437,7 @@
             "media": "Media",
             "media_description": "For example, camera recordings.",
             "share_folder": "Share folder",
-            "share_folder_description": "Folder that is often used by apps for advanced or older configurations.",
+            "share_folder_desc": "Folder that is often used by apps for custom or older configurations.",
             "local_apps": "Local apps folder",
             "local_apps_description": "Folder that contains the data of your local apps.",
             "apps": "Apps",
