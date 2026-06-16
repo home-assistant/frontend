@@ -68,6 +68,8 @@ class HaLogbookEntry extends LitElement {
 
   @property({ type: Boolean, attribute: false }) public lastOfDay = false;
 
+  @property({ type: Boolean, attribute: false }) public showRelative = false;
+
   // Live computed-style handle, resolved once per element — reading custom
   // properties forces a style recalc, costly to repeat per row while scrolling.
   private _computedStyle?: CSSStyleDeclaration;
@@ -110,18 +112,9 @@ class HaLogbookEntry extends LitElement {
     );
 
     const when = new Date(model.when);
-    const timeLabel = formatTimeWithSeconds(
-      when,
-      this.hass.locale,
-      this.hass.config
-    );
-    const relativeLabel = relativeTime(
-      when,
-      this.hass.locale,
-      undefined,
-      true,
-      "short"
-    );
+    const timeLabel = this.showRelative
+      ? relativeTime(when, this.hass.locale, undefined, true, "short")
+      : formatTimeWithSeconds(when, this.hass.locale, this.hass.config);
 
     return html`
       <div
@@ -133,9 +126,14 @@ class HaLogbookEntry extends LitElement {
         })}"
       >
         ${layout === "wide"
-          ? html`<div class="time">
+          ? html`<div
+              class="time"
+              role="button"
+              tabindex="0"
+              @click=${this._toggleTime}
+              @keydown=${this._timeKeydown}
+            >
               <span class="time-primary">${timeLabel}</span>
-              <span class="time-secondary">${relativeLabel}</span>
             </div>`
           : nothing}
         <div
@@ -167,27 +165,29 @@ class HaLogbookEntry extends LitElement {
                   model.what?.text,
                   model.cause,
                   model.context,
-                  timeLabel,
-                  relativeLabel
+                  timeLabel
                 )
               : this._renderInline(
                   whatHappened,
                   model.cause,
                   traceLink,
-                  timeLabel,
-                  relativeLabel
+                  timeLabel
                 )}
         </div>
       </div>
     `;
   }
 
-  private _renderInlineTime(timeLabel: string, relativeLabel: string) {
-    return html`<span class="time-inline"
-      ><span class="time-primary">${relativeLabel}</span
-      ><span class="time-separator" aria-hidden="true">·</span
-      ><span class="time-secondary">${timeLabel}</span></span
-    >`;
+  private _toggleTime(e: Event) {
+    e.stopPropagation();
+    fireEvent(this, "logbook-toggle-time" as any);
+  }
+
+  private _timeKeydown(e: KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fireEvent(this, "logbook-toggle-time" as any);
+    }
   }
 
   private _renderTraceLink(traceLink: string) {
@@ -231,8 +231,7 @@ class HaLogbookEntry extends LitElement {
     whatHappened: TemplateResult | string,
     cause: LogbookCause | undefined,
     traceLink: string | undefined,
-    timeLabel: string,
-    relativeLabel: string
+    timeLabel: string
   ) {
     return html`
       <div class="headline">
@@ -244,7 +243,14 @@ class HaLogbookEntry extends LitElement {
               >`
             : nothing}
           ${traceLink ? this._renderTraceLink(traceLink) : nothing}
-          ${this._renderInlineTime(timeLabel, relativeLabel)}
+          <span
+            class="time-inline"
+            role="button"
+            tabindex="0"
+            @click=${this._toggleTime}
+            @keydown=${this._timeKeydown}
+            >${timeLabel}</span
+          >
         </span>
       </div>
     `;
@@ -258,8 +264,7 @@ class HaLogbookEntry extends LitElement {
     whatText: string | undefined,
     cause: LogbookCause | undefined,
     contextText: string | undefined,
-    timeLabel: string,
-    relativeLabel: string
+    timeLabel: string
   ) {
     return html`
       <div class="headline">
@@ -272,8 +277,7 @@ class HaLogbookEntry extends LitElement {
         this.noIcon ? cause : undefined,
         contextText,
         traceLink,
-        timeLabel,
-        relativeLabel
+        timeLabel
       )}
       ${!this.noIcon && (cause || traceLink)
         ? html`<div class="meta">
@@ -406,8 +410,7 @@ class HaLogbookEntry extends LitElement {
     cause: LogbookCause | undefined,
     contextText: string | undefined,
     traceLink: string | undefined,
-    timeLabel: string,
-    relativeLabel: string
+    timeLabel: string
   ) {
     return html`<div class="meta">
       <span class="meta-main">${contextText ?? nothing}</span>
@@ -418,7 +421,14 @@ class HaLogbookEntry extends LitElement {
             >`
           : nothing}
         ${traceLink ? this._renderTraceLink(traceLink) : nothing}
-        ${this._renderInlineTime(timeLabel, relativeLabel)}
+        <span
+          class="time-inline"
+          role="button"
+          tabindex="0"
+          @click=${this._toggleTime}
+          @keydown=${this._timeKeydown}
+          >${timeLabel}</span
+        >
       </span>
     </div>`;
   }
@@ -614,21 +624,19 @@ class HaLogbookEntry extends LitElement {
           flex-direction: column;
           align-items: flex-end;
           justify-content: center;
-          gap: 2px;
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
           overflow: hidden;
+          cursor: pointer;
+          user-select: none;
+        }
+
+        .time:hover {
+          opacity: 0.75;
         }
 
         .time-primary {
           white-space: nowrap;
-        }
-
-        .time-secondary {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 100%;
         }
 
         .node {
@@ -850,15 +858,17 @@ class HaLogbookEntry extends LitElement {
         }
 
         .time-inline {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--ha-space-1);
           flex-shrink: 0;
           line-height: 1;
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
           font-variant-numeric: tabular-nums;
-          overflow: hidden;
+          cursor: pointer;
+          user-select: none;
+        }
+
+        .time-inline:hover {
+          opacity: 0.75;
         }
 
         .cause-avatar {

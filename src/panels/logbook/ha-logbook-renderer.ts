@@ -1,7 +1,7 @@
 import type { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property } from "lit/decorators";
+import { customElement, eventOptions, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -17,6 +17,7 @@ import { sameDay } from "./logbook-entry-model";
 declare global {
   interface HASSDomEvents {
     "hass-logbook-live": { enable: boolean };
+    "logbook-toggle-time": undefined;
   }
 }
 
@@ -46,6 +47,8 @@ class HaLogbookRenderer extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
+  @state() private _showRelative = false;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (
       (!this.hasUpdated && this.virtualize) ||
@@ -67,6 +70,7 @@ class HaLogbookRenderer extends LitElement {
     return (
       changedProps.has("entries") ||
       changedProps.has("traceContexts") ||
+      changedProps.has("_showRelative" as never) ||
       languageChanged
     );
   }
@@ -81,7 +85,11 @@ class HaLogbookRenderer extends LitElement {
     }
 
     return html`
-      <div class="container ha-scrollbar" @scroll=${this._saveScrollPos}>
+      <div
+        class="container ha-scrollbar"
+        @scroll=${this._saveScrollPos}
+        @logbook-toggle-time=${this._handleToggleTime}
+      >
         ${this.virtualize
           ? html`<lit-virtualizer
               @visibilityChanged=${this._visibilityChanged}
@@ -111,11 +119,7 @@ class HaLogbookRenderer extends LitElement {
       <div class="entry-container">
         ${firstOfDay
           ? html`<h4 class="date">
-              ${formatDate(
-                new Date(item.when * 1000),
-                this.hass.locale,
-                this.hass.config
-              )}
+              ${this._formatDateHeader(new Date(item.when * 1000))}
             </h4>`
           : nothing}
         <ha-logbook-entry
@@ -129,10 +133,33 @@ class HaLogbookRenderer extends LitElement {
           .scope=${this.scope}
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}
+          .showRelative=${this._showRelative}
         ></ha-logbook-entry>
       </div>
     `;
   };
+
+  private _handleToggleTime() {
+    this._showRelative = !this._showRelative;
+  }
+
+  private _formatDateHeader(date: Date): string {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const diffDays = Math.round((today.getTime() - d.getTime()) / 86400000);
+    const fullDate = formatDate(date, this.hass.locale, this.hass.config);
+    if (diffDays === 0 || diffDays === 1) {
+      const rtf = new Intl.RelativeTimeFormat(this.hass.locale.language, {
+        numeric: "auto",
+      });
+      const rel = rtf.format(diffDays === 0 ? 0 : -1, "day");
+      const label = rel.charAt(0).toUpperCase() + rel.slice(1);
+      return `${label} · ${fullDate}`;
+    }
+    return fullDate;
+  }
 
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
