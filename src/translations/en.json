@@ -2066,7 +2066,7 @@
       },
       "restart": {
         "heading": "Restart Home Assistant",
-        "advanced_options": "Advanced options",
+        "more_options": "More options",
         "backup_in_progress": "A backup is currently being created. The action will automatically proceed once the backup process is complete.",
         "upload_in_progress": "A backup upload is currently in progress. The action will automatically proceed once the upload process is complete.",
         "restore_in_progress": "A backup restore is currently in progress. The action will automatically proceed once the restore process is complete.",
