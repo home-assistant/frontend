@@ -1,20 +1,22 @@
-import { mdiRadioTower } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { mdiCheck, mdiCloseCircleOutline } from "@mdi/js";
+import type { CSSResultGroup, TemplateResult } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-relative-time";
+import { UNAVAILABLE } from "../../../../../data/entity/entity";
+import { FALLBACK_DOMAIN_ICONS } from "../../../../../data/icons";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
-import { fetchRadioFrequencyTransmitters } from "../../../../../data/radio_frequency";
+import {
+  DOMAIN,
+  fetchRadioFrequencyTransmitters,
+} from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
-import { computeEntityName } from "../../../../../common/entity/compute_entity_name";
 
 @customElement("radio-frequency-config-dashboard")
 export class RadioFrequencyConfigDashboard extends LitElement {
@@ -28,9 +30,11 @@ export class RadioFrequencyConfigDashboard extends LitElement {
 
   @state() private _transmitters: RadioFrequencyTransmitter[] = [];
 
-  public firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._fetchTransmitters();
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass) {
+      this._fetchTransmitters();
+    }
   }
 
   private async _fetchTransmitters(): Promise<void> {
@@ -39,6 +43,15 @@ export class RadioFrequencyConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const total = this._transmitters.length;
+    const online = this._transmitters.filter((transmitter) => {
+      const stateObj = this.hass.states[transmitter.entity_id];
+      return stateObj && stateObj.state !== UNAVAILABLE;
+    }).length;
+    const isOffline = online === 0;
+    const status = isOffline ? "offline" : "online";
+    const statusIcon = isOffline ? mdiCloseCircleOutline : mdiCheck;
+
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -47,88 +60,55 @@ export class RadioFrequencyConfigDashboard extends LitElement {
         back-path="/config"
       >
         <div class="container">
-          <ha-card
-            .header=${this.hass.localize(
-              "ui.panel.config.radio_frequency.transmitters_count",
-              { count: this._transmitters.length }
-            )}
-          >
+          <ha-card class="network-status">
             <div class="card-content">
-              ${this._transmitters.length === 0
-                ? html`<p class="no-transmitters">
+              <div class="heading">
+                <div class="icon ${status}">
+                  <ha-svg-icon .path=${statusIcon}></ha-svg-icon>
+                </div>
+                <div class="details">
+                  ${this.hass.localize(
+                    `ui.panel.config.radio_frequency.status_${status}`
+                  )}<br />
+                  <small>
                     ${this.hass.localize(
-                      "ui.panel.config.radio_frequency.no_transmitters"
+                      "ui.panel.config.radio_frequency.transmitters_summary",
+                      { online, total }
                     )}
-                  </p>`
-                : html`
-                    <ha-md-list>
-                      ${this._transmitters.map((transmitter) =>
-                        this._renderTransmitter(transmitter)
-                      )}
-                    </ha-md-list>
-                  `}
+                  </small>
+                </div>
+                <ha-svg-icon
+                  class="logo"
+                  .path=${FALLBACK_DOMAIN_ICONS[DOMAIN]}
+                ></ha-svg-icon>
+              </div>
+            </div>
+          </ha-card>
+
+          <ha-card class="network-card">
+            <div class="card-content">
+              <ha-md-list>
+                <ha-md-list-item
+                  type="link"
+                  href="/config/radio-frequency/transmitters"
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${FALLBACK_DOMAIN_ICONS[DOMAIN]}
+                  ></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.radio_frequency.devices_count",
+                      { count: total }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+              </ha-md-list>
             </div>
           </ha-card>
         </div>
       </hass-subpage>
-    `;
-  }
-
-  private _renderTransmitter(
-    transmitter: RadioFrequencyTransmitter
-  ): TemplateResult {
-    const entityState = this.hass.states[transmitter.entity_id];
-    const entity = this.hass.entities[transmitter.entity_id];
-    const device = transmitter.device_id
-      ? this.hass.devices[transmitter.device_id]
-      : undefined;
-    const areaId = entity.area_id || (device ? device.area_id : undefined);
-    const area = areaId ? this.hass.areas[areaId] : undefined;
-    return html`
-      <ha-md-list-item
-        type=${device ? "link" : "text"}
-        href=${device
-          ? `/config/devices/device/${transmitter.device_id}`
-          : nothing}
-      >
-        <ha-svg-icon slot="start" .path=${mdiRadioTower}></ha-svg-icon>
-        <div slot="headline">
-          ${device
-            ? computeDeviceName(device)
-            : computeEntityName(
-                this.hass.states[transmitter.entity_id],
-                this.hass.entities,
-                this.hass.devices
-              )}
-        </div>
-        <div slot="supporting-text">
-          ${area ? `${area.name} · ` : ""}
-          ${transmitter.supported_frequency_ranges
-            .map(
-              ([min, max]) =>
-                `${parseFloat((min / 1000000).toFixed(2))}-${parseFloat((max / 1000000).toFixed(2))}MHz`
-            )
-            .join(", ")}
-          · ${transmitter.supported_modulations.join(", ")}
-        </div>
-
-        ${device
-          ? html`<div slot="end">
-              ${this.hass.localize(
-                "ui.panel.config.radio_frequency.last_used"
-              )}:
-              <br />
-              ${entityState.state === "unknown" ||
-              entityState.state === "unavailable"
-                ? this.hass.localize(`state.default.${entityState.state}`)
-                : html`
-                    <ha-relative-time
-                      .datetime=${entityState.state}
-                    ></ha-relative-time>
-                  `}
-            </div>`
-          : nothing}
-      </ha-md-list-item>
     `;
   }
 
@@ -145,18 +125,78 @@ export class RadioFrequencyConfigDashboard extends LitElement {
           max-width: 600px;
         }
 
-        ha-card .card-content {
-          padding: 0;
-        }
-
         ha-md-list {
           background: none;
           padding: 0;
         }
 
-        .no-transmitters {
-          padding: var(--ha-space-4);
-          margin: 0;
+        .network-card {
+          overflow: hidden;
+        }
+
+        .network-card .card-content {
+          padding: 0;
+        }
+
+        .network-status div.heading {
+          display: flex;
+          align-items: center;
+          column-gap: var(--ha-space-4);
+        }
+
+        .network-status div.heading .logo {
+          margin-inline-start: auto;
+          --mdc-icon-size: 40px;
+        }
+
+        .network-status div.heading .icon {
+          position: relative;
+          border-radius: var(--ha-border-radius-2xl);
+          width: var(--ha-space-10);
+          height: var(--ha-space-10);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+          --icon-color: var(--primary-color);
+        }
+
+        .network-status div.heading .icon.online {
+          --icon-color: var(--success-color);
+        }
+
+        .network-status div.heading .icon.offline {
+          --icon-color: var(--error-color);
+        }
+
+        .network-status div.heading .icon::before {
+          display: block;
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: var(--icon-color, var(--primary-color));
+          opacity: 0.2;
+        }
+
+        .network-status div.heading .icon ha-svg-icon {
+          color: var(--icon-color, var(--primary-color));
+          width: var(--ha-space-6);
+          height: var(--ha-space-6);
+        }
+
+        .network-status div.heading .details {
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          color: var(--primary-text-color);
+        }
+
+        .network-status small {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          letter-spacing: 0.25px;
           color: var(--secondary-text-color);
         }
       `,

@@ -1,5 +1,7 @@
 import type { HomeAssistant } from "../types";
 
+export const DOMAIN = "radio_frequency";
+
 export interface RadioFrequencyTransmitter {
   entity_id: string;
   device_id: string | null;

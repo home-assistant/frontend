@@ -20,6 +20,7 @@ import {
   mdiPalette,
   mdiPaletteSwatch,
   mdiPuzzle,
+  mdiRadioTower,
   mdiRobot,
   mdiScrewdriver,
   mdiScriptText,
@@ -29,7 +30,6 @@ import {
   mdiTextBoxOutline,
   mdiTools,
   mdiUpdate,
-  mdiVideoInputAntenna,
   mdiViewDashboard,
   mdiZigbee,
   mdiZWave,
@@ -178,7 +178,7 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
     {
       path: "/config/radio-frequency",
-      iconPath: mdiVideoInputAntenna,
+      iconPath: mdiRadioTower,
       iconColor: "#E74011",
       component: "radio_frequency",
       translationKey: "radio_frequency",
@@ -687,9 +687,9 @@ class HaPanelConfig extends HassRouterPage {
         load: () => import("./core/ha-config-section-updates"),
       },
       "radio-frequency": {
-        tag: "radio-frequency-config-dashboard",
+        tag: "radio-frequency-config-dashboard-router",
         load: () =>
-          import("./integrations/integration-panels/radio_frequency/radio-frequency-config-dashboard"),
+          import("./integrations/integration-panels/radio_frequency/radio-frequency-config-dashboard-router"),
       },
       repairs: {
         tag: "ha-config-repairs-dashboard",
