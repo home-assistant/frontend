@@ -99,10 +99,7 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import {
-  createLabelRegistryEntry,
-  getLabelRegistryEntryOrUnknown,
-} from "../../../data/label/label_registry";
+import { createLabelRegistryEntry } from "../../../data/label/label_registry";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -555,8 +552,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
-          const label_entries = (labels || []).map((lbl) =>
-            getLabelRegistryEntryOrUnknown(labelReg!, lbl)
+          const label_entries = (labels || []).map(
+            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           );
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
