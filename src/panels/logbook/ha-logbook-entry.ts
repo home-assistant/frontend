@@ -592,7 +592,6 @@ class HaLogbookEntry extends LitElement {
           box-sizing: border-box;
           /* No vertical padding: the rail must reach the row edges to stay continuous between nodes. */
           padding: 0 var(--ha-space-4);
-          /* list is the default; timeline and inline override below. */
           grid-auto-rows: minmax(60px, auto);
           line-height: var(--ha-line-height-normal);
           align-items: stretch;

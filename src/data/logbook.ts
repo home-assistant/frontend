@@ -157,8 +157,6 @@ export const createHistoricState = (
     attributes: {
       // Rebuild the historical state by copying static attributes only
       device_class: currentStateObj.attributes.device_class,
-      // Needed so numeric states keep their unit (e.g. "21 °C") and are
-      // recognised as numeric by computeStateDisplay.
       unit_of_measurement: currentStateObj.attributes.unit_of_measurement,
       state_class: currentStateObj.attributes.state_class,
       options: currentStateObj.attributes.options,
