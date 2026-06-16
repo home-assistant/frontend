@@ -1806,9 +1806,12 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
         }
 
         ha-card:has(ha-logbook) .card-header a {
+          display: flex;
+          align-items: center;
           color: var(--primary-text-color);
           margin-right: calc(var(--ha-space-2) * -1);
           margin-inline-end: calc(var(--ha-space-2) * -1);

@@ -45,6 +45,7 @@ export class MoreInfoLogbook extends LitElement {
         .scope=${"entity"}
         narrow
         no-icon
+        graph-color
       ></ha-logbook>
     `;
   }

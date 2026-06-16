@@ -59,6 +59,8 @@ class HaLogbookEntry extends LitElement {
 
   @property({ type: Boolean, attribute: false }) public noIcon = false;
 
+  @property({ type: Boolean, attribute: false }) public graphColor = false;
+
   @property({ attribute: false }) public scope?: LogbookScope;
 
   @property({ type: Boolean, attribute: false }) public firstOfDay = false;
@@ -343,14 +345,12 @@ class HaLogbookEntry extends LitElement {
       model.glyph.type === "state" ? model.glyph.stateObj : undefined;
     const isUnavailable = this.item.state === UNAVAILABLE;
     const color =
-      this.noIcon && !isUnavailable
-        ? this.item.state
-          ? computeTimelineColor(
-              this.item.state,
-              (this._computedStyle ??= getComputedStyle(this)),
-              stateObj
-            )
-          : undefined
+      this.noIcon && this.graphColor && !isUnavailable && this.item.state
+        ? computeTimelineColor(
+            this.item.state,
+            (this._computedStyle ??= getComputedStyle(this)),
+            stateObj
+          )
         : nodeColor(model.category, stateObj);
     const style = color ? styleMap({ "--node-color": color }) : nothing;
     if (this.noIcon) {
@@ -523,6 +523,7 @@ class HaLogbookEntry extends LitElement {
       css`
         :host {
           display: block;
+          --cause-icon-size: 20px;
         }
 
         .entry {
@@ -531,11 +532,10 @@ class HaLogbookEntry extends LitElement {
           column-gap: var(--ha-space-3);
           width: 100%;
           box-sizing: border-box;
-          /* No vertical padding: the rail must reach the row edges so it stays
-             continuous between nodes. Air comes from min-height instead. */
+          /* No vertical padding: the rail must reach the row edges to stay continuous between nodes. */
           padding: 0 var(--ha-space-4);
           /* compact is the default; wide and inline override below. */
-          min-height: 60px;
+          grid-auto-rows: minmax(60px, auto);
           line-height: var(--ha-line-height-normal);
           align-items: stretch;
         }
@@ -543,7 +543,7 @@ class HaLogbookEntry extends LitElement {
         /* Wide: time column + node + content, taller to fit three lines. */
         .entry.layout-wide {
           grid-template-columns: 72px 36px minmax(0, 1fr);
-          min-height: 72px;
+          grid-auto-rows: minmax(72px, auto);
         }
 
         /* Compact & inline drop the time column (time moves inline). */
@@ -553,7 +553,7 @@ class HaLogbookEntry extends LitElement {
         }
 
         .entry.layout-inline {
-          min-height: 40px;
+          grid-auto-rows: minmax(40px, auto);
         }
 
         /* Dot node is 10px, so its column can shrink. */
@@ -623,9 +623,10 @@ class HaLogbookEntry extends LitElement {
           --rail-gap: 9px;
         }
 
-        /* Two-line dot rows (compact): align dot to headline instead of
-           centering. --dot-pos is measured from node top and matches headline's
-           center (~20px = 8px content offset + 12px half-lineheight in a 60px row). */
+        /* Two-line dot rows (compact): align dot to headline top.
+           --dot-pos = padding-block (8px) + half normal line-height (12px) = 20px.
+           Matches .content's padding-top + headline center — no dependency on
+           track height, so Firefox grid-track sizing quirks don't affect it. */
         .entry.node-dot:not(.layout-inline) .node {
           --dot-pos: 20px;
           justify-content: flex-start;
@@ -737,9 +738,23 @@ class HaLogbookEntry extends LitElement {
           border-bottom: none;
         }
 
-        .entry.layout-compact .content,
+        /* Compact/inline: fixed padding instead of justify-content:center so
+           the dot position (--dot-pos: 20px) matches headline center regardless
+           of track height — avoid the Firefox min-height / grid-track bug. */
+        .entry.layout-compact .content {
+          justify-content: flex-start;
+          padding-block: var(--ha-space-2);
+          gap: var(--ha-space-1);
+        }
+
         .entry.layout-inline .content {
           gap: 0;
+          justify-content: center;
+        }
+
+        .entry.layout-wide .content {
+          padding-top: var(--ha-space-2);
+          padding-bottom: var(--ha-space-2);
         }
 
         .headline {
@@ -799,8 +814,8 @@ class HaLogbookEntry extends LitElement {
 
         .cause-avatar {
           flex-shrink: 0;
-          width: 16px;
-          height: 16px;
+          width: var(--cause-icon-size);
+          height: var(--cause-icon-size);
           font-size: 9px;
         }
 
@@ -859,7 +874,7 @@ class HaLogbookEntry extends LitElement {
 
         .cause-icon {
           flex-shrink: 0;
-          --mdc-icon-size: 16px;
+          --mdc-icon-size: var(--cause-icon-size);
           color: var(--secondary-text-color);
         }
 
@@ -870,6 +885,7 @@ class HaLogbookEntry extends LitElement {
           text-overflow: ellipsis;
           white-space: nowrap;
           color: var(--primary-text-color);
+          line-height: var(--cause-icon-size);
         }
 
         /* The trace link sits after the cause; it never shrinks, so a long

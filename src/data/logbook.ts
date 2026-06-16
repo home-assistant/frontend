@@ -166,6 +166,8 @@ export const createHistoricState = (
       has_time: currentStateObj.attributes.has_time,
       // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
       // as they would present a false state in the log (played media right now vs actual historic data).
+      // Needed for select/input_select color assignment in timeline charts.
+      options: currentStateObj.attributes.options,
       entity_picture_local: DOMAINS_WITH_DYNAMIC_PICTURE.has(
         computeDomain(currentStateObj.entity_id)
       )

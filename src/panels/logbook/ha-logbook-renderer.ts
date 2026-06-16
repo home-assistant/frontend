@@ -38,6 +38,9 @@ class HaLogbookRenderer extends LitElement {
 
   @property({ type: Boolean, attribute: "no-icon" }) public noIcon = false;
 
+  @property({ type: Boolean, attribute: "graph-color" }) public graphColor =
+    false;
+
   @property({ attribute: false }) public scope?: LogbookScope;
 
   // @ts-ignore
@@ -122,6 +125,7 @@ class HaLogbookRenderer extends LitElement {
           .traceContexts=${this.traceContexts}
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}
+          .graphColor=${this.graphColor}
           .scope=${this.scope}
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}
