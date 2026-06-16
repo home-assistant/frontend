@@ -8,11 +8,11 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
-import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
+import "../../components/ha-relative-time";
 import "../../components/ha-domain-icon";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
@@ -42,7 +42,7 @@ type EntryLayout = "timeline" | "list" | "inline";
 
 interface LogbookRenderItem extends LogbookItem {
   traceLink: string | undefined;
-  timeLabel: string;
+  renderedTime: TemplateResult | string;
   renderedValue: TemplateResult | string;
 }
 
@@ -82,7 +82,7 @@ class HaLogbookEntry extends LitElement {
     const entry = this.item;
     const seenEntityIds: string[] = [];
 
-    const model = computeLogbookItem(this.hass, entry, {
+    const item = computeLogbookItem(this.hass, entry, {
       scope: this.scope,
       userIdToName: this.userIdToName,
     });
@@ -103,16 +103,19 @@ class HaLogbookEntry extends LitElement {
       !this.narrow && !this.noIcon ? "timeline" : hideName ? "inline" : "list";
     const node = layout === "timeline" ? "icon" : "dot";
 
-    const when = new Date(model.when);
-    const timeLabel = this.showRelative
-      ? relativeTime(when, this.hass.locale, undefined, true, "short")
+    const when = new Date(item.when);
+    const renderedTime = this.showRelative
+      ? html`<ha-relative-time
+          .datetime=${when}
+          format="short"
+        ></ha-relative-time>`
       : formatTimeWithSeconds(when, this.hass.locale, this.hass.config);
 
-    const item: LogbookRenderItem = {
-      ...model,
+    const ctx: LogbookRenderItem = {
+      ...item,
       traceLink,
-      timeLabel,
-      renderedValue: this._renderValue(model.value, seenEntityIds, !!traceLink),
+      renderedTime,
+      renderedValue: this._renderValue(item.value, seenEntityIds, !!traceLink),
     };
 
     return html`
@@ -121,7 +124,7 @@ class HaLogbookEntry extends LitElement {
           [`layout-${layout}`]: true,
           [`node-${node}`]: true,
           "last-of-day": this.lastOfDay,
-          [`category-${item.category}`]: true,
+          [`category-${ctx.category}`]: true,
         })}"
       >
         ${layout === "timeline"
@@ -132,7 +135,7 @@ class HaLogbookEntry extends LitElement {
               @click=${this._toggleTime}
               @keydown=${this._timeKeydown}
             >
-              <span class="time-primary">${timeLabel}</span>
+              <span class="time-content">${renderedTime}</span>
             </div>`
           : nothing}
         <div
@@ -141,14 +144,14 @@ class HaLogbookEntry extends LitElement {
             "rail-trim-bottom": this.lastOfDay,
           })}"
         >
-          ${this._renderNode(item, layout)}
+          ${this._renderNode(ctx, layout)}
         </div>
         <div class="content">
           ${layout === "timeline"
-            ? this._renderTimeline(item)
+            ? this._renderTimeline(ctx)
             : layout === "list"
-              ? this._renderList(item)
-              : this._renderInline(item)}
+              ? this._renderList(ctx)
+              : this._renderInline(ctx)}
         </div>
       </div>
     `;
@@ -184,21 +187,21 @@ class HaLogbookEntry extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private _renderTimeChip(timeLabel: string) {
+  private _renderTimeChip(renderedTime: TemplateResult | string) {
     return html`<span
       class="time-chip"
       role="button"
       tabindex="0"
       @click=${this._toggleTime}
       @keydown=${this._timeKeydown}
-      >${timeLabel}</span
+      >${renderedTime}</span
     >`;
   }
 
   private _renderTrailing(
     cause: LogbookCause | undefined,
     traceLink: string | undefined,
-    timeLabel: string
+    renderedTime: TemplateResult | string
   ) {
     return html`<span class="trailing">
       ${cause
@@ -207,7 +210,7 @@ class HaLogbookEntry extends LitElement {
           >`
         : nothing}
       ${traceLink ? this._renderTraceLink(traceLink) : nothing}
-      ${this._renderTimeChip(timeLabel)}
+      ${this._renderTimeChip(renderedTime)}
     </span>`;
   }
 
@@ -220,68 +223,68 @@ class HaLogbookEntry extends LitElement {
     >`;
   }
 
-  private _renderTimeline(item: LogbookRenderItem) {
+  private _renderTimeline(ctx: LogbookRenderItem) {
     const hideName = this.scope === "entity";
     const rtl = computeRTL(
       this.hass.language,
       this.hass.translationMetadata.translations
     );
-    const valueIsState = item.value?.type === "state";
-    const causePhrase = item.cause
-      ? this._renderCausePhrase(item.cause)
+    const valueIsState = ctx.value?.type === "state";
+    const causePhrase = ctx.cause
+      ? this._renderCausePhrase(ctx.cause)
       : undefined;
     return html`
       <div class="primary">
         <span class="primary-text"
           >${!hideName
             ? html`<span class="subject"
-                  >${this._renderEntity(item.entityId, item.name)}</span
-                >${item.renderedValue
+                  >${this._renderEntity(ctx.entityId, ctx.name)}</span
+                >${ctx.renderedValue
                   ? valueIsState
                     ? html`<span class="arrow">${rtl ? "←" : "→"}</span>`
                     : " "
                   : nothing}`
-            : nothing}${item.renderedValue}</span
+            : nothing}${ctx.renderedValue}</span
         >
       </div>
-      ${item.context
+      ${ctx.context
         ? html`<div class="secondary">
-            <span class="secondary-text">${item.context}</span>
+            <span class="secondary-text">${ctx.context}</span>
           </div>`
         : nothing}
-      ${causePhrase || item.traceLink
+      ${causePhrase || ctx.traceLink
         ? html`<div class="secondary">
             ${causePhrase
               ? html`<span class="cause-phrase">${causePhrase}</span>`
               : nothing}
-            ${causePhrase && item.traceLink ? html`·` : nothing}
-            ${item.traceLink ? this._renderTraceLink(item.traceLink) : nothing}
+            ${causePhrase && ctx.traceLink ? html`·` : nothing}
+            ${ctx.traceLink ? this._renderTraceLink(ctx.traceLink) : nothing}
           </div>`
         : nothing}
     `;
   }
 
-  private _renderList(item: LogbookRenderItem) {
+  private _renderList(ctx: LogbookRenderItem) {
     const cause =
-      this.showCause || item.category === "entity" ? item.cause : undefined;
-    const trailingTrace = this.showCause ? undefined : item.traceLink;
-    const thirdLineTrace = this.showCause ? item.traceLink : undefined;
+      this.showCause || ctx.category === "entity" ? ctx.cause : undefined;
+    const trailingTrace = this.showCause ? undefined : ctx.traceLink;
+    const thirdLineTrace = this.showCause ? ctx.traceLink : undefined;
     const showThirdLine = this.showCause && (cause || thirdLineTrace);
     return html`
       <div class="primary">
         <span class="subject"
-          >${this._renderEntity(item.entityId, item.name)}</span
+          >${this._renderEntity(ctx.entityId, ctx.name)}</span
         >
-        <span class="value" title=${item.value?.text ?? ""}
-          >${item.renderedValue}</span
+        <span class="value" title=${ctx.value?.text ?? ""}
+          >${ctx.renderedValue}</span
         >
       </div>
       <div class="secondary">
-        <span class="secondary-text">${item.context ?? nothing}</span>
+        <span class="secondary-text">${ctx.context ?? nothing}</span>
         ${this._renderTrailing(
           showThirdLine ? undefined : cause,
           trailingTrace,
-          item.timeLabel
+          ctx.renderedTime
         )}
       </div>
       ${showThirdLine
@@ -331,14 +334,14 @@ class HaLogbookEntry extends LitElement {
     `;
   }
 
-  private _renderInline(item: LogbookRenderItem) {
+  private _renderInline(ctx: LogbookRenderItem) {
     return html`
       <div class="primary">
-        <span class="primary-text">${item.renderedValue}</span>
+        <span class="primary-text">${ctx.renderedValue}</span>
         ${this._renderTrailing(
-          item.category === "entity" ? item.cause : undefined,
-          item.traceLink,
-          item.timeLabel
+          ctx.category === "entity" ? ctx.cause : undefined,
+          ctx.traceLink,
+          ctx.renderedTime
         )}
       </div>
     `;
@@ -499,9 +502,9 @@ class HaLogbookEntry extends LitElement {
     return message;
   }
 
-  private _renderNode(model: LogbookItem, layout: EntryLayout) {
+  private _renderNode(item: LogbookItem, layout: EntryLayout) {
     const stateObj =
-      model.glyph.type === "state" ? model.glyph.stateObj : undefined;
+      item.glyph.type === "state" ? item.glyph.stateObj : undefined;
     const isUnavailable = this.item.state === UNAVAILABLE;
     const domain = stateObj ? computeDomain(stateObj.entity_id) : undefined;
     const isEnumDomain =
@@ -516,7 +519,7 @@ class HaLogbookEntry extends LitElement {
             (this._computedStyle ??= getComputedStyle(this)),
             stateObj
           )
-        : nodeColor(model.category, stateObj);
+        : nodeColor(item.category, stateObj);
     const style = color ? styleMap({ "--node-color": color }) : nothing;
     if (layout !== "timeline") {
       return html`<span
@@ -525,10 +528,9 @@ class HaLogbookEntry extends LitElement {
       ></span>`;
     }
     const unavailable =
-      model.glyph.type === "state" &&
-      model.glyph.stateObj.state === UNAVAILABLE;
+      item.glyph.type === "state" && item.glyph.stateObj.state === UNAVAILABLE;
     return html`<div class="node-glyph" style=${style}>
-      ${this._renderGlyph(model.glyph)}
+      ${this._renderGlyph(item.glyph)}
       ${unavailable ? html`<span class="node-badge"></span>` : nothing}
     </div>`;
   }
@@ -634,8 +636,9 @@ class HaLogbookEntry extends LitElement {
         .time {
           display: flex;
           flex-direction: column;
-          align-items: flex-end;
+          align-items: stretch;
           justify-content: center;
+          text-align: end;
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
           overflow: hidden;
@@ -647,8 +650,10 @@ class HaLogbookEntry extends LitElement {
           opacity: 0.75;
         }
 
-        .time-primary {
+        .time-content {
+          overflow: hidden;
           white-space: nowrap;
+          text-overflow: ellipsis;
         }
 
         .node {
@@ -901,6 +906,10 @@ class HaLogbookEntry extends LitElement {
         .cause-badge {
           display: inline-flex;
           align-items: center;
+        }
+
+        ha-relative-time {
+          display: contents;
         }
 
         .time-chip {

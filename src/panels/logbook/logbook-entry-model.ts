@@ -313,30 +313,32 @@ export interface BuildLogbookItemOptions {
 
 export const computeLogbookItem = (
   hass: HomeAssistant,
-  item: LogbookEntry,
+  entry: LogbookEntry,
   opts: BuildLogbookItemOptions = {}
 ): LogbookItem => {
-  const category = classifyLogbookEntry(item);
-  const domain = item.entity_id ? computeDomain(item.entity_id) : item.domain;
-  const currentStateObj = item.entity_id
-    ? hass.states[item.entity_id]
+  const category = classifyLogbookEntry(entry);
+  const domain = entry.entity_id
+    ? computeDomain(entry.entity_id)
+    : entry.domain;
+  const currentStateObj = entry.entity_id
+    ? hass.states[entry.entity_id]
     : undefined;
   const historicStateObj = currentStateObj
-    ? createHistoricState(currentStateObj, item.state)
+    ? createHistoricState(currentStateObj, entry.state)
     : undefined;
 
-  const display = item.entity_id
-    ? entityDisplay(hass, item.entity_id, opts.scope)
+  const display = entry.entity_id
+    ? entityDisplay(hass, entry.entity_id, opts.scope)
     : undefined;
 
   return {
     category,
-    glyph: computeLogbookGlyph(item, category, historicStateObj, domain),
-    entityId: item.entity_id,
-    name: display?.primary ?? item.name,
+    glyph: computeLogbookGlyph(entry, category, historicStateObj, domain),
+    entityId: entry.entity_id,
+    name: display?.primary ?? entry.name,
     context: display?.secondary,
-    value: computeLogbookValue(hass, item, domain, historicStateObj),
-    cause: computeLogbookCause(hass, item, opts.userIdToName ?? {}),
-    when: item.when * 1000,
+    value: computeLogbookValue(hass, entry, domain, historicStateObj),
+    cause: computeLogbookCause(hass, entry, opts.userIdToName ?? {}),
+    when: entry.when * 1000,
   };
 };

@@ -12,6 +12,8 @@ import type { HomeAssistantInternationalization } from "../types";
 class HaRelativeTime extends ReactiveElement {
   @property({ attribute: false }) public datetime?: string | Date;
 
+  @property() public format: Intl.RelativeTimeFormatStyle = "long";
+
   @property({ type: Boolean }) public capitalize = false;
 
   @state()
@@ -73,7 +75,13 @@ class HaRelativeTime extends ReactiveElement {
           ? parseISO(this.datetime)
           : this.datetime;
 
-      const relTime = relativeTime(date, this._i18n.locale);
+      const relTime = relativeTime(
+        date,
+        this._i18n.locale,
+        undefined,
+        true,
+        this.format
+      );
       this.innerHTML = this.capitalize
         ? capitalizeFirstLetter(relTime)
         : relTime;
