@@ -27,13 +27,18 @@ import {
   updateEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { VacuumSegmentMappingDialogParams } from "./show-dialog-vacuum-segment-mapping";
 
+interface VacuumSegmentMappingState {
+  areaMapping: Record<string, string[]>;
+}
+
 @customElement("dialog-vacuum-segment-mapping")
 export class DialogVacuumSegmentMapping
-  extends LitElement
+  extends DirtyStateProviderMixin<VacuumSegmentMappingState>()(LitElement)
   implements HassDialog<VacuumSegmentMappingDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -77,6 +82,10 @@ export class DialogVacuumSegmentMapping
     } else {
       this._areaMapping = {};
     }
+    this._initDirtyTracking(
+      { type: "deep" },
+      { areaMapping: this._areaMapping }
+    );
   }
 
   private _dialogClosed(): void {
@@ -86,6 +95,7 @@ export class DialogVacuumSegmentMapping
 
   private _valueChanged(ev: CustomEvent) {
     this._areaMapping = ev.detail.value;
+    this._updateDirtyState({ areaMapping: ev.detail.value });
   }
 
   private async _save() {
@@ -107,6 +117,7 @@ export class DialogVacuumSegmentMapping
         options: options,
       });
 
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (_err: any) {
       // Error will be shown by the system
@@ -159,6 +170,7 @@ export class DialogVacuumSegmentMapping
       <ha-dialog
         .open=${this._open}
         @closed=${this._dialogClosed}
+        .preventScrimClose=${this.isDirtyState}
         .headerTitle=${this.hass.localize(
           "ui.dialogs.vacuum_segment_mapping.title"
         )}
@@ -189,7 +201,7 @@ export class DialogVacuumSegmentMapping
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._submitting}
+            .disabled=${this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>

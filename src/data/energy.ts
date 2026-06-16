@@ -1121,14 +1121,12 @@ const getSummedDataPartial = (
   const timestamps = new Set<number>();
   Object.entries(statIds).forEach(([key, subStatIds]) => {
     const totalStats: Record<number, number> = {};
-    const sets: Record<string, Record<number, number>> = {};
     let sum = 0;
     subStatIds!.forEach((id) => {
       const stats = compare ? data.statsCompare[id] : data.stats[id];
       if (!stats) {
         return;
       }
-      const set = {};
       stats.forEach((stat) => {
         if (stat.change === null || stat.change === undefined) {
           return;
@@ -1139,7 +1137,6 @@ const getSummedDataPartial = (
           stat.start in totalStats ? totalStats[stat.start] + val : val;
         timestamps.add(stat.start);
       });
-      sets[id] = set;
     });
     summedData[key] = totalStats;
     summedData.total[key] = sum;
@@ -1190,6 +1187,13 @@ const computeConsumptionDataPartial = (
     },
   };
 
+  const fromGrid = data.from_grid;
+  const toGrid = data.to_grid;
+  const solarData = data.solar;
+  const toBattery = data.to_battery;
+  const fromBattery = data.from_battery;
+  const total = outData.total;
+
   data.timestamps.forEach((t) => {
     const {
       grid_to_battery,
@@ -1201,29 +1205,29 @@ const computeConsumptionDataPartial = (
       solar_to_battery,
       solar_to_grid,
     } = computeConsumptionSingle({
-      from_grid: data.from_grid && (data.from_grid[t] ?? 0),
-      to_grid: data.to_grid && (data.to_grid[t] ?? 0),
-      solar: data.solar && (data.solar[t] ?? 0),
-      to_battery: data.to_battery && (data.to_battery[t] ?? 0),
-      from_battery: data.from_battery && (data.from_battery[t] ?? 0),
+      from_grid: fromGrid && (fromGrid[t] ?? 0),
+      to_grid: toGrid && (toGrid[t] ?? 0),
+      solar: solarData && (solarData[t] ?? 0),
+      to_battery: toBattery && (toBattery[t] ?? 0),
+      from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
     outData.used_total[t] = used_total;
-    outData.total.used_total += used_total;
+    total.used_total += used_total;
     outData.grid_to_battery[t] = grid_to_battery;
-    outData.total.grid_to_battery += grid_to_battery;
+    total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;
-    outData.total.battery_to_grid += battery_to_grid;
+    total.battery_to_grid += battery_to_grid;
     outData.used_battery![t] = used_battery;
-    outData.total.used_battery += used_battery;
+    total.used_battery += used_battery;
     outData.used_grid![t] = used_grid;
-    outData.total.used_grid += used_grid;
+    total.used_grid += used_grid;
     outData.used_solar![t] = used_solar;
-    outData.total.used_solar += used_solar;
+    total.used_solar += used_solar;
     outData.solar_to_battery[t] = solar_to_battery;
-    outData.total.solar_to_battery += solar_to_battery;
+    total.solar_to_battery += solar_to_battery;
     outData.solar_to_grid[t] = solar_to_grid;
-    outData.total.solar_to_grid += solar_to_grid;
+    total.solar_to_grid += solar_to_grid;
   });
 
   return outData;

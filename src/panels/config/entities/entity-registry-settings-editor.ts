@@ -85,7 +85,7 @@ import {
 } from "../../../data/options_flow";
 import {
   getSensorDeviceClassConvertibleUnits,
-  getSensorNumericDeviceClasses,
+  isNumericSensorDeviceClass,
 } from "../../../data/sensor";
 import { VacuumEntityFeature } from "../../../data/vacuum";
 import type { WeatherUnits } from "../../../data/weather";
@@ -237,8 +237,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
   @state() private _numberDeviceClassConvertibleUnits?: string[];
 
   @state() private _sensorDeviceClassConvertibleUnits?: string[];
-
-  @state() private _sensorNumericalDeviceClasses?: string[];
 
   @state() private _weatherConvertibleUnits?: WeatherUnits;
 
@@ -422,14 +420,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._numberDeviceClassConvertibleUnits = units;
       } else {
         this._numberDeviceClassConvertibleUnits = [];
-      }
-      if (domain === "sensor") {
-        const { numeric_device_classes } = await getSensorNumericDeviceClasses(
-          this.hass
-        );
-        this._sensorNumericalDeviceClasses = numeric_device_classes;
-      } else {
-        this._sensorNumericalDeviceClasses = [];
       }
       if (domain === "sensor" && this._deviceClass) {
         const { units } = await getSensorDeviceClassConvertibleUnits(
@@ -790,8 +780,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${domain === "sensor" &&
       // Allow customizing the precision for a sensor with numerical device class,
       // a unit of measurement or state class
-      ((this._deviceClass &&
-        this._sensorNumericalDeviceClasses?.includes(this._deviceClass)) ||
+      (isNumericSensorDeviceClass(this._deviceClass) ||
         stateObj?.attributes.unit_of_measurement ||
         stateObj?.attributes.state_class)
         ? html`
@@ -894,11 +883,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
           slot="end"
           @click=${this._restoreEntityId}
           .path=${mdiRestore}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.restore_entity_id"
+          )}
         ></ha-icon-button>
         <ha-icon-button
           slot="end"
           @click=${this._copyEntityId}
           .path=${mdiContentCopy}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.copy_entity_id"
+          )}
         ></ha-icon-button>
       </ha-input>
       ${!this.entry.device_id

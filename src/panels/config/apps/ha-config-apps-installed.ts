@@ -261,15 +261,22 @@ export class HaConfigAppsInstalled extends LitElement {
       }
 
       .search {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 56px;
         position: sticky;
         top: 0;
         z-index: 2;
+        background-color: var(--primary-background-color);
+        padding: 0 var(--ha-space-4);
+        box-sizing: border-box;
+        border-bottom: 1px solid var(--divider-color);
       }
 
       ha-input-search {
-        padding: var(--ha-space-3) var(--ha-space-2);
-        background: var(--sidebar-background-color);
-        border-bottom: 1px solid var(--divider-color);
+        flex: 1;
+        min-width: 0;
       }
 
       .content {

@@ -14,6 +14,7 @@ import {
   lightSupportsColor,
   lightSupportsColorMode,
 } from "../../../../data/light";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./light-color-rgb-picker";
@@ -22,8 +23,14 @@ import type { LightColorFavoriteDialogParams } from "./show-dialog-light-color-f
 
 export type LightPickerMode = "color_temp" | "color";
 
+interface LightColorFavoriteState {
+  color?: LightColor;
+}
+
 @customElement("dialog-light-color-favorite")
-class DialogLightColorFavorite extends LitElement {
+class DialogLightColorFavorite extends DirtyStateProviderMixin<LightColorFavoriteState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() _dialogParams?: LightColorFavoriteDialogParams;
@@ -46,6 +53,7 @@ class DialogLightColorFavorite extends LitElement {
     this._color = dialogParams.initialColor ?? this._computeCurrentColor();
     this._updateModes();
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, { color: this._color });
   }
 
   public closeDialog(): void {
@@ -107,6 +115,7 @@ class DialogLightColorFavorite extends LitElement {
 
   private _colorChanged(ev: CustomEvent) {
     this._color = ev.detail;
+    this._updateDirtyState({ color: this._color });
   }
 
   get stateObj() {
@@ -130,6 +139,7 @@ class DialogLightColorFavorite extends LitElement {
       return;
     }
     this._dialogParams?.submit?.(this._color);
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
@@ -150,6 +160,7 @@ class DialogLightColorFavorite extends LitElement {
       <ha-dialog
         .open=${this._open}
         .headerTitle=${this._dialogParams?.title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="header">

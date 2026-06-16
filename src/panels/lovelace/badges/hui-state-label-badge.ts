@@ -16,6 +16,7 @@ export class HuiStateLabelBadge extends HuiEntityBadge {
     const entityBadgeConfig: EntityBadgeConfig = {
       type: "entity",
       entity: config.entity,
+      color: config.color,
       show_name: config.show_name ?? true,
     };
 

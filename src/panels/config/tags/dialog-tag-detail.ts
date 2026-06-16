@@ -16,15 +16,22 @@ import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import type { Tag, UpdateTagParams } from "../../../data/tag";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import type { TagDetailDialogParams } from "./show-dialog-tag-detail";
 
+interface TagFormState {
+  name: string;
+  id: string | undefined;
+  useCustomId: boolean;
+}
+
 @customElement("dialog-tag-detail")
 class DialogTagDetail
-  extends LitElement
+  extends DirtyStateProviderMixin<TagFormState>()(LitElement)
   implements HassDialog<TagDetailDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -56,11 +63,20 @@ class DialogTagDetail
       this._id = "";
       this._name = "";
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
 
     // Defer QR until dialog has had a chance to apply styles
     requestAnimationFrame(() => {
       this._qrReady = true;
     });
+  }
+
+  private _currentState(): TagFormState {
+    return {
+      name: this._name,
+      id: this._id,
+      useCustomId: this._useCustomId,
+    };
   }
 
   public closeDialog(): boolean {
@@ -85,7 +101,7 @@ class DialogTagDetail
         header-title=${this._params.entry
           ? this.hass!.localize("ui.panel.config.tag.detail.tag_details")
           : this.hass!.localize("ui.panel.config.tag.detail.new_tag")}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
@@ -194,7 +210,9 @@ class DialogTagDetail
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting || !this._name}
+            .disabled=${this._submitting ||
+            !this._name ||
+            (!!this._params.entry && !this.isDirtyState)}
           >
             ${this._params.entry
               ? this.hass!.localize("ui.panel.config.tag.detail.update")
@@ -222,6 +240,7 @@ class DialogTagDetail
 
     this._error = undefined;
     this[`_${configValue}`] = target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _useCustomIdChanged(ev: CustomEvent) {
@@ -233,6 +252,7 @@ class DialogTagDetail
     } else {
       this._id = "";
     }
+    this._updateDirtyState(this._currentState());
   }
 
   private async _copyId() {
@@ -260,6 +280,7 @@ class DialogTagDetail
           this._useCustomId ? this._id : ""
         );
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";

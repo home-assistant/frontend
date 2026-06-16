@@ -452,6 +452,12 @@ export class HaConfigDeviceDashboard extends LitElement {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
       }
 
+      // Build a label lookup once instead of scanning labelReg for every
+      // label of every device.
+      const labelLookup = labelReg
+        ? new Map(labelReg.map((label) => [label.label_id, label]))
+        : undefined;
+
       const formattedOutputDevices = outputDevices.map((device) => {
         const deviceEntries = sortConfigEntries(
           device.config_entries
@@ -462,7 +468,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
         const labels = labelReg && device?.labels;
         const labelsEntries = (labels || [])
-          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .map((lbl) => labelLookup!.get(lbl))
           .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
 
         const { areaName } = computeDeviceAreaLabel(

@@ -14,13 +14,16 @@ import type {
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 import { pickAvailableDashboardUrlPath } from "./pick-available-dashboard-url-path";
 
 @customElement("dialog-lovelace-dashboard-detail")
-export class DialogLovelaceDashboardDetail extends LitElement {
+export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
+  Partial<LovelaceDashboard>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceDashboardDetailsDialogParams;
@@ -42,6 +45,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._open = true;
     if (this._params.dashboard) {
       this._data = this._params.dashboard;
+      this._initDirtyTracking({ type: "deep" }, this._data);
     } else {
       const suggestions = this._params.suggestions;
       this._data = {
@@ -51,9 +55,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         require_admin: false,
         mode: "storage",
       };
+      // New dashboards have no saved baseline, so track against an emptyobject to mark them dirty from the outset (keeps Create enabled).
+      this._initDirtyTracking({ type: "deep" }, {});
       if (suggestions?.title) {
         this._fillUrlPath(suggestions.title);
       }
+      this._updateDirtyState(this._data!);
     }
   }
 
@@ -71,6 +78,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
+
+    const yamlMode = this._params.dashboard?.mode === "yaml";
 
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
@@ -95,11 +104,11 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           : this.hass.localize(
               "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
             )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._params.dashboard?.mode === "yaml"
+          ${yamlMode
             ? this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
               )
@@ -142,10 +151,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateDashboard}
-            .disabled=${(this._error && "url_path" in this._error) ||
-            titleInvalid ||
-            this._submitting}
-            ?autofocus=${this._params.dashboard?.mode === "yaml"}
+            .disabled=${!yamlMode &&
+            ((this._error && "url_path" in this._error) ||
+              titleInvalid ||
+              this._submitting ||
+              !this.isDirtyState)}
+            ?autofocus=${yamlMode}
           >
             ${this._params.urlPath
               ? this._params.dashboard?.mode === "storage"
@@ -251,6 +262,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     } else {
       this._data = value;
     }
+    this._updateDirtyState(this._data!);
   }
 
   private _fillUrlPath(title: string) {
@@ -270,6 +282,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           ? pickAvailableDashboardUrlPath(baseSlug, taken)
           : baseSlug,
     };
+    this._updateDirtyState(this._data!);
   }
 
   private async _updateDashboard() {
@@ -292,6 +305,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           this._data as LovelaceDashboardCreateParams
         );
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       let localizedErrorMessage: string | undefined;

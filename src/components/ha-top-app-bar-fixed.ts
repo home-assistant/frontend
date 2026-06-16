@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { goBack } from "../common/navigate";
+import { haStyleScrollbar } from "../resources/styles";
 import "./ha-icon-button-arrow-prev";
 import "./ha-menu-button";
 
@@ -11,6 +12,9 @@ const PASSIVE_EVENT_OPTIONS = { passive: true } as const;
 export const haTopAppBarFixedStyles = css`
   :host {
     display: block;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
     --total-top-app-bar-height: calc(
       var(--header-height, 0px) + var(--sub-row-height, 0px)
     );
@@ -21,10 +25,11 @@ export const haTopAppBarFixedStyles = css`
     box-sizing: border-box;
     color: var(--app-header-text-color, #fff);
     background-color: var(--app-header-background-color, var(--primary-color));
-    position: fixed;
+    position: absolute;
     top: 0;
+    inset-inline-start: 0;
     inset-inline-end: 0;
-    width: var(--ha-top-app-bar-width, 100%);
+    width: 100%;
     z-index: 4;
     padding-top: var(--safe-area-inset-top);
     padding-right: var(--safe-area-inset-right);
@@ -116,17 +121,17 @@ export const haTopAppBarFixedStyles = css`
   }
 
   .top-app-bar-fixed-adjust {
-    height: calc(
-      100vh - var(--total-top-app-bar-height, 0px) - var(
-          --safe-area-inset-top,
-          0px
-        ) - var(--safe-area-inset-bottom, 0px)
-    );
-    padding-top: calc(
+    box-sizing: border-box;
+    position: absolute;
+    top: calc(
       var(--total-top-app-bar-height, 0px) + var(--safe-area-inset-top, 0px)
     );
+    bottom: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     padding-bottom: var(--safe-area-inset-bottom);
     padding-right: var(--safe-area-inset-right);
+    overflow: auto;
   }
 
   :host([narrow]) .top-app-bar-fixed-adjust {
@@ -146,6 +151,8 @@ export class HaTopAppBarFixed extends LitElement {
 
   @query(".sub-row") protected _subRowElement?: HTMLElement;
 
+  @query(".top-app-bar-fixed-adjust") protected _scrollElement?: HTMLElement;
+
   @state() private _hasSubRow = false;
 
   private _scrollTarget?: HTMLElement | Window;
@@ -154,14 +161,13 @@ export class HaTopAppBarFixed extends LitElement {
 
   @property({ attribute: false })
   public get scrollTarget(): HTMLElement | Window {
-    return this._scrollTarget || window;
+    return this._scrollTarget || this._scrollElement || window;
   }
 
   public set scrollTarget(value: HTMLElement | Window) {
     const old = this.scrollTarget;
     this._unregisterListeners();
     this._scrollTarget = value;
-    this._updateBarPosition();
     this.requestUpdate("scrollTarget", old);
     if (this.isConnected) {
       this._registerListeners();
@@ -183,7 +189,6 @@ export class HaTopAppBarFixed extends LitElement {
     if (this.hasUpdated) {
       this._observeSubRowHeight();
       this._updateSubRowHeight();
-      this._updateBarPosition();
       this._registerListeners();
       this._syncScrollState();
     }
@@ -243,7 +248,7 @@ export class HaTopAppBarFixed extends LitElement {
   }
 
   protected _renderContent() {
-    return html`<div class="top-app-bar-fixed-adjust">
+    return html`<div class="top-app-bar-fixed-adjust ha-scrollbar">
       <slot></slot>
     </div>`;
   }
@@ -252,7 +257,6 @@ export class HaTopAppBarFixed extends LitElement {
     super.firstUpdated(changedProperties);
     this._observeSubRowHeight();
     this._updateSubRowHeight();
-    this._updateBarPosition();
     this._registerListeners();
     this._syncScrollState();
   }
@@ -268,13 +272,6 @@ export class HaTopAppBarFixed extends LitElement {
     super.disconnectedCallback();
     this._unobserveSubRowHeight();
     this._unregisterListeners();
-  }
-
-  protected _updateBarPosition() {
-    if (this._barElement) {
-      this._barElement.style.position =
-        this.scrollTarget === window ? "" : "absolute";
-    }
   }
 
   protected _syncScrollState = () => {
@@ -336,7 +333,10 @@ export class HaTopAppBarFixed extends LitElement {
     this.style.setProperty("--sub-row-height", `${subRowHeight}px`);
   };
 
-  static override styles: CSSResultGroup = haTopAppBarFixedStyles;
+  static override styles: CSSResultGroup = [
+    haStyleScrollbar,
+    haTopAppBarFixedStyles,
+  ];
 }
 
 declare global {

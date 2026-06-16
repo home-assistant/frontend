@@ -62,7 +62,6 @@ import {
 import { subscribeLabFeature } from "../../data/labs";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
@@ -164,8 +163,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   @state() private _isEscapeEnabled = true;
 
-  @state() private _sensorNumericDeviceClasses?: string[] = [];
-
   @state() private _newTriggersAndConditions = false;
 
   protected scrollFadeThreshold = 24;
@@ -257,18 +254,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
-        computeShowLogBookComponent(
-          this.hass,
-          this._entityId!,
-          this._sensorNumericDeviceClasses
-        ))
+        computeShowLogBookComponent(this.hass, this._entityId!))
     );
   }
 
   private _shouldShowAddEntityTo(): boolean {
-    // When new_triggers_conditions labs feature is promoted, this whole check can be removed.
     return (
-      this._newTriggersAndConditions ||
+      (this._newTriggersAndConditions && !!this.hass.user?.is_admin) ||
       !!this.hass.auth.external?.config.hasEntityAddTo
     );
   }
@@ -536,11 +528,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   private _breadcrumbClick(ev: Event) {
     ev.stopPropagation();
     this._setView("related");
-  }
-
-  private async _loadNumericDeviceClasses() {
-    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
-    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
   protected render() {
@@ -953,7 +940,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     super.firstUpdated(changedProps);
     this.addEventListener("close-dialog", () => this.closeDialog());
     this.addEventListener("close-child-view", () => this._goBack());
-    this._loadNumericDeviceClasses();
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -1104,6 +1090,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         .title .breadcrumb {
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-m);
+          font-family: var(--ha-font-family-heading, inherit);
           line-height: 16px;
           --mdc-icon-size: 16px;
           padding: var(--ha-space-1);

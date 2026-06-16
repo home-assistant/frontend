@@ -30,12 +30,22 @@ import type {
   ZwaveCredential,
   ZwaveCredentialType,
 } from "../../../../../data/zwave_js-credentials";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZwaveCredentialUserEditDialogParams } from "./show-dialog-zwave_js-credential-user-edit";
 
+interface CredentialFormState {
+  userName: string;
+  userType: string;
+  credentialType: ZwaveCredentialType | "";
+  credentialData: string;
+}
+
 @customElement("dialog-zwave_js-credential-user-edit")
-class DialogZwaveCredentialUserEdit extends LitElement {
+class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: ZwaveCredentialUserEditDialogParams;
@@ -55,10 +65,6 @@ class DialogZwaveCredentialUserEdit extends LitElement {
   @state() private _credentialDataDirty = false;
 
   @state() private _open = false;
-
-  private _initialUserName = "";
-
-  private _initialUserType = "";
 
   public async showDialog(
     params: ZwaveCredentialUserEditDialogParams
@@ -88,8 +94,16 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     // Always show an empty field for credential data - we override it when something is entered.
     this._credentialData = "";
 
-    this._initialUserName = this._userName;
-    this._initialUserType = this._userType;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): CredentialFormState {
+    return {
+      userName: this._userName,
+      userType: this._userType,
+      credentialType: this._credentialType,
+      credentialData: this._credentialData,
+    };
   }
 
   // Credentials with non-enterable types (e.g. biometric) can't be edited
@@ -185,6 +199,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
         .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="form">
@@ -335,6 +350,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
 
   private _handleNameChange(ev: InputEvent): void {
     this._userName = (ev.target as HTMLInputElement).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleCredentialDataChange(ev: InputEvent): void {
@@ -347,6 +363,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       }
     }
     this._credentialData = value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleCredentialBeforeInput(ev: InputEvent): void {
@@ -388,14 +405,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
       return !!this._credentialData;
     }
     // Otherwise allow saving when the user was renamed or new credential data was entered
-    return !!this._credentialData || this._userChanged;
-  }
-
-  private get _userChanged(): boolean {
-    return (
-      this._userName !== this._initialUserName ||
-      this._userType !== this._initialUserType
-    );
+    return this.isDirtyState;
   }
 
   private get _credentialTypeChanged(): boolean {
@@ -459,10 +469,12 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     // Changing the credential type requires entering new credentials.
     // To make this obvious, we mark the field as dirty, so a validation error is shown.
     this._credentialDataDirty = this._credentialTypeChanged;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleUserTypeChanged(ev: CustomEvent): void {
     this._userType = ev.detail.value as string;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _save(): Promise<void> {
@@ -543,6 +555,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     }
 
     params.onSaved();
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 
@@ -553,7 +566,11 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     const user = params.user!;
     const existingCred = this._existingCredential(params);
 
-    if (this._userChanged) {
+    const userChanged =
+      this._userName !== (user.user_name || "") ||
+      this._userType !== user.user_type;
+
+    if (userChanged) {
       await setZwaveUser(this.hass, params.entity_id, {
         user_id: user.user_id,
         user_name: this._supportsUserNames ? this._userName.trim() : undefined,
@@ -581,6 +598,7 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     }
 
     params.onSaved();
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

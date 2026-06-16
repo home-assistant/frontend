@@ -313,7 +313,7 @@ class HaBackupConfigData extends LitElement {
                 </span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.data.share_folder_description"
+                    "ui.panel.config.backup.data.share_folder_desc"
                   )}
                 </span>
                 <ha-switch

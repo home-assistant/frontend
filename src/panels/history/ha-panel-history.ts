@@ -46,7 +46,6 @@ import {
 } from "../../data/history";
 import { fetchStatistics } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -296,19 +295,10 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
-    let sensorNumericDeviceClasses: string[];
-    try {
-      ({ numeric_device_classes: sensorNumericDeviceClasses } =
-        await getSensorNumericDeviceClasses(this.hass));
-    } catch (_err) {
-      return;
-    }
-
     this._statisticsHistory = convertStatisticsToHistory(
       this.hass!,
       statistics,
       statisticIds,
-      sensorNumericDeviceClasses,
       true
     );
   }
@@ -329,29 +319,6 @@ class HaPanelHistory extends LitElement {
 
     const now = new Date();
 
-    // Mark as subscribing before the await to prevent re-entrant calls
-    const sentinel = Promise.resolve(undefined) as NonNullable<
-      typeof this._subscribed
-    >;
-    this._subscribed = sentinel;
-
-    let sensorNumericDeviceClasses: string[];
-    try {
-      ({ numeric_device_classes: sensorNumericDeviceClasses } =
-        await getSensorNumericDeviceClasses(this.hass));
-    } catch (_err) {
-      if (this._subscribed === sentinel) {
-        this._subscribed = undefined;
-        this._isLoading = false;
-      }
-      return;
-    }
-
-    // Bail out if a newer call replaced our sentinel while we were awaiting
-    if (this._subscribed !== sentinel) {
-      return;
-    }
-
     this._subscribed = subscribeHistory(
       this.hass,
       (history) => {
@@ -361,7 +328,6 @@ class HaPanelHistory extends LitElement {
           history,
           entityIds,
           this.hass.localize,
-          sensorNumericDeviceClasses,
           true
         );
       },

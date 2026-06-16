@@ -39,6 +39,7 @@ import {
   deleteCalendarEvent,
   updateCalendarEvent,
 } from "../../data/calendar";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../lovelace/components/hui-generic-entity-row";
@@ -48,8 +49,21 @@ import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event
 
 const CALENDAR_DOMAINS = ["calendar"];
 
+interface CalendarEventFormState {
+  calendarId?: string;
+  summary: string;
+  description?: string;
+  location?: string;
+  rrule?: string;
+  allDay: boolean;
+  dtstart?: Date;
+  dtend?: Date;
+}
+
 @customElement("dialog-calendar-event-editor")
-class DialogCalendarEventEditor extends LitElement {
+class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -130,6 +144,20 @@ class DialogCalendarEventEditor extends LitElement {
       );
       this._dtend = addHours(this._dtstart, 1);
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): CalendarEventFormState {
+    return {
+      calendarId: this._calendarId,
+      summary: this._summary,
+      description: this._description,
+      location: this._location,
+      rrule: this._rrule,
+      allDay: this._allDay,
+      dtstart: this._dtstart,
+      dtend: this._dtend,
+    };
   }
 
   public closeDialog(): void {
@@ -153,7 +181,7 @@ class DialogCalendarEventEditor extends LitElement {
         header-title=${this.hass.localize(
           `ui.components.calendar.event.${isCreate ? "add" : "edit"}`
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -277,7 +305,7 @@ class DialogCalendarEventEditor extends LitElement {
                 <ha-button
                   slot="primaryAction"
                   @click=${this._createEvent}
-                  .disabled=${this._submitting}
+                  .disabled=${this._submitting || !this.isDirtyState}
                 >
                   ${this.hass.localize("ui.components.calendar.event.add")}
                 </ha-button>
@@ -301,7 +329,7 @@ class DialogCalendarEventEditor extends LitElement {
                 <ha-button
                   slot="primaryAction"
                   @click=${this._saveEvent}
-                  .disabled=${this._submitting}
+                  .disabled=${this._submitting || !this.isDirtyState}
                 >
                   ${this.hass.localize("ui.components.calendar.event.save")}
                 </ha-button>
@@ -346,18 +374,22 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _handleSummaryChanged(ev) {
     this._summary = ev.target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleDescriptionChanged(ev) {
     this._description = ev.target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleLocationChanged(ev: Event) {
     this._location = (ev.target as HTMLInputElement).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleRRuleChanged(ev) {
     this._rrule = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _allDayToggleChanged(ev) {
@@ -371,6 +403,7 @@ class DialogCalendarEventEditor extends LitElement {
         formatDate(this._dtend, this._timeZone!) + "T00:00:00"
       );
     }
+    this._updateDirtyState(this._currentState());
   }
 
   private _startDateChanged(ev: CustomEvent) {
@@ -390,6 +423,7 @@ class DialogCalendarEventEditor extends LitElement {
         "ui.components.calendar.event.end_auto_adjusted"
       );
     }
+    this._updateDirtyState(this._currentState());
   }
 
   private _endDateChanged(ev: CustomEvent) {
@@ -397,6 +431,7 @@ class DialogCalendarEventEditor extends LitElement {
       `${ev.detail.value}T${formatTime(this._dtend!, this._timeZone!)}`,
       this._timeZone!
     );
+    this._updateDirtyState(this._currentState());
   }
 
   private _startTimeChanged(ev: CustomEvent) {
@@ -416,6 +451,7 @@ class DialogCalendarEventEditor extends LitElement {
         "ui.components.calendar.event.end_auto_adjusted"
       );
     }
+    this._updateDirtyState(this._currentState());
   }
 
   private _endTimeChanged(ev: CustomEvent) {
@@ -423,6 +459,7 @@ class DialogCalendarEventEditor extends LitElement {
       `${formatDate(this._dtend!, this._timeZone!)}T${ev.detail.value}`,
       this._timeZone!
     );
+    this._updateDirtyState(this._currentState());
   }
 
   private _calculateData() {
@@ -453,6 +490,7 @@ class DialogCalendarEventEditor extends LitElement {
 
   private _handleCalendarChanged(ev: CustomEvent) {
     this._calendarId = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _isValidStartEnd(): boolean {

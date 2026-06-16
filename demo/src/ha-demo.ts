@@ -8,7 +8,7 @@ import type { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
-import { mockConfigEntries } from "./stubs/config_entries";
+import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
 import { energyEntities } from "./stubs/entities";
@@ -16,6 +16,7 @@ import { mockEntityRegistry } from "./stubs/entity_registry";
 import { mockEvents } from "./stubs/events";
 import { mockFloorRegistry } from "./stubs/floor_registry";
 import { mockFrontend } from "./stubs/frontend";
+import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
@@ -28,6 +29,31 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
+
+// WS command / REST path prefixes whose mocks live in the lazily imported
+// config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
+const CONFIG_PANEL_COMMANDS = [
+  "cloud/",
+  "validate_config",
+  "config_entries/",
+  "device_automation/",
+  "entity/source",
+  "blueprint/",
+  "homeassistant/expose",
+  "zone/list",
+  "person/list",
+  "network/url",
+  "application_credentials/",
+  "system_health/",
+  "backup/",
+  "automation/config",
+  "script/config",
+  "config/automation/config",
+  "config/script/config",
+  "config/scene/config",
+  "search/related",
+  "tag/list",
+];
 
 @customElement("ha-demo")
 export class HaDemo extends HomeAssistantAppEl {
@@ -61,9 +87,18 @@ export class HaDemo extends HomeAssistantAppEl {
     mockIcons(hass);
     mockEnergy(hass);
     mockPersistentNotification(hass);
-    mockConfigEntries(hass);
+    // Consumed app-wide via the lazy manifests context, so register eagerly.
+    mockIntegration(hass);
+    // Config panel mocks are code-split: the loader runs (and the chunk is
+    // dynamically imported) the first time one of these config-only WS/REST
+    // commands is requested, i.e. when the config panel is opened.
+    hass.mockLazyLoad(
+      (command) => CONFIG_PANEL_COMMANDS.some((p) => command.startsWith(p)),
+      () =>
+        import("./stubs/config-panel").then((mod) => mod.mockConfigPanel(hass))
+    );
     mockAreaRegistry(hass);
-    mockDeviceRegistry(hass);
+    mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
     mockLabelRegistry(hass);
     mockEntityRegistry(hass, [

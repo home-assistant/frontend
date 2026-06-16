@@ -77,6 +77,14 @@ export const clearBrandsTokenRefresh = (): void => {
 };
 
 export const brandsUrl = (options: BrandsOptions, hassUrl?: string): string => {
+  // In the demo there is no backend to serve the token-gated brands API, so
+  // load the images straight from the public brands CDN instead.
+  if (__DEMO__) {
+    return `https://brands.home-assistant.io/${options.domain}/${
+      options.darkOptimized ? "dark_" : ""
+    }${options.type}.png`;
+  }
+
   // The brands API requires a token; without one the request 401s. Return an
   // empty src so no request fires until the token is available. Components
   // re-render once the token arrives (see connection-mixin) and recompute this.
@@ -97,6 +105,13 @@ export const hardwareBrandsUrl = (
   options: HardwareBrandsOptions,
   hassUrl?: string
 ): string => {
+  // In the demo, load hardware images from the public brands CDN (see brandsUrl).
+  if (__DEMO__) {
+    return `https://brands.home-assistant.io/hardware/${options.category}/${
+      options.darkOptimized ? "dark_" : ""
+    }${options.manufacturer}${options.model ? `_${options.model}` : ""}.png`;
+  }
+
   // See brandsUrl: wait for the token before producing a loadable URL.
   if (!_brandsAccessToken) {
     return "";

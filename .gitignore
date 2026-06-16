@@ -58,3 +58,4 @@ test/coverage/
 .claude
 .cursor
 .opencode
+test/benchmarks/results/

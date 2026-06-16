@@ -62,6 +62,17 @@ Use `sidebar.js` when a page needs a visible section, section header, or determi
 - New categories without a sidebar entry are appended by the generator with their category name as the header.
 - If a listed page does not exist, the generator logs an error during `gather-gallery-pages`.
 
+### Subsections
+
+A section can group its pages under named subsections instead of one flat list. Use this for large categories where related pages should sit together.
+
+- `subsections` is an array of `{ header, pages }`. It is mutually exclusive with a flat `pages` array on the same group.
+- Each subsection `header` is a non-collapsible label rendered inside the section's expansion panel; the section stays the only collapsible level.
+- Listed pages keep their per-subsection order.
+- Any pages found in the category but not listed in a subsection are collected into a generated `Other` subsection, appended alphabetically. The `Other` subsection is omitted when there are no leftovers.
+- A listed page that does not exist still logs an error during `gather-gallery-pages`.
+- Use sentence case for subsection headers and follow the content standards below.
+
 ## Markdown Pages
 
 Use markdown pages for explanations, design guidance, API notes, and copy standards.

@@ -4,17 +4,25 @@ import { showToast } from "../../../util/toast";
 
 export const EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET = 60;
 
+// Editor elements that expose dirty tracking: the top-level automation/script
+// editors via `isDirtyState`, and the manual editors via `dirty`.
+interface DirtyStateElement extends HTMLElement {
+  isDirtyState?: boolean;
+  dirty?: boolean;
+}
+
+const isDirtyStateElement = (el: HTMLElement | null): el is DirtyStateElement =>
+  el !== null && ("isDirtyState" in el || "dirty" in el);
+
 function editorSaveFabVisibleFrom(el: HTMLElement): boolean {
   if (
     el.localName === "ha-automation-editor" ||
     el.localName === "ha-script-editor"
   ) {
-    return Boolean((el as { dirty?: boolean }).dirty);
+    return isDirtyStateElement(el) && Boolean(el.isDirtyState);
   }
-  const holder = closestWithProperty(el, "dirty", false) as
-    | (HTMLElement & { dirty?: boolean })
-    | null;
-  return Boolean(holder?.dirty);
+  const holder = closestWithProperty(el, "dirty", false);
+  return isDirtyStateElement(holder) && Boolean(holder.dirty);
 }
 
 export function showEditorToast(

@@ -25,10 +25,18 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
+
+type CostType = "no-costs" | "number" | "entity" | "statistic";
+
+interface GasFormState {
+  source: GasSourceTypeEnergyPreference;
+  costs: CostType;
+}
 
 const gasDeviceClasses = ["gas", "energy"];
 const gasUnitClasses = ["volume", "energy"];
@@ -36,7 +44,7 @@ const flowRateUnitClasses = ["volume_flow_rate"];
 
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
-  extends LitElement
+  extends DirtyStateProviderMixin<GasFormState>()(LitElement)
   implements HassDialog<EnergySettingsGasDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -47,7 +55,7 @@ export class DialogEnergyGasSettings
 
   @state() private _source?: GasSourceTypeEnergyPreference;
 
-  @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
+  @state() private _costs?: CostType;
 
   @state() private _pickedDisplayUnit?: string | null;
 
@@ -101,6 +109,10 @@ export class DialogEnergyGasSettings
       .filter((id) => id && id !== this._source?.stat_rate) as string[];
 
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      { source: this._source!, costs: this._costs! }
+    );
   }
 
   public closeDialog() {
@@ -153,7 +165,7 @@ export class DialogEnergyGasSettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.gas.dialog.header"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -318,7 +330,8 @@ export class DialogEnergyGasSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._source.stat_energy_from}
+            .disabled=${!this._source!.stat_energy_from ||
+            (!!this._params?.source && !this.isDirtyState)}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -329,11 +342,8 @@ export class DialogEnergyGasSettings
   }
 
   private _handleCostChanged(ev: Event) {
-    this._costs = (ev.currentTarget as HaRadioGroup).value as
-      | "no-costs"
-      | "number"
-      | "entity"
-      | "statistic";
+    this._costs = (ev.currentTarget as HaRadioGroup).value as CostType;
+    this._updateFormDirtyState();
   }
 
   private _numberPriceChanged(ev: InputEvent) {
@@ -343,6 +353,7 @@ export class DialogEnergyGasSettings
       entity_energy_price: null,
       stat_cost: null,
     };
+    this._updateFormDirtyState();
   }
 
   private _priceStatChanged(ev: CustomEvent) {
@@ -352,6 +363,7 @@ export class DialogEnergyGasSettings
       number_energy_price: null,
       stat_cost: ev.detail.value,
     };
+    this._updateFormDirtyState();
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
@@ -361,6 +373,7 @@ export class DialogEnergyGasSettings
       number_energy_price: null,
       stat_cost: null,
     };
+    this._updateFormDirtyState();
   }
 
   private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
@@ -368,6 +381,7 @@ export class DialogEnergyGasSettings
       ...this._source!,
       stat_rate: ev.detail.value || undefined,
     };
+    this._updateFormDirtyState();
   }
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
@@ -399,6 +413,7 @@ export class DialogEnergyGasSettings
       ...this._source!,
       stat_energy_from: ev.detail.value,
     };
+    this._updateFormDirtyState();
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -409,6 +424,11 @@ export class DialogEnergyGasSettings
     if (!this._source.name) {
       delete this._source.name;
     }
+    this._updateFormDirtyState();
+  }
+
+  private _updateFormDirtyState(): void {
+    this._updateDirtyState({ source: this._source!, costs: this._costs! });
   }
 
   private async _save() {
@@ -419,6 +439,7 @@ export class DialogEnergyGasSettings
         this._source!.stat_cost = null;
       }
       await this._params!.saveCallback(this._source!);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
