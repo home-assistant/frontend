@@ -110,7 +110,7 @@ export const nodeColor = (
   return stateColorCss(historicStateObj);
 };
 
-export type LogbookCauseKind =
+export type LogbookCauseType =
   | "user"
   | "automation"
   | "script"
@@ -120,14 +120,14 @@ export type LogbookCauseKind =
   | "integration";
 
 export interface LogbookCause {
-  kind: LogbookCauseKind;
+  type: LogbookCauseType;
   name: string;
   userId?: string;
   entityId?: string;
   brandDomain?: string;
 }
 
-export const resolveLogbookCause = (
+export const computeLogbookCause = (
   hass: HomeAssistant,
   item: LogbookEntry,
   userIdToName: Record<string, string>
@@ -136,7 +136,7 @@ export const resolveLogbookCause = (
     ? userIdToName[item.context_user_id]
     : undefined;
   if (userName) {
-    return { kind: "user", name: userName, userId: item.context_user_id };
+    return { type: "user", name: userName, userId: item.context_user_id };
   }
 
   if (
@@ -149,7 +149,7 @@ export const resolveLogbookCause = (
         : undefined) ?? item.context_name;
     if (name) {
       return {
-        kind:
+        type:
           item.context_event_type === "script_started"
             ? "script"
             : "automation",
@@ -161,7 +161,7 @@ export const resolveLogbookCause = (
 
   if (item.context_event_type === "call_service" && item.context_domain) {
     return {
-      kind: "integration",
+      type: "integration",
       brandDomain: item.context_domain,
       name: domainToName(hass.localize, item.context_domain),
     };
@@ -172,7 +172,7 @@ export const resolveLogbookCause = (
       entityDisplay(hass, item.context_entity_id).primary ??
       item.context_entity_id_name;
     if (name) {
-      return { kind: "state", name, entityId: item.context_entity_id };
+      return { type: "state", name, entityId: item.context_entity_id };
     }
   }
 
@@ -189,17 +189,17 @@ export const resolveLogbookCause = (
         : hass.localize(
             `ui.components.logbook.trigger_type.${platform}` as LocalizeKeys
           ) || platform;
-      return { kind: "state", name, entityId };
+      return { type: "state", name, entityId };
     }
     if (platform === "time" || platform === "time_pattern") {
-      return { kind: "scheduled", name: "" };
+      return { type: "scheduled", name: "" };
     }
     if (platform === "homeassistant") {
       const key = item.source.startsWith("Home Assistant starting")
         ? "homeassistant_starting"
         : "homeassistant_stopping";
       return {
-        kind: "homeassistant",
+        type: "homeassistant",
         name:
           hass.localize(`ui.components.logbook.${key}` as LocalizeKeys) ||
           item.source,
@@ -207,7 +207,7 @@ export const resolveLogbookCause = (
     }
     if (platform) {
       return {
-        kind: "integration",
+        type: "integration",
         name:
           hass.localize(
             `ui.components.logbook.trigger_type.${platform}` as LocalizeKeys
@@ -219,11 +219,11 @@ export const resolveLogbookCause = (
   if (item.context_name) {
     return item.context_domain
       ? {
-          kind: "integration",
+          type: "integration",
           brandDomain: item.context_domain,
           name: item.context_name,
         }
-      : { kind: "integration", name: item.context_name };
+      : { type: "integration", name: item.context_name };
   }
 
   return undefined;
@@ -234,7 +234,7 @@ export type LogbookGlyph =
   | { type: "automation"; script: boolean }
   | { type: "brand"; domain?: string; icon?: string };
 
-export const resolveLogbookGlyph = (
+export const computeLogbookGlyph = (
   item: LogbookEntry,
   category: LogbookEntryCategory,
   stateObj: HassEntity | undefined,
@@ -249,23 +249,23 @@ export const resolveLogbookGlyph = (
   return { type: "brand", domain, icon: item.icon };
 };
 
-export interface LogbookWhat {
+export interface LogbookValue {
   text: string;
-  kind: "state" | "message";
+  type: "state" | "message";
 }
 
-const resolveLogbookWhat = (
+const computeLogbookValue = (
   hass: HomeAssistant,
   item: LogbookEntry,
   domain: string | undefined,
   stateObj: HassEntity | undefined
-): LogbookWhat | undefined => {
+): LogbookValue | undefined => {
   if (item.entity_id && item.state) {
     return {
       text: stateObj
         ? localizeStateMessage(hass, item.state, stateObj, domain!)
         : item.state,
-      kind: "state",
+      type: "state",
     };
   }
   const isAutomationRun =
@@ -279,7 +279,7 @@ const resolveLogbookWhat = (
           ? "ui.components.logbook.script_ran"
           : "ui.components.logbook.automation_triggered"
       ),
-      kind: "state",
+      type: "state",
     };
   }
   if (item.message) {
@@ -287,7 +287,7 @@ const resolveLogbookWhat = (
       text: hasContext(item)
         ? stripEntityId(item.message, item.context_entity_id)
         : item.message,
-      kind: "message",
+      type: "message",
     };
   }
   return undefined;
@@ -301,7 +301,7 @@ export interface LogbookItem {
   entityId?: string;
   name?: string;
   context?: string;
-  what?: LogbookWhat;
+  value?: LogbookValue;
   cause?: LogbookCause;
   when: number;
 }
@@ -311,7 +311,7 @@ export interface BuildLogbookItemOptions {
   userIdToName?: Record<string, string>;
 }
 
-export const buildLogbookItem = (
+export const computeLogbookItem = (
   hass: HomeAssistant,
   item: LogbookEntry,
   opts: BuildLogbookItemOptions = {}
@@ -331,12 +331,12 @@ export const buildLogbookItem = (
 
   return {
     category,
-    glyph: resolveLogbookGlyph(item, category, historicStateObj, domain),
+    glyph: computeLogbookGlyph(item, category, historicStateObj, domain),
     entityId: item.entity_id,
     name: display?.primary ?? item.name,
     context: display?.secondary,
-    what: resolveLogbookWhat(hass, item, domain, historicStateObj),
-    cause: resolveLogbookCause(hass, item, opts.userIdToName ?? {}),
+    value: computeLogbookValue(hass, item, domain, historicStateObj),
+    cause: computeLogbookCause(hass, item, opts.userIdToName ?? {}),
     when: item.when * 1000,
   };
 };

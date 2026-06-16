@@ -26,27 +26,24 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type {
   LogbookCause,
-  LogbookCauseKind,
+  LogbookCauseType,
   LogbookGlyph,
   LogbookItem,
   LogbookScope,
-  LogbookWhat,
+  LogbookValue,
 } from "./logbook-entry-model";
 import {
-  buildLogbookItem,
+  computeLogbookItem,
   nodeColor,
   TRIGGER_DOMAINS,
 } from "./logbook-entry-model";
 
 type EntryLayout = "timeline" | "list" | "inline";
 
-interface EntryRenderCtx {
-  model: LogbookItem;
+interface LogbookRenderItem extends LogbookItem {
   traceLink: string | undefined;
   timeLabel: string;
-  whatHappened: TemplateResult | string;
-  hideName: boolean;
-  hasCause: boolean;
+  renderedValue: TemplateResult | string;
 }
 
 @customElement("ha-logbook-entry")
@@ -82,20 +79,20 @@ class HaLogbookEntry extends LitElement {
   private _computedStyle?: CSSStyleDeclaration;
 
   protected render() {
-    const item = this.item;
+    const entry = this.item;
     const seenEntityIds: string[] = [];
 
-    const model = buildLogbookItem(this.hass, item, {
+    const model = computeLogbookItem(this.hass, entry, {
       scope: this.scope,
       userIdToName: this.userIdToName,
     });
 
     const traceContext =
-      item.domain &&
-      TRIGGER_DOMAINS.includes(item.domain) &&
-      item.context_id &&
-      item.context_id in this.traceContexts
-        ? this.traceContexts[item.context_id]
+      entry.domain &&
+      TRIGGER_DOMAINS.includes(entry.domain) &&
+      entry.context_id &&
+      entry.context_id in this.traceContexts
+        ? this.traceContexts[entry.context_id]
         : undefined;
     const traceLink = traceContext
       ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
@@ -111,13 +108,11 @@ class HaLogbookEntry extends LitElement {
       ? relativeTime(when, this.hass.locale, undefined, true, "short")
       : formatTimeWithSeconds(when, this.hass.locale, this.hass.config);
 
-    const ctx: EntryRenderCtx = {
-      model,
+    const item: LogbookRenderItem = {
+      ...model,
       traceLink,
       timeLabel,
-      whatHappened: this._renderWhat(model.what, seenEntityIds, !!traceLink),
-      hideName,
-      hasCause: model.category === "entity",
+      renderedValue: this._renderValue(model.value, seenEntityIds, !!traceLink),
     };
 
     return html`
@@ -126,7 +121,7 @@ class HaLogbookEntry extends LitElement {
           [`layout-${layout}`]: true,
           [`node-${node}`]: true,
           "last-of-day": this.lastOfDay,
-          [`category-${model.category}`]: true,
+          [`category-${item.category}`]: true,
         })}"
       >
         ${layout === "timeline"
@@ -146,14 +141,14 @@ class HaLogbookEntry extends LitElement {
             "rail-trim-bottom": this.lastOfDay,
           })}"
         >
-          ${this._renderNode(model, layout)}
+          ${this._renderNode(item, layout)}
         </div>
         <div class="content">
           ${layout === "timeline"
-            ? this._renderTimeline(ctx)
+            ? this._renderTimeline(item)
             : layout === "list"
-              ? this._renderList(ctx)
-              : this._renderInline(ctx)}
+              ? this._renderList(item)
+              : this._renderInline(item)}
         </div>
       </div>
     `;
@@ -208,7 +203,7 @@ class HaLogbookEntry extends LitElement {
     return html`<span class="trailing">
       ${cause
         ? html`<span class="cause-badge" title=${cause.name}
-            >${this._causeIcon(cause)}</span
+            >${this._renderCauseIcon(cause)}</span
           >`
         : nothing}
       ${traceLink ? this._renderTraceLink(traceLink) : nothing}
@@ -225,68 +220,68 @@ class HaLogbookEntry extends LitElement {
     >`;
   }
 
-  private _renderTimeline(ctx: EntryRenderCtx) {
-    const { model, traceLink, hideName } = ctx;
+  private _renderTimeline(item: LogbookRenderItem) {
+    const hideName = this.scope === "entity";
     const rtl = computeRTL(
       this.hass.language,
       this.hass.translationMetadata.translations
     );
-    const whatIsState = model.what?.kind === "state";
-    const causePhrase = model.cause
-      ? this._causePhraseText(model.cause)
+    const valueIsState = item.value?.type === "state";
+    const causePhrase = item.cause
+      ? this._renderCausePhrase(item.cause)
       : undefined;
     return html`
       <div class="primary">
         <span class="primary-text"
           >${!hideName
             ? html`<span class="subject"
-                  >${this._renderEntity(model.entityId, model.name)}</span
-                >${ctx.whatHappened
-                  ? whatIsState
+                  >${this._renderEntity(item.entityId, item.name)}</span
+                >${item.renderedValue
+                  ? valueIsState
                     ? html`<span class="arrow">${rtl ? "←" : "→"}</span>`
                     : " "
                   : nothing}`
-            : nothing}${ctx.whatHappened}</span
+            : nothing}${item.renderedValue}</span
         >
       </div>
-      ${model.context
+      ${item.context
         ? html`<div class="secondary">
-            <span class="secondary-text">${model.context}</span>
+            <span class="secondary-text">${item.context}</span>
           </div>`
         : nothing}
-      ${causePhrase || traceLink
+      ${causePhrase || item.traceLink
         ? html`<div class="secondary">
             ${causePhrase
               ? html`<span class="cause-phrase">${causePhrase}</span>`
               : nothing}
-            ${causePhrase && traceLink ? html`·` : nothing}
-            ${traceLink ? this._renderTraceLink(traceLink) : nothing}
+            ${causePhrase && item.traceLink ? html`·` : nothing}
+            ${item.traceLink ? this._renderTraceLink(item.traceLink) : nothing}
           </div>`
         : nothing}
     `;
   }
 
-  private _renderList(ctx: EntryRenderCtx) {
-    const { model, traceLink, timeLabel, hasCause } = ctx;
-    const cause = this.showCause || hasCause ? model.cause : undefined;
-    const trailingTrace = this.showCause ? undefined : traceLink;
-    const thirdLineTrace = this.showCause ? traceLink : undefined;
+  private _renderList(item: LogbookRenderItem) {
+    const cause =
+      this.showCause || item.category === "entity" ? item.cause : undefined;
+    const trailingTrace = this.showCause ? undefined : item.traceLink;
+    const thirdLineTrace = this.showCause ? item.traceLink : undefined;
     const showThirdLine = this.showCause && (cause || thirdLineTrace);
     return html`
       <div class="primary">
         <span class="subject"
-          >${this._renderEntity(model.entityId, model.name)}</span
+          >${this._renderEntity(item.entityId, item.name)}</span
         >
-        <span class="value" title=${model.what?.text ?? ""}
-          >${ctx.whatHappened}</span
+        <span class="value" title=${item.value?.text ?? ""}
+          >${item.renderedValue}</span
         >
       </div>
       <div class="secondary">
-        <span class="secondary-text">${model.context ?? nothing}</span>
+        <span class="secondary-text">${item.context ?? nothing}</span>
         ${this._renderTrailing(
           showThirdLine ? undefined : cause,
           trailingTrace,
-          timeLabel
+          item.timeLabel
         )}
       </div>
       ${showThirdLine
@@ -305,9 +300,8 @@ class HaLogbookEntry extends LitElement {
       return traceLink ? this._renderTraceLink(traceLink) : nothing;
     }
     const { localize } = this.hass;
-    // Causes with an entity name: fixed prefix + truncatable entity name.
     if (cause.entityId) {
-      const prefixMap: Partial<Record<LogbookCauseKind, string>> = {
+      const prefixMap: Partial<Record<LogbookCauseType, string>> = {
         automation: localize("ui.components.logbook.cause.by_automation", {
           name: "",
         }),
@@ -318,7 +312,7 @@ class HaLogbookEntry extends LitElement {
           name: "",
         }),
       };
-      const prefix = prefixMap[cause.kind];
+      const prefix = prefixMap[cause.type];
       return html`
         ${prefix ? html`<span class="cause-prefix">${prefix}</span>` : nothing}
         <button
@@ -331,43 +325,36 @@ class HaLogbookEntry extends LitElement {
         ${traceLink ? this._renderTraceLink(traceLink) : nothing}
       `;
     }
-    // Simple phrase (no clickable entity): one truncatable span.
     return html`
-      <span class="secondary-text">${this._causePhraseText(cause)}</span>
+      <span class="secondary-text">${this._renderCausePhrase(cause)}</span>
       ${traceLink ? this._renderTraceLink(traceLink) : nothing}
     `;
   }
 
-  private _renderInline(ctx: EntryRenderCtx) {
-    const { model, traceLink, timeLabel, hasCause } = ctx;
+  private _renderInline(item: LogbookRenderItem) {
     return html`
       <div class="primary">
-        <span class="primary-text">${ctx.whatHappened}</span>
+        <span class="primary-text">${item.renderedValue}</span>
         ${this._renderTrailing(
-          hasCause ? model.cause : undefined,
-          traceLink,
-          timeLabel
+          item.category === "entity" ? item.cause : undefined,
+          item.traceLink,
+          item.timeLabel
         )}
       </div>
     `;
   }
 
-  private _renderWhat(
-    what: LogbookWhat | undefined,
+  private _renderValue(
+    value: LogbookValue | undefined,
     seenEntityIds: string[],
     noLink: boolean
   ): TemplateResult | string {
-    if (!what) {
+    if (!value) {
       return "";
     }
-    return what.kind === "message"
-      ? this._formatMessageWithPossibleEntity(
-          what.text,
-          seenEntityIds,
-          undefined,
-          noLink
-        )
-      : what.text;
+    return value.type === "message"
+      ? this._formatMessageWithPossibleEntity(value.text, seenEntityIds, noLink)
+      : value.text;
   }
 
   private _renderEntity(
@@ -395,7 +382,7 @@ class HaLogbookEntry extends LitElement {
         </button>`;
   }
 
-  private _causePhraseText(cause: LogbookCause): TemplateResult | string {
+  private _renderCausePhrase(cause: LogbookCause): TemplateResult | string {
     const { localize } = this.hass;
     const nameEl = cause.entityId
       ? html`<button
@@ -406,7 +393,7 @@ class HaLogbookEntry extends LitElement {
           ${cause.name}
         </button>`
       : cause.name;
-    switch (cause.kind) {
+    switch (cause.type) {
       case "user":
         return localize("ui.components.logbook.cause.by", {
           name: cause.name,
@@ -448,26 +435,26 @@ class HaLogbookEntry extends LitElement {
     }
   }
 
-  private _causeIcon(cause: LogbookCause) {
-    if (cause.kind === "user") {
+  private _renderCauseIcon(cause: LogbookCause) {
+    if (cause.type === "user") {
       return html`<ha-user-badge
         class="cause-icon cause-avatar"
-        .user=${this._causeUser(cause.userId!, cause.name)}
+        .user=${{ id: cause.userId!, name: cause.name } as User}
       ></ha-user-badge>`;
     }
-    if (cause.kind === "automation") {
+    if (cause.type === "automation") {
       return html`<ha-svg-icon
         class="cause-icon"
         .path=${mdiRobot}
       ></ha-svg-icon>`;
     }
-    if (cause.kind === "script") {
+    if (cause.type === "script") {
       return html`<ha-svg-icon
         class="cause-icon"
         .path=${mdiScriptText}
       ></ha-svg-icon>`;
     }
-    if (cause.kind === "state") {
+    if (cause.type === "state") {
       return nothing;
     }
     if (cause.brandDomain) {
@@ -483,14 +470,9 @@ class HaLogbookEntry extends LitElement {
     ></ha-svg-icon>`;
   }
 
-  private _causeUser(id: string, name: string): User {
-    return { id, name } as User;
-  }
-
   private _formatMessageWithPossibleEntity(
     message: string,
     seenEntities: string[],
-    possibleEntity?: string,
     noLink?: boolean
   ) {
     if (message.indexOf(".") !== -1) {
@@ -512,22 +494,6 @@ class HaLogbookEntry extends LitElement {
           )}
           ${messageEnd.join(" ")}`;
         }
-      }
-    }
-    if (possibleEntity && possibleEntity in this.hass.states) {
-      const possibleEntityName =
-        this.hass.states[possibleEntity].attributes.friendly_name;
-      if (possibleEntityName && message.endsWith(possibleEntityName)) {
-        if (seenEntities.includes(possibleEntity)) {
-          return "";
-        }
-        seenEntities.push(possibleEntity);
-        message = message.substring(
-          0,
-          message.length - possibleEntityName.length
-        );
-        return html`${message}
-        ${this._renderEntity(possibleEntity, possibleEntityName, noLink)}`;
       }
     }
     return message;
@@ -849,8 +815,7 @@ class HaLogbookEntry extends LitElement {
         }
 
         .entry.layout-timeline .content {
-          padding-top: var(--ha-space-2);
-          padding-bottom: var(--ha-space-2);
+          padding-block: var(--ha-space-2);
         }
 
         .primary {
@@ -897,7 +862,6 @@ class HaLogbookEntry extends LitElement {
           /* Don't shrink: the subject absorbs all truncation so a short state
              stays whole. max-width still caps a long one. */
           flex: 0 0 auto;
-          min-width: 0;
           max-width: 60%;
           white-space: nowrap;
           overflow: hidden;
@@ -926,8 +890,6 @@ class HaLogbookEntry extends LitElement {
           text-overflow: ellipsis;
         }
 
-        /* Icon + time share one centered box so they align to each other,
-           independent of primary/secondary text height. */
         .trailing {
           display: inline-flex;
           align-items: center;
@@ -955,17 +917,6 @@ class HaLogbookEntry extends LitElement {
           opacity: 0.75;
         }
 
-        /* Inline-flex so the icon/avatar is centered against the cause name
-           (custom-element icons have an unreliable baseline). */
-        .cause {
-          display: inline-flex;
-          align-items: center;
-          gap: var(--ha-space-1);
-          min-width: 0;
-          max-width: 100%;
-          overflow: hidden;
-        }
-
         .cause-icon {
           flex-shrink: 0;
           --mdc-icon-size: var(--cause-icon-size);
@@ -979,17 +930,6 @@ class HaLogbookEntry extends LitElement {
           font-size: 9px;
         }
 
-        .cause-name {
-          flex: 1 1 auto;
-          min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          color: var(--primary-text-color);
-          line-height: var(--cause-icon-size);
-        }
-
-        /* List cause line: fixed prefix + truncatable entity name */
         .cause-prefix {
           flex-shrink: 0;
           white-space: nowrap;

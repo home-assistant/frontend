@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildLogbookItem,
+  computeLogbookItem,
   classifyLogbookEntry,
   entityDisplay,
-  resolveLogbookCause,
-  resolveLogbookGlyph,
+  computeLogbookCause,
+  computeLogbookGlyph,
 } from "../../../src/panels/logbook/logbook-entry-model";
 import type { LogbookEntry } from "../../../src/data/logbook";
 import type { HomeAssistant } from "../../../src/types";
@@ -155,13 +155,13 @@ describe("entityDisplay", () => {
   });
 });
 
-describe("resolveLogbookCause", () => {
+describe("computeLogbookCause", () => {
   const localizeStub = (table: Record<string, string> = {}) =>
     ((key: string) => table[key] ?? "") as HomeAssistant["localize"];
 
   it("uses state kind and entity id as name when source names an entity", () => {
     const hass = baseHass({ localize: localizeStub() });
-    const cause = resolveLogbookCause(
+    const cause = computeLogbookCause(
       hass,
       entry({
         domain: "automation",
@@ -169,7 +169,7 @@ describe("resolveLogbookCause", () => {
       }),
       {}
     );
-    expect(cause?.kind).toBe("state");
+    expect(cause?.type).toBe("state");
     // Entity not in hass.states — falls back to entity id
     expect(cause?.name).toBe("binary_sensor.porte");
     expect(cause?.entityId).toBe("binary_sensor.porte");
@@ -181,7 +181,7 @@ describe("resolveLogbookCause", () => {
         "component.light.title": "Light",
       }),
     });
-    const cause = resolveLogbookCause(
+    const cause = computeLogbookCause(
       hass,
       entry({
         context_event_type: "call_service",
@@ -190,37 +190,37 @@ describe("resolveLogbookCause", () => {
       }),
       {}
     );
-    expect(cause?.kind).toBe("integration");
+    expect(cause?.type).toBe("integration");
     expect(cause?.name).toBe("Light");
     expect(cause?.brandDomain).toBe("light");
   });
 
   it("uses entity id as name when source entity is not in hass", () => {
     const hass = baseHass({ localize: localizeStub() });
-    const cause = resolveLogbookCause(
+    const cause = computeLogbookCause(
       hass,
       entry({ domain: "automation", source: "numeric state of sensor.temp" }),
       {}
     );
-    expect(cause?.kind).toBe("state");
+    expect(cause?.type).toBe("state");
     expect(cause?.name).toBe("sensor.temp");
   });
 
   it("uses scheduled kind for time-based triggers", () => {
     const hass = baseHass({ localize: localizeStub() });
-    const cause = resolveLogbookCause(
+    const cause = computeLogbookCause(
       hass,
       entry({ domain: "automation", source: "time pattern" }),
       {}
     );
-    expect(cause?.kind).toBe("scheduled");
+    expect(cause?.type).toBe("scheduled");
   });
 });
 
-describe("resolveLogbookGlyph", () => {
+describe("computeLogbookGlyph", () => {
   it("returns the automation/script glyph for a run", () => {
     expect(
-      resolveLogbookGlyph(
+      computeLogbookGlyph(
         entry({ entity_id: "automation.x", domain: "automation" }),
         "automation",
         undefined,
@@ -228,7 +228,7 @@ describe("resolveLogbookGlyph", () => {
       )
     ).toEqual({ type: "automation", script: false });
     expect(
-      resolveLogbookGlyph(
+      computeLogbookGlyph(
         entry({ entity_id: "script.x", domain: "script" }),
         "automation",
         undefined,
@@ -240,7 +240,7 @@ describe("resolveLogbookGlyph", () => {
   it("returns the entity state glyph when there is a historic state", () => {
     const historic = mockStateObj({ entity_id: "light.x" });
     expect(
-      resolveLogbookGlyph(
+      computeLogbookGlyph(
         entry({ entity_id: "light.x", icon: "mdi:bulb" }),
         "entity",
         historic,
@@ -251,7 +251,7 @@ describe("resolveLogbookGlyph", () => {
 
   it("falls back to the integration brand glyph", () => {
     expect(
-      resolveLogbookGlyph(
+      computeLogbookGlyph(
         entry({ domain: "zha", message: "x" }),
         "integration",
         undefined,
@@ -261,7 +261,7 @@ describe("resolveLogbookGlyph", () => {
   });
 });
 
-describe("buildLogbookItem", () => {
+describe("computeLogbookItem", () => {
   it("builds an entity item (name, state as 'value', context, glyph)", () => {
     const hass = baseHass({
       localize: ((key: string) => key) as HomeAssistant["localize"],
@@ -291,7 +291,7 @@ describe("buildLogbookItem", () => {
       },
       areas: { area_1: mockArea({ area_id: "area_1", name: "Salon" }) },
     });
-    const model = buildLogbookItem(
+    const model = computeLogbookItem(
       hass,
       entry({ entity_id: "light.salon", state: "on", when: 1000 }),
       {}
@@ -299,7 +299,7 @@ describe("buildLogbookItem", () => {
     expect(model.category).toBe("entity");
     expect(model.name).toBe("Spots Salon");
     expect(model.context).toBe("Salon ▸ Ampli");
-    expect(model.what).toEqual({ text: "Allumé", kind: "state" });
+    expect(model.value).toEqual({ text: "Allumé", type: "state" });
     expect(model.glyph.type).toBe("state");
     expect(model.when).toBe(1_000_000);
   });
@@ -312,7 +312,7 @@ describe("buildLogbookItem", () => {
           "ui.components.logbook.trigger_type.state": "State",
         })[key] ?? "") as HomeAssistant["localize"],
     });
-    const model = buildLogbookItem(
+    const model = computeLogbookItem(
       hass,
       entry({
         entity_id: "automation.x",
@@ -325,9 +325,9 @@ describe("buildLogbookItem", () => {
     expect(model.category).toBe("automation");
     expect(model.name).toBe("Mode nuit");
     expect(model.context).toBeUndefined();
-    expect(model.what).toEqual({ text: "Triggered", kind: "state" });
+    expect(model.value).toEqual({ text: "Triggered", type: "state" });
     expect(model.glyph).toEqual({ type: "automation", script: false });
-    expect(model.cause?.kind).toBe("state");
+    expect(model.cause?.type).toBe("state");
     expect(model.cause?.name).toBe("binary_sensor.porte");
   });
 
@@ -335,14 +335,14 @@ describe("buildLogbookItem", () => {
     const hass = baseHass({
       localize: (() => "") as HomeAssistant["localize"],
     });
-    const model = buildLogbookItem(
+    const model = computeLogbookItem(
       hass,
       entry({ domain: "zha", name: "Remote", message: "button pressed" }),
       {}
     );
     expect(model.category).toBe("integration");
     expect(model.name).toBe("Remote");
-    expect(model.what).toEqual({ text: "button pressed", kind: "message" });
+    expect(model.value).toEqual({ text: "button pressed", type: "message" });
     expect(model.glyph).toEqual({
       type: "brand",
       domain: "zha",
@@ -357,7 +357,7 @@ describe("buildLogbookItem", () => {
         ({ "ui.components.logbook.script_ran": "Ran" })[key] ??
         "") as HomeAssistant["localize"],
     });
-    const model = buildLogbookItem(
+    const model = computeLogbookItem(
       hass,
       entry({
         entity_id: "script.x",
@@ -368,6 +368,6 @@ describe("buildLogbookItem", () => {
       }),
       {}
     );
-    expect(model.what).toEqual({ text: "Ran", kind: "state" });
+    expect(model.value).toEqual({ text: "Ran", type: "state" });
   });
 });
