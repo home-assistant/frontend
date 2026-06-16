@@ -14,13 +14,16 @@ import type {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../../data/data_entry_flow";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 
 let instance = 0;
 
 @customElement("ha-mfa-module-setup-flow")
-class HaMfaModuleSetupFlow extends LitElement {
+class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
+  Record<string, unknown>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _dialogClosedCallback?: (params: {
@@ -83,7 +86,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this._computeStepTitle()}
         @closed=${this._dialogClosed}
       >
@@ -220,6 +223,7 @@ class HaMfaModuleSetupFlow extends LitElement {
 
   private _stepDataChanged(ev: CustomEvent) {
     this._stepData = ev.detail.value;
+    this._updateDirtyState(this._stepData);
   }
 
   private _submitStep() {
@@ -317,6 +321,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     // We got a new form if there are no errors.
     if (Object.keys(step.errors).length === 0) {
       this._stepData = {};
+      this._initDirtyTracking({ type: "shallow" }, {});
     }
   }
 

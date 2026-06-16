@@ -23,6 +23,7 @@ export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
   name?: string;
   icon?: string;
   image?: string;
+  color?: string;
   show_name?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

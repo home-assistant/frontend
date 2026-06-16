@@ -369,14 +369,10 @@ export const localizeStateMessage = (
   });
 };
 
-export const filterLogbookCompatibleEntities = (
-  entity,
-  sensorNumericDeviceClasses: string[] = []
-) => {
+export const filterLogbookCompatibleEntities = (entity) => {
   const domain = computeStateDomain(entity);
   const continuous =
     CONTINUOUS_DOMAINS.includes(domain) ||
-    (domain === "sensor" &&
-      isNumericEntity(domain, entity, undefined, sensorNumericDeviceClasses));
+    (domain === "sensor" && isNumericEntity(domain, entity, undefined));
   return !continuous;
 };

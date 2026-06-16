@@ -28,12 +28,23 @@ import {
   updateItem,
 } from "../../data/todo";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 
+interface TodoItemFormState {
+  summary: string;
+  description?: string;
+  due?: Date;
+  checked: boolean;
+  hasTime: boolean;
+}
+
 @customElement("dialog-todo-item-editor")
-class DialogTodoItemEditor extends LitElement {
+class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -87,6 +98,17 @@ class DialogTodoItemEditor extends LitElement {
       this._checked = false;
       this._due = undefined;
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): TodoItemFormState {
+    return {
+      summary: this._summary,
+      description: this._description,
+      due: this._due,
+      checked: this._checked,
+      hasTime: this._hasTime,
+    };
   }
 
   public closeDialog(): void {
@@ -131,7 +153,7 @@ class DialogTodoItemEditor extends LitElement {
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
         header-subtitle=${listName}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -224,7 +246,7 @@ class DialogTodoItemEditor extends LitElement {
                 <ha-button
                   slot="primaryAction"
                   @click=${this._createItem}
-                  .disabled=${this._submitting}
+                  .disabled=${this._submitting || !this.isDirtyState}
                 >
                   ${this.hass.localize("ui.components.todo.item.add")}
                 </ha-button>
@@ -233,7 +255,9 @@ class DialogTodoItemEditor extends LitElement {
                 <ha-button
                   slot="primaryAction"
                   @click=${this._saveItem}
-                  .disabled=${!canUpdate || this._submitting}
+                  .disabled=${!canUpdate ||
+                  this._submitting ||
+                  !this.isDirtyState}
                 >
                   ${this.hass.localize("ui.components.todo.item.save")}
                 </ha-button>
@@ -299,23 +323,28 @@ class DialogTodoItemEditor extends LitElement {
 
   private _checkedCanged(ev) {
     this._checked = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleSummaryChanged(ev: InputEvent) {
     this._summary = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleDescriptionChanged(ev) {
     this._description = ev.target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _dueDateChanged(ev: CustomEvent) {
     if (!ev.detail.value) {
       this._due = undefined;
+      this._updateDirtyState(this._currentState());
       return;
     }
     const time = this._due ? this._formatTime(this._due) : undefined;
     this._due = this._parseDate(`${ev.detail.value}${time ? `T${time}` : ""}`);
+    this._updateDirtyState(this._currentState());
   }
 
   private _dueTimeChanged(ev: CustomEvent) {
@@ -323,6 +352,7 @@ class DialogTodoItemEditor extends LitElement {
     this._due = this._parseDate(
       `${this._formatDate(this._due || new Date())}T${ev.detail.value}`
     );
+    this._updateDirtyState(this._currentState());
   }
 
   private async _createItem() {

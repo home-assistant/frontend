@@ -10,7 +10,6 @@ import type { DeviceRegistryEntry } from "../../../../../../data/device/device_r
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
-import { showZHAManageZigbeeDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-manage-zigbee-device";
 import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
 import type { DeviceAction } from "../../../ha-config-device-page";
 
@@ -64,8 +63,7 @@ export const getZHADeviceActions = async (
       {
         label: hass.localize("ui.dialogs.zha_device_info.buttons.manage"),
         icon: mdiGroup,
-        action: () =>
-          showZHAManageZigbeeDeviceDialog(el, { device: zhaDevice }),
+        action: () => navigate(`/config/zha/device/${zhaDevice.ieee}/clusters`),
       },
       {
         label: hass.localize("ui.dialogs.zha_device_info.buttons.view_network"),

@@ -4,7 +4,6 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
@@ -24,9 +23,9 @@ export class ZHAGroupBindingControl extends LitElement {
 
   @property({ attribute: false }) public device?: ZHADevice;
 
-  @state() private _bindTargetIndex = -1;
+  @property({ attribute: false }) public groups: ZHAGroup[] = [];
 
-  @state() private groups: ZHAGroup[] = [];
+  @state() private _bindTargetIndex = -1;
 
   @state() private _selectedClusters: string[] = [];
 
@@ -42,10 +41,17 @@ export class ZHAGroupBindingControl extends LitElement {
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has("device")) {
+    const oldDevice = changedProperties.get("device");
+    const deviceChanged =
+      changedProperties.has("device") && this.device?.ieee !== oldDevice?.ieee;
+
+    if (deviceChanged || changedProperties.has("groups")) {
       this._bindTargetIndex = -1;
+      this._groupToBind = undefined;
       this._selectedClusters = [];
       this._clustersToBind = [];
+    }
+    if (deviceChanged) {
       this._fetchClustersForZhaNode();
     }
     super.updated(changedProperties);
@@ -53,31 +59,31 @@ export class ZHAGroupBindingControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-        <ha-card class="content">
-          <div class="command-picker">
-            <ha-select
-              .label=${this.hass!.localize(
-                "ui.panel.config.zha.group_binding.group_picker_label"
-              )}
-              class="menu"
-              .value=${String(this._bindTargetIndex)}
-              @selected=${this._bindTargetIndexChanged}
-              .options=${this.groups.map((group, idx) => ({
-                value: String(idx),
-                label: group.name,
-              }))}
-            >
-            </ha-select>
-          </div>
-          <div class="command-picker">
-            <zha-clusters-data-table
-              .hass=${this.hass}
-              .clusters=${this._clusters}
-              @selection-changed=${this._handleClusterSelectionChanged}
-              class="menu"
-            ></zha-clusters-data-table>
-          </div>
-          <div class="card-actions">
+      <div class="content">
+        <div class="command-picker">
+          <ha-select
+            .label=${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.group_picker_label"
+            )}
+            class="menu"
+            .value=${String(this._bindTargetIndex)}
+            @selected=${this._bindTargetIndexChanged}
+            .options=${this.groups.map((group, idx) => ({
+              value: String(idx),
+              label: group.name,
+            }))}
+          >
+          </ha-select>
+        </div>
+        <div class="command-picker">
+          <zha-clusters-data-table
+            .hass=${this.hass}
+            .clusters=${this._clusters}
+            @selection-changed=${this._handleClusterSelectionChanged}
+            class="menu"
+          ></zha-clusters-data-table>
+        </div>
+        <div class="card-actions">
           <ha-progress-button
             @click=${this._onUnbindGroupClick}
             .disabled=${!this._canBind || this._bindingOperationInProgress}
@@ -88,17 +94,16 @@ export class ZHAGroupBindingControl extends LitElement {
               "ui.panel.config.zha.group_binding.unbind_button_label"
             )}
           </ha-progress-button>
-              <ha-progress-button
-                      @click=${this._onBindGroupClick}
-                      .disabled=${!this._canBind || this._bindingOperationInProgress}
-              >
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.group_binding.bind_button_label"
-                  )}
-              </ha-progress-button>
-          </div>
-        </ha-card>
-      </ha-config-section>
+          <ha-progress-button
+            @click=${this._onBindGroupClick}
+            .disabled=${!this._canBind || this._bindingOperationInProgress}
+          >
+            ${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.bind_button_label"
+            )}
+          </ha-progress-button>
+        </div>
+      </div>
     `;
   }
 
@@ -171,10 +176,10 @@ export class ZHAGroupBindingControl extends LitElement {
   }
 
   private async _fetchClustersForZhaNode(): Promise<void> {
-    if (this.hass) {
+    if (this.hass && this.device) {
       this._clusters = await fetchClustersForZhaDevice(
         this.hass,
-        this.device!.ieee
+        this.device.ieee
       );
       this._clusters = this._clusters
         .filter((cluster) => cluster.type.toLowerCase() === "out")
@@ -199,35 +204,24 @@ export class ZHAGroupBindingControl extends LitElement {
           width: 100%;
         }
 
-        .content {
-          padding-top: var(--ha-space-2);
+        :host {
+          display: block;
         }
 
         .command-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;
           padding-inline-end: 28px;
           padding-bottom: 10px;
-        }
-
-        .input-text {
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-inline-start: 28px;
-          padding-inline-end: 28px;
-          padding-bottom: 10px;
-        }
-
-        .sectionHeader {
-          flex-grow: 1;
         }
 
         .card-actions {
           display: flex;
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2);
           justify-content: flex-end;
-          gap: var(--ha-space-1);
+          gap: var(--ha-space-2);
         }
       `,
     ];

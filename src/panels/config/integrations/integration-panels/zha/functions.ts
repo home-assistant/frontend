@@ -1,3 +1,4 @@
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 
 export const formatAsPaddedHex = (value: string | number): string => {
@@ -27,3 +28,16 @@ export const computeClusterKey = (cluster: Cluster): string =>
   `${cluster.name} (Endpoint id: ${
     cluster.endpoint_id
   }, Id: ${formatAsPaddedHex(cluster.id)}, Type: ${cluster.type})`;
+
+export const computeClusterSecondary = (
+  cluster: Cluster,
+  localize: LocalizeFunc
+): string =>
+  localize("ui.panel.config.zha.clusters.cluster_description", {
+    endpoint: cluster.endpoint_id,
+    id: formatAsPaddedHex(cluster.id),
+    type: cluster.type,
+  });
+
+export const computeClusterValue = (cluster: Cluster): string =>
+  `${cluster.endpoint_id}-${cluster.id}-${cluster.type}`;

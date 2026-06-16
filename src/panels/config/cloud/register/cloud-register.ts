@@ -84,7 +84,10 @@ export class CloudRegister extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.cloud.register.information3"
                 )}
-                <a href="https://www.nabucasa.com" target="_blank"
+                <a
+                  href="https://www.nabucasa.com"
+                  target="_blank"
+                  rel="noreferrer"
                   >Nabu&nbsp;Casa,&nbsp;Inc</a
                 >
                 ${this.hass.localize(

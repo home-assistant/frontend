@@ -23,8 +23,6 @@ describe("computeStateDisplay", () => {
   const localize = (message, ...args) =>
     message + (args.length ? ": " + args.join(",") : "");
 
-  const numericDeviceClasses = [];
-
   beforeEach(() => {
     localeData = {
       language: "en",
@@ -43,14 +41,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
       "component.binary_sensor.entity_component._.state.off"
     );
   });
@@ -64,14 +55,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
       "component.binary_sensor.entity_component.moisture.state.off"
     );
   });
@@ -91,14 +75,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        altLocalize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
       "component.binary_sensor.entity_component.invalid_device_class.state.off"
     );
   });
@@ -112,14 +89,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
       "123 m"
     );
   });
@@ -139,14 +109,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        entities
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, entities),
       "1,234 component.custom_integration.entity.sensor.custom_translation.unit_of_measurement"
     );
   });
@@ -160,14 +123,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
       "1,234.5 m"
     );
   });
@@ -181,14 +137,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
       "1,234.5"
     );
   });
@@ -208,14 +157,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        altLocalize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
       "state.default.unknown"
     );
   });
@@ -235,14 +177,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        altLocalize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
       "state.default.unavailable"
     );
   });
@@ -262,14 +197,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(
-        altLocalize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
       "component.sensor.entity_component._.state.custom_state"
     );
   });
@@ -293,7 +221,6 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
-          numericDeviceClasses,
           demoConfig,
           entities
         ),
@@ -328,28 +255,14 @@ describe("computeStateDisplay", () => {
     };
     it("Uses am/pm time format", () => {
       assert.strictEqual(
-        computeStateDisplay(
-          localize,
-          stateObj,
-          localeData,
-          numericDeviceClasses,
-          demoConfig,
-          {}
-        ),
+        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
         "November 18, 2017 at 11:12 PM"
       );
     });
     it("Uses 24h time format", () => {
       localeData.time_format = TimeFormat.twenty_four;
       assert.strictEqual(
-        computeStateDisplay(
-          localize,
-          stateObj,
-          localeData,
-          numericDeviceClasses,
-          demoConfig,
-          {}
-        ),
+        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
         "November 18, 2017 at 23:12"
       );
     });
@@ -371,14 +284,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
       "November 18, 2017"
     );
   });
@@ -401,28 +307,14 @@ describe("computeStateDisplay", () => {
     it("Uses am/pm time format", () => {
       localeData.time_format = TimeFormat.am_pm;
       assert.strictEqual(
-        computeStateDisplay(
-          localize,
-          stateObj,
-          localeData,
-          numericDeviceClasses,
-          demoConfig,
-          {}
-        ),
+        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
         "11:12 PM"
       );
     });
     it("Uses 24h time format", () => {
       localeData.time_format = TimeFormat.twenty_four;
       assert.strictEqual(
-        computeStateDisplay(
-          localize,
-          stateObj,
-          localeData,
-          numericDeviceClasses,
-          demoConfig,
-          {}
-        ),
+        computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
         "23:12"
       );
     });
@@ -449,7 +341,6 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
-          numericDeviceClasses,
           demoConfig,
           {},
           "2021-07-04 15:40:03"
@@ -464,7 +355,6 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
-          numericDeviceClasses,
           demoConfig,
           {},
           "2021-07-04 15:40:03"
@@ -494,7 +384,6 @@ describe("computeStateDisplay", () => {
         localize,
         stateObj,
         localeData,
-        numericDeviceClasses,
         demoConfig,
         {},
         "2021-07-04"
@@ -525,7 +414,6 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
-          numericDeviceClasses,
           demoConfig,
           {},
           "17:05:07"
@@ -540,7 +428,6 @@ describe("computeStateDisplay", () => {
           localize,
           stateObj,
           localeData,
-          numericDeviceClasses,
           demoConfig,
           {},
           "17:05:07"
@@ -563,14 +450,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(
-        altLocalize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
       "state.default.unavailable"
     );
   });
@@ -585,14 +465,7 @@ describe("computeStateDisplay", () => {
       attributes: {},
     };
     assert.strictEqual(
-      computeStateDisplay(
-        altLocalize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        {}
-      ),
+      computeStateDisplay(altLocalize, stateObj, localeData, demoConfig, {}),
       "My Custom State"
     );
   });
@@ -610,14 +483,7 @@ describe("computeStateDisplay", () => {
       },
     };
     assert.strictEqual(
-      computeStateDisplay(
-        localize,
-        stateObj,
-        localeData,
-        numericDeviceClasses,
-        demoConfig,
-        entities
-      ),
+      computeStateDisplay(localize, stateObj, localeData, demoConfig, entities),
       "component.custom_integration.entity.sensor.custom_translation.state.custom_state"
     );
   });
@@ -631,7 +497,6 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       {
         language: "en",
       } as FrontendLocaleData,
-      [],
       {} as HassConfig,
       {
         display_precision: 2,
@@ -652,7 +517,6 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       {
         language: "en",
       } as FrontendLocaleData,
-      [],
       {} as HassConfig,
       undefined,
       "number.test",
@@ -672,7 +536,6 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       {
         language: "en",
       } as FrontendLocaleData,
-      [],
       {} as HassConfig,
       undefined,
       "number.test",
@@ -692,7 +555,6 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       {
         language: "en",
       } as FrontendLocaleData,
-      [],
       {} as HassConfig,
       undefined,
       "number.test",
@@ -720,7 +582,6 @@ describe("computeStateDisplayFromEntityAttributes datetime device calss", () => 
       {
         language: "en",
       } as FrontendLocaleData,
-      [],
       {} as HassConfig,
       undefined,
       "button.test",

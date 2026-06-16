@@ -283,7 +283,7 @@ class DialogMatterAddDevice extends LitElement {
     const savedStep = this._step;
     try {
       this._step = "commissioning";
-      await commissionMatterDevice(this.hass, code);
+      await commissionMatterDevice(this.hass, code, true);
     } catch (_err) {
       showToast(this, {
         message: this.hass.localize(

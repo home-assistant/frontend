@@ -80,12 +80,7 @@ class HuiTimestampDisplay extends LitElement {
     if (!changedProperties.has("format") || !this._connected) {
       return;
     }
-
-    if (INTERVAL_FORMAT.includes("relative")) {
-      this._startInterval();
-    } else {
-      this._clearInterval();
-    }
+    this._startInterval();
   }
 
   private get _format(): string {

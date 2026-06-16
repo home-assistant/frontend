@@ -128,11 +128,13 @@ export const addMatterDevice = (hass: HomeAssistant) => {
 
 export const commissionMatterDevice = (
   hass: HomeAssistant,
-  code: string
+  code: string,
+  networkOnly: boolean
 ): Promise<void> =>
   hass.callWS({
     type: "matter/commission",
     code,
+    network_only: networkOnly,
   });
 
 export const acceptSharedMatterDevice = (

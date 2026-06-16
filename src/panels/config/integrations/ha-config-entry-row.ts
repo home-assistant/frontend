@@ -354,6 +354,7 @@ export class HaConfigEntryRow extends LitElement {
                 <a
                   href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                   target="_blank"
+                  rel="noreferrer"
                   @click=${this._signUrl}
                 >
                   <ha-dropdown-item value="diagnostics">

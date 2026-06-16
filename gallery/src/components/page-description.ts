@@ -13,13 +13,10 @@ class PageDescription extends HaMarkdown {
       return nothing;
     }
 
+    const subtitle = PAGES[this.page].metadata.subtitle;
+
     return html`
-      <div class="heading">
-        <div class="title">
-          ${PAGES[this.page].metadata.title || this.page.split("/")[1]}
-        </div>
-        <div class="subtitle">${PAGES[this.page].metadata.subtitle}</div>
-      </div>
+      ${subtitle ? html`<div class="subtitle">${subtitle}</div>` : nothing}
       ${until(
         PAGES[this.page]
           .description()
@@ -32,16 +29,9 @@ class PageDescription extends HaMarkdown {
   static styles = [
     HaMarkdown.styles,
     css`
-      .heading {
+      .subtitle {
         padding: 16px;
         border-bottom: 1px solid var(--secondary-background-color);
-      }
-      .title {
-        font-size: 42px;
-        line-height: var(--ha-line-height-condensed);
-        padding-bottom: 8px;
-      }
-      .subtitle {
         font-size: var(--ha-font-size-l);
         line-height: var(--ha-line-height-normal);
       }
