@@ -271,7 +271,7 @@ const computeLogbookValue = (
   const isAutomationRun =
     domain &&
     TRIGGER_DOMAINS.includes(domain) &&
-    (item.source || hasContext(item));
+    (item.source || hasContext(item) || !!item.context_user_id);
   if (isAutomationRun) {
     return {
       text: hass.localize(
