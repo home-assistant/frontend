@@ -43,6 +43,9 @@ class HaLogbookRenderer extends LitElement {
   @property({ type: Boolean, attribute: "graph-color" }) public graphColor =
     false;
 
+  @property({ type: Boolean, attribute: "show-cause" }) public showCause =
+    false;
+
   @property({ attribute: false }) public scope?: LogbookScope;
 
   // @ts-ignore
@@ -137,6 +140,7 @@ class HaLogbookRenderer extends LitElement {
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}
           .showRelative=${this._showRelative}
+          .showCause=${this.showCause}
         ></ha-logbook-entry>
       </div>
     `;

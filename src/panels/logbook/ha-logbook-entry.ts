@@ -26,6 +26,7 @@ import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type {
   LogbookCause,
+  LogbookCauseKind,
   LogbookGlyph,
   LogbookItem,
   LogbookScope,
@@ -45,7 +46,7 @@ interface EntryRenderCtx {
   timeLabel: string;
   whatHappened: TemplateResult | string;
   hideName: boolean;
-  showCause: boolean;
+  hasCause: boolean;
 }
 
 @customElement("ha-logbook-entry")
@@ -73,6 +74,9 @@ class HaLogbookEntry extends LitElement {
 
   @property({ type: Boolean, attribute: false }) public showRelative = false;
 
+  @property({ type: Boolean, attribute: "show-cause" }) public showCause =
+    false;
+
   // Reading custom properties forces a style recalc, costly to repeat per row
   // while scrolling — resolve once and cache.
   private _computedStyle?: CSSStyleDeclaration;
@@ -98,11 +102,8 @@ class HaLogbookEntry extends LitElement {
       : undefined;
 
     const hideName = this.scope === "entity";
-    const layout: EntryLayout = !this.narrow && !this.noIcon
-      ? "timeline"
-      : hideName
-        ? "inline"
-        : "list";
+    const layout: EntryLayout =
+      !this.narrow && !this.noIcon ? "timeline" : hideName ? "inline" : "list";
     const node = layout === "timeline" ? "icon" : "dot";
 
     const when = new Date(model.when);
@@ -116,7 +117,7 @@ class HaLogbookEntry extends LitElement {
       timeLabel,
       whatHappened: this._renderWhat(model.what, seenEntityIds, !!traceLink),
       hideName,
-      showCause: model.category === "entity",
+      hasCause: model.category === "entity",
     };
 
     return html`
@@ -266,7 +267,11 @@ class HaLogbookEntry extends LitElement {
   }
 
   private _renderList(ctx: EntryRenderCtx) {
-    const { model, traceLink, timeLabel, showCause } = ctx;
+    const { model, traceLink, timeLabel, hasCause } = ctx;
+    const cause = this.showCause || hasCause ? model.cause : undefined;
+    const trailingTrace = this.showCause ? undefined : traceLink;
+    const thirdLineTrace = this.showCause ? traceLink : undefined;
+    const showThirdLine = this.showCause && (cause || thirdLineTrace);
     return html`
       <div class="primary">
         <span class="subject"
@@ -279,21 +284,67 @@ class HaLogbookEntry extends LitElement {
       <div class="secondary">
         <span class="secondary-text">${model.context ?? nothing}</span>
         ${this._renderTrailing(
-          showCause ? model.cause : undefined,
-          traceLink,
+          showThirdLine ? undefined : cause,
+          trailingTrace,
           timeLabel
         )}
       </div>
+      ${showThirdLine
+        ? html`<div class="secondary">
+            ${this._renderListCauseLine(cause, thirdLineTrace)}
+          </div>`
+        : nothing}
+    `;
+  }
+
+  private _renderListCauseLine(
+    cause: LogbookCause | undefined,
+    traceLink: string | undefined
+  ) {
+    if (!cause) {
+      return traceLink ? this._renderTraceLink(traceLink) : nothing;
+    }
+    const { localize } = this.hass;
+    // Causes with an entity name: fixed prefix + truncatable entity name.
+    if (cause.entityId) {
+      const prefixMap: Partial<Record<LogbookCauseKind, string>> = {
+        automation: localize("ui.components.logbook.cause.by_automation", {
+          name: "",
+        }),
+        script: localize("ui.components.logbook.cause.by_script", {
+          name: "",
+        }),
+        state: localize("ui.components.logbook.cause.by_state_change", {
+          name: "",
+        }),
+      };
+      const prefix = prefixMap[cause.kind];
+      return html`
+        ${prefix ? html`<span class="cause-prefix">${prefix}</span>` : nothing}
+        <button
+          class="link cause-entity"
+          @click=${this._entityClicked}
+          .entityId=${cause.entityId}
+        >
+          ${cause.name}
+        </button>
+        ${traceLink ? this._renderTraceLink(traceLink) : nothing}
+      `;
+    }
+    // Simple phrase (no clickable entity): one truncatable span.
+    return html`
+      <span class="secondary-text">${this._causePhraseText(cause)}</span>
+      ${traceLink ? this._renderTraceLink(traceLink) : nothing}
     `;
   }
 
   private _renderInline(ctx: EntryRenderCtx) {
-    const { model, traceLink, timeLabel, showCause } = ctx;
+    const { model, traceLink, timeLabel, hasCause } = ctx;
     return html`
       <div class="primary">
         <span class="primary-text">${ctx.whatHappened}</span>
         ${this._renderTrailing(
-          showCause ? model.cause : undefined,
+          hasCause ? model.cause : undefined,
           traceLink,
           timeLabel
         )}
@@ -351,8 +402,9 @@ class HaLogbookEntry extends LitElement {
           class="link"
           @click=${this._entityClicked}
           .entityId=${cause.entityId}
-          >${cause.name}</button
-        >`
+        >
+          ${cause.name}
+        </button>`
       : cause.name;
     switch (cause.kind) {
       case "user":
@@ -361,16 +413,28 @@ class HaLogbookEntry extends LitElement {
         });
       case "automation":
         return cause.entityId
-          ? html`${localize("ui.components.logbook.cause.by_automation", { name: "" })}${nameEl}`
-          : localize("ui.components.logbook.cause.by_automation", { name: cause.name });
+          ? html`${localize("ui.components.logbook.cause.by_automation", {
+              name: "",
+            })}${nameEl}`
+          : localize("ui.components.logbook.cause.by_automation", {
+              name: cause.name,
+            });
       case "script":
         return cause.entityId
-          ? html`${localize("ui.components.logbook.cause.by_script", { name: "" })}${nameEl}`
-          : localize("ui.components.logbook.cause.by_script", { name: cause.name });
+          ? html`${localize("ui.components.logbook.cause.by_script", {
+              name: "",
+            })}${nameEl}`
+          : localize("ui.components.logbook.cause.by_script", {
+              name: cause.name,
+            });
       case "state":
         return cause.entityId
-          ? html`${localize("ui.components.logbook.cause.by_state_change", { name: "" })}${nameEl}`
-          : localize("ui.components.logbook.cause.by_state_change", { name: cause.name });
+          ? html`${localize("ui.components.logbook.cause.by_state_change", {
+              name: "",
+            })}${nameEl}`
+          : localize("ui.components.logbook.cause.by_state_change", {
+              name: cause.name,
+            });
       case "scheduled":
         return localize("ui.components.logbook.cause.scheduled");
       case "homeassistant":
@@ -923,6 +987,22 @@ class HaLogbookEntry extends LitElement {
           white-space: nowrap;
           color: var(--primary-text-color);
           line-height: var(--cause-icon-size);
+        }
+
+        /* List cause line: fixed prefix + truncatable entity name */
+        .cause-prefix {
+          flex-shrink: 0;
+          white-space: nowrap;
+        }
+
+        .cause-entity {
+          flex: 1;
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-weight: var(--ha-font-weight-medium);
+          color: var(--primary-text-color);
         }
 
         /* The trace link sits after the cause; it never shrinks, so a long

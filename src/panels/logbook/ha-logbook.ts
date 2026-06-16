@@ -64,6 +64,9 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "graph-color" }) public graphColor =
     false;
 
+  @property({ type: Boolean, attribute: "show-cause" }) public showCause =
+    false;
+
   // Surface scope: removes the context (and, for "entity", the subject name)
   // the surface already implies.
   @property({ attribute: false }) public scope?: LogbookScope;
@@ -126,6 +129,7 @@ export class HaLogbook extends LitElement {
         .virtualize=${this.virtualize}
         .noIcon=${this.noIcon}
         .graphColor=${this.graphColor}
+        .showCause=${this.showCause}
         .scope=${this.scope}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
