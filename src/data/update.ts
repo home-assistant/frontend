@@ -77,7 +77,10 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
-export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
+export const updateReleaseNotes = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entityId: string
+) =>
   hass.callWS<string | null>({
     type: "update/release_notes",
     entity_id: entityId,
