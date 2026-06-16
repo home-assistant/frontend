@@ -165,7 +165,7 @@ export function generatePowerSourcesGraphData(
       // The interpolation breaks the stacking, so this positive/negative is a workaround
       const { positive, negative } = processData(
         meta.stats.map((id: string) => {
-          const stats = [...(energyData.stats[id] ?? [])]
+          const stats = [...(energyData.stats[id] ?? [])];
           if (showingToday) {
             // Append current state if we are showing today
             const currentStateWatts = getPowerFromState(states[id]);
