@@ -159,12 +159,8 @@ describe("resolveLogbookCause", () => {
   const localizeStub = (table: Record<string, string> = {}) =>
     ((key: string) => table[key] ?? "") as HomeAssistant["localize"];
 
-  it("uses the trigger type (icon + name), not the entity it fired on", () => {
-    const hass = baseHass({
-      localize: localizeStub({
-        "ui.components.logbook.trigger_type.state": "State",
-      }),
-    });
+  it("uses state kind and entity id as name when source names an entity", () => {
+    const hass = baseHass({ localize: localizeStub() });
     const cause = resolveLogbookCause(
       hass,
       entry({
@@ -173,15 +169,16 @@ describe("resolveLogbookCause", () => {
       }),
       {}
     );
-    expect(cause?.name).toBe("State");
-    expect(cause?.triggerPlatform).toBe("state");
+    expect(cause?.kind).toBe("state");
+    // Entity not in hass.states — falls back to entity id
+    expect(cause?.name).toBe("binary_sensor.porte");
+    expect(cause?.entityId).toBe("binary_sensor.porte");
   });
 
-  it("labels a service call with the action name and integration icon", () => {
+  it("labels a service call with the domain name and integration kind", () => {
     const hass = baseHass({
       localize: localizeStub({
         "component.light.title": "Light",
-        "component.light.services.turn_on.name": "Turn on",
       }),
     });
     const cause = resolveLogbookCause(
@@ -193,33 +190,30 @@ describe("resolveLogbookCause", () => {
       }),
       {}
     );
-    expect(cause?.name).toBe("Light: Turn on");
+    expect(cause?.kind).toBe("integration");
+    expect(cause?.name).toBe("Light");
     expect(cause?.brandDomain).toBe("light");
   });
 
-  it("falls back to the raw platform key when untranslated", () => {
+  it("uses entity id as name when source entity is not in hass", () => {
     const hass = baseHass({ localize: localizeStub() });
     const cause = resolveLogbookCause(
       hass,
       entry({ domain: "automation", source: "numeric state of sensor.temp" }),
       {}
     );
-    expect(cause?.name).toBe("numeric_state");
-    expect(cause?.triggerPlatform).toBe("numeric_state");
+    expect(cause?.kind).toBe("state");
+    expect(cause?.name).toBe("sensor.temp");
   });
 
-  it("parses the English source for the trigger platform", () => {
-    const hass = baseHass({
-      localize: localizeStub({
-        "ui.components.logbook.trigger_type.time_pattern": "Time pattern",
-      }),
-    });
+  it("uses scheduled kind for time-based triggers", () => {
+    const hass = baseHass({ localize: localizeStub() });
     const cause = resolveLogbookCause(
       hass,
       entry({ domain: "automation", source: "time pattern" }),
       {}
     );
-    expect(cause?.name).toBe("Time pattern");
+    expect(cause?.kind).toBe("scheduled");
   });
 });
 
@@ -305,7 +299,7 @@ describe("buildLogbookItem", () => {
     expect(model.category).toBe("entity");
     expect(model.name).toBe("Spots Salon");
     expect(model.context).toBe("Salon ▸ Ampli");
-    expect(model.what).toEqual({ text: "Allumé", kind: "value" });
+    expect(model.what).toEqual({ text: "Allumé", kind: "state" });
     expect(model.glyph.type).toBe("state");
     expect(model.when).toBe(1_000_000);
   });
@@ -331,9 +325,10 @@ describe("buildLogbookItem", () => {
     expect(model.category).toBe("automation");
     expect(model.name).toBe("Mode nuit");
     expect(model.context).toBeUndefined();
-    expect(model.what).toEqual({ text: "Triggered", kind: "value" });
+    expect(model.what).toEqual({ text: "Triggered", kind: "state" });
     expect(model.glyph).toEqual({ type: "automation", script: false });
-    expect(model.cause?.name).toBe("State");
+    expect(model.cause?.kind).toBe("state");
+    expect(model.cause?.name).toBe("binary_sensor.porte");
   });
 
   it("builds an integration item (message as 'phrase', brand glyph)", () => {
@@ -347,7 +342,7 @@ describe("buildLogbookItem", () => {
     );
     expect(model.category).toBe("integration");
     expect(model.name).toBe("Remote");
-    expect(model.what).toEqual({ text: "button pressed", kind: "phrase" });
+    expect(model.what).toEqual({ text: "button pressed", kind: "message" });
     expect(model.glyph).toEqual({
       type: "brand",
       domain: "zha",
@@ -373,6 +368,6 @@ describe("buildLogbookItem", () => {
       }),
       {}
     );
-    expect(model.what).toEqual({ text: "Ran", kind: "value" });
+    expect(model.what).toEqual({ text: "Ran", kind: "state" });
   });
 });

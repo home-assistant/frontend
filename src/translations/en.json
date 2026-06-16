@@ -698,6 +698,14 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
+        "cause": {
+          "by": "By {name}",
+          "by_automation": "By automation: {name}",
+          "by_script": "By script: {name}",
+          "by_state_change": "By state change: {name}",
+          "scheduled": "Scheduled",
+          "via": "Via {name}"
+        },
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
