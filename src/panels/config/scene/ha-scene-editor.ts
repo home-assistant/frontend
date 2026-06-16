@@ -26,7 +26,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
@@ -432,10 +431,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                         if (!entityStateObj) {
                           return nothing;
                         }
-                        const { secondary } = computeEntityPickerDisplay(
-                          this.hass,
-                          entityStateObj
-                        );
+                        const { primary, secondary } =
+                          computeEntityPickerDisplay(this.hass, entityStateObj);
                         const platform =
                           entityRegistryLookup[entityId]?.platform;
                         const integrationName = platform
@@ -463,7 +460,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                                   ></state-badge>
                                 `
                               : nothing}
-                            ${computeStateName(entityStateObj)}
+                            ${primary}
                             ${secondary
                               ? html`<span slot="secondary">${secondary}</span>`
                               : nothing}
@@ -523,10 +520,11 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           if (!entityStateObj) {
                             return nothing;
                           }
-                          const { secondary } = computeEntityPickerDisplay(
-                            this.hass,
-                            entityStateObj
-                          );
+                          const { primary, secondary } =
+                            computeEntityPickerDisplay(
+                              this.hass,
+                              entityStateObj
+                            );
                           const domainName = domainToName(
                             this.hass.localize,
                             computeDomain(entityId)
@@ -552,7 +550,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                                     slot="graphic"
                                   ></state-badge>`
                                 : nothing}
-                              ${computeStateName(entityStateObj)}
+                              ${primary}
                               ${secondary
                                 ? html`<span slot="secondary"
                                     >${secondary}</span
