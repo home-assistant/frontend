@@ -86,7 +86,7 @@ export const stateContentHasTimestamp = (
     return false;
   }
   const domain = computeDomain(entityId);
-  if (!content || content.includes("state")) {
+  if (!content || contentArray.includes("state")) {
     if (TIMESTAMP_STATE_DOMAINS.includes(domain)) {
       return true;
     }

@@ -3,7 +3,6 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
-import "./ha-generic-picker";
 import "./ha-select";
 import { TIMESTAMP_RENDERING_FORMATS } from "../panels/lovelace/components/types";
 
