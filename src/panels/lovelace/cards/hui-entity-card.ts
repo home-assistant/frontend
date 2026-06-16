@@ -121,10 +121,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const domain = computeStateDomain(stateObj);
     const unit = computeEntityUnitDisplay(this.hass, stateObj, this._config);
     const stateParts = this.hass.formatEntityStateToParts(stateObj);
-    const currency_sign =
+    const currencySign =
       stateParts.find((part) => part.type === "currency_sign")?.value ?? "";
     const val = stateParts.find((part) => part.type === "value")?.value;
-    const composedValue = `${currency_sign}${val}`;
+    const composedValue = `${currencySign}${val}`;
 
     const indexUnit = stateParts.findIndex((part) => part.type === "unit");
     const indexValue = stateParts.reduceRight(
