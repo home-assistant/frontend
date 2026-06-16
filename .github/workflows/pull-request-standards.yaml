@@ -184,9 +184,7 @@ jobs:
               });
             }
 
-            // Fail this check so it can block the merge directly. The label
-            // alone cannot: a label added by GITHUB_TOKEN does not trigger the
-            // blocking-labels workflow.
+            // Fail this check so it can block the PR from being merged
             core.setFailed(
               `Pull request standards not met:\n- ${problems.join("\n- ")}`
             );
