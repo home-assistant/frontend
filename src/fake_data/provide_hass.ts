@@ -174,8 +174,7 @@ export const provideHass = (
       hass().entities,
       hass().devices,
       hass().areas,
-      hass().floors,
-      [] // numericDeviceClasses
+      hass().floors
     );
     hass().updateHass({
       formatEntityState,
