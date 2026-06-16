@@ -688,9 +688,9 @@ export class HaConfigEntities extends LitElement {
         }
 
         const labels = labelReg && entry?.labels;
-        const labelsEntries = (labels || []).map(
-          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-        );
+        const labelsEntries = (labels || [])
+          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
 
         const entityName = computeEntityEntryName(
           entry as EntityRegistryEntry,
