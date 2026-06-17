@@ -17,9 +17,10 @@ import type {
   ChooseActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import { getDataFromPath } from "../../data/trace";
+import { getDataFromPath, isTriggerPath } from "../../data/trace";
 import "../../panels/logbook/ha-logbook-renderer";
 import type { HomeAssistant } from "../../types";
+import "../ha-alert";
 import "../ha-code-editor";
 import "../ha-icon-button";
 import "../ha-tab-group";
@@ -63,7 +64,7 @@ export class HaTracePathDetails extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="padded-box trace-info">
-        ${this._renderSelectedTraceInfo()}
+        ${this._renderNotTriggeredNotice()} ${this._renderSelectedTraceInfo()}
       </div>
 
       <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
@@ -87,6 +88,22 @@ export class HaTracePathDetails extends LitElement {
           ? this._renderChangedVars()
           : this._renderLogbook()}
     `;
+  }
+
+  private _renderNotTriggeredNotice() {
+    if (
+      !this.trace.not_triggered ||
+      !this.selected?.path ||
+      !isTriggerPath(this.selected.path) ||
+      !(this.selected.path in this.trace.trace)
+    ) {
+      return nothing;
+    }
+    return html`<ha-alert alert-type="info">
+      ${this.hass!.localize(
+        "ui.panel.config.automation.trace.path.not_triggered"
+      )}
+    </ha-alert>`;
   }
 
   private _renderSelectedTraceInfo() {

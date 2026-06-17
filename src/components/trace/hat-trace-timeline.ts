@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCircle,
+  mdiCircleOffOutline,
   mdiCircleOutline,
   mdiProgressClock,
   mdiProgressWrench,
@@ -323,6 +324,23 @@ class ActionRenderer {
   }
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
+    if (this.trace.not_triggered) {
+      this._renderEntry(
+        triggerStep.path,
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.evaluated_not_triggered",
+          {
+            time: formatDateTimeWithSeconds(
+              new Date(triggerStep.timestamp),
+              this.hass.locale,
+              this.hass.config
+            ),
+          }
+        ),
+        mdiCircleOffOutline
+      );
+      return index + 1;
+    }
     this._renderEntry(
       triggerStep.path,
       this.hass.localize(
@@ -724,6 +742,16 @@ export class HaAutomationTracer extends LitElement {
           "ui.panel.config.automation.trace.messages.debugged"
         ),
         icon: mdiProgressWrench,
+      };
+    } else if (this.trace.not_triggered) {
+      entry = {
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.not_triggered",
+          {
+            time: renderFinishedAt(),
+          }
+        ),
+        icon: mdiCircleOffOutline,
       };
     } else if (this.trace.script_execution === "finished") {
       entry = {

@@ -5893,6 +5893,7 @@
               "template_errors": "Template errors:",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
+              "not_triggered": "This trigger evaluated a relevant change but did not trigger the automation. The reason is shown in the result below.",
               "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
@@ -5916,6 +5917,8 @@
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
               "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
+              "evaluated_not_triggered": "Evaluated a change at {time}",
+              "not_triggered": "Did not trigger at {time}. Select the trigger step details to see why.",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
@@ -5932,7 +5935,8 @@
               "stopped_failed_single": "Stopped because only a single execution is allowed",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
               "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
-              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)",
+              "not_triggered": "Did not trigger"
             }
           }
         },
