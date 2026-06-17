@@ -19,11 +19,11 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   @property({ attribute: false }) public changedOverride?: number;
 
+  @state() private _absoluteTime = false;
+
   @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: HomeAssistantFormatters;
-
-  @state() private _absoluteTime = false;
 
   private _localizeState(): TemplateResult | string {
     if (

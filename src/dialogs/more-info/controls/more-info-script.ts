@@ -1,10 +1,13 @@
+import { consume } from "@lit/context";
 import { mdiPlay, mdiStop } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { listenMediaQuery } from "../../../common/dom/media_query";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/entity/state-info";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
@@ -16,16 +19,15 @@ import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registr
 import type { ScriptEntity } from "../../../data/script";
 import {
   canRun,
-  hasRequiredScriptFields,
-  requiredScriptFieldsFilled,
+  hasRequiredScriptFieldsForServices,
+  requiredScriptFieldsFilledForServices,
 } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
+import { apiContext, servicesContext } from "../../../data/context";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import "../components/ha-more-info-state-header";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: ScriptEntity;
 
   @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
@@ -35,6 +37,18 @@ class MoreInfoScript extends LitElement {
   @state() private _scriptData: Record<string, any> = {};
 
   @state() private narrow = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: servicesContext, subscribe: true })
+  private _services!: HomeAssistant["services"];
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   private _unsubMediaQuery?: () => void;
 
@@ -57,13 +71,13 @@ class MoreInfoScript extends LitElement {
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this._services || !this.stateObj) {
       return nothing;
     }
     const stateObj = this.stateObj;
 
     const script =
-      this.hass.services.script[
+      this._services.script[
         this.entry?.unique_id || computeObjectId(this.stateObj.entity_id)
       ];
     const fields = script?.fields;
@@ -78,14 +92,13 @@ class MoreInfoScript extends LitElement {
     return html`
       <ha-more-info-state-header
         .stateObj=${stateObj}
-        .hass=${this.hass}
         .stateOverride=${current > 0
           ? isParallel && current > 1
-            ? this.hass.localize("ui.card.script.running_parallel", {
+            ? this._localize("ui.card.script.running_parallel", {
                 active: current,
               })
-            : this.hass.localize("ui.card.script.running_single")
-          : this.hass.localize("ui.card.script.idle")}
+            : this._localize("ui.card.script.running_single")
+          : this._localize("ui.card.script.idle")}
         .changedOverride=${this.stateObj.attributes.last_triggered || 0}
       ></ha-more-info-state-header>
 
@@ -99,7 +112,7 @@ class MoreInfoScript extends LitElement {
       <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
         ${hasQueue
           ? html`
-              ${this.hass.localize("ui.card.script.running_queued", {
+              ${this._localize("ui.card.script.running_queued", {
                 queued: current - 1,
               })}
             `
@@ -110,12 +123,11 @@ class MoreInfoScript extends LitElement {
         ? html`
             <div class="fields">
               <div class="title">
-                ${this.hass.localize("ui.card.script.run_script")}
+                ${this._localize("ui.card.script.run_script")}
               </div>
               <ha-service-control
                 hide-picker
                 hide-description
-                .hass=${this.hass}
                 .value=${{
                   ...(this.data ? { data: this.data } : {}),
                   ...this._scriptData,
@@ -135,8 +147,8 @@ class MoreInfoScript extends LitElement {
         >
           <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
           ${(isQueued || isParallel) && current > 1
-            ? this.hass.localize("ui.card.script.cancel_all")
-            : this.hass.localize("ui.card.script.cancel")}
+            ? this._localize("ui.card.script.cancel_all")
+            : this._localize("ui.card.script.cancel")}
         </ha-control-button>
         <ha-control-button
           class="run-button"
@@ -144,7 +156,7 @@ class MoreInfoScript extends LitElement {
           .disabled=${stateObj.state === UNAVAILABLE || !this._canRun()}
         >
           <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-          ${this.hass!.localize("ui.card.script.run")}
+          ${this._localize("ui.card.script.run")}
         </ha-control-button>
       </ha-control-button-group>
     `;
@@ -187,7 +199,7 @@ class MoreInfoScript extends LitElement {
 
   private async _runScript(ev: Event) {
     ev.stopPropagation();
-    this.hass.callService(
+    this._api.callService(
       "script",
       this.entry?.unique_id || computeObjectId(this.stateObj!.entity_id),
       this._scriptData.data
@@ -195,7 +207,7 @@ class MoreInfoScript extends LitElement {
   }
 
   private _callService(service: string): void {
-    this.hass.callService("script", service, {
+    this._api.callService("script", service, {
       entity_id: this.stateObj!.entity_id,
     });
   }
@@ -206,9 +218,12 @@ class MoreInfoScript extends LitElement {
 
   private _canRun() {
     if (
-      !hasRequiredScriptFields(this.hass, this.stateObj!.entity_id) ||
-      (requiredScriptFieldsFilled(
-        this.hass,
+      !hasRequiredScriptFieldsForServices(
+        this._services,
+        this.stateObj!.entity_id
+      ) ||
+      (requiredScriptFieldsFilledForServices(
+        this._services,
         this.stateObj!.entity_id,
         this._scriptData.data
       ) &&
