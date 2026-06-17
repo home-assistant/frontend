@@ -231,6 +231,7 @@ export class EntitySettingsHelperTab extends LitElement {
         }
         .form {
           padding: 20px 24px;
+          z-index: 0;
         }
         .buttons {
           box-sizing: border-box;
@@ -238,6 +239,9 @@ export class EntitySettingsHelperTab extends LitElement {
           justify-content: space-between;
           padding: 16px;
           background-color: var(--mdc-theme-surface, #fff);
+          position: sticky;
+          bottom: 0px;
+          z-index: 1;
         }
         .error {
           color: var(--error-color);
