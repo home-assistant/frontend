@@ -5194,7 +5194,7 @@
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
-                    "picker": "Triggers when an event is being received (event is an advanced concept in Home Assistant).",
+                    "picker": "Triggers when an event is being received (events are a building block used across Home Assistant).",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -5695,7 +5695,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "picker": "Fires an event manually (event is an advanced concept in Home Assistant).",
+                    "picker": "Fires an event manually (events are a building block used across Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
