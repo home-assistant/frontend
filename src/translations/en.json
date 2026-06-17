@@ -444,6 +444,9 @@
       "loading": "Loading",
       "refresh": "Refresh",
       "cancel": "Cancel",
+      "upload_file_too_large": "Uploaded file {name} is too large",
+      "upload_image_too_large": "Uploaded image {name} is too large",
+      "unknown_error": "Unknown error",
       "delete": "Delete",
       "delete_all": "Delete all",
       "download": "Download",
@@ -530,7 +533,8 @@
           "media_content_id": "Media content ID",
           "media_content_type": "Media content type",
           "media_content_id_detail": "The ID of the content to play. Platform dependent.",
-          "media_content_type_detail": "The type of the content to play, such as image, music, TV show, video, episode, channel, or playlist."
+          "media_content_type_detail": "The type of the content to play, such as image, music, TV show, video, episode, channel, or playlist.",
+          "upload_image_too_large": "Uploaded image {name} is too large"
         },
         "file": {
           "upload_failed": "Upload failed",
