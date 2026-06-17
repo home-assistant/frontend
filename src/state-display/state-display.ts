@@ -206,7 +206,7 @@ class StateDisplay extends LitElement {
       relativeDateTime = stateObj.attributes[content];
     }
 
-    if (relativeDateTime !== undefined) {
+    if (relativeDateTime || relativeDateTime === 0) {
       return html`<hui-timestamp-display
         .hass=${this.hass}
         .ts=${new Date(relativeDateTime)}
