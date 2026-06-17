@@ -277,7 +277,7 @@ export const getExtendedEntityRegistryEntries = (
   });
 
 export const updateEntityRegistryEntry = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
 ): Promise<UpdateEntityRegistryEntryResult> =>

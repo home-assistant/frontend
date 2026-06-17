@@ -1,19 +1,43 @@
+import { consume } from "@lit/context";
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { transform } from "../../common/decorators/transform";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-slider";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
 import type { CoverEntity } from "../../data/cover";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
-import type { HomeAssistant } from "../../types";
+import type { FrontendLocaleData } from "../../data/translation";
+import type {
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../types";
 
 @customElement("ha-state-control-cover-position")
 export class HaStateControlCoverPosition extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
@@ -31,7 +55,7 @@ export class HaStateControlCoverPosition extends LitElement {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
 
-    this.hass.callService("cover", "set_cover_position", {
+    this._api.callService("cover", "set_cover_position", {
       entity_id: this.stateObj!.entity_id,
       position: value,
     });
@@ -51,10 +75,8 @@ export class HaStateControlCoverPosition extends LitElement {
         show-handle
         mode="end"
         @value-changed=${this._valueChanged}
-        .label=${computeAttributeNameDisplay(
-          this.hass.localize,
+        .label=${this._formatters.formatEntityAttributeName(
           this.stateObj,
-          this.hass.entities,
           "current_position"
         )}
         style=${styleMap({
@@ -65,7 +87,7 @@ export class HaStateControlCoverPosition extends LitElement {
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         .unit=${DOMAIN_ATTRIBUTES_UNITS.cover.current_position}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
       >
       </ha-control-slider>
     `;

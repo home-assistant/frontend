@@ -1,21 +1,31 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { stateColorCss } from "../../common/entity/state_color";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
+import { apiContext } from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { stateControlToggleStyle } from "../../resources/state-control-styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantApi } from "../../types";
 
 @customElement("ha-state-control-cover-toggle")
 export class HaStateControlCoverToggle extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -38,12 +48,12 @@ export class HaStateControlCoverToggle extends LitElement {
   }
 
   private async _callService(turnOn): Promise<void> {
-    if (!this.hass || !this.stateObj) {
+    if (!this.stateObj) {
       return;
     }
     forwardHaptic(this, "light");
 
-    await this.hass.callService(
+    await this._api.callService(
       "cover",
       turnOn ? "open_cover" : "close_cover",
       {
@@ -69,7 +79,7 @@ export class HaStateControlCoverToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize("ui.card.cover.open_cover")}
+            .label=${this._localize("ui.card.cover.open_cover")}
             @click=${this._turnOn}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -85,7 +95,7 @@ export class HaStateControlCoverToggle extends LitElement {
             ></ha-state-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize("ui.card.cover.close_cover")}
+            .label=${this._localize("ui.card.cover.close_cover")}
             @click=${this._turnOff}
             .disabled=${this.stateObj.state === UNAVAILABLE}
             class=${classMap({
@@ -112,8 +122,8 @@ export class HaStateControlCoverToggle extends LitElement {
         .checked=${isOn}
         @change=${this._valueChanged}
         .label=${isOn
-          ? this.hass.localize("ui.card.cover.close_cover")
-          : this.hass.localize("ui.card.cover.open_cover")}
+          ? this._localize("ui.card.cover.close_cover")
+          : this._localize("ui.card.cover.open_cover")}
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,
