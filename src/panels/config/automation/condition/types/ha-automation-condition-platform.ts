@@ -3,11 +3,16 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
-import type { PlatformCondition } from "../../../../../data/automation";
+import type {
+  ForDict,
+  PlatformCondition,
+} from "../../../../../data/automation";
 import {
   getConditionDomain,
   getConditionObjectId,
@@ -15,10 +20,20 @@ import {
 } from "../../../../../data/condition";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
+import { getRecordedEntity } from "../../../../../data/recorder";
 import type { TargetSelector } from "../../../../../data/selector";
-import { getTargetEntityCount } from "../../../../../data/target";
+import {
+  extractFromTarget,
+  getTargetEntityCount,
+} from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+
+// Mirrors `MAX_HISTORY_PRIMING_LOOKBACK` in homeassistant/helpers/condition.py:
+// when a condition has a `for:` duration, the recorder is only queried this far
+// back to prime it at setup, so longer durations can't be fully satisfied from
+// history after a restart or reload.
+const MAX_HISTORY_PRIMING_LOOKBACK_HOURS = 6;
 
 const showOptionalToggle = (field: ConditionDescription["fields"][string]) =>
   field.selector &&
@@ -41,6 +56,11 @@ export class HaPlatformCondition extends LitElement {
 
   @state() private _resolvedTargetEntityCount?: number;
 
+  @state() private _targetHasUnrecordedEntity = false;
+
+  // Incremented on each recording check so stale async responses are ignored.
+  private _recordingCheckToken = 0;
+
   public static get defaultConfig(): PlatformCondition {
     return { condition: "" };
   }
@@ -51,6 +71,26 @@ export class HaPlatformCondition extends LitElement {
       this.hass.loadBackendTranslation("conditions");
       this.hass.loadBackendTranslation("selector");
     }
+
+    // The `for:` priming info depends on both the condition (target + duration)
+    // and the description (whether the condition targets entities at all), which
+    // can arrive in separate updates.
+    if (
+      changedProperties.has("condition") ||
+      changedProperties.has("description")
+    ) {
+      const previousCondition = changedProperties.get("condition") as
+        | undefined
+        | this["condition"];
+      if (
+        changedProperties.has("description") ||
+        previousCondition?.target !== this.condition?.target ||
+        previousCondition?.options?.for !== this.condition?.options?.for
+      ) {
+        this._updateDurationPrimingInfo();
+      }
+    }
+
     if (!changedProperties.has("condition")) {
       return;
     }
@@ -206,6 +246,7 @@ export class HaPlatformCondition extends LitElement {
               conditionName
             )
           )}
+      ${this._renderDurationPrimingInfo()}
     `;
   }
 
@@ -472,6 +513,105 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
+  private _renderDurationPrimingInfo() {
+    const forValue = this.condition.options?.for;
+
+    // Priming only happens for entity conditions that have a `for:` duration.
+    if (
+      forValue === undefined ||
+      forValue === "" ||
+      !this.description?.target
+    ) {
+      return nothing;
+    }
+
+    if (this._targetHasUnrecordedEntity) {
+      return html`<ha-alert alert-type="info" class="priming-info">
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.duration_priming.entity_not_recorded"
+        )}
+      </ha-alert>`;
+    }
+
+    if (this._durationExceedsLookback(forValue)) {
+      return html`<ha-alert alert-type="info" class="priming-info">
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.conditions.duration_priming.history_capped",
+          { hours: MAX_HISTORY_PRIMING_LOOKBACK_HOURS }
+        )}
+      </ha-alert>`;
+    }
+
+    return nothing;
+  }
+
+  private _durationExceedsLookback(forValue: unknown): boolean {
+    const duration = createDurationData(
+      forValue as string | number | ForDict | undefined
+    );
+    if (!duration) {
+      return false;
+    }
+    const seconds =
+      (duration.days || 0) * 86400 +
+      (duration.hours || 0) * 3600 +
+      (duration.minutes || 0) * 60 +
+      (duration.seconds || 0) +
+      (duration.milliseconds || 0) / 1000;
+    return seconds > MAX_HISTORY_PRIMING_LOOKBACK_HOURS * 3600;
+  }
+
+  private async _updateDurationPrimingInfo(): Promise<void> {
+    const forValue = this.condition.options?.for;
+    const target = this.condition.target;
+
+    // Recording status only matters for an entity condition that has both a
+    // target and a `for:` duration.
+    const token = ++this._recordingCheckToken;
+    if (
+      forValue === undefined ||
+      forValue === "" ||
+      !this.description?.target ||
+      !target ||
+      !this.hass.config.components.includes("recorder")
+    ) {
+      this._targetHasUnrecordedEntity = false;
+      return;
+    }
+
+    try {
+      const { referenced_entities } = await extractFromTarget(
+        this.hass.callWS,
+        target
+      );
+      // Ignore if a newer check superseded this one.
+      if (token !== this._recordingCheckToken) {
+        return;
+      }
+      if (!referenced_entities.length) {
+        this._targetHasUnrecordedEntity = false;
+        return;
+      }
+      const recordingDisabled = await Promise.all(
+        referenced_entities.map((entityId) =>
+          getRecordedEntity(this.hass, entityId)
+            .then((options) => options.recording_disabled_by !== null)
+            // Unknown entity or command unavailable on older cores: don't warn.
+            .catch(() => false)
+        )
+      );
+      if (token !== this._recordingCheckToken) {
+        return;
+      }
+      this._targetHasUnrecordedEntity = recordingDisabled.some(Boolean);
+    } catch (_err) {
+      // Target resolution failed; fall back to no warning rather than guessing.
+      if (token === this._recordingCheckToken) {
+        this._targetHasUnrecordedEntity = false;
+      }
+    }
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -526,6 +666,10 @@ export class HaPlatformCondition extends LitElement {
     }
     .clickable {
       cursor: pointer;
+    }
+    .priming-info {
+      display: block;
+      margin: var(--ha-space-2) var(--ha-space-4) 0;
     }
   `;
 }

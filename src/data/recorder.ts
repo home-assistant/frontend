@@ -153,6 +153,21 @@ export const getRecorderInfo = (conn: Connection) =>
     type: "recorder/info",
   });
 
+export type EntityRecordingDisabler = "user";
+
+export interface RecordedEntityOptions {
+  recording_disabled_by: EntityRecordingDisabler | null;
+}
+
+export const getRecordedEntity = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entity_id: string
+) =>
+  hass.callWS<RecordedEntityOptions>({
+    type: "recorder/recorded_entities/get",
+    entity_id,
+  });
+
 export const getStatisticIds = (
   hass: Pick<HomeAssistant, "callWS">,
   statistic_type?: "mean" | "sum"
