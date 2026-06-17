@@ -1,12 +1,19 @@
+import { mdiChevronRight } from "@mdi/js";
+import { startOfYesterday } from "date-fns";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { navigate } from "../../../common/navigate";
+import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import type { HaLogbook } from "../../logbook/ha-logbook";
@@ -20,8 +27,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { LogbookCardConfig } from "./types";
-import { resolveEntityIDs } from "../../../data/selector";
-import { ensureArray } from "../../../common/array/ensure-array";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -135,6 +140,34 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._stateFilter = ensureArray(config.state_filter);
   }
 
+  private _showMore() {
+    navigate(this._showMoreUrl());
+  }
+
+  private _showMoreUrl(): string {
+    const target = this._targetPickerValue;
+    const params: Record<string, string> = {
+      start_date: startOfYesterday().toISOString(),
+      back: "1",
+    };
+    if (target.entity_id) {
+      params.entity_id = ensureArray(target.entity_id).join(",");
+    }
+    if (target.device_id) {
+      params.device_id = ensureArray(target.device_id).join(",");
+    }
+    if (target.area_id) {
+      params.area_id = ensureArray(target.area_id).join(",");
+    }
+    if (target.floor_id) {
+      params.floor_id = ensureArray(target.floor_id).join(",");
+    }
+    if (target.label_id) {
+      params.label_id = ensureArray(target.label_id).join(",");
+    }
+    return `/logbook?${createSearchParam(params)}`;
+  }
+
   private _getEntityIds(): string[] | undefined {
     const entities = this._getMemoizedEntityIds(
       this._targetPickerValue,
@@ -200,10 +233,19 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card
-        .header=${this._config!.title}
-        class=${classMap({ "no-header": !this._config!.title })}
-      >
+      <ha-card class=${classMap({ "no-header": !this._config!.title })}>
+        ${this._config!.title
+          ? html`<div class="card-header">
+              <h1 class="name">${this._config!.title}</h1>
+              <ha-icon-button
+                .path=${mdiChevronRight}
+                .label=${this.hass.localize(
+                  "ui.dialogs.more_info_control.show_more"
+                )}
+                @click=${this._showMore}
+              ></ha-icon-button>
+            </div>`
+          : nothing}
         <div class="content">
           <ha-logbook
             class=${classMap({
@@ -215,7 +257,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
             .entityIds=${this._getEntityIds()}
             .stateFilter=${this._stateFilter}
             narrow
-            relative-time
+            no-icon
             virtualize
           ></ha-logbook>
         </div>
@@ -231,6 +273,27 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px 16px 0;
+        }
+
+        .card-header .name {
+          margin: 0;
+          font-size: var(--ha-card-header-font-size, 1.4rem);
+          font-weight: var(--ha-card-header-font-weight, 500);
+          color: var(--ha-card-header-color, var(--primary-text-color));
+        }
+
+        .card-header a {
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
         }
 
         .content {

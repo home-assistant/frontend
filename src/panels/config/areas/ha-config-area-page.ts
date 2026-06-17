@@ -1,5 +1,7 @@
+import { startOfYesterday } from "date-fns";
 import { consume } from "@lit/context";
 import {
+  mdiChevronRight,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -30,6 +32,7 @@ import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
+import { createSearchParam } from "../../../common/url/search-params";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
@@ -596,12 +599,30 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     const logbookColumn = html`
       ${isComponentLoaded(this.hass.config, "logbook")
         ? html`
-            <ha-card outlined .header=${this.hass.localize("panel.logbook")}>
+            <ha-card outlined>
+              <div class="card-header logbook-header">
+                <span>${this.hass.localize("panel.logbook")}</span>
+                <a
+                  href="/logbook?${createSearchParam({
+                    area_id: this.areaId,
+                    start_date: startOfYesterday().toISOString(),
+                    back: "1",
+                  })}"
+                >
+                  <ha-icon-button
+                    .path=${mdiChevronRight}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.show_more"
+                    )}
+                  ></ha-icon-button>
+                </a>
+              </div>
               <ha-logbook
                 .hass=${this.hass}
                 .time=${this._logbookTime}
                 .entityIds=${this._allEntities(memberships)}
                 .deviceIds=${this._allDeviceIds(memberships.devices)}
+                .scope=${"area"}
                 virtualize
                 narrow
                 no-icon
@@ -979,6 +1000,22 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           opacity: 0.5;
           border-radius: var(--ha-border-radius-circle);
         }
+        .logbook-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
+        }
+
+        .logbook-header a {
+          display: flex;
+          align-items: center;
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
+        }
+
         ha-logbook {
           height: 400px;
         }

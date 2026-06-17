@@ -1,7 +1,9 @@
+import { startOfYesterday } from "date-fns";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiCog,
+  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -98,6 +100,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
+import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
@@ -900,12 +903,29 @@ export class HaConfigDevicePage extends LitElement {
     const logbookColumn = isComponentLoaded(this.hass.config, "logbook")
       ? html`
           <ha-card outlined>
-            <h1 class="card-header">${this.hass.localize("panel.logbook")}</h1>
+            <div class="card-header">
+              <span>${this.hass.localize("panel.logbook")}</span>
+              <a
+                href="/logbook?${createSearchParam({
+                  device_id: this.deviceId,
+                  start_date: startOfYesterday().toISOString(),
+                  back: "1",
+                })}"
+              >
+                <ha-icon-button
+                  .path=${mdiChevronRight}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                ></ha-icon-button>
+              </a>
+            </div>
             <ha-logbook
               .hass=${this.hass}
               .time=${this._logbookTime}
               .entityIds=${this._entityIds(entities)}
               .deviceIds=${this._deviceIdInList(this.deviceId)}
+              .scope=${"device"}
               virtualize
               narrow
               no-icon
@@ -1780,6 +1800,22 @@ export class HaConfigDevicePage extends LitElement {
           color: var(--secondary-text-color);
           --mdc-icon-size: 24px;
           display: block;
+        }
+
+        ha-card:has(ha-logbook) .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
+        }
+
+        ha-card:has(ha-logbook) .card-header a {
+          display: flex;
+          align-items: center;
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
         }
 
         ha-card:has(ha-logbook) {

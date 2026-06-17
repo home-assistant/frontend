@@ -97,6 +97,8 @@ export class HaPanelLogbook extends LitElement {
             .hass=${this.hass}
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
+            .narrow=${this.narrow}
+            show-cause
             virtualize
           ></ha-logbook>
         </div>
