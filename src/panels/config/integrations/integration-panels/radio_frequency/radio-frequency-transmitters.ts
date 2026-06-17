@@ -10,7 +10,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-icon-button";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
 import { fetchRadioFrequencyTransmitters } from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
