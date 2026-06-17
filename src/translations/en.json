@@ -7142,9 +7142,6 @@
           "name": "Name",
           "type": "Type",
           "last_used": "Last used",
-          "type_emitter": "Emitter",
-          "type_receiver": "Receiver",
-          "type_both": "Receiver, Emitter",
           "no_devices": "No infrared proxies found"
         },
         "bluetooth": {
