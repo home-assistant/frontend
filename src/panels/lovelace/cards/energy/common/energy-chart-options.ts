@@ -366,6 +366,42 @@ export function computeStatMidpoint(
   return (start + end) / 2;
 }
 
+export interface UntrackedSplit {
+  /** Untracked consumption per timestamp, clamped to >= 0. */
+  positive: Record<number, number>;
+  /** Negative untracked per timestamp — only timestamps where the raw value
+   * was below zero (tracked devices reported more than total consumption). */
+  negative: Record<number, number>;
+}
+
+/**
+ * Split untracked energy consumption into positive and negative parts per
+ * timestamp.
+ *
+ * Untracked is `used_total - sum(tracked device consumption)`. It can go
+ * negative when meters report at coarser resolution than device sensors
+ * (e.g. an integer-kWh grid meter vs fractional device sensors). The positive
+ * part is the genuine untracked consumption; the negative part is surfaced as
+ * a separate, toggleable series so users can hide it without losing it as a
+ * diagnostic signal.
+ */
+export function splitUntrackedConsumption(
+  usedTotal: Record<number, number>,
+  totalDeviceConsumption: Record<number, number>
+): UntrackedSplit {
+  const positive: Record<number, number> = {};
+  const negative: Record<number, number> = {};
+  for (const time of Object.keys(usedTotal)) {
+    const ts = Number(time);
+    const raw = usedTotal[ts] - (totalDeviceConsumption[ts] || 0);
+    positive[ts] = Math.max(0, raw);
+    if (raw < 0) {
+      negative[ts] = raw;
+    }
+  }
+  return { positive, negative };
+}
+
 export function getCompareTransform(start: Date, compareStart?: Date) {
   if (!compareStart) {
     return (ts: Date) => ts;
