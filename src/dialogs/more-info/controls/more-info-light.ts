@@ -60,7 +60,6 @@ class MoreInfoLight extends LitElement {
 
   private _renderEffectIcon = (value: string) =>
     html`<ha-attribute-icon
-      .hass=${this.hass}
       .stateObj=${this.stateObj}
       attribute="effect"
       .attributeValue=${value}

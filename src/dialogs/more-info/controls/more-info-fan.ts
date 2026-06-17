@@ -42,7 +42,6 @@ class MoreInfoFan extends LitElement {
 
   private _renderPresetModeIcon = (value: string) =>
     html`<ha-attribute-icon
-      .hass=${this.hass}
       .stateObj=${this.stateObj}
       attribute="preset_mode"
       .attributeValue=${value}
@@ -50,7 +49,6 @@ class MoreInfoFan extends LitElement {
 
   private _renderDirectionIcon = (value: string) =>
     html`<ha-attribute-icon
-      .hass=${this.hass}
       .stateObj=${this.stateObj}
       attribute="direction"
       .attributeValue=${value}
@@ -241,7 +239,6 @@ class MoreInfoFan extends LitElement {
               >
                 <ha-attribute-icon
                   slot="icon"
-                  .hass=${this.hass}
                   .stateObj=${this.stateObj}
                   attribute="direction"
                   .attributeValue=${this.stateObj.attributes.direction}
