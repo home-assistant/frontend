@@ -74,12 +74,12 @@ export class InfraredDevicesPage extends LitElement {
   private _data = memoizeOne(
     (devices: InfraredDevice[], localize: LocalizeFunc): InfraredDeviceRow[] =>
       devices.map((device) => {
-        const emitterLabel =
-          localize("component.infrared.entity_component.emitter.name") ||
-          "Emitter";
-        const receiverLabel =
-          localize("component.infrared.entity_component.receiver.name") ||
-          "Receiver";
+        const emitterLabel = localize(
+          "component.infrared.entity_component.emitter.name"
+        );
+        const receiverLabel = localize(
+          "component.infrared.entity_component.receiver.name"
+        );
         const type_label =
           device.type === "both"
             ? `${emitterLabel}, ${receiverLabel}`
