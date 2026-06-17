@@ -88,7 +88,7 @@ export const stateContentHasTimestamp = (
   }
   const domain = computeDomain(entityId);
   if (!content || contentArray.includes("state")) {
-    if (TIMESTAMP_STATE_DOMAINS.includes(domain)) {
+    if (TIMESTAMP_STATE_DOMAINS.has(domain)) {
       return true;
     }
     if (stateObj) {
@@ -161,7 +161,7 @@ class StateDisplay extends LitElement {
         (SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
           this.stateObj.attributes.device_class
         ) ||
-          TIMESTAMP_STATE_DOMAINS.includes(domain)) &&
+          TIMESTAMP_STATE_DOMAINS.has(domain)) &&
         !noValue
       ) {
         return html`
