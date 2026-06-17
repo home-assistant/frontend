@@ -60,6 +60,17 @@ export const computeAttributeValueToParts = (
     return [{ type: "value", value: localize("state.default.unknown") }];
   }
 
+  // Device class attribute, return the integration's translated name
+  if (attribute === "device_class" && typeof attributeValue === "string") {
+    const domain = computeStateDomain(stateObj);
+    const deviceClassName = localize(
+      `component.${domain}.entity_component.${attributeValue}.name`
+    );
+    if (deviceClassName) {
+      return [{ type: "value", value: deviceClassName }];
+    }
+  }
+
   // Number value, return formatted number
   if (typeof attributeValue === "number") {
     const domain = computeStateDomain(stateObj);

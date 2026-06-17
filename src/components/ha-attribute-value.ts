@@ -4,6 +4,8 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { getValueAttribute } from "../common/entity/get_states";
 import { formattersContext } from "../data/context";
 
 @customElement("ha-attribute-value")
@@ -54,6 +56,26 @@ class HaAttributeValue extends LitElement {
     ) {
       const yaml = import("js-yaml").then(({ dump }) => dump(attributeValue));
       return html`<pre>${until(yaml, "")}</pre>`;
+    }
+
+    // Options-list attributes (effect_list, preset_modes, …) translated through
+    // their value attribute, or the main state for lists like hvac_modes.
+    if (Array.isArray(attributeValue)) {
+      const domain = computeStateDomain(this.stateObj);
+      const valueAttribute = getValueAttribute(domain, this.attribute);
+      if (valueAttribute) {
+        return attributeValue
+          .map((item) =>
+            valueAttribute === "_"
+              ? this._formatters!.formatEntityState(this.stateObj!, item)
+              : this._formatters!.formatEntityAttributeValue(
+                  this.stateObj!,
+                  valueAttribute,
+                  item
+                )
+          )
+          .join(", ");
+      }
     }
 
     if (this.hideUnit) {
