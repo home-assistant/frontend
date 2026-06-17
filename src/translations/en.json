@@ -2066,7 +2066,7 @@
         "generic": {
           "name": "Name",
           "icon": "Icon",
-          "advanced_settings": "Advanced settings"
+          "more_options": "[%key:ui::dialogs::restart::more_options%]"
         },
         "input_datetime": {
           "date": "Date",
