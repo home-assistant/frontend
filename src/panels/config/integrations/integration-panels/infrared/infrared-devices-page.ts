@@ -94,9 +94,7 @@ export class InfraredDevicesPage extends LitElement {
     (proxies: InfraredProxy[], localize: LocalizeFunc): InfraredDeviceRow[] =>
       computeInfraredDevices(proxies, this.hass).map((device) => ({
         ...device,
-        type_label: localize(
-          `ui.panel.config.infrared.type_${device.type}`
-        ),
+        type_label: localize(`ui.panel.config.infrared.type_${device.type}`),
       }))
   );
 
