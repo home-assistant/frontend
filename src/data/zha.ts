@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
+import type { ConfigEntry } from "./config_entries";
 
 export interface ZHAEntityReference extends HassEntity {
   name: string;
@@ -467,6 +468,13 @@ export const changeZHANetworkChannel = (
     type: "zha/network/change_channel",
     new_channel: newChannel,
   });
+
+export const findActiveZhaConfigEntry = (
+  entries: ConfigEntry[]
+): ConfigEntry | undefined =>
+  entries.find(
+    (entry) => entry.disabled_by === null && entry.source !== "ignore"
+  );
 
 export const INITIALIZED = "INITIALIZED";
 export const INTERVIEW_COMPLETE = "INTERVIEW_COMPLETE";

@@ -9,6 +9,7 @@ import {
   mdiShape,
   mdiTune,
   mdiVectorPolyline,
+  mdiZigbee,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -21,6 +22,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -33,7 +35,9 @@ import {
   fetchDevices,
   fetchGroups,
   fetchZHAConfiguration,
+  findActiveZhaConfigEntry,
 } from "../../../../../data/zha";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
@@ -64,17 +68,45 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _configEntryLoaded = false;
+
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this.hass.loadBackendTranslation("config_panel", "zha", false);
-      this._fetchConfigEntry();
-      this._fetchConfiguration();
-      this._fetchDevicesAndGroups();
+      this._load();
     }
   }
 
+  private async _load(): Promise<void> {
+    await this._fetchConfigEntry();
+    if (!this._configEntry) {
+      return;
+    }
+    this._fetchConfiguration();
+    this._fetchDevicesAndGroups();
+  }
+
   protected render(): TemplateResult {
+    if (!this._configEntryLoaded) {
+      return html`
+        <hass-subpage
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
+          back-path="/config"
+        >
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </hass-subpage>
+      `;
+    }
+
+    if (!this._configEntry) {
+      return this._renderNotConfigured();
+    }
+
     const devices = this._configEntry
       ? Object.values(this.hass.devices).filter((device) =>
           device.config_entries.includes(this._configEntry!.entry_id)
@@ -112,6 +144,51 @@ class ZHAConfigDashboard extends LitElement {
         </a>
       </hass-subpage>
     `;
+  }
+
+  private _renderNotConfigured(): TemplateResult {
+    return html`
+      <hass-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
+        back-path="/config"
+      >
+        <div class="container">
+          <ha-card class="content empty-state">
+            <div class="card-content">
+              <ha-svg-icon .path=${mdiZigbee}></ha-svg-icon>
+              <h2>
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.not_configured_title"
+                )}
+              </h2>
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.not_configured_description"
+                )}
+              </p>
+              <ha-button appearance="accent" @click=${this._setupZha}>
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.set_up"
+                )}
+              </ha-button>
+            </div>
+          </ha-card>
+        </div>
+      </hass-subpage>
+    `;
+  }
+
+  private _setupZha(): void {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "zha",
+      dialogClosedCallback: (params) => {
+        if (params.flowFinished) {
+          this._load();
+        }
+      },
+    });
   }
 
   private _renderNetworkStatus(deviceOnline: boolean, totalDevices: number) {
@@ -360,9 +437,8 @@ class ZHAConfigDashboard extends LitElement {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "zha",
     });
-    this._configEntry = configEntries.find(
-      (entry) => entry.disabled_by === null && entry.source !== "ignore"
-    );
+    this._configEntry = findActiveZhaConfigEntry(configEntries);
+    this._configEntryLoaded = true;
   }
 
   private async _fetchConfiguration(): Promise<void> {
@@ -461,6 +537,42 @@ class ZHAConfigDashboard extends LitElement {
 
         .content {
           margin-top: var(--ha-space-6);
+        }
+
+        .loading {
+          display: flex;
+          justify-content: center;
+          padding: var(--ha-space-12);
+        }
+
+        .empty-state .card-content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: var(--ha-space-2);
+          padding: var(--ha-space-6);
+        }
+
+        .empty-state ha-svg-icon {
+          width: 48px;
+          height: 48px;
+          color: var(--primary-color);
+        }
+
+        .empty-state h2 {
+          margin: 0;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+        }
+
+        .empty-state p {
+          margin: 0;
+          color: var(--secondary-text-color);
+        }
+
+        .empty-state ha-button {
+          margin-top: var(--ha-space-2);
         }
 
         ha-md-list {
