@@ -1523,6 +1523,15 @@
         "title": "Safe mode",
         "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
+      "http_pending_config": {
+        "title": "Confirm new HTTP server configuration",
+        "description": "Home Assistant has restarted with new HTTP server settings. Confirm to keep them, or revert to undo the change.",
+        "changes_label": "Changed settings:",
+        "confirm": "Confirm",
+        "revert": "Revert",
+        "confirm_error": "Failed to confirm the new configuration: {error}",
+        "revert_error": "Failed to revert the configuration: {error}"
+      },
       "quick-bar": {
         "commands_title": "Commands",
         "navigate_title": "Navigate",
@@ -8287,11 +8296,14 @@
           },
           "http": {
             "caption": "HTTP server",
-            "description": "Configure how Home Assistant serves its web interface. Changes take effect after a restart.",
+            "description": "Configure how Home Assistant serves its web interface. Saving restarts Home Assistant.",
             "save": "Save",
-            "restart": "Restart",
-            "restart_required_title": "Restart required",
-            "restart_required_description": "Restart Home Assistant to apply the new HTTP settings.",
+            "save_no_changes": "Nothing changed — no restart needed.",
+            "save_confirm": {
+              "title": "Restart required",
+              "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
+              "confirm": "Save and restart"
+            },
             "ssl_profile_modern": "Modern",
             "ssl_profile_intermediate": "Intermediate",
             "sections": {

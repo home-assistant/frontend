@@ -15,11 +15,26 @@ export interface HttpConfig {
   ssl_profile?: "modern" | "intermediate";
 }
 
-export const fetchHttpConfig = (hass: HomeAssistant) =>
-  hass.callWS<HttpConfig>({ type: "http/config" });
+export interface HttpConfigState {
+  stable: HttpConfig;
+  pending: HttpConfig | null;
+}
 
-export const saveHttpConfig = (hass: HomeAssistant, config: HttpConfig) =>
-  hass.callWS<undefined>({
+export interface SaveHttpConfigResult {
+  restart: boolean;
+}
+
+export const fetchHttpConfig = (hass: HomeAssistant) =>
+  hass.callWS<HttpConfigState>({ type: "http/config" });
+
+export const saveHttpConfig = (
+  hass: HomeAssistant,
+  config: HttpConfig | null
+) =>
+  hass.callWS<SaveHttpConfigResult>({
     type: "http/config/configure",
     config,
   });
+
+export const promoteHttpConfig = (hass: HomeAssistant) =>
+  hass.callWS<undefined>({ type: "http/config/promote" });
