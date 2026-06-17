@@ -40,8 +40,8 @@ import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
-import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
+import { timeFormatConfigStruct } from "../../components/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -62,7 +62,7 @@ const cardConfigStruct = assign(
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
-    time_format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
+    time_format: optional(timeFormatConfigStruct),
   })
 );
 
