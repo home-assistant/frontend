@@ -1,0 +1,53 @@
+# BrowserStack Automate configuration for Home Assistant frontend e2e tests.
+# Credentials are read from BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY
+# environment variables set in GitHub Actions (or locally).
+# See: https://www.browserstack.com/docs/automate/playwright/getting-started/nodejs
+
+userName: ${BROWSERSTACK_USERNAME}
+accessKey: ${BROWSERSTACK_ACCESS_KEY}
+
+projectName: Home Assistant Frontend
+buildName: e2e tests
+buildIdentifier: "CI #${BUILD_NUMBER}"
+
+# ── Platforms ────────────────────────────────────────────────────────────────
+platforms:
+  - os: Windows
+    osVersion: 11
+    browserName: chrome
+    browserVersion: latest
+  - os: OS X
+    osVersion: Ventura
+    browserName: playwright-firefox
+    browserVersion: latest
+  - deviceName: iPad 6th
+    osVersion: 12
+    browserName: playwright-webkit
+  - deviceName: iPhone 12
+    osVersion: 14
+    browserName: playwright-webkit
+  - deviceName: Samsung Galaxy S23
+    osVersion: 13
+    browserName: chrome
+    realMobile: true
+
+parallelsPerPlatform: 1
+
+# ── Local tunnel ─────────────────────────────────────────────────────────────
+# The SDK manages the BrowserStack Local tunnel automatically.
+browserstackLocal: true
+
+framework: playwright
+
+# Pin to the latest Playwright version BrowserStack supports. Our local
+# @playwright/test is newer (1.59.x) which BrowserStack does not yet support,
+# causing a "Malformed endpoint" connection error if left unset.
+# Update this when BrowserStack adds support for a newer version.
+# Supported versions: https://www.browserstack.com/docs/automate/playwright/browsers-and-os
+playwrightVersion: 1.latest
+
+# ── Debugging ────────────────────────────────────────────────────────────────
+debug: false
+networkLogs: false
+consoleLogs: errors
+testObservability: true

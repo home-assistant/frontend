@@ -6,7 +6,13 @@ import { defineConfig, devices } from "@playwright/test";
 // server instead of starting a new one.
 // In CI we serve the pre-built demo/dist on the same port.
 const DEMO_PORT = 8090;
-const DEMO_BASE_URL = `http://localhost:${DEMO_PORT}`;
+// When running via the BrowserStack SDK the tunnel maps bs-local.com to
+// localhost, so the remote browsers must use bs-local.com as the host.
+const DEMO_BASE_URL = process.env.BROWSERSTACK_AUTOMATION
+  ? `http://bs-local.com:${DEMO_PORT}`
+  : `http://localhost:${DEMO_PORT}`;
+// webServer healthcheck always talks to the local process, not via the tunnel.
+const DEMO_LOCAL_URL = `http://localhost:${DEMO_PORT}`;
 
 export default defineConfig({
   testDir: ".",
@@ -48,7 +54,7 @@ export default defineConfig({
     command: process.env.CI
       ? `npx serve demo/dist -p ${DEMO_PORT} --no-clipboard`
       : `./node_modules/.bin/gulp build-demo && npx serve demo/dist -p ${DEMO_PORT} --no-clipboard`,
-    url: DEMO_BASE_URL,
+    url: DEMO_LOCAL_URL,
     // Reuse the develop_demo dev server if it is already running locally.
     reuseExistingServer: !process.env.CI,
     // Allow up to 5 minutes locally for the demo build + serve startup.

@@ -1,7 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const APP_PORT = 8095;
-const APP_BASE_URL = `http://localhost:${APP_PORT}`;
+// When running via the BrowserStack SDK the tunnel maps bs-local.com to
+// localhost, so the remote browsers must use bs-local.com as the host.
+const APP_BASE_URL = process.env.BROWSERSTACK_AUTOMATION
+  ? `http://bs-local.com:${APP_PORT}`
+  : `http://localhost:${APP_PORT}`;
+// webServer healthcheck always talks to the local process, not via the tunnel.
+const APP_LOCAL_URL = `http://localhost:${APP_PORT}`;
 
 export default defineConfig({
   testDir: ".",
@@ -37,7 +43,7 @@ export default defineConfig({
     command: process.env.CI
       ? `npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s`
       : `./node_modules/.bin/gulp build-e2e-test-app && npx serve test/e2e/app/dist -p ${APP_PORT} --no-clipboard -s`,
-    url: APP_BASE_URL,
+    url: APP_LOCAL_URL,
     reuseExistingServer: !process.env.CI,
     timeout: process.env.CI ? 30_000 : 600_000,
     cwd:

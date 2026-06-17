@@ -5,7 +5,7 @@
 //
 // Usage: node test/e2e/run-suites.mjs <suite> [<suite> ...]
 // Where <suite> matches a test:e2e:<suite> script in package.json,
-// e.g. "demo", "app", "gallery".
+// e.g. "demo", "app", "gallery", "demo:browserstack", etc.
 //
 // Using ; or running suites independently avoids the && short-circuit problem
 // where a failing suite skips the remaining suites and their blob reports.
@@ -30,20 +30,24 @@ for (const suite of suites) {
 }
 
 // Collect and merge blob reports regardless of suite outcomes.
-execFileSync("node", ["test/e2e/collect-blob-reports.mjs"], {
-  stdio: "inherit",
-});
-execFileSync(
-  "npx",
-  [
-    "playwright",
-    "merge-reports",
-    "-c",
-    "test/e2e/playwright.merge.config.ts",
-    "test/e2e/reports/blob",
-  ],
-  { stdio: "inherit" }
-);
+// (Skipped for browserstack suites — BrowserStack dashboard is the report.)
+const isBrowserStack = suites.some((s) => s.includes("browserstack"));
+if (!isBrowserStack) {
+  execFileSync("node", ["test/e2e/collect-blob-reports.mjs"], {
+    stdio: "inherit",
+  });
+  execFileSync(
+    "npx",
+    [
+      "playwright",
+      "merge-reports",
+      "-c",
+      "test/e2e/playwright.merge.config.ts",
+      "test/e2e/reports/blob",
+    ],
+    { stdio: "inherit" }
+  );
+}
 
 if (failures.length) {
   process.stderr.write(
