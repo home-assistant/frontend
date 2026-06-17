@@ -1138,7 +1138,7 @@
         }
       },
       "siren": {
-        "advanced_controls": "Advanced controls",
+        "more_controls": "More controls",
         "tone": "Tone",
         "duration": "Duration",
         "volume": "Volume"
