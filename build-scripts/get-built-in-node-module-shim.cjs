@@ -1,4 +1,3 @@
-/* global module */
 // Browser-only replacement for core-js/internals/get-built-in-node-module.
 // The original helper evaluates `Function('return require("...")')()`
 // when it detects a Node environment, which causes a runtime

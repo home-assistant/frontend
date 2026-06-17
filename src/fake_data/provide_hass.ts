@@ -457,6 +457,10 @@ export const provideHass = (
         value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
       },
     ],
+    formatEntityName: (stateObj, type) =>
+      typeof type === "string"
+        ? type
+        : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
     ...overrideData,
   };
 
