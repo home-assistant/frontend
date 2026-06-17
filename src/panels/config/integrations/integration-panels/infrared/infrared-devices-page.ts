@@ -91,10 +91,10 @@ export class InfraredDevicesPage extends LitElement {
   );
 
   private _data = memoizeOne(
-    (proxies: InfraredProxy[], hass: HomeAssistant): InfraredDeviceRow[] =>
-      computeInfraredDevices(proxies, hass).map((device) => ({
+    (proxies: InfraredProxy[], localize: LocalizeFunc): InfraredDeviceRow[] =>
+      computeInfraredDevices(proxies, this.hass).map((device) => ({
         ...device,
-        type_label: hass.localize(
+        type_label: localize(
           `ui.panel.config.infrared.type_${device.type}`
         ),
       }))
@@ -110,7 +110,7 @@ export class InfraredDevicesPage extends LitElement {
         back-path="/config/infrared"
         clickable
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this._proxies, this.hass)}
+        .data=${this._data(this._proxies, this.hass.localize)}
         .noDataText=${this.hass.localize("ui.panel.config.infrared.no_devices")}
         @row-click=${this._handleRowClicked}
       ></hass-tabs-subpage-data-table>
