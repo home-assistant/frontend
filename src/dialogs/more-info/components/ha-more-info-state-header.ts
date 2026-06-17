@@ -1,23 +1,29 @@
+import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
+import { formattersContext } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { LightEntity } from "../../../data/light";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import "../../../panels/lovelace/components/hui-timestamp-display";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantFormatters } from "../../../types";
 
 @customElement("ha-more-info-state-header")
 export class HaMoreInfoStateHeader extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
 
   @property({ attribute: false }) public stateOverride?: string;
 
   @property({ attribute: false }) public changedOverride?: number;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
 
   @state() private _absoluteTime = false;
 
@@ -37,7 +43,7 @@ export class HaMoreInfoStateHeader extends LitElement {
       `;
     }
 
-    return this.hass.formatEntityState(this.stateObj);
+    return this._formatters.formatEntityState(this.stateObj);
   }
 
   private _toggleAbsolute() {
