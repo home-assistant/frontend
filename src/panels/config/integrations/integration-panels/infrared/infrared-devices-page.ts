@@ -1,6 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -11,14 +11,7 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
-import type {
-  InfraredDevice,
-  InfraredProxy,
-} from "../../../../../data/infrared";
-import {
-  computeInfraredDevices,
-  listInfraredProxies,
-} from "../../../../../data/infrared";
+import type { InfraredDevice } from "../../../../../data/infrared";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -38,7 +31,7 @@ export class InfraredDevicesPage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _proxies: InfraredProxy[] = [];
+  @property({ attribute: false }) public devices: InfraredDevice[] = [];
 
   private _tabs: PageNavigation[] = [
     {
@@ -46,18 +39,6 @@ export class InfraredDevicesPage extends LitElement {
       path: "/config/infrared/devices",
     },
   ];
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass) {
-      this._fetchProxies();
-    }
-  }
-
-  private async _fetchProxies(): Promise<void> {
-    const { proxies } = await listInfraredProxies(this.hass);
-    this._proxies = proxies;
-  }
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer<InfraredDeviceRow> => ({
@@ -91,8 +72,8 @@ export class InfraredDevicesPage extends LitElement {
   );
 
   private _data = memoizeOne(
-    (proxies: InfraredProxy[], localize: LocalizeFunc): InfraredDeviceRow[] =>
-      computeInfraredDevices(proxies, this.hass).map((device) => ({
+    (devices: InfraredDevice[], localize: LocalizeFunc): InfraredDeviceRow[] =>
+      devices.map((device) => ({
         ...device,
         type_label: localize(`ui.panel.config.infrared.type_${device.type}`),
       }))
@@ -108,7 +89,7 @@ export class InfraredDevicesPage extends LitElement {
         back-path="/config/infrared"
         clickable
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._data(this._proxies, this.hass.localize)}
+        .data=${this._data(this.devices, this.hass.localize)}
         .noDataText=${this.hass.localize("ui.panel.config.infrared.no_devices")}
         @row-click=${this._handleRowClicked}
       ></hass-tabs-subpage-data-table>

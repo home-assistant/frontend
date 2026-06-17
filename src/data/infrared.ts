@@ -1,18 +1,17 @@
 import { computeDeviceName } from "../common/entity/compute_device_name";
+import { computeDomain } from "../common/entity/compute_domain";
+import { computeEntityName } from "../common/entity/compute_entity_name";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
+
+// The infrared integration is an entity-type integration: its emitter and
+// receiver entities live in the `infrared` domain (their registry platform is
+// the providing integration, e.g. broadlink/esphome).
+const INFRARED_DOMAIN = "infrared";
 
 export type InfraredProxyType = "emitter" | "receiver";
 
 export type InfraredDeviceType = InfraredProxyType | "both";
-
-export interface InfraredProxy {
-  entity_id: string;
-  device_id: string | null;
-  config_entry_id: string | null;
-  name: string;
-  type: InfraredProxyType;
-}
 
 export interface InfraredDevice {
   id: string;
@@ -26,20 +25,71 @@ export interface InfraredDevice {
   entity_ids: string[];
 }
 
-export const listInfraredProxies = (
-  hass: HomeAssistant
-): Promise<{ proxies: InfraredProxy[] }> =>
-  hass.callWS({
-    type: "infrared/list",
-  });
+interface InfraredProxyEntity {
+  entity_id: string;
+  device_id: string | null;
+  name: string;
+  type: InfraredProxyType;
+  online: boolean;
+  last_used?: string;
+}
+
+// Collect the infrared proxy entities from the entity registry. A proxy is an
+// entity in the `infrared` domain, classified as emitter or receiver by its
+// device class.
+const computeInfraredProxies = (
+  entities: HomeAssistant["entities"],
+  states: HomeAssistant["states"],
+  devices: HomeAssistant["devices"]
+): InfraredProxyEntity[] => {
+  const proxies: InfraredProxyEntity[] = [];
+
+  for (const entry of Object.values(entities)) {
+    if (computeDomain(entry.entity_id) !== INFRARED_DOMAIN) {
+      continue;
+    }
+
+    const stateObj = states[entry.entity_id];
+    const deviceClass = stateObj?.attributes.device_class;
+    if (deviceClass !== "emitter" && deviceClass !== "receiver") {
+      continue;
+    }
+
+    const online = stateObj.state !== UNAVAILABLE;
+
+    // The entity state holds the timestamp the proxy was last used (or
+    // unknown/unavailable when it never has been).
+    let last_used: string | undefined;
+    if (stateObj.state !== UNAVAILABLE && stateObj.state !== UNKNOWN) {
+      const time = new Date(stateObj.state).getTime();
+      if (!isNaN(time)) {
+        last_used = stateObj.state;
+      }
+    }
+
+    proxies.push({
+      entity_id: entry.entity_id,
+      device_id: entry.device_id ?? null,
+      name: computeEntityName(stateObj, entities, devices) || entry.entity_id,
+      type: deviceClass,
+      online,
+      last_used,
+    });
+  }
+
+  return proxies;
+};
 
 // Group the proxy entities by device. A device exposing both an emitter and a
 // receiver entity is reported as type "both".
 export const computeInfraredDevices = (
-  proxies: InfraredProxy[],
-  hass: HomeAssistant
+  entities: HomeAssistant["entities"],
+  states: HomeAssistant["states"],
+  devices: HomeAssistant["devices"]
 ): InfraredDevice[] => {
-  const groups = new Map<string, InfraredProxy[]>();
+  const proxies = computeInfraredProxies(entities, states, devices);
+
+  const groups = new Map<string, InfraredProxyEntity[]>();
   for (const proxy of proxies) {
     const key = proxy.device_id ?? `entity:${proxy.entity_id}`;
     const group = groups.get(key);
@@ -55,29 +105,20 @@ export const computeInfraredDevices = (
     const hasReceiver = group.some((p) => p.type === "receiver");
     const type: InfraredDeviceType =
       hasEmitter && hasReceiver ? "both" : hasEmitter ? "emitter" : "receiver";
-    const online = group.some((p) => {
-      const stateObj = hass.states[p.entity_id];
-      return stateObj !== undefined && stateObj.state !== UNAVAILABLE;
-    });
-    // The entity state holds the timestamp the proxy was last used (or
-    // unknown/unavailable when it never has been). Across a device's entities,
-    // keep the most recent valid timestamp.
+    const online = group.some((p) => p.online);
+    // Across a device's entities, keep the most recent valid timestamp.
     let last_used: string | undefined;
     for (const p of group) {
-      const state = hass.states[p.entity_id]?.state;
-      if (!state || state === UNAVAILABLE || state === UNKNOWN) {
-        continue;
-      }
-      const time = new Date(state).getTime();
       if (
-        !isNaN(time) &&
-        (!last_used || time > new Date(last_used).getTime())
+        p.last_used &&
+        (!last_used ||
+          new Date(p.last_used).getTime() > new Date(last_used).getTime())
       ) {
-        last_used = state;
+        last_used = p.last_used;
       }
     }
     const { device_id } = group[0];
-    const device = device_id ? hass.devices[device_id] : undefined;
+    const device = device_id ? devices[device_id] : undefined;
     const name = (device && computeDeviceName(device)) || group[0].name;
 
     return {

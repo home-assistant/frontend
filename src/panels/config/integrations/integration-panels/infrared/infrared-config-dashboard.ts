@@ -6,17 +6,13 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
-import type { InfraredProxy } from "../../../../../data/infrared";
-import {
-  computeInfraredDevices,
-  listInfraredProxies,
-} from "../../../../../data/infrared";
+import type { InfraredDevice } from "../../../../../data/infrared";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
@@ -31,22 +27,10 @@ export class InfraredConfigDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _proxies: InfraredProxy[] = [];
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass) {
-      this._fetchProxies();
-    }
-  }
-
-  private async _fetchProxies(): Promise<void> {
-    const { proxies } = await listInfraredProxies(this.hass);
-    this._proxies = proxies;
-  }
+  @property({ attribute: false }) public devices: InfraredDevice[] = [];
 
   protected render(): TemplateResult {
-    const devices = computeInfraredDevices(this._proxies, this.hass);
+    const devices = this.devices;
     const deviceCount = devices.length;
     const onlineCount = devices.filter((d) => d.online).length;
 
