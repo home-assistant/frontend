@@ -2,11 +2,6 @@ import type { HomeAssistant } from "../../types";
 
 type ResultCache<T> = Record<string, Promise<T> | undefined>;
 
-// Caches are namespaced by `cacheKey`, then keyed by the caller object (a hass
-// slice) through a WeakMap so each cache is released once that object is garbage
-// collected.
-const caches = new Map<string, WeakMap<object, ResultCache<unknown>>>();
-
 /**
  * Call a function with result caching per entity.
  * @param cacheKey key to namespace the cache
