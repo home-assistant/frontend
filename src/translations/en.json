@@ -496,7 +496,8 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "none": "None"
     },
     "components": {
       "input": {
@@ -1603,6 +1604,7 @@
         "info": "Information",
         "related": "Related",
         "attributes": "Attributes",
+        "supported_features": "Supported features",
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",

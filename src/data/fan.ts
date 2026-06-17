@@ -12,7 +12,7 @@ import type {
 import { stateActive } from "../common/entity/state_active";
 import type { HomeAssistant } from "../types";
 
-export const enum FanEntityFeature {
+export enum FanEntityFeature {
   SET_SPEED = 1,
   OSCILLATE = 2,
   DIRECTION = 4,

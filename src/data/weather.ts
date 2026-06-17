@@ -41,7 +41,7 @@ import { round } from "../common/number/round";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
 
-export const enum WeatherEntityFeature {
+export enum WeatherEntityFeature {
   FORECAST_DAILY = 1,
   FORECAST_HOURLY = 2,
   FORECAST_TWICE_DAILY = 4,

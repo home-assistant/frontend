@@ -18,7 +18,7 @@ import { getExtendedEntityRegistryEntry } from "./entity/entity_registry";
 export const FORMAT_TEXT = "text";
 export const FORMAT_NUMBER = "number";
 
-export const enum AlarmControlPanelEntityFeature {
+export enum AlarmControlPanelEntityFeature {
   ARM_HOME = 1,
   ARM_AWAY = 2,
   ARM_NIGHT = 4,

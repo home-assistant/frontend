@@ -4,7 +4,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { temperature2rgb } from "../common/color/convert-light-color";
 
-export const enum LightEntityFeature {
+export enum LightEntityFeature {
   EFFECT = 4,
   FLASH = 8,
   TRANSITION = 32,

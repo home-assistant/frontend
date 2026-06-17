@@ -82,7 +82,7 @@ export interface MediaPlayerEntity extends HassEntityBase {
     | "buffering";
 }
 
-export const enum MediaPlayerEntityFeature {
+export enum MediaPlayerEntityFeature {
   PAUSE = 1,
   SEEK = 2,
   VOLUME_SET = 4,
