@@ -80,7 +80,7 @@ export function canUnlock(stateObj: LockEntity) {
 
 export const callProtectedLockService = async (
   element: HTMLElement,
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService" | "localize" | "callWS">,
   stateObj: LockEntity,
   service: ProtectedLockService
 ) => {

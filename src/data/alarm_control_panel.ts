@@ -108,7 +108,7 @@ export const supportedAlarmModes = (stateObj: AlarmControlPanelEntity) =>
 
 export const setProtectedAlarmControlPanelMode = async (
   element: HTMLElement,
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService" | "localize" | "callWS">,
   stateObj: AlarmControlPanelEntity,
   mode: AlarmMode
 ) => {
