@@ -466,6 +466,7 @@
       "save": "Save",
       "apply": "Apply",
       "add": "Add",
+      "auto": "Auto",
       "create": "Create",
       "edit": "Edit",
       "edit_item": "Edit {name}",
@@ -797,6 +798,15 @@
           "label": "Label",
           "labels": "Labels",
           "floor": "Floor"
+        }
+      },
+      "time-format-picker": {
+        "formats": {
+          "relative": "Relative",
+          "total": "Total",
+          "datetime": "Date and time",
+          "time": "Time",
+          "date": "Date"
         }
       },
       "subpage-data-table": {
@@ -9663,6 +9673,7 @@
               "show_state": "Show state",
               "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
+              "time_format": "Time format",
               "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
