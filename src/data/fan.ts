@@ -100,7 +100,7 @@ export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 4;
 
 export function computeFanSpeedStateDisplay(
   stateObj: FanEntity,
-  hass: HomeAssistant,
+  formatters: Pick<HomeAssistant, "formatEntityAttributeValue">,
   speed?: number
 ) {
   const percentage = stateActive(stateObj)
@@ -109,7 +109,7 @@ export function computeFanSpeedStateDisplay(
   const currentSpeed = speed ?? percentage;
 
   return currentSpeed
-    ? hass.formatEntityAttributeValue(
+    ? formatters.formatEntityAttributeValue(
         stateObj,
         "percentage",
         Math.round(currentSpeed)
