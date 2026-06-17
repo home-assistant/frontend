@@ -4,6 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { formatDate } from "../../common/datetime/format_date";
+import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LogbookEntry } from "../../data/logbook";
@@ -162,8 +163,7 @@ class HaLogbookRenderer extends LitElement {
         numeric: "auto",
       });
       const rel = rtf.format(diffDays === 0 ? 0 : -1, "day");
-      const label = rel.charAt(0).toUpperCase() + rel.slice(1);
-      return `${label} · ${fullDate}`;
+      return `${capitalizeFirstLetter(rel)} · ${fullDate}`;
     }
     return fullDate;
   }
@@ -190,7 +190,6 @@ class HaLogbookRenderer extends LitElement {
           height: 100%;
         }
 
-        /* The virtualizer positions items shrink-to-fit, so force full width. */
         .entry-container {
           width: 100%;
         }

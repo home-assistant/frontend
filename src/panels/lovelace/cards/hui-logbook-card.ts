@@ -1,16 +1,19 @@
-import { startOfYesterday } from "date-fns";
 import { mdiChevronRight } from "@mdi/js";
+import { startOfYesterday } from "date-fns";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { navigate } from "../../../common/navigate";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import type { HaLogbook } from "../../logbook/ha-logbook";
@@ -24,8 +27,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { LogbookCardConfig } from "./types";
-import { resolveEntityIDs } from "../../../data/selector";
-import { ensureArray } from "../../../common/array/ensure-array";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -139,8 +140,10 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._stateFilter = ensureArray(config.state_filter);
   }
 
-  // Built in render() (not cached) so start_date stays relative to "now", not
-  // to when the card was configured — long-lived dashboards stay current.
+  private _showMore() {
+    navigate(this._showMoreUrl());
+  }
+
   private _showMoreUrl(): string {
     const target = this._targetPickerValue;
     const params: Record<string, string> = {
@@ -234,14 +237,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         ${this._config!.title
           ? html`<div class="card-header">
               <h1 class="name">${this._config!.title}</h1>
-              <a href=${this._showMoreUrl()}>
-                <ha-icon-button
-                  .path=${mdiChevronRight}
-                  .label=${this.hass.localize(
-                    "ui.dialogs.more_info_control.show_more"
-                  )}
-                ></ha-icon-button>
-              </a>
+              <ha-icon-button
+                .path=${mdiChevronRight}
+                .label=${this.hass.localize(
+                  "ui.dialogs.more_info_control.show_more"
+                )}
+                @click=${this._showMore}
+              ></ha-icon-button>
             </div>`
           : nothing}
         <div class="content">
