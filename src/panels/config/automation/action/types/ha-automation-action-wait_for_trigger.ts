@@ -52,6 +52,7 @@ export class HaWaitForTriggerAction
         {
           name: "continue_on_timeout",
           selector: { boolean: {} },
+          default: true,
         },
       ] as const satisfies readonly HaFormSchema[]
   );
