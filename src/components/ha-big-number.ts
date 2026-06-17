@@ -7,7 +7,6 @@ import { classMap } from "lit/directives/class-map";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 import { internationalizationContext } from "../data/context";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-big-number")
 export class HaBigNumber extends LitElement {
@@ -18,8 +17,6 @@ export class HaBigNumber extends LitElement {
   @property({ attribute: "unit-position" })
   public unitPosition: "top" | "bottom" = "top";
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false })
   public formatOptions: Intl.NumberFormatOptions = {};
 
@@ -28,7 +25,7 @@ export class HaBigNumber extends LitElement {
   private _i18n?: ContextType<typeof internationalizationContext>;
 
   protected render() {
-    const locale = this._i18n?.locale ?? this.hass?.locale;
+    const locale = this._i18n!.locale;
     const formatted = formatNumber(this.value, locale, this.formatOptions);
     const [integer] = formatted.includes(".")
       ? formatted.split(".")
