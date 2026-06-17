@@ -5,6 +5,7 @@ import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition } from "../common/validate-condition";
 import type { EntityFilterEntityConfig } from "../entity-rows/types";
 import type { DisplayType } from "./hui-entity-badge";
+import type { TimestampRenderingFormat } from "../components/types";
 
 export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
   type: "entity-filter";
@@ -53,6 +54,7 @@ export interface EntityBadgeConfig extends LovelaceBadgeConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  time_format?: TimestampRenderingFormat;
   /**
    * @deprecated use `show_state`, `show_name`, `icon_type`
    */
