@@ -30,7 +30,7 @@ export const computeEntityEntryName = (
   fallbackStateObj?: HassEntity
 ): string | undefined => {
   const name =
-    entry.name ||
+    entry.name ??
     ("original_name" in entry && entry.original_name != null
       ? String(entry.original_name)
       : undefined);
@@ -59,7 +59,8 @@ export const computeEntityEntryName = (
     return stripPrefixFromEntityName(name, deviceName) || name;
   }
 
-  return name;
+  // Empty name = main entity → undefined, so callers fall back to the device name.
+  return name || undefined;
 };
 
 export const entityUseDeviceName = (
