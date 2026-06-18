@@ -10,6 +10,8 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-relative-time";
+import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity/entity";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
 import { fetchRadioFrequencyTransmitters } from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
@@ -21,7 +23,7 @@ interface RadioFrequencyTransmitterRow {
   id: string;
   name: string;
   type: string;
-  last_used: string;
+  last_used?: string;
   device_id: string | null;
 }
 
@@ -77,7 +79,14 @@ export class RadioFrequencyTransmitters extends LitElement {
         last_used: {
           title: localize("ui.panel.config.radio_frequency.last_used"),
           sortable: true,
-          filterable: true,
+          template: (transmitter) =>
+            transmitter.last_used
+              ? html`<ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${transmitter.last_used}
+                  capitalize
+                ></ha-relative-time>`
+              : "—",
         },
       };
 
@@ -93,11 +102,21 @@ export class RadioFrequencyTransmitters extends LitElement {
     ): RadioFrequencyTransmitterRow[] =>
       transmitters.map((transmitter) => {
         const stateObj = states[transmitter.entity_id];
+        // The entity state holds the timestamp the transmitter was last used
+        // (or unknown/unavailable when it never has been).
+        const state = stateObj?.state;
+        const last_used =
+          state &&
+          state !== UNAVAILABLE &&
+          state !== UNKNOWN &&
+          !isNaN(new Date(state).getTime())
+            ? state
+            : undefined;
         return {
           id: transmitter.entity_id,
           name: stateObj ? computeStateName(stateObj) : transmitter.entity_id,
           type: localize("ui.panel.config.radio_frequency.type_transmitter"),
-          last_used: stateObj ? this.hass.formatEntityState(stateObj) : "—",
+          last_used,
           device_id: transmitter.device_id,
         };
       })
