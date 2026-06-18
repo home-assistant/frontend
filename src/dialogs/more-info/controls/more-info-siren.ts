@@ -54,7 +54,7 @@ class MoreInfoSiren extends LitElement {
               size="s"
               @click=${this._showAdvancedControlsDialog}
             >
-              ${this._localize("ui.components.siren.advanced_controls")}
+              ${this._localize("ui.components.siren.more_controls")}
             </ha-button>`
           : nothing}
       </div>
