@@ -1,14 +1,18 @@
+import { consume } from "@lit/context";
 import { mdiCheck } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-outlined-icon-button";
 import "../../../components/ha-state-icon";
+import { apiContext } from "../../../data/context";
 import type { LockEntity } from "../../../data/lock";
 import {
   LockEntityFeature,
@@ -17,7 +21,7 @@ import {
   isJammed,
 } from "../../../data/lock";
 import "../../../state-control/lock/ha-state-control-lock-toggle";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi } from "../../../types";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -28,7 +32,13 @@ type ButtonState = "normal" | "confirm" | "done";
 
 @customElement("more-info-lock")
 class MoreInfoLock extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj?: LockEntity;
 
@@ -52,7 +62,16 @@ class MoreInfoLock extends LitElement {
       return;
     }
 
-    callProtectedLockService(this, this.hass, this.stateObj!, "open");
+    callProtectedLockService(
+      this,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
+      this.stateObj!,
+      "open"
+    );
 
     this._setButtonState("done", DONE_TIMEOUT_SECOND);
   }
@@ -67,15 +86,33 @@ class MoreInfoLock extends LitElement {
   }
 
   private async _lock() {
-    callProtectedLockService(this, this.hass, this.stateObj!, "lock");
+    callProtectedLockService(
+      this,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
+      this.stateObj!,
+      "lock"
+    );
   }
 
   private async _unlock() {
-    callProtectedLockService(this, this.hass, this.stateObj!, "unlock");
+    callProtectedLockService(
+      this,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
+      this.stateObj!,
+      "unlock"
+    );
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this.stateObj) {
       return nothing;
     }
 
@@ -88,7 +125,6 @@ class MoreInfoLock extends LitElement {
 
     return html`
       <ha-more-info-state-header
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
       ></ha-more-info-state-header>
       <div class="controls" style=${styleMap(style)}>
@@ -105,7 +141,6 @@ class MoreInfoLock extends LitElement {
               <ha-state-control-lock-toggle
                 @lock-service-called=${this._resetButtonState}
                 .stateObj=${this.stateObj}
-                .hass=${this.hass}
               >
               </ha-state-control-lock-toggle>
             `}
@@ -116,7 +151,7 @@ class MoreInfoLock extends LitElement {
                   ? html`
                       <p class="open-done">
                         <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-                        ${this.hass.localize("ui.card.lock.open_door_done")}
+                        ${this._localize("ui.card.lock.open_door_done")}
                       </p>
                     `
                   : html`
@@ -126,8 +161,8 @@ class MoreInfoLock extends LitElement {
                         @click=${this._open}
                       >
                         ${this._buttonState === "confirm"
-                          ? this.hass.localize("ui.card.lock.open_door_confirm")
-                          : this.hass.localize("ui.card.lock.open_door")}
+                          ? this._localize("ui.card.lock.open_door_confirm")
+                          : this._localize("ui.card.lock.open_door")}
                       </ha-control-button>
                     `}
               </div>
@@ -139,10 +174,10 @@ class MoreInfoLock extends LitElement {
           ? html`
               <ha-control-button-group class="jammed">
                 <ha-control-button @click=${this._unlock}>
-                  ${this.hass.localize("ui.card.lock.unlock")}
+                  ${this._localize("ui.card.lock.unlock")}
                 </ha-control-button>
                 <ha-control-button @click=${this._lock}>
-                  ${this.hass.localize("ui.card.lock.lock")}
+                  ${this._localize("ui.card.lock.lock")}
                 </ha-control-button>
               </ha-control-button-group>
             `

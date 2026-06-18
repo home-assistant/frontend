@@ -258,7 +258,7 @@ export const computeEntityRegistryName = (
 };
 
 export const getExtendedEntityRegistryEntry = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entityId: string
 ): Promise<ExtEntityRegistryEntry> =>
   hass.callWS({
