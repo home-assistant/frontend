@@ -211,7 +211,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     .divider {
       height: 1px;
       background-color: var(--divider-color);
-      margin: 8px 16px;
+      margin: var(--ha-space-2) var(--ha-space-4);
     }
     .move-up {
       margin-top: -13px;
