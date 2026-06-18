@@ -20,6 +20,7 @@ import {
   mdiPalette,
   mdiPaletteSwatch,
   mdiPuzzle,
+  mdiRemote,
   mdiRobot,
   mdiScrewdriver,
   mdiScriptText,
@@ -35,6 +36,7 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { CloudStatus } from "../../data/cloud";
@@ -54,6 +56,14 @@ declare global {
     "ha-refresh-cloud-status": undefined;
   }
 }
+
+const getHasDomainCheck = (domain: string) => {
+  const prefix = `${domain}.`;
+  const checkRegistry = memoizeOne((entries: HomeAssistant["entities"]) =>
+    Object.values(entries).some((entry) => entry.entity_id.startsWith(prefix))
+  );
+  return (hass: HomeAssistant) => checkRegistry(hass.entities);
+};
 
 export const configSections: Record<string, PageNavigation[]> = {
   dashboard: [
@@ -165,6 +175,14 @@ export const configSections: Record<string, PageNavigation[]> = {
       component: "bluetooth",
       translationKey: "bluetooth",
       adminOnly: true,
+    },
+    {
+      path: "/config/infrared",
+      iconPath: mdiRemote,
+      iconColor: "#9C27B0",
+      translationKey: "infrared",
+      adminOnly: true,
+      filter: getHasDomainCheck("infrared"),
     },
     {
       path: "/insteon",
@@ -720,6 +738,11 @@ class HaPanelConfig extends HassRouterPage {
         tag: "bluetooth-config-dashboard-router",
         load: () =>
           import("./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"),
+      },
+      infrared: {
+        tag: "infrared-config-dashboard-router",
+        load: () =>
+          import("./integrations/integration-panels/infrared/infrared-config-dashboard-router"),
       },
       dhcp: {
         tag: "dhcp-config-panel",

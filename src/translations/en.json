@@ -2633,6 +2633,10 @@
           "cloud": {
             "secondary": "Loading..."
           },
+          "infrared": {
+            "main": "Infrared",
+            "secondary": "Control anything with a remote."
+          },
           "zwave_js": {
             "main": "Z-Wave",
             "secondary": "Sub-GHz mesh protocol"
@@ -7058,6 +7062,20 @@
           "message_received": "Message {id} received on {topic} at {time}:",
           "qos": "QoS",
           "retain": "Retain"
+        },
+        "infrared": {
+          "title": "Infrared",
+          "status_online": "Online",
+          "status_warning": "Warning",
+          "status_offline": "Offline",
+          "devices_online_summary": "{online}/{total} devices online",
+          "my_devices": "My devices",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "devices_navigation": "Devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "no_devices": "No infrared proxies found"
         },
         "bluetooth": {
           "title": "Bluetooth",
