@@ -211,14 +211,14 @@ export interface EntityRegistryEntryUpdateParams {
 
 const batteryPriorities = ["sensor", "binary_sensor"];
 export const findBatteryEntity = <T extends { entity_id: string }>(
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entities: T[]
 ): T | undefined => {
   const batteryEntities = entities
     .filter(
       (entity) =>
-        hass.states[entity.entity_id] &&
-        hass.states[entity.entity_id].attributes.device_class === "battery" &&
+        states[entity.entity_id] &&
+        states[entity.entity_id].attributes.device_class === "battery" &&
         batteryPriorities.includes(computeDomain(entity.entity_id))
     )
     .sort(
@@ -234,14 +234,13 @@ export const findBatteryEntity = <T extends { entity_id: string }>(
 };
 
 export const findBatteryChargingEntity = <T extends { entity_id: string }>(
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entities: T[]
 ): T | undefined =>
   entities.find(
     (entity) =>
-      hass.states[entity.entity_id] &&
-      hass.states[entity.entity_id].attributes.device_class ===
-        "battery_charging"
+      states[entity.entity_id] &&
+      states[entity.entity_id].attributes.device_class === "battery_charging"
   );
 
 export const computeEntityRegistryName = (
