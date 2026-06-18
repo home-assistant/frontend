@@ -72,23 +72,27 @@ export class InfraredDevicesPage extends LitElement {
   );
 
   private _data = memoizeOne(
-    (devices: InfraredDevice[], localize: LocalizeFunc): InfraredDeviceRow[] =>
-      devices.map((device) => {
-        // The emitter is the default device class, stored under the "_" key
-        const emitterLabel = localize(
-          "component.infrared.entity_component._.name"
-        );
-        const receiverLabel = localize(
-          "component.infrared.entity_component.receiver.name"
-        );
-        const type_label =
+    (
+      devices: InfraredDevice[],
+      localize: LocalizeFunc
+    ): InfraredDeviceRow[] => {
+      // The emitter is the default device class, stored under the "_" key
+      const emitterLabel = localize(
+        "component.infrared.entity_component._.name"
+      );
+      const receiverLabel = localize(
+        "component.infrared.entity_component.receiver.name"
+      );
+      return devices.map((device) => ({
+        ...device,
+        type_label:
           device.type === "both"
             ? `${emitterLabel}, ${receiverLabel}`
             : device.type === "emitter"
               ? emitterLabel
-              : receiverLabel;
-        return { ...device, type_label };
-      })
+              : receiverLabel,
+      }));
+    }
   );
 
   protected render(): TemplateResult {
