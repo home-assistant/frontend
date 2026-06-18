@@ -1,6 +1,7 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -22,6 +23,8 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const OPTION_MIN_WIDTH = 30;
 
 type NumericFavoriteEntity = HassEntity & {
   attributes: HassEntity["attributes"] & {
@@ -92,6 +95,16 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   private _subscribedEntityId?: string;
 
   private _subscribedConnection?: HomeAssistant["connection"];
+
+  private _resizeController = new ResizeController<number | undefined>(this, {
+    callback: (entries: { contentRect?: { width: number } }[]) => {
+      const width = entries[0]?.contentRect?.width;
+      if (!width) {
+        return undefined;
+      }
+      return Math.max(1, Math.floor(width / OPTION_MIN_WIDTH));
+    },
+  });
 
   protected abstract get _definition(): NumericFavoriteCardFeatureDefinition<TEntity>;
 
@@ -301,7 +314,11 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
       return null;
     }
 
-    const options = positions.map((position) => ({
+    const maxVisible = this._resizeController.value;
+    const visiblePositions =
+      maxVisible != null ? positions.slice(0, maxVisible) : positions;
+
+    const options = visiblePositions.map((position) => ({
       value: String(position),
       label: `${position}%`,
       ariaLabel: hass.localize(this._definition.setPositionLabelKey, {
@@ -330,6 +347,13 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
   }
 
   static get styles() {
-    return cardFeatureStyles;
+    return [
+      cardFeatureStyles,
+      css`
+        :host {
+          display: block;
+        }
+      `,
+    ];
   }
 }
