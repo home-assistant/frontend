@@ -7,13 +7,16 @@ import type { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
-export const CAMERA_SUPPORT_ON_OFF = 1;
-export const CAMERA_SUPPORT_STREAM = 2;
 
 export const STREAM_TYPE_HLS = "hls";
 export const STREAM_TYPE_WEB_RTC = "web_rtc";
 
 export type StreamType = typeof STREAM_TYPE_HLS | typeof STREAM_TYPE_WEB_RTC;
+
+export enum CameraEntityFeature {
+  ON_OFF = 1,
+  STREAM = 2,
+}
 
 interface CameraEntityAttributes extends HassEntityAttributeBase {
   model_name: string;

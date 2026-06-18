@@ -2,6 +2,7 @@ import { AITaskEntityFeature } from "../../data/ai_task";
 import { AlarmControlPanelEntityFeature } from "../../data/alarm_control_panel";
 import { AssistSatelliteEntityFeature } from "../../data/assist_satellite";
 import { CalendarEntityFeature } from "../../data/calendar";
+import { CameraEntityFeature } from "../../data/camera";
 import { ClimateEntityFeature } from "../../data/climate";
 import { ConversationEntityFeature } from "../../data/conversation";
 import { CoverEntityFeature } from "../../data/cover";
@@ -11,6 +12,9 @@ import { LawnMowerEntityFeature } from "../../data/lawn_mower";
 import { LightEntityFeature } from "../../data/light";
 import { LockEntityFeature } from "../../data/lock";
 import { MediaPlayerEntityFeature } from "../../data/media-player";
+import { NotifyEntityFeature } from "../../data/notify";
+import { RemoteEntityFeature } from "../../data/remote";
+import { SirenEntityFeature } from "../../data/siren";
 import { TodoListEntityFeature } from "../../data/todo";
 import { UpdateEntityFeature } from "../../data/update";
 import { VacuumEntityFeature } from "../../data/vacuum";
@@ -25,6 +29,7 @@ const DOMAIN_ENUMS = {
   alarm_control_panel: AlarmControlPanelEntityFeature,
   assist_satellite: AssistSatelliteEntityFeature,
   calendar: CalendarEntityFeature,
+  camera: CameraEntityFeature,
   climate: ClimateEntityFeature,
   conversation: ConversationEntityFeature,
   cover: CoverEntityFeature,
@@ -34,6 +39,9 @@ const DOMAIN_ENUMS = {
   light: LightEntityFeature,
   lock: LockEntityFeature,
   media_player: MediaPlayerEntityFeature,
+  notify: NotifyEntityFeature,
+  remote: RemoteEntityFeature,
+  siren: SirenEntityFeature,
   todo: TodoListEntityFeature,
   update: UpdateEntityFeature,
   vacuum: VacuumEntityFeature,

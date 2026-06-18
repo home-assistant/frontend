@@ -8,7 +8,7 @@ import type { HaSelectSelectEvent } from "../../../components/ha-select";
 import "../../../components/ha-select";
 import { apiContext, formattersContext } from "../../../data/context";
 import type { RemoteEntity } from "../../../data/remote";
-import { REMOTE_SUPPORT_ACTIVITY } from "../../../data/remote";
+import { RemoteEntityFeature } from "../../../data/remote";
 import type { HomeAssistantApi, HomeAssistantFormatters } from "../../../types";
 
 @customElement("more-info-remote")
@@ -35,7 +35,7 @@ class MoreInfoRemote extends LitElement {
     const stateObj = this.stateObj;
 
     return html`
-      ${supportsFeature(stateObj, REMOTE_SUPPORT_ACTIVITY)
+      ${supportsFeature(stateObj, RemoteEntityFeature.ACTIVITY)
         ? html`
             <ha-select
               .label=${this._localize(
