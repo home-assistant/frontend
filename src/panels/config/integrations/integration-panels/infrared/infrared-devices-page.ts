@@ -74,8 +74,9 @@ export class InfraredDevicesPage extends LitElement {
   private _data = memoizeOne(
     (devices: InfraredDevice[], localize: LocalizeFunc): InfraredDeviceRow[] =>
       devices.map((device) => {
+        // The emitter is the default device class, stored under the "_" key
         const emitterLabel = localize(
-          "component.infrared.entity_component.emitter.name"
+          "component.infrared.entity_component._.name"
         );
         const receiverLabel = localize(
           "component.infrared.entity_component.receiver.name"
