@@ -104,7 +104,7 @@ export class HuiDialogEditCard
   }
 
   public closeDialog(): boolean {
-    if (this.isDirtyState) {
+    if (this.isEffectiveDirtyState) {
       this._confirmCancel();
       return false;
     }
@@ -172,7 +172,7 @@ export class HuiDialogEditCard
       <ha-dialog
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        .preventScrimClose=${this.isDirtyState}
+        .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}

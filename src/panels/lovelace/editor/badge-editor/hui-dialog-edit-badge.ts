@@ -118,7 +118,7 @@ export class HuiDialogEditBadge
   }
 
   public closeDialog(): boolean {
-    if (this.isDirtyState) {
+    if (this.isEffectiveDirtyState) {
       this._confirmCancel();
       return false;
     }
@@ -196,7 +196,7 @@ export class HuiDialogEditBadge
       <ha-dialog
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        .preventScrimClose=${this.isDirtyState}
+        .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}

@@ -4,6 +4,7 @@ import type { LitElement } from "lit";
 import { state } from "lit/decorators";
 import { deepEqual } from "../common/util/deep-equal";
 import { shallowEqual } from "../common/util/shallow-equal";
+import { stripToggleDefaults } from "../common/util/strip-toggle-defaults";
 import {
   DEFAULT_DIRTY_STATE_KEY,
   dirtyStateContext,
@@ -25,6 +26,12 @@ export type CompareStrategy<State> =
  * strategy. `isDirty` is true when any slice differs from its initial value,
  * so independent contributors (e.g. a helper form alongside the entity
  * registry editor) can coexist without overwriting each other.
+ *
+ * `isEffectiveDirty` runs the same comparison but treats `false` and
+ * `undefined`/absent object keys as equal, so a toggle left at its off-default
+ * does not read as dirty. Use `isEffectiveDirtyState` to decide whether
+ * closing needs a "discard changes?" prompt, and `isDirtyState` to decide
+ * whether save is enabled.
  *
  * @example Eager init for the provider's own slice:
  * ```ts
@@ -63,7 +70,7 @@ export const DirtyStateProviderMixin =
     class DirtyStateProviderMixinClass extends superClass {
       private _dirtySlices = new Map<
         Key | DefaultDirtyStateKey,
-        { initial: State; current: State }
+        { initial: State; current: State; strippedInitial: State }
       >();
 
       private _dirtyCompareFn: (a: State, b: State) => boolean = deepEqual;
@@ -76,9 +83,17 @@ export const DirtyStateProviderMixin =
         this._buildContextValue();
 
       private _buildContextValue(): DirtyStateContext<State, Key> {
+        const slices = Array.from(this._dirtySlices.values());
         return {
-          isDirty: Array.from(this._dirtySlices.values()).some(
+          isDirty: slices.some(
             ({ initial, current }) => !this._dirtyCompareFn(initial, current)
+          ),
+          isEffectiveDirty: slices.some(
+            ({ strippedInitial, current }) =>
+              !this._dirtyCompareFn(
+                strippedInitial,
+                stripToggleDefaults(current)
+              )
           ),
           setState: (value: State, key: Key) => {
             this._writeSlice(key, value);
@@ -97,9 +112,11 @@ export const DirtyStateProviderMixin =
         const slice = this._dirtySlices.get(key);
         if (!slice) {
           // First push for this key becomes the baseline.
+          const initial = this._dirtyCloneFn(value);
           this._dirtySlices.set(key, {
-            initial: this._dirtyCloneFn(value),
+            initial,
             current: value,
+            strippedInitial: stripToggleDefaults(initial),
           });
           this._publishContext();
           return;
@@ -140,9 +157,11 @@ export const DirtyStateProviderMixin =
         }
         this._dirtySlices.clear();
         if (initialState !== undefined) {
+          const initial = this._dirtyCloneFn(initialState);
           this._dirtySlices.set(DEFAULT_DIRTY_STATE_KEY, {
-            initial: this._dirtyCloneFn(initialState),
+            initial,
             current: initialState,
+            strippedInitial: stripToggleDefaults(initial),
           });
         }
         this._publishContext();
@@ -164,6 +183,7 @@ export const DirtyStateProviderMixin =
       protected _markDirtyStateClean(): void {
         for (const slice of this._dirtySlices.values()) {
           slice.initial = this._dirtyCloneFn(slice.current);
+          slice.strippedInitial = stripToggleDefaults(slice.initial);
         }
         this._publishContext();
       }
@@ -184,6 +204,16 @@ export const DirtyStateProviderMixin =
        */
       public get isDirtyState(): boolean {
         return this._dirtyStateContext.isDirty;
+      }
+
+      /**
+       * Like `isDirtyState`, but treats `false` and `undefined`/absent object
+       * keys as equal, so a toggle left at its off-default does not read as
+       * dirty. Use it to decide whether closing needs a "discard changes?"
+       * prompt, while `isDirtyState` decides whether save is enabled.
+       */
+      public get isEffectiveDirtyState(): boolean {
+        return this._dirtyStateContext.isEffectiveDirty;
       }
     }
     return DirtyStateProviderMixinClass;
