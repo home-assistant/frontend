@@ -86,7 +86,10 @@ export class HaDateTimeSelector extends LitElement {
   static styles = css`
     .input {
       display: flex;
-      align-items: center;
+      /* Align the input fields by their top edge so the date field's underline
+         lines up with the time field, since ha-date-input reserves extra space
+         below for its hint while ha-time-input does not. */
+      align-items: flex-start;
       flex-direction: row;
     }
 
