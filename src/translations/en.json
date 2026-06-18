@@ -1558,6 +1558,7 @@
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
+            "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
@@ -2656,6 +2657,10 @@
           "bluetooth": {
             "main": "Bluetooth",
             "secondary": "Local device connectivity"
+          },
+          "radio_frequency": {
+            "main": "Radio frequency",
+            "secondary": "Control radio-based devices."
           },
           "knx": {
             "main": "KNX",
@@ -7137,6 +7142,19 @@
           "scanners": "Scanners",
           "known_devices": "Known devices",
           "unknown_devices": "Unknown devices"
+        },
+        "radio_frequency": {
+          "title": "Radio frequency",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "devices_online_summary": "{online}/{total} devices online",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "no_devices": "No radio frequency devices found",
+          "loading_error": "Failed to load radio frequency devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "devices_navigation": "Devices"
         },
         "dhcp": {
           "title": "DHCP discovery",

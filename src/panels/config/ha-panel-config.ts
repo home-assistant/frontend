@@ -20,6 +20,7 @@ import {
   mdiPalette,
   mdiPaletteSwatch,
   mdiPuzzle,
+  mdiRadioTower,
   mdiRemote,
   mdiRobot,
   mdiScrewdriver,
@@ -183,6 +184,15 @@ export const configSections: Record<string, PageNavigation[]> = {
       translationKey: "infrared",
       adminOnly: true,
       filter: getHasDomainCheck("infrared"),
+    },
+    {
+      path: "/config/radio-frequency",
+      iconPath: mdiRadioTower,
+      iconColor: "#E74011",
+      component: "radio_frequency",
+      translationKey: "radio_frequency",
+      adminOnly: true,
+      filter: getHasDomainCheck("radio_frequency"),
     },
     {
       path: "/insteon",
@@ -684,6 +694,11 @@ class HaPanelConfig extends HassRouterPage {
       updates: {
         tag: "ha-config-section-updates",
         load: () => import("./core/ha-config-section-updates"),
+      },
+      "radio-frequency": {
+        tag: "radio-frequency-config-dashboard-router",
+        load: () =>
+          import("./integrations/integration-panels/radio_frequency/radio-frequency-config-dashboard-router"),
       },
       repairs: {
         tag: "ha-config-repairs-dashboard",
