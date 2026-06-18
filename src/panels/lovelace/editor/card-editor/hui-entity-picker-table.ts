@@ -261,4 +261,7 @@ declare global {
   interface HTMLElementTagNameMap {
     "hui-entity-picker-table": HuiEntityPickerTable;
   }
+  interface HASSDomEvents {
+    "selected-changed": { selectedEntities: string[] };
+  }
 }

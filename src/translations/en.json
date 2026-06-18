@@ -10475,7 +10475,15 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_badge": "By badge"
+            "by_badge": "By badge",
+            "with_name": "With name",
+            "suggestions_title": "[%key:ui::panel::lovelace::editor::cardpicker::suggestions_title%]",
+            "community_title": "[%key:ui::panel::lovelace::editor::cardpicker::community_title%]",
+            "selected_entity": "[%key:ui::panel::lovelace::editor::cardpicker::selected_entity%]",
+            "content_empty_title": "[%key:ui::panel::lovelace::editor::cardpicker::content_empty_title%]",
+            "content_empty_description": "Or browse all badge types.",
+            "browse_badges": "Browse all badges",
+            "not_found": "Can't find the badge you want?"
           },
           "header-footer": {
             "header": "Header",
