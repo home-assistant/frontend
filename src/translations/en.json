@@ -7196,16 +7196,13 @@
           "title": "Radio frequency",
           "status_online": "Online",
           "status_offline": "Offline",
-          "transmitters_summary": "{online}/{total} transmitters online",
+          "devices_online_summary": "{online}/{total} devices online",
           "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-          "no_transmitters": "No radio frequency transmitters found",
+          "no_devices": "No radio frequency devices found",
           "name": "Name",
           "type": "Type",
-          "type_transmitter": "Transmitter",
           "last_used": "Last used",
-          "navigation": {
-            "transmitters": "Transmitters"
-          }
+          "devices_navigation": "Devices"
         },
         "dhcp": {
           "title": "DHCP discovery",

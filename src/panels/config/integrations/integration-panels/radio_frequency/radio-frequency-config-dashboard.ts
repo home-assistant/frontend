@@ -1,7 +1,7 @@
 import { mdiCheck, mdiCloseCircleOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
@@ -10,10 +10,7 @@ import "../../../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../../../data/entity/entity";
 import { FALLBACK_DOMAIN_ICONS } from "../../../../../data/icons";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
-import {
-  DOMAIN,
-  fetchRadioFrequencyTransmitters,
-} from "../../../../../data/radio_frequency";
+import { DOMAIN } from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
@@ -28,23 +25,12 @@ export class RadioFrequencyConfigDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _transmitters: RadioFrequencyTransmitter[] = [];
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass) {
-      this._fetchTransmitters();
-    }
-  }
-
-  private async _fetchTransmitters(): Promise<void> {
-    const result = await fetchRadioFrequencyTransmitters(this.hass);
-    this._transmitters = result.transmitters;
-  }
+  @property({ attribute: false })
+  public transmitters: RadioFrequencyTransmitter[] = [];
 
   protected render(): TemplateResult {
-    const total = this._transmitters.length;
-    const online = this._transmitters.filter((transmitter) => {
+    const total = this.transmitters.length;
+    const online = this.transmitters.filter((transmitter) => {
       const stateObj = this.hass.states[transmitter.entity_id];
       return stateObj && stateObj.state !== UNAVAILABLE;
     }).length;
@@ -72,7 +58,7 @@ export class RadioFrequencyConfigDashboard extends LitElement {
                   )}<br />
                   <small>
                     ${this.hass.localize(
-                      "ui.panel.config.radio_frequency.transmitters_summary",
+                      "ui.panel.config.radio_frequency.devices_online_summary",
                       { online, total }
                     )}
                   </small>
@@ -90,7 +76,7 @@ export class RadioFrequencyConfigDashboard extends LitElement {
               <ha-md-list>
                 <ha-md-list-item
                   type="link"
-                  href="/config/radio-frequency/transmitters"
+                  href="/config/radio-frequency/devices"
                 >
                   <ha-svg-icon
                     slot="start"

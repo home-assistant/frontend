@@ -1,6 +1,6 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../../../common/navigate";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
@@ -13,7 +13,6 @@ import type {
 import "../../../../../components/ha-relative-time";
 import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity/entity";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
-import { fetchRadioFrequencyTransmitters } from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -27,8 +26,8 @@ interface RadioFrequencyTransmitterRow {
   device_id: string | null;
 }
 
-@customElement("radio-frequency-transmitters")
-export class RadioFrequencyTransmitters extends LitElement {
+@customElement("radio-frequency-devices-page")
+export class RadioFrequencyDevicesPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -37,26 +36,15 @@ export class RadioFrequencyTransmitters extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _transmitters: RadioFrequencyTransmitter[] = [];
+  @property({ attribute: false })
+  public transmitters: RadioFrequencyTransmitter[] = [];
 
   private _tabs: PageNavigation[] = [
     {
-      translationKey: "ui.panel.config.radio_frequency.navigation.transmitters",
-      path: "/config/radio-frequency/transmitters",
+      translationKey: "ui.panel.config.radio_frequency.devices_navigation",
+      path: "/config/radio-frequency/devices",
     },
   ];
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass) {
-      this._fetchTransmitters();
-    }
-  }
-
-  private async _fetchTransmitters(): Promise<void> {
-    const result = await fetchRadioFrequencyTransmitters(this.hass);
-    this._transmitters = result.transmitters;
-  }
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
@@ -115,7 +103,7 @@ export class RadioFrequencyTransmitters extends LitElement {
         return {
           id: transmitter.entity_id,
           name: stateObj ? computeStateName(stateObj) : transmitter.entity_id,
-          type: localize("ui.panel.config.radio_frequency.type_transmitter"),
+          type: localize("component.radio_frequency.entity_component._.name"),
           last_used,
           device_id: transmitter.device_id,
         };
@@ -132,12 +120,12 @@ export class RadioFrequencyTransmitters extends LitElement {
         back-path="/config/radio-frequency/dashboard"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._data(
-          this._transmitters,
+          this.transmitters,
           this.hass.states,
           this.hass.localize
         )}
         .noDataText=${this.hass.localize(
-          "ui.panel.config.radio_frequency.no_transmitters"
+          "ui.panel.config.radio_frequency.no_devices"
         )}
         @row-click=${this._handleRowClicked}
         clickable
@@ -146,7 +134,7 @@ export class RadioFrequencyTransmitters extends LitElement {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const transmitter = this._transmitters.find(
+    const transmitter = this.transmitters.find(
       (t) => t.entity_id === ev.detail.id
     );
     if (transmitter?.device_id) {
@@ -159,6 +147,6 @@ export class RadioFrequencyTransmitters extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "radio-frequency-transmitters": RadioFrequencyTransmitters;
+    "radio-frequency-devices-page": RadioFrequencyDevicesPage;
   }
 }
