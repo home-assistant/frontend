@@ -24,9 +24,6 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-// Minimum width (px) for a labelled favorite option to stay legible and
-// tappable. Below this, the row reduces how many favorites it shows so the
-// labels never overflow (mainly on narrow tiles and mobile).
 const OPTION_MIN_WIDTH = 30;
 
 type NumericFavoriteEntity = HassEntity & {
@@ -108,12 +105,6 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
       return Math.max(1, Math.floor(width / OPTION_MIN_WIDTH));
     },
   });
-
-  // Number of favorites that fit the current width, or undefined before the
-  // first measurement (render shows all until then to avoid an empty flash).
-  private get _maxVisible(): number | undefined {
-    return this._resizeController.value;
-  }
 
   protected abstract get _definition(): NumericFavoriteCardFeatureDefinition<TEntity>;
 
@@ -323,9 +314,7 @@ export abstract class HuiNumericFavoriteCardFeatureBase<
       return null;
     }
 
-    // Reduce how many favorites are shown when there isn't enough room,
-    // keeping the first ones as configured. Shows all until first measured.
-    const maxVisible = this._maxVisible;
+    const maxVisible = this._resizeController.value;
     const visiblePositions =
       maxVisible != null ? positions.slice(0, maxVisible) : positions;
 
