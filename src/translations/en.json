@@ -808,7 +808,12 @@
           "datetime": "Date and time",
           "time": "Time",
           "date": "Date"
-        }
+        },
+        "styles": {
+          "short": "Short",
+          "long": "Long"
+        },
+        "style": "Time format style"
       },
       "subpage-data-table": {
         "filters": "Filters",

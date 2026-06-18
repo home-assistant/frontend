@@ -21,6 +21,6 @@ export const relativeTime = (
   return Intl.NumberFormat(locale.language, {
     style: "unit",
     unit: diff.unit,
-    unitDisplay: "long",
+    unitDisplay: style,
   }).format(Math.abs(diff.value));
 };
