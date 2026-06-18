@@ -31,12 +31,7 @@ class HaPanelMap extends LitElement {
               @click=${this._openZonesEditor}
             ></ha-icon-button>`
           : ""}
-        <ha-map
-          .hass=${this.hass}
-          .entities=${this._entities}
-          auto-fit
-          interactive-zones
-        ></ha-map>
+        <ha-map .entities=${this._entities} auto-fit interactive-zones></ha-map>
       </ha-top-app-bar-fixed>
     `;
   }

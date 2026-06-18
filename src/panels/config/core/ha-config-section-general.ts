@@ -136,7 +136,6 @@ class HaConfigSectionGeneral extends LitElement {
           ? html`
               <div class="card-content">
                 <ha-map
-                  .hass=${this.hass}
                   .entities=${["zone.home"]}
                   .zoom=${14}
                   .autoFit=${true}
