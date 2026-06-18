@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
-  CAMERA_SUPPORT_STREAM,
+  CameraEntityFeature,
   type CameraCapabilities,
   type CameraEntity,
   computeMJPEGStreamUrl,
@@ -170,7 +170,7 @@ export class HaCameraStream extends LitElement {
     this._capabilities = undefined;
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
-    if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
+    if (!supportsFeature(this.stateObj!, CameraEntityFeature.STREAM)) {
       this._capabilities = { frontend_stream_types: [] };
       return;
     }
