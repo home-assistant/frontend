@@ -110,6 +110,25 @@ export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set([
   "media_player",
 ]);
 
+/** Domains that use a timestamp for state. */
+export const TIMESTAMP_STATE_DOMAINS = new Set([
+  "ai_task",
+  "button",
+  "conversation",
+  "event",
+  "image",
+  "infrared",
+  "input_button",
+  "notify",
+  "radio_frequency",
+  "scene",
+  "stt",
+  "tag",
+  "tts",
+  "wake_word",
+  "datetime",
+]);
+
 /** Temperature units. */
 export const UNIT_C = "°C";
 export const UNIT_F = "°F";

@@ -9,6 +9,7 @@ import "./fetch-nightly-translations.js";
 import "./gallery.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
+import "./gen-numeric-device-classes.js";
 import "./landing-page.js";
 import "./locale-data.js";
 import "./rspack.js";

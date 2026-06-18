@@ -221,7 +221,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities: HassEntity[] = [];
+  @state() private _helperEntities?: HassEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -229,7 +229,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
-  @state() private _entitySource: Record<string, string> = {};
+  @state() private _entitySource?: Record<string, string>;
 
   @state() private _selected: string[] = [];
 
@@ -499,7 +499,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             configEntry !== undefined || entityState.attributes.editable,
           type: configEntry
             ? configEntry.domain
-            : this._entitySource[entityState.entity_id] ||
+            : this._entitySource![entityState.entity_id] ||
               computeStateDomain(entityState),
           configEntry,
           entity: entityState,
@@ -552,9 +552,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           const entityRegEntry =
             entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
-          const label_entries = (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          );
+          const label_entries = (labels || [])
+            .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+            .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
           const category = entityRegEntry?.categories.helpers;
           const deviceId = entityRegEntry?.device_id;
           const areaId =
@@ -830,6 +830,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _applyFilters() {
+    if (!this._helperEntities) {
+      return;
+    }
     const filters = Object.entries(this._filters);
 
     let items: Set<string> | undefined;
@@ -1224,7 +1227,7 @@ ${rejected
       this._setFiltersFromUrl();
     }
 
-    if (!this._entityEntries || !this._configEntries) {
+    if (!this._entityEntries || !this._configEntries || !this._entitySource) {
       return;
     }
 
@@ -1256,15 +1259,19 @@ ${rejected
       return;
     }
 
-    const entityIds = Object.keys(this._entitySource);
+    // Use a Set for O(1) lookups: this runs on every state change, and the
+    // filter scans every state, so an array `includes` here is O(states ×
+    // sources).
+    const entityIds = new Set(Object.keys(this._entitySource));
 
     const newHelpers = Object.values(this.hass!.states).filter(
       (entity) =>
-        entityIds.includes(entity.entity_id) ||
+        entityIds.has(entity.entity_id) ||
         isHelperDomain(computeStateDomain(entity))
     );
 
     if (
+      !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
       !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
     ) {

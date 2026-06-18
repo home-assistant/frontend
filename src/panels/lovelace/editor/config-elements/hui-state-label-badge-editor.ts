@@ -14,6 +14,7 @@ const badgeConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
+    color: optional(string()),
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     show_name: optional(boolean()),
@@ -30,6 +31,7 @@ export class HuiStateLabelBadgeEditor extends HuiEntityBadgeEditor {
     const entityBadgeConfig: EntityBadgeConfig = {
       type: "entity",
       entity: config.entity,
+      color: config.color,
       show_name: config.show_name ?? true,
     };
 

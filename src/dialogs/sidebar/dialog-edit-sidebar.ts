@@ -29,11 +29,19 @@ import {
   getPanelIconPath,
   getPanelTitle,
 } from "../../data/panel";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 
+interface SidebarState {
+  order: string[];
+  hidden: string[];
+}
+
 @customElement("dialog-edit-sidebar")
-class DialogEditSidebar extends LitElement {
+class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -71,6 +79,11 @@ class DialogEditSidebar extends LitElement {
         this._migrateToUserData = this._migrateToUserData || !!storedHidden;
         this._hidden = storedHidden ? JSON.parse(storedHidden) : [];
       }
+      const order = this._order ?? [];
+      this._initDirtyTracking(
+        { type: "deep" },
+        { order, hidden: this._computeHiddenPanels() }
+      );
     } catch (err: any) {
       this._error = err.message || err;
     }
@@ -88,6 +101,30 @@ class DialogEditSidebar extends LitElement {
   private _panels = memoizeOne((panels: HomeAssistant["panels"]) =>
     panels ? Object.values(panels) : []
   );
+
+  private _computeHiddenPanels(): string[] {
+    const panels = this._panels(this.hass.panels);
+    const defaultPanel = getDefaultPanelUrlPath(this.hass);
+
+    const orderSet = new Set(this._order);
+    const hiddenSet = new Set(this._hidden);
+
+    for (const panel of panels) {
+      if (
+        panel.default_visible === false &&
+        !orderSet.has(panel.url_path) &&
+        !hiddenSet.has(panel.url_path)
+      ) {
+        hiddenSet.add(panel.url_path);
+      }
+    }
+
+    if (hiddenSet.has(defaultPanel)) {
+      hiddenSet.delete(defaultPanel);
+    }
+
+    return Array.from(hiddenSet);
+  }
 
   private _renderContent(): TemplateResult {
     if (!this._order || !this._hidden) {
@@ -112,24 +149,7 @@ class DialogEditSidebar extends LitElement {
       this.hass.locale
     );
 
-    const orderSet = new Set(this._order);
-    const hiddenSet = new Set(this._hidden);
-
-    for (const panel of panels) {
-      if (
-        panel.default_visible === false &&
-        !orderSet.has(panel.url_path) &&
-        !hiddenSet.has(panel.url_path)
-      ) {
-        hiddenSet.add(panel.url_path);
-      }
-    }
-
-    if (hiddenSet.has(defaultPanel)) {
-      hiddenSet.delete(defaultPanel);
-    }
-
-    const hiddenPanels = Array.from(hiddenSet);
+    const hiddenPanels = this._computeHiddenPanels();
 
     const items = [
       ...beforeSpacer,
@@ -169,6 +189,7 @@ class DialogEditSidebar extends LitElement {
         header-subtitle=${!this._migrateToUserData
           ? this.hass.localize("ui.sidebar.edit_subtitle")
           : ""}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-dropdown slot="headerActionItems" placement="bottom-end">
@@ -193,7 +214,7 @@ class DialogEditSidebar extends LitElement {
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._order || !this._hidden}
+            .disabled=${!this._order || !this._hidden || !this.isDirtyState}
             @click=${this._save}
           >
             ${this.hass.localize("ui.common.save")}
@@ -207,6 +228,7 @@ class DialogEditSidebar extends LitElement {
     const { order = [], hidden = [] } = ev.detail.value;
     this._order = [...order];
     this._hidden = [...hidden];
+    this._updateDirtyState({ order: this._order, hidden: this._hidden });
   }
 
   private _resetToDefaults = async () => {
@@ -250,6 +272,7 @@ class DialogEditSidebar extends LitElement {
       return;
     }
 
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

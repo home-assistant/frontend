@@ -6,7 +6,6 @@ import { stateColorCss } from "../../common/entity/state_color";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { LawnMowerEntity } from "../../data/lawn_mower";
 import { isMowing } from "../../data/lawn_mower";
-import type { HomeAssistant } from "../../types";
 
 type LawnMowerVisualState =
   | "mowing"
@@ -42,8 +41,6 @@ const computeVisualState = (
 
 @customElement("ha-state-control-lawn_mower-status")
 export class HaStateControlLawnMowerStatus extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: LawnMowerEntity;
 
   protected render(): TemplateResult {

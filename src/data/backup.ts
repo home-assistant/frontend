@@ -181,7 +181,7 @@ export interface RestoreBackupParams {
   restore_homeassistant?: boolean;
 }
 
-export const fetchBackupConfig = (hass: HomeAssistant) =>
+export const fetchBackupConfig = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
 
 export const updateBackupConfig = (

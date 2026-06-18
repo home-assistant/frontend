@@ -15,6 +15,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/item/ha-row-item";
 import "../../../../components/list/ha-list-base";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import type {
   BackupConfig,
   BackupMutableConfig,
@@ -82,7 +83,10 @@ const RECOMMENDED_CONFIG: BackupConfig = {
 };
 
 @customElement("ha-dialog-backup-onboarding")
-class DialogBackupOnboarding extends LitElement implements HassDialog {
+class DialogBackupOnboarding
+  extends DirtyStateProviderMixin<BackupConfig>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -115,6 +119,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     }
 
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._config!);
   }
 
   public closeDialog() {
@@ -169,6 +174,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
     try {
       await this._save(true);
       this._params?.submit!(true);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -214,7 +220,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       <ha-dialog
         .open=${this._open}
         header-title=${this._stepTitle}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${isFirstStep
@@ -293,6 +299,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         password: this._config.create_backup.password,
       },
     };
+    this._updateDirtyState(this._config);
     this._done();
   }
 
@@ -515,6 +522,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         include_addons: data.include_addons || null,
       },
     };
+    this._updateDirtyState(this._config);
   }
 
   private _scheduleChanged(ev) {
@@ -524,6 +532,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
       schedule: value.schedule,
       retention: value.retention,
     };
+    this._updateDirtyState(this._config);
   }
 
   private _agentsConfigChanged(ev) {
@@ -535,6 +544,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
         agent_ids: agents,
       },
     };
+    this._updateDirtyState(this._config);
   }
 
   static get styles(): CSSResultGroup {

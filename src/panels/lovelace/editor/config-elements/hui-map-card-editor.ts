@@ -616,6 +616,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           margin-bottom: var(--ha-space-1);
           color: var(--secondary-text-color);
         }
+        ha-selector-select {
+          display: block;
+          margin-inline-start: var(--ha-space-1);
+        }
       `,
     ];
   }

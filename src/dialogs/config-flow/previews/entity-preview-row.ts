@@ -106,7 +106,9 @@ class EntityPreviewRow extends LitElement {
     }
   `;
 
-  private _renderEntityState(stateObj: HassEntity): TemplateResult | string {
+  private _renderEntityState(
+    stateObj: HassEntity
+  ): TemplateResult | string | typeof nothing {
     const domain = stateObj.entity_id.split(".", 1)[0];
     const disabled = stateObj.state === UNAVAILABLE;
     const noValue =
@@ -216,7 +218,10 @@ class EntityPreviewRow extends LitElement {
     }
 
     if (domain === "image") {
-      const image: string = computeImageUrl(stateObj as ImageEntity);
+      const image = computeImageUrl(stateObj as ImageEntity);
+      if (!image) {
+        return nothing;
+      }
       return html`
         <img
           alt=${ifDefined(stateObj?.attributes.friendly_name)}

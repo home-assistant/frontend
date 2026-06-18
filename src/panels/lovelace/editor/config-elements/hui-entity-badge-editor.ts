@@ -33,7 +33,9 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
 import { configElementStyle } from "./config-elements-style";
+import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import "./hui-card-features-editor";
+import { timeFormatConfigStruct } from "../../components/types";
 
 const badgeConfigStruct = assign(
   baseLovelaceBadgeConfig,
@@ -51,6 +53,7 @@ const badgeConfigStruct = assign(
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
+    time_format: optional(timeFormatConfigStruct),
     image: optional(string()), // For old badge config support
   })
 );
@@ -73,7 +76,7 @@ export class HuiEntityBadgeEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, showTimeFormat: boolean) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
@@ -157,6 +160,16 @@ export class HuiEntityBadgeEditor
                 filter_entity: "entity",
               },
             },
+            ...(showTimeFormat
+              ? ([
+                  {
+                    name: "time_format",
+                    selector: {
+                      ui_time_format: {},
+                    },
+                  },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
           ],
         },
         {
@@ -214,7 +227,17 @@ export class HuiEntityBadgeEditor
       return nothing;
     }
 
-    const schema = this._schema(this.hass!.localize);
+    const entityId = this._config!.entity;
+
+    const showTimeFormat =
+      !!entityId &&
+      stateContentHasTimestamp(
+        entityId,
+        this.hass.states[entityId],
+        this._config.state_content
+      );
+
+    const schema = this._schema(this.hass!.localize, showTimeFormat);
 
     const data = {
       ...this._config,

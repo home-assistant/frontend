@@ -2,6 +2,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
@@ -10,6 +11,7 @@ import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
+import type { MatterCommissionFinish } from "../../../../../external_app/external_messaging";
 import {
   commissionMatterDevice,
   watchForNewMatterDevice,
@@ -82,6 +84,10 @@ class DialogMatterAddDevice extends LitElement {
 
   @state() private _mainEntity?: ExtEntityRegistryEntry;
 
+  @state() private _proposedDeviceName?: string;
+
+  @state() private _commissioningFinished = false;
+
   @state() private _deviceAddedState: {
     name: string;
     area: string | undefined;
@@ -104,14 +110,62 @@ class DialogMatterAddDevice extends LitElement {
       // make sure a refresh of the page will navigate to the device page, old iOS apps will refresh the webview when commissioning is done
       setRefreshUrl(`/config/devices/device/${device.id}`);
       this._newDevice = device;
-      this._step = "device_added";
       this._fetchMainEntity();
+      this._maybeShowDeviceAdded();
     });
+    if (this._waitForCommissioningFinish) {
+      window.addEventListener(
+        "matter-commission-finish",
+        this._handleCommissionFinish
+      );
+    }
   }
 
   public closeDialog(): void {
     this._open = false;
   }
+
+  private get _waitForCommissioningFinish(): boolean {
+    // When the app supports reporting Matter commissioning status, defer
+    // advancing past the spinner until we receive matter/commission/finish.
+    return !!this.hass.auth.external?.config.hasMatterStatusReport;
+  }
+
+  private _maybeShowDeviceAdded(): void {
+    if (!this._newDevice) {
+      return;
+    }
+    if (this._waitForCommissioningFinish && !this._commissioningFinished) {
+      return;
+    }
+    this._step = "device_added";
+  }
+
+  private _handleCommissionFinish = (
+    ev: HASSDomEvent<MatterCommissionFinish>
+  ) => {
+    const { name, success } = ev.detail;
+    if (!success) {
+      if (this._newDevice) {
+        // Device already showed up in the registry — ignore the failure signal
+        // and let the user finish the rename flow.
+        return;
+      }
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.matter-add-device.add_device_failed"
+        ),
+        duration: 2000,
+      });
+      this.closeDialog();
+      return;
+    }
+    this._commissioningFinished = true;
+    if (name) {
+      this._proposedDeviceName = name;
+    }
+    this._maybeShowDeviceAdded();
+  };
 
   protected updated(changedProps: Map<string, unknown>): void {
     // Retry fetching main entity when hass updates (entities may not be available immediately)
@@ -160,6 +214,8 @@ class DialogMatterAddDevice extends LitElement {
     this._newDevice = undefined;
     this._mainEntity = undefined;
     this._mainEntityFetched = false;
+    this._proposedDeviceName = undefined;
+    this._commissioningFinished = false;
     this._deviceAddedState = {
       name: "",
       area: undefined,
@@ -168,6 +224,10 @@ class DialogMatterAddDevice extends LitElement {
     };
     this._unsub?.();
     this._unsub = undefined;
+    window.removeEventListener(
+      "matter-commission-finish",
+      this._handleCommissionFinish
+    );
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -211,6 +271,7 @@ class DialogMatterAddDevice extends LitElement {
             hass: this.hass,
             device: this._newDevice,
             mainEntity: this._mainEntity,
+            proposedName: this._proposedDeviceName,
           }
         )}
       </div>
@@ -222,7 +283,7 @@ class DialogMatterAddDevice extends LitElement {
     const savedStep = this._step;
     try {
       this._step = "commissioning";
-      await commissionMatterDevice(this.hass, code);
+      await commissionMatterDevice(this.hass, code, true);
     } catch (_err) {
       showToast(this, {
         message: this.hass.localize(

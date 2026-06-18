@@ -11,7 +11,7 @@ export type LawnMowerEntityState =
   | "docked"
   | "error";
 
-export const enum LawnMowerEntityFeature {
+export enum LawnMowerEntityFeature {
   START_MOWING = 1,
   PAUSE = 2,
   DOCK = 4,

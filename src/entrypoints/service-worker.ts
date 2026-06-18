@@ -19,6 +19,64 @@ declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
 const noFallBackRegEx =
   /\/(api|static|auth|frontend_latest|frontend_es5|local)\/.*/;
 
+// Camera / image proxy endpoints that carry credentials in the URL.
+// We pre-validate the credential in the service worker so obviously invalid
+// requests (signature expired, token missing) never reach the server and
+// don't trigger spurious "Login attempt" warnings from http.ban after BFCache
+// restore, tab resume, network change, or any other browser-initiated replay
+// of a stale `<img>` URL.
+const proxyPathRegEx =
+  /^\/api\/(camera_proxy_stream|camera_proxy|image_proxy)\//;
+
+// Reject signatures this many ms before their nominal expiry to absorb small
+// client/server clock differences. Erring this direction only ever turns a
+// would-be valid request into a local 401; we cannot err the other way without
+// re-introducing the warnings this filter exists to prevent.
+const JWT_EXPIRY_SKEW_MS = 5000;
+
+const base64UrlDecode = (input: string): string => {
+  const normalized = input.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+  return atob(padded);
+};
+
+const isJwtExpired = (jwt: string): boolean => {
+  try {
+    const parts = jwt.split(".");
+    if (parts.length !== 3) {
+      return false;
+    }
+    const payload = JSON.parse(base64UrlDecode(parts[1]));
+    if (typeof payload.exp !== "number") {
+      return false;
+    }
+    return payload.exp * 1000 < Date.now() + JWT_EXPIRY_SKEW_MS;
+  } catch (_err) {
+    // If we can't parse the JWT for any reason, defer to the server.
+    return false;
+  }
+};
+
+const handleProxyRequest: RouteHandler = async ({ request }) => {
+  const req = request as Request;
+  const url = new URL(req.url);
+
+  const token = url.searchParams.get("token");
+  if (token === "undefined" || token === "null" || token === "") {
+    return new Response(null, { status: 401, statusText: "Invalid token" });
+  }
+
+  const authSig = url.searchParams.get("authSig");
+  if (authSig && isJwtExpired(authSig)) {
+    return new Response(null, {
+      status: 401,
+      statusText: "Signature expired",
+    });
+  }
+
+  return fetch(req);
+};
+
 const initRouting = () => {
   precacheAndRoute(__WB_MANIFEST__, {
     // Ignore all URL parameters.
@@ -57,6 +115,15 @@ const initRouting = () => {
         }),
       ],
     })
+  );
+
+  // Short-circuit camera/image proxy requests with an expired signature or a
+  // missing/undefined token so they don't hit core and get logged as invalid
+  // login attempts. Registered before the generic /api route below so it wins.
+  registerRoute(
+    ({ url, request }) =>
+      proxyPathRegEx.test(url.pathname) && request.method === "GET",
+    handleProxyRequest
   );
 
   // Get api from network.

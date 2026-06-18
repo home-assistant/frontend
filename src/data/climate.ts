@@ -68,7 +68,7 @@ export type ClimateEntity = HassEntityBase & {
   };
 };
 
-export const enum ClimateEntityFeature {
+export enum ClimateEntityFeature {
   TARGET_TEMPERATURE = 1,
   TARGET_TEMPERATURE_RANGE = 2,
   TARGET_HUMIDITY = 4,

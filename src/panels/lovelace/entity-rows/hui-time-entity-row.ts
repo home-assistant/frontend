@@ -67,7 +67,7 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
   private _timeChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const stateObj = this.hass!.states[this._config!.entity];
-      setTimeValue(this.hass!, stateObj.entity_id, ev.detail.value);
+      setTimeValue(this.hass!.callService, stateObj.entity_id, ev.detail.value);
     }
   }
 }

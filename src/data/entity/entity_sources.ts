@@ -7,11 +7,12 @@ interface EntitySource {
 
 export type EntitySources = Record<string, EntitySource>;
 
-const fetchEntitySources = (hass: HomeAssistant): Promise<EntitySources> =>
-  hass.callWS({ type: "entity/source" });
+const fetchEntitySources = (
+  hass: Pick<HomeAssistant, "callWS">
+): Promise<EntitySources> => hass.callWS({ type: "entity/source" });
 
 export const fetchEntitySourcesWithCache = (
-  hass: HomeAssistant
+  hass: Pick<HomeAssistant, "callWS" | "states">
 ): Promise<EntitySources> =>
   timeCachePromiseFunc(
     "_entitySources",

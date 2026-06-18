@@ -19,7 +19,6 @@ import type {
   StatisticsTypes,
 } from "../../data/recorder";
 import { fetchStatistics, getStatisticMetadata } from "../../data/recorder";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 
@@ -246,28 +245,6 @@ export class MoreInfoHistory extends LitElement {
       this._unsubscribeHistory();
     }
 
-    // Mark as subscribing before the await to prevent re-entrant calls
-    const sentinel = Promise.resolve(undefined) as NonNullable<
-      typeof this._subscribed
-    >;
-    this._subscribed = sentinel;
-
-    let sensorNumericDeviceClasses: string[];
-    try {
-      ({ numeric_device_classes: sensorNumericDeviceClasses } =
-        await getSensorNumericDeviceClasses(this.hass));
-    } catch (_err) {
-      if (this._subscribed === sentinel) {
-        this._subscribed = undefined;
-      }
-      return;
-    }
-
-    // Bail out if a newer call replaced our sentinel while we were awaiting
-    if (this._subscribed !== sentinel) {
-      return;
-    }
-
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
       (combinedHistory) => {
@@ -279,8 +256,7 @@ export class MoreInfoHistory extends LitElement {
           this.hass!,
           combinedHistory,
           [this.entityId],
-          this.hass!.localize,
-          sensorNumericDeviceClasses
+          this.hass!.localize
         );
       },
       24,

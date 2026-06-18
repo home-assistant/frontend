@@ -258,6 +258,14 @@ export class HaTextArea extends WaInputMixin(LitElement) {
         overflow-y: auto;
       }
 
+      /* The size-adjuster shares a grid cell with the textarea and is given an
+         inline height matching the content's scrollHeight. Without capping it
+         too, it inflates the grid row past the max-height and pushes the
+         textarea down instead of scrolling. */
+      :host([resize="auto"]) wa-textarea::part(textarea-adjuster) {
+        max-height: var(--ha-textarea-max-height, 200px);
+      }
+
       wa-textarea:hover::part(base),
       wa-textarea:hover::part(label) {
         background-color: var(--ha-color-form-background-hover);

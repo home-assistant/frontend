@@ -11,8 +11,10 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
+import { batteryStateColorProperty } from "../../../common/entity/color/battery_color";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
+import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -109,6 +111,16 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const attributes = this._computeAttributes(stateObj);
+    let batteryColorVar: string | undefined;
+    if (attributes.includes("battery")) {
+      const batteryLevel = stateObj.attributes.battery;
+      const batteryColorProperty = batteryStateColorProperty(batteryLevel);
+      if (batteryColorProperty) {
+        batteryColorVar = computeCssVariable(batteryColorProperty);
+      }
+    }
+
     return html`
       <ha-card
         class=${stateObj.attributes.entity_picture ? "has-plant-image" : ""}
@@ -122,7 +134,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="content">
-          ${this._computeAttributes(stateObj).map(
+          ${attributes.map(
             (item) => html`
               <div
                 class="attributes"
@@ -134,6 +146,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                 <div class="icon">
                   ${item === "battery"
                     ? html`<ha-icon
+                        style="color: ${batteryColorVar};"
                         .icon=${batteryLevelIcon(stateObj.attributes.battery)}
                       ></ha-icon>`
                     : html`<ha-svg-icon

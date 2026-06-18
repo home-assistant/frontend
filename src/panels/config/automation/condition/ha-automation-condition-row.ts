@@ -19,10 +19,7 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type {
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
@@ -38,12 +35,10 @@ import { capitalizeFirstLetter } from "../../../../common/string/capitalize-firs
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
-import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
+import "../../../../components/automation/ha-automation-condition-live-test";
 import "../../../../components/automation/ha-automation-row-event-chip";
-import "../../../../components/automation/ha-automation-row-live-test";
-import type { LiveTestState } from "../../../../components/automation/ha-automation-row-live-test";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
 import "../../../../components/ha-condition-icon";
@@ -59,11 +54,7 @@ import type {
   ConditionSidebarConfig,
   PlatformCondition,
 } from "../../../../data/automation";
-import {
-  isCondition,
-  subscribeCondition,
-  testCondition,
-} from "../../../../data/automation";
+import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
@@ -155,11 +146,6 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _selected = false;
 
-  @state() private _liveTestResult: {
-    state: LiveTestState;
-    message?: string;
-  } = { state: "unknown" };
-
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
@@ -171,8 +157,6 @@ export default class HaAutomationConditionRow extends LitElement {
   private _automationRowElement?: HaAutomationRow;
 
   private _testingTimeout?: number;
-
-  private _conditionUnsub?: Promise<UnsubscribeFunc>;
 
   get selected() {
     return this._selected;
@@ -212,27 +196,28 @@ export default class HaAutomationConditionRow extends LitElement {
     );
 
     return html`
-      <div id="condition-icon" class="icon-badge-wrapper" slot="leading-icon">
-        <ha-condition-icon
-          .hass=${this.hass}
-          .condition=${this.condition.condition}
-        ></ha-condition-icon>
-        ${this.optionsInSidebar && this.condition.condition !== "trigger"
-          ? html`<ha-automation-row-live-test
-              .state=${this._liveTestResult.state}
-              .label=${this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
-              )}
-            ></ha-automation-row-live-test>`
-          : nothing}
-      </div>
-      ${this.optionsInSidebar &&
-      this.condition.condition !== "trigger" &&
-      this._liveTestResult.message
-        ? html`<ha-tooltip for="condition-icon" slot="leading-icon"
-            >${this._liveTestResult.message}</ha-tooltip
-          >`
-        : nothing}
+      ${this.optionsInSidebar && this.condition.condition !== "trigger"
+        ? html`<ha-automation-condition-live-test
+            id="condition-icon"
+            slot="leading-icon"
+            .hass=${this.hass}
+            .condition=${this.condition}
+          >
+            <ha-condition-icon
+              .hass=${this.hass}
+              .condition=${this.condition.condition}
+            ></ha-condition-icon>
+          </ha-automation-condition-live-test>`
+        : html`<div
+            id="condition-icon"
+            class="icon-badge-wrapper"
+            slot="leading-icon"
+          >
+            <ha-condition-icon
+              .hass=${this.hass}
+              .condition=${this.condition.condition}
+            ></ha-condition-icon>
+          </div>`}
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
@@ -593,11 +578,6 @@ export default class HaAutomationConditionRow extends LitElement {
       ></ha-automation-row-targets>`
   );
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._subscribeCondition();
-  }
-
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
 
@@ -613,85 +593,11 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
-  protected override updated(changedProps: PropertyValues<this>): void {
-    super.updated(changedProps);
-    if (
-      changedProps.has("condition") &&
-      changedProps.get("condition") !== undefined
-    ) {
-      this._resetSubscription();
-      this._debounceSubscribeCondition();
-    }
-  }
-
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._debounceSubscribeCondition.cancel();
     if (this._testingTimeout !== undefined) {
       clearTimeout(this._testingTimeout);
     }
-    this._resetSubscription();
-  }
-
-  private _resetSubscription() {
-    this._liveTestResult = {
-      state: "unknown",
-      message: this.hass.localize(
-        "ui.panel.config.automation.editor.conditions.live_test_state.unknown"
-      ),
-    };
-    if (this._conditionUnsub) {
-      this._conditionUnsub.then((unsub) => unsub());
-      this._conditionUnsub = undefined;
-    }
-  }
-
-  private _debounceSubscribeCondition = debounce(
-    () => this._subscribeCondition(),
-    500
-  );
-
-  private async _subscribeCondition() {
-    this._resetSubscription();
-
-    if (!this.condition) {
-      return;
-    }
-
-    const conditionUnsub = subscribeCondition(
-      this.hass.connection,
-      (result) => {
-        if (result.error) {
-          this._handleLiveTestError(result.error);
-        } else {
-          this._liveTestResult = {
-            state: result.result ? "pass" : "fail",
-            message: this.hass.localize(
-              `ui.panel.config.automation.editor.conditions.testing_${result.result ? "pass" : "error"}`
-            ),
-          };
-        }
-      },
-      this.condition
-    );
-    conditionUnsub.catch((err: any) => {
-      this._handleLiveTestError(err);
-      if (this._conditionUnsub === conditionUnsub) {
-        this._conditionUnsub = undefined;
-      }
-    });
-    this._conditionUnsub = conditionUnsub;
-  }
-
-  private _handleLiveTestError(error: any) {
-    const invalid =
-      typeof error !== "string" && error.code === "invalid_format";
-    this._liveTestResult = {
-      state: invalid ? "invalid" : "unknown",
-      message: this.hass.localize(
-        `ui.panel.config.automation.editor.conditions.${invalid ? "invalid_condition" : "live_test_state.unknown"}`
-      ),
-    };
   }
 
   private _onValueChange(event: CustomEvent) {

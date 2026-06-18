@@ -82,7 +82,7 @@ export interface MediaPlayerEntity extends HassEntityBase {
     | "buffering";
 }
 
-export const enum MediaPlayerEntityFeature {
+export enum MediaPlayerEntityFeature {
   PAUSE = 1,
   SEEK = 2,
   VOLUME_SET = 4,
@@ -481,7 +481,7 @@ export const setMediaPlayerVolume = (
   hass.callService("media_player", "volume_set", { entity_id, volume_level });
 
 export const handleMediaControlClick = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   stateObj: MediaPlayerEntity,
   action: string
 ) =>
@@ -509,7 +509,7 @@ export const handleMediaControlClick = (
   );
 
 export const mediaPlayerPlayMedia = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entity_id: string,
   media_content_id: string,
   media_content_type: string,

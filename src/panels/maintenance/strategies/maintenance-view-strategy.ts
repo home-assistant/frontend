@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
   findEntities,
@@ -14,6 +15,10 @@ import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../../lovelace/cards/types";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import {
+  type EntityRegistryDisplayEntry,
+  findBatteryChargingEntity,
+} from "../../../data/entity/entity_registry";
 
 export interface MaintenanceViewStrategyConfig {
   type: "maintenance";
@@ -33,6 +38,16 @@ export const maintenanceEntityFilters: EntityFilter[] = [
 
 const LOW_BATTERY_THRESHOLD = 20;
 
+const _deviceEntities = memoizeOne(
+  (
+    deviceId: string,
+    entities: HomeAssistant["entities"]
+  ): EntityRegistryDisplayEntry[] => {
+    const entries = Object.values(entities);
+    return entries.filter((entity) => entity.device_id === deviceId);
+  }
+);
+
 export const filterLowBatteryEntities = (
   hass: HomeAssistant,
   entityIds: string[]
@@ -42,6 +57,22 @@ export const filterLowBatteryEntities = (
     if (computeDomain(entityId) === "binary_sensor") {
       return state === BINARY_STATE_ON;
     }
+
+    const deviceId = hass.entities[entityId]?.device_id;
+    const entities = deviceId ? _deviceEntities(deviceId, hass.entities) : [];
+
+    const batteryChargingEntity = findBatteryChargingEntity(
+      hass.states,
+      entities
+    );
+    const batteryCharging = batteryChargingEntity
+      ? hass.states[batteryChargingEntity?.entity_id]
+      : undefined;
+
+    if (batteryCharging && batteryCharging.state === "on") {
+      return false;
+    }
+
     const stateValue = parseFloat(state);
     return !isNaN(stateValue) && stateValue <= LOW_BATTERY_THRESHOLD;
   });

@@ -20,6 +20,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
 
@@ -87,7 +88,9 @@ export interface EditorDomainHooks<TConfig> {
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
-  class AutomationScriptEditorClass extends superClass {
+  class AutomationScriptEditorClass extends DirtyStateProviderMixin<TConfig>()(
+    superClass
+  ) {
     @property({ attribute: false }) public hass!: HomeAssistant;
 
     @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -101,8 +104,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @state()
     @consume({ context: fullEntitiesContext, subscribe: true })
     entityRegistry?: EntityRegistryEntry[];
-
-    @state() protected dirty = false;
 
     @state() protected errors?: string;
 
@@ -217,7 +218,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     protected takeControlSave() {
       this.readOnly = false;
-      this.dirty = true;
+      // Force dirty: set baseline to null so current config always differs
+      this._initDirtyTracking({ type: "deep" }, null as unknown as TConfig);
+      this._updateDirtyState(this.config!);
       this.blueprintConfig = undefined;
     }
 
@@ -237,10 +240,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
     };
 
-    protected get isDirty() {
-      return this.dirty;
-    }
-
     protected async promptDiscardChanges() {
       return this.confirmUnsavedChanged();
     }
@@ -259,9 +258,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       const domain = hooks.domain;
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
-        this.dirty = false;
         this.readOnly = false;
         this.config = hooks.normalizeConfig(config);
+        this._initDirtyTracking({ type: "deep" }, this.config);
         hooks.checkValidation();
       } catch (err: any) {
         if (err.status_code !== 404) {

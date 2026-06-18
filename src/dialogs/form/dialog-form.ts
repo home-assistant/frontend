@@ -7,6 +7,7 @@ import "../../components/ha-button";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog, ShowDialogParams } from "../make-dialog-manager";
@@ -20,7 +21,7 @@ interface StackEntry {
 
 @customElement("dialog-form")
 export class DialogForm
-  extends LitElement
+  extends DirtyStateProviderMixin<FormDialogData>()(LitElement)
   implements HassDialog<FormDialogData>
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -39,6 +40,7 @@ export class DialogForm
     this._params = params;
     this._data = params.data || {};
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): boolean {
@@ -62,6 +64,7 @@ export class DialogForm
     const nested = ev.detail.dialogParams as FormDialogParams;
     this._params = nested;
     this._data = nested?.data || {};
+    this._initDirtyTracking({ type: "deep" }, this._data);
   };
 
   private _popStack(): string | undefined {
@@ -72,6 +75,7 @@ export class DialogForm
     this._stack = this._stack.slice(0, -1);
     this._params = prev.params;
     this._data = prev.data;
+    this._initDirtyTracking({ type: "deep" }, this._data);
     return prev.nestedField;
   }
 
@@ -115,6 +119,7 @@ export class DialogForm
       : data;
 
     this._data = deepClone({ ...this._data, [nestedField]: newValue });
+    this._updateDirtyState(this._data);
   }
 
   private _cancel(): void {
@@ -131,6 +136,7 @@ export class DialogForm
 
   private _valueChanged(ev: CustomEvent): void {
     this._data = ev.detail.value;
+    this._updateDirtyState(this._data);
   }
 
   protected render() {
@@ -142,7 +148,7 @@ export class DialogForm
       <ha-dialog
         .open=${this._open}
         header-title=${this._params.title}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-form

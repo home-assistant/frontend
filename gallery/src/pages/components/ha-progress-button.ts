@@ -1,20 +1,21 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-svg-icon";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 @customElement("demo-components-ha-progress-button")
 export class DemoHaProgressButton extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${["light", "dark"].map(
-        (mode) => html`
-          <div class=${mode}>
-            <ha-card header="ha-progress-button in ${mode}">
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot}>
               <div class="card-content">
                 <ha-progress-button @click=${this._clickedSuccess}>
                   Success
@@ -59,32 +60,17 @@ export class DemoHaProgressButton extends LitElement {
                 </ha-progress-button>
               </div>
             </ha-card>
-          </div>
-        `
-      )}
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
-  firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
-  }
-
-  private async _clickedSuccess(ev: CustomEvent): Promise<void> {
+  private _clickedSuccess(
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-progress-button"]>
+  ) {
     console.log("Clicked success");
-    const button = ev.currentTarget as any;
+    const button = ev.currentTarget;
     button.progress = true;
 
     setTimeout(() => {
@@ -93,8 +79,10 @@ export class DemoHaProgressButton extends LitElement {
     }, 1000);
   }
 
-  private async _clickedFail(ev: CustomEvent): Promise<void> {
-    const button = ev.currentTarget as any;
+  private _clickedFail(
+    ev: HASSDomCurrentTargetEvent<HTMLElementTagNameMap["ha-progress-button"]>
+  ) {
+    const button = ev.currentTarget;
     button.progress = true;
 
     setTimeout(() => {
@@ -105,20 +93,14 @@ export class DemoHaProgressButton extends LitElement {
 
   static styles = css`
     :host {
-      display: flex;
-      justify-content: center;
-    }
-    .dark,
-    .light {
       display: block;
-      background-color: var(--primary-background-color);
-      padding: 0 50px;
     }
     .button {
       padding: unset;
     }
     ha-card {
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     .card-content {
       display: flex;

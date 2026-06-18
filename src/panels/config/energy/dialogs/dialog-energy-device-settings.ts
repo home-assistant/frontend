@@ -23,6 +23,7 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsDeviceDialogParams } from "./show-dialogs-energy";
@@ -32,7 +33,9 @@ const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-device-settings")
 export class DialogEnergyDeviceSettings
-  extends LitElement
+  extends DirtyStateProviderMixin<DeviceConsumptionEnergyPreference | null>()(
+    LitElement
+  )
   implements HassDialog<EnergySettingsDeviceDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -75,6 +78,7 @@ export class DialogEnergyDeviceSettings
       .filter((id) => id && id !== this._device?.stat_rate) as string[];
 
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._device ?? null);
   }
 
   private _computePossibleParents() {
@@ -147,7 +151,7 @@ export class DialogEnergyDeviceSettings
         header-title=${this.hass.localize(
           "ui.panel.config.energy.device_consumption.dialog.header"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -226,7 +230,8 @@ export class DialogEnergyDeviceSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._device}
+            .disabled=${!this._device ||
+            (!!this._params?.device && !this.isDirtyState)}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -239,10 +244,12 @@ export class DialogEnergyDeviceSettings
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
+      this._updateDirtyState(this._device ?? null);
       return;
     }
     this._device = { stat_consumption: ev.detail.value };
     this._computePossibleParents();
+    this._updateDirtyState(this._device);
 
     if (
       isExternalStatistic(ev.detail.value) &&
@@ -271,6 +278,7 @@ export class DialogEnergyDeviceSettings
       delete newDevice.stat_rate;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -282,6 +290,7 @@ export class DialogEnergyDeviceSettings
       delete newDevice.name;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
   }
 
   private _parentSelected(ev: HaSelectSelectEvent<string, true>) {
@@ -293,11 +302,13 @@ export class DialogEnergyDeviceSettings
       delete newDevice.included_in_stat;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
   }
 
   private async _save() {
     try {
       await this._params!.saveCallback(this._device!);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;

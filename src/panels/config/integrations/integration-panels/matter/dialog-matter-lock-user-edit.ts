@@ -15,6 +15,7 @@ import {
   setMatterLockCredential,
   setMatterLockUser,
 } from "../../../../../data/matter-lock";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { MatterLockUserEditDialogParams } from "./show-dialog-matter-lock-user-edit";
@@ -24,8 +25,16 @@ const SIMPLE_USER_TYPES: MatterLockUserType[] = [
   "disposable_user",
 ];
 
+interface MatterLockFormState {
+  userName: string;
+  userType: MatterLockUserType;
+  pinCode: string;
+}
+
 @customElement("dialog-matter-lock-user-edit")
-class DialogMatterLockUserEdit extends LitElement {
+class DialogMatterLockUserEdit extends DirtyStateProviderMixin<MatterLockFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: MatterLockUserEditDialogParams;
@@ -57,6 +66,15 @@ class DialogMatterLockUserEdit extends LitElement {
       this._userName = "";
       this._userType = "unrestricted_user";
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): MatterLockFormState {
+    return {
+      userName: this._userName,
+      userType: this._userType,
+      pinCode: this._pinCode,
+    };
   }
 
   protected render() {
@@ -78,6 +96,7 @@ class DialogMatterLockUserEdit extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="form">
@@ -149,7 +168,9 @@ class DialogMatterLockUserEdit extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving || (isNew && !supportsPinCredential)}
+            .disabled=${this._saving ||
+            (isNew && !supportsPinCredential) ||
+            (!isNew && !this.isDirtyState)}
           >
             ${this._saving
               ? html`<ha-spinner size="small"></ha-spinner>`
@@ -164,12 +185,14 @@ class DialogMatterLockUserEdit extends LitElement {
 
   private _handleNameChange(ev: InputEvent): void {
     this._userName = (ev.target as HTMLInputElement).value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _handlePinChange(ev: InputEvent): void {
     const value = (ev.target as HTMLInputElement).value.replace(/\D/g, "");
     this._pinCode = value;
     (ev.target as HTMLInputElement).value = value;
+    this._updateDirtyState(this._currentState());
   }
 
   private get _userTypeOptions(): SelectBoxOption[] {
@@ -186,6 +209,7 @@ class DialogMatterLockUserEdit extends LitElement {
 
   private _handleUserTypeChanged(ev: CustomEvent): void {
     this._userType = ev.detail.value as MatterLockUserType;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _save(): Promise<void> {
@@ -258,6 +282,7 @@ class DialogMatterLockUserEdit extends LitElement {
       }
 
       this._params.onSaved();
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: unknown) {
       this._error =

@@ -388,7 +388,6 @@ export class HaTracePathDetails extends LitElement {
     return entries.length
       ? html`
           <ha-logbook-renderer
-            relative-time
             .hass=${this.hass}
             .entries=${entries}
             .narrow=${this.narrow}

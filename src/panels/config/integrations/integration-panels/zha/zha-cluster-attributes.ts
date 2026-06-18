@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/input/ha-input";
@@ -60,7 +59,7 @@ export class ZHAClusterAttributes extends LitElement {
       return nothing;
     }
     return html`
-      <ha-card class="content">
+      <div class="content">
         <div class="attribute-picker">
           <ha-select
             .label=${this.hass!.localize(
@@ -79,7 +78,7 @@ export class ZHAClusterAttributes extends LitElement {
         ${this._selectedAttributeId !== undefined
           ? this._renderAttributeInteractions()
           : nothing}
-      </ha-card>
+      </div>
     `;
   }
 
@@ -222,8 +221,12 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          border: none;
+        :host {
+          display: block;
+        }
+
+        .content {
+          padding-top: var(--ha-space-4);
         }
 
         ha-select {
@@ -235,12 +238,7 @@ export class ZHAClusterAttributes extends LitElement {
           width: 100%;
         }
 
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
-        }
-
         .attribute-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;
@@ -256,15 +254,12 @@ export class ZHAClusterAttributes extends LitElement {
           padding-bottom: 10px;
         }
 
-        .header {
-          flex-grow: 1;
-        }
-
         .card-actions {
           display: flex;
-          margin-top: var(--ha-space-2);
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2);
           justify-content: flex-end;
-          gap: var(--ha-space-3);
+          gap: var(--ha-space-2);
         }
       `,
     ];

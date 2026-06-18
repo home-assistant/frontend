@@ -14,12 +14,8 @@ export const isNumericState = (stateObj: HassEntity): boolean =>
   isNumericFromAttributes(stateObj.attributes);
 
 export const isNumericFromAttributes = (
-  attributes: HassEntityAttributeBase,
-  numericDeviceClasses?: string[]
-): boolean =>
-  !!attributes.unit_of_measurement ||
-  !!attributes.state_class ||
-  (numericDeviceClasses || []).includes(attributes.device_class || "");
+  attributes: HassEntityAttributeBase
+): boolean => !!attributes.unit_of_measurement || !!attributes.state_class;
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData
@@ -38,6 +34,25 @@ export const numberFormatToLocale = (
     default:
       return localeOptions.language;
   }
+};
+
+// Constructing an Intl.NumberFormat is comparatively expensive, and these
+// formatters are created on every numeric state render. The number of distinct
+// (locale, options) combinations is small and bounded in practice, so cache the
+// instances instead of rebuilding them on every call.
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
+
+const getNumberFormatter = (
+  locale: string | string[] | undefined,
+  options: Intl.NumberFormatOptions
+): Intl.NumberFormat => {
+  const key = JSON.stringify([locale, options]);
+  let formatter = numberFormatCache.get(key);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, options);
+    numberFormatCache.set(key, formatter);
+  }
+  return formatter;
 };
 
 /**
@@ -75,7 +90,7 @@ export const formatNumberToParts = (
     localeOptions?.number_format !== NumberFormat.none &&
     !Number.isNaN(Number(num))
   ) {
-    return new Intl.NumberFormat(
+    return getNumberFormatter(
       locale,
       getDefaultFormatOptions(num, options)
     ).formatToParts(Number(num));
@@ -87,7 +102,7 @@ export const formatNumberToParts = (
     localeOptions?.number_format === NumberFormat.none
   ) {
     // If NumberFormat is none, use en-US format without grouping.
-    return new Intl.NumberFormat(
+    return getNumberFormatter(
       "en-US",
       getDefaultFormatOptions(num, {
         ...options,

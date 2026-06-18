@@ -1,34 +1,48 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { stateColorCss } from "../../../common/entity/state_color";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-state-icon";
 import type { AlarmControlPanelEntity } from "../../../data/alarm_control_panel";
 import { setProtectedAlarmControlPanelMode } from "../../../data/alarm_control_panel";
+import { apiContext } from "../../../data/context";
 import "../../../state-control/alarm_control_panel/ha-state-control-alarm_control_panel-modes";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi } from "../../../types";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-alarm_control_panel")
 class MoreInfoAlarmControlPanel extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj?: AlarmControlPanelEntity;
 
   private async _disarm() {
     setProtectedAlarmControlPanelMode(
       this,
-      this.hass,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
       this.stateObj!,
       "disarmed"
     );
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this.stateObj) {
       return nothing;
     }
 
@@ -38,7 +52,6 @@ class MoreInfoAlarmControlPanel extends LitElement {
     };
     return html`
       <ha-more-info-state-header
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
       ></ha-more-info-state-header>
       <div class="controls" style=${styleMap(style)}>
@@ -53,7 +66,6 @@ class MoreInfoAlarmControlPanel extends LitElement {
           : html`
               <ha-state-control-alarm_control_panel-modes
                 .stateObj=${this.stateObj}
-                .hass=${this.hass}
               >
               </ha-state-control-alarm_control_panel-modes>
             `}
@@ -62,7 +74,7 @@ class MoreInfoAlarmControlPanel extends LitElement {
         ${["triggered", "arming", "pending"].includes(this.stateObj.state)
           ? html`
               <ha-control-button @click=${this._disarm} class="disarm">
-                ${this.hass.localize("ui.card.alarm_control_panel.disarm")}
+                ${this._localize("ui.card.alarm_control_panel.disarm")}
               </ha-control-button>
             `
           : nothing}

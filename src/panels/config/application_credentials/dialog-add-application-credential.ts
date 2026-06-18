@@ -23,10 +23,18 @@ import {
 } from "../../../data/application_credential";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
+
+interface CredentialFormState {
+  domain: string;
+  name: string;
+  clientId: string;
+  clientSecret: string;
+}
 
 interface Domain {
   id: string;
@@ -34,7 +42,9 @@ interface Domain {
 }
 
 @customElement("dialog-add-application-credential")
-export class DialogAddApplicationCredential extends LitElement {
+export class DialogAddApplicationCredential extends DirtyStateProviderMixin<CredentialFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _loading = false;
@@ -76,6 +86,7 @@ export class DialogAddApplicationCredential extends LitElement {
     this._error = undefined;
     this._loading = false;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, this._currentState());
     this._fetchConfig();
   }
 
@@ -100,10 +111,7 @@ export class DialogAddApplicationCredential extends LitElement {
       <ha-dialog
         .open=${this._open}
         @closed=${this._abortDialog}
-        .preventScrimClose=${!!this._domain ||
-        !!this._name ||
-        !!this._clientId ||
-        !!this._clientSecret}
+        .preventScrimClose=${this.isDirtyState}
         .headerTitle=${this.hass.localize(
           "ui.panel.config.application_credentials.editor.caption"
         )}
@@ -284,6 +292,7 @@ export class DialogAddApplicationCredential extends LitElement {
     ev.stopPropagation();
     this._domain = ev.detail.value;
     this._updateDescription();
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateDescription() {
@@ -307,6 +316,16 @@ export class DialogAddApplicationCredential extends LitElement {
     const name = (ev.target as any).name;
     const value = (ev.target as any).value;
     this[`_${name}`] = value;
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _currentState(): CredentialFormState {
+    return {
+      domain: this._domain || "",
+      name: this._name || "",
+      clientId: this._clientId || "",
+      clientSecret: this._clientSecret || "",
+    };
   }
 
   private _abortDialog() {
