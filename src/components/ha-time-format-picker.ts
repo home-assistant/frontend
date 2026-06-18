@@ -8,6 +8,7 @@ import "./ha-select";
 import type { TimestampRenderingFormat } from "../panels/lovelace/components/types";
 import { TIMESTAMP_RENDERING_FORMATS } from "../panels/lovelace/components/types";
 
+const NARROW_FORMATS = ["relative", "total"];
 @customElement("ha-time-format-picker")
 export class HaTimeFormatPicker extends LitElement {
   @property() public value?: TimestampRenderingFormat;
@@ -33,17 +34,27 @@ export class HaTimeFormatPicker extends LitElement {
     )
   );
 
-  private _styleOptions = memoizeOne((localize: LocalizeFunc) => [
-    { label: localize("ui.common.auto"), value: "auto" },
-    {
-      label: localize("ui.components.time-format-picker.styles.short"),
-      value: "short",
-    },
-    {
-      label: localize("ui.components.time-format-picker.styles.long"),
-      value: "long",
-    },
-  ]);
+  private _styleOptions = memoizeOne(
+    (localize: LocalizeFunc, narrow: boolean) => [
+      { label: localize("ui.common.auto"), value: "auto" },
+      ...(narrow
+        ? [
+            {
+              label: localize("ui.components.time-format-picker.styles.narrow"),
+              value: "narrow",
+            },
+          ]
+        : []),
+      {
+        label: localize("ui.components.time-format-picker.styles.short"),
+        value: "short",
+      },
+      {
+        label: localize("ui.components.time-format-picker.styles.long"),
+        value: "long",
+      },
+    ]
+  );
 
   protected render() {
     const type = typeof this.value === "object" ? this.value.type : this.value;
@@ -68,7 +79,10 @@ export class HaTimeFormatPicker extends LitElement {
                 .value=${style || "auto"}
                 .disabled=${this.disabled}
                 @selected=${this._styleChanged}
-                .options=${this._styleOptions(this._localize)}
+                .options=${this._styleOptions(
+                  this._localize,
+                  !!type && NARROW_FORMATS.includes(type)
+                )}
               >
               </ha-select>
             `
@@ -85,17 +99,23 @@ export class HaTimeFormatPicker extends LitElement {
       });
       return;
     }
-    if (this.value && typeof this.value === "object" && this.value.style) {
+    const newType = ev.detail.value;
+    if (
+      this.value &&
+      typeof this.value === "object" &&
+      this.value.style &&
+      (this.value.style !== "narrow" || NARROW_FORMATS.includes(newType))
+    ) {
       fireEvent(this, "value-changed", {
         value: {
-          type: ev.detail.value,
+          type: newType,
           style: this.value.style,
         },
       });
       return;
     }
     fireEvent(this, "value-changed", {
-      value: ev.detail.value,
+      value: newType,
     });
   }
 

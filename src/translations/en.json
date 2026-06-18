@@ -810,6 +810,7 @@
           "date": "Date"
         },
         "styles": {
+          "narrow": "Narrow",
           "short": "Short",
           "long": "Long"
         },

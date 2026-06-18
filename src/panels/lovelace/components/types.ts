@@ -20,7 +20,7 @@ export type TimestampRenderingFormat =
   | (typeof TIMESTAMP_RENDERING_FORMATS)[number]
   | {
       type: (typeof TIMESTAMP_RENDERING_FORMATS)[number];
-      style?: "short" | "long";
+      style?: "short" | "long" | "narrow";
     };
 
 export const timeFormatConfigStruct = optional(
@@ -28,7 +28,7 @@ export const timeFormatConfigStruct = optional(
     enums(TIMESTAMP_RENDERING_FORMATS),
     object({
       type: enums(TIMESTAMP_RENDERING_FORMATS),
-      style: optional(enums(["short", "long"])),
+      style: optional(enums(["short", "long", "narrow"])),
     }),
   ])
 );
