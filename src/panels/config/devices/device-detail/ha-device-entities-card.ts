@@ -9,6 +9,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -57,20 +58,29 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
     });
 
+    // Main entities (those without their own name, shown as the device name)
+    // are listed first, separated from the additional entities by a divider.
+    const mainEntities: EntityRegistryStateEntry[] = [];
+    const additionalEntities: EntityRegistryStateEntry[] = [];
+    enabledEntities.forEach((entry) => {
+      if (computeEntityEntryName(entry, this.hass.devices)) {
+        additionalEntities.push(entry);
+      } else {
+        mainEntities.push(entry);
+      }
+    });
+
     return html`
       <ha-card outlined .header=${this.header}>
         ${enabledEntities.length
           ? html`
               <div id="entities" class="move-up">
                 <ha-list>
-                  ${repeat(
-                    enabledEntities,
-                    (entry) => entry.entity_id,
-                    (entry) =>
-                      this.hass.states[entry.entity_id]
-                        ? this._renderEntity(entry)
-                        : this._renderUnavailableEntity(entry)
-                  )}
+                  ${this._renderEntities(mainEntities)}
+                  ${mainEntities.length && additionalEntities.length
+                    ? html`<div class="divider" role="separator"></div>`
+                    : nothing}
+                  ${this._renderEntities(additionalEntities)}
                 </ha-list>
               </div>
             `
@@ -113,6 +123,17 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   private _toggleShowHidden() {
     this.showHidden = !this.showHidden;
+  }
+
+  private _renderEntities(entries: EntityRegistryStateEntry[]) {
+    return repeat(
+      entries,
+      (entry) => entry.entity_id,
+      (entry) =>
+        this.hass.states[entry.entity_id]
+          ? this._renderEntity(entry)
+          : this._renderUnavailableEntity(entry)
+    );
   }
 
   private _renderEntity(entry: EntityRegistryStateEntry): TemplateResult {
@@ -186,6 +207,11 @@ export class HaDeviceEntitiesCard extends LitElement {
     }
     .disabled-entry {
       color: var(--secondary-text-color);
+    }
+    .divider {
+      height: 1px;
+      background-color: var(--divider-color);
+      margin: var(--ha-space-2) var(--ha-space-4);
     }
     .move-up {
       margin-top: -13px;
