@@ -84,6 +84,10 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     };
   }
 
+  public static getDefaultConfig(): Partial<EntityBadgeConfig> {
+    return DEFAULT_CONFIG;
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() protected _config?: EntityBadgeConfig;

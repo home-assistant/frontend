@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
@@ -32,6 +33,7 @@ import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../badges/hui-badge";
 import "../../sections/hui-section";
 import { addBadge, replaceBadge } from "../config-util";
+import { getBadgeDefaultConfig } from "../get-badge-default-config";
 import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
@@ -109,11 +111,16 @@ export class HuiDialogEditBadge
     if (this._badgeConfig && !Object.isFrozen(this._badgeConfig)) {
       this._badgeConfig = deepFreeze(this._badgeConfig);
     }
+    const effectiveDefaults = this._badgeConfig?.type
+      ? await getBadgeDefaultConfig(this._badgeConfig.type)
+      : undefined;
+    const normalize = (config: LovelaceBadgeConfig) =>
+      stripDefaults(config, effectiveDefaults);
     if ("badgeConfig" in params && this._badgeConfig) {
-      this._initDirtyTracking({ type: "deep" }, { type: "" });
+      this._initDirtyTracking({ type: "deep" }, { type: "" }, normalize);
       this._updateDirtyState(this._badgeConfig);
     } else {
-      this._initDirtyTracking({ type: "deep" }, this._badgeConfig);
+      this._initDirtyTracking({ type: "deep" }, this._badgeConfig, normalize);
     }
   }
 

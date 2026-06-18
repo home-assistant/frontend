@@ -4,7 +4,6 @@ import type { LitElement } from "lit";
 import { state } from "lit/decorators";
 import { deepEqual } from "../common/util/deep-equal";
 import { shallowEqual } from "../common/util/shallow-equal";
-import { stripToggleDefaults } from "../common/util/strip-toggle-defaults";
 import {
   DEFAULT_DIRTY_STATE_KEY,
   dirtyStateContext,
@@ -27,11 +26,14 @@ export type CompareStrategy<State> =
  * so independent contributors (e.g. a helper form alongside the entity
  * registry editor) can coexist without overwriting each other.
  *
- * `isEffectiveDirty` runs the same comparison but treats `false` and
- * `undefined`/absent object keys as equal, so a toggle left at its off-default
- * does not read as dirty. Use `isEffectiveDirtyState` to decide whether
- * closing needs a "discard changes?" prompt, and `isDirtyState` to decide
- * whether save is enabled.
+ * `isEffectiveDirty` runs the same comparison, but first passes each slice's
+ * initial and current value through the optional `effectiveNormalize` function
+ * given to `_initDirtyTracking`. Provide a normalizer that collapses values you
+ * consider equivalent (e.g. a config with a toggle left at its default vs the
+ * key being absent) so they do not read as dirty. Without a normalizer it is
+ * identical to `isDirty`. Use `isEffectiveDirtyState` to decide whether closing
+ * needs a "discard changes?" prompt, and `isDirtyState` to decide whether save
+ * is enabled.
  *
  * @example Eager init for the provider's own slice:
  * ```ts
@@ -70,17 +72,25 @@ export const DirtyStateProviderMixin =
     class DirtyStateProviderMixinClass extends superClass {
       private _dirtySlices = new Map<
         Key | DefaultDirtyStateKey,
-        { initial: State; current: State; strippedInitial: State }
+        { initial: State; current: State; normalizedInitial: State }
       >();
 
       private _dirtyCompareFn: (a: State, b: State) => boolean = deepEqual;
 
       private _dirtyCloneFn: (value: State) => State = (value) => value;
 
+      private _effectiveNormalize?: (value: State) => State;
+
       @provide({ context: dirtyStateContext })
       @state()
       private _dirtyStateContext: DirtyStateContext<State, Key> =
         this._buildContextValue();
+
+      private _normalizeEffective(value: State): State {
+        return this._effectiveNormalize
+          ? this._effectiveNormalize(value)
+          : value;
+      }
 
       private _buildContextValue(): DirtyStateContext<State, Key> {
         const slices = Array.from(this._dirtySlices.values());
@@ -89,10 +99,10 @@ export const DirtyStateProviderMixin =
             ({ initial, current }) => !this._dirtyCompareFn(initial, current)
           ),
           isEffectiveDirty: slices.some(
-            ({ strippedInitial, current }) =>
+            ({ normalizedInitial, current }) =>
               !this._dirtyCompareFn(
-                strippedInitial,
-                stripToggleDefaults(current)
+                normalizedInitial,
+                this._normalizeEffective(current)
               )
           ),
           setState: (value: State, key: Key) => {
@@ -116,7 +126,7 @@ export const DirtyStateProviderMixin =
           this._dirtySlices.set(key, {
             initial,
             current: value,
-            strippedInitial: stripToggleDefaults(initial),
+            normalizedInitial: this._normalizeEffective(initial),
           });
           this._publishContext();
           return;
@@ -136,12 +146,19 @@ export const DirtyStateProviderMixin =
        * push for any key (via the provider helper or a consumer's `setState`)
        * becomes that key's baseline.
        *
+       * `effectiveNormalize` transforms a slice value before the
+       * `isEffectiveDirty` comparison, letting the caller treat values it
+       * considers equivalent as clean (e.g. a config with a toggle at its
+       * default vs the key being absent). It does not affect `isDirty`.
+       *
        * Call again to reset (e.g. when the underlying entity changes).
        */
       protected _initDirtyTracking(
         strategy: CompareStrategy<State>,
-        initialState?: State
+        initialState?: State,
+        effectiveNormalize?: (value: State) => State
       ): void {
+        this._effectiveNormalize = effectiveNormalize;
         switch (strategy.type) {
           case "deep":
             this._dirtyCompareFn = (a, b) => deepEqual(a, b);
@@ -161,7 +178,7 @@ export const DirtyStateProviderMixin =
           this._dirtySlices.set(DEFAULT_DIRTY_STATE_KEY, {
             initial,
             current: initialState,
-            strippedInitial: stripToggleDefaults(initial),
+            normalizedInitial: this._normalizeEffective(initial),
           });
         }
         this._publishContext();
@@ -183,7 +200,7 @@ export const DirtyStateProviderMixin =
       protected _markDirtyStateClean(): void {
         for (const slice of this._dirtySlices.values()) {
           slice.initial = this._dirtyCloneFn(slice.current);
-          slice.strippedInitial = stripToggleDefaults(slice.initial);
+          slice.normalizedInitial = this._normalizeEffective(slice.initial);
         }
         this._publishContext();
       }
@@ -207,10 +224,11 @@ export const DirtyStateProviderMixin =
       }
 
       /**
-       * Like `isDirtyState`, but treats `false` and `undefined`/absent object
-       * keys as equal, so a toggle left at its off-default does not read as
-       * dirty. Use it to decide whether closing needs a "discard changes?"
-       * prompt, while `isDirtyState` decides whether save is enabled.
+       * Like `isDirtyState`, but compares values after the `effectiveNormalize`
+       * function passed to `_initDirtyTracking`, so values the caller treats as
+       * equivalent (e.g. a toggle left at its default) do not read as dirty. Use
+       * it to decide whether closing needs a "discard changes?" prompt, while
+       * `isDirtyState` decides whether save is enabled.
        */
       public get isEffectiveDirtyState(): boolean {
         return this._dirtyStateContext.isEffectiveDirty;
