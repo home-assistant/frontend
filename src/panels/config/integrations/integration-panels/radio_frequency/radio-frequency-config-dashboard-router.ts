@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
 import { fetchRadioFrequencyTransmitters } from "../../../../../data/radio_frequency";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
@@ -42,8 +43,17 @@ class RadioFrequencyConfigDashboardRouter extends HassRouterPage {
   }
 
   private async _fetchTransmitters(): Promise<void> {
-    const result = await fetchRadioFrequencyTransmitters(this.hass);
-    this._transmitters = result.transmitters;
+    try {
+      const result = await fetchRadioFrequencyTransmitters(this.hass);
+      this._transmitters = result.transmitters;
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.radio_frequency.loading_error"
+        ),
+        text: err.message,
+      });
+    }
   }
 
   protected updatePageEl(el): void {
