@@ -104,7 +104,6 @@ module.exports.babelOptions = ({
       {
         useBuiltIns: "usage",
         corejs: dependencies["core-js"],
-        bugfixes: true,
         shippedProposals: true,
       },
     ],
