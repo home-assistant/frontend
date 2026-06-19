@@ -7,6 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { getValueAttribute } from "../common/entity/get_states";
+import { valueFromParts } from "../common/entity/value_parts";
 import { formattersContext } from "../data/context";
 
 const isObjectValue = (value: unknown): boolean =>
@@ -94,10 +95,7 @@ class HaAttributeValue extends LitElement {
         this.stateObj!,
         this.attribute
       );
-      return parts
-        .filter((part) => part.type === "value")
-        .map((part) => part.value)
-        .join("");
+      return valueFromParts(parts);
     }
 
     return this._formatters!.formatEntityAttributeValue(

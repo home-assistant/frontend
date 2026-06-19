@@ -160,7 +160,8 @@ const computeStateToPartsFromEntityAttributes = (
           const type = MONETARY_TYPE_MAP[part.type];
           if (!type) continue;
           const last = valueParts[valueParts.length - 1];
-          // Merge consecutive value parts (e.g. "-" + "12" + "." + "00" → "-12.00")
+          // Merge consecutive value parts so the number stays a single part
+          // (e.g. "-" + "12" + "." + "00" → "-12.00")
           if (type === "value" && last?.type === "value") {
             last.value += part.value;
           } else {
