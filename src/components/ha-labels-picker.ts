@@ -101,15 +101,9 @@ export class HaLabelsPicker extends LitElement {
       language: string
     ) =>
       value
-        ?.map(
-          (id) =>
-            labels?.find((label) => label.label_id === id) || {
-              label_id: id,
-              name: id,
-              color: "rgba(var(--rgb-primary-text-color), 0.15)",
-            }
-        )
-        .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
+        ?.map((id) => labels?.find((label) => label.label_id === id))
+        .filter((label): label is LabelRegistryEntry => label !== undefined)
+        .sort((a, b) => stringCompare(a.name, b.name, language))
         .map((label) => ({
           ...label,
           style: getLabelColorStyle(label.color),

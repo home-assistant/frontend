@@ -265,7 +265,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         const labels = labelReg && entityRegEntry?.labels;
         const label_entries = (labels || [])
           .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
-          .filter(Boolean);
+          .filter((lbl) => lbl !== undefined);
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           automation.entity_id
