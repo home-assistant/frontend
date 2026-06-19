@@ -71,7 +71,6 @@ const SUB_FORM = {
           name: "color",
           selector: {
             ui_color: {
-              default_color: "state",
               include_state: true,
               include_none: true,
             },
@@ -129,7 +128,6 @@ const SCHEMA = [
     name: "color",
     selector: {
       ui_color: {
-        default_color: "state",
         include_state: true,
         include_none: true,
       },

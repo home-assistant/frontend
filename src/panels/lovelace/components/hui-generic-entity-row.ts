@@ -26,7 +26,12 @@ const colorToStateColor = (
   color: string | undefined,
   stateColor: boolean | undefined
 ): boolean | undefined =>
-  color === undefined ? stateColor : color === "state";
+  color === undefined ? stateColor : color !== "none" && color === "state";
+
+const colorToBadgeColor = (color: string | undefined): string | undefined =>
+  color !== undefined && color !== "state" && color !== "none"
+    ? color
+    : undefined;
 
 @customElement("hui-generic-entity-row")
 export class HuiGenericEntityRow extends LitElement {
@@ -96,6 +101,7 @@ export class HuiGenericEntityRow extends LitElement {
             this.config.color,
             this.config.state_color
           )}
+          .color=${colorToBadgeColor(this.config.color)}
         ></state-badge>
         ${!this.hideName
           ? html`<div

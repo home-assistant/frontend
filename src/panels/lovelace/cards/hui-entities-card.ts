@@ -30,7 +30,7 @@ const colorToStateColor = (
   color: string | undefined,
   stateColor: boolean | undefined
 ): boolean | undefined =>
-  color === undefined ? stateColor : color === "state";
+  color === undefined ? stateColor : color !== "none" && color === "state";
 
 export const computeShowHeaderToggle = <
   T extends EntityConfig | LovelaceRowConfig,
@@ -334,20 +334,26 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
     const entityCardConfig = entityConf as EntitiesCardEntityConfig;
-    const stateColor =
-      !("type" in entityConf) || entityConf.type === "conditional"
-        ? colorToStateColor(
-            entityCardConfig.color ?? this._config!.color,
-            entityCardConfig.state_color !== undefined
-              ? entityCardConfig.state_color
-              : this._config!.state_color
-          )
+    const shouldPassStateColor =
+      !("type" in entityConf) || entityConf.type === "conditional";
+    const inheritedColor =
+      entityCardConfig.color === undefined &&
+      entityCardConfig.state_color === undefined
+        ? this._config!.color
         : undefined;
+    const rowColor = entityCardConfig.color ?? inheritedColor;
+    const stateColor = shouldPassStateColor
+      ? entityCardConfig.color !== undefined
+        ? colorToStateColor(entityCardConfig.color, entityCardConfig.state_color)
+        : entityCardConfig.state_color !== undefined
+          ? entityCardConfig.state_color
+          : colorToStateColor(this._config!.color, this._config!.state_color)
+      : undefined;
     const element = createRowElement(
-      (!("type" in entityConf) || entityConf.type === "conditional") &&
-        stateColor !== undefined
+      shouldPassStateColor && (stateColor !== undefined || rowColor !== undefined)
         ? ({
             ...(entityConf as EntityConfig),
+            ...(rowColor !== undefined ? { color: rowColor } : {}),
             state_color: stateColor,
           } as EntityConfig)
         : entityConf.type === "perform-action"

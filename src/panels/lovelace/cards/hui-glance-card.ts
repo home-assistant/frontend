@@ -37,7 +37,12 @@ const colorToStateColor = (
   color: string | undefined,
   stateColor: boolean | undefined
 ): boolean | undefined =>
-  color === undefined ? stateColor : color === "state";
+  color === undefined ? stateColor : color !== "none" && color === "state";
+
+const colorToBadgeColor = (color: string | undefined): string | undefined =>
+  color !== undefined && color !== "state" && color !== "none"
+    ? color
+    : undefined;
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -291,6 +296,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 .stateColor=${colorToStateColor(
                   entityConf.color ?? this._config!.color,
                   entityConf.state_color ?? this._config!.state_color
+                )}
+                .color=${colorToBadgeColor(
+                  entityConf.color ?? this._config!.color
                 )}
               ></state-badge>
             `

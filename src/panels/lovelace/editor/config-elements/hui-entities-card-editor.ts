@@ -221,11 +221,16 @@ const migrateEntityRowStateColor = (
     return entity;
   }
 
-  let migratedEntity = migrateStateColor(entity);
+  const isGenericEntityRow = (row: LovelaceRowConfig): boolean =>
+    typeof row === "object" && !("type" in row);
+
+  let migratedEntity = isGenericEntityRow(entity)
+    ? migrateStateColor(entity)
+    : entity;
   if (
     migratedEntity.type === "conditional" &&
     "row" in migratedEntity &&
-    typeof migratedEntity.row === "object"
+    isGenericEntityRow(migratedEntity.row)
   ) {
     const migratedRow = migrateStateColor(migratedEntity.row);
     if (migratedRow !== migratedEntity.row) {
