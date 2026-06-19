@@ -5,6 +5,7 @@ import { hex2rgb } from "../../../../common/color/convert-color";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
+import { normalizeValueBySIPrefix } from "../../../../common/number/normalize-by-si-prefix";
 import type { EnergyData } from "../../../../data/energy";
 import { getPowerFromState } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
@@ -165,7 +166,18 @@ export function generatePowerSourcesGraphData(
       // The interpolation breaks the stacking, so this positive/negative is a workaround
       const { positive, negative } = processData(
         meta.stats.map((id: string) => {
-          const stats = [...(energyData.stats[id] ?? [])];
+          // Stats are stored in the sensor's native unit (W, kW, MW, …).
+          // Normalize them to kW so a sensor reporting in W is not read as kW.
+          const statUnit =
+            energyData.statsMetadata[id]?.statistics_unit_of_measurement ??
+            undefined;
+          const stats = (energyData.stats[id] ?? []).map((point) => ({
+            ...point,
+            mean:
+              point.mean == null
+                ? point.mean
+                : normalizeValueBySIPrefix(point.mean, statUnit) / 1000,
+          }));
           if (showingToday) {
             // Append current state if we are showing today
             const currentStateWatts = getPowerFromState(states[id]);

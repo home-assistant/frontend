@@ -6,6 +6,8 @@
 import { describe, expect, it } from "vitest";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { EnergyData } from "../../../../../src/data/energy";
+import type { StatisticsMetaData } from "../../../../../src/data/recorder";
+import { StatisticMeanType } from "../../../../../src/data/recorder";
 import { generatePowerSourcesGraphData } from "../../../../../src/panels/lovelace/cards/energy/power-sources-graph-data";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
@@ -44,7 +46,29 @@ interface BuildOptions {
   grid?: boolean;
   solar?: boolean;
   battery?: boolean;
+  // Native unit the rate sensors report their statistics in. The graph plots
+  // in kW, so a "kW" sensor needs no conversion while a "W" sensor must be
+  // divided by 1000.
+  unit?: string;
 }
+
+const buildStatsMetadata = (
+  ids: string[],
+  unit: string
+): Record<string, StatisticsMetaData> =>
+  Object.fromEntries(
+    ids.map((id) => [
+      id,
+      {
+        statistic_id: id,
+        source: "recorder",
+        statistics_unit_of_measurement: unit,
+        unit_class: "power",
+        has_sum: false,
+        mean_type: StatisticMeanType.ARITHMETIC,
+      },
+    ])
+  );
 
 const buildEnergyData = (seed: number, o: BuildOptions): EnergyData => {
   const prefs = generateEnergyPreferences({
@@ -81,7 +105,11 @@ const buildEnergyData = (seed: number, o: BuildOptions): EnergyData => {
     days: o.days,
     sumStatistics: false,
   });
-  return { ...base, stats: meanStats };
+  return {
+    ...base,
+    stats: meanStats,
+    statsMetadata: buildStatsMetadata(ids, o.unit ?? "kW"),
+  };
 };
 
 describe("generatePowerSourcesGraphData", () => {
@@ -205,6 +233,41 @@ describe("generatePowerSourcesGraphData", () => {
         now,
       })
     ).toMatchSnapshot();
+  });
+
+  it("converts W-unit stats to kW (divides by 1000)", () => {
+    const options: BuildOptions = {
+      days: 1,
+      period: "hour",
+      grid: true,
+      solar: true,
+      battery: true,
+    };
+    const kwResult = generatePowerSourcesGraphData({
+      ...baseParams,
+      energyData: buildEnergyData(7, { ...options, unit: "kW" }),
+    });
+    const wResult = generatePowerSourcesGraphData({
+      ...baseParams,
+      energyData: buildEnergyData(7, { ...options, unit: "W" }),
+    });
+
+    // The series carry gap-fill nulls and derived lines, so compare the
+    // overall magnitude: the same readings in W must plot 1000x smaller than
+    // in kW.
+    const maxAbsValue = (result: { chartData: { data?: unknown }[] }): number =>
+      Math.max(
+        ...result.chartData.flatMap((series) =>
+          (series.data as [number, number | null][])
+            .map((point) => point?.[1])
+            .filter((value): value is number => typeof value === "number")
+            .map(Math.abs)
+        )
+      );
+
+    const kwMax = maxAbsValue(kwResult);
+    expect(kwMax).toBeGreaterThan(0);
+    expect(maxAbsValue(wResult)).toBeCloseTo(kwMax / 1000, 10);
   });
 
   it("large multi-day 5-minute payload digest is stable", () => {
