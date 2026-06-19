@@ -115,7 +115,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     } else {
       parts = this.hass.formatEntityStateToParts(stateObj);
     }
-    const valueToDisplay = parts.find((part) => part.type === "value")?.value;
+    // Join all value parts: a monetary value splits the number around the
+    // currency symbol (for example "-" and "182.95" around "£"), so taking
+    // only the first value part would drop everything but the minus sign.
+    const valueToDisplay =
+      parts
+        .filter((part) => part.type === "value")
+        .map((part) => part.value)
+        .join("") || undefined;
     const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
