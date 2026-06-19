@@ -79,3 +79,21 @@ export const getVacuumSegments = (
     type: "vacuum/get_segments",
     entity_id,
   });
+
+// Drop segment IDs the vacuum no longer reports from an area mapping. Orphaned
+// IDs left behind make area cleaning fail, so they have to go. Areas left
+// without any segment are removed entirely.
+export const pruneOrphanedSegments = (
+  areaMapping: Record<string, string[]>,
+  segments: Segment[]
+): Record<string, string[]> => {
+  const knownIds = new Set(segments.map((segment) => segment.id));
+  const pruned: Record<string, string[]> = {};
+  for (const [areaId, segmentIds] of Object.entries(areaMapping)) {
+    const kept = segmentIds.filter((id) => knownIds.has(id));
+    if (kept.length) {
+      pruned[areaId] = kept;
+    }
+  }
+  return pruned;
+};
