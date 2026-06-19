@@ -33,6 +33,12 @@ const TRACE_PATH_TABS = [
   "logbook",
 ] as const;
 
+// A repeat keeps only its last iterations, so the array index is not the real
+// one. Use the recorded repeat.index when we have it.
+const iterationNumber = (trace: ActionTraceStep, index: number): number =>
+  (trace.changed_variables?.repeat as { index?: number } | undefined)?.index ??
+  index + 1;
+
 @customElement("ha-trace-path-details")
 export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -214,7 +220,7 @@ export class HaTracePathDetails extends LitElement {
               : html`<h3>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
-                    { number: idx + 1 }
+                    { number: iterationNumber(trace, idx) }
                   )}
                 </h3>`}
             ${curPath
@@ -318,7 +324,7 @@ export class HaTracePathDetails extends LitElement {
               ? html`<p>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
-                    { number: idx + 1 }
+                    { number: iterationNumber(trace, idx) }
                   )}
                 </p>`
               : ""}
