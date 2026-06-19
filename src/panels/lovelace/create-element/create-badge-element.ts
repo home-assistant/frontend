@@ -12,6 +12,7 @@ const LAZY_LOAD_TYPES = {
   shortcut: () => import("../badges/hui-shortcut-badge"),
   "state-label": () => import("../badges/hui-state-label-badge"),
   "power-total": () => import("../badges/energy/hui-power-total-badge"),
+  "power-solar": () => import("../badges/energy/hui-power-solar-badge"),
   "gas-total": () => import("../badges/energy/hui-gas-total-badge"),
   "water-total": () => import("../badges/energy/hui-water-total-badge"),
 };

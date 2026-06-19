@@ -39,6 +39,9 @@ export class PowerViewStrategy extends ReactiveElement {
       }
       return false;
     });
+    const hasSolarSources = prefs?.energy_sources.some(
+      (source) => source.type === "solar" && source.stat_rate
+    );
     const hasPowerDevices = prefs?.device_consumption.some(
       (device) => device.stat_rate
     );
@@ -80,6 +83,13 @@ export class PowerViewStrategy extends ReactiveElement {
         type: "power-total",
         collection_key: collectionKey,
       });
+
+      if (hasSolarSources) {
+        badges.push({
+          type: "power-solar",
+          collection_key: collectionKey,
+        });
+      }
 
       if (!isEnergyCardHidden("now", "power-sources-graph", hidden)) {
         chartsSection.cards!.push({
@@ -126,47 +136,4 @@ export class PowerViewStrategy extends ReactiveElement {
       );
       chartsSection.cards!.push({
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
-        type: "power-sankey",
-        collection_key: collectionKey,
-        group_by_floor: showFloorsAndAreas,
-        group_by_area: showFloorsAndAreas,
-        grid_options: {
-          columns: 36,
-        },
-      });
-    }
-
-    if (
-      hasWaterDevices &&
-      !isEnergyCardHidden("now", "water-flow-sankey", hidden)
-    ) {
-      const showFloorsAndAreas = shouldShowFloorsAndAreas(
-        prefs.device_consumption_water,
-        hass,
-        (d) => d.stat_rate
-      );
-      chartsSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.water_flow_sankey_title"),
-        type: "water-flow-sankey",
-        collection_key: collectionKey,
-        group_by_floor: showFloorsAndAreas,
-        group_by_area: showFloorsAndAreas,
-        grid_options: {
-          columns: 36,
-        },
-      });
-    }
-
-    if (badges.length) {
-      view.badges = badges;
-    }
-
-    return view;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    "power-view-strategy": PowerViewStrategy;
-  }
-}
+        type: "power-s
