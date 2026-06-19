@@ -1,5 +1,4 @@
 import { customElement } from "lit/decorators";
-import type { EntityCardConfig } from "../cards/types";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createRowElement } from "../create-element/create-row-element";
 import type {
@@ -8,6 +7,16 @@ import type {
   LovelaceRow,
 } from "../entity-rows/types";
 import { fireEvent } from "../../../common/dom/fire_event";
+
+type ConditionalColorConfig = ConditionalRowConfig & {
+  color?: string;
+  state_color?: boolean;
+};
+
+type EntityColorConfig = EntityConfig & {
+  color?: string;
+  state_color?: boolean;
+};
 
 declare global {
   interface HASSDomEvents {
@@ -23,15 +32,24 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
       throw new Error("No row configured");
     }
 
+    const inheritedConfig = config as ConditionalColorConfig;
+    const rowConfig = config.row as EntityColorConfig;
+    const hasInheritedColorConfig =
+      inheritedConfig.state_color !== undefined ||
+      inheritedConfig.color !== undefined;
+    const hasRowColorConfig =
+      rowConfig.state_color !== undefined || rowConfig.color !== undefined;
+
     this._element = createRowElement(
-      (config as EntityCardConfig).state_color !== undefined ||
-        (config as EntityCardConfig).color !== undefined
+      hasInheritedColorConfig && !hasRowColorConfig
         ? ({
-            ...(config.row as EntityConfig),
-            ...(config as EntityCardConfig).color !== undefined
-              ? { color: (config as EntityCardConfig).color }
-              : {},
-            state_color: (config as EntityCardConfig).state_color,
+            ...rowConfig,
+            ...(inheritedConfig.color !== undefined
+              ? { color: inheritedConfig.color }
+              : {}),
+            ...(inheritedConfig.state_color !== undefined
+              ? { state_color: inheritedConfig.state_color }
+              : {}),
           } as EntityConfig)
         : config.row
     ) as LovelaceRow;

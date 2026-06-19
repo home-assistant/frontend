@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
 import { uid } from "../../../common/util/uid";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -30,7 +31,7 @@ const colorToStateColor = (
 
 const colorToBadgeColor = (color: string | undefined): string | undefined =>
   color !== undefined && color !== "state" && color !== "none"
-    ? color
+    ? computeCssColor(color)
     : undefined;
 
 @customElement("hui-generic-entity-row")

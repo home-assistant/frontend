@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -41,7 +42,7 @@ const colorToStateColor = (
 
 const colorToBadgeColor = (color: string | undefined): string | undefined =>
   color !== undefined && color !== "state" && color !== "none"
-    ? color
+    ? computeCssColor(color)
     : undefined;
 
 @customElement("hui-glance-card")
@@ -267,6 +268,15 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
 
     const name = this.hass!.formatEntityName(stateObj, entityConf.name);
+    const color =
+      entityConf.color ??
+      (entityConf.state_color === undefined ? this._config!.color : undefined);
+    const stateColor =
+      entityConf.color !== undefined
+        ? colorToStateColor(entityConf.color, entityConf.state_color)
+        : entityConf.state_color !== undefined
+          ? entityConf.state_color
+          : colorToStateColor(this._config!.color, this._config!.state_color);
 
     return html`
       <div
@@ -293,13 +303,8 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .overrideIcon=${entityConf.icon}
                 .overrideImage=${entityConf.image}
-                .stateColor=${colorToStateColor(
-                  entityConf.color ?? this._config!.color,
-                  entityConf.state_color ?? this._config!.state_color
-                )}
-                .color=${colorToBadgeColor(
-                  entityConf.color ?? this._config!.color
-                )}
+                .stateColor=${stateColor}
+                .color=${colorToBadgeColor(color)}
               ></state-badge>
             `
           : ""}
