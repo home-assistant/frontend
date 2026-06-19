@@ -7492,6 +7492,7 @@
             "provisioned_devices": "Provisioned devices",
             "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
             "not_included": "{count} not included",
+            "not_ready": "{count} not ready",
             "devices_offline": "{count} offline",
             "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
             "rebuild_routes_action": "Rebuild",
