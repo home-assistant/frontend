@@ -18,9 +18,15 @@ export const formatSelectorValue = (
   }
 
   if ("text" in selector) {
-    const { prefix, suffix } = selector.text || {};
+    const { prefix, suffix, type } = selector.text || {};
 
     const texts = ensureArray(value);
+
+    // Never reveal secret values in a read-only preview.
+    if (type === "password") {
+      return texts.map(() => "••••••••").join(", ");
+    }
+
     return texts
       .map((text) => `${prefix || ""}${text}${suffix || ""}`)
       .join(", ");
