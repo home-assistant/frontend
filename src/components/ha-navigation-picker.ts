@@ -68,6 +68,18 @@ export class HaNavigationPicker extends LitElement {
 
   @property({ attribute: false }) public excludePaths?: string[];
 
+  @property({ type: Boolean, attribute: false }) public excludeRelated = false;
+
+  @property({ type: Boolean, attribute: false }) public excludeDashboards =
+    false;
+
+  @property({ type: Boolean, attribute: false }) public excludeViews = false;
+
+  @property({ type: Boolean, attribute: false }) public excludeApps = false;
+
+  @property({ type: Boolean, attribute: false }) public excludeOtherRoutes =
+    false;
+
   @property({ attribute: "add-button-label" }) public addButtonLabel?: string;
 
   @state() private _loading = true;
@@ -96,9 +108,21 @@ export class HaNavigationPicker extends LitElement {
     (newArgs, lastArgs) => newArgs[0] === lastArgs[0]
   );
 
+  private get _isSingleGroupMode(): boolean {
+    return (
+      [
+        !this.excludeRelated && this._navigationGroups.related.length > 0,
+        !this.excludeDashboards,
+        !this.excludeViews,
+        !this.excludeApps && this._navigationGroups.apps.length > 0,
+        !this.excludeOtherRoutes,
+      ].filter(Boolean).length <= 1
+    );
+  }
+
   protected render() {
     const sections = [
-      ...(this._navigationGroups.related.length
+      ...(!this.excludeRelated && this._navigationGroups.related.length
         ? [
             {
               id: "related",
@@ -108,15 +132,27 @@ export class HaNavigationPicker extends LitElement {
             },
           ]
         : []),
-      {
-        id: "dashboards",
-        label: this.hass.localize("ui.components.navigation-picker.dashboards"),
-      },
-      {
-        id: "views",
-        label: this.hass.localize("ui.components.navigation-picker.views"),
-      },
-      ...(this._navigationGroups.apps.length
+      ...(!this.excludeDashboards
+        ? [
+            {
+              id: "dashboards",
+              label: this.hass.localize(
+                "ui.components.navigation-picker.dashboards"
+              ),
+            },
+          ]
+        : []),
+      ...(!this.excludeViews
+        ? [
+            {
+              id: "views",
+              label: this.hass.localize(
+                "ui.components.navigation-picker.views"
+              ),
+            },
+          ]
+        : []),
+      ...(!this.excludeApps && this._navigationGroups.apps.length
         ? [
             {
               id: "apps",
@@ -124,12 +160,16 @@ export class HaNavigationPicker extends LitElement {
             },
           ]
         : []),
-      {
-        id: "other_routes",
-        label: this.hass.localize(
-          "ui.components.navigation-picker.other_routes"
-        ),
-      },
+      ...(!this.excludeOtherRoutes
+        ? [
+            {
+              id: "other_routes",
+              label: this.hass.localize(
+                "ui.components.navigation-picker.other_routes"
+              ),
+            },
+          ]
+        : []),
     ];
 
     return html`
@@ -144,7 +184,7 @@ export class HaNavigationPicker extends LitElement {
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
-        .sections=${sections}
+        .sections=${this._isSingleGroupMode ? [] : sections}
         .customValueLabel=${this.hass.localize(
           "ui.components.navigation-picker.add_custom_path"
         )}
@@ -263,7 +303,7 @@ export class HaNavigationPicker extends LitElement {
       if (section && section !== group) {
         return;
       }
-      if (!section && groupItems.length) {
+      if (!section && !this._isSingleGroupMode && groupItems.length) {
         items.push(
           this.hass.localize(`ui.components.navigation-picker.${group}`)
         );
@@ -271,11 +311,11 @@ export class HaNavigationPicker extends LitElement {
       items.push(...groupItems);
     };
 
-    addGroup("related", related);
-    addGroup("dashboards", dashboards);
-    addGroup("views", views);
-    addGroup("apps", apps);
-    addGroup("other_routes", otherRoutes);
+    if (!this.excludeRelated) addGroup("related", related);
+    if (!this.excludeDashboards) addGroup("dashboards", dashboards);
+    if (!this.excludeViews) addGroup("views", views);
+    if (!this.excludeApps) addGroup("apps", apps);
+    if (!this.excludeOtherRoutes) addGroup("other_routes", otherRoutes);
 
     return items;
   };
@@ -426,6 +466,17 @@ export class HaNavigationPicker extends LitElement {
   protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
       this._loadRelatedItems();
+    }
+    if (
+      this.excludeDashboards &&
+      this.excludeViews &&
+      this.excludeApps &&
+      this.excludeOtherRoutes
+    ) {
+      // eslint-disable-next-line no-console
+      console.error(
+        "ha-navigation-picker: all groups are excluded — at least one of excludeDashboards, excludeViews, excludeApps, excludeOtherRoutes must be false"
+      );
     }
   }
 

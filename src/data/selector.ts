@@ -381,7 +381,16 @@ export interface MediaSelectorValue {
 }
 
 export interface NavigationSelector {
-  navigation: ActionRelatedContext | null;
+  navigation:
+    | (ActionRelatedContext & {
+        exclude_paths?: string[];
+        exclude_related?: boolean;
+        exclude_dashboards?: boolean;
+        exclude_views?: boolean;
+        exclude_apps?: boolean;
+        exclude_other_routes?: boolean;
+      })
+    | null;
 }
 
 export interface NumberSelector {

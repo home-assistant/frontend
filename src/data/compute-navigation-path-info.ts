@@ -43,34 +43,41 @@ const AREA_VIEW_PREFIX = "areas-";
 
 export const CONFIG_SUB_ROUTES: Record<
   string,
-  { translationKey: LocalizeKeys; iconPath: string }
+  { translationKey: LocalizeKeys; icon: string; iconPath: string }
 > = {
   automation: {
     translationKey: "ui.components.navigation-picker.route.automations",
+    icon: "mdi:robot",
     iconPath: mdiRobot,
   },
   scene: {
     translationKey: "ui.components.navigation-picker.route.scenes",
+    icon: "mdi:palette",
     iconPath: mdiPalette,
   },
   script: {
     translationKey: "ui.components.navigation-picker.route.scripts",
+    icon: "mdi:script-text",
     iconPath: mdiScriptText,
   },
   "developer-tools": {
     translationKey: "ui.components.navigation-picker.route.developer_tools",
+    icon: "mdi:hammer",
     iconPath: mdiHammer,
   },
   integrations: {
     translationKey: "ui.components.navigation-picker.route.integrations",
+    icon: "mdi:puzzle",
     iconPath: mdiPuzzle,
   },
   devices: {
     translationKey: "ui.components.navigation-picker.route.devices",
+    icon: "mdi:devices",
     iconPath: mdiDevices,
   },
   entities: {
     translationKey: "ui.components.navigation-picker.route.entities",
+    icon: "mdi:shape",
     iconPath: mdiShape,
   },
 };
@@ -120,6 +127,7 @@ export const computeNavigationPathInfo = (
     const route = CONFIG_SUB_ROUTES[subPath];
     return {
       label: hass.localize(route.translationKey) || subPath,
+      icon: route.icon,
       iconPath: route.iconPath,
     };
   }
