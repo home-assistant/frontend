@@ -202,7 +202,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       !isEnergyCardHidden("electricity", "energy-solar-overview", hidden)
     ) {
       mainCards.push({
-        type: "energy-solar-overview",
+        type: "energy-overview",
         title: hass.localize(
           "ui.panel.energy.cards.energy_solar_overview_title"
         ),
