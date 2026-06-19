@@ -21,14 +21,23 @@ const ADDITIONAL_TIMEZONES: PickerComboBoxItem[] = [
   { id: "Etc/UTC", primary: "(GMT+00:00) UTC", secondary: "Etc/UTC" },
 ];
 
+// google-timezones-json also ships an invalid IANA identifier. Correct it so
+// the zone can be selected (the backend rejects the invalid id).
+const TIMEZONE_ID_CORRECTIONS: Record<string, string> = {
+  "Asia/Yuzhno-Sakhalinsk": "Asia/Sakhalin",
+};
+
 export const getTimezoneOptions = (): PickerComboBoxItem[] => {
   const options: PickerComboBoxItem[] = Object.entries(
     timezones as Record<string, string>
-  ).map(([key, value]) => ({
-    id: key,
-    primary: value,
-    secondary: key,
-  }));
+  ).map(([key, value]) => {
+    const id = TIMEZONE_ID_CORRECTIONS[key] ?? key;
+    return {
+      id,
+      primary: value,
+      secondary: id,
+    };
+  });
 
   for (const timezone of ADDITIONAL_TIMEZONES) {
     if (!options.some((option) => option.id === timezone.id)) {

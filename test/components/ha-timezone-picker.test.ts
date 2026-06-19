@@ -26,4 +26,13 @@ describe("getTimezoneOptions", () => {
     );
     expect(options.length).toBeGreaterThan(100);
   });
+
+  it("corrects the invalid Asia/Yuzhno-Sakhalinsk id to Asia/Sakhalin", () => {
+    expect(
+      options.some((option) => option.id === "Asia/Yuzhno-Sakhalinsk")
+    ).toBe(false);
+    const sakhalin = options.find((option) => option.id === "Asia/Sakhalin");
+    expect(sakhalin).toBeDefined();
+    expect(sakhalin?.secondary).toBe("Asia/Sakhalin");
+  });
 });
