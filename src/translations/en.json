@@ -9287,6 +9287,12 @@
                 "before": "Before",
                 "weekdays": "Weekdays"
               },
+              "entity_time": {
+                "label": "Entity Time",
+                "after": "After",
+                "before": "Before",
+                "offset": "Offset"
+              },
               "location": {
                 "label": "Location",
                 "locations": "Locations",

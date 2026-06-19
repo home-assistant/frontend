@@ -34,6 +34,7 @@ import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-state-no_entity";
+import "./types/ha-card-condition-entity_time";
 import "./types/ha-card-condition-time";
 import "./types/ha-card-condition-user";
 
@@ -42,6 +43,7 @@ const UI_CONDITION = [
   "numeric_state",
   "state",
   "screen",
+  "entity_time",
   "time",
   "user",
   "and",

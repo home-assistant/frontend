@@ -6,7 +6,10 @@ import type {
 } from "../../panels/lovelace/common/validate-condition";
 import { checkConditionsMet } from "../../panels/lovelace/common/validate-condition";
 import { extractMediaQueries, extractTimeConditions } from "./extract";
-import { calculateNextTimeUpdate } from "./time-calculator";
+import {
+  calculateNextEntityTimeUpdate,
+  calculateNextTimeUpdate,
+} from "./time-calculator";
 
 /** Maximum delay for setTimeout (2^31 - 1 milliseconds, ~24.8 days)
  * Values exceeding this will overflow and execute immediately
@@ -67,7 +70,10 @@ export function setupTimeListeners(
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     const scheduleUpdate = () => {
-      const delay = calculateNextTimeUpdate(hass, timeCondition);
+      const delay =
+        timeCondition.condition === "time"
+          ? calculateNextTimeUpdate(hass, timeCondition)
+          : calculateNextEntityTimeUpdate(hass, timeCondition);
 
       if (delay === undefined) return;
 

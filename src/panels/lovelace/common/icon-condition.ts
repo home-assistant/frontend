@@ -8,6 +8,7 @@ import {
   mdiNumeric,
   mdiResponsive,
   mdiStateMachine,
+  mdiTimer,
   mdiViewColumnOutline,
 } from "@mdi/js";
 import type { Condition } from "./validate-condition";
@@ -18,6 +19,7 @@ export const ICON_CONDITION: Record<Condition["condition"], string> = {
   numeric_state: mdiNumeric,
   state: mdiStateMachine,
   screen: mdiResponsive,
+  entity_time: mdiTimer,
   time: mdiCalendarClock,
   user: mdiAccount,
   and: mdiAmpersand,

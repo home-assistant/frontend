@@ -3,7 +3,11 @@ import { isBefore, isAfter, isWithinInterval } from "date-fns";
 import type { HomeAssistant } from "../../types";
 import { TimeZone } from "../../data/translation";
 import { WEEKDAY_MAP } from "./weekday";
-import type { TimeCondition } from "../../panels/lovelace/common/validate-condition";
+import type {
+  TimeCondition,
+  EntityTimeCondition,
+} from "../../panels/lovelace/common/validate-condition";
+import { parseEntityTime } from "../condition/time-calculator";
 
 /**
  * Validate a time string format and value ranges without creating Date objects
@@ -128,4 +132,31 @@ export const checkTimeInRange = (
   }
 
   return true;
+};
+
+/**
+ * Check if the current time matches the entity time condition
+ * @param hass Home Assistant object
+ * @param condition Entity Time condition to check
+ * @returns true if current time matches the condition
+ */
+export const checkEntityTime = (
+  hass: HomeAssistant,
+  { entity, mode, offset, timestamp }: Omit<EntityTimeCondition, "condition">
+): boolean => {
+  if (!entity) {
+    return false;
+  }
+  const timezone =
+    hass.locale.time_zone === TimeZone.server
+      ? hass.config.time_zone
+      : Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const now = new TZDate(new Date(), timezone);
+
+  const entityDate = parseEntityTime(entity, hass.states, offset, timestamp);
+
+  return mode === "before"
+    ? isBefore(now, entityDate)
+    : isAfter(now, entityDate);
 };

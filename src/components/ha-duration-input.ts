@@ -233,7 +233,7 @@ export class HaDurationInput extends LitElement {
     ev.stopPropagation();
     const negative = (ev.detail?.value || ev.target.value) === "-";
     this._toggleNegative = negative;
-    const value = this.data;
+    const value = { ...this.data };
     if (value) {
       FIELDS.forEach((t) => {
         if (value[t]) {

@@ -240,6 +240,10 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     if (changedProps.has("hass") || changedProps.has("preview")) {
       this._updateVisibility();
     }
+    if (changedProps.has("hass")) {
+      this.clearConditionalListeners();
+      this.setupConditionalListeners();
+    }
   }
 
   protected _updateVisibility(conditionsMet?: boolean) {

@@ -1,8 +1,9 @@
 import type {
   Condition,
+  EntityTimeCondition,
   TimeCondition,
 } from "../../panels/lovelace/common/validate-condition";
-
+import { validateEntityTimeCondition } from "../../panels/lovelace/common/validate-condition";
 /**
  * Extract media queries from conditions recursively
  */
@@ -23,14 +24,20 @@ export function extractMediaQueries(conditions: Condition[]): string[] {
  */
 export function extractTimeConditions(
   conditions: Condition[]
-): TimeCondition[] {
-  return conditions.reduce<TimeCondition[]>((array, c) => {
-    if ("conditions" in c && c.conditions) {
-      array.push(...extractTimeConditions(c.conditions));
-    }
-    if (c.condition === "time") {
-      array.push(c);
-    }
-    return array;
-  }, []);
+): (TimeCondition | EntityTimeCondition)[] {
+  return conditions.reduce<(TimeCondition | EntityTimeCondition)[]>(
+    (array, c) => {
+      if ("conditions" in c && c.conditions) {
+        array.push(...extractTimeConditions(c.conditions));
+      }
+      if (c.condition === "time") {
+        array.push(c);
+      }
+      if (c.condition === "entity_time" && validateEntityTimeCondition(c)) {
+        array.push(c);
+      }
+      return array;
+    },
+    []
+  );
 }

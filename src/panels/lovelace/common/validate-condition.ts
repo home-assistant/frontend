@@ -2,12 +2,14 @@ import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
   isValidTimeString,
+  checkEntityTime,
 } from "../../../common/datetime/check_time";
 import {
   WEEKDAYS_SHORT,
   type WeekdayShort,
 } from "../../../common/datetime/weekday";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import type { HaDurationData } from "../../../components/ha-duration-input";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
@@ -18,6 +20,7 @@ export type Condition =
   | NumericStateCondition
   | StateCondition
   | ScreenCondition
+  | EntityTimeCondition
   | TimeCondition
   | UserCondition
   | OrCondition
@@ -70,6 +73,14 @@ export interface StateCondition extends BaseCondition {
 export interface ScreenCondition extends BaseCondition {
   condition: "screen";
   media_query?: string;
+}
+
+export interface EntityTimeCondition extends BaseCondition {
+  condition: "entity_time";
+  entity?: string;
+  mode?: "before" | "after";
+  offset?: string | HaDurationData;
+  timestamp?: "state" | "last_updated" | "last_changed";
 }
 
 export interface TimeCondition extends BaseCondition {
@@ -208,6 +219,13 @@ function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
     : false;
 }
 
+function checkEntityTimeCondition(
+  condition: Omit<EntityTimeCondition, "condition">,
+  hass: HomeAssistant
+) {
+  return checkEntityTime(hass, condition);
+}
+
 function checkTimeCondition(
   condition: Omit<TimeCondition, "condition">,
   hass: HomeAssistant
@@ -278,6 +296,8 @@ export function checkConditionsMet(
       switch (c.condition) {
         case "view_columns":
           return checkViewColumnsCondition(c, context);
+        case "entity_time":
+          return checkEntityTimeCondition(c, hass);
         case "time":
           return checkTimeCondition(c, hass);
         case "screen":
@@ -335,6 +355,12 @@ export function extractConditionEntityIds(
           entityIds.add(state);
         }
       });
+    } else if (
+      condition.condition === "entity_time" &&
+      condition.entity &&
+      isValidEntityId(condition.entity)
+    ) {
+      entityIds.add(condition.entity);
     } else if ("conditions" in condition && condition.conditions) {
       return new Set([
         ...entityIds,
@@ -351,6 +377,10 @@ function validateStateCondition(condition: StateCondition | LegacyCondition) {
 
 function validateScreenCondition(condition: ScreenCondition) {
   return condition.media_query != null;
+}
+
+export function validateEntityTimeCondition(condition: EntityTimeCondition) {
+  return condition.entity ? isValidEntityId(condition.entity) : false;
 }
 
 function validateTimeCondition(condition: TimeCondition) {
@@ -424,6 +454,8 @@ export function validateConditionalConfig(
           return validateViewColumnsCondition(c);
         case "screen":
           return validateScreenCondition(c);
+        case "entity_time":
+          return validateEntityTimeCondition(c);
         case "time":
           return validateTimeCondition(c);
         case "user":
@@ -467,7 +499,8 @@ export function addEntityToCondition(
 
   if (
     condition.condition === "state" ||
-    condition.condition === "numeric_state"
+    condition.condition === "numeric_state" ||
+    condition.condition === "entity_time"
   ) {
     return {
       entity: entityId,
