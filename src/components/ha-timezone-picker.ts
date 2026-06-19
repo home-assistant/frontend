@@ -13,12 +13,31 @@ const SEARCH_KEYS = [
   { name: "secondary", weight: 8 },
 ];
 
-export const getTimezoneOptions = (): PickerComboBoxItem[] =>
-  Object.entries(timezones as Record<string, string>).map(([key, value]) => ({
+// google-timezones-json is missing the bare "UTC" and "Etc/UTC" zones, even
+// though both are valid IANA identifiers and common server defaults. Without
+// them a "UTC" configuration shows up as an unknown time zone. Add them back.
+const ADDITIONAL_TIMEZONES: PickerComboBoxItem[] = [
+  { id: "UTC", primary: "(GMT+00:00) UTC", secondary: "UTC" },
+  { id: "Etc/UTC", primary: "(GMT+00:00) UTC", secondary: "Etc/UTC" },
+];
+
+export const getTimezoneOptions = (): PickerComboBoxItem[] => {
+  const options: PickerComboBoxItem[] = Object.entries(
+    timezones as Record<string, string>
+  ).map(([key, value]) => ({
     id: key,
     primary: value,
     secondary: key,
   }));
+
+  for (const timezone of ADDITIONAL_TIMEZONES) {
+    if (!options.some((option) => option.id === timezone.id)) {
+      options.push(timezone);
+    }
+  }
+
+  return options;
+};
 
 @customElement("ha-timezone-picker")
 export class HaTimeZonePicker extends LitElement {
