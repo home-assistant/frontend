@@ -1,7 +1,7 @@
 import { consume, type ContextType } from "@lit/context";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { until } from "lit/directives/until";
 import { configContext, connectionContext, uiContext } from "../data/context";
 import {
   DEFAULT_DOMAIN_ICON,
@@ -36,6 +36,47 @@ export class HaDomainIcon extends LitElement {
   @consume({ context: uiContext, subscribe: true })
   private _hassUi?: ContextType<typeof uiContext>;
 
+  // undefined: not resolved yet (render nothing, as the old `until` did).
+  // null: resolved, but no icon found (render the fallback).
+  @state() private _resolvedIcon?: string | null;
+
+  // Resolving the icon in render() created a new promise (and a `until()`
+  // directive chain) on every render. Resolve it into state instead, guarded so
+  // only the latest resolution wins.
+  private _iconRequest = 0;
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("icon") ||
+      changedProps.has("domain") ||
+      changedProps.has("deviceClass") ||
+      changedProps.has("state") ||
+      changedProps.has("_connection") ||
+      changedProps.has("_hassConfig")
+    ) {
+      this._loadIcon();
+    }
+  }
+
+  private async _loadIcon(): Promise<void> {
+    if (this.icon || !this.domain || !this._connection || !this._hassConfig) {
+      this._resolvedIcon = undefined;
+      return;
+    }
+    const request = ++this._iconRequest;
+    const icon = await domainIcon(
+      this._connection.connection,
+      this._hassConfig.config,
+      this.domain,
+      this.deviceClass,
+      this.state
+    );
+    if (request === this._iconRequest) {
+      this._resolvedIcon = icon || null;
+    }
+  }
+
   protected render() {
     if (this.icon) {
       return html`<ha-icon .icon=${this.icon}></ha-icon>`;
@@ -49,21 +90,15 @@ export class HaDomainIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = domainIcon(
-      this._connection.connection,
-      this._hassConfig.config,
-      this.domain,
-      this.deviceClass,
-      this.state
-    ).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
-      }
+    if (this._resolvedIcon === undefined) {
+      return nothing;
+    }
 
-      return this._renderFallback();
-    });
+    if (this._resolvedIcon) {
+      return html`<ha-icon .icon=${this._resolvedIcon}></ha-icon>`;
+    }
 
-    return html`${until(icon)}`;
+    return this._renderFallback();
   }
 
   private _renderFallback() {
