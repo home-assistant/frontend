@@ -5349,7 +5349,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Days of the Week",
+                  "weekday": "Days of the week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -5560,7 +5560,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the week",
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::time::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::time::before%]",
                   "weekdays": {
