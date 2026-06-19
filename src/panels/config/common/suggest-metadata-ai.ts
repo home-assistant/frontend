@@ -69,6 +69,24 @@ export async function generateMetadataSuggestionTask<T>(
     include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
 
+  const categoryOptions = categories
+    ? Object.entries(categories).map(([id, name]) => ({
+        value: id,
+        label: name,
+      }))
+    : [];
+  const floorOptions = floors
+    ? Object.values(floors).map((floor) => ({
+        value: floor.floor_id,
+        label: floor.name,
+      }))
+    : [];
+
+  // Only offer the select fields when there is at least one option. Some AI
+  // providers reject a select/enum schema with an empty options list.
+  const includeCategories = categoryOptions.length > 0;
+  const includeFloor = floorOptions.length > 0;
+
   const structure: AITaskStructure = {
     ...(include.name && {
       name: {
@@ -99,50 +117,42 @@ export async function generateMetadataSuggestionTask<T>(
         },
       },
     }),
-    ...(include.categories &&
-      categories && {
-        category: {
-          description: `The category of the ${domain}`,
-          required: false,
-          selector: {
-            select: {
-              options: Object.entries(categories).map(([id, name]) => ({
-                value: id,
-                label: name,
-              })),
-            },
+    ...(includeCategories && {
+      category: {
+        description: `The category of the ${domain}`,
+        required: false,
+        selector: {
+          select: {
+            options: categoryOptions,
           },
         },
-      }),
-    ...(include.floor &&
-      floors && {
-        floor: {
-          description: `The floor of the ${domain}`,
-          required: false,
-          selector: {
-            select: {
-              options: Object.values(floors).map((floor) => ({
-                value: floor.floor_id,
-                label: floor.name,
-              })),
-            },
+      },
+    }),
+    ...(includeFloor && {
+      floor: {
+        description: `The floor of the ${domain}`,
+        required: false,
+        selector: {
+          select: {
+            options: floorOptions,
           },
         },
-      }),
+      },
+    }),
   };
 
   const requestedParts = [
     include.name ? "a name" : null,
     include.description ? "a description" : null,
-    include.categories ? "a category" : null,
+    includeCategories ? "a category" : null,
     include.labels ? "labels" : null,
-    include.floor ? "a floor" : null,
+    includeFloor ? "a floor" : null,
   ].filter((entry): entry is string => entry !== null);
 
   const categoryLabels: string[] = [
-    include.categories ? "category" : null,
+    includeCategories ? "category" : null,
     include.labels ? "labels" : null,
-    include.floor ? "floor" : null,
+    includeFloor ? "floor" : null,
   ].filter((entry): entry is string => entry !== null);
 
   const categoryLabelsText = PROMPT_LIST_FORMAT.format(categoryLabels);
@@ -168,7 +178,7 @@ export async function generateMetadataSuggestionTask<T>(
                     `The name should be in same style and sentence capitalization as existing ${domain}s.`,
                   ]
                 : []),
-              ...(include.categories || include.labels || include.floor
+              ...(includeCategories || include.labels || includeFloor
                 ? [
                     `Suggest ${categoryLabelsText} if relevant to the ${domain}'s purpose.`,
                     `Only suggest ${categoryLabelsText} that are already used by existing ${domain}s.`,
