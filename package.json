@@ -63,6 +63,7 @@
     "@lit-labs/virtualizer": "2.1.1",
     "@lit/context": "1.1.6",
     "@lit/reactive-element": "2.1.2",
+    "@lit/task": "1.0.3",
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch",
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
     "@material/web": "2.4.1",

@@ -2326,6 +2326,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lit/task@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@lit/task@npm:1.0.3"
+  dependencies:
+    "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
+  checksum: 10/9b6a907585a8a34c7418138624f9f25a76820747a095d6a4748e91d3a36bc113c73f677e91f2a32367a33c7482dd4af06b2780ffbedd82bf69147dc05e28b0ef
+  languageName: node
+  linkType: hard
+
 "@lokalise/node-api@npm:16.0.0":
   version: 16.0.0
   resolution: "@lokalise/node-api@npm:16.0.0"
@@ -8551,6 +8560,7 @@ __metadata:
     "@lit-labs/virtualizer": "npm:2.1.1"
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
+    "@lit/task": "npm:1.0.3"
     "@lokalise/node-api": "npm:16.0.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
