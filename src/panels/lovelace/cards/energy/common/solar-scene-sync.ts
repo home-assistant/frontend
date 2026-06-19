@@ -1,21 +1,17 @@
 // Shared time cursor for the Solar scene card and its timeline companion. Keyed by the
 // energy collection so the two sibling cards on a dashboard move together with no DOM
-// coupling: the timeline writes the selected minute, the scene reads it to place the sun.
-
-const minutesNow = (): number => {
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
-};
+// coupling: the timeline writes the scrubbed instant, the scene reads it to place the sun.
+// The instant is an absolute epoch (ms) anywhere inside the selected dashboard period, or
+// null to follow the present ("live").
 
 export interface SolarSceneSyncState {
-  minute: number; // selected minute of day, 0-1439 (used only when not live)
-  live: boolean; // when true both cards follow the current time
+  instant: number | null;
 }
 
 type Listener = (state: SolarSceneSyncState) => void;
 
 export class SolarSceneSync {
-  private _state: SolarSceneSyncState = { minute: minutesNow(), live: true };
+  private _state: SolarSceneSyncState = { instant: null };
 
   private _listeners = new Set<Listener>();
 
@@ -23,15 +19,12 @@ export class SolarSceneSync {
     return this._state;
   }
 
-  public setMinute(minute: number): void {
-    this._update({
-      minute: Math.max(0, Math.min(1439, Math.round(minute))),
-      live: false,
-    });
+  public setInstant(instant: number): void {
+    this._update({ instant });
   }
 
-  public setLive(live: boolean): void {
-    this._update({ live, minute: live ? minutesNow() : this._state.minute });
+  public setLive(): void {
+    this._update({ instant: null });
   }
 
   public subscribe(listener: Listener): () => void {

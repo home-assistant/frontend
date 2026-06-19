@@ -11,6 +11,12 @@ import type { LovelaceCard } from "../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../../../energy/constants";
 import type { SolarSceneSync } from "./common/solar-scene-sync";
 import { getSolarSceneSync } from "./common/solar-scene-sync";
+import "../../../../components/ha-icon";
+import "./common/hui-energy-graph-chip";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { getEnergyDataCollection } from "../../../../data/energy";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { formatShortDateTime } from "../../../../common/datetime/format_date_time";
 
 type Point = [number, number];
 
@@ -154,6 +160,40 @@ function tintedRgba(base: string, altitude: number, opacity: number): string {
   return `rgba(${(c >> 16) & 255},${(c >> 8) & 255},${c & 255},${opacity})`;
 }
 
+// Resolve a HA CSS custom property (hex or rgb) to a #rrggbb string.
+function cssHex(
+  styles: CSSStyleDeclaration,
+  name: string,
+  fallback: string
+): string {
+  const raw = styles.getPropertyValue(name).trim();
+  if (!raw) return fallback;
+  if (raw.startsWith("#"))
+    return raw.length === 4
+      ? "#" +
+          raw
+            .slice(1)
+            .split("")
+            .map((c) => c + c)
+            .join("")
+      : raw.slice(0, 7);
+  const m = raw.match(/(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+  return m
+    ? "#" +
+        [m[1], m[2], m[3]]
+          .map((n) => Number(n).toString(16).padStart(2, "0"))
+          .join("")
+    : fallback;
+}
+
+// Sun colour along the day: grey underground, warm near the horizon, amber high up.
+const arcColor = (altitude: number, amber: string): string =>
+  altitude <= 0
+    ? "#3a4a63"
+    : altitude < 12
+      ? mixHex(amber, "#ff6a00", 0.5)
+      : amber;
+
 interface Building {
   footprint: Point[]; // metres east/north relative to the home
   height: number;
@@ -187,7 +227,7 @@ const DEFAULTS = {
   tilt_deg: 50,
   perspective: 1200,
   target_height_m: 10, // aim 10 m above the home (like Helios) to open up the sky
-  height_scale: 1.5,
+  height_scale: 1.0, // real OSM render height, matching Helios (no exaggeration)
   osm_radius_m: 100,
   home_radius_m: 15, // every building within 15 m of the GPS point is "the home"
   default_height_m: 6,
@@ -201,15 +241,15 @@ const DARK_FILTER =
 
 @customElement("hui-energy-solar-scene-card")
 export class HuiEnergySolarSceneCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config!: EnergySolarSceneCardConfig & typeof DEFAULTS;
-  @state() private _live = true;
+  @state() private _instant: number | null = null;
+  @state() private _period?: { start: Date; end?: Date };
 
-  private _minuteOfDay = HuiEnergySolarSceneCard._nowMinutes();
   private _sync?: SolarSceneSync;
   private _unsub?: () => void;
   private _bearing = 0;
@@ -222,11 +262,20 @@ export class HuiEnergySolarSceneCard
   private _ground?: { canvas: HTMLCanvasElement; homeX: number; homeY: number };
   private _built = false;
   private _redrawScheduled = false;
+  private _growth = 0;
+  private _grown = false;
+  private _lastLiveMinute = -1;
+  private _arcSamples?: {
+    dayKey: number;
+    samples: { azimuth: number; altitude: number }[];
+  };
 
-  private static _nowMinutes(): number {
-    const now = new Date();
-    return now.getHours() * 60 + now.getMinutes();
-  }
+  private _palette?: {
+    dark: boolean;
+    home: string;
+    neighbor: string;
+    sun: string;
+  };
 
   public setConfig(config: EnergySolarSceneCardConfig): void {
     this._config = { ...DEFAULTS, ...config };
@@ -237,12 +286,32 @@ export class HuiEnergySolarSceneCard
     return 6;
   }
 
+  // Follow the dashboard date selector like the other energy cards: its day drives the sun path.
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
+        this._period = { start: data.start, end: data.end };
+        this._scheduleDraw();
+      }),
+    ];
+  }
+
   private _resizeObserver = new ResizeObserver(() => this._scheduleDraw());
 
   public connectedCallback(): void {
     super.connectedCallback();
     this._resizeObserver.observe(this);
     this._connectSync();
+    // Returning to the tab reconnects the card; replay the rise so it matches the energy graphs,
+    // which re-animate on every tab change. (No-op on first mount: buildings aren't loaded yet.)
+    this._grown = false;
+    this._growth = 0;
+    this._palette = undefined; // theme may have changed while the tab was hidden
+    if (this._buildings.length) this._startGrowth();
   }
 
   public disconnectedCallback(): void {
@@ -260,8 +329,7 @@ export class HuiEnergySolarSceneCard
       this._config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY
     );
     this._unsub = this._sync.subscribe((state) => {
-      this._live = state.live;
-      this._minuteOfDay = state.minute;
+      this._instant = state.instant;
       this._scheduleDraw();
     });
   }
@@ -273,7 +341,14 @@ export class HuiEnergySolarSceneCard
   protected updated(changedProps: PropertyValues): void {
     this._connectSync();
     this._maybeBuild();
-    if (changedProps.has("hass") && this.hass && this._live) this._draw();
+    if (changedProps.has("hass") && this.hass && this._instant === null) {
+      // Live mode tracks "now", which only moves the sun once a minute: skip the per-state redraws.
+      const minute = Math.floor(Date.now() / 60000);
+      if (minute !== this._lastLiveMinute) {
+        this._lastLiveMinute = minute;
+        this._scheduleDraw();
+      }
+    }
   }
 
   // Build once both setConfig and hass are available, never before.
@@ -360,7 +435,7 @@ export class HuiEnergySolarSceneCard
         Date.now() - cached.time < 30 * 86400000
       ) {
         this._buildings = cached.buildings;
-        this._draw();
+        this._startGrowth();
         return;
       }
     } catch {
@@ -393,7 +468,7 @@ export class HuiEnergySolarSceneCard
           } catch {
             /* storage quota: not fatal */
           }
-          this._draw();
+          this._startGrowth();
           return;
         }
       } catch {
@@ -471,16 +546,21 @@ export class HuiEnergySolarSceneCard
     return buildings.slice(0, 80);
   }
 
-  private _activeMinute(): number {
-    return this._live
-      ? HuiEnergySolarSceneCard._nowMinutes()
-      : this._minuteOfDay;
+  private _activeDate(): Date {
+    return new Date(this._instant ?? Date.now());
   }
 
-  private _activeDate(): Date {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0);
-    return new Date(date.valueOf() + this._activeMinute() * 60000);
+  private _windowContainsNow(): boolean {
+    if (!this._period) return true;
+    const now = Date.now();
+    return (
+      now >= this._period.start.getTime() &&
+      now <= (this._period.end ?? new Date()).getTime()
+    );
+  }
+
+  private _backToLive(): void {
+    this._sync?.setLive();
   }
 
   // Manual 2-axis camera drag + time scrubber.
@@ -514,9 +594,34 @@ export class HuiEnergySolarSceneCard
     });
   }
 
+  // Buildings rise from the ground to their real height on first load, over the same 500 ms the
+  // page's energy charts animate in (cubicOut), and instant when reduced motion is requested.
+  private _startGrowth(): void {
+    if (this._grown) return;
+    this._grown = true;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      this._growth = 1;
+      this._scheduleDraw();
+      return;
+    }
+    const startedAt = Date.now();
+    const tick = (): void => {
+      if (!this.isConnected) return;
+      const t = Math.min(1, (Date.now() - startedAt) / 500);
+      this._growth = 1 - Math.pow(1 - t, 3);
+      this._scheduleDraw();
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   // Project (east, north, up) metres to screen px: bearing, then pitch, then perspective. Mirrors
   // the ground canvas's CSS transform so everything stays glued together as the camera turns.
-  private _project(eastM: number, northM: number, upM: number): Point {
+  private _project3(
+    eastM: number,
+    northM: number,
+    upM: number
+  ): { x: number; y: number; depth: number } {
     const bearing = this._bearing * DEG;
     const tilt = this._tilt * DEG;
     const x = eastM * this._pxPerMetre;
@@ -526,10 +631,16 @@ export class HuiEnergySolarSceneCard
     const ry = x * Math.sin(bearing) + y * Math.cos(bearing);
     const cameraZ = ry * Math.sin(tilt) + z * Math.cos(tilt);
     const p = this._config.perspective / (this._config.perspective - cameraZ);
-    return [
-      this._centreX + rx * p,
-      this._centreY + (ry * Math.cos(tilt) - z * Math.sin(tilt)) * p,
-    ];
+    return {
+      x: this._centreX + rx * p,
+      y: this._centreY + (ry * Math.cos(tilt) - z * Math.sin(tilt)) * p,
+      depth: cameraZ,
+    };
+  }
+
+  private _project(eastM: number, northM: number, upM: number): Point {
+    const p = this._project3(eastM, northM, upM);
+    return [p.x, p.y];
   }
 
   private _draw(): void {
@@ -550,10 +661,18 @@ export class HuiEnergySolarSceneCard
       height / 2 +
       targetPx * Math.sin(tilt) * (persp / (persp - targetPx * Math.cos(tilt)));
 
-    this.style.setProperty(
-      "--map-filter",
-      this.hass?.themes?.darkMode ? DARK_FILTER : "none"
-    );
+    const dark = !!this.hass.themes?.darkMode;
+    this.style.setProperty("--map-filter", dark ? DARK_FILTER : "none");
+    // Theme colours change rarely; resolve them once per theme instead of every frame.
+    if (this._palette?.dark !== dark) {
+      const styles = getComputedStyle(this);
+      this._palette = {
+        dark,
+        home: cssHex(styles, "--energy-grid-consumption-color", "#488fc2"),
+        neighbor: cssHex(styles, "--primary-text-color", "#dddddd"),
+        sun: cssHex(styles, "--warning-color", "#ffc107"),
+      };
+    }
     if (this._ground) {
       const { canvas, homeX, homeY } = this._ground;
       canvas.style.transformOrigin = `${homeX}px ${homeY}px`;
@@ -563,12 +682,13 @@ export class HuiEnergySolarSceneCard
     const { latitude, longitude } = this.hass.config;
     const date = this._activeDate();
     const sun = sunPosition(date, latitude, longitude);
+    const palette = this._palette!;
 
     svg.innerHTML = [
       this._renderNightShade(sun.altitude, width, height),
       this._renderShadows(sun),
-      this._renderBuildings(sun.altitude),
-      this._renderSky(sun, date, width, height),
+      this._renderBuildings(sun.altitude, palette),
+      this._renderSky(sun, date, width, height, palette),
     ].join("");
   }
 
@@ -602,7 +722,10 @@ export class HuiEnergySolarSceneCard
     return inner ? `<g opacity="0.34">${inner}</g>` : "";
   }
 
-  private _renderBuildings(altitude: number): string {
+  private _renderBuildings(
+    altitude: number,
+    palette: { home: string; neighbor: string }
+  ): string {
     const bearing = this._bearing * DEG;
     const order = this._buildings
       .map((b, index) => ({
@@ -616,15 +739,19 @@ export class HuiEnergySolarSceneCard
       const b = this._buildings[index];
       const base = b.footprint.map((p) => this._project(p[0], p[1], 0));
       const roof = b.footprint.map((p) =>
-        this._project(p[0], p[1], b.height * this._config.height_scale)
+        this._project(
+          p[0],
+          p[1],
+          b.height * this._config.height_scale * this._growth
+        )
       );
       const roofFill = tintedRgba(
-        b.isHome ? "#7494d6" : "#93a6c2",
+        b.isHome ? mixHex(palette.home, "#ffffff", 0.18) : palette.neighbor,
         altitude,
         b.isHome ? 0.97 : 0.16
       );
       const wallFill = tintedRgba(
-        b.isHome ? "#4a608c" : "#93a6c2",
+        b.isHome ? mixHex(palette.home, "#000000", 0.22) : palette.neighbor,
         altitude,
         b.isHome ? 0.95 : 0.11
       );
@@ -650,58 +777,140 @@ export class HuiEnergySolarSceneCard
     return svg;
   }
 
-  // Big screen-space sky dome (like Helios scales its arc to the view), tilted/rotated with the camera.
+  // Sun path on a dome around the home, ported from the Helios arc: depth-modulated stroke (far
+  // thin, near thick), dark outline under a sun-colour pass, dotted underground leg, and a
+  // four-layer disc whose inner fill and halo scale with (clear-sky) irradiance.
   private _renderSky(
     sun: { azimuth: number; altitude: number },
     date: Date,
     width: number,
-    height: number
+    height: number,
+    palette: { sun: string }
   ): string {
     const { latitude, longitude } = this.hass.config;
-    const radius = Math.min(width * 0.34, height * 0.92);
-    const onDome = (azimuth: number, altitude: number): Point => {
-      const elev = Math.max(0, altitude) * DEG;
-      const az = azimuth * DEG;
-      const bearing = this._bearing * DEG;
-      const tilt = this._tilt * DEG;
-      const x = Math.cos(elev) * Math.sin(az) * radius;
-      const y = -Math.cos(elev) * Math.cos(az) * radius;
-      const z = Math.sin(elev) * radius;
-      const rx = x * Math.cos(bearing) - y * Math.sin(bearing);
-      const ry = x * Math.sin(bearing) + y * Math.cos(bearing);
-      return [
-        this._centreX + rx,
-        this._centreY + (ry * Math.cos(tilt) - z * Math.sin(tilt)),
-      ];
-    };
+    const DRAW_ALT = -12; // draw a short dotted dip below the horizon
 
-    const arc: string[] = [];
+    // World-space arc like Helios: a celestial dome of radius R metres around the home, projected
+    // through the same perspective as the buildings. R is scaled so the projected arc fills ~0.41
+    // of the smaller side; the scale comes from an 8-direction probe whose MAX projected distance
+    // is the ellipse's semi-major axis, invariant to the camera bearing, so the arc keeps a
+    // constant size as the camera rotates (only resize / zoom changes it).
+    const home = this._project3(0, 0, 0);
+    let pxPerM = this._pxPerMetre;
+    let maxDist = 0;
+    for (let k = 0; k < 8; k++) {
+      const a = (k / 8) * 2 * Math.PI;
+      const p = this._project3(60 * Math.sin(a), 60 * Math.cos(a), 0);
+      maxDist = Math.max(maxDist, Math.hypot(p.x - home.x, p.y - home.y));
+    }
+    if (maxDist > 0) pxPerM = maxDist / 60;
+    const ARC_R_M = 40;
+    const scale = Math.max(
+      0.72,
+      Math.min((0.47 * Math.min(width, height)) / pxPerM / ARC_R_M, 6)
+    );
+    const R = ARC_R_M * scale;
+    const dome = (azimuth: number, altitude: number) =>
+      this._project3(
+        R * Math.cos(altitude * DEG) * Math.sin(azimuth * DEG),
+        R * Math.cos(altitude * DEG) * Math.cos(azimuth * DEG),
+        R * Math.sin(altitude * DEG)
+      );
+
+    // The day's celestial samples depend only on the date, not the camera: cache them so rotating
+    // and scrubbing within a day re-project cached angles instead of recomputing sunPosition 96x.
     const midnight = new Date(date);
     midnight.setHours(0, 0, 0, 0);
-    for (let minute = 0; minute <= 1440; minute += 15) {
-      const at = sunPosition(
-        new Date(midnight.valueOf() + minute * 60000),
-        latitude,
-        longitude
-      );
-      if (at.altitude > 0) {
-        const [x, y] = onDome(at.azimuth, at.altitude);
-        arc.push(`${x.toFixed(1)},${y.toFixed(1)}`);
-      }
+    const dayKey = midnight.valueOf();
+    if (this._arcSamples?.dayKey !== dayKey) {
+      const samples: { azimuth: number; altitude: number }[] = [];
+      for (let minute = 0; minute <= 1440; minute += 15)
+        samples.push(
+          sunPosition(new Date(dayKey + minute * 60000), latitude, longitude)
+        );
+      this._arcSamples = { dayKey, samples };
     }
-    const [sx, sy] = onDome(sun.azimuth, Math.max(sun.altitude, 0));
-    const isNight = sun.altitude <= 0;
-    const color = isNight
-      ? "#3a4a63"
-      : sun.altitude < 12
-        ? "#ff8a3d"
-        : "#ffc107";
-    const arcLine = arc.length
-      ? `<polyline points="${arc.join(" ")}" fill="none" stroke="rgba(255,200,80,0.5)" stroke-width="2" stroke-dasharray="2 4"/>`
-      : "";
-    return `${arcLine}
-      <circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="13" fill="${color}" opacity="${isNight ? 0.4 : 0.95}"/>
-      <circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="22" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.4"/>`;
+    const pts = this._arcSamples.samples.map((at) => ({
+      ...dome(at.azimuth, at.altitude),
+      alt: at.altitude,
+    }));
+    const s = dome(sun.azimuth, sun.altitude);
+
+    // One shared perspective ramp: nearness = 1 at the nearest point (max camera depth), 0 at the
+    // furthest, across the whole arc plus the sun, so stroke widths and disc size stay consistent.
+    let dMin = Infinity;
+    let dMax = -Infinity;
+    for (const p of pts) {
+      dMin = Math.min(dMin, p.depth);
+      dMax = Math.max(dMax, p.depth);
+    }
+    dMin = Math.min(dMin, s.depth);
+    dMax = Math.max(dMax, s.depth);
+    const dRange = dMax - dMin || 1;
+    const near = (d: number) => (d - dMin) / dRange;
+
+    // Two passes (all dark outlines, then all coloured segments) so the outline is a continuous rim.
+    let outlines = "";
+    let segments = "";
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1];
+      const b = pts[i];
+      if (a.alt < DRAW_ALT || b.alt < DRAW_ALT) continue;
+      const n = (near(a.depth) + near(b.depth)) / 2;
+      const night = a.alt <= 0 && b.alt <= 0;
+      const factor = night ? 0.5 : 1;
+      const ow = (1.5 + 3.5 * n) * factor;
+      const sw = (1 + 3 * n) * factor;
+      const cls = night ? " solar-arc-night" : "";
+      const coords = `x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}"`;
+      outlines += `<line class="solar-arc-outline${cls}" ${coords} stroke-width="${ow.toFixed(2)}"/>`;
+      segments += `<line class="solar-arc-segment${cls}" ${coords} stroke="${arcColor((a.alt + b.alt) / 2, palette.sun)}" stroke-width="${sw.toFixed(2)}"/>`;
+    }
+    const arc = outlines + segments;
+
+    const sunX = s.x;
+    const sunY = s.y;
+    const wm2 = Math.max(0, 1000 * Math.sin(Math.max(0, sun.altitude) * DEG));
+    const fill = Math.sqrt(Math.min(1, wm2 / 1000));
+    const r = (10 + 10 * near(s.depth)) * scale;
+    const day = sun.altitude > -2;
+    const ray =
+      day && fill > 0
+        ? `<line class="solar-ray" style="--sun-flow-duration:${(1.6 - fill).toFixed(2)}s" x1="${sunX.toFixed(1)}" y1="${sunY.toFixed(1)}" x2="${home.x.toFixed(1)}" y2="${home.y.toFixed(1)}" stroke="${palette.sun}"/>`
+        : "";
+    this._positionSunChip(sunX, sunY, Math.round(wm2), day);
+    const c = `cx="${sunX.toFixed(1)}" cy="${sunY.toFixed(1)}"`;
+    return `${arc}${ray}
+      <defs><radialGradient id="solar-halo">
+        <stop offset="0%" stop-color="${palette.sun}" stop-opacity="${(fill * 0.55).toFixed(3)}"/>
+        <stop offset="100%" stop-color="${palette.sun}" stop-opacity="0"/>
+      </radialGradient></defs>
+      <circle ${c} r="${(r * 3).toFixed(1)}" fill="url(#solar-halo)"/>
+      <circle ${c} r="${r.toFixed(1)}" fill="${palette.sun}" fill-opacity="0.2"/>
+      <circle ${c} r="${(r * fill).toFixed(1)}" fill="${palette.sun}"/>
+      <circle ${c} r="${r.toFixed(1)}" fill="none" stroke="${palette.sun}" stroke-width="1.5"/>`;
+  }
+
+  private _positionSunChip(
+    x: number,
+    y: number,
+    wm2: number,
+    visible: boolean
+  ): void {
+    const chip = this.renderRoot.querySelector(
+      ".sun-chip"
+    ) as HTMLElement | null;
+    if (!chip) return;
+    chip.hidden = !visible;
+    if (!visible) return;
+    const value = chip.querySelector("span");
+    if (value) value.textContent = `${wm2} W/m²`;
+    // Safety net: keep the chip on screen even if the sun reaches a corner.
+    const wrap = this.renderRoot.querySelector(".wrap") as HTMLElement | null;
+    const w = wrap?.clientWidth ?? 0;
+    const half = chip.offsetWidth / 2 + 4;
+    chip.style.left = `${w ? Math.max(half, Math.min(w - half, x)) : x}px`;
+    chip.style.top = `${Math.max(28, y - 18)}px`;
   }
 
   protected render() {
@@ -710,8 +919,32 @@ export class HuiEnergySolarSceneCard
       <ha-card>
         <div class="wrap">
           <div class="title">${this._config.title}</div>
+          <div class="chip-row">
+            ${this._instant !== null && this._windowContainsNow()
+              ? html`<button
+                  class="live-chip"
+                  title="Back to live"
+                  @click=${this._backToLive}
+                >
+                  <hui-energy-graph-chip>
+                    <ha-icon icon="mdi:restore"></ha-icon>
+                  </hui-energy-graph-chip>
+                </button>`
+              : nothing}
+            <hui-energy-graph-chip>
+              ${formatShortDateTime(
+                this._activeDate(),
+                this.hass.locale,
+                this.hass.config
+              )}
+            </hui-energy-graph-chip>
+          </div>
           <div class="viewport"><div id="ground"></div></div>
           <svg class="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+          <div class="sun-chip" hidden>
+            <ha-icon icon="mdi:white-balance-sunny"></ha-icon>
+            <span></span>
+          </div>
           <div
             class="drag"
             @pointerdown=${this._onPointerDown}
@@ -741,11 +974,38 @@ export class HuiEnergySolarSceneCard
       top: 12px;
       left: 16px;
       z-index: 3;
-      color: #fff;
+      color: var(--primary-text-color);
       font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl, 24px));
       line-height: 1.2;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
       pointer-events: none;
+    }
+    .chip-row {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .live-chip {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      background: none;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+    }
+    .live-chip ha-icon {
+      --mdc-icon-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .viewport {
       position: absolute;
@@ -784,6 +1044,63 @@ export class HuiEnergySolarSceneCard
     }
     .drag:active {
       cursor: grabbing;
+    }
+    .solar-arc-outline {
+      stroke: rgba(0, 0, 0, 0.35);
+      stroke-linecap: round;
+    }
+    .solar-arc-segment {
+      stroke-linecap: round;
+    }
+    .solar-arc-night {
+      stroke-linecap: round;
+      stroke-dasharray: 0 8;
+      stroke-opacity: 0.45;
+    }
+    .solar-arc-night.solar-arc-outline {
+      stroke-opacity: 0.25;
+    }
+    .solar-ray {
+      stroke-width: 1.5;
+      stroke-dasharray: 5 6;
+      stroke-opacity: 0.6;
+      stroke-linecap: round;
+      animation: solar-ray-flow var(--sun-flow-duration, 1.2s) linear infinite;
+    }
+    @keyframes solar-ray-flow {
+      from {
+        stroke-dashoffset: 0;
+      }
+      to {
+        stroke-dashoffset: -11;
+      }
+    }
+    .sun-chip {
+      position: absolute;
+      z-index: 3;
+      transform: translate(-50%, -100%);
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color, #212121);
+      border: 2px solid var(--warning-color, #ffc107);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: var(--ha-font-size-s, 12px);
+      font-weight: 600;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      box-shadow: 0 1px 3px var(--shadow-color, rgba(0, 0, 0, 0.3));
+      white-space: nowrap;
+    }
+    .sun-chip[hidden] {
+      display: none;
+    }
+    .sun-chip ha-icon {
+      --mdc-icon-size: 16px;
+      color: inherit;
     }
   `;
 }

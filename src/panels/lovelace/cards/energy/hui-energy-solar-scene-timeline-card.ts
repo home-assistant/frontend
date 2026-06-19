@@ -1,10 +1,11 @@
-// Companion chart for the Solar scene card: a day-long solar production curve styled like the
-// other energy charts (ECharts via ha-chart-base). Its slider drives a shared time cursor, so
-// scrubbing here moves the sun in the Solar scene card sitting above it.
-import type { HassEntity } from "home-assistant-js-websocket";
+// Companion chart for the Solar scene card: the solar production curve over the period selected
+// in the dashboard date picker, styled like the other energy charts (ECharts via ha-chart-base).
+// Hovering (or touch-dragging) the chart scrubs anywhere inside that period and writes a shared
+// instant, so the sun in the Solar scene card above follows; a click pins a marker on that moment.
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type {
   CallbackDataParams,
@@ -12,14 +13,18 @@ import type {
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
+import { getCommonOptions } from "./common/energy-chart-options";
 import { formatNumber } from "../../../../common/number/format_number";
-import { formatTime } from "../../../../common/datetime/format_time";
+import { formatShortDateTime } from "../../../../common/datetime/format_date_time";
+import type { HaChartBase } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
+import { getEnergyDataCollection } from "../../../../data/energy";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../../../energy/constants";
 import type {
   SolarSceneSync,
@@ -32,36 +37,28 @@ export interface EnergySolarSceneTimelineCardConfig extends LovelaceCardConfig {
   power_entity?: string;
 }
 
-const SAMPLE_STEP_MIN = 15;
-const DAY_MIN = 1440;
-
-const dayStart = (): number => {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date.valueOf();
-};
-
-const nowMinute = (): number => {
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
-};
-
 @customElement("hui-energy-solar-scene-timeline-card")
 export class HuiEnergySolarSceneTimelineCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySolarSceneTimelineCardConfig;
 
-  @state() private _state: SolarSceneSyncState = { minute: 0, live: true };
+  @state() private _instant: number | null = null;
 
-  private _forecast: { minute: number; watts: number }[] = [];
+  @state() private _period?: { start: Date; end?: Date };
+
+  private _forecast: { t: number; watts: number }[] = [];
 
   private _sync?: SolarSceneSync;
 
   private _unsub?: () => void;
+
+  @query("ha-chart-base") private _chartBase?: HaChartBase;
+
+  private _dragging = false;
 
   public setConfig(config: EnergySolarSceneTimelineCardConfig): void {
     this._config = config;
@@ -69,6 +66,19 @@ export class HuiEnergySolarSceneTimelineCard
 
   public getCardSize(): number {
     return 4;
+  }
+
+  // Bind to the dashboard date selector like the other energy graphs: its period is what we plot.
+  protected hassSubscribeRequiredHostProps = ["_config"];
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
+        this._period = { start: data.start, end: data.end };
+      }),
+    ];
   }
 
   public connectedCallback(): void {
@@ -93,21 +103,15 @@ export class HuiEnergySolarSceneTimelineCard
     this._sync = getSolarSceneSync(
       this._config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY
     );
-    this._unsub = this._sync.subscribe((state) => {
-      this._state = state;
+    this._unsub = this._sync.subscribe((state: SolarSceneSyncState) => {
+      this._instant = state.instant;
     });
   }
 
-  private _cursorMinute(): number {
-    return this._state.live ? nowMinute() : this._state.minute;
-  }
-
   protected render() {
-    if (!this.hass || !this._config) return nothing;
-    const minute = this._cursorMinute();
-    const label = `${String(Math.floor(minute / 60)).padStart(2, "0")}:${String(
-      Math.floor(minute % 60)
-    ).padStart(2, "0")}`;
+    if (!this.hass || !this._config || !this._period) return nothing;
+    const start = this._period.start.getTime();
+    const end = (this._period.end ?? new Date()).getTime();
     return html`
       <ha-card>
         ${this._config.title
@@ -118,38 +122,58 @@ export class HuiEnergySolarSceneTimelineCard
         <div class="content">
           <ha-chart-base
             .hass=${this.hass}
-            .data=${this._series(this._forecast, minute)}
-            .options=${this._options()}
+            .data=${this._series(start, end)}
+            .options=${this._options(start, end)}
             chart-type="line"
             height="150px"
+            @pointerdown=${this._onPointerDown}
+            @pointermove=${this._onPointerMove}
+            @pointerup=${this._onPointerUp}
+            @pointercancel=${this._onPointerUp}
           ></ha-chart-base>
-          <div class="row">
-            <span class="time">${label}</span>
-            <input
-              type="range"
-              min="0"
-              max=${DAY_MIN - 1}
-              .value=${String(minute)}
-              @input=${this._onScrub}
-            />
-            <button
-              class=${this._state.live ? "live on" : "live"}
-              @click=${this._toggleLive}
-            >
-              ${this._state.live ? "● live" : "live"}
-            </button>
-          </div>
         </div>
       </ha-card>
     `;
   }
 
-  private _onScrub(ev: Event): void {
-    this._sync?.setMinute(Number((ev.target as HTMLInputElement).value));
+  // Drag (or tap) the chart to scrub the scene, like the Helios timeline; releasing keeps the
+  // picked instant. Landing within a few px of the live "now" column snaps back to live.
+  private _onPointerDown(ev: PointerEvent): void {
+    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
+    this._dragging = true;
+    this._scrubAt(ev);
   }
 
-  private _toggleLive(): void {
-    this._sync?.setLive(!this._state.live);
+  private _onPointerMove(ev: PointerEvent): void {
+    if (this._dragging) this._scrubAt(ev);
+  }
+
+  private _onPointerUp(ev: PointerEvent): void {
+    this._dragging = false;
+    try {
+      (ev.currentTarget as HTMLElement).releasePointerCapture(ev.pointerId);
+    } catch {
+      /* capture may already be released */
+    }
+  }
+
+  private _scrubAt(ev: PointerEvent): void {
+    const chart = this._chartBase?.chart;
+    if (!chart || !this._period) return;
+    const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ev.clientX - rect.left;
+    const start = this._period.start.getTime();
+    const end = (this._period.end ?? new Date()).getTime();
+    const now = Date.now();
+    if (now >= start && now <= end) {
+      const nowX = chart.convertToPixel({ gridIndex: 0 }, [now, 0]) as number[];
+      if (Math.abs(x - nowX[0]) <= 8) {
+        this._sync?.setLive();
+        return;
+      }
+    }
+    const v = chart.convertFromPixel({ gridIndex: 0 }, [x, 0]) as number[];
+    this._sync?.setInstant(Math.min(end, Math.max(start, v[0])));
   }
 
   private _findEntity(needle: string): HassEntity | undefined {
@@ -168,73 +192,58 @@ export class HuiEnergySolarSceneTimelineCard
       | { datetime: string; watts: number }[]
       | undefined;
     if (!Array.isArray(points)) return;
-    const midnight = dayStart();
-    this._forecast = points
-      .map((p) => ({
-        minute: (new Date(p.datetime).valueOf() - midnight) / 60000,
-        watts: p.watts,
-      }))
-      .filter((p) => p.minute >= -60 && p.minute <= 1500);
-  }
-
-  private _powerAt(minute: number): number {
-    const forecast = this._forecast;
-    if (!forecast.length) {
-      const x = (minute - 780) / 240; // placeholder bell curve until a forecast is present
-      return Math.max(0, 4200 * Math.exp(-x * x));
-    }
-    let before = forecast[0];
-    let after = forecast[forecast.length - 1];
-    for (let i = 0; i < forecast.length - 1; i++)
-      if (forecast[i].minute <= minute && forecast[i + 1].minute >= minute) {
-        before = forecast[i];
-        after = forecast[i + 1];
-        break;
-      }
-    const span = after.minute - before.minute || 1;
-    return (
-      before.watts +
-      ((after.watts - before.watts) * (minute - before.minute)) / span
-    );
+    this._forecast = points.map((p) => ({
+      t: new Date(p.datetime).valueOf(),
+      watts: p.watts,
+    }));
   }
 
   private _curve = memoizeOne(
-    (_forecast: { minute: number; watts: number }[]): [number, number][] => {
-      const midnight = dayStart();
-      const data: [number, number][] = [];
-      for (let minute = 0; minute <= DAY_MIN; minute += SAMPLE_STEP_MIN)
-        data.push([midnight + minute * 60000, this._powerAt(minute) / 1000]);
-      return data;
-    }
+    (
+      forecast: { t: number; watts: number }[],
+      start: number,
+      end: number
+    ): [number, number][] =>
+      forecast
+        .filter((p) => p.t >= start && p.t <= end)
+        .map((p) => [p.t, p.watts / 1000])
   );
 
-  private _series(
-    forecast: { minute: number; watts: number }[],
-    cursorMinute: number
-  ): LineSeriesOption[] {
+  private _colors = memoizeOne((dark: boolean) => {
     const styles = getComputedStyle(this);
-    const dark = this.hass.themes.darkMode;
-    const line = getEnergyColor(
-      styles,
-      dark,
-      false,
-      false,
-      "--energy-solar-color"
-    );
-    const fill = getEnergyColor(
-      styles,
-      dark,
-      true,
-      false,
-      "--energy-solar-color"
-    );
+    return {
+      line: getEnergyColor(styles, dark, false, false, "--energy-solar-color"),
+      fill: getEnergyColor(styles, dark, true, false, "--energy-solar-color"),
+      nowColor:
+        styles.getPropertyValue("--secondary-text-color").trim() || "#888",
+    };
+  });
+
+  private _series(start: number, end: number): LineSeriesOption[] {
+    const { line, fill, nowColor } = this._colors(this.hass.themes.darkMode);
+    // Always show a present-time cursor; add the picked-instant cursor while scrubbing.
+    const now = Date.now();
+    const cursors: {
+      xAxis: number;
+      lineStyle: { color: string; width: number; type?: "solid" | "dashed" };
+    }[] = [];
+    if (now >= start && now <= end)
+      cursors.push({
+        xAxis: now,
+        lineStyle: { color: nowColor, width: 1.5, type: "dashed" },
+      });
+    if (this._instant !== null)
+      cursors.push({
+        xAxis: Math.min(end, Math.max(start, this._instant)),
+        lineStyle: { color: "#ffc107", width: 2 },
+      });
     return [
       {
         id: "curve",
         type: "line",
         smooth: true,
         showSymbol: false,
-        data: this._curve(forecast),
+        data: this._curve(this._forecast, start, end),
         lineStyle: { width: 2, color: line },
         areaStyle: { color: fill, opacity: 0.4 },
       },
@@ -246,35 +255,36 @@ export class HuiEnergySolarSceneTimelineCard
           silent: true,
           symbol: "none",
           label: { show: false },
-          lineStyle: { color: "#ffc107", width: 2 },
-          data: [{ xAxis: dayStart() + cursorMinute * 60000 }],
+          data: cursors,
         },
       },
     ];
   }
 
-  private _options(): HaECOption {
-    const midnight = dayStart();
+  // Memoised by period: getCommonOptions does date math, yet only the cursor moves while scrubbing,
+  // not the axis, so the axis is rebuilt only when the selected period changes.
+  private _options = memoizeOne((start: number, end: number): HaECOption => {
+    const xAxis = getCommonOptions(
+      new Date(start),
+      new Date(end),
+      this.hass.locale,
+      this.hass.config,
+      "kW"
+    ).xAxis;
     return {
-      xAxis: {
-        type: "time",
-        min: midnight,
-        max: midnight + DAY_MIN * 60000,
-        axisLabel: {
-          formatter: (value: number) =>
-            formatTime(new Date(value), this.hass.locale, this.hass.config),
-        },
-      },
+      xAxis,
       yAxis: {
         type: "value",
         name: "kW",
+        nameGap: 8,
         min: 0,
+        splitNumber: 3,
         axisLabel: {
           formatter: (value: number) => formatNumber(value, this.hass.locale),
         },
         splitLine: { show: true },
       },
-      grid: { top: 15, bottom: 0, left: 1, right: 1, containLabel: true },
+      grid: { top: 24, bottom: 0, left: 1, right: 1, containLabel: true },
       tooltip: {
         trigger: "axis",
         formatter: (params: TopLevelFormatterParams) => {
@@ -282,7 +292,7 @@ export class HuiEnergySolarSceneTimelineCard
             Array.isArray(params) ? params[0] : params
           ) as CallbackDataParams;
           const [ts, kw] = point.value as [number, number];
-          return html`${formatTime(
+          return html`${formatShortDateTime(
             new Date(ts),
             this.hass.locale,
             this.hass.config
@@ -291,7 +301,7 @@ export class HuiEnergySolarSceneTimelineCard
         },
       },
     };
-  }
+  });
 
   static styles = css`
     .card-header {
@@ -303,33 +313,9 @@ export class HuiEnergySolarSceneTimelineCard
     .content {
       padding: 8px 16px 16px;
     }
-    .row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 8px;
-    }
-    .time {
-      font-variant-numeric: tabular-nums;
-      color: var(--secondary-text-color);
-      min-width: 44px;
-    }
-    input[type="range"] {
-      flex: 1;
-      accent-color: var(--energy-solar-color, #ff9800);
-    }
-    button.live {
-      border: none;
-      border-radius: 14px;
-      padding: 4px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      color: var(--secondary-text-color);
-      background: var(--secondary-background-color);
-    }
-    button.live.on {
-      color: #fff;
-      background: var(--energy-solar-color, #ff9800);
+    ha-chart-base {
+      cursor: ew-resize;
+      touch-action: none;
     }
   `;
 }
