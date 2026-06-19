@@ -16,6 +16,7 @@ import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
   INITIAL_UPLOAD_FORM_DATA,
+  isSupportedBackupFile,
   SUPPORTED_UPLOAD_FORMAT,
   uploadBackup,
   type BackupUploadFileFormData,
@@ -141,7 +142,7 @@ export class DialogUploadBackup
 
   private async _upload() {
     const { file } = this._formData!;
-    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
+    if (!file || !isSupportedBackupFile(file)) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.backup.dialogs.upload.unsupported.title"
