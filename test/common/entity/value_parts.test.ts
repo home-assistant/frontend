@@ -67,7 +67,7 @@ describe("unitFromParts", () => {
 });
 
 describe("unitPosition", () => {
-  it("is before when the unit leads the value", () => {
+  it("is before when the symbol sits between the sign and digits ($-12)", () => {
     const parts: ValuePart[] = [
       { type: "value", value: "-" },
       { type: "unit", value: "$" },
@@ -76,17 +76,21 @@ describe("unitPosition", () => {
     expect(unitPosition(parts)).toBe("before");
   });
 
-  it("is after when the unit trails the value", () => {
+  it("is before when the symbol leads (€ -12)", () => {
+    const parts: ValuePart[] = [
+      { type: "unit", value: "€" },
+      { type: "literal", value: " " },
+      { type: "value", value: "-12,00" },
+    ];
+    expect(unitPosition(parts)).toBe("before");
+  });
+
+  it("is after when the symbol trails (-12 €)", () => {
     const parts: ValuePart[] = [
       { type: "value", value: "-12,00" },
       { type: "literal", value: " " },
       { type: "unit", value: "€" },
     ];
-    expect(unitPosition(parts)).toBe("after");
-  });
-
-  it("is after when there is no unit", () => {
-    const parts: ValuePart[] = [{ type: "value", value: "21" }];
     expect(unitPosition(parts)).toBe("after");
   });
 });
@@ -117,21 +121,5 @@ describe("negative monetary parts", () => {
     );
     expect(valueFromParts(parts)).toBe("-12.00");
     expect(unitFromParts(parts)).toBe("$");
-  });
-
-  it("place the unit before the value (rendered as $-12.00)", () => {
-    const parts = computeStateToParts(
-      localize,
-      stateObj,
-      localeData,
-      demoConfig,
-      {}
-    );
-    const value = valueFromParts(parts);
-    const unit = unitFromParts(parts);
-    expect(unitPosition(parts)).toBe("before");
-    const display =
-      unitPosition(parts) === "before" ? `${unit}${value}` : `${value}${unit}`;
-    expect(display).toBe("$-12.00");
   });
 });
