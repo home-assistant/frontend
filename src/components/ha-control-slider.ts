@@ -388,7 +388,10 @@ export class HaControlSlider extends LitElement {
   private _isVisuallyInverted() {
     let inverted = this.inverted;
 
-    if (mainWindow.document.dir === "rtl") {
+    // RTL only mirrors the horizontal axis. A vertical slider always fills
+    // bottom-to-top regardless of text direction, so it must not be flipped,
+    // otherwise its value mapping ends up upside down in RTL languages.
+    if (!this.vertical && mainWindow.document.dir === "rtl") {
       inverted = !inverted;
     }
 
