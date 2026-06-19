@@ -11220,6 +11220,8 @@
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_solar_overview_title": "Solar overview",
+          "energy_solar_scene_title": "Solar scene",
+          "energy_solar_scene_timeline_title": "Solar scene timeline",
           "energy_solar_overview": {
             "chart_production": "Show production in chart",
             "chart_grid": "Show grid in chart",

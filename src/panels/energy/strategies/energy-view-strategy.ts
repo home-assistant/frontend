@@ -202,9 +202,15 @@ export class EnergyViewStrategy extends ReactiveElement {
       !isEnergyCardHidden("electricity", "energy-solar-overview", hidden)
     ) {
       mainCards.push({
-        type: "energy-overview",
+        type: "energy-solar-scene",
+        title: hass.localize("ui.panel.energy.cards.energy_solar_scene_title"),
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
+      mainCards.push({
+        type: "energy-solar-scene-timeline",
         title: hass.localize(
-          "ui.panel.energy.cards.energy_solar_overview_title"
+          "ui.panel.energy.cards.energy_solar_scene_timeline_title"
         ),
         collection_key: collectionKey,
         grid_options: { columns: 36 },
