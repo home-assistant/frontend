@@ -73,6 +73,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public static getDefaultConfig(): Partial<TileCardConfig> {
+    return {
+      features_position: "bottom",
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: TileCardConfig;
