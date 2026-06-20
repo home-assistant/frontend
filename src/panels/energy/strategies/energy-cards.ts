@@ -14,6 +14,7 @@ export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
 export type EnergyViewPath =
   | "overview"
   | "electricity"
+  | "solar"
   | "gas"
   | "water"
   | "now";
@@ -140,12 +141,6 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
   // --- Electricity ---
   entry(
     "electricity",
-    "energy-solar-overview",
-    "ui.panel.energy.cards.energy_solar_overview_title",
-    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
-  ),
-  entry(
-    "electricity",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
     (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
@@ -215,6 +210,56 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "energy-sankey",
     "ui.panel.energy.cards.energy_sankey_title",
     (p) => hasDeviceConsumption(p)
+  ),
+
+  // --- Solar ---
+  entry(
+    "solar",
+    "energy-solar-scene",
+    "ui.panel.energy.cards.energy_solar_scene_title",
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
+  ),
+  entry(
+    "solar",
+    "energy-solar-scene-timeline",
+    "ui.panel.energy.cards.energy_solar_scene_timeline_title",
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
+  ),
+  entry(
+    "solar",
+    "energy-distribution",
+    "ui.panel.energy.cards.energy_distribution_title",
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
+  ),
+  entry(
+    "solar",
+    "energy-grid-balance",
+    "ui.panel.energy.cards.energy_grid_balance_title",
+    (p) => hasGridSource(p) && hasReturn(p)
+  ),
+  entry(
+    "solar",
+    "energy-grid-neutrality-gauge",
+    "ui.panel.energy.cards.energy_grid_neutrality_gauge_title",
+    (p) => hasReturn(p)
+  ),
+  entry(
+    "solar",
+    "energy-solar-consumed-gauge",
+    "ui.panel.energy.cards.energy_solar_consumed_gauge_title",
+    (p) => hasSolar(p) && hasReturn(p)
+  ),
+  entry(
+    "solar",
+    "energy-self-sufficiency-gauge",
+    "ui.panel.energy.cards.energy_self_sufficiency_gauge_title",
+    (p) => hasSolar(p) && hasGridSource(p)
+  ),
+  entry(
+    "solar",
+    "energy-solar-graph",
+    "ui.panel.energy.cards.energy_solar_graph_title",
+    (p) => hasSolar(p)
   ),
 
   // --- Gas ---

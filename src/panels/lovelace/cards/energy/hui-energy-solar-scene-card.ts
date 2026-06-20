@@ -10,11 +10,22 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../../../energy/constants";
 import type { SolarSceneSync } from "./common/solar-scene-sync";
+import type { ChartTarget } from "./common/solar-scene-sync";
 import { getSolarSceneSync } from "./common/solar-scene-sync";
+import type { LivePower } from "./common/solar-scene-power";
+import { forecastSeries, livePower } from "./common/solar-scene-power";
+import type { EnergyData, EnergySolarForecasts } from "../../../../data/energy";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-icon";
 import "./common/hui-energy-graph-chip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getEnergySolarForecasts,
+  getSuggestedPeriod,
+} from "../../../../data/energy";
+import type { StatisticValue } from "../../../../data/recorder";
+import { fetchStatistics } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { formatShortDateTime } from "../../../../common/datetime/format_date_time";
 
@@ -22,6 +33,9 @@ type Point = [number, number];
 
 const DEG = Math.PI / 180;
 const EARTH_CIRCUMFERENCE_M = 40075016.686;
+// Below this many watts the battery is treated as idle: its power chip and leader hide so an idle
+// battery does not sit there reading "0 W".
+const IDLE_W = 5;
 
 // Solar position (SunCalc-derived): azimuth from NORTH clockwise, altitude, both in degrees.
 function sunPosition(date: Date, latitude: number, longitude: number) {
@@ -116,7 +130,7 @@ function distanceToHome(polygon: Point[]): number {
   return nearest;
 }
 
-// Ambient colour ported from the standalone Helios engine/lighting.ts (pure of sun altitude).
+// Ambient colour as a pure function of the sun's altitude.
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 function mixHex(hexA: string, hexB: string, t: number): string {
   const a = parseInt(hexA.slice(1), 16);
@@ -226,15 +240,15 @@ const DEFAULTS = {
   ground_radius: 3, // 7x7 @256px = 1792px canvas, under the 2048 GPU limit (Pi-0 safe)
   tilt_deg: 50,
   perspective: 1200,
-  target_height_m: 10, // aim 10 m above the home (like Helios) to open up the sky
-  height_scale: 1.0, // real OSM render height, matching Helios (no exaggeration)
+  target_height_m: 10, // aim 10 m above the home to open up the sky
+  height_scale: 1.0, // real OSM render height (no exaggeration)
   osm_radius_m: 100,
   home_radius_m: 15, // every building within 15 m of the GPS point is "the home"
   default_height_m: 6,
 };
 
 const TILE_PX = 256;
-const PITCH_MIN = 15; // Helios CAMERA_PITCH_MIN/MAX_DEG
+const PITCH_MIN = 15; // camera pitch bounds (degrees)
 const PITCH_MAX = 55;
 const DARK_FILTER =
   "invert(0.9) hue-rotate(170deg) brightness(1.3) contrast(1) saturate(0.4)";
@@ -249,11 +263,30 @@ export class HuiEnergySolarSceneCard
   @state() private _config!: EnergySolarSceneCardConfig & typeof DEFAULTS;
   @state() private _instant: number | null = null;
   @state() private _period?: { start: Date; end?: Date };
+  @state() private _power?: LivePower;
+  @state() private _target: ChartTarget = "production";
+  @state() private _energyData?: EnergyData;
+
+  // Battery SoC sampled from its own stat fetch so the chip can follow the scrub (the energy data
+  // carries no SoC). Merged mean buckets across batteries, sorted by start.
+  @state() private _socBuckets: StatisticValue[] = [];
+
+  private _socKey = "";
+
+  // Solar forecast: when the scrubbed instant is in the future the PV chip shows the forecast value
+  // (italic, low opacity), since there's no actual production yet. Fetched like the timeline does.
+  @state() private _forecasts?: EnergySolarForecasts;
+
+  private _forecastFetched = false;
+
+  @state() private _pvPredicted = false;
 
   private _sync?: SolarSceneSync;
   private _unsub?: () => void;
-  private _bearing = 0;
-  private _tilt = DEFAULTS.tilt_deg;
+  // Initial camera: facing due south (the sun's side in the northern hemisphere) and at the lowest
+  // allowed tilt (most overhead). The drag still moves freely within [PITCH_MIN, PITCH_MAX].
+  private _bearing = 180;
+  private _tilt = PITCH_MIN;
   private _pxPerMetre = 4;
   private _centreX = 0;
   private _centreY = 0;
@@ -294,7 +327,10 @@ export class HuiEnergySolarSceneCard
       getEnergyDataCollection(this.hass, {
         key: this._config?.collection_key,
       }).subscribe((data) => {
+        this._energyData = data;
         this._period = { start: data.start, end: data.end };
+        this._fetchSoc();
+        this._fetchForecasts();
         this._scheduleDraw();
       }),
     ];
@@ -330,6 +366,7 @@ export class HuiEnergySolarSceneCard
     );
     this._unsub = this._sync.subscribe((state) => {
       this._instant = state.instant;
+      this._target = state.target;
       this._scheduleDraw();
     });
   }
@@ -338,7 +375,113 @@ export class HuiEnergySolarSceneCard
     this._maybeBuild();
   }
 
+  protected willUpdate(): void {
+    // Resolve the live chip values before every render so they appear as soon as the energy data
+    // and hass are both available, and follow the scrubbed instant (SoC included).
+    if (this.hass && this._energyData) {
+      const power = livePower(
+        this._energyData,
+        this.hass.states,
+        this._instant,
+        this._instant != null ? this._socAt(this._instant) : undefined
+      );
+      // Scrubbing into the future: the PV chip shows the forecast (no actual production yet).
+      const t = this._instant ?? Date.now();
+      const forecastPv = t > Date.now() + 60000 ? this._forecastPvAt(t) : null;
+      this._pvPredicted = forecastPv != null;
+      this._power = forecastPv != null ? { ...power, pv: forecastPv } : power;
+    }
+  }
+
+  // Forecast PV power (W) for the hour containing a future instant, or null when none.
+  private _forecastPvAt(t: number): number | null {
+    if (!this._forecasts || !this._energyData || !this._period) return null;
+    const series = forecastSeries(
+      this._forecasts,
+      this._energyData.prefs,
+      this._period.start.getTime(),
+      (this._period.end ?? new Date()).getTime()
+    );
+    const hour = new Date(t);
+    hour.setMinutes(0, 0, 0);
+    const ht = hour.getTime();
+    for (const [ts, kw] of series) if (ts === ht) return kw * 1000;
+    return null;
+  }
+
+  private async _fetchForecasts(): Promise<void> {
+    const hasForecast = this._energyData?.prefs.energy_sources.some(
+      (s) => s.type === "solar" && s.config_entry_solar_forecast?.length
+    );
+    if (!hasForecast || this._forecastFetched) return;
+    this._forecastFetched = true;
+    try {
+      this._forecasts = await getEnergySolarForecasts(this.hass);
+    } catch {
+      this._forecasts = undefined;
+    }
+  }
+
+  // Merged battery-SoC mean at a scrubbed instant, or null when no bucket covers it.
+  private _socAt(instant: number): number | null {
+    for (const b of this._socBuckets)
+      if (instant >= b.start && instant < b.end && b.mean != null)
+        return b.mean;
+    return null;
+  }
+
+  private async _fetchSoc(): Promise<void> {
+    const ids =
+      this._energyData?.prefs.energy_sources.flatMap((s) =>
+        s.type === "battery" && s.stat_soc ? [s.stat_soc] : []
+      ) ?? [];
+    if (!ids.length || !this._period) {
+      this._socBuckets = [];
+      return;
+    }
+    const start = this._period.start;
+    const end = this._period.end ?? new Date();
+    const key = `${ids.join(",")}|${start.getTime()}|${end.getTime()}`;
+    if (key === this._socKey) return;
+    this._socKey = key;
+    try {
+      const stats = await fetchStatistics(
+        this.hass,
+        start,
+        end,
+        ids,
+        getSuggestedPeriod(start, end),
+        undefined,
+        ["mean"]
+      );
+      // Average the batteries per bucket so a multi-battery home reads one SoC, like the chip.
+      const byStart: Record<number, { end: number; sum: number; n: number }> =
+        {};
+      for (const id of ids)
+        for (const b of stats[id] ?? [])
+          if (b.mean != null) {
+            const acc = byStart[b.start] ?? { end: b.end, sum: 0, n: 0 };
+            acc.sum += b.mean;
+            acc.n += 1;
+            byStart[b.start] = acc;
+          }
+      this._socBuckets = Object.keys(byStart)
+        .map((ts): StatisticValue => {
+          const k = Number(ts);
+          return {
+            start: k,
+            end: byStart[k].end,
+            mean: byStart[k].sum / byStart[k].n,
+          };
+        })
+        .sort((a, b) => a.start - b.start);
+    } catch {
+      this._socBuckets = [];
+    }
+  }
+
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps); // SubscribeMixin subscribes to the energy collection here
     this._connectSync();
     this._maybeBuild();
     if (changedProps.has("hass") && this.hass && this._instant === null) {
@@ -684,12 +827,136 @@ export class HuiEnergySolarSceneCard
     const sun = sunPosition(date, latitude, longitude);
     const palette = this._palette!;
 
+    // Anchor the energy chips to the home's projected position via CSS vars (they keep a fixed
+    // screen offset from it), and draw the leader lines connecting each chip back to the home.
+    const home = this._project(0, 0, 0);
+    this.style.setProperty("--home-x", `${home[0].toFixed(1)}px`);
+    this.style.setProperty("--home-y", `${home[1].toFixed(1)}px`);
+
     svg.innerHTML = [
       this._renderNightShade(sun.altitude, width, height),
       this._renderShadows(sun),
       this._renderBuildings(sun.altitude, palette),
       this._renderSky(sun, date, width, height, palette),
+      this._renderLeaders(home),
     ].join("");
+  }
+
+  // Leaders from each present chip to the home: an L-path (or a straight leg)
+  // in the metric's colour with a bead riding it at a speed proportional to the live power. The
+  // stacked low-carbon / SoC chips link to the chip below with a static hairline.
+  private _renderLeaders(home: Point): string {
+    const p = this._power;
+    if (!p) return "";
+    const hx = home[0];
+    const hy = home[1];
+    // Cluster geometry (must mirror the .chip CSS transforms).
+    const LIFT = 28;
+    const SIDE = 84;
+    const HALF_GAP = 30; // CHIP_STACK_GAP_PX / 2
+    const PV_OFF = 70;
+    const PILL_H = 14; // home / battery pill half height
+    const PILL_QX = 13;
+    const FILLET = 12;
+    const PV_HW = 28;
+    const PV_HH = 11;
+    const homeX = hx;
+    const homeY = hy - LIFT;
+    const pvX = hx;
+    const pvY = hy - LIFT - PV_OFF;
+    const powerX = hx + SIDE;
+    const powerY = hy - LIFT - HALF_GAP;
+    const socX = hx + SIDE;
+    const socY = hy - LIFT + HALF_GAP;
+    const gridX = hx - SIDE;
+    const gridY = hy - LIFT + HALF_GAP;
+    const lcX = hx - SIDE;
+    const lcY = hy - LIFT - HALF_GAP;
+
+    const dur = (w: number): number =>
+      Math.max(0.6, Math.min(6, (5000 / Math.max(50, Math.abs(w))) * 0.8));
+    const beaded = (path: string, color: string, w: number): string =>
+      `<path class="chip-leader" style="stroke:${color}" fill="none" d="${path}"/>` +
+      (Math.abs(w) > IDLE_W
+        ? `<circle class="leader-bead" r="3" fill="${color}"><animateMotion dur="${dur(w).toFixed(2)}s" repeatCount="indefinite" path="${path}"/></circle>`
+        : "");
+    const plain = (path: string, color: string): string =>
+      `<path class="chip-leader" style="stroke:${color}" fill="none" d="${path}"/>`;
+    // Rounded L from a chip to the home pill: horizontal leg, fillet, vertical leg to the pill edge.
+    const lToHome = (cx: number, cy: number, nudge: number): string => {
+      const dirH = homeX > cx ? 1 : -1;
+      const dirV = homeY > cy ? 1 : -1;
+      const sx = cx + dirH * nudge;
+      const ex = homeX - dirH * PILL_QX;
+      const ey = homeY - dirV * PILL_H;
+      const r = Math.min(FILLET, Math.abs(ex - sx) / 2, Math.abs(ey - cy) / 2);
+      const preX = ex - dirH * r;
+      const postY = cy + dirV * r;
+      return `M ${sx.toFixed(1)},${cy.toFixed(1)} L ${preX.toFixed(1)},${cy.toFixed(1)} Q ${ex.toFixed(1)},${cy.toFixed(1)} ${ex.toFixed(1)},${postY.toFixed(1)} L ${ex.toFixed(1)},${ey.toFixed(1)}`;
+    };
+    // Rounded L between two points, vertical leg first.
+    const lVFirst = (
+      sx: number,
+      sy: number,
+      ex: number,
+      ey: number
+    ): string => {
+      const dirH = ex > sx ? 1 : -1;
+      const dirV = ey > sy ? 1 : -1;
+      const r = Math.min(FILLET, Math.abs(ex - sx) / 2, Math.abs(ey - sy) / 2);
+      const preY = ey - dirV * r;
+      const postX = sx + dirH * r;
+      return `M ${sx.toFixed(1)},${sy.toFixed(1)} L ${sx.toFixed(1)},${preY.toFixed(1)} Q ${sx.toFixed(1)},${ey.toFixed(1)} ${postX.toFixed(1)},${ey.toFixed(1)} L ${ex.toFixed(1)},${ey.toFixed(1)}`;
+    };
+
+    const solar = "var(--energy-solar-color)";
+    let s = "";
+    // PV -> home: straight drop to the pill border (PV shares the home x).
+    if (p.pv != null)
+      s += beaded(
+        `M ${pvX.toFixed(1)},${(pvY + PV_HH).toFixed(1)} L ${homeX.toFixed(1)},${(homeY - PILL_H).toFixed(1)}`,
+        solar,
+        p.pv
+      );
+    // Grid -> home: rounded L from the bottom-left.
+    if (p.grid != null)
+      s += beaded(
+        lToHome(gridX, gridY, 22),
+        p.grid >= 0
+          ? "var(--energy-grid-consumption-color)"
+          : "var(--energy-grid-return-color)",
+        p.grid
+      );
+    // Low-carbon -> grid: straight vertical down into the grid chip below it.
+    if (p.lowCarbon != null)
+      s += plain(
+        `M ${lcX.toFixed(1)},${(lcY + 16).toFixed(1)} L ${gridX.toFixed(1)},${(gridY - 16).toFixed(1)}`,
+        "var(--energy-non-fossil-color)"
+      );
+    // Battery: SoC docks on the Power chip (level hairline); PV feeds Power while charging; SoC feeds
+    // home while discharging.
+    if (p.battery != null) {
+      const battColor =
+        p.battery >= 0
+          ? "var(--energy-battery-out-color)"
+          : "var(--energy-battery-in-color)";
+      s += plain(
+        `M ${socX.toFixed(1)},${(socY - PILL_H).toFixed(1)} L ${powerX.toFixed(1)},${(powerY + PILL_H).toFixed(1)}`,
+        "var(--energy-battery-out-color)"
+      );
+      if (p.battery < -IDLE_W) {
+        // Charging: PV -> Power chip, drop then right.
+        s += beaded(
+          lVFirst(pvX + PV_HW / 2, pvY + PV_HH, powerX - 30, powerY),
+          solar,
+          p.battery
+        );
+      } else if (p.battery > IDLE_W) {
+        // Discharging: SoC -> home.
+        s += beaded(lToHome(socX, socY, 22), battColor, p.battery);
+      }
+    }
+    return s;
   }
 
   private _renderNightShade(
@@ -777,7 +1044,7 @@ export class HuiEnergySolarSceneCard
     return svg;
   }
 
-  // Sun path on a dome around the home, ported from the Helios arc: depth-modulated stroke (far
+  // Sun path on a dome around the home: depth-modulated stroke (far
   // thin, near thick), dark outline under a sun-colour pass, dotted underground leg, and a
   // four-layer disc whose inner fill and halo scale with (clear-sky) irradiance.
   private _renderSky(
@@ -790,7 +1057,7 @@ export class HuiEnergySolarSceneCard
     const { latitude, longitude } = this.hass.config;
     const DRAW_ALT = -12; // draw a short dotted dip below the horizon
 
-    // World-space arc like Helios: a celestial dome of radius R metres around the home, projected
+    // World-space arc: a celestial dome of radius R metres around the home, projected
     // through the same perspective as the buildings. R is scaled so the projected arc fills ~0.41
     // of the smaller side; the scale comes from an 8-direction probe whose MAX projected distance
     // is the ellipse's semi-major axis, invariant to the camera bearing, so the arc keeps a
@@ -874,9 +1141,35 @@ export class HuiEnergySolarSceneCard
     const fill = Math.sqrt(Math.min(1, wm2 / 1000));
     const r = (10 + 10 * near(s.depth)) * scale;
     const day = sun.altitude > -2;
+    // The ray docks on the nearest point of the PV chip's pill outline, gliding along it as
+    // the sun arcs; with no PV chip it goes to the home. A bead rides it, paced by irradiance.
+    let rayX = home.x;
+    let rayY = home.y;
+    if (this._power?.pv != null) {
+      const cx = home.x;
+      const cy = home.y - 98; // PV chip centre (cluster lift 28 + PV offset 70)
+      const halfW = 44;
+      const halfH = 14;
+      const straightHalfW = Math.max(0, halfW - halfH);
+      const ex = sunX - cx;
+      const ey = sunY - cy;
+      if (Math.abs(ex) <= straightHalfW) {
+        rayX = sunX;
+        rayY = cy + (ey >= 0 ? 1 : -1) * halfH;
+      } else {
+        const cornerX = cx + (ex >= 0 ? 1 : -1) * straightHalfW;
+        const dx = sunX - cornerX;
+        const dy = sunY - cy;
+        const dist = Math.hypot(dx, dy) || 1;
+        rayX = cornerX + (halfH * dx) / dist;
+        rayY = cy + (halfH * dy) / dist;
+      }
+    }
+    const rayDur = (1.6 - fill).toFixed(2);
     const ray =
       day && fill > 0
-        ? `<line class="solar-ray" style="--sun-flow-duration:${(1.6 - fill).toFixed(2)}s" x1="${sunX.toFixed(1)}" y1="${sunY.toFixed(1)}" x2="${home.x.toFixed(1)}" y2="${home.y.toFixed(1)}" stroke="${palette.sun}"/>`
+        ? `<line class="solar-ray" style="--sun-flow-duration:${rayDur}s" x1="${sunX.toFixed(1)}" y1="${sunY.toFixed(1)}" x2="${rayX.toFixed(1)}" y2="${rayY.toFixed(1)}" stroke="${palette.sun}"/>` +
+          `<circle class="leader-bead" r="3" fill="${palette.sun}"><animateMotion dur="${rayDur}s" repeatCount="indefinite" path="M ${sunX.toFixed(1)},${sunY.toFixed(1)} L ${rayX.toFixed(1)},${rayY.toFixed(1)}"/></circle>`
         : "";
     this._positionSunChip(sunX, sunY, Math.round(wm2), day);
     const c = `cx="${sunX.toFixed(1)}" cy="${sunY.toFixed(1)}"`;
@@ -913,6 +1206,103 @@ export class HuiEnergySolarSceneCard
     chip.style.top = `${Math.max(28, y - 18)}px`;
   }
 
+  private _fmtPower(w: number): string {
+    return Math.abs(w) >= 1000
+      ? `${formatNumber(w / 1000, this.hass.locale, { maximumFractionDigits: 1 })} kW`
+      : `${Math.round(w)} W`;
+  }
+
+  private _chip(
+    key: string,
+    icon: string,
+    color: string,
+    value: string,
+    target: ChartTarget | null,
+    predicted = false
+  ) {
+    return html`<div
+      class="chip ${key} ${target ? "clickable" : ""} ${target &&
+      this._target === target
+        ? "is-active"
+        : ""} ${predicted ? "is-predicted" : ""}"
+      style="--chip-color:${color}"
+      role=${target ? "button" : nothing}
+      @click=${() => target && this._sync?.setTarget(target)}
+    >
+      <ha-icon icon=${icon}></ha-icon>
+      <span>${value}</span>
+    </div>`;
+  }
+
+  // Energy chips ringed around the home, each in its metric colour; clicking retargets the timeline.
+  private _renderChips() {
+    const p = this._power;
+    if (!p) return nothing;
+    return html`
+      ${p.home != null
+        ? this._chip(
+            "home",
+            "mdi:home",
+            "var(--primary-color)",
+            this._fmtPower(p.home),
+            "home"
+          )
+        : nothing}
+      ${p.pv != null
+        ? this._chip(
+            "pv",
+            "mdi:solar-power",
+            "var(--energy-solar-color)",
+            this._fmtPower(p.pv),
+            "production",
+            this._pvPredicted
+          )
+        : nothing}
+      ${p.grid != null
+        ? this._chip(
+            "grid",
+            p.grid >= 0
+              ? "mdi:transmission-tower-import"
+              : "mdi:transmission-tower-export",
+            p.grid >= 0
+              ? "var(--energy-grid-consumption-color)"
+              : "var(--energy-grid-return-color)",
+            this._fmtPower(Math.abs(p.grid)),
+            "grid"
+          )
+        : nothing}
+      ${p.lowCarbon != null
+        ? this._chip(
+            "lowcarbon",
+            "mdi:leaf",
+            "var(--energy-non-fossil-color)",
+            this._fmtPower(p.lowCarbon),
+            "lowcarbon"
+          )
+        : nothing}
+      ${p.battery != null
+        ? this._chip(
+            "battery",
+            "mdi:lightning-bolt",
+            p.battery >= 0
+              ? "var(--energy-battery-out-color)"
+              : "var(--energy-battery-in-color)",
+            this._fmtPower(Math.abs(p.battery)),
+            "battery"
+          )
+        : nothing}
+      ${p.soc != null
+        ? this._chip(
+            "soc",
+            "mdi:battery",
+            "var(--energy-battery-out-color)",
+            `${Math.round(p.soc)} %`,
+            "battery-soc"
+          )
+        : nothing}
+    `;
+  }
+
   protected render() {
     if (!this._config || !this.hass) return nothing;
     return html`
@@ -945,6 +1335,7 @@ export class HuiEnergySolarSceneCard
             <ha-icon icon="mdi:white-balance-sunny"></ha-icon>
             <span></span>
           </div>
+          ${this._renderChips()}
           <div
             class="drag"
             @pointerdown=${this._onPointerDown}
@@ -1101,6 +1492,83 @@ export class HuiEnergySolarSceneCard
     .sun-chip ha-icon {
       --mdc-icon-size: 16px;
       color: inherit;
+    }
+    /* Energy chips: same pill recipe as hui-energy-graph-chip, bordered in the metric colour, and
+       anchored to the home via the --home-x / --home-y vars with a fixed per-chip screen offset. */
+    .chip {
+      position: absolute;
+      left: var(--home-x, 50%);
+      top: var(--home-y, 50%);
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      /* Fixed width so every chip lines up regardless of its value. */
+      width: 88px;
+      box-sizing: border-box;
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color, #212121);
+      border: 2px solid var(--chip-color, var(--divider-color));
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: var(--ha-font-size-s, 12px);
+      font-weight: 600;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+      box-shadow: 0 1px 3px var(--shadow-color, rgba(0, 0, 0, 0.2));
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .chip.clickable {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    .chip.is-active {
+      box-shadow:
+        0 1px 3px var(--shadow-color, rgba(0, 0, 0, 0.2)),
+        0 0 12px color-mix(in srgb, var(--chip-color) 70%, transparent);
+    }
+    /* Forecast (future) value: italic and faded, to mark it as predicted. */
+    .chip.is-predicted span {
+      font-style: italic;
+    }
+    .chip.is-predicted {
+      opacity: 0.6;
+    }
+    .chip ha-icon {
+      --mdc-icon-size: 16px;
+      color: inherit;
+    }
+    /* Cluster geometry: the pill cluster is lifted 28px off the home ground point; PV sits 70px
+       above it; the side chips are 84px off the
+       home x; the top/bottom rows are split by a 60px gap (so +/-30 around the cluster). Battery
+       Power top-right, SoC bottom-right; low-carbon top-left, grid bottom-left. */
+    .chip.home {
+      transform: translate(-50%, calc(-50% - 28px));
+    }
+    .chip.pv {
+      transform: translate(-50%, calc(-50% - 98px));
+    }
+    .chip.lowcarbon {
+      transform: translate(calc(-50% - 84px), calc(-50% - 58px));
+    }
+    .chip.grid {
+      transform: translate(calc(-50% - 84px), calc(-50% + 2px));
+    }
+    .chip.battery {
+      transform: translate(calc(-50% + 84px), calc(-50% - 58px));
+    }
+    .chip.soc {
+      transform: translate(calc(-50% + 84px), calc(-50% + 2px));
+    }
+    .chip-leader {
+      stroke-width: 1.5;
+      stroke-opacity: 0.5;
+      stroke-linecap: round;
+    }
+    .leader-bead {
+      opacity: 0.9;
     }
   `;
 }

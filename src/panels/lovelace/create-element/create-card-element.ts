@@ -50,10 +50,6 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-devices-detail-graph-card"),
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
-  "energy-solar-overview": () =>
-    import(
-      "../cards/energy/hui-energy-solar-overview/hui-energy-solar-overview-card"
-    ),
   "energy-solar-scene": () =>
     import("../cards/energy/hui-energy-solar-scene-card"),
   "energy-solar-scene-timeline": () =>

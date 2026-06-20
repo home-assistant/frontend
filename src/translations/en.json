@@ -11195,6 +11195,7 @@
         "title": {
           "overview": "Summary",
           "electricity": "Electricity",
+          "solar": "Solar",
           "gas": "Gas",
           "water": "Water",
           "now": "Now"
@@ -11219,22 +11220,8 @@
           "energy_gas_graph_title": "Gas consumption",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
-          "energy_solar_overview_title": "Solar overview",
           "energy_solar_scene_title": "Solar scene",
           "energy_solar_scene_timeline_title": "Solar scene timeline",
-          "energy_solar_overview": {
-            "chart_production": "Show production in chart",
-            "chart_grid": "Show grid in chart",
-            "chart_battery_charge": "Show battery charge in chart",
-            "chart_battery_power": "Show battery power in chart",
-            "chart_irradiance": "Show irradiance in chart",
-            "weather_open": "Open weather mode",
-            "weather_back": "Back to overview",
-            "live": "Live",
-            "band_low": "Low clouds",
-            "band_mid": "Mid clouds",
-            "band_high": "High clouds"
-          },
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",
           "energy_devices_detail_graph_title": "Individual devices detail usage",

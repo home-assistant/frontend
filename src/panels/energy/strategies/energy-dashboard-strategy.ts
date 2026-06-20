@@ -34,6 +34,14 @@ const ENERGY_VIEW = {
   },
 } as LovelaceStrategyViewConfig;
 
+const SOLAR_VIEW = {
+  path: "solar",
+  strategy: {
+    type: "energy-solar",
+    collection_key: DEFAULT_ENERGY_COLLECTION_KEY,
+  },
+} as LovelaceStrategyViewConfig;
+
 const WATER_VIEW = {
   path: "water",
   strategy: {
@@ -123,6 +131,10 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     const candidateViews: LovelaceStrategyViewConfig[] = [];
     if (hasEnergy || hasDeviceConsumption) {
       candidateViews.push(ENERGY_VIEW);
+    }
+    // New Solar dashboard: shown when panels, a grid import/export, or a battery is configured.
+    if (hasEnergy) {
+      candidateViews.push(SOLAR_VIEW);
     }
     if (hasGas) {
       candidateViews.push(GAS_VIEW);
