@@ -22,9 +22,9 @@ export function parseEntityTime(
   entity: string,
   states: HomeAssistant["states"],
   offset?: HaDurationData | string,
-  _timestamp?: "state" | "last_updated" | "last_changed"
+  timestamp: "state" | "last_updated" | "last_changed" = "last_changed"
 ): Date {
-  const stateDate = new Date(states[entity].state);
+  const stateDate = new Date(states[entity][timestamp]);
   return addSeconds(stateDate, durationToSeconds(offset || {}));
 }
 

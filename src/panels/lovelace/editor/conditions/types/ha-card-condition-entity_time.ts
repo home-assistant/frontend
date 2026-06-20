@@ -20,6 +20,7 @@ import type {
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-form/ha-form";
+import { entityIsTimestamp } from "../../../../../data/entity/entity_is_timestamp";
 
 const durationStruct = union([
   string(),
@@ -52,7 +53,7 @@ export class HaCardConditionEntityTime extends LitElement {
       condition: "entity_time",
       entity: "",
       mode: "after",
-      timestamp: "state",
+      timestamp: "last_changed",
     };
   }
 
@@ -61,7 +62,7 @@ export class HaCardConditionEntityTime extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, includeState: boolean) =>
       [
         {
           name: "entity",
@@ -97,16 +98,49 @@ export class HaCardConditionEntityTime extends LitElement {
             },
           },
         },
+        {
+          name: "timestamp",
+          selector: {
+            select: {
+              options: [
+                {
+                  value: "last_changed",
+                  label: localize(
+                    "ui.panel.lovelace.editor.condition-editor.condition.entity_time.last_changed"
+                  ),
+                },
+                {
+                  value: "last_updated",
+                  label: localize(
+                    "ui.panel.lovelace.editor.condition-editor.condition.entity_time.last_updated"
+                  ),
+                },
+                ...(includeState
+                  ? [
+                      {
+                        value: "state",
+                        label: localize(
+                          "ui.panel.lovelace.editor.condition-editor.condition.entity_time.state"
+                        ),
+                      },
+                    ]
+                  : []),
+              ],
+            },
+          },
+        },
       ] as const satisfies HaFormSchema[]
   );
 
   protected render() {
+    const entity = this.condition.entity || "";
+    const includeState = entityIsTimestamp(entity, this.hass.states);
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this.condition}
         .computeLabel=${this._computeLabelCallback}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${this._schema(this.hass.localize, includeState)}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -116,6 +150,15 @@ export class HaCardConditionEntityTime extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const data = ev.detail.value as EntityTimeCondition;
+    if (
+      data.timestamp === "state" &&
+      !entityIsTimestamp(data.entity || "", this.hass.states)
+    ) {
+      fireEvent(this, "value-changed", {
+        value: { ...data, timestamp: "last_changed" },
+      });
+      return;
+    }
     fireEvent(this, "value-changed", { value: data });
   }
 

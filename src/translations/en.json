@@ -9291,7 +9291,11 @@
                 "label": "Entity Time",
                 "after": "After",
                 "before": "Before",
-                "offset": "Offset"
+                "offset": "Offset",
+                "last_changed": "Last changed",
+                "last_updated": "Last updated",
+                "timestamp": "Timestamp mode",
+                "state": "Entity state"
               },
               "location": {
                 "label": "Location",
