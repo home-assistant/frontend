@@ -400,10 +400,12 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
 
   private _handleToggleThinking(ev: Event) {
     const index = (ev.currentTarget as any).index;
-    this._conversation[index] = {
-      ...this._conversation[index],
-      thinking_expanded: !this._conversation[index].thinking_expanded,
-    };
+    // Mutate the message in place rather than replacing it. The streaming
+    // processor keeps a reference to this same object and mutates it as deltas
+    // arrive; swapping in a new object would detach the in-flight message from
+    // the processor and freeze the chat (see #52501).
+    const message = this._conversation[index];
+    message.thinking_expanded = !message.thinking_expanded;
     this.requestUpdate("_conversation");
   }
 

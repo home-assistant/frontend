@@ -1,11 +1,13 @@
 import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
+import { initialState } from "@lit/task";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { getValueAttribute } from "../common/entity/get_states";
+import { valueFromParts } from "../common/entity/value_parts";
 import { formattersContext } from "../data/context";
 
 const isObjectValue = (value: unknown): boolean =>
@@ -24,32 +26,16 @@ class HaAttributeValue extends LitElement {
 
   @property({ type: Boolean, attribute: "hide-unit" }) public hideUnit = false;
 
-  @state() private _yaml?: string;
-
-  // Dumping the value to YAML in render() created a new promise (and a `until()`
-  // directive chain) on every render. Resolve it into state instead, guarded so
-  // only the latest resolution wins.
-  private _yamlRequest = 0;
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (changedProps.has("stateObj") || changedProps.has("attribute")) {
-      this._loadYaml();
-    }
-  }
-
-  private async _loadYaml(): Promise<void> {
-    const attributeValue = this.stateObj?.attributes[this.attribute];
-    if (!isObjectValue(attributeValue)) {
-      this._yaml = undefined;
-      return;
-    }
-    const request = ++this._yamlRequest;
-    const { dump } = await import("js-yaml");
-    if (request === this._yamlRequest) {
-      this._yaml = dump(attributeValue);
-    }
-  }
+  private _yamlTask = new AsyncValueTask(this, {
+    task: async ([attributeValue]) => {
+      if (!isObjectValue(attributeValue)) {
+        return initialState;
+      }
+      const { dump } = await import("js-yaml");
+      return dump(attributeValue);
+    },
+    args: () => [this.stateObj?.attributes[this.attribute]] as const,
+  });
 
   protected render() {
     if (!this.stateObj) {
@@ -81,7 +67,7 @@ class HaAttributeValue extends LitElement {
     }
 
     if (isObjectValue(attributeValue)) {
-      return html`<pre>${this._yaml ?? ""}</pre>`;
+      return html`<pre>${this._yamlTask.value ?? ""}</pre>`;
     }
 
     // Options-list attributes (effect_list, preset_modes, …) translated through
@@ -109,10 +95,7 @@ class HaAttributeValue extends LitElement {
         this.stateObj!,
         this.attribute
       );
-      return parts
-        .filter((part) => part.type === "value")
-        .map((part) => part.value)
-        .join("");
+      return valueFromParts(parts);
     }
 
     return this._formatters!.formatEntityAttributeValue(

@@ -502,6 +502,10 @@ const SCHEMAS: {
                   },
                 },
               },
+              password: {
+                label: "Password",
+                selector: { text: { type: "password" } },
+              },
             },
           },
         },

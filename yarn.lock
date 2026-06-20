@@ -1363,14 +1363,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/search@npm:6.7.0":
-  version: 6.7.0
-  resolution: "@codemirror/search@npm:6.7.0"
+"@codemirror/search@npm:6.7.1":
+  version: 6.7.1
+  resolution: "@codemirror/search@npm:6.7.1"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.37.0"
     crelt: "npm:^1.0.5"
-  checksum: 10/29b7d8adeb5317ea45bf3c03c6c5ab18210efe800ebc89dd11b4a77827966a8ef85dda082517fe278e470b5ead21e6b29e590d3060775a41d3179bbd74711279
+  checksum: 10/97b6be5397a332d0882ef3967d6ffb518606c95b7157f7120c47013f223cdd0e8d6aa2ff412ac870d60828dd9f871b67733bde8bf517564cf84f40d5c0fb7537
   languageName: node
   linkType: hard
 
@@ -2323,6 +2323,15 @@ __metadata:
   dependencies:
     "@lit-labs/ssr-dom-shim": "npm:^1.5.0"
   checksum: 10/91ae952d34fba51ac4936f7d6b3a4300e48a54a9e7c77c8747a08148124a2a9a52cd057db059eff8424ae43c6fa342275550793e6ecfc0054bce8286df4214cb
+  languageName: node
+  linkType: hard
+
+"@lit/task@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@lit/task@npm:1.0.3"
+  dependencies:
+    "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
+  checksum: 10/9b6a907585a8a34c7418138624f9f25a76820747a095d6a4748e91d3a36bc113c73f677e91f2a32367a33c7482dd4af06b2780ffbedd82bf69147dc05e28b0ef
   languageName: node
   linkType: hard
 
@@ -8522,7 +8531,7 @@ __metadata:
     "@codemirror/lang-yaml": "npm:6.1.3"
     "@codemirror/language": "npm:6.12.3"
     "@codemirror/lint": "npm:6.9.7"
-    "@codemirror/search": "npm:6.7.0"
+    "@codemirror/search": "npm:6.7.1"
     "@codemirror/state": "npm:6.6.0"
     "@codemirror/view": "npm:6.43.1"
     "@date-fns/tz": "npm:1.5.0"
@@ -8551,6 +8560,7 @@ __metadata:
     "@lit-labs/virtualizer": "npm:2.1.1"
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.2"
+    "@lit/task": "npm:1.0.3"
     "@lokalise/node-api": "npm:16.0.0"
     "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch"
     "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"

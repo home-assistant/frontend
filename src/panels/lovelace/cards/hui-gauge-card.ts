@@ -6,7 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeEntityUnitDisplay } from "../../../common/entity/compute_entity_unit_display";
+import { valueFromParts } from "../../../common/entity/value_parts";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
@@ -115,14 +115,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     } else {
       parts = this.hass.formatEntityStateToParts(stateObj);
     }
-    // Join all value parts: a monetary value splits the number around the
-    // currency symbol (for example "-" and "182.95" around "£"), so taking
-    // only the first value part would drop everything but the minus sign.
-    const valueToDisplay =
-      parts
-        .filter((part) => part.type === "value")
-        .map((part) => part.value)
-        .join("") || undefined;
+    const customUnit = this._config.unit;
+    // Custom unit can't keep a locale position, so append it at the end;
+    // otherwise render natively.
+    const valueToDisplay = customUnit
+      ? valueFromParts(parts)
+      : parts.map((part) => part.value).join("");
     const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
@@ -141,8 +139,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
-    const unit =
-      computeEntityUnitDisplay(this.hass, stateObj, this._config) ?? "";
 
     return html`
       <ha-card
@@ -166,7 +162,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .value=${value}
           .valueText=${valueToDisplay}
           .locale=${this.hass!.locale}
-          .label=${unit}
+          .label=${customUnit ?? ""}
           style=${styleMap({
             "--gauge-color": this._computeSeverity(Number(value)),
           })}

@@ -1,9 +1,10 @@
 import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
+import { initialState } from "@lit/task";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
 import {
   configContext,
   connectionContext,
@@ -35,53 +36,46 @@ export class HaAttributeIcon extends LitElement {
   @consume({ context: entitiesContext, subscribe: true })
   private _entities?: ContextType<typeof entitiesContext>;
 
-  @state() private _resolvedIcon?: string;
-
-  // Resolving the icon in render() created a new promise (and a `until()`
-  // directive chain) on every render. Resolve it into state instead, guarded so
-  // only the latest resolution wins.
-  private _iconRequest = 0;
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      changedProps.has("icon") ||
-      changedProps.has("stateObj") ||
-      changedProps.has("attribute") ||
-      changedProps.has("attributeValue") ||
-      changedProps.has("_config") ||
-      changedProps.has("_connection") ||
-      changedProps.has("_entities")
-    ) {
-      this._loadIcon();
-    }
-  }
-
-  private async _loadIcon(): Promise<void> {
-    if (
-      this.icon ||
-      !this.stateObj ||
-      !this.attribute ||
-      !this._config ||
-      !this._connection ||
-      !this._entities
-    ) {
-      this._resolvedIcon = undefined;
-      return;
-    }
-    const request = ++this._iconRequest;
-    const icon = await attributeIcon(
-      this._config.config,
-      this._connection.connection,
-      this._entities,
-      this.stateObj,
-      this.attribute,
-      this.attributeValue
-    );
-    if (request === this._iconRequest) {
-      this._resolvedIcon = icon || undefined;
-    }
-  }
+  private _iconTask = new AsyncValueTask(this, {
+    task: ([
+      icon,
+      config,
+      connection,
+      entities,
+      stateObj,
+      attribute,
+      attributeValue,
+    ]) => {
+      if (
+        icon ||
+        !config ||
+        !connection ||
+        !entities ||
+        !stateObj ||
+        !attribute
+      ) {
+        return initialState;
+      }
+      return attributeIcon(
+        config.config,
+        connection.connection,
+        entities,
+        stateObj,
+        attribute,
+        attributeValue
+      );
+    },
+    args: () =>
+      [
+        this.icon,
+        this._config,
+        this._connection,
+        this._entities,
+        this.stateObj,
+        this.attribute,
+        this.attributeValue,
+      ] as const,
+  });
 
   protected render() {
     if (this.icon) {
@@ -96,11 +90,9 @@ export class HaAttributeIcon extends LitElement {
       return nothing;
     }
 
-    if (this._resolvedIcon) {
-      return html`<ha-icon .icon=${this._resolvedIcon}></ha-icon>`;
-    }
-
-    return nothing;
+    return this._iconTask.value
+      ? html`<ha-icon .icon=${this._iconTask.value}></ha-icon>`
+      : nothing;
   }
 }
 

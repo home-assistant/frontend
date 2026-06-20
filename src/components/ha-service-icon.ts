@@ -1,8 +1,9 @@
 import { consume } from "@lit/context";
-import type { PropertyValues } from "lit";
+import { initialState } from "@lit/task";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { Connection, HassConfig } from "home-assistant-js-websocket";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { computeDomain } from "../common/entity/compute_domain";
 import { transform } from "../common/decorators/transform";
 import { configContext, connectionContext } from "../data/context";
@@ -34,42 +35,16 @@ export class HaServiceIcon extends LitElement {
   })
   private _connection?: Connection;
 
-  // undefined: not resolved yet (render nothing, as the old `until` did).
-  // null: resolved, but no icon found (render the fallback).
-  @state() private _resolvedIcon?: string | null;
-
-  // Resolving the icon in render() created a new promise (and a `until()`
-  // directive chain) on every render. Resolve it into state instead, guarded so
-  // only the latest resolution wins.
-  private _iconRequest = 0;
-
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (
-      changedProps.has("icon") ||
-      changedProps.has("service") ||
-      changedProps.has("_connection") ||
-      changedProps.has("_config")
-    ) {
-      this._loadIcon();
-    }
-  }
-
-  private async _loadIcon(): Promise<void> {
-    if (this.icon || !this.service || !this._connection || !this._config) {
-      this._resolvedIcon = undefined;
-      return;
-    }
-    const request = ++this._iconRequest;
-    const icon = await serviceIcon(
-      this._connection,
-      this._config,
-      this.service
-    );
-    if (request === this._iconRequest) {
-      this._resolvedIcon = icon || null;
-    }
-  }
+  private _iconTask = new AsyncValueTask(this, {
+    task: ([icon, connection, config, service]) => {
+      if (icon || !connection || !config || !service) {
+        return initialState;
+      }
+      return serviceIcon(connection, config, service);
+    },
+    args: () =>
+      [this.icon, this._connection, this._config, this.service] as const,
+  });
 
   protected render() {
     if (this.icon) {
@@ -84,15 +59,12 @@ export class HaServiceIcon extends LitElement {
       return this._renderFallback();
     }
 
-    if (this._resolvedIcon === undefined) {
+    if (!this._iconTask.resolved) {
       return nothing;
     }
-
-    if (this._resolvedIcon) {
-      return html`<ha-icon .icon=${this._resolvedIcon}></ha-icon>`;
-    }
-
-    return this._renderFallback();
+    return this._iconTask.value
+      ? html`<ha-icon .icon=${this._iconTask.value}></ha-icon>`
+      : this._renderFallback();
   }
 
   private _renderFallback() {
