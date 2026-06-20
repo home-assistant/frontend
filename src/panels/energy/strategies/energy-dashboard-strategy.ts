@@ -16,7 +16,16 @@ import {
   DEFAULT_POWER_COLLECTION_KEY,
 } from "../constants";
 import type { EnergyViewPath } from "./energy-cards";
-import { isEnergyViewEmpty } from "./energy-cards";
+import {
+  hasDeviceConsumption,
+  hasEnergySource,
+  hasGasSource,
+  hasPowerDevices,
+  hasPowerSources,
+  hasWaterDevices,
+  hasWaterSource,
+  isEnergyViewEmpty,
+} from "./energy-cards";
 
 const OVERVIEW_VIEW = {
   path: "overview",
@@ -91,37 +100,18 @@ export class EnergyDashboardStrategy extends ReactiveElement {
       };
     }
 
-    const hasEnergy = prefs.energy_sources.some((source) =>
-      ["grid", "solar", "battery"].includes(source.type)
-    );
-
-    const hasPowerSource = prefs.energy_sources.some((source) => {
-      if (source.type === "solar" && source.stat_rate) return true;
-      if (source.type === "battery" && source.stat_rate) return true;
-      if (source.type === "grid") {
-        return !!source.stat_rate || !!source.power_config;
-      }
-      return false;
-    });
-
-    const hasDevicePower = prefs.device_consumption.some(
-      (device) => device.stat_rate
-    );
-
+    const hasEnergy = hasEnergySource(prefs);
+    const hasPowerSource = hasPowerSources(prefs);
+    const hasDevicePower = hasPowerDevices(prefs);
     const hasPower = hasPowerSource || hasDevicePower;
-
-    const hasWater =
-      prefs.energy_sources.some((source) => source.type === "water") ||
-      prefs.device_consumption_water?.length > 0;
-
-    const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
-
-    const hasDeviceConsumption = prefs.device_consumption.length > 0;
+    const hasWater = hasWaterSource(prefs) || hasWaterDevices(prefs);
+    const hasGas = hasGasSource(prefs);
+    const hasDevices = hasDeviceConsumption(prefs);
 
     const hidden = _config.hidden_cards;
 
     const candidateViews: LovelaceStrategyViewConfig[] = [];
-    if (hasEnergy || hasDeviceConsumption) {
+    if (hasEnergy || hasDevices) {
       candidateViews.push(ENERGY_VIEW);
     }
     if (hasGas) {

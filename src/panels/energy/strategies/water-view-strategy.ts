@@ -7,7 +7,11 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { isEnergyCardHidden } from "./energy-cards";
+import {
+  hasWaterDevices,
+  hasWaterSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("water-view-strategy")
@@ -44,13 +48,8 @@ export class WaterViewStrategy extends ReactiveElement {
     }
     const prefs = energyCollection.prefs;
 
-    const hasWaterSources = prefs?.energy_sources.some(
-      (source) => source.type === "water"
-    );
-    const hasWaterDevices = prefs?.device_consumption_water?.length;
-
-    // No water sources available
-    if (!prefs || (!hasWaterDevices && !hasWaterSources)) {
+    // No water sources or devices available
+    if (!prefs || (!hasWaterDevices(prefs) && !hasWaterSource(prefs))) {
       return view;
     }
 
@@ -64,39 +63,33 @@ export class WaterViewStrategy extends ReactiveElement {
       },
     });
 
-    if (hasWaterSources) {
-      if (!isEnergyCardHidden("water", "energy-water-graph", hidden)) {
-        section.cards!.push({
-          title: hass.localize(
-            "ui.panel.energy.cards.energy_water_graph_title"
-          ),
-          type: "energy-water-graph",
-          collection_key: collectionKey,
-          grid_options: {
-            columns: 24,
-          },
-        });
-      }
-      if (!isEnergyCardHidden("water", "energy-sources-table", hidden)) {
-        section.cards!.push({
-          title: hass.localize(
-            "ui.panel.energy.cards.energy_sources_table_title"
-          ),
-          type: "energy-sources-table",
-          collection_key: collectionKey,
-          types: ["water"],
-          grid_options: {
-            columns: 12,
-          },
-        });
-      }
+    if (isEnergyCardVisible("water", "energy-water-graph", prefs, hidden)) {
+      section.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
+        type: "energy-water-graph",
+        collection_key: collectionKey,
+        grid_options: {
+          columns: 24,
+        },
+      });
+    }
+
+    if (isEnergyCardVisible("water", "energy-sources-table", prefs, hidden)) {
+      section.cards!.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_sources_table_title"
+        ),
+        type: "energy-sources-table",
+        collection_key: collectionKey,
+        types: ["water"],
+        grid_options: {
+          columns: 12,
+        },
+      });
     }
 
     // Only include if we have at least 1 water device in the config.
-    if (
-      hasWaterDevices &&
-      !isEnergyCardHidden("water", "water-sankey", hidden)
-    ) {
+    if (isEnergyCardVisible("water", "water-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption_water,
         hass,
