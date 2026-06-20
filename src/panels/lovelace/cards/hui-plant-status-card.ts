@@ -12,6 +12,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
 import { batteryStateColorProperty } from "../../../common/entity/color/battery_color";
+import { valueFromParts } from "../../../common/entity/value_parts";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import { computeCssVariable } from "../../../resources/css-variables";
@@ -258,10 +259,9 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       ? this.hass!.states[sensorEntityId]
       : undefined;
     if (sensorStateObj) {
-      return this.hass!.formatEntityStateToParts(sensorStateObj)
-        .filter((part) => part.type !== "unit")
-        .map((part) => part.value)
-        .join("");
+      return valueFromParts(
+        this.hass!.formatEntityStateToParts(sensorStateObj)
+      );
     }
     return stateObj.attributes[attribute] ?? "";
   }
