@@ -3,7 +3,7 @@
  * devices-detail graph data transform. Do NOT update these snapshots to make
  * an optimization pass — see test/benchmarks/README.md.
  */
-import { describe, expect, it } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
@@ -162,5 +162,98 @@ describe("generateEnergyDevicesDetailGraphData", () => {
         generateEnergyDevicesDetailGraphData({ ...baseParams, energyData })
       )
     ).toMatchSnapshot();
+  });
+
+  // The seeded fixtures above all happen to produce fully-negative untracked
+  // (devices reference the source stats, so they consume all of used_total).
+  // These two cases pin the branches those snapshots can't reach.
+  describe("negative untracked series", () => {
+    const NEGATIVE_NAME =
+      "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.over_reported_consumption";
+
+    const isNegativeSeries = (id: unknown) =>
+      typeof id === "string" && id.includes("untracked-negative");
+
+    it("omits the over-reported series when untracked is all positive", () => {
+      // Grid-only with no export keeps used_total >= 0, and the device
+      // references a stat with no data, so untracked == used_total >= 0.
+      const gridPrefs = generateEnergyPreferences({ grid: true });
+      const prefs: EnergyPreferences = {
+        ...gridPrefs,
+        energy_sources: gridPrefs.energy_sources.map((s) =>
+          s.type === "grid" ? { ...s, stat_energy_to: null } : s
+        ),
+        device_consumption: [
+          { stat_consumption: "sensor.device_without_stats", name: "Phantom" },
+        ],
+      };
+      const energyData = generateEnergyData(9, {
+        days: 1,
+        period: "hour",
+        prefs,
+      });
+      const result = generateEnergyDevicesDetailGraphData({
+        ...baseParams,
+        energyData,
+      });
+
+      // No negative series and no extra legend item for clean data.
+      assert.isFalse(result.chartData.some((d) => isNegativeSeries(d.id)));
+      assert.isUndefined(
+        result.legendData?.find((l) => l.name === NEGATIVE_NAME)
+      );
+
+      // The positive untracked series still carries the genuine (>= 0) values.
+      const untracked = result.chartData.find(
+        (d) =>
+          typeof d.id === "string" &&
+          d.id.startsWith("untracked-") &&
+          !isNegativeSeries(d.id)
+      );
+      assert.exists(untracked);
+      const ys = (untracked!.data as any[]).map((p) => p.value?.[1] ?? p?.[1]);
+      assert.isTrue(ys.every((y) => y >= 0));
+      assert.isTrue(ys.some((y) => y > 0));
+    });
+
+    it("adds a toggleable over-reported series when negatives exist", () => {
+      // buildPrefs devices reference the source stats -> negative untracked.
+      const energyData = generateEnergyData(1, {
+        days: 1,
+        period: "hour",
+        prefs: buildPrefs(false),
+      });
+      const result = generateEnergyDevicesDetailGraphData({
+        ...baseParams,
+        energyData,
+      });
+
+      const negative = result.chartData.find((d) => isNegativeSeries(d.id));
+      assert.exists(negative);
+      // It carries negative values and shares the devices stack.
+      const ys = (negative!.data as any[]).map((p) => p.value?.[1] ?? p?.[1]);
+      assert.isTrue(ys.some((y) => y < 0));
+      assert.equal(negative!.stack, "devices");
+
+      // The positive untracked is clamped to >= 0 (negatives moved to the
+      // separate series).
+      const untracked = result.chartData.find(
+        (d) =>
+          typeof d.id === "string" &&
+          d.id.startsWith("untracked-") &&
+          !isNegativeSeries(d.id)
+      );
+      const posYs = (untracked!.data as any[]).map(
+        (p) => p.value?.[1] ?? p?.[1]
+      );
+      assert.isTrue(posYs.every((y) => y >= 0));
+
+      // A dedicated, non-clickable legend item paired with the compare series.
+      const legend = result.legendData?.find((l) => l.name === NEGATIVE_NAME);
+      assert.exists(legend);
+      assert.equal(legend!.id, negative!.id);
+      assert.isTrue(legend!.noLabelClick);
+      assert.deepEqual(legend!.secondaryIds, [`compare-${negative!.id}`]);
+    });
   });
 });

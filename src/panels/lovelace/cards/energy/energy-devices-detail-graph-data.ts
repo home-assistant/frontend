@@ -24,6 +24,7 @@ import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCompareTransform,
+  splitUntrackedConsumption,
 } from "./common/energy-chart-options";
 import { getEnergyColor } from "./common/color";
 
@@ -211,7 +212,7 @@ function processUntracked(
   consumptionData,
   trackY: (v: number) => void,
   compare: boolean
-): BarSeriesOption {
+): { dataset: BarSeriesOption; negativeDataset: BarSeriesOption } {
   const totalDeviceConsumption: Record<number, number> = {};
 
   processedData.forEach((device) => {
@@ -223,7 +224,16 @@ function processUntracked(
   const compareTransform = getCompareTransform(ctx.start, ctx.compareStart!);
   const period = getSuggestedPeriod(ctx.start, ctx.end);
 
+  // Split untracked into its positive part (genuine untracked consumption) and
+  // its negative part (tracked devices over-reporting relative to the meter).
+  // The negative part becomes a separate, toggleable series.
+  const { positive, negative } = splitUntrackedConsumption(
+    consumptionData.used_total,
+    totalDeviceConsumption
+  );
+
   const untrackedConsumption: BarSeriesOption["data"] = [];
+  const negativeUntracked: BarSeriesOption["data"] = [];
   const sortedTimes = Object.keys(consumptionData.used_total).sort(
     (a, b) => Number(a) - Number(b)
   );
@@ -235,24 +245,30 @@ function processUntracked(
       : 0;
   sortedTimes.forEach((time) => {
     const ts = Number(time);
-    const value =
-      consumptionData.used_total[time] - (totalDeviceConsumption[time] || 0);
-    const dataPoint: EnergyDataPoint = [ts + periodOffset, value, ts];
-    if (compare) {
-      dataPoint[0] = compareTransform(new Date(ts)).getTime() + periodOffset;
+    const x = compare
+      ? compareTransform(new Date(ts)).getTime() + periodOffset
+      : ts + periodOffset;
+    untrackedConsumption.push([x, positive[ts], ts]);
+    trackY(positive[ts]);
+    if (ts in negative) {
+      negativeUntracked.push([x, negative[ts], ts]);
+      trackY(negative[ts]);
     }
-    untrackedConsumption.push(dataPoint);
-    trackY(value);
   });
   // random id to always add untracked at the end
   const order = ctx.untrackedOrder;
-  const dataset: BarSeriesOption = {
+  const stack = compare ? "devicesCompare" : "devices";
+  // The positive untracked and negative ("over-reported") series share styling
+  // and stack, differing only by id, name and data.
+  const makeDataset = (
+    id: string,
+    name: string,
+    data: BarSeriesOption["data"]
+  ): BarSeriesOption => ({
     type: "bar",
     cursor: "default",
-    id: compare ? `compare-untracked-${order}` : `untracked-${order}`,
-    name: ctx.hass.localize(
-      "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
-    ),
+    id,
+    name,
     itemStyle: {
       borderColor: getEnergyColor(
         computedStyle,
@@ -270,11 +286,43 @@ function processUntracked(
       compare,
       "--history-unknown-color"
     ),
-    data: untrackedConsumption,
-    stack: compare ? "devicesCompare" : "devices",
-  };
-  return dataset;
+    data,
+    stack,
+  });
+  const dataset = makeDataset(
+    compare ? `compare-untracked-${order}` : `untracked-${order}`,
+    ctx.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+    ),
+    untrackedConsumption
+  );
+  // Only added by the caller when it has data.
+  const negativeDataset = makeDataset(
+    compare
+      ? `compare-untracked-negative-${order}`
+      : `untracked-negative-${order}`,
+    ctx.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.over_reported_consumption"
+    ),
+    negativeUntracked
+  );
+  return { dataset, negativeDataset };
 }
+
+// Legend item for an untracked series (positive or negative): not tied to an
+// entity, so the label isn't clickable, and paired with its compare series.
+const untrackedLegendItem = (
+  dataset: BarSeriesOption
+): NonNullable<CustomLegendOption["data"]>[number] => ({
+  id: dataset.id as string,
+  secondaryIds: [`compare-${dataset.id}`],
+  name: dataset.name as string,
+  itemStyle: {
+    color: dataset.color as string,
+    borderColor: dataset.itemStyle?.borderColor as string,
+  },
+  noLabelClick: true,
+});
 
 /**
  * Transforms an `EnergyData` collection update into the ECharts bar series and
@@ -366,6 +414,7 @@ export function generateEnergyDevicesDetailGraphData(
     ? computeConsumptionData(summedData, compareSummedData)
     : { consumption: undefined, compareConsumption: undefined };
 
+  let compareNegativeDataset: BarSeriesOption | undefined;
   if (compareData) {
     const processedCompareData = processDataSet(
       ctx,
@@ -382,15 +431,22 @@ export function generateEnergyDevicesDetailGraphData(
     datasets.push(...processedCompareData);
 
     if (showUntracked) {
-      const untrackedCompareData = processUntracked(
-        ctx,
-        computedStyles,
-        processedCompareData,
-        consumptionCompareData,
-        trackY,
-        true
-      );
+      const { dataset: untrackedCompareData, negativeDataset } =
+        processUntracked(
+          ctx,
+          computedStyles,
+          processedCompareData,
+          consumptionCompareData,
+          trackY,
+          true
+        );
       datasets.push(untrackedCompareData);
+      compareNegativeDataset = negativeDataset;
+      // Keep the compare negative series grouped with the other compare series
+      // (before the placeholder), mirroring the positive untracked placement.
+      if (negativeDataset.data?.length) {
+        datasets.push(negativeDataset);
+      }
     }
   }
 
@@ -430,7 +486,7 @@ export function generateEnergyDevicesDetailGraphData(
   });
 
   if (showUntracked) {
-    const untrackedData = processUntracked(
+    const { dataset: untrackedData, negativeDataset } = processUntracked(
       ctx,
       computedStyles,
       processedData,
@@ -439,16 +495,20 @@ export function generateEnergyDevicesDetailGraphData(
       false
     );
     datasets.push(untrackedData);
-    legendData.push({
-      id: untrackedData.id as string,
-      secondaryIds: [`compare-${untrackedData.id}`],
-      name: untrackedData.name as string,
-      itemStyle: {
-        color: untrackedData.color as string,
-        borderColor: untrackedData.itemStyle?.borderColor as string,
-      },
-      noLabelClick: true,
-    });
+    legendData.push(untrackedLegendItem(untrackedData));
+
+    // Only surface the negative untracked series (and its legend item) when
+    // either the main or compare period actually has negative values, so users
+    // with clean data don't get extra chart clutter. The compare series is
+    // pushed in the compare block above to keep series order consistent.
+    const hasNegative = !!negativeDataset.data?.length;
+    const hasCompareNegative = !!compareNegativeDataset?.data?.length;
+    if (hasNegative) {
+      datasets.push(negativeDataset);
+    }
+    if (hasNegative || hasCompareNegative) {
+      legendData.push(untrackedLegendItem(negativeDataset));
+    }
   }
 
   fillDataGapsAndRoundCaps(datasets);
