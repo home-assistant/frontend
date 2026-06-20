@@ -1,6 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { generateMetadataSuggestionTask } from "../../../../src/panels/config/common/suggest-metadata-ai";
-import type { MetadataSuggestionInclude } from "../../../../src/panels/config/common/suggest-metadata-ai";
+import {
+  generateMetadataSuggestionTask,
+  processMetadataSuggestion,
+} from "../../../../src/panels/config/common/suggest-metadata-ai";
+import type {
+  MetadataSuggestionInclude,
+  MetadataSuggestionResult,
+} from "../../../../src/panels/config/common/suggest-metadata-ai";
+import type { GenDataTaskResult } from "../../../../src/data/ai_task";
 import type { HomeAssistant } from "../../../../src/types";
 
 const fetchCategories = vi.hoisted(() => vi.fn());
@@ -58,7 +65,8 @@ describe("generateMetadataSuggestionTask", () => {
     expect(result.task.structure?.category).toEqual({
       description: "The category of the automation",
       required: false,
-      selector: { select: { options: [{ value: "work", label: "Work" }] } },
+      // The model is offered the category name, not its internal ID.
+      selector: { select: { options: [{ value: "Work", label: "Work" }] } },
     });
     expect(result.task.instructions).toContain("a category");
   });
@@ -80,8 +88,11 @@ describe("generateMetadataSuggestionTask", () => {
     expect(result.task.structure?.floor).toEqual({
       description: "The floor of the automation",
       required: false,
+      // The model is offered the floor name, not its internal ID.
       selector: {
-        select: { options: [{ value: "ground", label: "Ground floor" }] },
+        select: {
+          options: [{ value: "Ground floor", label: "Ground floor" }],
+        },
       },
     });
   });
@@ -94,5 +105,50 @@ describe("generateMetadataSuggestionTask", () => {
       required: false,
       selector: { text: { multiple: true } },
     });
+  });
+});
+
+describe("processMetadataSuggestion", () => {
+  beforeEach(() => {
+    fetchCategories.mockResolvedValue({});
+    fetchFloors.mockResolvedValue({});
+    fetchLabels.mockResolvedValue({});
+  });
+
+  const result = (
+    data: MetadataSuggestionResult
+  ): GenDataTaskResult<MetadataSuggestionResult> => ({
+    conversation_id: "test",
+    data,
+  });
+
+  // The model is offered the category name, so the result carries a name that
+  // has to map back to the internal ID.
+  it("maps a category name from the model back to its ID", async () => {
+    fetchCategories.mockResolvedValue({ work: "Work" });
+
+    const processed = await processMetadataSuggestion(
+      connection,
+      "automation",
+      result({ category: "Work" }),
+      INCLUDE_ALL
+    );
+
+    expect(processed.category).toBe("work");
+  });
+
+  it("maps a floor name from the model back to its ID", async () => {
+    fetchFloors.mockResolvedValue({
+      ground: { floor_id: "ground", name: "Ground floor" },
+    });
+
+    const processed = await processMetadataSuggestion(
+      connection,
+      "automation",
+      result({ floor: "Ground floor" }),
+      INCLUDE_ALL
+    );
+
+    expect(processed.floor).toBe("ground");
   });
 });
