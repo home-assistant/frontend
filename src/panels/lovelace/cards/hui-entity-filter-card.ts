@@ -8,6 +8,7 @@ import { computeCardSize } from "../common/compute-card-size";
 import { evaluateStateFilter } from "../common/evaluate-filter";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
+import type { Condition } from "../common/validate-condition";
 import {
   addEntityToCondition,
   checkConditionsMet,
@@ -17,10 +18,11 @@ import type { EntityFilterEntityConfig } from "../entity-rows/types";
 import type { LovelaceCard } from "../types";
 import type { HuiCard } from "./hui-card";
 import type { EntityFilterCardConfig } from "./types";
+import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 
 @customElement("hui-entity-filter-card")
 export class HuiEntityFilterCard
-  extends ReactiveElement
+  extends ConditionalListenerMixin<EntityFilterCardConfig>(ReactiveElement)
   implements LovelaceCard
 {
   public static getStubConfig(
@@ -58,7 +60,7 @@ export class HuiEntityFilterCard
 
   @property({ type: Boolean }) public preview = false;
 
-  @state() private _config?: EntityFilterCardConfig;
+  @state() protected _config?: EntityFilterCardConfig;
 
   private _element?: HuiCard;
 
@@ -67,6 +69,8 @@ export class HuiEntityFilterCard
   private _baseCardConfig?: LovelaceCardConfig;
 
   private _oldEntities?: EntityFilterEntityConfig[];
+
+  private _forceNextUpdate = false;
 
   public getCardSize(): number | Promise<number> {
     return this._element ? computeCardSize(this._element) : 1;
@@ -143,6 +147,10 @@ export class HuiEntityFilterCard
       this._element.preview = this.preview;
       this._element.layout = this.layout;
     }
+    if (this._forceNextUpdate) {
+      this._forceNextUpdate = false;
+      return true;
+    }
     if (changedProps.has("_config") || changedProps.has("preview")) {
       return true;
     }
@@ -164,6 +172,9 @@ export class HuiEntityFilterCard
     ) {
       return;
     }
+
+    this.clearConditionalListeners();
+    this.setupConditionalListeners();
 
     const entitiesList = this._configEntities.filter((entityConf) => {
       const stateObj = this.hass!.states[entityConf.entity];
@@ -277,6 +288,37 @@ export class HuiEntityFilterCard
     element.config = cardConfig;
     element.load();
     return element;
+  }
+
+  protected setupConditionalListeners() {
+    if (!this._configEntities || !this.hass) {
+      return;
+    }
+
+    const conditions: Condition[] = [];
+
+    this._configEntities.forEach((entityConf) => {
+      const stateObj = this.hass!.states[entityConf.entity];
+      if (!stateObj) return;
+
+      const entityConditions =
+        entityConf.conditions ?? this._config!.conditions;
+      if (entityConditions && !entityConf.state_filter) {
+        entityConditions.forEach((condition) => {
+          if (condition.condition === "entity_time") {
+            conditions.push(addEntityToCondition(condition, entityConf.entity));
+          }
+        });
+      }
+    });
+
+    // Pass filtered conditions to parent implementation
+    super.setupConditionalListeners(conditions);
+  }
+
+  protected _updateVisibility() {
+    this._forceNextUpdate = true;
+    this.requestUpdate();
   }
 }
 
