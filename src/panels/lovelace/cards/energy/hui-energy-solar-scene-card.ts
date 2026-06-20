@@ -1,24 +1,28 @@
-// Faux-3D solar overview card. The ground is the CARTO basemap (Map-panel style) stitched into one
+// Solar overview card: the ground is the CARTO basemap (Map-panel style) stitched into one
 // seam-free <canvas> used as a tilted/orbiting plane via a CSS 3D transform; OpenStreetMap building
 // footprints are extruded with a projection that mirrors that transform, so the whole scene turns
 // together. No map/geometry library (just <canvas>, <svg>, fetch) so it runs on a Raspberry Pi 0.
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../../../energy/constants";
-import type { SolarSceneSync } from "./common/solar-scene-sync";
-import type { ChartTarget } from "./common/solar-scene-sync";
+import type { SolarSceneSync, ChartTarget } from "./common/solar-scene-sync";
 import { getSolarSceneSync } from "./common/solar-scene-sync";
 import type { LivePower } from "./common/solar-scene-power";
-import { forecastSeries, livePower } from "./common/solar-scene-power";
+import {
+  forecastSeries,
+  livePower,
+  targetSeries,
+} from "./common/solar-scene-power";
 import type { EnergyData, EnergySolarForecasts } from "../../../../data/energy";
 import { formatNumber } from "../../../../common/number/format_number";
+import { theme2hex } from "../../../../common/color/convert-color";
 import "../../../../components/ha-icon";
 import "./common/hui-energy-graph-chip";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   getEnergyDataCollection,
   getEnergySolarForecasts,
@@ -33,11 +37,13 @@ type Point = [number, number];
 
 const DEG = Math.PI / 180;
 const EARTH_CIRCUMFERENCE_M = 40075016.686;
-// Below this many watts the battery is treated as idle: its power chip and leader hide so an idle
-// battery does not sit there reading "0 W".
-const IDLE_W = 5;
+const IDLE_W = 5; // Minimal watts value a flow must to have to be treated as idle
+// Building shadows: full strength at SHADOW_FADE_DEG above the horizon, easing to nothing at the
+// horizon so they fade in at sunrise and out at sunset instead of popping on/off.
+const SHADOW_OPACITY = 0.26;
+const SHADOW_FADE_DEG = 10;
 
-// Solar position (SunCalc-derived): azimuth from NORTH clockwise, altitude, both in degrees.
+// Solar position: azimuth from NORTH clockwise, altitude, both in degrees.
 function sunPosition(date: Date, latitude: number, longitude: number) {
   const lonRad = DEG * -longitude;
   const latRad = DEG * latitude;
@@ -85,8 +91,9 @@ function convexHull(points: Point[]): Point[] {
       while (
         out.length >= 2 &&
         turn(out[out.length - 2], out[out.length - 1], p) <= 0
-      )
+      ) {
         out.pop();
+      }
       out.push(p);
     }
     out.pop();
@@ -95,7 +102,7 @@ function convexHull(points: Point[]): Point[] {
   return half(sorted).concat(half(sorted.reverse()));
 }
 
-// Web Mercator: lon/lat -> fractional tile coordinates at the given zoom.
+// Web Mercator: lon/lat: fractional tile coordinates at the given zoom.
 function lonLatToTile(lon: number, lat: number, zoom: number): Point {
   const world = 2 ** zoom;
   const latRad = lat * DEG;
@@ -109,8 +116,9 @@ function pointInPolygon(x: number, y: number, polygon: Point[]): boolean {
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const [ax, ay] = polygon[i];
     const [bx, by] = polygon[j];
-    if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax)
+    if (ay > y !== by > y && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) {
       inside = !inside;
+    }
   }
   return inside;
 }
@@ -132,29 +140,35 @@ function distanceToHome(polygon: Point[]): number {
 
 // Ambient colour as a pure function of the sun's altitude.
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const hexByte = (hex: string, i: number) => parseInt(hex.slice(i, i + 2), 16);
+
+// Blend two #rrggbb colours channel by channel; t in [0..1] runs from hexA to hexB. Kept local (no
+// culori) since it runs per building per frame on Raspberry-Pi-class hardware.
 function mixHex(hexA: string, hexB: string, t: number): string {
-  const a = parseInt(hexA.slice(1), 16);
-  const b = parseInt(hexB.slice(1), 16);
-  const ch = (shift: number) =>
-    Math.round(
-      ((a >> shift) & 255) + (((b >> shift) & 255) - ((a >> shift) & 255)) * t
-    );
-  return (
-    "#" +
-    ((1 << 24) + (ch(16) << 16) + (ch(8) << 8) + ch(0)).toString(16).slice(1)
-  );
+  let out = "#";
+  for (let i = 1; i < 7; i += 2) {
+    const a = hexByte(hexA, i);
+    out += Math.round(a + (hexByte(hexB, i) - a) * t)
+      .toString(16)
+      .padStart(2, "0");
+  }
+  return out;
 }
 
 function nightShade(altitude: number): { color: string; opacity: number } {
   if (altitude < -12) return { color: "#02040c", opacity: 0.68 };
-  if (altitude < -6)
+  if (altitude < -6) {
     return { color: "#040824", opacity: lerp(0.5, 0.68, (-altitude - 6) / 6) };
-  if (altitude < 0)
+  }
+  if (altitude < 0) {
     return { color: "#0a1240", opacity: lerp(0.5, 0.3, (altitude + 6) / 6) };
-  if (altitude < 6)
+  }
+  if (altitude < 6) {
     return { color: "#3a1408", opacity: lerp(0.3, 0.1, altitude / 6) };
-  if (altitude < 20)
+  }
+  if (altitude < 20) {
     return { color: "#3a1408", opacity: lerp(0.1, 0, (altitude - 6) / 14) };
+  }
   return { color: "#000000", opacity: 0 };
 }
 
@@ -170,34 +184,18 @@ function buildingColor(base: string, altitude: number): string {
 }
 
 function tintedRgba(base: string, altitude: number, opacity: number): string {
-  const c = parseInt(buildingColor(base, altitude).slice(1), 16);
-  return `rgba(${(c >> 16) & 255},${(c >> 8) & 255},${c & 255},${opacity})`;
+  const hex = buildingColor(base, altitude);
+  return `rgba(${hexByte(hex, 1)},${hexByte(hex, 3)},${hexByte(hex, 5)},${opacity})`;
 }
 
-// Resolve a HA CSS custom property (hex or rgb) to a #rrggbb string.
+// Resolve a HA CSS custom property to a #rrggbb string via HA's theme2hex (handles hex, rgb() and
+// named/theme colours).
 function cssHex(
   styles: CSSStyleDeclaration,
   name: string,
   fallback: string
 ): string {
-  const raw = styles.getPropertyValue(name).trim();
-  if (!raw) return fallback;
-  if (raw.startsWith("#"))
-    return raw.length === 4
-      ? "#" +
-          raw
-            .slice(1)
-            .split("")
-            .map((c) => c + c)
-            .join("")
-      : raw.slice(0, 7);
-  const m = raw.match(/(\d+)[,\s]+(\d+)[,\s]+(\d+)/);
-  return m
-    ? "#" +
-        [m[1], m[2], m[3]]
-          .map((n) => Number(n).toString(16).padStart(2, "0"))
-          .join("")
-    : fallback;
+  return theme2hex(styles.getPropertyValue(name).trim() || fallback);
 }
 
 // Sun colour along the day: grey underground, warm near the horizon, amber high up.
@@ -229,7 +227,6 @@ export interface EnergySolarSceneCardConfig extends LovelaceCardConfig {
   tilt_deg?: number;
   perspective?: number;
   target_height_m?: number;
-  height_scale?: number;
   osm_radius_m?: number;
   home_radius_m?: number;
   default_height_m?: number;
@@ -241,15 +238,25 @@ const DEFAULTS = {
   tilt_deg: 50,
   perspective: 1200,
   target_height_m: 10, // aim 10 m above the home to open up the sky
-  height_scale: 1.0, // real OSM render height (no exaggeration)
   osm_radius_m: 100,
   home_radius_m: 15, // every building within 15 m of the GPS point is "the home"
   default_height_m: 6,
 };
 
+// Camera pitch bounds (degrees).
 const TILE_PX = 256;
-const PITCH_MIN = 15; // camera pitch bounds (degrees)
+const PITCH_MIN = 15;
 const PITCH_MAX = 55;
+// Card viewport: fixed height, with a width fallback for the first frame before layout settles.
+const CARD_HEIGHT_PX = 380;
+const FALLBACK_WIDTH_PX = 600;
+// W/m² chip placement: gutter kept from the card edges, floor below the header, and rise above the sun.
+const SUN_CHIP_EDGE_PAD_PX = 4;
+const SUN_CHIP_MIN_TOP_PX = 28;
+const SUN_CHIP_RISE_PX = 18;
+// OpenStreetMap building cache: kept 30 days; a failed mirror waits this long before the next.
+const BUILDING_CACHE_TTL_MS = 30 * 86400000;
+const OVERPASS_RETRY_DELAY_MS = 1200;
 const DARK_FILTER =
   "invert(0.9) hue-rotate(170deg) brightness(1.3) contrast(1) saturate(0.4)";
 
@@ -281,6 +288,28 @@ export class HuiEnergySolarSceneCard
 
   @state() private _pvPredicted = false;
 
+  @query(".wrap") private _wrap?: HTMLElement;
+
+  @query("#ground") private _groundHolder?: HTMLElement;
+
+  @query(".sun-chip") private _sunChip?: HTMLElement;
+
+  // Stacked overlay layers, filled imperatively each frame (see _draw); the z-index split lives in
+  // the styles.
+  @query(".l-scene") private _lScene?: SVGSVGElement;
+
+  @query(".l-arc-back") private _lArcBack?: SVGSVGElement;
+
+  @query(".l-arc-far") private _lArcFar?: SVGSVGElement;
+
+  @query(".l-leaders") private _lLeaders?: SVGSVGElement;
+
+  @query(".l-ray") private _lRay?: SVGSVGElement;
+
+  @query(".l-arc-near") private _lArcNear?: SVGSVGElement;
+
+  @query(".l-sun") private _lSun?: SVGSVGElement;
+
   private _sync?: SolarSceneSync;
   private _unsub?: () => void;
   // Initial camera: facing due south (the sun's side in the northern hemisphere) and at the lowest
@@ -290,6 +319,14 @@ export class HuiEnergySolarSceneCard
   private _pxPerMetre = 4;
   private _centreX = 0;
   private _centreY = 0;
+  // Home colour follows the timeline target; on change it squashes (_homeGrowth 1 -> 0), swaps colour
+  // while flat, then grows back (0 -> 1). _growth is the one-off load rise; the home multiplies both.
+  private _homeColor = "";
+  private _homeGrowth = 1;
+  private _homeAnimId = 0;
+  // Last home-relative leader markup, so the group (and its bead animations) is rebuilt only when the
+  // flows change, not on every rotation frame.
+  private _leadersHtml = "";
   private _drag?: { x: number; y: number };
   private _buildings: Building[] = [];
   private _ground?: { canvas: HTMLCanvasElement; homeX: number; homeY: number };
@@ -308,6 +345,7 @@ export class HuiEnergySolarSceneCard
     home: string;
     neighbor: string;
     sun: string;
+    shadow: string;
   };
 
   public setConfig(config: EnergySolarSceneCardConfig): void {
@@ -364,9 +402,9 @@ export class HuiEnergySolarSceneCard
     this._sync = getSolarSceneSync(
       this._config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY
     );
-    this._unsub = this._sync.subscribe((state) => {
-      this._instant = state.instant;
-      this._target = state.target;
+    this._unsub = this._sync.subscribe((cursor) => {
+      this._instant = cursor.instant;
+      this._target = cursor.target;
       this._scheduleDraw();
     });
   }
@@ -375,7 +413,15 @@ export class HuiEnergySolarSceneCard
     this._maybeBuild();
   }
 
-  protected willUpdate(): void {
+  protected willUpdate(changed: PropertyValues): void {
+    // Recolour the home to the timeline target (animated) when the target or the underlying data
+    // changes, since the dominant direction of a two-curve target can flip with the data.
+    if (
+      (changed.has("_target") || changed.has("_energyData")) &&
+      this._energyData
+    ) {
+      this._animateHomeColor(this._targetHomeColor());
+    }
     // Resolve the live chip values before every render so they appear as soon as the energy data
     // and hass are both available, and follow the scrubbed instant (SoC included).
     if (this.hass && this._energyData) {
@@ -385,11 +431,25 @@ export class HuiEnergySolarSceneCard
         this._instant,
         this._instant != null ? this._socAt(this._instant) : undefined
       );
-      // Scrubbing into the future: the PV chip shows the forecast (no actual production yet).
+      // Scrubbing into the future: nothing has been measured yet, so every chip hides except PV,
+      // which shows its forecast when one is available (the carried-forward stat reading would
+      // otherwise leave stale values on the grid / battery / home chips).
       const t = this._instant ?? Date.now();
-      const forecastPv = t > Date.now() + 60000 ? this._forecastPvAt(t) : null;
+      const future = t > Date.now() + 60000;
+      const forecastPv = future ? this._forecastPvAt(t) : null;
       this._pvPredicted = forecastPv != null;
-      this._power = forecastPv != null ? { ...power, pv: forecastPv } : power;
+      this._power = future
+        ? {
+            pv: forecastPv,
+            grid: null,
+            battery: null,
+            soc: null,
+            home: null,
+            lowCarbon: null,
+          }
+        : forecastPv != null
+          ? { ...power, pv: forecastPv }
+          : power;
     }
   }
 
@@ -424,9 +484,11 @@ export class HuiEnergySolarSceneCard
 
   // Merged battery-SoC mean at a scrubbed instant, or null when no bucket covers it.
   private _socAt(instant: number): number | null {
-    for (const b of this._socBuckets)
-      if (instant >= b.start && instant < b.end && b.mean != null)
+    for (const b of this._socBuckets) {
+      if (instant >= b.start && instant < b.end && b.mean != null) {
         return b.mean;
+      }
+    }
     return null;
   }
 
@@ -457,14 +519,16 @@ export class HuiEnergySolarSceneCard
       // Average the batteries per bucket so a multi-battery home reads one SoC, like the chip.
       const byStart: Record<number, { end: number; sum: number; n: number }> =
         {};
-      for (const id of ids)
-        for (const b of stats[id] ?? [])
+      for (const id of ids) {
+        for (const b of stats[id] ?? []) {
           if (b.mean != null) {
             const acc = byStart[b.start] ?? { end: b.end, sum: 0, n: 0 };
             acc.sum += b.mean;
             acc.n += 1;
             byStart[b.start] = acc;
           }
+        }
+      }
       this._socBuckets = Object.keys(byStart)
         .map((ts): StatisticValue => {
           const k = Number(ts);
@@ -524,7 +588,7 @@ export class HuiEnergySolarSceneCard
     const ctx = canvas.getContext("2d")!;
 
     const loads: Promise<void>[] = [];
-    for (let col = 0; col < across; col++)
+    for (let col = 0; col < across; col++) {
       for (let row = 0; row < across; row++) {
         const x = firstX + col;
         const y = firstY + row;
@@ -547,12 +611,12 @@ export class HuiEnergySolarSceneCard
           })
         );
       }
+    }
     await Promise.all(loads);
 
-    const holder = this.renderRoot.querySelector("#ground");
-    if (holder) {
-      holder.innerHTML = "";
-      holder.appendChild(canvas);
+    if (this._groundHolder) {
+      this._groundHolder.innerHTML = "";
+      this._groundHolder.appendChild(canvas);
     }
     this._ground = {
       canvas,
@@ -575,7 +639,7 @@ export class HuiEnergySolarSceneCard
         : null;
       if (
         cached?.buildings?.length &&
-        Date.now() - cached.time < 30 * 86400000
+        Date.now() - cached.time < BUILDING_CACHE_TTL_MS
       ) {
         this._buildings = cached.buildings;
         this._startGrowth();
@@ -586,16 +650,18 @@ export class HuiEnergySolarSceneCard
     }
 
     const radius = this._config.osm_radius_m;
-    const query = `[out:json][timeout:25];(way["building"](around:${radius},${lat},${lng}););out geom;`;
+    const overpassQuery = `[out:json][timeout:25];(way["building"](around:${radius},${lat},${lng}););out geom;`;
     // Try a couple of CORS-enabled mirrors: the main one rate-limits (406) under repeated loads.
     const endpoints = [
       "https://overpass-api.de/api/interpreter",
       "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
     ];
+    // Mirrors are tried in order, the second only if the first fails, so we never hammer both.
+    /* eslint-disable no-await-in-loop -- retries are intentionally sequential */
     for (const endpoint of endpoints) {
       try {
         const response = await fetch(
-          endpoint + "?data=" + encodeURIComponent(query)
+          endpoint + "?data=" + encodeURIComponent(overpassQuery)
         );
         if (!response.ok) throw new Error(String(response.status));
         const data = (await response.json()) as { elements?: OverpassWay[] };
@@ -615,9 +681,12 @@ export class HuiEnergySolarSceneCard
           return;
         }
       } catch {
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        await new Promise((resolve) => {
+          setTimeout(resolve, OVERPASS_RETRY_DELAY_MS);
+        });
       }
     }
+    /* eslint-enable no-await-in-loop */
   }
 
   private _parseBuildings(
@@ -638,8 +707,9 @@ export class HuiEnergySolarSceneCard
       if (
         footprint.length > 1 &&
         footprint[0][0] === footprint[footprint.length - 1][0]
-      )
+      ) {
         footprint.pop();
+      }
       if (footprint.length < 3) continue;
 
       // Counter-clockwise winding so back-face culling has a consistent sign.
@@ -678,12 +748,14 @@ export class HuiEnergySolarSceneCard
 
     if (buildings.length && !buildings.some((b) => b.isHome)) {
       let closest = buildings[0];
-      for (const b of buildings)
+      for (const b of buildings) {
         if (
           b.centerX ** 2 + b.centerY ** 2 <
           closest.centerX ** 2 + closest.centerY ** 2
-        )
+        ) {
           closest = b;
+        }
+      }
       closest.isHome = true;
     }
     return buildings.slice(0, 80);
@@ -723,6 +795,60 @@ export class HuiEnergySolarSceneCard
     this._scheduleDraw();
   }
 
+  // The home colour reflects the timeline target. The dominant direction wins for a two-curve target
+  // (import vs export, charge vs discharge): the larger cumulated value over the period.
+  private _targetHomeColor(): string {
+    const fallback = this._palette?.home ?? "#488fc2";
+    if (!this._energyData) return fallback;
+    const dirs = targetSeries(this._energyData, this._target);
+    if (!dirs.length) return fallback;
+    const sumAbs = (d: [number, number][]): number =>
+      d.reduce((sum, pt) => sum + Math.abs(pt[1]), 0);
+    const dominant = dirs.reduce((a, b) =>
+      sumAbs(b.data) > sumAbs(a.data) ? b : a
+    );
+    return cssHex(getComputedStyle(this), dominant.token, fallback);
+  }
+
+  // Squash the home down, swap its colour while flattened, then grow it back up. First paint (or
+  // reduced motion) just sets the colour.
+  private _animateHomeColor(color: string): void {
+    if (color === this._homeColor) return;
+    if (
+      !this._homeColor ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
+      this._homeColor = color;
+      this._homeGrowth = 1;
+      this._scheduleDraw();
+      return;
+    }
+    const id = ++this._homeAnimId;
+    const DOWN_MS = 220;
+    const UP_MS = 300;
+    const startedAt = Date.now();
+    const tick = (): void => {
+      if (id !== this._homeAnimId || !this.isConnected) return;
+      const t = Date.now() - startedAt;
+      if (t < DOWN_MS) {
+        const x = t / DOWN_MS;
+        this._homeGrowth = 1 - x * x * x; // ease-in squash, 1 -> 0
+      } else if (t < DOWN_MS + UP_MS) {
+        this._homeColor = color; // swapped while flat
+        const x = (t - DOWN_MS) / UP_MS;
+        this._homeGrowth = 1 - (1 - x) ** 3; // ease-out grow, 0 -> 1
+      } else {
+        this._homeColor = color;
+        this._homeGrowth = 1;
+        this._scheduleDraw();
+        return;
+      }
+      this._scheduleDraw();
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
   private _onPointerUp(): void {
     this._drag = undefined;
   }
@@ -751,7 +877,7 @@ export class HuiEnergySolarSceneCard
     const tick = (): void => {
       if (!this.isConnected) return;
       const t = Math.min(1, (Date.now() - startedAt) / 500);
-      this._growth = 1 - Math.pow(1 - t, 3);
+      this._growth = 1 - (1 - t) ** 3;
       this._scheduleDraw();
       if (t < 1) requestAnimationFrame(tick);
     };
@@ -787,14 +913,11 @@ export class HuiEnergySolarSceneCard
   }
 
   private _draw(): void {
-    const svg = this.renderRoot.querySelector(
-      ".overlay"
-    ) as SVGSVGElement | null;
-    if (!svg) return;
-    const wrap = this.renderRoot.querySelector(".wrap") as HTMLElement | null;
-    const width = wrap?.clientWidth || 600;
-    const height = wrap?.clientHeight || 480;
-    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    if (!this._wrap || !this._lScene) return;
+    // Layers are sized by CSS and carry no viewBox, so user units equal px and the projected
+    // coordinates (computed below in px) map 1:1.
+    const width = this._wrap.clientWidth || FALLBACK_WIDTH_PX;
+    const height = this._wrap.clientHeight || CARD_HEIGHT_PX;
 
     const tilt = this._tilt * DEG;
     const persp = this._config.perspective;
@@ -814,6 +937,7 @@ export class HuiEnergySolarSceneCard
         home: cssHex(styles, "--energy-grid-consumption-color", "#488fc2"),
         neighbor: cssHex(styles, "--primary-text-color", "#dddddd"),
         sun: cssHex(styles, "--warning-color", "#ffc107"),
+        shadow: cssHex(styles, "--shadow-color", "#000000"),
       };
     }
     if (this._ground) {
@@ -833,23 +957,51 @@ export class HuiEnergySolarSceneCard
     this.style.setProperty("--home-x", `${home[0].toFixed(1)}px`);
     this.style.setProperty("--home-y", `${home[1].toFixed(1)}px`);
 
-    svg.innerHTML = [
-      this._renderNightShade(sun.altitude, width, height),
-      this._renderShadows(sun),
-      this._renderBuildings(sun.altitude, palette),
-      this._renderSky(sun, date, width, height, palette),
-      this._renderLeaders(home),
-    ].join("");
+    const sky = this._renderSky(sun, date, width, height, palette);
+    // Bottom-up: the 3D scene (night shade, shadows, buildings) under the depth-split arc and sun.
+    this._lScene.innerHTML =
+      this._renderNightShade(sun.altitude, width, height) +
+      this._renderShadows(sun, palette.shadow) +
+      this._renderBuildings(sun.altitude, palette);
+    if (this._lArcBack) this._lArcBack.innerHTML = sky.arcBack;
+    if (this._lArcFar) this._lArcFar.innerHTML = sky.arcFar;
+    if (this._lLeaders) {
+      // Rebuild the (home-relative) leader content only when it actually changes, then just translate
+      // the group to the home each frame. Recreating the bead elements every rotation frame is what
+      // made them flicker; this keeps their animations alive.
+      const leaders = this._renderLeaders();
+      if (leaders !== this._leadersHtml) {
+        this._leadersHtml = leaders;
+        this._lLeaders.innerHTML = leaders ? `<g>${leaders}</g>` : "";
+      }
+      const g = this._lLeaders.firstElementChild;
+      if (g) {
+        g.setAttribute(
+          "transform",
+          `translate(${home[0].toFixed(1)},${home[1].toFixed(1)})`
+        );
+      }
+    }
+    if (this._lRay) this._lRay.innerHTML = sky.ray;
+    if (this._lArcNear) this._lArcNear.innerHTML = sky.arcNear;
+    if (this._lSun) {
+      this._lSun.innerHTML = sky.sun;
+      this._lSun.classList.toggle("is-near", sky.sunNear);
+      this._lSun.classList.toggle("is-far", !sky.sunNear);
+    }
   }
 
-  // Leaders from each present chip to the home: an L-path (or a straight leg)
-  // in the metric's colour with a bead riding it at a speed proportional to the live power. The
-  // stacked low-carbon / SoC chips link to the chip below with a static hairline.
-  private _renderLeaders(home: Point): string {
+  // Leaders from each present chip to the home: an L-path (or a straight leg) in the metric's colour
+  // with a bead riding it at a speed proportional to the live power. The stacked low-carbon / SoC
+  // chips link to the chip below with a static hairline. Built relative to the home at the origin
+  // (0,0): the chip offsets are fixed screen px, so the whole leader group only TRANSLATES as the
+  // camera turns. _draw moves it with a <g> transform instead of rebuilding it, so the bead
+  // animations are never recreated mid-rotation (which made them flicker).
+  private _renderLeaders(): string {
     const p = this._power;
     if (!p) return "";
-    const hx = home[0];
-    const hy = home[1];
+    const hx = 0;
+    const hy = 0;
     // Cluster geometry (must mirror the .chip CSS transforms).
     const LIFT = 28;
     const SIDE = 84;
@@ -860,8 +1012,12 @@ export class HuiEnergySolarSceneCard
     const FILLET = 12;
     const PV_HW = 28;
     const PV_HH = 11;
+    const LEADER_NUDGE = 22; // run a leader this far from its chip before turning toward the home
+    const LC_GAP = 16; // gap from the low-carbon chip down into the grid chip it feeds
+    const CHARGE_DOCK = 30; // horizontal inset where the PV -> Power charge leader meets the chip
+    // Home pill mirrors the PV chip: centred, the same distance below the cluster as PV sits above.
     const homeX = hx;
-    const homeY = hy - LIFT;
+    const homeY = hy - LIFT + PV_OFF;
     const pvX = hx;
     const pvY = hy - LIFT - PV_OFF;
     const powerX = hx + SIDE;
@@ -911,30 +1067,35 @@ export class HuiEnergySolarSceneCard
 
     const solar = "var(--energy-solar-color)";
     let s = "";
-    // PV -> home: straight drop to the pill border (PV shares the home x).
-    if (p.pv != null)
+    // PV -> home: straight drop down the centre into the home pill (PV and home share the centre x).
+    // Gated on the home chip too: in forecast-only futures the PV chip stands alone, so its leader
+    // would otherwise dangle to an absent home.
+    if (p.pv != null && p.home != null) {
       s += beaded(
         `M ${pvX.toFixed(1)},${(pvY + PV_HH).toFixed(1)} L ${homeX.toFixed(1)},${(homeY - PILL_H).toFixed(1)}`,
         solar,
         p.pv
       );
-    // Grid -> home: rounded L from the bottom-left.
-    if (p.grid != null)
+    }
+    // Grid -> home: rounded L from the bottom-left into the home pill.
+    if (p.grid != null) {
       s += beaded(
-        lToHome(gridX, gridY, 22),
+        lToHome(gridX, gridY, LEADER_NUDGE),
         p.grid >= 0
           ? "var(--energy-grid-consumption-color)"
           : "var(--energy-grid-return-color)",
         p.grid
       );
+    }
     // Low-carbon -> grid: straight vertical down into the grid chip below it.
-    if (p.lowCarbon != null)
+    if (p.lowCarbon != null) {
       s += plain(
-        `M ${lcX.toFixed(1)},${(lcY + 16).toFixed(1)} L ${gridX.toFixed(1)},${(gridY - 16).toFixed(1)}`,
+        `M ${lcX.toFixed(1)},${(lcY + LC_GAP).toFixed(1)} L ${gridX.toFixed(1)},${(gridY - LC_GAP).toFixed(1)}`,
         "var(--energy-non-fossil-color)"
       );
-    // Battery: SoC docks on the Power chip (level hairline); PV feeds Power while charging; SoC feeds
-    // home while discharging.
+    }
+    // Battery: SoC links to the Power chip above it with a static hairline (a level, not a flow);
+    // PV feeds Power while charging, SoC feeds home while discharging.
     if (p.battery != null) {
       const battColor =
         p.battery >= 0
@@ -947,13 +1108,13 @@ export class HuiEnergySolarSceneCard
       if (p.battery < -IDLE_W) {
         // Charging: PV -> Power chip, drop then right.
         s += beaded(
-          lVFirst(pvX + PV_HW / 2, pvY + PV_HH, powerX - 30, powerY),
+          lVFirst(pvX + PV_HW / 2, pvY + PV_HH, powerX - CHARGE_DOCK, powerY),
           solar,
           p.battery
         );
       } else if (p.battery > IDLE_W) {
         // Discharging: SoC -> home.
-        s += beaded(lToHome(socX, socY, 22), battColor, p.battery);
+        s += beaded(lToHome(socX, socY, LEADER_NUDGE), battColor, p.battery);
       }
     }
     return s;
@@ -971,9 +1132,15 @@ export class HuiEnergySolarSceneCard
   }
 
   // Every footprint casts a shadow; one group-opacity flattens overlaps into a single even shade
-  // (no double-darkening) without a polygon-union dependency, composited on the GPU.
-  private _renderShadows(sun: { azimuth: number; altitude: number }): string {
-    if (sun.altitude <= 2) return "";
+  // (no double-darkening) without a polygon-union dependency, composited on the GPU. The fill is the
+  // theme shadow colour (opaque so the group opacity, not per-polygon overlap, sets the shade).
+  private _renderShadows(
+    sun: { azimuth: number; altitude: number },
+    shadow: string
+  ): string {
+    // Ramp the shade in over the first degrees of altitude so sunrise/sunset fades rather than snaps.
+    const fade = Math.min(1, sun.altitude / SHADOW_FADE_DEG);
+    if (fade <= 0) return "";
     const away = (sun.azimuth + 180) * DEG;
     let inner = "";
     for (const b of this._buildings) {
@@ -984,9 +1151,11 @@ export class HuiEnergySolarSceneCard
       const cast = b.footprint.map((p) =>
         this._project(p[0] + oe, p[1] + on, 0)
       );
-      inner += `<polygon points="${pointsAttr(convexHull([...base, ...cast]))}" fill="#070b14"/>`;
+      inner += `<polygon points="${pointsAttr(convexHull([...base, ...cast]))}" fill="${shadow}"/>`;
     }
-    return inner ? `<g opacity="0.34">${inner}</g>` : "";
+    return inner
+      ? `<g opacity="${(SHADOW_OPACITY * fade).toFixed(3)}">${inner}</g>`
+      : "";
   }
 
   private _renderBuildings(
@@ -1004,25 +1173,28 @@ export class HuiEnergySolarSceneCard
     let svg = "";
     for (const { index } of order) {
       const b = this._buildings[index];
+      // The home also rides _homeGrowth (the target-colour squash/grow); neighbours only the load rise.
+      const grow = b.isHome ? this._growth * this._homeGrowth : this._growth;
+      const homeColor = this._homeColor || palette.home;
       const base = b.footprint.map((p) => this._project(p[0], p[1], 0));
       const roof = b.footprint.map((p) =>
-        this._project(
-          p[0],
-          p[1],
-          b.height * this._config.height_scale * this._growth
-        )
+        this._project(p[0], p[1], b.height * grow)
       );
       const roofFill = tintedRgba(
-        b.isHome ? mixHex(palette.home, "#ffffff", 0.18) : palette.neighbor,
+        b.isHome ? mixHex(homeColor, "#ffffff", 0.18) : palette.neighbor,
         altitude,
-        b.isHome ? 0.97 : 0.16
+        b.isHome ? 0.92 : 0.16
       );
       const wallFill = tintedRgba(
-        b.isHome ? mixHex(palette.home, "#000000", 0.22) : palette.neighbor,
+        b.isHome ? mixHex(homeColor, "#000000", 0.22) : palette.neighbor,
         altitude,
-        b.isHome ? 0.95 : 0.11
+        b.isHome ? 0.9 : 0.11
       );
-      const stroke = b.isHome ? "rgba(0,0,0,0.3)" : "rgba(200,215,240,0.16)";
+      // Neighbour edges follow the theme (derived from the same palette colour as their fill) so they
+      // stay legible in both light and dark; the home keeps a fixed dark outline for definition.
+      const stroke = b.isHome
+        ? "rgba(0,0,0,0.3)"
+        : tintedRgba(palette.neighbor, altitude, 0.16);
 
       const walls: { depth: number; svg: string }[] = [];
       for (let i = 0; i < base.length; i++) {
@@ -1030,14 +1202,15 @@ export class HuiEnergySolarSceneCard
         // back-face cull: drop walls whose outward normal faces away from the camera
         const edgeE = b.footprint[next][0] - b.footprint[i][0];
         const edgeN = b.footprint[next][1] - b.footprint[i][1];
-        if (edgeN * Math.sin(bearing) + edgeE * Math.cos(bearing) <= 0)
+        if (edgeN * Math.sin(bearing) + edgeE * Math.cos(bearing) <= 0) {
           continue;
+        }
         walls.push({
           depth: (base[i][1] + base[next][1]) / 2,
           svg: `<polygon points="${pointsAttr([base[i], base[next], roof[next], roof[i]])}" fill="${wallFill}" stroke="${stroke}" stroke-width="0.4"/>`,
         });
       }
-      walls.sort((a, b) => a.depth - b.depth);
+      walls.sort((w1, w2) => w1.depth - w2.depth);
       svg += walls.map((w) => w.svg).join("");
       svg += `<polygon points="${pointsAttr(roof)}" fill="${roofFill}" stroke="${stroke}" stroke-width="0.6"/>`;
     }
@@ -1053,7 +1226,14 @@ export class HuiEnergySolarSceneCard
     width: number,
     height: number,
     palette: { sun: string }
-  ): string {
+  ): {
+    arcBack: string;
+    arcFar: string;
+    arcNear: string;
+    ray: string;
+    sun: string;
+    sunNear: boolean;
+  } {
     const { latitude, longitude } = this.hass.config;
     const DRAW_ALT = -12; // draw a short dotted dip below the horizon
 
@@ -1091,10 +1271,11 @@ export class HuiEnergySolarSceneCard
     const dayKey = midnight.valueOf();
     if (this._arcSamples?.dayKey !== dayKey) {
       const samples: { azimuth: number; altitude: number }[] = [];
-      for (let minute = 0; minute <= 1440; minute += 15)
+      for (let minute = 0; minute <= 1440; minute += 15) {
         samples.push(
           sunPosition(new Date(dayKey + minute * 60000), latitude, longitude)
         );
+      }
       this._arcSamples = { dayKey, samples };
     }
     const pts = this._arcSamples.samples.map((at) => ({
@@ -1116,9 +1297,17 @@ export class HuiEnergySolarSceneCard
     const dRange = dMax - dMin || 1;
     const near = (d: number) => (d - dMin) / dRange;
 
-    // Two passes (all dark outlines, then all coloured segments) so the outline is a continuous rim.
-    let outlines = "";
-    let segments = "";
+    // Three depth buckets so the arc passes BEHIND the home cluster on its far side and IN FRONT on
+    // its near side, exactly like the standalone Helios card: below-horizon segments go to the BACK
+    // layer (dotted underside), above-horizon segments split at the nearness midpoint into FAR
+    // (behind the chips) and NEAR (over the chips). Two passes within each bucket (dark outlines,
+    // then coloured segments) so every layer keeps a continuous rim.
+    let backOut = "";
+    let backSeg = "";
+    let farOut = "";
+    let farSeg = "";
+    let nearOut = "";
+    let nearSeg = "";
     for (let i = 1; i < pts.length; i++) {
       const a = pts[i - 1];
       const b = pts[i];
@@ -1130,10 +1319,22 @@ export class HuiEnergySolarSceneCard
       const sw = (1 + 3 * n) * factor;
       const cls = night ? " solar-arc-night" : "";
       const coords = `x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}"`;
-      outlines += `<line class="solar-arc-outline${cls}" ${coords} stroke-width="${ow.toFixed(2)}"/>`;
-      segments += `<line class="solar-arc-segment${cls}" ${coords} stroke="${arcColor((a.alt + b.alt) / 2, palette.sun)}" stroke-width="${sw.toFixed(2)}"/>`;
+      const outline = `<line class="solar-arc-outline${cls}" ${coords} stroke-width="${ow.toFixed(2)}"/>`;
+      const segment = `<line class="solar-arc-segment${cls}" ${coords} stroke="${arcColor((a.alt + b.alt) / 2, palette.sun)}" stroke-width="${sw.toFixed(2)}"/>`;
+      if (night) {
+        backOut += outline;
+        backSeg += segment;
+      } else if (n >= 0.5) {
+        nearOut += outline;
+        nearSeg += segment;
+      } else {
+        farOut += outline;
+        farSeg += segment;
+      }
     }
-    const arc = outlines + segments;
+    const arcBack = backOut + backSeg;
+    const arcFar = farOut + farSeg;
+    const arcNear = nearOut + nearSeg;
 
     const sunX = s.x;
     const sunY = s.y;
@@ -1172,8 +1373,11 @@ export class HuiEnergySolarSceneCard
           `<circle class="leader-bead" r="3" fill="${palette.sun}"><animateMotion dur="${rayDur}s" repeatCount="indefinite" path="M ${sunX.toFixed(1)},${sunY.toFixed(1)} L ${rayX.toFixed(1)},${rayY.toFixed(1)}"/></circle>`
         : "";
     this._positionSunChip(sunX, sunY, Math.round(wm2), day);
+    // The disc inherits the arc's depth split: far half under the chips (z 5), near half over
+    // everything but the W/m² readout (z 12).
+    const sunNear = near(s.depth) >= 0.5;
     const c = `cx="${sunX.toFixed(1)}" cy="${sunY.toFixed(1)}"`;
-    return `${arc}${ray}
+    const sunSvg = `
       <defs><radialGradient id="solar-halo">
         <stop offset="0%" stop-color="${palette.sun}" stop-opacity="${(fill * 0.55).toFixed(3)}"/>
         <stop offset="100%" stop-color="${palette.sun}" stop-opacity="0"/>
@@ -1182,6 +1386,7 @@ export class HuiEnergySolarSceneCard
       <circle ${c} r="${r.toFixed(1)}" fill="${palette.sun}" fill-opacity="0.2"/>
       <circle ${c} r="${(r * fill).toFixed(1)}" fill="${palette.sun}"/>
       <circle ${c} r="${r.toFixed(1)}" fill="none" stroke="${palette.sun}" stroke-width="1.5"/>`;
+    return { arcBack, arcFar, arcNear, ray, sun: sunSvg, sunNear };
   }
 
   private _positionSunChip(
@@ -1190,22 +1395,21 @@ export class HuiEnergySolarSceneCard
     wm2: number,
     visible: boolean
   ): void {
-    const chip = this.renderRoot.querySelector(
-      ".sun-chip"
-    ) as HTMLElement | null;
+    const chip = this._sunChip;
     if (!chip) return;
     chip.hidden = !visible;
     if (!visible) return;
     const value = chip.querySelector("span");
     if (value) value.textContent = `${wm2} W/m²`;
     // Safety net: keep the chip on screen even if the sun reaches a corner.
-    const wrap = this.renderRoot.querySelector(".wrap") as HTMLElement | null;
-    const w = wrap?.clientWidth ?? 0;
-    const half = chip.offsetWidth / 2 + 4;
+    const w = this._wrap?.clientWidth ?? 0;
+    const half = chip.offsetWidth / 2 + SUN_CHIP_EDGE_PAD_PX;
     chip.style.left = `${w ? Math.max(half, Math.min(w - half, x)) : x}px`;
-    chip.style.top = `${Math.max(28, y - 18)}px`;
+    chip.style.top = `${Math.max(SUN_CHIP_MIN_TOP_PX, y - SUN_CHIP_RISE_PX)}px`;
   }
 
+  // One decimal for kW, whole watts below: deliberately tighter than formatPowerShort (3 decimals) so
+  // the compact chips stay glanceable.
   private _fmtPower(w: number): string {
     return Math.abs(w) >= 1000
       ? `${formatNumber(w / 1000, this.hass.locale, { maximumFractionDigits: 1 })} kW`
@@ -1227,11 +1431,18 @@ export class HuiEnergySolarSceneCard
         : ""} ${predicted ? "is-predicted" : ""}"
       style="--chip-color:${color}"
       role=${target ? "button" : nothing}
-      @click=${() => target && this._sync?.setTarget(target)}
+      data-target=${target ?? nothing}
+      @click=${this._chipClick}
     >
       <ha-icon icon=${icon}></ha-icon>
       <span>${value}</span>
     </div>`;
+  }
+
+  private _chipClick(ev: Event): void {
+    const target = (ev.currentTarget as HTMLElement).dataset
+      .target as ChartTarget;
+    if (target) this._sync?.setTarget(target);
   }
 
   // Energy chips ringed around the home, each in its metric colour; clicking retargets the timeline.
@@ -1330,7 +1541,22 @@ export class HuiEnergySolarSceneCard
             </hui-energy-graph-chip>
           </div>
           <div class="viewport"><div id="ground"></div></div>
-          <svg class="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="layer l-scene" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg
+            class="layer l-arc-back"
+            xmlns="http://www.w3.org/2000/svg"
+          ></svg>
+          <svg class="layer l-arc-far" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="layer l-leaders" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg class="layer l-ray" xmlns="http://www.w3.org/2000/svg"></svg>
+          <svg
+            class="layer l-arc-near"
+            xmlns="http://www.w3.org/2000/svg"
+          ></svg>
+          <svg
+            class="layer l-sun is-far"
+            xmlns="http://www.w3.org/2000/svg"
+          ></svg>
           <div class="sun-chip" hidden>
             <ha-icon icon="mdi:white-balance-sunny"></ha-icon>
             <span></span>
@@ -1355,16 +1581,19 @@ export class HuiEnergySolarSceneCard
     .wrap {
       position: relative;
       width: 100%;
-      height: 480px;
+      height: ${CARD_HEIGHT_PX}px;
       border-radius: var(--ha-card-border-radius, 12px);
       overflow: hidden;
       background: linear-gradient(#0c1d33 0%, #14283f 45%, #0b1622 100%);
+      /* Own stacking context so the depth-split z-index children (arc, sun, chips up to z 14) stay
+         scoped to the card and never escape above the HA header on scroll. */
+      isolation: isolate;
     }
     .title {
       position: absolute;
       top: 12px;
       left: 16px;
-      z-index: 3;
+      z-index: 14;
       color: var(--primary-text-color);
       font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl, 24px));
       line-height: 1.2;
@@ -1374,7 +1603,7 @@ export class HuiEnergySolarSceneCard
       position: absolute;
       top: 12px;
       right: 12px;
-      z-index: 3;
+      z-index: 14;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -1392,8 +1621,12 @@ export class HuiEnergySolarSceneCard
       display: inline-flex;
       align-items: center;
     }
+    /* Size the icon to exactly one line of the chip's text (font-size-m x line-height-normal) so the
+       icon-only Live button is the same height as the text date chip beside it. */
     .live-chip ha-icon {
-      --mdc-icon-size: 20px;
+      --mdc-icon-size: calc(
+        var(--ha-font-size-m) * var(--ha-line-height-normal)
+      );
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1420,11 +1653,46 @@ export class HuiEnergySolarSceneCard
       will-change: transform;
       filter: var(--map-filter, none);
     }
-    .overlay {
+    /* The scene is split into stacked SVG layers so the solar arc and disc pass BEHIND the home
+       cluster on their far side and IN FRONT on their near side, identically to the standalone Helios
+       card. Buildings/shadows sit at the bottom (z 1); the arc splits into back (z 4, the dotted
+       below-horizon underside), far (z 5, behind the chips) and near (z 11, over the chips); leaders
+       ride at z 5 (the chip pill occludes their endpoints), the sun-to-PV ray at z 7 (below the chips
+       so the chip background occludes its endpoint), the chips at z 8 (home hub z 9), the sun disc at
+       z 5 when far / z 12 when near, and the W/m² readout last at z 13. */
+    /* width/height 100% (not just inset:0): an SVG is a replaced element, so without an explicit size
+       and without a viewBox it keeps its tiny intrinsic size and clips the scene to the top-left. The
+       px coordinates we draw then map 1:1 onto the filled box. */
+    .layer {
       position: absolute;
       inset: 0;
-      z-index: 1;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
+    }
+    .l-scene {
+      z-index: 1;
+    }
+    .l-arc-back {
+      z-index: 4;
+    }
+    .l-arc-far {
+      z-index: 5;
+    }
+    .l-leaders {
+      z-index: 5;
+    }
+    .l-ray {
+      z-index: 7;
+    }
+    .l-arc-near {
+      z-index: 11;
+    }
+    .l-sun.is-far {
+      z-index: 5;
+    }
+    .l-sun.is-near {
+      z-index: 12;
     }
     .drag {
       position: absolute;
@@ -1468,7 +1736,7 @@ export class HuiEnergySolarSceneCard
     }
     .sun-chip {
       position: absolute;
-      z-index: 3;
+      z-index: 13;
       transform: translate(-50%, -100%);
       pointer-events: none;
       display: inline-flex;
@@ -1499,12 +1767,11 @@ export class HuiEnergySolarSceneCard
       position: absolute;
       left: var(--home-x, 50%);
       top: var(--home-y, 50%);
-      z-index: 3;
+      z-index: 8;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
-      /* Fixed width so every chip lines up regardless of its value. */
       width: 88px;
       box-sizing: border-box;
       background: var(--card-background-color, #fff);
@@ -1540,12 +1807,14 @@ export class HuiEnergySolarSceneCard
       --mdc-icon-size: 16px;
       color: inherit;
     }
-    /* Cluster geometry: the pill cluster is lifted 28px off the home ground point; PV sits 70px
-       above it; the side chips are 84px off the
-       home x; the top/bottom rows are split by a 60px gap (so +/-30 around the cluster). Battery
-       Power top-right, SoC bottom-right; low-carbon top-left, grid bottom-left. */
+    /* Cluster geometry: the pill cluster is lifted 28px off the home ground point; PV sits 70px above
+       it (top centre); the side chips are 84px off the home x; the top/bottom rows are split by a 60px
+       gap (so +/-30 around the cluster). Low-carbon top-left, grid bottom-left; battery Power
+       top-right, SoC bottom-right. Home mirrors PV at bottom centre (+42), the consumption sink the
+       flows converge on. z 9 keeps the home pill above a neighbour that drifts close. */
     .chip.home {
-      transform: translate(-50%, calc(-50% - 28px));
+      z-index: 9;
+      transform: translate(-50%, calc(-50% + 42px));
     }
     .chip.pv {
       transform: translate(-50%, calc(-50% - 98px));

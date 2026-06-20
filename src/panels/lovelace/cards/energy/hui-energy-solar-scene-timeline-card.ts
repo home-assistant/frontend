@@ -31,6 +31,7 @@ import {
   getEnergySolarForecasts,
   getSuggestedPeriod,
 } from "../../../../data/energy";
+import type { Statistics } from "../../../../data/recorder";
 import { fetchStatistics } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../../../energy/constants";
@@ -86,8 +87,13 @@ const TOOLTIP_META: Record<
 
 export interface EnergySolarSceneTimelineCardConfig extends LovelaceCardConfig {
   collection_key?: string;
-  power_entity?: string;
 }
+
+// Resolution for the timeline curves: finer than the energy collection's coarse default so a week or
+// month reads as a detailed curve, but capped at hourly (5-minute statistics are only retained a few
+// days and would leave gaps) and dropping to daily past ~2 months where hourly would be unreadable.
+const finePeriod = (start: Date, end?: Date): "hour" | "day" =>
+  getSuggestedPeriod(start, end, true) === "day" ? "day" : "hour";
 
 @customElement("hui-energy-solar-scene-timeline-card")
 export class HuiEnergySolarSceneTimelineCard
@@ -114,6 +120,14 @@ export class HuiEnergySolarSceneTimelineCard
 
   private _socKey = "";
 
+  // Metric stats fetched at the FINE period (5-minute / hourly / daily by range), finer than the
+  // energy collection's coarse default, so a week or a month reads as a detailed curve instead of a
+  // handful of daily averages. Low-carbon stays on the coarse collection (it matches the per-bucket
+  // fossil energy keyed at the coarse period).
+  @state() private _fineStats: Statistics = {};
+
+  private _fineStatsKey = "";
+
   private _snappedKey = "";
 
   // Solar forecast (fetched separately, like the native solar graph; not part of the energy data).
@@ -121,11 +135,22 @@ export class HuiEnergySolarSceneTimelineCard
 
   private _forecastFetched = false;
 
+  // Whether the forecast fetch has settled (resolved, failed, or none configured). The production
+  // curve waits for this so the actual and forecast lines sweep in as one animation, instead of the
+  // forecast doing a second, separate reveal when it arrives late.
+  @state() private _forecastSettled = false;
+
+  private _forecastTimer?: number;
+
   private _sync?: SolarSceneSync;
 
   private _unsub?: () => void;
 
   @query("ha-chart-base") private _chartBase?: HaChartBase;
+
+  @query(".cursor-now") private _cursorNow?: HTMLElement;
+
+  @query(".cursor-sel") private _cursorSel?: HTMLElement;
 
   private _dragging = false;
 
@@ -161,6 +186,10 @@ export class HuiEnergySolarSceneTimelineCard
     this._unsub?.();
     this._unsub = undefined;
     this._sync = undefined;
+    if (this._forecastTimer) {
+      clearTimeout(this._forecastTimer);
+      this._forecastTimer = undefined;
+    }
   }
 
   protected shouldUpdate(changed: PropertyValues): boolean {
@@ -176,8 +205,12 @@ export class HuiEnergySolarSceneTimelineCard
       changed.has("_energyData") ||
       changed.has("_target") ||
       changed.has("_period")
-    )
+    ) {
       this._maybeFetchSoc();
+    }
+    if (changed.has("_energyData") || changed.has("_period")) {
+      this._maybeFetchFineStats();
+    }
     if (changed.has("_energyData")) this._maybeFetchForecasts();
     if (
       changed.has("_energyData") ||
@@ -185,9 +218,12 @@ export class HuiEnergySolarSceneTimelineCard
       changed.has("_instant") ||
       changed.has("_period") ||
       changed.has("_socData") ||
-      changed.has("_forecasts")
-    )
+      changed.has("_fineStats") ||
+      changed.has("_forecasts") ||
+      changed.has("_forecastSettled")
+    ) {
       this._buildSeries();
+    }
   }
 
   // When the dashboard period changes, drop the cursor on the last day of the period at local noon
@@ -209,12 +245,25 @@ export class HuiEnergySolarSceneTimelineCard
     const hasForecast = this._energyData?.prefs.energy_sources.some(
       (s) => s.type === "solar" && s.config_entry_solar_forecast?.length
     );
-    if (!hasForecast || this._forecastFetched) return;
+    if (!hasForecast) {
+      // No forecast to wait for: let the production curve build right away.
+      this._forecastSettled = true;
+      return;
+    }
+    if (this._forecastFetched) return;
     this._forecastFetched = true;
+    // Safety net: never hold the chart blank if the fetch stalls.
+    this._forecastTimer = window.setTimeout(() => {
+      this._forecastSettled = true;
+    }, 1000);
     try {
       this._forecasts = await getEnergySolarForecasts(this.hass);
     } catch {
       this._forecasts = undefined;
+    } finally {
+      clearTimeout(this._forecastTimer);
+      this._forecastTimer = undefined;
+      this._forecastSettled = true;
     }
   }
 
@@ -243,20 +292,22 @@ export class HuiEnergySolarSceneTimelineCard
         start,
         end,
         ids,
-        getSuggestedPeriod(start, end),
+        finePeriod(start, end),
         undefined,
         ["mean"]
       );
       // Average across batteries per bucket start, like the chips do.
       const byStart: Record<number, { sum: number; n: number }> = {};
-      for (const id of ids)
-        for (const b of stats[id] ?? [])
+      for (const id of ids) {
+        for (const b of stats[id] ?? []) {
           if (b.mean != null) {
             const acc = byStart[b.start] ?? { sum: 0, n: 0 };
             acc.sum += b.mean;
             acc.n += 1;
             byStart[b.start] = acc;
           }
+        }
+      }
       this._socData = Object.keys(byStart)
         .map((ts): [number, number] => [
           Number(ts),
@@ -265,6 +316,46 @@ export class HuiEnergySolarSceneTimelineCard
         .sort((a, b) => a[0] - b[0]);
     } catch {
       this._socData = [];
+    }
+  }
+
+  // Energy meter stat ids feeding the curves (solar, grid import/export, battery charge/discharge).
+  private _metricStatIds(): string[] {
+    const ids: string[] = [];
+    for (const s of this._energyData?.prefs.energy_sources ?? []) {
+      if (s.type === "solar") {
+        if (s.stat_energy_from) ids.push(s.stat_energy_from);
+      } else if (s.type === "grid" || s.type === "battery") {
+        if (s.stat_energy_from) ids.push(s.stat_energy_from);
+        if (s.stat_energy_to) ids.push(s.stat_energy_to);
+      }
+    }
+    return ids;
+  }
+
+  private async _maybeFetchFineStats(): Promise<void> {
+    const ids = this._metricStatIds();
+    if (!ids.length || !this._period) {
+      this._fineStats = {};
+      return;
+    }
+    const start = this._period.start;
+    const end = this._period.end ?? new Date();
+    const key = `${ids.join(",")}|${start.getTime()}|${end.getTime()}`;
+    if (key === this._fineStatsKey) return;
+    this._fineStatsKey = key;
+    try {
+      this._fineStats = await fetchStatistics(
+        this.hass,
+        start,
+        end,
+        ids,
+        finePeriod(start, end),
+        { energy: "kWh" },
+        ["change"]
+      );
+    } catch {
+      this._fineStats = {};
     }
   }
 
@@ -278,9 +369,9 @@ export class HuiEnergySolarSceneTimelineCard
     this._sync = getSolarSceneSync(
       this._config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY
     );
-    this._unsub = this._sync.subscribe((state: SolarSceneSyncState) => {
-      this._instant = state.instant;
-      this._target = state.target;
+    this._unsub = this._sync.subscribe((cursor: SolarSceneSyncState) => {
+      this._instant = cursor.instant;
+      this._target = cursor.target;
     });
   }
 
@@ -308,7 +399,7 @@ export class HuiEnergySolarSceneTimelineCard
     return html`
       <ha-card>
         <div class="target-chip">
-          <hui-energy-graph-chip>
+          <hui-energy-graph-chip square>
             <ha-icon icon=${this._targetIcon()}></ha-icon>
           </hui-energy-graph-chip>
         </div>
@@ -317,7 +408,7 @@ export class HuiEnergySolarSceneTimelineCard
               <span>${this._config.title}</span>
             </div>`
           : nothing}
-        <div class="content">
+        <div class="content ${this._config.title ? "has-header" : ""}">
           <div class="chart-wrap">
             <ha-chart-base
               .hass=${this.hass}
@@ -375,14 +466,8 @@ export class HuiEnergySolarSceneTimelineCard
       }
     }
     const v = chart.convertFromPixel({ gridIndex: 0 }, [x, 0]) as number[];
-    let t = Math.min(end, Math.max(start, v[0]));
-    // On a wide range (3 months, a year, ...) the buckets are daily, so a raw pick lands on midnight,
-    // which is not representative of the day. Snap to local midday instead.
-    if (end - start > 2 * 86400000) {
-      const noon = new Date(t);
-      noon.setHours(12, 0, 0, 0);
-      t = Math.min(end, Math.max(start, noon.getTime()));
-    }
+    // Land the cursor exactly where the pointer is, not snapped to a bucket boundary.
+    const t = Math.min(end, Math.max(start, v[0]));
     this._sync?.setInstant(t);
   }
 
@@ -392,10 +477,14 @@ export class HuiEnergySolarSceneTimelineCard
   // of the chart so they never disturb its animation.
   private _buildSeries(): void {
     if (!this.hass) return;
+    // Hold the production curve until the forecast fetch has settled so the actual and forecast lines
+    // sweep in together as one animation rather than the forecast revealing itself separately later.
+    if (this._target === "production" && !this._forecastSettled) return;
     this._chartData = this._seriesFromData(
       this._energyData,
       this._target,
       this._socData,
+      this._fineStats,
       this._forecasts,
       this.hass.themes.darkMode
     );
@@ -406,18 +495,31 @@ export class HuiEnergySolarSceneTimelineCard
       data: EnergyData | undefined,
       target: ChartTarget,
       socData: [number, number][],
+      fineStats: Statistics,
       forecasts: EnergySolarForecasts | undefined,
       dark: boolean
     ): LineSeriesOption[] => {
       if (!data) return [];
       const styles = getComputedStyle(this);
+      // Plot the curves from the fine-period stats (richer than the collection's coarse default),
+      // except low-carbon which must stay on the collection so its per-bucket fossil share lines up.
+      const fineData =
+        target === "lowcarbon" || !Object.keys(fineStats).length
+          ? data
+          : { ...data, stats: fineStats };
       // State-of-charge: a single % line from its own fetch, not the energy meters.
       const dirs =
         target === "battery-soc"
           ? [{ key: "soc", token: "--energy-battery-out-color", data: socData }]
-          : targetSeries(data, target);
+          : targetSeries(fineData, target);
+      // Key the series ids on the period so a period change retires the old series and enters fresh
+      // ones (the whole curve animates in), instead of ECharts morphing the old points by index into
+      // the new range, which left the overlapping right part pinned while the rest crawled in.
+      const periodKey = `${data.start.getTime()}-${data.end?.getTime() ?? "live"}`;
       const series: LineSeriesOption[] = dirs.map((s) => ({
-        id: s.key,
+        id: `${s.key}-${periodKey}`,
+        // name stays the period-free key so the tooltip can map it to TOOLTIP_META.
+        name: s.key,
         type: "line",
         smooth: 0.4,
         showSymbol: false,
@@ -440,9 +542,10 @@ export class HuiEnergySolarSceneTimelineCard
           data.start.getTime(),
           (data.end ?? new Date()).getTime()
         );
-        if (fc.length)
+        if (fc.length) {
           series.push({
-            id: "forecast",
+            id: `forecast-${periodKey}`,
+            name: "forecast",
             type: "line",
             smooth: 0.4,
             showSymbol: false,
@@ -459,6 +562,7 @@ export class HuiEnergySolarSceneTimelineCard
               ),
             },
           });
+        }
       }
       return series;
     }
@@ -475,16 +579,30 @@ export class HuiEnergySolarSceneTimelineCard
       const px = chart.convertToPixel({ gridIndex: 0 }, [t, 0]);
       return Array.isArray(px) ? px[0] : null;
     };
-    const place = (sel: string, t: number | null): void => {
-      const el = this.renderRoot.querySelector(sel) as HTMLElement | null;
+    // Confine the cursors to the plot rectangle so they don't overshoot into the axis label band or
+    // up past the top of the grid (which made the header gap read differently from the other cards).
+    const rect = (
+      chart
+        // @ts-ignore internal model, the only way to read the grid pixel rect
+        .getModel?.()
+        ?.getComponent?.("grid", 0)?.coordinateSystem as
+        | { getRect?: () => { y: number; height: number } }
+        | undefined
+    )?.getRect?.();
+    const place = (el: HTMLElement | undefined, t: number | null): void => {
       if (!el) return;
       const x = t === null ? null : xOf(Math.min(end, Math.max(start, t)));
       el.hidden = x === null;
-      if (x !== null) el.style.left = `${x}px`;
+      if (x === null) return;
+      el.style.left = `${x}px`;
+      if (rect) {
+        el.style.top = `${rect.y}px`;
+        el.style.height = `${rect.height}px`;
+      }
     };
     const now = Date.now();
-    place(".cursor-now", now >= start && now <= end ? now : null);
-    place(".cursor-sel", this._instant);
+    place(this._cursorNow, now >= start && now <= end ? now : null);
+    place(this._cursorSel, this._instant);
   }
 
   // Memoised by period: getCommonOptions does date math, yet only the cursor moves while scrubbing,
@@ -493,14 +611,25 @@ export class HuiEnergySolarSceneTimelineCard
     (start: number, end: number, target: ChartTarget): HaECOption => {
       const soc = target === "battery-soc";
       const unit = soc ? "%" : "kW";
+      // detailedDailyData = true: this is a line chart, so the x-axis must run all the way to the
+      // period end (the bar-chart rounding would cut off the last day, which is always shown on the
+      // native energy cards). Same call shape as the native power-sources line graph.
       const xAxis = getCommonOptions(
         new Date(start),
         new Date(end),
         this.hass.locale,
         this.hass.config,
-        unit
+        unit,
+        undefined,
+        undefined,
+        undefined,
+        true
       ).xAxis;
       return {
+        // Period changes retire the series (period-keyed ids) and enter fresh, but the x-axis range
+        // update would otherwise slide the existing curve across; 0 makes that update instant so only
+        // the new curve's draw animation plays.
+        animationDurationUpdate: 0,
         xAxis,
         yAxis: {
           type: "value",
@@ -526,7 +655,7 @@ export class HuiEnergySolarSceneTimelineCard
             const items = (
               Array.isArray(params) ? params : [params]
             ) as CallbackDataParams[];
-            if (!items.length) return html``;
+            if (!items.length) return nothing;
             const ts = (items[0].value as [number, number])[0];
             const header = formatShortDateTime(
               new Date(ts),
@@ -539,8 +668,9 @@ export class HuiEnergySolarSceneTimelineCard
             const styles = getComputedStyle(this);
             const dark = this.hass.themes.darkMode;
             const rows = items.map((p) => {
-              const id = String(p.seriesId ?? "");
-              const meta = TOOLTIP_META[id] ?? {
+              // seriesName is the period-free key (the id is suffixed with the period for animations).
+              const key = String(p.seriesName ?? "");
+              const meta = TOOLTIP_META[key] ?? {
                 icon: "mdi:flash",
                 unit: "kW",
                 token: "--primary-color",
@@ -587,7 +717,12 @@ export class HuiEnergySolarSceneTimelineCard
       position: relative;
     }
     .content {
-      padding: 8px 16px 16px;
+      padding: 16px;
+    }
+    /* With a header, the header's own bottom padding sets the gap, so the content drops its
+       padding-top, matching the native energy graph cards exactly. */
+    .has-header {
+      padding-top: 0;
     }
     .target-chip {
       position: absolute;
@@ -595,8 +730,12 @@ export class HuiEnergySolarSceneTimelineCard
       right: 12px;
       z-index: 1;
     }
+    /* Size the icon to one line of the chip's text (font-size-m x line-height-normal) so this
+       icon-only chip matches the height of the text date chip on the Solar scene card. */
     .target-chip ha-icon {
-      --mdc-icon-size: 16px;
+      --mdc-icon-size: calc(
+        var(--ha-font-size-m) * var(--ha-line-height-normal)
+      );
       display: flex;
     }
     .chart-wrap {
@@ -608,8 +747,9 @@ export class HuiEnergySolarSceneTimelineCard
     }
     .cursor {
       position: absolute;
+      /* top + height are set inline to the chart's plot rectangle; this is the fallback. */
       top: 0;
-      bottom: 0;
+      height: 100%;
       width: 0;
       pointer-events: none;
       z-index: 1;

@@ -7,7 +7,10 @@ import type {
   EnergyData,
   EnergySolarForecasts,
 } from "../../../../../data/energy";
-import { getPowerFromState } from "../../../../../data/energy";
+import {
+  energySourcesByType,
+  getPowerFromState,
+} from "../../../../../data/energy";
 import type { StatisticValue } from "../../../../../data/recorder";
 import type { ChartTarget } from "./solar-scene-sync";
 
@@ -24,6 +27,7 @@ interface Resolved {
 }
 
 function resolve(data: EnergyData): Resolved {
+  const types = energySourcesByType(data.prefs);
   const r: Resolved = {
     solarRate: [],
     solarEnergy: [],
@@ -35,20 +39,20 @@ function resolve(data: EnergyData): Resolved {
     batteryDischarge: [],
     soc: [],
   };
-  for (const s of data.prefs.energy_sources) {
-    if (s.type === "solar") {
-      if (s.stat_rate) r.solarRate.push(s.stat_rate);
-      if (s.stat_energy_from) r.solarEnergy.push(s.stat_energy_from);
-    } else if (s.type === "grid") {
-      if (s.stat_rate) r.gridRate.push(s.stat_rate);
-      if (s.stat_energy_from) r.gridImport.push(s.stat_energy_from);
-      if (s.stat_energy_to) r.gridExport.push(s.stat_energy_to);
-    } else if (s.type === "battery") {
-      if (s.stat_rate) r.batteryRate.push(s.stat_rate);
-      if (s.stat_energy_to) r.batteryCharge.push(s.stat_energy_to);
-      if (s.stat_energy_from) r.batteryDischarge.push(s.stat_energy_from);
-      if (s.stat_soc) r.soc.push(s.stat_soc);
-    }
+  for (const s of types.solar ?? []) {
+    if (s.stat_rate) r.solarRate.push(s.stat_rate);
+    if (s.stat_energy_from) r.solarEnergy.push(s.stat_energy_from);
+  }
+  for (const s of types.grid ?? []) {
+    if (s.stat_rate) r.gridRate.push(s.stat_rate);
+    if (s.stat_energy_from) r.gridImport.push(s.stat_energy_from);
+    if (s.stat_energy_to) r.gridExport.push(s.stat_energy_to);
+  }
+  for (const s of types.battery ?? []) {
+    if (s.stat_rate) r.batteryRate.push(s.stat_rate);
+    if (s.stat_energy_to) r.batteryCharge.push(s.stat_energy_to);
+    if (s.stat_energy_from) r.batteryDischarge.push(s.stat_energy_from);
+    if (s.stat_soc) r.soc.push(s.stat_soc);
   }
   return r;
 }
@@ -104,22 +108,36 @@ export interface LivePower {
   lowCarbon: number | null; // W of grid import that is low-carbon
 }
 
-// Average watts in the change/mean bucket that contains a scrubbed instant.
+// Watts a single bucket represents: its mean power, or its energy change averaged over the bucket.
+function bucketWatts(b: StatisticValue): number | null {
+  if (b.mean != null) return b.mean * 1000;
+  if (b.change != null) {
+    const hours = (b.end - b.start) / 3600000;
+    return hours > 0 ? (b.change / hours) * 1000 : null;
+  }
+  return null;
+}
+
+// Watts at a scrubbed instant: the bucket covering it, or, when none does (the instant sits past the
+// last bucket or in a gap), the nearest known reading. Carrying the last measurement keeps the value
+// honest, instead of reading null and making a configured source flicker out of the scene.
 function valueAt(
   buckets: StatisticValue[] | undefined,
   instant: number
 ): number | null {
   if (!buckets?.length) return null;
+  let before: number | null = null; // latest reading at or before the instant
+  let after: number | null = null; // first reading past the instant
   for (const b of buckets) {
-    if (instant >= b.start && instant < b.end) {
-      if (b.mean != null) return b.mean * 1000;
-      if (b.change != null) {
-        const hours = (b.end - b.start) / 3600000;
-        return hours > 0 ? (b.change / hours) * 1000 : null;
-      }
-    }
+    const w = bucketWatts(b);
+    if (w === null) continue;
+    if (instant >= b.start && instant < b.end) return w; // the covering bucket always wins
+    if (b.end <= instant) {
+      before = w;
+    } // buckets are chronological, so this keeps the most recent
+    else if (after === null) after = w;
   }
-  return null;
+  return before ?? after;
 }
 
 const sumStatAt = (
@@ -148,26 +166,29 @@ export function livePower(
   const r = resolve(data);
   const stats = data.stats;
 
-  // One value per metric: at a scrubbed instant read the matching stat bucket; live, read the rate
-  // sensor (or the latest energy bucket). Signed through the plus/minus meter pair.
+  // One value per metric, null only when the source is NOT configured, so a chip's presence follows
+  // the energy preferences (like the distribution card) rather than whether data happens to be
+  // flowing right now. A configured-but-idle source reads 0, not null. At a scrubbed instant read the
+  // matching stat bucket; live, read the rate sensor (or the latest energy bucket). Signed through
+  // the plus/minus meter pair.
   const metricW = (
     rateIds: string[],
     plusIds: string[],
     minusIds: string[],
     rateSign = 1
   ): number | null => {
+    if (!rateIds.length && !plusIds.length && !minusIds.length) return null;
     if (instant != null) {
       const rate = sumStatAt(rateIds, stats, instant);
       if (rate !== null) return rate * rateSign;
-      const p = sumStatAt(plusIds, stats, instant);
-      const m = sumStatAt(minusIds, stats, instant);
-      return p === null && m === null ? null : (p ?? 0) - (m ?? 0);
+      return (
+        (sumStatAt(plusIds, stats, instant) ?? 0) -
+        (sumStatAt(minusIds, stats, instant) ?? 0)
+      );
     }
     const rate = sumRates(rateIds, states);
     if (rate !== null) return rate * rateSign;
-    const p = sumEnergy(plusIds, stats);
-    const m = sumEnergy(minusIds, stats);
-    return p === null && m === null ? null : (p ?? 0) - (m ?? 0);
+    return (sumEnergy(plusIds, stats) ?? 0) - (sumEnergy(minusIds, stats) ?? 0);
   };
 
   const pv = metricW(r.solarRate, r.solarEnergy, []);
@@ -232,11 +253,12 @@ const seriesFor = (
   sign: number
 ): [number, number][] => {
   const byStart: Record<number, number> = {};
-  for (const id of ids)
+  for (const id of ids) {
     for (const b of data.stats[id] ?? []) {
       const kw = bucketKw(b);
       if (kw != null) byStart[b.start] = (byStart[b.start] ?? 0) + sign * kw;
     }
+  }
   return Object.keys(byStart)
     .map((ts): [number, number] => [Number(ts), byStart[Number(ts)]])
     .sort((a, b) => a[0] - b[0]);
@@ -252,7 +274,7 @@ function lowCarbonSeries(r: Resolved, data: EnergyData): [number, number][] {
     if (!Number.isNaN(ts)) fossilByTs[ts] = kwh;
   }
   const byStart: Record<number, number> = {};
-  for (const id of r.gridImport)
+  for (const id of r.gridImport) {
     for (const b of data.stats[id] ?? []) {
       const kw = bucketKw(b);
       if (kw == null || b.change == null) continue;
@@ -262,6 +284,7 @@ function lowCarbonSeries(r: Resolved, data: EnergyData): [number, number][] {
           : 0;
       byStart[b.start] = (byStart[b.start] ?? 0) + kw * share;
     }
+  }
   return Object.keys(byStart)
     .map((ts): [number, number] => [Number(ts), byStart[Number(ts)]])
     .sort((a, b) => a[0] - b[0]);
@@ -300,11 +323,12 @@ export function forecastSeries(
 function homeSeries(r: Resolved, data: EnergyData): [number, number][] {
   const byStart: Record<number, number> = {};
   const add = (ids: string[], sign: number): void => {
-    for (const id of ids)
+    for (const id of ids) {
       for (const b of data.stats[id] ?? []) {
         const kw = bucketKw(b);
         if (kw != null) byStart[b.start] = (byStart[b.start] ?? 0) + sign * kw;
       }
+    }
   };
   add(r.solarEnergy.length ? r.solarEnergy : r.solarRate, 1);
   add(r.gridImport, 1);
