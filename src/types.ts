@@ -322,11 +322,10 @@ export interface HomeAssistantUI {
   suspendWhenHidden: boolean;
 }
 
-export type ManagedLogFileDisabledReason = "environment" | "supervisor";
+export type LogFileDisabledReason = "environment";
 
 export interface HassLoggingConfig {
-  managed_log_file: boolean;
-  managed_log_file_disabled_reason: ManagedLogFileDisabledReason | null;
+  log_file_disabled_reason: LogFileDisabledReason | null;
 }
 
 export interface HomeAssistantConfig {

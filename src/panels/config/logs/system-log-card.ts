@@ -157,7 +157,7 @@ export class SystemLogCard extends LitElement {
                 ${logFileDownloadUnavailableReason
                   ? html`<ha-alert alert-type="warning">
                       ${this.hass.localize(
-                        `ui.panel.config.logs.managed_log_file_disabled.${logFileDownloadUnavailableReason}`
+                        `ui.panel.config.logs.log_file_disabled.${logFileDownloadUnavailableReason}`
                       )}
                     </ha-alert>`
                   : nothing}

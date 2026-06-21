@@ -1187,10 +1187,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     if (logFileDownloadUnavailableReason) {
       showAlertDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.logs.managed_log_file_disabled_title"
+          "ui.panel.config.logs.log_file_disabled_title"
         ),
         text: this.hass.localize(
-          `ui.panel.config.logs.managed_log_file_disabled_debug_download.${logFileDownloadUnavailableReason}`
+          `ui.panel.config.logs.log_file_disabled_debug_download.${logFileDownloadUnavailableReason}`
         ),
       });
       return;

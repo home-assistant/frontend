@@ -1,6 +1,6 @@
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { atLeastVersion } from "../common/config/version";
-import type { HomeAssistant, ManagedLogFileDisabledReason } from "../types";
+import type { HomeAssistant, LogFileDisabledReason } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";
 
 export interface LogProvider {
@@ -23,16 +23,10 @@ export const getErrorLogDownloadUrl = (hass: HomeAssistant) =>
 
 export const getCoreLogFileDownloadUnavailableReason = (
   hass: HomeAssistant
-): ManagedLogFileDisabledReason | undefined => {
+): LogFileDisabledReason | undefined => {
   if (hasSupervisorCoreLogDownload(hass)) {
     return undefined;
   }
 
-  const logging = hass.config.logging;
-
-  if (logging?.managed_log_file !== false) {
-    return undefined;
-  }
-
-  return logging.managed_log_file_disabled_reason ?? "environment";
+  return hass.config.logging?.log_file_disabled_reason ?? undefined;
 };
