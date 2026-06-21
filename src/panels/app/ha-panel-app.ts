@@ -32,7 +32,7 @@ interface AppPanelConfig {
 }
 
 // Time to wait for app to start before we ask the user if we should try again
-const START_WAIT_TIME = 20000; // ms
+const START_WAIT_TIME = 30000; // ms
 const RETRY_START_WAIT_TIME = 5000; // ms
 
 @customElement("ha-panel-app")
