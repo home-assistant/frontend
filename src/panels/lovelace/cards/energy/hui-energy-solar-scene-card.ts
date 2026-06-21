@@ -16,11 +16,14 @@ import type { LivePower } from "./common/solar-scene-power";
 import {
   forecastSeries,
   livePower,
+  solarBreakdownAt,
   targetSeries,
 } from "./common/solar-scene-power";
+import { getEnergyColor } from "./common/color";
 import type { EnergyData, EnergySolarForecasts } from "../../../../data/energy";
 import { formatNumber } from "../../../../common/number/format_number";
 import { theme2hex } from "../../../../common/color/convert-color";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "./common/hui-energy-graph-chip";
 import {
@@ -324,12 +327,23 @@ export class HuiEnergySolarSceneCard
   private _homeColor = "";
   private _homeGrowth = 1;
   private _homeAnimId = 0;
+  // When the PV chip is active, the home fills as a stacked histogram of each panel string's share of
+  // production at the scrubbed instant. willUpdate keeps the fractions (per source, cheap to refresh
+  // on every scrub / live tick); _draw resolves their colours (cached, off the solar token by index).
+  // Empty for every other target, where the home stays a single solid colour.
+  private _solarBands: { frac: number; idx: number }[] = [];
+  private _bandColorCache?: { key: string; colors: string[] };
   // Last home-relative leader markup, so the group (and its bead animations) is rebuilt only when the
   // flows change, not on every rotation frame.
   private _leadersHtml = "";
   private _drag?: { x: number; y: number };
   private _buildings: Building[] = [];
-  private _ground?: { canvas: HTMLCanvasElement; homeX: number; homeY: number };
+  private _ground?: {
+    canvas: HTMLCanvasElement;
+    fade: HTMLDivElement;
+    homeX: number;
+    homeY: number;
+  };
   private _built = false;
   private _redrawScheduled = false;
   private _growth = 0;
@@ -450,7 +464,58 @@ export class HuiEnergySolarSceneCard
         : forecastPv != null
           ? { ...power, pv: forecastPv }
           : power;
+      this._updateSolarBands();
     }
+  }
+
+  // Per-string production shares of the home histogram, refreshed for the active instant. Only the
+  // fractions are computed here (cheap on every scrub / tick); colours are resolved in _draw. Cleared
+  // for any target other than PV, and whenever a single string carries everything, so the home falls
+  // back to its solid colour. Never touches _homeGrowth, so a same-target redraw won't replay the
+  // squash/grow — only the bands move.
+  private _updateSolarBands(): void {
+    if (this._target !== "production" || !this._energyData || !this.hass) {
+      this._solarBands = [];
+      return;
+    }
+    const breakdown = solarBreakdownAt(
+      this._energyData,
+      this.hass.states,
+      this._instant
+    );
+    const positive = breakdown.filter((b) => b.value > 0);
+    const total = positive.reduce((sum, b) => sum + b.value, 0);
+    this._solarBands =
+      total > 0 && positive.length > 1
+        ? positive.map((b) => ({ frac: b.value / total, idx: b.idx }))
+        : [];
+  }
+
+  // Resolve the home histogram bands to drawable {fraction, colour}. Colours are shaded off the solar
+  // token by the source index (like the timeline and the native Solar production graph) and cached on
+  // the (dark, index-set) key, so a rotation or scrub frame reuses them instead of hitting
+  // getComputedStyle every time. Returns [] when there's nothing to stack (home draws solid).
+  private _resolveHomeBands(dark: boolean): { frac: number; color: string }[] {
+    if (this._solarBands.length < 2) return [];
+    const key = `${dark}|${this._solarBands.map((b) => b.idx).join(",")}`;
+    if (this._bandColorCache?.key !== key) {
+      const styles = getComputedStyle(this);
+      this._bandColorCache = {
+        key,
+        colors: this._solarBands.map((b) =>
+          getEnergyColor(
+            styles,
+            dark,
+            false,
+            false,
+            "--energy-solar-color",
+            b.idx
+          )
+        ),
+      };
+    }
+    const colors = this._bandColorCache.colors;
+    return this._solarBands.map((b, i) => ({ frac: b.frac, color: colors[i] }));
   }
 
   // Forecast PV power (W) for the hour containing a future instant, or null when none.
@@ -614,12 +679,22 @@ export class HuiEnergySolarSceneCard
     }
     await Promise.all(loads);
 
+    // Edge fade on the plane: same size as the canvas, transformed identically each frame so it tilts
+    // with the map. The gradient (CSS, theme-reactive) dissolves the mega-tile's borders into the card
+    // background, so the cut-off plane reads as a disc rather than a sniper's-eye rectangle.
+    const fade = document.createElement("div");
+    fade.className = "ground-fade";
+    fade.style.width = `${canvas.width}px`;
+    fade.style.height = `${canvas.height}px`;
+
     if (this._groundHolder) {
       this._groundHolder.innerHTML = "";
       this._groundHolder.appendChild(canvas);
+      this._groundHolder.appendChild(fade);
     }
     this._ground = {
       canvas,
+      fade,
       homeX: (tileX - firstX) * TILE_PX,
       homeY: (tileY - firstY) * TILE_PX,
     };
@@ -941,9 +1016,14 @@ export class HuiEnergySolarSceneCard
       };
     }
     if (this._ground) {
-      const { canvas, homeX, homeY } = this._ground;
-      canvas.style.transformOrigin = `${homeX}px ${homeY}px`;
-      canvas.style.transform = `translate(${this._centreX - homeX}px, ${this._centreY - homeY}px) rotateX(${this._tilt}deg) rotateZ(${this._bearing}deg)`;
+      const { canvas, fade, homeX, homeY } = this._ground;
+      const origin = `${homeX}px ${homeY}px`;
+      const transform = `translate(${this._centreX - homeX}px, ${this._centreY - homeY}px) rotateX(${this._tilt}deg) rotateZ(${this._bearing}deg)`;
+      canvas.style.transformOrigin = origin;
+      canvas.style.transform = transform;
+      // Same origin + transform so the fade sits exactly on the map plane and shares its perspective.
+      fade.style.transformOrigin = origin;
+      fade.style.transform = transform;
     }
 
     const { latitude, longitude } = this.hass.config;
@@ -962,7 +1042,11 @@ export class HuiEnergySolarSceneCard
     this._lScene.innerHTML =
       this._renderNightShade(sun.altitude, width, height) +
       this._renderShadows(sun, palette.shadow) +
-      this._renderBuildings(sun.altitude, palette);
+      this._renderBuildings(
+        sun.altitude,
+        palette,
+        this._resolveHomeBands(dark)
+      );
     if (this._lArcBack) this._lArcBack.innerHTML = sky.arcBack;
     if (this._lArcFar) this._lArcFar.innerHTML = sky.arcFar;
     if (this._lLeaders) {
@@ -1160,7 +1244,8 @@ export class HuiEnergySolarSceneCard
 
   private _renderBuildings(
     altitude: number,
-    palette: { home: string; neighbor: string }
+    palette: { home: string; neighbor: string },
+    homeBands: { frac: number; color: string }[]
   ): string {
     const bearing = this._bearing * DEG;
     const order = this._buildings
@@ -1175,6 +1260,13 @@ export class HuiEnergySolarSceneCard
       const b = this._buildings[index];
       // The home also rides _homeGrowth (the target-colour squash/grow); neighbours only the load rise.
       const grow = b.isHome ? this._growth * this._homeGrowth : this._growth;
+      // PV target: fill the home as a stacked histogram of the strings' production shares instead of a
+      // single solid block. Uses the same growth, so the squash/grow on a target change still plays,
+      // but a same-target scrub just restacks the bands.
+      if (b.isHome && homeBands.length > 1) {
+        svg += this._renderHomeBands(b, grow, altitude, bearing, homeBands);
+        continue;
+      }
       const homeColor = this._homeColor || palette.home;
       const base = b.footprint.map((p) => this._project(p[0], p[1], 0));
       const roof = b.footprint.map((p) =>
@@ -1214,6 +1306,60 @@ export class HuiEnergySolarSceneCard
       svg += walls.map((w) => w.svg).join("");
       svg += `<polygon points="${pointsAttr(roof)}" fill="${roofFill}" stroke="${stroke}" stroke-width="0.6"/>`;
     }
+    return svg;
+  }
+
+  // Draw the home box as a vertical stack of bands, one per producing string, each band's height a
+  // fraction of the home height proportional to that string's share of production at the instant, in
+  // its solar shade. The walls are split at the cumulative fractions; the roof caps the top band. So
+  // the home reads like a stacked histogram — tallest band = the string producing the most right now.
+  private _renderHomeBands(
+    b: Building,
+    grow: number,
+    altitude: number,
+    bearing: number,
+    bands: { frac: number; color: string }[]
+  ): string {
+    const totalH = b.height * grow;
+    // Cumulative z-fraction boundaries 0 .. 1 (last pinned to 1 against rounding drift).
+    const cum = [0];
+    for (const band of bands) cum.push(cum[cum.length - 1] + band.frac);
+    cum[cum.length - 1] = 1;
+    // Footprint projected at each band boundary height.
+    const rings = cum.map((c) =>
+      b.footprint.map((p) => this._project(p[0], p[1], totalH * c))
+    );
+    const stroke = "rgba(0,0,0,0.3)";
+    // One entry per visible wall edge, each carrying all of its bands; sorted back-to-front by depth.
+    const edges: { depth: number; faces: string }[] = [];
+    for (let i = 0; i < b.footprint.length; i++) {
+      const next = (i + 1) % b.footprint.length;
+      // back-face cull: drop walls whose outward normal faces away from the camera
+      const edgeE = b.footprint[next][0] - b.footprint[i][0];
+      const edgeN = b.footprint[next][1] - b.footprint[i][1];
+      if (edgeN * Math.sin(bearing) + edgeE * Math.cos(bearing) <= 0) continue;
+      let faces = "";
+      for (let k = 0; k < bands.length; k++) {
+        const lo = rings[k];
+        const hi = rings[k + 1];
+        const fill = tintedRgba(
+          mixHex(bands[k].color, "#000000", 0.22),
+          altitude,
+          0.9
+        );
+        faces += `<polygon points="${pointsAttr([lo[i], lo[next], hi[next], hi[i]])}" fill="${fill}" stroke="${stroke}" stroke-width="0.4"/>`;
+      }
+      edges.push({ depth: (rings[0][i][1] + rings[0][next][1]) / 2, faces });
+    }
+    edges.sort((e1, e2) => e1.depth - e2.depth);
+    let svg = edges.map((e) => e.faces).join("");
+    // Roof cap in the top band's shade.
+    const roofFill = tintedRgba(
+      mixHex(bands[bands.length - 1].color, "#ffffff", 0.18),
+      altitude,
+      0.92
+    );
+    svg += `<polygon points="${pointsAttr(rings[rings.length - 1])}" fill="${roofFill}" stroke="${stroke}" stroke-width="0.6"/>`;
     return svg;
   }
 
@@ -1584,7 +1730,9 @@ export class HuiEnergySolarSceneCard
       height: ${CARD_HEIGHT_PX}px;
       border-radius: var(--ha-card-border-radius, 12px);
       overflow: hidden;
-      background: linear-gradient(#0c1d33 0%, #14283f 45%, #0b1622 100%);
+      /* Same flat background as the chart cards: the ground plane fades into it at the edges of the
+         merged mega-tile, so the faux-3D plane reads as a disc on the card instead of a cut-off map. */
+      background: var(--ha-card-background, var(--card-background-color, #fff));
       /* Own stacking context so the depth-split z-index children (arc, sun, chips up to z 14) stay
          scoped to the card and never escape above the HA header on scroll. */
       isolation: isolate;
@@ -1652,6 +1800,23 @@ export class HuiEnergySolarSceneCard
       transform-origin: center center;
       will-change: transform;
       filter: var(--map-filter, none);
+    }
+    /* Lives in the SAME perspective parent as the ground canvas and gets the SAME 3D transform each
+       frame, so the fade is on the map plane (tilts/rotates with it) rather than a flat overhead disc.
+       The gradient is the largest circle inscribed in the mega-tile (closest-side = half the square's
+       side); it stays clear out to ~86% then dissolves the plane's edges into the card background. */
+    .ground-fade {
+      position: absolute;
+      left: 0;
+      top: 0;
+      will-change: transform;
+      pointer-events: none;
+      background: radial-gradient(
+        circle closest-side at 50% 50%,
+        transparent 0%,
+        transparent 86%,
+        var(--ha-card-background, var(--card-background-color, #fff)) 100%
+      );
     }
     /* The scene is split into stacked SVG layers so the solar arc and disc pass BEHIND the home
        cluster on their far side and IN FRONT on their near side, identically to the standalone Helios

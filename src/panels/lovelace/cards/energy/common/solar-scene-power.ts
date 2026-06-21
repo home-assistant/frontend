@@ -236,13 +236,69 @@ export function livePower(
   return { pv, grid, battery, soc, home, lowCarbon };
 }
 
-const bucketKw = (b: StatisticValue): number | null => {
+export interface SolarBand {
+  statId: string;
+  idx: number; // source order, for the colour shade off the solar token
+  value: number; // W at the instant (live or scrubbed); 0 when the source has no reading
+}
+
+// Per-source solar production (W) at an instant (or live), one entry per configured solar source in
+// preference order, for the scene's stacked-house view. Mirrors livePower's resolution: a scrubbed
+// instant reads the stat bucket covering it (rate sensor first, else the energy meter's change);
+// live reads the rate sensor's current state, else the latest energy bucket. A source with no
+// reading contributes 0 so the bands always cover every string. Proportions are exact regardless of
+// the bucket width: every source shares the same bucket span at a given instant, so it cancels out.
+export function solarBreakdownAt(
+  data: EnergyData,
+  states: HassEntities,
+  instant?: number | null
+): SolarBand[] {
+  const solar = energySourcesByType(data.prefs).solar ?? [];
+  return solar.map((s, idx): SolarBand => {
+    const statId = s.stat_energy_from || s.stat_rate || "";
+    let value: number | null = null;
+    if (instant != null) {
+      if (s.stat_rate) value = valueAt(data.stats[s.stat_rate], instant);
+      if (value === null && s.stat_energy_from) {
+        value = valueAt(data.stats[s.stat_energy_from], instant);
+      }
+    } else {
+      if (s.stat_rate) {
+        const w = getPowerFromState(states[s.stat_rate]);
+        value = w === undefined ? null : w;
+      }
+      if (value === null && s.stat_energy_from) {
+        value = latestWatts(data.stats[s.stat_energy_from]);
+      }
+    }
+    return { statId, idx, value: value ?? 0 };
+  });
+}
+
+// Average power (kW) a bucket represents. mean sensors are already power; a cumulative meter gives
+// energy per bucket, divided by the bucket's NOMINAL span (`nominalH`, the period's typical width)
+// rather than its raw end-start. The most recent bucket is usually partial — it ends at "now" — so
+// dividing its small energy by a tiny span would spike it to an instantaneous-looking peak that
+// crushes the rest of a long curve; normalising by the nominal span keeps every point comparable
+// (a partial day then just reads as a lower daily average, which is the honest value).
+const bucketKw = (b: StatisticValue, nominalH: number): number | null => {
   if (b.mean != null) return b.mean;
-  if (b.change != null) {
-    const hours = (b.end - b.start) / 3600000;
-    return hours > 0 ? b.change / hours : null;
-  }
+  if (b.change != null) return nominalH > 0 ? b.change / nominalH : null;
   return null;
+};
+
+// Typical bucket width (hours) of a meter set: the median of the buckets' own spans, so a single
+// partial bucket at either end can't skew it. Falls back to 1h when nothing usable is present.
+const nominalHoursFor = (ids: string[], data: EnergyData): number => {
+  const spans: number[] = [];
+  for (const id of ids) {
+    for (const b of data.stats[id] ?? []) {
+      if (b.change != null) spans.push((b.end - b.start) / 3600000);
+    }
+  }
+  if (!spans.length) return 1;
+  spans.sort((a, b) => a - b);
+  return spans[Math.floor(spans.length / 2)] || 1;
 };
 
 // Power (kW) over the period from one set of meters, merging buckets keyed on bucket start like
@@ -252,10 +308,11 @@ const seriesFor = (
   data: EnergyData,
   sign: number
 ): [number, number][] => {
+  const nominalH = nominalHoursFor(ids, data);
   const byStart: Record<number, number> = {};
   for (const id of ids) {
     for (const b of data.stats[id] ?? []) {
-      const kw = bucketKw(b);
+      const kw = bucketKw(b, nominalH);
       if (kw != null) byStart[b.start] = (byStart[b.start] ?? 0) + sign * kw;
     }
   }
@@ -273,10 +330,11 @@ function lowCarbonSeries(r: Resolved, data: EnergyData): [number, number][] {
     const ts = new Date(iso).getTime();
     if (!Number.isNaN(ts)) fossilByTs[ts] = kwh;
   }
+  const nominalH = nominalHoursFor(r.gridImport, data);
   const byStart: Record<number, number> = {};
   for (const id of r.gridImport) {
     for (const b of data.stats[id] ?? []) {
-      const kw = bucketKw(b);
+      const kw = bucketKw(b, nominalH);
       if (kw == null || b.change == null) continue;
       const share =
         b.change > 0
@@ -290,16 +348,21 @@ function lowCarbonSeries(r: Resolved, data: EnergyData): [number, number][] {
     .sort((a, b) => a[0] - b[0]);
 }
 
-// Solar production forecast as hourly power (kW), summed across the configured forecast providers
-// (wh_hours = Wh per hour, so /1000 is the average kW). Same source the HA solar graph dashes in.
-// Forecasts aren't part of the energy data, so the caller fetches them and passes them in.
+// Solar production forecast as power (kW), summed across the configured forecast providers (wh_hours
+// = Wh per hour). Same source the HA solar graph dashes in; forecasts aren't part of the energy data,
+// so the caller fetches them and passes them in. `period` must match the resolution of the actual
+// curve it sits on: at "hour" each point is the average kW of that hour (Wh / 1000); at "day" the
+// hours are summed per day and averaged over 24 h (Wh / 1000 / 24), so the dashed forecast stays on
+// the same scale as a daily-averaged production curve instead of towering over it with hourly peaks.
 export function forecastSeries(
   forecasts: EnergySolarForecasts,
   prefs: EnergyData["prefs"],
   start: number,
-  end: number
+  end: number,
+  period: "hour" | "day" = "hour"
 ): [number, number][] {
-  const byTime: Record<number, number> = {};
+  const daily = period === "day";
+  const byTime: Record<number, number> = {}; // Wh accumulated per bucket
   for (const s of prefs.energy_sources) {
     if (s.type !== "solar" || !s.config_entry_solar_forecast) continue;
     for (const ceid of s.config_entry_solar_forecast) {
@@ -309,23 +372,26 @@ export function forecastSeries(
         const d = new Date(date);
         const ts = d.getTime();
         if (ts < start || ts > end) continue;
-        d.setMinutes(0, 0, 0);
+        if (daily) d.setHours(0, 0, 0, 0);
+        else d.setMinutes(0, 0, 0);
         const t = d.getTime();
         byTime[t] = (byTime[t] ?? 0) + Number(value);
       }
     }
   }
+  const divisor = daily ? 1000 * 24 : 1000;
   return Object.keys(byTime)
-    .map((t): [number, number] => [Number(t), byTime[Number(t)] / 1000])
+    .map((t): [number, number] => [Number(t), byTime[Number(t)] / divisor])
     .sort((a, b) => a[0] - b[0]);
 }
 
 function homeSeries(r: Resolved, data: EnergyData): [number, number][] {
   const byStart: Record<number, number> = {};
   const add = (ids: string[], sign: number): void => {
+    const nominalH = nominalHoursFor(ids, data);
     for (const id of ids) {
       for (const b of data.stats[id] ?? []) {
-        const kw = bucketKw(b);
+        const kw = bucketKw(b, nominalH);
         if (kw != null) byStart[b.start] = (byStart[b.start] ?? 0) + sign * kw;
       }
     }
@@ -347,6 +413,11 @@ export interface DirSeries {
   key: string;
   token: string;
   data: [number, number][];
+  // Production splits into one stacked band per configured solar source (panel string). These carry
+  // what the chart needs to draw and label those bands; they stay undefined for the other targets.
+  idx?: number; // colour-derivation index off the token, like the native Solar production graph
+  stack?: string; // ECharts stack group, so the bands sum to the total production height
+  statId?: string; // the source's energy meter, so the card can label the band
 }
 
 // Up to two area series per target, each from its own meter in its own colour: import
@@ -409,18 +480,24 @@ export function targetSeries(
         { key: "home", token: "--primary-color", data: homeSeries(r, data) },
       ];
       break;
-    default:
-      out = [
-        {
-          key: "solar",
+    default: {
+      // One stacked area per configured solar source (each panel string), shaded off the solar
+      // colour by its index exactly like the native Solar production graph. Stacked, so the curve's
+      // height at any instant is the sum of every string's production. A single source reads as one
+      // plain solar band (index 0 keeps the base colour), so nothing changes for a one-string setup.
+      const solarSources = energySourcesByType(data.prefs).solar ?? [];
+      out = solarSources.map((s, idx): DirSeries => {
+        const statId = s.stat_energy_from || s.stat_rate;
+        return {
+          key: statId ? `solar-${statId}` : `solar-${idx}`,
           token: "--energy-solar-color",
-          data: seriesFor(
-            r.solarEnergy.length ? r.solarEnergy : r.solarRate,
-            data,
-            1
-          ),
-        },
-      ];
+          idx,
+          stack: "solar",
+          statId: statId || undefined,
+          data: seriesFor(statId ? [statId] : [], data, 1),
+        };
+      });
+    }
   }
   return out.filter((s) => s.data.length > 0);
 }

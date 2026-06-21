@@ -32,7 +32,7 @@ import {
   getSuggestedPeriod,
 } from "../../../../data/energy";
 import type { Statistics } from "../../../../data/recorder";
-import { fetchStatistics } from "../../../../data/recorder";
+import { fetchStatistics, getStatisticLabel } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../../../energy/constants";
 import type {
@@ -113,6 +113,10 @@ export class HuiEnergySolarSceneTimelineCard
   @state() private _energyData?: EnergyData;
 
   @state() private _chartData: LineSeriesOption[] = [];
+
+  // Human label per stacked solar band, keyed on its series name (solar-<statId>), so the tooltip
+  // can name each panel string. Filled while the series are built; the other targets leave it empty.
+  private _seriesLabel: Record<string, string> = {};
 
   // Battery state-of-charge is a level (%), not an energy meter, so the energy collection never
   // fetches it. We pull it separately whenever the chart targets it.
@@ -516,23 +520,39 @@ export class HuiEnergySolarSceneTimelineCard
       // ones (the whole curve animates in), instead of ECharts morphing the old points by index into
       // the new range, which left the overlapping right part pinned while the rest crawled in.
       const periodKey = `${data.start.getTime()}-${data.end?.getTime() ?? "live"}`;
-      const series: LineSeriesOption[] = dirs.map((s) => ({
-        id: `${s.key}-${periodKey}`,
-        // name stays the period-free key so the tooltip can map it to TOOLTIP_META.
-        name: s.key,
-        type: "line",
-        smooth: 0.4,
-        showSymbol: false,
-        data: s.data,
-        lineStyle: {
-          width: 1,
-          color: getEnergyColor(styles, dark, false, false, s.token),
-        },
-        areaStyle: {
-          color: getEnergyColor(styles, dark, true, false, s.token),
-          opacity: 0.4,
-        },
-      }));
+      // Name each stacked solar band after its source so the tooltip can label it. Built here (where
+      // hass is in scope) rather than in targetSeries, which has no access to the entity names.
+      const labels: Record<string, string> = {};
+      const series: LineSeriesOption[] = dirs.map((s) => {
+        if (s.statId) {
+          labels[s.key] = getStatisticLabel(
+            this.hass,
+            s.statId,
+            data.statsMetadata[s.statId]
+          );
+        }
+        // Shade off the token by the band index (idx 0 keeps the base colour), exactly like the
+        // native Solar production graph, so the panel strings stack as distinguishable solar shades.
+        const line = getEnergyColor(styles, dark, false, false, s.token, s.idx);
+        return {
+          id: `${s.key}-${periodKey}`,
+          // name stays the period-free key so the tooltip can map it to TOOLTIP_META / the labels.
+          name: s.key,
+          type: "line",
+          // Stacked sources (production) sum to the total height; the other targets stay unstacked.
+          stack: s.stack,
+          smooth: 0.4,
+          showSymbol: false,
+          data: s.data,
+          color: line, // so the tooltip marker matches the band's shade
+          lineStyle: { width: 1, color: line },
+          areaStyle: {
+            color: getEnergyColor(styles, dark, true, false, s.token, s.idx),
+            opacity: 0.4,
+          },
+        };
+      });
+      this._seriesLabel = labels;
       fillLineGaps(series);
       // Solar production forecast: a dashed line in the solar colour, like HA's native solar graph.
       if (target === "production" && forecasts) {
@@ -540,7 +560,10 @@ export class HuiEnergySolarSceneTimelineCard
           forecasts,
           data.prefs,
           data.start.getTime(),
-          (data.end ?? new Date()).getTime()
+          (data.end ?? new Date()).getTime(),
+          // Aggregate the forecast to the same resolution as the actual curve so the dashed line
+          // stays on the same scale (daily-averaged on long ranges, hourly on short ones).
+          finePeriod(data.start, data.end)
         );
         if (fc.length) {
           series.push({
@@ -667,23 +690,36 @@ export class HuiEnergySolarSceneTimelineCard
             // icon is tinted with the same colour token as its curve, computed identically.
             const styles = getComputedStyle(this);
             const dark = this.hass.themes.darkMode;
+            let solarBands = 0;
+            let solarTotal = 0;
             const rows = items.map((p) => {
               // seriesName is the period-free key (the id is suffixed with the period for animations).
               const key = String(p.seriesName ?? "");
-              const meta = TOOLTIP_META[key] ?? {
-                icon: "mdi:flash",
-                unit: "kW",
-                token: "--primary-color",
-              };
-              const color = getEnergyColor(
-                styles,
-                dark,
-                false,
-                false,
-                meta.token
-              );
+              // Production is split into one stacked band per panel string (key solar-<statId>); name
+              // each one and tint its icon with the band's own derived shade (params.color).
+              const isSolarBand = key.startsWith("solar-");
+              const meta = isSolarBand
+                ? {
+                    icon: "mdi:solar-power",
+                    unit: "kW",
+                    token: "--energy-solar-color",
+                  }
+                : (TOOLTIP_META[key] ?? {
+                    icon: "mdi:flash",
+                    unit: "kW",
+                    token: "--primary-color",
+                  });
+              const color =
+                isSolarBand && typeof p.color === "string"
+                  ? p.color
+                  : getEnergyColor(styles, dark, false, false, meta.token);
               const raw = (p.value as [number, number])[1];
               const value = meta.unit === "%" ? Math.round(raw) : Math.abs(raw);
+              const label = isSolarBand ? this._seriesLabel[key] : undefined;
+              if (isSolarBand) {
+                solarBands += 1;
+                solarTotal += Math.abs(raw);
+              }
               return html`<div
                 style="display:flex;align-items:center;gap:6px;line-height:1.6"
               >
@@ -691,14 +727,40 @@ export class HuiEnergySolarSceneTimelineCard
                   icon=${meta.icon}
                   style="color:${color};--mdc-icon-size:16px"
                 ></ha-icon>
-                <span
-                  >${formatNumber(value, this.hass.locale)} ${meta.unit}</span
+                <span>
+                  ${label ? html`${label} ` : nothing}${formatNumber(
+                    value,
+                    this.hass.locale
+                  )}
+                  ${meta.unit}</span
                 >
               </div>`;
             });
+            // With several panel strings stacked, add their sum so the total production at this
+            // instant (the stacked height) reads at a glance, in the full solar colour.
+            const totalRow =
+              solarBands > 1
+                ? html`<div
+                    style="display:flex;align-items:center;gap:6px;line-height:1.6;font-weight:600;margin-top:2px;border-top:1px solid var(--divider-color);padding-top:2px"
+                  >
+                    <ha-icon
+                      icon="mdi:solar-power"
+                      style="color:${getEnergyColor(
+                        styles,
+                        dark,
+                        false,
+                        false,
+                        "--energy-solar-color"
+                      )};--mdc-icon-size:16px"
+                    ></ha-icon>
+                    <span
+                      >${formatNumber(solarTotal, this.hass.locale)} kW</span
+                    >
+                  </div>`
+                : nothing;
             return html`<div>
               <div style="font-weight:500;margin-bottom:2px">${header}</div>
-              ${rows}
+              ${rows}${totalRow}
             </div>`;
           },
         },
