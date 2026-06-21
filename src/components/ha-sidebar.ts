@@ -533,29 +533,15 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           item.panel.url_path === selectedPanel
         );
       }
-      return this._renderShortcut(item, selectedPanel);
+      return this._renderShortcut(item);
     });
   }
 
-  private _renderShortcut(item: SidebarShortcutItem, selectedPanel: string) {
-    // Active when the route matches the shortcut path exactly or is a sub-path.
-    // Compare the first path segment to selectedPanel (hass.panelUrl) as a fast
-    // pre-check, then verify the full route for sub-path disambiguation.
-    const firstSegment = item.path.replace(/^\//, "").split("/")[0];
-    const isSelected =
-      selectedPanel === firstSegment &&
-      (this.route?.path === item.path ||
-        this.route?.path?.startsWith(item.path + "/") ||
-        false);
-
+  private _renderShortcut(item: SidebarShortcutItem) {
     const id = `sidebar-shortcut-${item.path.replace(/\//g, "-").replace(/^-/, "")}`;
 
     return html`
-      <ha-list-item-button
-        .href=${item.path}
-        id=${id}
-        class=${classMap({ selected: isSelected })}
-      >
+      <ha-list-item-button .href=${item.path} id=${id}>
         ${item.iconPath
           ? html`<ha-svg-icon
               slot="start"
