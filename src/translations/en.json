@@ -8759,6 +8759,7 @@
               "named_grid_imported": "{name} imported",
               "named_grid_exported": "{name} exported"
             },
+            "back_to_live": "Back to live",
             "energy_solar_graph": {
               "production": "Production {name}",
               "forecast": "Forecast {name}",
@@ -11222,6 +11223,7 @@
           "energy_distribution_title": "Energy distribution",
           "energy_solar_scene_title": "Solar scene",
           "energy_solar_scene_timeline_title": "Solar scene timeline",
+          "energy_clock_title": "Energy clock",
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",
           "energy_devices_detail_graph_title": "Individual devices detail usage",

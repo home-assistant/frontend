@@ -227,6 +227,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
   ),
   entry(
     "solar",
+    "energy-clock",
+    "ui.panel.energy.cards.energy_clock_title",
+    (p) => hasSolar(p)
+  ),
+  entry(
+    "solar",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
     (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)

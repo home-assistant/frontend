@@ -2,6 +2,10 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-tooltip";
 
+// Per-instance counter so the tooltip's anchor id is stable across renders (Date.now() in render() is
+// neither stable nor unique for chips created in the same millisecond, which breaks ha-tooltip's for=).
+let chipId = 0;
+
 @customElement("hui-energy-graph-chip")
 export class HuiEnergyGraphChip extends LitElement {
   @property({ type: String }) public tooltip?: string;
@@ -10,14 +14,15 @@ export class HuiEnergyGraphChip extends LitElement {
   // chip. Off by default so the text chips other energy cards use are unaffected.
   @property({ type: Boolean }) public square = false;
 
+  private _id = `energy-graph-chip-${++chipId}`;
+
   protected render() {
-    const id = `energy-graph-chip-${Date.now()}`;
     return html`
-      <div class="chip ${this.square ? "square" : ""}" id=${id}>
+      <div class="chip ${this.square ? "square" : ""}" id=${this._id}>
         <slot></slot>
       </div>
       ${this.tooltip
-        ? html`<ha-tooltip for=${id} placement="top"
+        ? html`<ha-tooltip for=${this._id} placement="top"
             >${this.tooltip}</ha-tooltip
           >`
         : nothing}

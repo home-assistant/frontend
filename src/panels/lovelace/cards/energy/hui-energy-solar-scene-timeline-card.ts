@@ -41,48 +41,20 @@ import type {
   SolarSceneSyncState,
 } from "./common/solar-scene-sync";
 import { getSolarSceneSync } from "./common/solar-scene-sync";
-import { forecastSeries, targetSeries } from "./common/solar-scene-power";
+import {
+  forecastSeries,
+  metricMeta,
+  targetSeries,
+} from "./common/solar-scene-power";
 
-// Per-series tooltip metadata: the icon, unit and colour token shown for each curve the cursor
-// crosses. Keyed on the series id set by targetSeries. The token is the SAME one the line is drawn
-// with, so the icon colour matches its curve exactly (import icon in the import colour, etc.).
-const TOOLTIP_META: Record<
-  string,
-  { icon: string; unit: string; token: string }
-> = {
-  solar: { icon: "mdi:solar-power", unit: "kW", token: "--energy-solar-color" },
-  import: {
-    icon: "mdi:transmission-tower-import",
-    unit: "kW",
-    token: "--energy-grid-consumption-color",
-  },
-  export: {
-    icon: "mdi:transmission-tower-export",
-    unit: "kW",
-    token: "--energy-grid-return-color",
-  },
-  discharge: {
-    icon: "mdi:battery-arrow-up",
-    unit: "kW",
-    token: "--energy-battery-out-color",
-  },
-  charge: {
-    icon: "mdi:battery-arrow-down",
-    unit: "kW",
-    token: "--energy-battery-in-color",
-  },
-  forecast: {
-    icon: "mdi:solar-power",
-    unit: "kW",
-    token: "--energy-solar-color",
-  },
-  soc: { icon: "mdi:battery", unit: "%", token: "--energy-battery-out-color" },
-  lowcarbon: {
-    icon: "mdi:leaf",
-    unit: "kW",
-    token: "--energy-non-fossil-color",
-  },
-  home: { icon: "mdi:home", unit: "kW", token: "--primary-color" },
+// Per-series tooltip metadata (icon + colour token) comes from the shared metricMeta(); the unit is
+// kW here (the timeline plots power), or % for a level series (SoC). One source of truth shared with
+// the Energy clock so icons/colours never drift between the two cards.
+const tooltipMeta = (
+  key: string
+): { icon: string; unit: string; token: string } => {
+  const m = metricMeta(key);
+  return { icon: m.icon, token: m.token, unit: m.level ? "%" : "kW" };
 };
 
 export interface EnergySolarSceneTimelineCardConfig extends LovelaceCardConfig {
@@ -536,7 +508,7 @@ export class HuiEnergySolarSceneTimelineCard
         const line = getEnergyColor(styles, dark, false, false, s.token, s.idx);
         return {
           id: `${s.key}-${periodKey}`,
-          // name stays the period-free key so the tooltip can map it to TOOLTIP_META / the labels.
+          // name stays the period-free key so the tooltip can map it via metricMeta / the labels.
           name: s.key,
           type: "line",
           // Stacked sources (production) sum to the total height; the other targets stay unstacked.
@@ -698,17 +670,7 @@ export class HuiEnergySolarSceneTimelineCard
               // Production is split into one stacked band per panel string (key solar-<statId>); name
               // each one and tint its icon with the band's own derived shade (params.color).
               const isSolarBand = key.startsWith("solar-");
-              const meta = isSolarBand
-                ? {
-                    icon: "mdi:solar-power",
-                    unit: "kW",
-                    token: "--energy-solar-color",
-                  }
-                : (TOOLTIP_META[key] ?? {
-                    icon: "mdi:flash",
-                    unit: "kW",
-                    token: "--primary-color",
-                  });
+              const meta = tooltipMeta(key);
               const color =
                 isSolarBand && typeof p.color === "string"
                   ? p.color

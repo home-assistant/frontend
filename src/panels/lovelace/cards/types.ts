@@ -202,6 +202,10 @@ export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
 }
 
+export interface EnergyClockCardConfig extends EnergyCardConfig {
+  type: "energy-clock";
+}
+
 export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
 }

@@ -99,6 +99,21 @@ export class EnergySolarViewStrategy extends ReactiveElement {
       });
     }
 
+    if (hasSolar && !isEnergyCardHidden("solar", "energy-clock", hidden)) {
+      const radialCard = {
+        title: hass.localize("ui.panel.energy.cards.energy_clock_title"),
+        type: "energy-clock",
+        collection_key: collectionKey,
+      };
+      sidebarSection.cards!.push(radialCard);
+      view.sections!.push({
+        type: "grid",
+        column_span: 1,
+        cards: [radialCard],
+        visibility: [SMALL_SCREEN_CONDITION],
+      });
+    }
+
     if (
       (hasGrid || hasBattery || hasSolar) &&
       !isEnergyCardHidden("solar", "energy-distribution", hidden)

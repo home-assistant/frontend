@@ -11,7 +11,7 @@ import {
   energySourcesByType,
   getPowerFromState,
 } from "../../../../../data/energy";
-import type { StatisticValue } from "../../../../../data/recorder";
+import type { StatisticValue, Statistics } from "../../../../../data/recorder";
 import type { ChartTarget } from "./solar-scene-sync";
 
 interface Resolved {
@@ -500,4 +500,204 @@ export function targetSeries(
     }
   }
   return out.filter((s) => s.data.length > 0);
+}
+
+export interface MetricMeta {
+  icon: string;
+  token: string; // colour custom property
+  level: boolean; // true for a level metric (SoC, %) rather than energy (kWh)
+}
+
+// Icon + colour token + kind for a timeline/clock series key. Solar strings (key "solar-<id>") and the
+// directional / aggregate keys produced by targetSeries all map here, so the Energy clock can label and
+// colour the selected chip's series the same way the timeline does.
+export function metricMeta(key: string): MetricMeta {
+  if (key.startsWith("solar") || key === "forecast") {
+    return {
+      icon: "mdi:solar-power",
+      token: "--energy-solar-color",
+      level: false,
+    };
+  }
+  switch (key) {
+    case "import":
+      return {
+        icon: "mdi:transmission-tower-import",
+        token: "--energy-grid-consumption-color",
+        level: false,
+      };
+    case "export":
+      return {
+        icon: "mdi:transmission-tower-export",
+        token: "--energy-grid-return-color",
+        level: false,
+      };
+    case "discharge":
+      return {
+        icon: "mdi:battery-arrow-up",
+        token: "--energy-battery-out-color",
+        level: false,
+      };
+    case "charge":
+      return {
+        icon: "mdi:battery-arrow-down",
+        token: "--energy-battery-in-color",
+        level: false,
+      };
+    case "lowcarbon":
+      return {
+        icon: "mdi:leaf",
+        token: "--energy-non-fossil-color",
+        level: false,
+      };
+    case "home":
+      return { icon: "mdi:home", token: "--primary-color", level: false };
+    case "soc":
+      return {
+        icon: "mdi:battery",
+        token: "--energy-battery-out-color",
+        level: true,
+      };
+    default:
+      return { icon: "mdi:flash", token: "--primary-color", level: false };
+  }
+}
+
+export interface RingBand {
+  key: string; // series key from targetSeries (solar-<id>, import, export, charge, …)
+  token: string; // colour token
+  idx?: number; // shade index for the per-string solar bands
+  statId?: string; // the source's meter, for labelling solar bands
+  value: number; // average magnitude over the period at this hour (kW, or % for SoC) — cylinder height
+  total: number; // cumulated magnitude over the period at this hour (kWh for energy series)
+  forecast: number; // forecast average (kW) at this hour — solar only, else 0
+  forecastTotal: number; // forecast cumulated (kWh) at this hour — solar only, else 0
+}
+
+export interface RingHour {
+  hour: number; // 0..23 local
+  bands: RingBand[];
+}
+
+// Bin the selected chip's timeline series (DirSeries, at hourly resolution over the period) into 24
+// hours-of-day: each band's `value` is the average magnitude at that hour (drives the cylinder height)
+// and `total` the cumulated magnitude (kWh for energy series, for the tooltip). Magnitudes are
+// absolute since export / charge come back signed-negative from targetSeries. This is the one place
+// the clock turns "whatever the timeline draws" into 24 stacked columns — same source, same colours.
+export function hourlyTargetRings(dirs: DirSeries[]): RingHour[] {
+  const acc = dirs.map(() =>
+    Array.from({ length: 24 }, () => ({ sum: 0, n: 0 }))
+  );
+  dirs.forEach((d, i) => {
+    for (const [ts, v] of d.data) {
+      const h = new Date(ts).getHours();
+      acc[i][h].sum += Math.abs(v);
+      acc[i][h].n += 1;
+    }
+  });
+  const rings: RingHour[] = [];
+  for (let h = 0; h < 24; h++) {
+    rings.push({
+      hour: h,
+      bands: dirs.map((d, i) => ({
+        key: d.key,
+        token: d.token,
+        idx: d.idx,
+        statId: d.statId,
+        value: acc[i][h].n ? acc[i][h].sum / acc[i][h].n : 0,
+        total: acc[i][h].sum,
+        forecast: 0,
+        forecastTotal: 0,
+      })),
+    });
+  }
+  return rings;
+}
+
+// Per-solar-source forecast binned by hour-of-day within [start, end]: average kW and cumulated kWh
+// per hour, keyed by the source's energy meter id. Lets the clock show predicted (transparent)
+// cylinders for hours with no actuals yet — e.g. a future day. Solar is the only metric with a forecast.
+export function solarForecastByHour(
+  prefs: EnergyData["prefs"],
+  forecasts: EnergySolarForecasts,
+  start: number,
+  end: number
+): Map<string, { avg: number[]; total: number[] }> {
+  const out = new Map<string, { avg: number[]; total: number[] }>();
+  for (const s of energySourcesByType(prefs).solar ?? []) {
+    const id = s.stat_energy_from;
+    if (!id) continue;
+    const sum = new Array(24).fill(0);
+    const cnt = new Array(24).fill(0);
+    for (const ceid of s.config_entry_solar_forecast ?? []) {
+      const f = forecasts[ceid];
+      if (!f) continue;
+      for (const [date, wh] of Object.entries(f.wh_hours)) {
+        const d = new Date(date);
+        const ts = d.getTime();
+        if (ts < start || ts > end) continue;
+        const h = d.getHours();
+        sum[h] += Number(wh) / 1000;
+        cnt[h] += 1;
+      }
+    }
+    out.set(id, {
+      avg: sum.map((v, h) => (cnt[h] ? v / cnt[h] : 0)),
+      total: sum,
+    });
+  }
+  return out;
+}
+
+// Per-hour-of-day rings for the PRODUCTION target. Unlike the generic builder it always emits a band
+// per solar source (even with no actuals), so a future day with only a forecast still shows every
+// string's predicted cylinder. Actuals from hourly `change`; forecast from `solarForecastByHour`.
+export function solarRings(
+  prefs: EnergyData["prefs"],
+  hourlyStats: Statistics,
+  forecasts?: EnergySolarForecasts,
+  start?: number,
+  end?: number
+): RingHour[] {
+  const solar = energySourcesByType(prefs).solar ?? [];
+  const acc = solar.map(() =>
+    Array.from({ length: 24 }, () => ({ sum: 0, n: 0 }))
+  );
+  solar.forEach((s, idx) => {
+    const id = s.stat_energy_from;
+    if (!id) return;
+    for (const b of hourlyStats[id] ?? []) {
+      if (b.change == null) continue;
+      const hours = (b.end - b.start) / 3600000;
+      if (hours <= 0) continue;
+      const h = new Date(b.start).getHours();
+      acc[idx][h].sum += b.change / hours;
+      acc[idx][h].n += 1;
+    }
+  });
+  const fc =
+    forecasts && start != null && end != null
+      ? solarForecastByHour(prefs, forecasts, start, end)
+      : undefined;
+  const rings: RingHour[] = [];
+  for (let h = 0; h < 24; h++) {
+    rings.push({
+      hour: h,
+      bands: solar.map((s, idx) => {
+        const id = s.stat_energy_from || s.stat_rate || "";
+        const f = s.stat_energy_from ? fc?.get(s.stat_energy_from) : undefined;
+        return {
+          key: `solar-${id}`,
+          token: "--energy-solar-color",
+          idx,
+          statId: id,
+          value: acc[idx][h].n ? acc[idx][h].sum / acc[idx][h].n : 0,
+          total: acc[idx][h].sum,
+          forecast: f ? f.avg[h] : 0,
+          forecastTotal: f ? f.total[h] : 0,
+        };
+      }),
+    });
+  }
+  return rings;
 }
