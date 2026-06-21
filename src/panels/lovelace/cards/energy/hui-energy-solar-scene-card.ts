@@ -348,7 +348,6 @@ export class HuiEnergySolarSceneCard
             battery: null,
             soc: null,
             home: null,
-            lowCarbon: null,
           }
         : forecastPv != null
           ? { ...power, pv: forecastPv }
@@ -694,8 +693,6 @@ export class HuiEnergySolarSceneCard
         );
       case "battery-soc":
         return color("--energy-battery-out-color");
-      case "lowcarbon":
-        return color("--energy-non-fossil-color");
       case "home":
         return color("--primary-color");
       default:
@@ -827,8 +824,8 @@ export class HuiEnergySolarSceneCard
   }
 
   // Leaders from each present chip to the home: an L-path (or a straight leg) in the metric's colour
-  // with a bead riding it at a speed proportional to the live power. The stacked low-carbon / SoC
-  // chips link to the chip below with a static hairline. Built relative to the home at the origin
+  // with a bead riding it at a speed proportional to the live power. The SoC chip links to the Power
+  // chip above it with a static hairline. Built relative to the home at the origin
   // (0,0): the chip offsets are fixed screen px, so the whole leader group only TRANSLATES as the
   // camera turns. _draw moves it with a <g> transform instead of rebuilding it, so the bead
   // animations are never recreated mid-rotation (which made them flicker).
@@ -848,7 +845,6 @@ export class HuiEnergySolarSceneCard
     const PV_HW = 28;
     const PV_HH = 11;
     const LEADER_NUDGE = 22; // run a leader this far from its chip before turning toward the home
-    const LC_GAP = 16; // gap from the low-carbon chip down into the grid chip it feeds
     const CHARGE_DOCK = 30; // horizontal inset where the PV -> Power charge leader meets the chip
     // Home pill mirrors the PV chip: centred, the same distance below the cluster as PV sits above.
     const homeX = hx;
@@ -861,8 +857,6 @@ export class HuiEnergySolarSceneCard
     const socY = hy - LIFT + HALF_GAP;
     const gridX = hx - SIDE;
     const gridY = hy - LIFT + HALF_GAP;
-    const lcX = hx - SIDE;
-    const lcY = hy - LIFT - HALF_GAP;
 
     const dur = (w: number): number =>
       Math.max(0.6, Math.min(6, (5000 / Math.max(50, Math.abs(w))) * 0.8));
@@ -920,13 +914,6 @@ export class HuiEnergySolarSceneCard
           ? "var(--energy-grid-consumption-color)"
           : "var(--energy-grid-return-color)",
         p.grid
-      );
-    }
-    // Low-carbon -> grid: straight vertical down into the grid chip below it.
-    if (p.lowCarbon != null) {
-      s += plain(
-        `M ${lcX.toFixed(1)},${(lcY + LC_GAP).toFixed(1)} L ${gridX.toFixed(1)},${(gridY - LC_GAP).toFixed(1)}`,
-        "var(--energy-non-fossil-color)"
       );
     }
     // Battery: SoC links to the Power chip above it with a static hairline (a level, not a flow);
@@ -1379,15 +1366,6 @@ export class HuiEnergySolarSceneCard
             "grid"
           )
         : nothing}
-      ${p.lowCarbon != null
-        ? this._chip(
-            "lowcarbon",
-            "mdi:leaf",
-            "var(--energy-non-fossil-color)",
-            this._fmtPower(p.lowCarbon),
-            "lowcarbon"
-          )
-        : nothing}
       ${p.battery != null
         ? this._chip(
             "battery",
@@ -1574,18 +1552,15 @@ export class HuiEnergySolarSceneCard
       }
       /* Cluster geometry: the pill cluster is lifted 28px off the home ground point; PV sits 70px above
        it (top centre); the side chips are 84px off the home x; the top/bottom rows are split by a 60px
-       gap (so +/-30 around the cluster). Low-carbon top-left, grid bottom-left; battery Power
-       top-right, SoC bottom-right. Home mirrors PV at bottom centre (+42), the consumption sink the
-       flows converge on. z 9 keeps the home pill above a neighbour that drifts close. */
+       gap (so +/-30 around the cluster). Grid bottom-left; battery Power top-right, SoC bottom-right.
+       Home mirrors PV at bottom centre (+42), the consumption sink the flows converge on. z 9 keeps
+       the home pill above a neighbour that drifts close. */
       .chip.home {
         z-index: 9;
         transform: translate(-50%, calc(-50% + 42px));
       }
       .chip.pv {
         transform: translate(-50%, calc(-50% - 98px));
-      }
-      .chip.lowcarbon {
-        transform: translate(calc(-50% - 84px), calc(-50% - 58px));
       }
       .chip.grid {
         transform: translate(calc(-50% - 84px), calc(-50% + 2px));

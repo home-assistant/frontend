@@ -11,7 +11,6 @@ export type ChartTarget =
   | "grid"
   | "battery"
   | "battery-soc"
-  | "lowcarbon"
   | "home";
 
 export interface SolarSceneSyncState {

@@ -43,6 +43,9 @@ const MAX_HEIGHT_M = 12;
 // cylinders stay visible all the way round the clock.
 const FLAT_M = 0.5;
 const SIDES = 8;
+// Hour labels fade with distance from the camera: this is the opacity of the farthest-back label
+// (the nearest is fully opaque), so receding numbers don't clutter the reading.
+const LABEL_MIN_OPACITY = 0.15;
 // Period-change intro: each cylinder rises (ease-out) over GROW_MS, staggered clockwise by STAGGER_MS.
 const GROW_MS = 320;
 const STAGGER_MS = 28;
@@ -341,8 +344,6 @@ export class HuiEnergyClockCard
         return "mdi:lightning-bolt";
       case "battery-soc":
         return "mdi:battery";
-      case "lowcarbon":
-        return "mdi:leaf";
       case "home":
         return "mdi:home";
       default:
@@ -394,17 +395,34 @@ export class HuiEnergyClockCard
 
     // 24 hour labels laid flat on the ground, OUTSIDE the ring of cylinders (centre → medallion →
     // cylinders → hours), each rotated so its top points inward toward its cylinder. (z-index keeps
-    // them under the cylinders.)
+    // them under the cylinders.) Each fades with its distance from the camera: labels at the front
+    // stay solid, those receding toward the back go transparent so they don't clutter the reading.
     const labelR = ringR * 1.18;
-    this._hourLabels?.forEach((label, h) => {
+    const projected = Array.from({ length: 24 }, (_, h) => {
       const angle = (h / 24) * 2 * Math.PI;
-      const [lx, ly] = this._project(
+      return this._project3(
         labelR * Math.sin(angle),
         labelR * Math.cos(angle),
         0
       );
-      label.style.left = `${lx}px`;
-      label.style.top = `${ly}px`;
+    });
+    let depthMin = Infinity;
+    let depthMax = -Infinity;
+    for (const p of projected) {
+      depthMin = Math.min(depthMin, p.depth);
+      depthMax = Math.max(depthMax, p.depth);
+    }
+    const depthRange = depthMax - depthMin || 1;
+    this._hourLabels?.forEach((label, h) => {
+      const p = projected[h];
+      // nearness: 1 at the closest label (max projected depth), 0 at the farthest.
+      const near = (p.depth - depthMin) / depthRange;
+      label.style.left = `${p.x}px`;
+      label.style.top = `${p.y}px`;
+      label.style.opacity = (
+        LABEL_MIN_OPACITY +
+        (1 - LABEL_MIN_OPACITY) * near
+      ).toFixed(3);
       label.style.transform = `translate(-50%, -50%) perspective(900px) rotateX(${this._tilt}deg) rotateZ(${this._bearing + (h / 24) * 360 + 180}deg)`;
     });
 

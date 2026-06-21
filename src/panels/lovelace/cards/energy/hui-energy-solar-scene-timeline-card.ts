@@ -98,8 +98,7 @@ export class HuiEnergySolarSceneTimelineCard
 
   // Metric stats fetched at the FINE period (5-minute / hourly / daily by range), finer than the
   // energy collection's coarse default, so a week or a month reads as a detailed curve instead of a
-  // handful of daily averages. Low-carbon stays on the coarse collection (it matches the per-bucket
-  // fossil energy keyed at the coarse period).
+  // handful of daily averages.
   @state() private _fineStats: Statistics = {};
 
   private _fineStatsKey = "";
@@ -359,8 +358,6 @@ export class HuiEnergySolarSceneTimelineCard
         return "mdi:lightning-bolt";
       case "battery-soc":
         return "mdi:battery";
-      case "lowcarbon":
-        return "mdi:leaf";
       case "home":
         return "mdi:home";
       default:
@@ -477,12 +474,10 @@ export class HuiEnergySolarSceneTimelineCard
     ): LineSeriesOption[] => {
       if (!data) return [];
       const styles = getComputedStyle(this);
-      // Plot the curves from the fine-period stats (richer than the collection's coarse default),
-      // except low-carbon which must stay on the collection so its per-bucket fossil share lines up.
-      const fineData =
-        target === "lowcarbon" || !Object.keys(fineStats).length
-          ? data
-          : { ...data, stats: fineStats };
+      // Plot the curves from the fine-period stats (richer than the collection's coarse default).
+      const fineData = !Object.keys(fineStats).length
+        ? data
+        : { ...data, stats: fineStats };
       // State-of-charge: a single % line from its own fetch, not the energy meters.
       const dirs =
         target === "battery-soc"

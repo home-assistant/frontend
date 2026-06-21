@@ -105,7 +105,6 @@ export interface LivePower {
   battery: number | null; // W, + discharging into the home / - charging
   soc: number | null; // %
   home: number | null; // W consumption = max(0, pv + grid + battery)
-  lowCarbon: number | null; // W of grid import that is low-carbon
 }
 
 // Watts a single bucket represents: its mean power, or its energy change averaged over the bucket.
@@ -224,16 +223,7 @@ export function livePower(
       ? null
       : Math.max(0, (pv ?? 0) + (grid ?? 0) + (battery ?? 0));
 
-  let lowCarbon: number | null = null;
-  const gridImport = grid !== null && grid > 0 ? grid : 0;
-  if (data.co2SignalEntity && gridImport > 0) {
-    const fossil = parseFloat(states[data.co2SignalEntity]?.state ?? "");
-    if (isFinite(fossil)) {
-      lowCarbon = gridImport * Math.max(0, Math.min(1, 1 - fossil / 100));
-    }
-  }
-
-  return { pv, grid, battery, soc, home, lowCarbon };
+  return { pv, grid, battery, soc, home };
 }
 
 export interface SolarBand {
@@ -320,33 +310,6 @@ const seriesFor = (
     .map((ts): [number, number] => [Number(ts), byStart[Number(ts)]])
     .sort((a, b) => a[0] - b[0]);
 };
-
-// Low-carbon import power: the grid import scaled, per bucket, by its non-fossil share. HA gives the
-// fossil energy per bucket (fossilEnergyConsumption, keyed by period start); the low-carbon share is
-// 1 - fossil/import. Same shape as the live low-carbon chip, over the whole period.
-function lowCarbonSeries(r: Resolved, data: EnergyData): [number, number][] {
-  const fossilByTs: Record<number, number> = {};
-  for (const [iso, kwh] of Object.entries(data.fossilEnergyConsumption ?? {})) {
-    const ts = new Date(iso).getTime();
-    if (!Number.isNaN(ts)) fossilByTs[ts] = kwh;
-  }
-  const nominalH = nominalHoursFor(r.gridImport, data);
-  const byStart: Record<number, number> = {};
-  for (const id of r.gridImport) {
-    for (const b of data.stats[id] ?? []) {
-      const kw = bucketKw(b, nominalH);
-      if (kw == null || b.change == null) continue;
-      const share =
-        b.change > 0
-          ? Math.max(0, Math.min(1, 1 - (fossilByTs[b.start] ?? 0) / b.change))
-          : 0;
-      byStart[b.start] = (byStart[b.start] ?? 0) + kw * share;
-    }
-  }
-  return Object.keys(byStart)
-    .map((ts): [number, number] => [Number(ts), byStart[Number(ts)]])
-    .sort((a, b) => a[0] - b[0]);
-}
 
 // Solar production forecast as power (kW), summed across the configured forecast providers (wh_hours
 // = Wh per hour). Same source the HA solar graph dashes in; forecasts aren't part of the energy data,
@@ -466,15 +429,6 @@ export function targetSeries(
         },
       ];
       break;
-    case "lowcarbon":
-      out = [
-        {
-          key: "lowcarbon",
-          token: "--energy-non-fossil-color",
-          data: lowCarbonSeries(r, data),
-        },
-      ];
-      break;
     case "home":
       out = [
         { key: "home", token: "--primary-color", data: homeSeries(r, data) },
@@ -542,12 +496,6 @@ export function metricMeta(key: string): MetricMeta {
       return {
         icon: "mdi:battery-arrow-down",
         token: "--energy-battery-in-color",
-        level: false,
-      };
-    case "lowcarbon":
-      return {
-        icon: "mdi:leaf",
-        token: "--energy-non-fossil-color",
         level: false,
       };
     case "home":
