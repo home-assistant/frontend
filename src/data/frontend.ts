@@ -10,6 +10,7 @@ export interface CoreFrontendUserData {
 export interface SidebarFrontendUserData {
   panelOrder?: string[];
   hiddenPanels?: string[];
+  customShortcuts?: string[];
 }
 
 export interface CoreFrontendSystemData {

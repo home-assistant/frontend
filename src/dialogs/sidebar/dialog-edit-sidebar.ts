@@ -1,5 +1,5 @@
-import { mdiDotsVertical, mdiRestart } from "@mdi/js";
-import { css, html, LitElement, type TemplateResult } from "lit";
+import { mdiDelete, mdiDotsVertical, mdiRestart } from "@mdi/js";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -15,15 +15,18 @@ import type {
   DisplayItem,
   DisplayValue,
 } from "../../components/ha-items-display-editor";
+import "../../components/ha-navigation-picker";
 import { computePanels } from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/ha-dialog";
+import { computeNavigationPathInfo } from "../../data/compute-navigation-path-info";
 import {
   fetchFrontendUserData,
   saveFrontendUserData,
 } from "../../data/frontend";
 import {
+  FIXED_PANELS,
   getDefaultPanelUrlPath,
   getPanelIcon,
   getPanelIconPath,
@@ -36,6 +39,7 @@ import { showConfirmationDialog } from "../generic/show-dialog-box";
 interface SidebarState {
   order: string[];
   hidden: string[];
+  shortcuts: string[];
 }
 
 @customElement("dialog-edit-sidebar")
@@ -49,6 +53,8 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
   @state() private _order?: string[];
 
   @state() private _hidden?: string[];
+
+  @state() private _customShortcuts?: string[];
 
   @state() private _error?: string;
 
@@ -67,6 +73,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       const data = await fetchFrontendUserData(this.hass.connection, "sidebar");
       this._order = data?.panelOrder;
       this._hidden = data?.hiddenPanels;
+      this._customShortcuts = data?.customShortcuts ?? [];
 
       // fallback to old localStorage values
       if (!this._order) {
@@ -82,7 +89,11 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       const order = this._order ?? [];
       this._initDirtyTracking(
         { type: "deep" },
-        { order, hidden: this._computeHiddenPanels() }
+        {
+          order,
+          hidden: this._computeHiddenPanels(),
+          shortcuts: this._customShortcuts ?? [],
+        }
       );
     } catch (err: any) {
       this._error = err.message || err;
@@ -126,6 +137,20 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
     return Array.from(hiddenSet);
   }
 
+  /**
+   * Paths to exclude from the shortcut picker:
+   * - All panel paths (e.g. /lovelace, /todo, /map) — they are already sidebar items
+   * - Fixed sidebar paths (/config, /profile) — rendered outside the editable list
+   * - Already-added shortcut paths — prevent duplicates
+   */
+  private _computePickerExcludePaths(): string[] {
+    const panelPaths = Object.values(this.hass.panels).map(
+      (panel) => `/${panel.url_path}`
+    );
+    const fixedPaths = FIXED_PANELS.map((urlPath) => `/${urlPath}`);
+    return [...panelPaths, ...fixedPaths, ...(this._customShortcuts ?? [])];
+  }
+
   private _renderContent(): TemplateResult {
     if (!this._order || !this._hidden) {
       return html`<ha-fade-in .delay=${500}
@@ -151,7 +176,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
 
     const hiddenPanels = this._computeHiddenPanels();
 
-    const items = [
+    const panelDisplayItems = [
       ...beforeSpacer,
       ...panels.filter((panel) => hiddenPanels.includes(panel.url_path)),
       ...afterSpacer,
@@ -165,17 +190,42 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       disableHiding: panel.url_path === defaultPanel,
     }));
 
+    const shortcutDisplayItems: DisplayItem[] = (
+      this._customShortcuts ?? []
+    ).map((path): DisplayItem => {
+      const info = computeNavigationPathInfo(this.hass, path);
+      return {
+        value: `shortcut:${path}`,
+        label: info.label || path,
+        icon: info.icon,
+        iconPath: info.iconPath,
+        disableHiding: true,
+      };
+    });
+
+    const allItems = [...panelDisplayItems, ...shortcutDisplayItems];
+
     return html`
       <ha-items-display-editor
         .value=${{
           order: this._order,
           hidden: hiddenPanels,
         }}
-        .items=${items}
+        .items=${allItems}
+        .actionsRenderer=${this._actionsRenderer}
         @value-changed=${this._changed}
-        dont-sort-visible
       >
       </ha-items-display-editor>
+      <ha-navigation-picker
+        .hass=${this.hass}
+        .addButtonLabel=${this.hass.localize("ui.sidebar.add_shortcut")}
+        .excludeDashboards=${true}
+        .excludeViews=${true}
+        .excludeApps=${true}
+        .excludeRelated=${true}
+        .excludePaths=${this._computePickerExcludePaths()}
+        @value-changed=${this._addShortcut}
+      ></ha-navigation-picker>
     `;
   }
 
@@ -214,7 +264,10 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._order || !this._hidden || !this.isDirtyState}
+            .disabled=${!this._order ||
+            !this._hidden ||
+            !this._customShortcuts ||
+            !this.isDirtyState}
             @click=${this._save}
           >
             ${this.hass.localize("ui.common.save")}
@@ -224,11 +277,60 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
     `;
   }
 
+  private _actionsRenderer = (
+    item: DisplayItem
+  ): TemplateResult<1> | typeof nothing => {
+    if (!item.value.startsWith("shortcut:")) return nothing;
+    return html`<ha-icon-button
+      .path=${mdiDelete}
+      .label=${this.hass.localize("ui.common.delete")}
+      data-item-value=${item.value}
+      @click=${this._handleDeleteShortcut}
+    ></ha-icon-button>`;
+  };
+
+  private _handleDeleteShortcut = (ev: Event): void => {
+    const itemValue = (ev.currentTarget as HTMLElement).dataset.itemValue;
+    if (itemValue) this._deleteShortcut(itemValue);
+  };
+
+  private _addShortcut = (ev: ValueChangedEvent<string>): void => {
+    ev.stopPropagation();
+    const path = ev.detail.value;
+    if (!path) return;
+    (ev.currentTarget as any).value = "";
+    if ((this._customShortcuts ?? []).includes(path)) return;
+    this._customShortcuts = [...(this._customShortcuts ?? []), path];
+    this._order = [...(this._order ?? []), `shortcut:${path}`];
+    this._updateDirtyState({
+      order: this._order,
+      hidden: this._computeHiddenPanels(),
+      shortcuts: this._customShortcuts,
+    });
+  };
+
+  private _deleteShortcut(itemValue: string): void {
+    const path = itemValue.slice("shortcut:".length);
+    this._customShortcuts = (this._customShortcuts ?? []).filter(
+      (p) => p !== path
+    );
+    this._order = (this._order ?? []).filter((key) => key !== itemValue);
+    this._updateDirtyState({
+      order: this._order,
+      hidden: this._computeHiddenPanels(),
+      shortcuts: this._customShortcuts,
+    });
+  }
+
   private _changed(ev: ValueChangedEvent<DisplayValue>): void {
     const { order = [], hidden = [] } = ev.detail.value;
     this._order = [...order];
     this._hidden = [...hidden];
-    this._updateDirtyState({ order: this._order, hidden: this._hidden });
+    this._updateDirtyState({
+      order: this._order,
+      hidden: this._hidden,
+      shortcuts: this._customShortcuts ?? [],
+    });
   }
 
   private _resetToDefaults = async () => {
@@ -243,6 +345,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
 
     this._order = [];
     this._hidden = [];
+    this._customShortcuts = [];
     try {
       await saveFrontendUserData(this.hass.connection, "sidebar", {});
     } catch (err: any) {
@@ -266,6 +369,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       await saveFrontendUserData(this.hass.connection, "sidebar", {
         panelOrder: this._order!,
         hiddenPanels: this._hidden!,
+        customShortcuts: this._customShortcuts ?? [],
       });
     } catch (err: any) {
       this._error = err.message || err;

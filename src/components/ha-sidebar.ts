@@ -16,6 +16,7 @@ import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { throttle } from "../common/util/throttle";
+import { computeNavigationPathInfo } from "../data/compute-navigation-path-info";
 import { subscribeFrontendUserData } from "../data/frontend";
 import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
 import {
@@ -159,6 +160,91 @@ export const computePanels = memoizeOne(
   }
 );
 
+export interface SidebarPanelItem {
+  kind: "panel";
+  panel: PanelInfo;
+}
+
+export interface SidebarShortcutItem {
+  kind: "shortcut";
+  path: string;
+  label: string;
+  icon?: string;
+  iconPath?: string;
+}
+
+export type SidebarItem = SidebarPanelItem | SidebarShortcutItem;
+
+export const computeSidebarItems = (
+  panels: HomeAssistant["panels"],
+  defaultPanel: string,
+  panelOrder: string[],
+  hiddenPanels: string[],
+  customShortcuts: string[],
+  locale: HomeAssistant["locale"],
+  hass: HomeAssistant
+): SidebarItem[] => {
+  const [orderedPanels] = computePanels(
+    panels,
+    defaultPanel,
+    panelOrder,
+    hiddenPanels,
+    locale
+  );
+
+  const shortcutMap = new Map<string, SidebarShortcutItem>(
+    customShortcuts.map((path) => {
+      const info = computeNavigationPathInfo(hass, path);
+      return [
+        `shortcut:${path}`,
+        {
+          kind: "shortcut",
+          path,
+          label: info.label || path,
+          icon: info.icon,
+          iconPath: info.iconPath,
+        },
+      ];
+    })
+  );
+
+  const panelMap = new Map(orderedPanels.map((p) => [p.url_path, p]));
+  const result: SidebarItem[] = [];
+  const seen = new Set<string>();
+
+  for (const key of panelOrder) {
+    if (key.startsWith("shortcut:")) {
+      const item = shortcutMap.get(key);
+      if (item && !seen.has(key)) {
+        result.push(item);
+        seen.add(key);
+      }
+    } else {
+      const panel = panelMap.get(key);
+      if (panel && !seen.has(key)) {
+        result.push({ kind: "panel", panel });
+        seen.add(key);
+      }
+    }
+  }
+
+  for (const panel of orderedPanels) {
+    if (!seen.has(panel.url_path)) {
+      result.push({ kind: "panel", panel });
+      seen.add(panel.url_path);
+    }
+  }
+
+  for (const [key, item] of shortcutMap) {
+    if (!seen.has(key)) {
+      result.push(item);
+      seen.add(key);
+    }
+  }
+
+  return result;
+};
+
 @customElement("ha-sidebar")
 class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -183,6 +269,8 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   @state() private _hiddenPanels?: string[];
 
+  @state() private _customShortcuts?: string[];
+
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
   @query(".before-spacer") private _scrollableList?: HTMLDivElement;
@@ -199,6 +287,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         ({ value }) => {
           this._panelOrder = value?.panelOrder;
           this._hiddenPanels = value?.hiddenPanels;
+          this._customShortcuts = value?.customShortcuts ?? [];
 
           // fallback to old localStorage values
           if (!this._panelOrder) {
@@ -250,6 +339,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       changedProps.has("_notifications") ||
       changedProps.has("_hiddenPanels") ||
       changedProps.has("_panelOrder") ||
+      changedProps.has("_customShortcuts") ||
       changedProps.has("_contentScrolled") ||
       changedProps.has("_contentScrollable")
     ) {
@@ -364,7 +454,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
         >${content}</ha-list-nav
       >`;
 
-    if (!this._panelOrder || !this._hiddenPanels) {
+    if (!this._panelOrder || !this._hiddenPanels || !this._customShortcuts) {
       return html`<div class="panels-list">
         <div class="wrapper">
           ${renderList(
@@ -391,12 +481,14 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
     const defaultPanel = getDefaultPanelUrlPath(this.hass);
 
-    const [beforeSpacer, afterSpacer] = computePanels(
+    const sidebarItems = computeSidebarItems(
       this.hass.panels,
       defaultPanel,
       this._panelOrder,
       this._hiddenPanels,
-      this.hass.locale
+      this._customShortcuts,
+      this.hass.locale,
+      this.hass
     );
 
     // prettier-ignore
@@ -404,7 +496,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       <div class="wrapper">
         ${renderList(
       html`<slot name="main-navigation">
-        ${this._renderPanels(beforeSpacer, selectedPanel)}
+        ${this._renderSidebarItems(sidebarItems, selectedPanel)}
       </slot>`,
       "before-spacer",
       true
@@ -414,7 +506,6 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       ${this._renderSpacer()}
       ${renderList(
       html`<slot name="fixed-navigation">
-          ${this._renderPanels(afterSpacer, selectedPanel)}
           ${this._renderFixedPanels(selectedPanel)}
         </slot>`,
       "after-spacer",
@@ -434,10 +525,49 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     `;
   }
 
-  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
-    return panels.map((panel) =>
-      this._renderPanel(panel, panel.url_path === selectedPanel)
-    );
+  private _renderSidebarItems(items: SidebarItem[], selectedPanel: string) {
+    return items.map((item) => {
+      if (item.kind === "panel") {
+        return this._renderPanel(
+          item.panel,
+          item.panel.url_path === selectedPanel
+        );
+      }
+      return this._renderShortcut(item, selectedPanel);
+    });
+  }
+
+  private _renderShortcut(item: SidebarShortcutItem, selectedPanel: string) {
+    // Active when the route matches the shortcut path exactly or is a sub-path.
+    // Compare the first path segment to selectedPanel (hass.panelUrl) as a fast
+    // pre-check, then verify the full route for sub-path disambiguation.
+    const firstSegment = item.path.replace(/^\//, "").split("/")[0];
+    const isSelected =
+      selectedPanel === firstSegment &&
+      (this.route?.path === item.path ||
+        this.route?.path?.startsWith(item.path + "/") ||
+        false);
+
+    const id = `sidebar-shortcut-${item.path.replace(/\//g, "-").replace(/^-/, "")}`;
+
+    return html`
+      <ha-list-item-button
+        .href=${item.path}
+        id=${id}
+        class=${classMap({ selected: isSelected })}
+      >
+        ${item.iconPath
+          ? html`<ha-svg-icon
+              slot="start"
+              .path=${item.iconPath}
+            ></ha-svg-icon>`
+          : html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`}
+        <span class="item-text" slot="headline">${item.label}</span>
+      </ha-list-item-button>
+      ${!this.alwaysExpand && item.label
+        ? this._renderToolTip(id, item.label)
+        : nothing}
+    `;
   }
 
   private _renderPanel(panel: PanelInfo, isSelected: boolean) {
