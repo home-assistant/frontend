@@ -102,6 +102,13 @@ export class DialogEnterCode
     this._showClearButton = !!val;
   }
 
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      ev.preventDefault();
+      this._submit();
+    }
+  }
+
   protected render() {
     if (!this._dialogParams || !this.hass) {
       return nothing;
@@ -127,6 +134,7 @@ export class DialogEnterCode
             autoValidate
             validateOnInitialRender
             pattern=${ifDefined(this._dialogParams.codePattern)}
+            @keydown=${this._handleKeyDown}
             inputmode="text"
           ></ha-input>
           <ha-dialog-footer slot="footer">
@@ -163,6 +171,7 @@ export class DialogEnterCode
             inputmode="numeric"
             ?autofocus=${!this._narrow}
             password-toggle
+            @keydown=${this._handleKeyDown}
           ></ha-input>
           <div class="keypad">
             ${BUTTONS.map((value) =>
