@@ -576,12 +576,19 @@ class HUIRoot extends LitElement {
                   `
                 : html`
                     ${isSubview || this.backButton
-                      ? html`
-                          <ha-icon-button-arrow-prev
-                            slot="navigationIcon"
-                            @click=${this._goBack}
-                          ></ha-icon-button-arrow-prev>
-                        `
+                      ? this._backPath
+                        ? html`
+                            <ha-icon-button-arrow-prev
+                              slot="navigationIcon"
+                              .href=${this._backPath}
+                            ></ha-icon-button-arrow-prev>
+                          `
+                        : html`
+                            <ha-icon-button-arrow-prev
+                              slot="navigationIcon"
+                              @click=${this._goBack}
+                            ></ha-icon-button-arrow-prev>
+                          `
                       : html`
                           <ha-menu-button
                             slot="navigationIcon"
@@ -888,6 +895,20 @@ class HUIRoot extends LitElement {
     } else {
       navigate("/");
     }
+  }
+
+  private get _backPath(): string | undefined {
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
+    if (curViewConfig?.back_path != null) {
+      return curViewConfig.back_path;
+    }
+    if (this.backPath) {
+      return this.backPath;
+    }
+    return curViewConfig?.subview ? this.route!.prefix : undefined;
   }
 
   private _addDevice = async () => {
