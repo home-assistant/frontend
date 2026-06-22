@@ -98,7 +98,10 @@ function createYAxisLabelFormatter(
   fractionDigits: number
 ) {
   return (value: number): string =>
-    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
+    formatNumber(value, locale, {
+      minimumFractionDigits: value === 0 ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
 }
 
 export function getCommonOptions(
