@@ -404,6 +404,11 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       }
     }
 
+    ha-navigation-picker {
+      display: block;
+      margin-top: var(--ha-space-4);
+    }
+
     ha-fade-in {
       display: flex;
       justify-content: center;
