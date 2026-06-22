@@ -1,6 +1,7 @@
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -43,23 +44,69 @@ export class DialogHttpPendingConfig
 
   @state() private _error?: string;
 
+  @state() private _secondsRemaining?: number;
+
+  @state() private _reverted = false;
+
+  private _interval?: number;
+
   public showDialog(params: HttpPendingConfigDialogParams): void {
     this._params = params;
     this._open = true;
     this._busy = undefined;
     this._error = undefined;
+    this._reverted = false;
+    this._startCountdown();
   }
 
   public closeDialog(): boolean {
     this._open = false;
+    this._stopCountdown();
     return true;
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._stopCountdown();
   }
 
   private _dialogClosed(): void {
     this._params = undefined;
     this._busy = undefined;
     this._error = undefined;
+    this._reverted = false;
+    this._secondsRemaining = undefined;
+    this._stopCountdown();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _startCountdown(): void {
+    this._stopCountdown();
+    const revertAt = this._params?.state.revert_at;
+    if (!revertAt) {
+      this._secondsRemaining = undefined;
+      return;
+    }
+    const target = new Date(revertAt).getTime();
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((target - Date.now()) / 1000));
+      this._secondsRemaining = remaining;
+      if (remaining === 0) {
+        this._stopCountdown();
+        this._reverted = true;
+      }
+    };
+    tick();
+    if (this._secondsRemaining && this._secondsRemaining > 0) {
+      this._interval = window.setInterval(tick, 1000);
+    }
+  }
+
+  private _stopCountdown(): void {
+    if (this._interval) {
+      window.clearInterval(this._interval);
+      this._interval = undefined;
+    }
   }
 
   private get _changedFields(): (keyof HttpConfig)[] {
@@ -91,9 +138,34 @@ export class DialogHttpPendingConfig
       >
         <span slot="headerNavigationIcon"></span>
         <div class="content">
-          <p>
-            ${this.hass.localize("ui.dialogs.http_pending_config.description")}
-          </p>
+          ${this._reverted
+            ? html`
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.dialogs.http_pending_config.reverted"
+                  )}
+                </ha-alert>
+              `
+            : html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.dialogs.http_pending_config.description"
+                  )}
+                </p>
+                ${this._secondsRemaining !== undefined
+                  ? html`
+                      <p class="countdown">
+                        ${this.hass.localize(
+                          "ui.dialogs.http_pending_config.auto_revert",
+                          {
+                            time:
+                              secondsToDuration(this._secondsRemaining) ?? "0",
+                          }
+                        )}
+                      </p>
+                    `
+                  : nothing}
+              `}
           ${changes.length
             ? html`
                 <p class="changes-label">
@@ -119,23 +191,33 @@ export class DialogHttpPendingConfig
             : nothing}
         </div>
         <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            .loading=${this._busy === "revert"}
-            .disabled=${this._busy === "confirm"}
-            @click=${this._revert}
-          >
-            ${this.hass.localize("ui.dialogs.http_pending_config.revert")}
-          </ha-button>
-          <ha-button
-            slot="primaryAction"
-            .loading=${this._busy === "confirm"}
-            .disabled=${this._busy === "revert"}
-            @click=${this._confirm}
-          >
-            ${this.hass.localize("ui.dialogs.http_pending_config.confirm")}
-          </ha-button>
+          ${this._reverted
+            ? html`
+                <ha-button slot="primaryAction" @click=${this._close}>
+                  ${this.hass.localize("ui.dialogs.http_pending_config.close")}
+                </ha-button>
+              `
+            : html`
+                <ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  .loading=${this._busy === "revert"}
+                  .disabled=${this._busy === "confirm"}
+                  @click=${this._revert}
+                >
+                  ${this.hass.localize("ui.dialogs.http_pending_config.revert")}
+                </ha-button>
+                <ha-button
+                  slot="primaryAction"
+                  .loading=${this._busy === "confirm"}
+                  .disabled=${this._busy === "revert"}
+                  @click=${this._confirm}
+                >
+                  ${this.hass.localize(
+                    "ui.dialogs.http_pending_config.confirm"
+                  )}
+                </ha-button>
+              `}
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -152,12 +234,25 @@ export class DialogHttpPendingConfig
       this._notifyResolved();
       this._open = false;
     } catch (err: any) {
+      // A confirm fired right as the backend auto-reverts may race the
+      // restart and surface as a connection-lost error. Treat it as resolved;
+      // the disconnected overlay takes over.
+      if (err?.error?.code === ERR_CONNECTION_LOST) {
+        this._notifyResolved();
+        this._open = false;
+        return;
+      }
       this._error = this.hass.localize(
         "ui.dialogs.http_pending_config.confirm_error",
         { error: err.message ?? "" }
       );
       this._busy = undefined;
     }
+  }
+
+  private _close(): void {
+    this._notifyResolved();
+    this._open = false;
   }
 
   private async _revert(): Promise<void> {
@@ -201,6 +296,9 @@ export class DialogHttpPendingConfig
       }
       p {
         margin: 0 0 var(--ha-space-4) 0;
+      }
+      .countdown {
+        color: var(--secondary-text-color);
       }
       .changes-label {
         font-weight: var(--ha-font-weight-medium);

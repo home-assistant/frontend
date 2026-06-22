@@ -18,6 +18,7 @@ export interface HttpConfig {
 export interface HttpConfigState {
   stable: HttpConfig;
   pending: HttpConfig | null;
+  revert_at: string | null;
 }
 
 export interface SaveHttpConfigResult {

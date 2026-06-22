@@ -1472,9 +1472,12 @@
       "http_pending_config": {
         "title": "Confirm new HTTP server configuration",
         "description": "Home Assistant has restarted with new HTTP server settings. Confirm to keep them, or revert to undo the change.",
+        "auto_revert": "Settings will revert in {time}.",
+        "reverted": "Home Assistant reverted the HTTP server settings.",
         "changes_label": "Changed settings:",
         "confirm": "Confirm",
         "revert": "Revert",
+        "close": "Close",
         "confirm_error": "Failed to confirm the new configuration: {error}",
         "revert_error": "Failed to revert the configuration: {error}"
       },
