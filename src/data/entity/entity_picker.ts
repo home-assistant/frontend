@@ -15,10 +15,6 @@ import type { HaEntityPickerEntityFilterFunc } from "./entity";
 export interface EntityComboBoxItem extends PickerComboBoxItem {
   domain_name?: string;
   stateObj?: HassEntity;
-  /**
-   * Closeness to the active related context: 0 = the entity itself, 1 = its
-   * device, 2 = its area, 3 = unrelated. Lower sorts first.
-   */
   relatedRank?: number;
 }
 
