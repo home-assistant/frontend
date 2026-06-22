@@ -2,6 +2,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -110,14 +111,13 @@ class PanelDeveloperTools extends LitElement {
   }
 
   private _handleTabAnchorClick(ev: MouseEvent) {
-    // Allow middle-click and modifier-key clicks to open in a new tab/window
-    // natively via the anchor href. Only prevent default for plain left-clicks
-    // so the SPA routing (via wa-tab-show) handles navigation instead.
-    if (!ev.ctrlKey && !ev.metaKey && !ev.shiftKey && ev.button === 0) {
-      ev.preventDefault();
-    } else {
+    if (!isNavigationClick(ev)) {
+      // Middle-click, ctrl/meta/shift+click: let the browser open in a new
+      // tab/window via the anchor href, but stop the tab-group from switching.
       ev.stopPropagation();
     }
+    // For plain left-click, isNavigationClick already called preventDefault()
+    // so the anchor won't navigate; the click bubbles to tab-group for SPA routing.
   }
 
   private _handlePageSelected(ev: CustomEvent<{ name: string }>) {
