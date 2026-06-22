@@ -552,6 +552,7 @@ export class StatisticsChart extends LitElement {
 
   private _formatYAxisLabel = (value: number) =>
     formatNumber(value, this.hass.locale, {
+      minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
 
