@@ -1,13 +1,16 @@
+import { consume, type ContextType } from "@lit/context";
 import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { nextRender } from "../common/util/render-status";
 import { fetchStreamUrl } from "../data/camera";
-import type { HomeAssistant } from "../types";
+import { apiContext, configContext, connectionContext } from "../data/context";
 import "./ha-alert";
 
 type HlsLite = Omit<
@@ -17,7 +20,21 @@ type HlsLite = Omit<
 
 @customElement("ha-hls-player")
 class HaHLSPlayer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property() public entityid?: string;
 
@@ -140,7 +157,7 @@ class HaHLSPlayer extends LitElement {
     this._cleanUp();
     this._resetError();
 
-    if (!isComponentLoaded(this.hass.config, "stream")) {
+    if (!isComponentLoaded(this._config.config, "stream")) {
       this._setFatalError("Streaming component is not loaded.");
       return;
     }
@@ -149,9 +166,12 @@ class HaHLSPlayer extends LitElement {
       return;
     }
     try {
-      const { url } = await fetchStreamUrl(this.hass!, this.entityid);
+      const { url } = await fetchStreamUrl(
+        { callWS: this._api.callWS, hassUrl: this._connection.hassUrl },
+        this.entityid
+      );
 
-      this._url = this.hass.hassUrl(url);
+      this._url = this._connection.hassUrl(url);
       this._cleanUp();
       this._resetError();
       this._startHls();
@@ -184,13 +204,13 @@ class HaHLSPlayer extends LitElement {
 
     if (!hlsSupported) {
       this._setFatalError(
-        this.hass.localize("ui.components.media-browser.video_not_supported")
+        this._localize("ui.components.media-browser.video_not_supported")
       );
       return;
     }
 
     const useExoPlayer =
-      this.allowExoPlayer && this.hass.auth.external?.config.hasExoPlayer;
+      this.allowExoPlayer && this._config.auth.external?.config.hasExoPlayer;
     const masterPlaylist = await (await masterPlaylistPromise).text();
 
     if (!this.isConnected) {
@@ -236,7 +256,7 @@ class HaHLSPlayer extends LitElement {
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
-    await this.hass!.auth.external!.fireMessage({
+    await this._config.auth.external!.fireMessage({
       type: "exoplayer/play_hls",
       payload: {
         url,
@@ -250,7 +270,7 @@ class HaHLSPlayer extends LitElement {
       return;
     }
     const rect = this._videoEl.getBoundingClientRect();
-    this.hass!.auth.external!.fireMessage({
+    this._config.auth.external!.fireMessage({
       type: "exoplayer/resize",
       payload: {
         left: rect.left,
@@ -362,7 +382,7 @@ class HaHLSPlayer extends LitElement {
     }
     if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
-      this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
+      this._config.auth.external!.fireMessage({ type: "exoplayer/stop" });
       this._exoPlayer = false;
     }
     if (this._videoEl) {

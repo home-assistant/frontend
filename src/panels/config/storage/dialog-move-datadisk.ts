@@ -24,10 +24,15 @@ import {
   moveDatadisk,
 } from "../../../data/hassio/host";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
 import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
+
+interface MoveDatadiskFormState {
+  selectedDevice: string | undefined;
+}
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
   // Assume a speed of 30 MB/s.
@@ -37,7 +42,9 @@ const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
 });
 
 @customElement("dialog-move-datadisk")
-class MoveDatadiskDialog extends LitElement {
+class MoveDatadiskDialog extends DirtyStateProviderMixin<MoveDatadiskFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _hostInfo?: HassioHostInfo;
@@ -57,6 +64,12 @@ class MoveDatadiskDialog extends LitElement {
   ): Promise<Promise<void>> {
     this._hostInfo = dialogParams.hostInfo;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        selectedDevice: this._selectedDevice,
+      }
+    );
 
     try {
       this._osInfo = await fetchHassioHassOsInfo(this.hass);
@@ -113,6 +126,7 @@ class MoveDatadiskDialog extends LitElement {
         header-title=${this._moving
           ? this.hass.localize("ui.panel.config.storage.datadisk.moving")
           : this.hass.localize("ui.panel.config.storage.datadisk.title")}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._moving
@@ -181,6 +195,7 @@ class MoveDatadiskDialog extends LitElement {
 
   private _selectDevice(ev: HaSelectSelectEvent): void {
     this._selectedDevice = ev.detail.value;
+    this._updateDirtyState({ selectedDevice: this._selectedDevice });
   }
 
   private async _moveDatadisk() {

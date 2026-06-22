@@ -16,11 +16,13 @@ import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
   INITIAL_UPLOAD_FORM_DATA,
+  isSupportedBackupFile,
   SUPPORTED_UPLOAD_FORMAT,
   uploadBackup,
   type BackupUploadFileFormData,
 } from "../../../../data/backup";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
@@ -28,7 +30,7 @@ import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 @customElement("ha-dialog-upload-backup")
 export class DialogUploadBackup
-  extends LitElement
+  extends DirtyStateProviderMixin<BackupUploadFileFormData>()(LitElement)
   implements HassDialog<UploadBackupDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -47,6 +49,8 @@ export class DialogUploadBackup
     this._params = params;
     this._formData = INITIAL_UPLOAD_FORM_DATA;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, INITIAL_UPLOAD_FORM_DATA);
+    this._updateDirtyState(this._formData);
   }
 
   private _dialogClosed() {
@@ -64,10 +68,6 @@ export class DialogUploadBackup
     return true;
   }
 
-  private _formValid() {
-    return this._formData?.file !== undefined;
-  }
-
   protected render() {
     if (!this._params || !this._formData) {
       return nothing;
@@ -79,14 +79,13 @@ export class DialogUploadBackup
         header-title=${this.hass.localize(
           "ui.panel.config.backup.dialogs.upload.title"
         )}
-        ?prevent-scrim-close=${this._uploading}
+        .preventScrimClose=${this.isDirtyState || this._uploading}
         @closed=${this._dialogClosed}
       >
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
         <ha-file-upload
-          .hass=${this.hass}
           .uploading=${this._uploading}
           .icon=${mdiFolderUpload}
           .accept=${SUPPORTED_UPLOAD_FORMAT}
@@ -112,7 +111,7 @@ export class DialogUploadBackup
           <ha-button
             slot="primaryAction"
             @click=${this._upload}
-            .disabled=${!this._formValid() || this._uploading}
+            .disabled=${!this.isDirtyState || this._uploading}
           >
             ${this.hass.localize(
               "ui.panel.config.backup.dialogs.upload.action"
@@ -131,16 +130,18 @@ export class DialogUploadBackup
       ...this._formData!,
       file,
     };
+    this._updateDirtyState(this._formData);
   }
 
   private _filesCleared() {
     this._error = undefined;
     this._formData = INITIAL_UPLOAD_FORM_DATA;
+    this._updateDirtyState(this._formData);
   }
 
   private async _upload() {
     const { file } = this._formData!;
-    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
+    if (!file || !isSupportedBackupFile(file)) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.backup.dialogs.upload.unsupported.title"
@@ -161,6 +162,7 @@ export class DialogUploadBackup
     try {
       await uploadBackup(this.hass, file, agentIds);
       this._params!.submit?.();
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;

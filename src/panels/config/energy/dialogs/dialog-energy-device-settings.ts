@@ -7,12 +7,8 @@ import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-select";
-import type {
-  HaSelectOption,
-  HaSelectSelectEvent,
-} from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
+import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
@@ -23,6 +19,7 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsDeviceDialogParams } from "./show-dialogs-energy";
@@ -32,7 +29,9 @@ const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-device-settings")
 export class DialogEnergyDeviceSettings
-  extends LitElement
+  extends DirtyStateProviderMixin<DeviceConsumptionEnergyPreference | null>()(
+    LitElement
+  )
   implements HassDialog<EnergySettingsDeviceDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -75,6 +74,7 @@ export class DialogEnergyDeviceSettings
       .filter((id) => id && id !== this._device?.stat_rate) as string[];
 
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._device ?? null);
   }
 
   private _computePossibleParents() {
@@ -119,35 +119,13 @@ export class DialogEnergyDeviceSettings
       return nothing;
     }
 
-    const includedInDeviceOptions: HaSelectOption[] = this._possibleParents
-      .length
-      ? this._possibleParents.map((stat) => ({
-          value: stat.stat_consumption,
-          label:
-            stat.name ||
-            getStatisticLabel(
-              this.hass,
-              stat.stat_consumption,
-              this._params?.statsMetadata?.[stat.stat_consumption]
-            ),
-        }))
-      : [
-          {
-            value: "-",
-            disabled: true,
-            label: this.hass.localize(
-              "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
-            ),
-          },
-        ];
-
     return html`
       <ha-dialog
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.device_consumption.dialog.header"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -201,20 +179,23 @@ export class DialogEnergyDeviceSettings
         >
         </ha-input>
 
-        <ha-select
+        <ha-energy-upstream-device-picker
+          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.included_in_device"
           )}
-          .value=${this._device?.included_in_stat || ""}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.included_in_device_helper"
           )}
+          .value=${this._device?.included_in_stat}
+          .possibleParents=${this._possibleParents}
+          .statsMetadata=${this._params.statsMetadata}
+          .emptyLabel=${this.hass.localize(
+            "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
+          )}
           .disabled=${!this._device}
-          @selected=${this._parentSelected}
-          clearable
-          .options=${includedInDeviceOptions}
-        >
-        </ha-select>
+          @value-changed=${this._parentChanged}
+        ></ha-energy-upstream-device-picker>
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -226,7 +207,8 @@ export class DialogEnergyDeviceSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._device}
+            .disabled=${!this._device ||
+            (!!this._params?.device && !this.isDirtyState)}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -239,10 +221,12 @@ export class DialogEnergyDeviceSettings
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (!ev.detail.value) {
       this._device = undefined;
+      this._updateDirtyState(this._device ?? null);
       return;
     }
     this._device = { stat_consumption: ev.detail.value };
     this._computePossibleParents();
+    this._updateDirtyState(this._device);
 
     if (
       isExternalStatistic(ev.detail.value) &&
@@ -271,6 +255,7 @@ export class DialogEnergyDeviceSettings
       delete newDevice.stat_rate;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -282,9 +267,10 @@ export class DialogEnergyDeviceSettings
       delete newDevice.name;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
   }
 
-  private _parentSelected(ev: HaSelectSelectEvent<string, true>) {
+  private _parentChanged(ev: ValueChangedEvent<string>) {
     const newDevice = {
       ...this._device!,
       included_in_stat: ev.detail.value,
@@ -293,11 +279,13 @@ export class DialogEnergyDeviceSettings
       delete newDevice.included_in_stat;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
   }
 
   private async _save() {
     try {
       await this._params!.saveCallback(this._device!);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
@@ -315,7 +303,7 @@ export class DialogEnergyDeviceSettings
         ha-statistic-picker {
           width: 100%;
         }
-        ha-select {
+        ha-energy-upstream-device-picker {
           display: block;
           margin-top: var(--ha-space-4);
           width: 100%;

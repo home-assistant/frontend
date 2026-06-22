@@ -19,11 +19,11 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import { extractSearchParamsObject } from "../../common/url/search-params";
 import {
-  createSearchParam,
-  extractSearchParam,
-  removeSearchParam,
-} from "../../common/url/search-params";
+  createTodoQueryString,
+  decodeTodoQueryParams,
+} from "../../common/url/todo-query-params";
 import "../../components/ha-button";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
@@ -32,7 +32,6 @@ import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
 import "../../components/ha-list-item";
-import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
@@ -104,10 +103,11 @@ class PanelTodo extends LitElement {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
 
-      const urlEntityId = extractSearchParam("entity_id");
-      this._openAddItemFromUrl = extractSearchParam("add_item") === "true";
-      if (urlEntityId) {
-        this._entityId = urlEntityId;
+      const params = decodeTodoQueryParams(extractSearchParamsObject());
+      this._openAddItemFromUrl = params.add_item ?? false;
+
+      if (params.entity_id) {
+        this._entityId = params.entity_id;
       } else {
         if (this._entityId && !(this._entityId in this.hass.states)) {
           this._entityId = undefined;
@@ -127,9 +127,12 @@ class PanelTodo extends LitElement {
     }
 
     this._openAddItemFromUrl = false;
-    navigate(constructUrlCurrentPath(removeSearchParam("add_item")), {
-      replace: true,
-    });
+    navigate(
+      constructUrlCurrentPath(
+        createTodoQueryString({ entity_id: this._entityId })
+      ),
+      { replace: true }
+    );
     if (
       supportsFeature(
         this.hass.states[this._entityId],
@@ -146,7 +149,9 @@ class PanelTodo extends LitElement {
       return;
     }
     navigate(
-      constructUrlCurrentPath(createSearchParam({ entity_id: this._entityId })),
+      constructUrlCurrentPath(
+        createTodoQueryString({ entity_id: this._entityId })
+      ),
       { replace: true }
     );
   }
@@ -184,7 +189,6 @@ class PanelTodo extends LitElement {
         footer
         .narrow=${this.narrow}
       >
-        <ha-menu-button slot="navigationIcon"></ha-menu-button>
         <div slot="title">
           ${!showPane
             ? html`<ha-dropdown class="lists">

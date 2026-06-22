@@ -32,7 +32,7 @@ import type { HomeAssistant } from "../../../../types";
 import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
 import type { EntitiesCardConfig } from "../../cards/types";
 import { processConfigEntities } from "../../common/process-config-entities";
-import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
+import { timeFormatConfigStruct } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
@@ -119,7 +119,7 @@ const attributeEntitiesRowConfigStruct = object({
   suffix: optional(string()),
   name: optional(string()),
   icon: optional(string()),
-  format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
+  format: optional(timeFormatConfigStruct),
 });
 
 const textEntitiesRowConfigStruct = object({
@@ -260,7 +260,6 @@ export class HuiEntitiesCardEditor
           @input=${this._valueChanged}
         ></ha-input>
         <ha-theme-picker
-          .hass=${this.hass}
           .value=${this._theme}
           .label=${`${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.theme"

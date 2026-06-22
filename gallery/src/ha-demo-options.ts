@@ -16,22 +16,9 @@ class HaDemoOptions extends LitElement {
     css`
       :host {
         display: block;
-        background-color: var(--light-primary-color);
-        margin-left: 60px
-        margin-right: 60px;
-        display: var(--layout-horizontal_-_display);
-        -ms-flex-direction: var(--layout-horizontal_-_-ms-flex-direction);
-        -webkit-flex-direction: var(
-          --layout-horizontal_-_-webkit-flex-direction
-        );
-        flex-direction: var(--layout-horizontal_-_flex-direction);
-        -ms-flex-align: var(--layout-center_-_-ms-flex-align);
-        -webkit-align-items: var(--layout-center_-_-webkit-align-items);
-        align-items: var(--layout-center_-_align-items);
+        background-color: var(--primary-background-color);
         position: relative;
-        height: 64px;
-        padding: 0 16px;
-        pointer-events: none;
+        padding: var(--ha-space-2) var(--ha-space-16) var(--ha-space-1);
         font-size: var(--ha-font-size-xl);
       }
     `,

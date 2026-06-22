@@ -23,7 +23,6 @@ export class HaThemeSelector extends LitElement {
   protected render() {
     return html`
       <ha-theme-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

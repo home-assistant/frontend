@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -22,6 +23,7 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -32,6 +34,7 @@ import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import "../../sections/hui-section";
+import { getCardDefaultConfig } from "../get-card-default-config";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { GUIModeChangedEvent } from "../types";
@@ -52,7 +55,7 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard
-  extends LitElement
+  extends DirtyStateProviderMixin<LovelaceCardConfig>()(LitElement)
   implements HassDialog<EditCardDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -80,8 +83,6 @@ export class HuiDialogEditCard
 
   @state() private _documentationURL?: string;
 
-  @state() private _dirty = false;
-
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -91,16 +92,26 @@ export class HuiDialogEditCard
     this._sectionConfig = this._params.sectionConfig;
 
     this._cardConfig = params.cardConfig;
-    this._dirty = Boolean(this._params.isNew);
 
     this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
+    const effectiveDefaults = this._cardConfig?.type
+      ? await getCardDefaultConfig(this._cardConfig.type)
+      : undefined;
+    const normalize = (config: LovelaceCardConfig) =>
+      stripDefaults(config, effectiveDefaults);
+    if (params.isNew && this._cardConfig) {
+      this._initDirtyTracking({ type: "deep" }, { type: "" }, normalize);
+      this._updateDirtyState(this._cardConfig);
+    } else {
+      this._initDirtyTracking({ type: "deep" }, this._cardConfig, normalize);
+    }
   }
 
   public closeDialog(): boolean {
-    if (this._dirty) {
+    if (this.isEffectiveDirtyState) {
       this._confirmCancel();
       return false;
     }
@@ -114,7 +125,6 @@ export class HuiDialogEditCard
     this._cardConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
-    this._dirty = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -169,7 +179,7 @@ export class HuiDialogEditCard
       <ha-dialog
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        prevent-scrim-close
+        .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
@@ -262,18 +272,14 @@ export class HuiDialogEditCard
           >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
-          ${this._cardConfig !== undefined && this._dirty
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  ?disabled=${!this._canSave}
-                  @click=${this._save}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize("ui.common.save")}
-                </ha-button>
-              `
-            : ``}
+          <ha-button
+            slot="primaryAction"
+            ?disabled=${!this._canSave || this._saving || !this.isDirtyState}
+            @click=${this._save}
+            .loading=${this._saving}
+          >
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -289,11 +295,14 @@ export class HuiDialogEditCard
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    this._cardConfig = deepFreeze(ev.detail.config);
+  private _handleConfigChanged(
+    ev: HASSDomEvent<ConfigChangedEvent<LovelaceCardConfig>>
+  ) {
+    const config = deepFreeze(ev.detail.config);
+    this._cardConfig = config;
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
-    this._dirty = true;
+    this._updateDirtyState(config);
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
@@ -361,7 +370,7 @@ export class HuiDialogEditCard
     if (ev) {
       ev.stopPropagation();
     }
-    this._dirty = false;
+    this._discardDirtyStateChanges();
     this.closeDialog();
   }
 
@@ -369,7 +378,7 @@ export class HuiDialogEditCard
     if (!this._canSave) {
       return;
     }
-    if (!this._dirty) {
+    if (!this.isDirtyState) {
       this.closeDialog();
       return;
     }
@@ -377,7 +386,7 @@ export class HuiDialogEditCard
     try {
       await this._params!.saveCardConfig(this._cardConfig!);
       this._saving = false;
-      this._dirty = false;
+      this._markDirtyStateClean();
       showSaveSuccessToast(this, this.hass);
       this.closeDialog();
     } catch (err: any) {

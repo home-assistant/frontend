@@ -6,8 +6,12 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../../data/sensor";
 import type { EntitiesCardEntityConfig } from "../../cards/types";
 import type { LovelaceRowEditor } from "../../types";
 import { entitiesConfigStruct } from "../structs/entities-struct";
@@ -41,55 +45,77 @@ export class HuiGenericEntityRowEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((entity: string, localize: LocalizeFunc) => {
-    const domain = computeDomain(entity);
+  private _schema = memoizeOne(
+    (entity: string, localize: LocalizeFunc, showTimeFormat?: boolean) => {
+      const domain = computeDomain(entity);
 
-    return [
-      { name: "entity", required: true, selector: { entity: {} } },
-      {
-        name: "name",
-        selector: { entity_name: {} },
-        context: { entity: "entity" },
-      },
-      {
-        name: "icon",
-        selector: {
-          icon: {},
+      return [
+        { name: "entity", required: true, selector: { entity: {} } },
+        {
+          name: "name",
+          selector: { entity_name: {} },
+          context: { entity: "entity" },
         },
-        context: {
-          icon_entity: "entity",
-        },
-      },
-      {
-        name: "secondary_info",
-        selector: {
-          select: {
-            options: (
-              Object.keys(SECONDARY_INFO_VALUES).filter(
-                (info) =>
-                  !("domains" in SECONDARY_INFO_VALUES[info]) ||
-                  ("domains" in SECONDARY_INFO_VALUES[info] &&
-                    SECONDARY_INFO_VALUES[info].domains!.includes(domain))
-              ) as (keyof typeof SECONDARY_INFO_VALUES)[]
-            ).map((info) => ({
-              value: info,
-              label: localize(
-                `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
-              ),
-            })),
+        {
+          name: "icon",
+          selector: {
+            icon: {},
+          },
+          context: {
+            icon_entity: "entity",
           },
         },
-      },
-    ] as const;
-  });
+        {
+          name: "secondary_info",
+          selector: {
+            select: {
+              options: (
+                Object.keys(SECONDARY_INFO_VALUES).filter(
+                  (info) =>
+                    !("domains" in SECONDARY_INFO_VALUES[info]) ||
+                    ("domains" in SECONDARY_INFO_VALUES[info] &&
+                      SECONDARY_INFO_VALUES[info].domains!.includes(domain))
+                ) as (keyof typeof SECONDARY_INFO_VALUES)[]
+              ).map((info) => ({
+                value: info,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.entities.secondary_info_values.${info}`
+                ),
+              })),
+            },
+          },
+        },
+        ...(showTimeFormat
+          ? ([
+              {
+                name: "format",
+                selector: {
+                  ui_time_format: {},
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+      ] as const;
+    }
+  );
 
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
+    const entity = this._config.entity;
+    const domain = entity ? computeDomain(entity) : undefined;
+    const showTimeFormat =
+      domain === "event" ||
+      (domain === "sensor" &&
+        SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+          this.hass.states[entity]?.attributes.device_class
+        ));
+
     const schema =
-      this.schema || this._schema(this._config.entity, this.hass.localize);
+      this.schema ||
+      this._schema(this._config.entity, this.hass.localize, showTimeFormat);
 
     return html`
       <ha-form
@@ -113,6 +139,10 @@ export class HuiGenericEntityRowEditor
       case "secondary_info":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.entity-row.${schema.name}`
+        );
+      case "format":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.time_format`
         );
       default:
         return this.hass!.localize(

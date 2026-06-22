@@ -33,11 +33,7 @@ export class HomeFavoriteEntityListItem extends LitElement {
 
     return html`
       <ha-settings-row slim>
-        <state-badge
-          slot="prefix"
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-        ></state-badge>
+        <state-badge slot="prefix" .stateObj=${stateObj}></state-badge>
         <span slot="heading">${primary}</span>
         ${secondary
           ? html`<span slot="description">${secondary}</span>`

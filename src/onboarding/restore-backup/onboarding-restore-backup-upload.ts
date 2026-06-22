@@ -9,6 +9,7 @@ import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
+  isSupportedBackupFile,
   SUPPORTED_UPLOAD_FORMAT,
 } from "../../data/backup";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -76,7 +77,7 @@ class OnboardingRestoreBackupUpload extends LitElement {
     this._error = undefined;
     const file = ev.detail.files[0];
 
-    if (!file || file.type !== SUPPORTED_UPLOAD_FORMAT) {
+    if (!file || !isSupportedBackupFile(file)) {
       showAlertDialog(this, {
         title: this.localize(
           "ui.panel.page-onboarding.restore.unsupported.title"

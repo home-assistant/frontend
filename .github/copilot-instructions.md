@@ -2,7 +2,7 @@
 
 You are an assistant helping with development of the Home Assistant frontend. The frontend is built using Lit-based Web Components and TypeScript, providing a responsive and performant interface for home automation control.
 
-**Note**: This file contains high-level guidelines and references to implementation patterns. For detailed component documentation, API references, and usage examples, refer to the `gallery/` directory.
+**Note**: This file contains high-level guidelines and references to implementation patterns. For gallery-specific documentation, demos, page structure, and usage examples, see [`gallery/AGENTS.md`](gallery/AGENTS.md).
 
 ## Table of Contents
 
@@ -289,6 +289,7 @@ For browser support, API details, and current specifications, refer to these aut
 - **Test with Vitest**: Use the established test framework
 - **Mock appropriately**: Mock WebSocket connections and API calls
 - **Test accessibility**: Ensure components are accessible
+- **Optimizing chart data processing**: When optimizing chart data transforms (history, statistics, energy, downsampling), follow the playbook in [`test/benchmarks/README.md`](test/benchmarks/README.md) — it has seeded fixtures, characterization (snapshot) tests that pin current output, and `vitest bench` benchmarks (`yarn test:bench`) for before/after comparison. Optimizations must keep output bit-identical.
 
 ## Component Library
 
@@ -338,11 +339,6 @@ Common patterns:
 - **Destructive actions**: `variant="danger"` for delete/remove operations (the generic confirmation dialog uses `variant="danger"` for its confirm button — see `src/dialogs/generic/dialog-box.ts`)
 - Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
 
-**Gallery Documentation:**
-
-- `gallery/src/pages/components/ha-dialog.markdown`
-- `gallery/src/pages/components/ha-dialogs.markdown`
-
 ### Form Component (ha-form)
 
 - Schema-driven using `HaFormSchema[]`
@@ -361,10 +357,6 @@ Common patterns:
 ></ha-form>
 ```
 
-**Gallery Documentation:**
-
-- `gallery/src/pages/components/ha-form.markdown`
-
 ### Alert Component (ha-alert)
 
 - Types: `error`, `warning`, `info`, `success`
@@ -377,10 +369,6 @@ Common patterns:
 <ha-alert alert-type="warning" title="Warning">Description</ha-alert>
 <ha-alert alert-type="success" dismissable>Success message</ha-alert>
 ```
-
-**Gallery Documentation:**
-
-- `gallery/src/pages/components/ha-alert.markdown`
 
 ### Keyboard Shortcuts (ShortcutManager)
 
@@ -405,7 +393,6 @@ The `ha-tooltip` component wraps Web Awesome tooltip with Home Assistant theming
 
 - **Component definition**: `src/components/ha-tooltip.ts`
 - **Usage example**: `src/components/ha-label.ts`
-- **Gallery documentation**: `gallery/src/pages/components/ha-tooltip.markdown`
 
 ## Common Patterns
 
@@ -435,7 +422,7 @@ export class HaPanelMyFeature extends SubscribeMixin(LitElement) {
 
 #### Creating a Lovelace Card
 
-**Purpose**: Cards allow users to tell different stories about their house (based on gallery)
+**Purpose**: Cards allow users to tell different stories about their house.
 
 ```typescript
 @customElement("hui-my-card")
@@ -508,6 +495,10 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 4. **Test**: `yarn test` - Add and run tests
 5. **Build**: `script/build_frontend` - Test production build
 
+### Gallery
+
+For Gallery-specific structure, page/demo naming, sidebar behavior, content standards, and commands, see [`gallery/AGENTS.md`](gallery/AGENTS.md).
+
 ### Common Pitfalls to Avoid
 
 - Don't manually query the DOM with `querySelector` - use the `@query`/`@queryAll` decorators or component properties
@@ -538,7 +529,7 @@ When creating a pull request, you **must** use the PR template located at `.gith
 
 #### Terminology Standards
 
-**Delete vs Remove** (Based on gallery/src/pages/Text/remove-delete-add-create.markdown)
+**Delete vs Remove**
 
 - **Use "Remove"** for actions that can be restored or reapplied:
   - Removing a user's permission

@@ -1,11 +1,14 @@
+import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
@@ -17,12 +20,19 @@ import {
   ALARM_MODES,
   setProtectedAlarmControlPanelMode,
 } from "../../data/alarm_control_panel";
+import { apiContext } from "../../data/context";
 import { UNAVAILABLE } from "../../data/entity/entity";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantApi } from "../../types";
 
 @customElement("ha-state-control-alarm_control_panel-modes")
 export class HaStateControlAlarmControlPanelModes extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: AlarmControlPanelEntity;
 
@@ -50,8 +60,12 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
   private async _setMode(mode: AlarmMode) {
     await setProtectedAlarmControlPanelMode(
       this,
-      this.hass!,
-      this.stateObj!,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
+      this.stateObj,
       mode
     );
   }
@@ -80,7 +94,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
 
     const options = modes.map<ControlSelectOption>((mode) => ({
       value: mode,
-      label: this.hass.localize(`ui.card.alarm_control_panel.modes.${mode}`),
+      label: this._localize(`ui.card.alarm_control_panel.modes.${mode}`),
       path: ALARM_MODES[mode].path,
     }));
 
@@ -90,7 +104,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        .label=${this.hass.localize("ui.card.alarm_control_panel.modes_label")}
+        .label=${this._localize("ui.card.alarm_control_panel.modes_label")}
         style=${styleMap({
           "--control-select-color": color,
           "--modes-count": modes.length.toString(),

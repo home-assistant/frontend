@@ -1,13 +1,18 @@
+import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 import { saveFabStyles } from "./styles";
 
@@ -19,7 +24,9 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   @property({ type: Boolean }) public saving = false;
 
-  @property({ type: Boolean }) public dirty = false;
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext;
 
   protected get _config(): BlueprintAutomationConfig {
     return this.config;
@@ -58,7 +65,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
       <ha-button
         slot="fab"
         size="l"
-        class=${this.dirty ? "dirty" : ""}
+        class=${this._dirtyState?.isDirty ? "dirty" : ""}
         .disabled=${this.saving}
         @click=${this._saveAutomation}
       >

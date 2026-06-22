@@ -134,7 +134,6 @@ export class HuiEntityPickerTable extends LitElement {
           template: (entity) => html`
             <state-badge
               @click=${this._handleEntityClicked}
-              .hass=${this.hass!}
               .stateObj=${entity.stateObj}
             ></state-badge>
           `,

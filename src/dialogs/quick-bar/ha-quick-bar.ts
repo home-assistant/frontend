@@ -310,7 +310,6 @@ export class QuickBar extends LitElement {
               <state-badge
                 slot="start"
                 .stateObj=${(item as EntityComboBoxItem).stateObj}
-                .hass=${this.hass}
               ></state-badge>
             `
           : "domain" in item && item.domain

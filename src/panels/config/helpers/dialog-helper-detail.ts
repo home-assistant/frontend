@@ -18,6 +18,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -101,7 +102,9 @@ const HELPERS: HelperCreators = {
 };
 
 @customElement("dialog-helper-detail")
-export class DialogHelperDetail extends LitElement {
+export class DialogHelperDetail extends DirtyStateProviderMixin<
+  Helper | undefined
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _item?: Helper;
@@ -137,6 +140,7 @@ export class DialogHelperDetail extends LitElement {
     this._item = undefined;
     if (this._domain && this._domain in HELPERS) {
       await HELPERS[this._domain].import();
+      this._initDirtyTracking({ type: "deep" }, undefined);
     }
     this._open = true;
     await this.updateComplete;
@@ -293,6 +297,7 @@ export class DialogHelperDetail extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this._domain
           ? this.hass.localize(
               "ui.panel.config.helpers.dialog.create_platform",
@@ -364,6 +369,7 @@ export class DialogHelperDetail extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
+    this._updateDirtyState(this._item);
   }
 
   private async _createItem(): Promise<void> {
@@ -383,6 +389,7 @@ export class DialogHelperDetail extends LitElement {
           entityId: `${this._domain}.${createdEntity.id}`,
         });
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message || "Unknown error";
@@ -410,6 +417,7 @@ export class DialogHelperDetail extends LitElement {
       try {
         await HELPERS[domain].import();
         this._domain = domain;
+        this._initDirtyTracking({ type: "deep" }, undefined);
       } finally {
         this._loading = false;
       }

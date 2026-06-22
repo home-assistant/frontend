@@ -5,7 +5,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-control-button";
-import "../../components/ha-dialog";
+import "../../components/ha-adaptive-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
@@ -102,6 +102,13 @@ export class DialogEnterCode
     this._showClearButton = !!val;
   }
 
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      ev.preventDefault();
+      this._submit();
+    }
+  }
+
   protected render() {
     if (!this._dialogParams || !this.hass) {
       return nothing;
@@ -111,7 +118,7 @@ export class DialogEnterCode
 
     if (isText) {
       return html`
-        <ha-dialog
+        <ha-adaptive-dialog
           .open=${this._open}
           header-title=${this._dialogParams.title ??
           this.hass.localize("ui.dialogs.enter_code.title")}
@@ -127,6 +134,7 @@ export class DialogEnterCode
             autoValidate
             validateOnInitialRender
             pattern=${ifDefined(this._dialogParams.codePattern)}
+            @keydown=${this._handleKeyDown}
             inputmode="text"
           ></ha-input>
           <ha-dialog-footer slot="footer">
@@ -143,12 +151,12 @@ export class DialogEnterCode
               this.hass.localize("ui.common.submit")}
             </ha-button>
           </ha-dialog-footer>
-        </ha-dialog>
+        </ha-adaptive-dialog>
       `;
     }
 
     return html`
-      <ha-dialog
+      <ha-adaptive-dialog
         .open=${this._open}
         header-title=${this._dialogParams.title ?? "Enter code"}
         width="small"
@@ -163,6 +171,7 @@ export class DialogEnterCode
             inputmode="numeric"
             ?autofocus=${!this._narrow}
             password-toggle
+            @keydown=${this._handleKeyDown}
           ></ha-input>
           <div class="keypad">
             ${BUTTONS.map((value) =>
@@ -202,12 +211,12 @@ export class DialogEnterCode
             )}
           </div>
         </div>
-      </ha-dialog>
+      </ha-adaptive-dialog>
     `;
   }
 
   static styles = css`
-    ha-dialog {
+    ha-adaptive-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
     }

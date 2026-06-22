@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -13,7 +14,7 @@ import {
   webRtcOffer,
   type WebRtcOfferEvent,
 } from "../data/camera";
-import type { HomeAssistant } from "../types";
+import { apiContext, connectionContext } from "../data/context";
 import "./ha-alert";
 
 /**
@@ -23,7 +24,13 @@ import "./ha-alert";
  */
 @customElement("ha-web-rtc-player")
 class HaWebRtcPlayer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property() public entityid?: string;
 
@@ -130,7 +137,7 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    if (!this.hass || !this.entityid) {
+    if (!this._api || !this._connection || !this.entityid) {
       return;
     }
 
@@ -141,7 +148,7 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start clientConfig");
 
     this._clientConfig = await fetchWebRtcClientConfiguration(
-      this.hass,
+      this._api,
       this.entityid
     );
 
@@ -230,8 +237,11 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
-      this._unsub = webRtcOffer(this.hass, this.entityid, offer_sdp, (event) =>
-        this._handleOfferEvent(event)
+      this._unsub = webRtcOffer(
+        this._connection,
+        this.entityid,
+        offer_sdp,
+        (event) => this._handleOfferEvent(event)
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
@@ -257,7 +267,7 @@ class HaWebRtcPlayer extends LitElement {
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
         addWebRtcCandidate(
-          this.hass,
+          this._api,
           this.entityid!,
           event.session_id,
           // toJSON returns RTCIceCandidateInit
@@ -310,7 +320,7 @@ class HaWebRtcPlayer extends LitElement {
 
     if (this._sessionId) {
       addWebRtcCandidate(
-        this.hass,
+        this._api,
         this.entityid,
         this._sessionId,
         // toJSON returns RTCIceCandidateInit

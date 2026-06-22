@@ -39,11 +39,7 @@ class EntityPreviewRow extends LitElement {
       return nothing;
     }
     const stateObj = this.stateObj;
-    return html`<state-badge
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        stateColor
-      ></state-badge>
+    return html`<state-badge .stateObj=${stateObj} stateColor></state-badge>
       <div class="name" .title=${computeStateName(stateObj)}>
         ${computeStateName(stateObj)}
       </div>
@@ -106,7 +102,9 @@ class EntityPreviewRow extends LitElement {
     }
   `;
 
-  private _renderEntityState(stateObj: HassEntity): TemplateResult | string {
+  private _renderEntityState(
+    stateObj: HassEntity
+  ): TemplateResult | string | typeof nothing {
     const domain = stateObj.entity_id.split(".", 1)[0];
     const disabled = stateObj.state === UNAVAILABLE;
     const noValue =
@@ -199,12 +197,7 @@ class EntityPreviewRow extends LitElement {
         stateObj.state === "on" || stateObj.state === "off" || noValue;
       return html`
         ${showToggle
-          ? html`
-              <ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-entity-toggle>
-            `
+          ? html` <ha-entity-toggle .stateObj=${stateObj}></ha-entity-toggle> `
           : this.hass.formatEntityState(stateObj)}
       `;
     }
@@ -216,7 +209,10 @@ class EntityPreviewRow extends LitElement {
     }
 
     if (domain === "image") {
-      const image: string = computeImageUrl(stateObj as ImageEntity);
+      const image = computeImageUrl(stateObj as ImageEntity);
+      if (!image) {
+        return nothing;
+      }
       return html`
         <img
           alt=${ifDefined(stateObj?.attributes.friendly_name)}

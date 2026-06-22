@@ -215,10 +215,16 @@ export class HaDataTable extends LitElement {
     if (clear) {
       this._checkedRows = [];
     }
+    // Map + Set keep a large selection O(rows + ids) instead of O(rows × ids).
+    const rowLookup = new Map(
+      (this._filteredData || []).map((data) => [data[this.id], data])
+    );
+    const checkedRows = new Set(this._checkedRows);
     ids.forEach((id) => {
-      const row = this._filteredData?.find((data) => data[this.id] === id);
-      if (row?.selectable !== false && !this._checkedRows.includes(id)) {
+      const row = rowLookup.get(id);
+      if (row?.selectable !== false && !checkedRows.has(id)) {
         this._checkedRows.push(id);
+        checkedRows.add(id);
       }
     });
     this._lastSelectedRowId = null;
@@ -1477,6 +1483,11 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__table.auto-height .scroller {
           overflow-y: hidden !important;
         }
+
+        .mdc-data-table__table.auto-height lit-virtualizer {
+          overscroll-behavior-y: auto;
+        }
+
         .grows {
           flex-grow: 1;
           flex-shrink: 1;

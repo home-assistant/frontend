@@ -1,4 +1,5 @@
-import type { TemplateResult } from "lit";
+import { ContextProvider } from "@lit/context";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
@@ -14,6 +15,11 @@ import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import type { AreaRegistryEntry } from "../../../../src/data/area/area_registry";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../../src/data/context";
+import { updateHassGroups } from "../../../../src/data/context/updateContext";
 import type { DeviceRegistryEntry } from "../../../../src/data/device/device_registry";
 import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
 import type { LabelRegistryEntry } from "../../../../src/data/label/label_registry";
@@ -496,6 +502,10 @@ const SCHEMAS: {
                   },
                 },
               },
+              password: {
+                label: "Password",
+                selector: { text: { type: "password" } },
+              },
             },
           },
         },
@@ -518,6 +528,17 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
 
   private data = SCHEMAS.map(() => ({}));
 
+  // The date/datetime selectors and the date-picker dialog consume these
+  // contexts (provided by the root element in the real app). Provide them here
+  // so they work in the gallery.
+  private _i18nProvider = new ContextProvider(this, {
+    context: internationalizationContext,
+  });
+
+  private _configProvider = new ContextProvider(this, {
+    context: configContext,
+  });
+
   constructor() {
     super();
     const hass = provideHass(this);
@@ -537,6 +558,16 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
 
   public provideHass(el) {
     el.hass = this.hass;
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (changedProps.has("hass") && this.hass) {
+      this._i18nProvider.setValue(
+        updateHassGroups.internationalization(this.hass)
+      );
+      this._configProvider.setValue(updateHassGroups.config(this.hass));
+    }
   }
 
   public connectedCallback() {

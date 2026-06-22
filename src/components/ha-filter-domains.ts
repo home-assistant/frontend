@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -5,12 +6,14 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { internationalizationContext, statesContext } from "../data/context";
 import { domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
@@ -20,7 +23,17 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-domains")
 export class HaFilterDomains extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -43,7 +56,7 @@ export class HaFilterDomains extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.domains.caption")}
+          ${this._localize("ui.panel.config.domains.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -65,7 +78,13 @@ export class HaFilterDomains extends LitElement {
                 multi
               >
                 ${repeat(
-                  this._domains(this.hass.states, this._filter, this.value),
+                  this._domains(
+                    this._states,
+                    this._localize,
+                    this._i18n.locale.language,
+                    this._filter,
+                    this.value
+                  ),
                   (i) => i,
                   (domain) =>
                     html`<ha-check-list-item
@@ -78,7 +97,7 @@ export class HaFilterDomains extends LitElement {
                         .domain=${domain}
                         brand-fallback
                       ></ha-domain-icon>
-                      ${domainToName(this.hass.localize, domain)}
+                      ${domainToName(this._localize, domain)}
                     </ha-check-list-item>`
                 )}
               </ha-list> `
@@ -87,26 +106,34 @@ export class HaFilterDomains extends LitElement {
     `;
   }
 
-  private _domains = memoizeOne((states, filter, _value) => {
-    const domains = new Set<string>();
-    Object.keys(states).forEach((entityId) => {
-      domains.add(computeDomain(entityId));
-    });
+  private _domains = memoizeOne(
+    (
+      states: ContextType<typeof statesContext>,
+      localize: LocalizeFunc,
+      language: string | undefined,
+      filter: string | undefined,
+      _value
+    ) => {
+      const domains = new Set<string>();
+      Object.keys(states).forEach((entityId) => {
+        domains.add(computeDomain(entityId));
+      });
 
-    return Array.from(domains.values())
-      .map((domain) => ({
-        domain,
-        name: domainToName(this.hass.localize, domain),
-      }))
-      .filter(
-        (entry) =>
-          !filter ||
-          entry.domain.toLowerCase().includes(filter) ||
-          entry.name.toLowerCase().includes(filter)
-      )
-      .sort((a, b) => stringCompare(a.name, b.name, this.hass.locale.language))
-      .map((entry) => entry.domain);
-  });
+      return Array.from(domains.values())
+        .map((domain) => ({
+          domain,
+          name: domainToName(localize, domain),
+        }))
+        .filter(
+          (entry) =>
+            !filter ||
+            entry.domain.toLowerCase().includes(filter) ||
+            entry.name.toLowerCase().includes(filter)
+        )
+        .sort((a, b) => stringCompare(a.name, b.name, language))
+        .map((entry) => entry.domain);
+    }
+  );
 
   protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
@@ -129,7 +156,13 @@ export class HaFilterDomains extends LitElement {
   }
 
   private _handleItemSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    const domains = this._domains(this.hass.states, this._filter, this.value);
+    const domains = this._domains(
+      this._states,
+      this._localize,
+      this._i18n.locale.language,
+      this._filter,
+      this.value
+    );
 
     const visibleDomains = new Set(domains);
     const preserved = (this.value || []).filter((d) => !visibleDomains.has(d));

@@ -11,6 +11,12 @@ export const copyToClipboard = async (str, rootEl?: HTMLElement) => {
   }
 
   const root = rootEl || deepActiveElement()?.getRootNode() || document.body;
+  // A document node cannot have a textarea appended directly (only the single
+  // documentElement is allowed), so fall back to its body. Shadow roots and
+  // elements can hold the textarea directly, which keeps execCommand working
+  // inside dialogs that trap focus.
+  const container: Node =
+    root.nodeType === Node.DOCUMENT_NODE ? document.body : root;
 
   const el = document.createElement("textarea");
   el.value = str;
@@ -19,8 +25,8 @@ export const copyToClipboard = async (str, rootEl?: HTMLElement) => {
   el.style.top = "0";
   el.style.left = "0";
   el.style.opacity = "0";
-  root.appendChild(el);
+  container.appendChild(el);
   el.select();
   document.execCommand("copy");
-  root.removeChild(el);
+  container.removeChild(el);
 };

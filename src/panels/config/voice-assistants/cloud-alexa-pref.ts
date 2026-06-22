@@ -64,10 +64,7 @@ export class CloudAlexaPref extends LitElement {
     return html`
       <ha-card outlined>
         <h1 class="card-header">
-          <voice-assistant-brand-icon
-            .voiceAssistantId=${"cloud.alexa"}
-            .hass=${this.hass}
-          >
+          <voice-assistant-brand-icon .voiceAssistantId=${"cloud.alexa"}>
           </voice-assistant-brand-icon
           >${this.hass.localize("ui.panel.config.cloud.account.alexa.title")}
         </h1>

@@ -82,7 +82,6 @@ export class HuiGenericEntityRow extends LitElement {
         )}
       >
         <state-badge
-          .hass=${this.hass}
           .stateObj=${stateObj}
           .overrideIcon=${this.config.icon}
           .overrideImage=${this.config.image}

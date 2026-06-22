@@ -37,7 +37,6 @@ export class HaFileSelector extends LitElement {
   protected render() {
     return html`
       <ha-file-upload
-        .hass=${this.hass}
         .accept=${this.selector.file?.accept}
         .icon=${mdiFile}
         .label=${this.label}

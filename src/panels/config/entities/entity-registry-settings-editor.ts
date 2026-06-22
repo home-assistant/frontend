@@ -6,8 +6,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -38,13 +38,17 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import {
   CAMERA_ORIENTATIONS,
-  CAMERA_SUPPORT_STREAM,
+  CameraEntityFeature,
   type CameraPreferences,
   fetchCameraCapabilities,
   fetchCameraPrefs,
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteConfigEntry } from "../../../data/config_entries";
 import {
@@ -81,7 +85,7 @@ import {
 } from "../../../data/options_flow";
 import {
   getSensorDeviceClassConvertibleUnits,
-  getSensorNumericDeviceClasses,
+  isNumericSensorDeviceClass,
 } from "../../../data/sensor";
 import { VacuumEntityFeature } from "../../../data/vacuum";
 import type { WeatherUnits } from "../../../data/weather";
@@ -144,6 +148,28 @@ const SCANNER_SOURCE_TYPES = ["router", "bluetooth", "bluetooth_le"];
 
 const ZONE_DOMAINS = ["zone"];
 
+export interface EntitySettingsState {
+  name: string | null;
+  icon: string | null;
+  entityId: string;
+  areaId: string | null;
+  labels: string[];
+  deviceClass: string | undefined;
+  disabledBy: EntityRegistryEntry["disabled_by"];
+  hiddenBy: EntityRegistryEntry["hidden_by"];
+  unitOfMeasurement: string | null | undefined;
+  precision: number | null | undefined;
+  defaultCode: string | null | undefined;
+  calendarColor: string | null;
+  precipitationUnit: string | null | undefined;
+  pressureUnit: string | null | undefined;
+  temperatureUnit: string | null | undefined;
+  visibilityUnit: string | null | undefined;
+  windSpeedUnit: string | null | undefined;
+  switchAsDomain: string;
+  switchAsInvert: boolean;
+}
+
 @customElement("entity-registry-settings-editor")
 export class EntityRegistrySettingsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -158,41 +184,53 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @property({ attribute: false }) public helperConfigEntry?: ConfigEntry;
 
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<
+    EntitySettingsState,
+    "entity-registry"
+  >;
+
   @state() private _name!: string;
 
   @state() private _icon!: string;
 
-  @state() private _entityId!: string;
+  @state() private _entityId!: EntitySettingsState["entityId"];
 
-  @state() private _deviceClass?: string;
+  @state() private _deviceClass?: EntitySettingsState["deviceClass"];
 
-  @state() private _switchAsDomain = "switch";
+  @state() private _switchAsDomain: EntitySettingsState["switchAsDomain"] =
+    "switch";
 
-  @state() private _switchAsInvert = false;
+  @state() private _switchAsInvert: EntitySettingsState["switchAsInvert"] =
+    false;
 
   @state() private _areaId?: string | null;
 
   @state() private _labels?: string[] | null;
 
-  @state() private _disabledBy!: EntityRegistryEntry["disabled_by"];
+  @state() private _disabledBy!: EntitySettingsState["disabledBy"];
 
-  @state() private _hiddenBy!: EntityRegistryEntry["hidden_by"];
+  @state() private _hiddenBy!: EntitySettingsState["hiddenBy"];
 
   @state() private _device?: DeviceRegistryEntry;
 
-  @state() private _unit_of_measurement?: string | null;
+  @state()
+  private _unit_of_measurement?: EntitySettingsState["unitOfMeasurement"];
 
-  @state() private _precision?: number | null;
+  @state() private _precision?: EntitySettingsState["precision"];
 
-  @state() private _precipitation_unit?: string | null;
+  @state()
+  private _precipitation_unit?: EntitySettingsState["precipitationUnit"];
 
-  @state() private _pressure_unit?: string | null;
+  @state() private _pressure_unit?: EntitySettingsState["pressureUnit"];
 
-  @state() private _temperature_unit?: string | null;
+  @state()
+  private _temperature_unit?: EntitySettingsState["temperatureUnit"];
 
-  @state() private _visibility_unit?: string | null;
+  @state() private _visibility_unit?: EntitySettingsState["visibilityUnit"];
 
-  @state() private _wind_speed_unit?: string | null;
+  @state() private _wind_speed_unit?: EntitySettingsState["windSpeedUnit"];
 
   @state() private _cameraPrefs?: CameraPreferences;
 
@@ -200,13 +238,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _sensorDeviceClassConvertibleUnits?: string[];
 
-  @state() private _sensorNumericalDeviceClasses?: string[];
-
   @state() private _weatherConvertibleUnits?: WeatherUnits;
 
-  @state() private _defaultCode?: string | null;
+  @state() private _defaultCode?: EntitySettingsState["defaultCode"];
 
-  @state() private _calendarColor?: string | null;
+  @state() private _calendarColor?: EntitySettingsState["calendarColor"];
 
   @state() private _associatedZone?: string;
 
@@ -215,34 +251,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
-
-  private _initialStateJson!: string;
-
-  private _lastDirty = false;
-
-  private _currentState() {
-    return {
-      name: this._name.trim() || null,
-      icon: this._icon.trim() || null,
-      entityId: this._entityId.trim(),
-      areaId: this._areaId ?? null,
-      labels: this._labels ?? [],
-      deviceClass: this._deviceClass,
-      disabledBy: this._disabledBy,
-      hiddenBy: this._hiddenBy,
-      unitOfMeasurement: this._unit_of_measurement,
-      precision: this._precision,
-      defaultCode: this._defaultCode,
-      calendarColor: this._calendarColor ?? null,
-      precipitationUnit: this._precipitation_unit,
-      pressureUnit: this._pressure_unit,
-      temperatureUnit: this._temperature_unit,
-      visibilityUnit: this._visibility_unit,
-      windSpeedUnit: this._wind_speed_unit,
-      switchAsDomain: this._switchAsDomain,
-      switchAsInvert: this._switchAsInvert,
-    };
-  }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -273,7 +281,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (domain === "camera" && isComponentLoaded(this.hass.config, "stream")) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
-      if (stateObj && supportsFeature(stateObj, CAMERA_SUPPORT_STREAM)) {
+      if (stateObj && supportsFeature(stateObj, CameraEntityFeature.STREAM)) {
         this._fetchCameraPrefs();
       }
     }
@@ -314,9 +322,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
       this._visibility_unit = stateObj?.attributes?.visibility_unit;
       this._wind_speed_unit = stateObj?.attributes?.wind_speed_unit;
     }
-
-    this._initialStateJson = JSON.stringify(this._currentState());
-    this._lastDirty = false;
 
     const deviceClasses: string[][] = OVERRIDE_DEVICE_CLASSES[domain];
 
@@ -365,6 +370,45 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   protected async updated(changedProps: PropertyValues): Promise<void> {
+    if (changedProps.has("helperConfigEntry")) {
+      if (this.helperConfigEntry?.domain === "switch_as_x") {
+        this._switchAsDomain = computeDomain(this.entry.entity_id);
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
+      } else {
+        this._switchAsDomain = "switch";
+        this._switchAsInvert = false;
+      }
+    }
+
+    if (this._name === undefined || this._entityId === undefined) {
+      return;
+    }
+
+    this._dirtyState?.setState(
+      {
+        name: this._name.trim() || null,
+        icon: this._icon.trim() || null,
+        entityId: this._entityId.trim(),
+        areaId: this._areaId ?? null,
+        labels: this._labels ?? [],
+        deviceClass: this._deviceClass,
+        disabledBy: this._disabledBy,
+        hiddenBy: this._hiddenBy,
+        unitOfMeasurement: this._unit_of_measurement,
+        precision: this._precision,
+        defaultCode: this._defaultCode,
+        calendarColor: this._calendarColor ?? null,
+        precipitationUnit: this._precipitation_unit,
+        pressureUnit: this._pressure_unit,
+        temperatureUnit: this._temperature_unit,
+        visibilityUnit: this._visibility_unit,
+        windSpeedUnit: this._wind_speed_unit,
+        switchAsDomain: this._switchAsDomain,
+        switchAsInvert: this._switchAsInvert,
+      },
+      "entity-registry"
+    );
+
     if (changedProps.has("_deviceClass")) {
       const domain = computeDomain(this.entry.entity_id);
 
@@ -376,14 +420,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._numberDeviceClassConvertibleUnits = units;
       } else {
         this._numberDeviceClassConvertibleUnits = [];
-      }
-      if (domain === "sensor") {
-        const { numeric_device_classes } = await getSensorNumericDeviceClasses(
-          this.hass
-        );
-        this._sensorNumericalDeviceClasses = numeric_device_classes;
-      } else {
-        this._sensorNumericalDeviceClasses = [];
       }
       if (domain === "sensor" && this._deviceClass) {
         const { units } = await getSensorDeviceClassConvertibleUnits(
@@ -406,25 +442,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         this._weatherConvertibleUnits = units;
       } else {
         this._weatherConvertibleUnits = undefined;
-      }
-    }
-    if (changedProps.has("helperConfigEntry")) {
-      if (this.helperConfigEntry?.domain === "switch_as_x") {
-        this._switchAsDomain = computeDomain(this.entry.entity_id);
-        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
-      } else {
-        this._switchAsDomain = "switch";
-        this._switchAsInvert = false;
-      }
-      this._initialStateJson = JSON.stringify(this._currentState());
-      this._lastDirty = false;
-    }
-
-    if (this._initialStateJson) {
-      const dirty = this.dirty;
-      if (dirty !== this._lastDirty) {
-        this._lastDirty = dirty;
-        fireEvent(this, "change");
       }
     }
   }
@@ -763,8 +780,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
       ${domain === "sensor" &&
       // Allow customizing the precision for a sensor with numerical device class,
       // a unit of measurement or state class
-      ((this._deviceClass &&
-        this._sensorNumericalDeviceClasses?.includes(this._deviceClass)) ||
+      (isNumericSensorDeviceClass(this._deviceClass) ||
         stateObj?.attributes.unit_of_measurement ||
         stateObj?.attributes.state_class)
         ? html`
@@ -867,11 +883,17 @@ export class EntityRegistrySettingsEditor extends LitElement {
           slot="end"
           @click=${this._restoreEntityId}
           .path=${mdiRestore}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.restore_entity_id"
+          )}
         ></ha-icon-button>
         <ha-icon-button
           slot="end"
           @click=${this._copyEntityId}
           .path=${mdiContentCopy}
+          .label=${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.copy_entity_id"
+          )}
         ></ha-icon-button>
       </ha-input>
       ${!this.entry.device_id
@@ -1142,10 +1164,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
           `
         : nothing}
     `;
-  }
-
-  public get dirty(): boolean {
-    return JSON.stringify(this._currentState()) !== this._initialStateJson;
   }
 
   public async updateEntry(): Promise<{
@@ -1433,12 +1451,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _nameChanged(ev: InputEvent): void {
-    fireEvent(this, "change");
     this._name = (ev.target as HTMLInputElement).value;
   }
 
   private _iconChanged(ev: CustomEvent): void {
-    fireEvent(this, "change");
     this._icon = ev.detail.value;
   }
 
@@ -1457,22 +1473,18 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _entityIdChanged(ev: InputEvent): void {
-    fireEvent(this, "change");
     this._entityId = `${computeDomain(this._origEntityId)}.${(ev.target as HTMLInputElement).value}`;
   }
 
   private _deviceClassChanged(ev: HaSelectSelectEvent<string, true>): void {
-    fireEvent(this, "change");
     this._deviceClass = ev.detail.value;
   }
 
   private _unitChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._unit_of_measurement = ev.detail.value;
   }
 
   private _defaultcodeChanged(ev: InputEvent): void {
-    fireEvent(this, "change");
     this._defaultCode =
       (ev.target as HTMLInputElement).value === ""
         ? null
@@ -1480,43 +1492,35 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _calendarColorChanged(ev: CustomEvent): void {
-    fireEvent(this, "change");
     this._calendarColor = ev.detail.value || null;
   }
 
   private _associatedZoneChanged(ev: CustomEvent): void {
-    fireEvent(this, "change");
     this._associatedZone = ev.detail.value || "zone.home";
   }
 
   private _precipitationUnitChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._precipitation_unit = ev.detail.value;
   }
 
   private _precisionChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._precision =
       ev.detail.value === "default" ? null : Number(ev.detail.value);
   }
 
   private _pressureUnitChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._pressure_unit = ev.detail.value;
   }
 
   private _temperatureUnitChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._temperature_unit = ev.detail.value;
   }
 
   private _visibilityUnitChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._visibility_unit = ev.detail.value;
   }
 
   private _windSpeedUnitChanged(ev: HaSelectSelectEvent): void {
-    fireEvent(this, "change");
     this._wind_speed_unit = ev.detail.value;
   }
 
@@ -1551,7 +1555,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private _areaPicked(ev: CustomEvent) {
-    fireEvent(this, "change");
     this._areaId = ev.detail.value;
   }
 
@@ -1624,8 +1627,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _resetNameAndOpenDeviceSettings() {
     this._name = this.entry.name || "";
-    fireEvent(this, "change");
-
     this._openDeviceSettings();
   }
 

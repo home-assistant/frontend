@@ -7,17 +7,20 @@ import type { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
 export const CAMERA_ORIENTATIONS = [1, 2, 3, 4, 6, 8];
-export const CAMERA_SUPPORT_ON_OFF = 1;
-export const CAMERA_SUPPORT_STREAM = 2;
 
 export const STREAM_TYPE_HLS = "hls";
 export const STREAM_TYPE_WEB_RTC = "web_rtc";
 
 export type StreamType = typeof STREAM_TYPE_HLS | typeof STREAM_TYPE_WEB_RTC;
 
+export enum CameraEntityFeature {
+  ON_OFF = 1,
+  STREAM = 2,
+}
+
 interface CameraEntityAttributes extends HassEntityAttributeBase {
   model_name: string;
-  access_token: string;
+  access_token?: string;
   brand: string;
   motion_detection: boolean;
   frontend_stream_type: string;
@@ -78,11 +81,15 @@ export const cameraUrlWithWidthHeight = (
   height: number
 ) => `${base_url}&width=${width}&height=${height}`;
 
-export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
-  `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
+export const computeMJPEGStreamUrl = (
+  entity: CameraEntity
+): string | undefined =>
+  entity.attributes.access_token
+    ? `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`
+    : undefined;
 
 export const fetchThumbnailUrlWithCache = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS" | "hassUrl">,
   entityId: string,
   width: number,
   height: number
@@ -98,7 +105,7 @@ export const fetchThumbnailUrlWithCache = async (
 };
 
 export const fetchThumbnailUrl = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS" | "hassUrl">,
   entityId: string
 ) => {
   const path = await getSignedPath(hass, `/api/camera_proxy/${entityId}`);
@@ -106,7 +113,7 @@ export const fetchThumbnailUrl = async (
 };
 
 export const fetchStreamUrl = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS" | "hassUrl">,
   entityId: string,
   format?: "hls"
 ) => {
@@ -124,7 +131,7 @@ export const fetchStreamUrl = async (
 };
 
 export const webRtcOffer = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   entity_id: string,
   offer: string,
   callback: (event: WebRtcOfferEvent) => void
@@ -136,7 +143,7 @@ export const webRtcOffer = (
   });
 
 export const addWebRtcCandidate = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entity_id: string,
   session_id: string,
   candidate: RTCIceCandidateInit
@@ -182,7 +189,7 @@ export interface CameraCapabilities {
 }
 
 export const fetchCameraCapabilities = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entity_id: string
 ) =>
   hass.callWS<CameraCapabilities>({ type: "camera/capabilities", entity_id });
@@ -193,7 +200,7 @@ export interface WebRTCClientConfiguration {
 }
 
 export const fetchWebRtcClientConfiguration = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entityId: string
 ) =>
   hass.callWS<WebRTCClientConfiguration>({

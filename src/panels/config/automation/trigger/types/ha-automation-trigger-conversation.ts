@@ -55,6 +55,9 @@ export class HaConversationTrigger
                     @click=${this._removeOption}
                     slot="end"
                     .path=${mdiClose}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.type.conversation.delete"
+                    )}
                   ></ha-icon-button>
                 </ha-input>
               `
@@ -78,6 +81,9 @@ export class HaConversationTrigger
           @click=${this._addOption}
           slot="end"
           .path=${mdiPlus}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.triggers.type.conversation.add_sentence"
+          )}
         ></ha-icon-button>
       </ha-input>`;
   }

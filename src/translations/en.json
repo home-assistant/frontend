@@ -312,7 +312,8 @@
           "start": "Start",
           "pause": "Pause",
           "cancel": "Cancel",
-          "finish": "Finish"
+          "finish": "Finish",
+          "set": "Set"
         }
       },
       "vacuum": {
@@ -443,6 +444,9 @@
       "loading": "Loading",
       "refresh": "Refresh",
       "cancel": "Cancel",
+      "upload_file_too_large": "Uploaded file {name} is too large",
+      "upload_image_too_large": "Uploaded image {name} is too large",
+      "unknown_error": "Unknown error",
       "delete": "Delete",
       "delete_all": "Delete all",
       "download": "Download",
@@ -465,6 +469,7 @@
       "save": "Save",
       "apply": "Apply",
       "add": "Add",
+      "auto": "Auto",
       "create": "Create",
       "edit": "Edit",
       "edit_item": "Edit {name}",
@@ -495,7 +500,8 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "none": "None"
     },
     "components": {
       "input": {
@@ -600,7 +606,7 @@
           }
         },
         "template": {
-          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (e.g. '{{ states(sensor.test) > 0 }}' ).",
+          "yaml_warning": "It appears you may be writing YAML into this template field (saw ''{string}''), which is likely incorrect. This field is intended for templates only (for example, '{{ states(sensor.test) > 0 }}').",
           "learn_more": "Learn more about templating"
         },
         "text": {
@@ -669,17 +675,28 @@
       },
       "logbook": {
         "entries_not_found": "No activity found.",
-        "triggered_by": "triggered by",
-        "triggered_by_automation": "triggered by automation",
-        "triggered_by_script": "triggered by script",
-        "triggered_by_action": "triggered by action",
-        "triggered_by_numeric_state_of": "triggered by numeric state of",
-        "triggered_by_state_of": "triggered by state of",
-        "triggered_by_event": "triggered by event",
-        "triggered_by_time": "triggered by time",
-        "triggered_by_time_pattern": "triggered by time pattern",
-        "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
-        "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
+        "automation_triggered": "Triggered",
+        "script_ran": "Ran",
+        "view_trace": "View trace",
+        "trigger_type": {
+          "calendar": "[%key:ui::panel::config::automation::editor::triggers::type::calendar::label%]",
+          "conversation": "[%key:ui::panel::config::automation::editor::triggers::type::conversation::label%]",
+          "device": "[%key:ui::panel::config::automation::editor::triggers::type::device::label%]",
+          "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
+          "geo_location": "[%key:ui::panel::config::automation::editor::triggers::type::geo_location::label%]",
+          "homeassistant": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::label%]",
+          "mqtt": "[%key:ui::panel::config::automation::editor::triggers::type::mqtt::label%]",
+          "numeric_state": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
+          "persistent_notification": "[%key:ui::panel::config::automation::editor::triggers::type::persistent_notification::label%]",
+          "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+          "sun": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
+          "tag": "[%key:ui::panel::config::automation::editor::triggers::type::tag::label%]",
+          "template": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
+          "time": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
+          "time_pattern": "[%key:ui::panel::config::automation::editor::triggers::type::time_pattern::label%]",
+          "webhook": "[%key:ui::panel::config::automation::editor::triggers::type::webhook::label%]",
+          "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
+        },
         "numeric_state_of": "numeric state of",
         "state_of": "state of",
         "event": "event",
@@ -687,105 +704,18 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
-        "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+        "cause": {
+          "by": "By {name}",
+          "by_automation": "By automation: {name}",
+          "by_script": "By script: {name}",
+          "by_state_change": "By state change: {name}",
+          "scheduled": "Scheduled",
+          "via": "Via {name}"
+        },
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
-          "was_away": "was detected away",
-          "was_at_state": "was detected at {state}",
-          "rose": "rose",
-          "set": "set",
-          "was_low": "was low",
-          "was_normal": "was normal",
-          "was_connected": "was connected",
-          "was_disconnected": "was disconnected",
-          "was_opened": "was opened",
-          "was_closed": "was closed",
-          "is_opening": "is opening",
-          "is_opened": "is opened",
-          "is_closing": "is closing",
-          "was_unlocked": "was unlocked",
-          "was_locked": "was locked",
-          "is_unlocking": "is unlocking",
-          "is_locking": "is locking",
-          "is_jammed": "is jammed",
-          "was_plugged_in": "was plugged in",
-          "was_unplugged": "was unplugged",
-          "was_at_home": "was detected at home",
-          "was_unsafe": "was unsafe",
-          "was_safe": "was safe",
-          "detected_device_class": "detected {device_class}",
-          "cleared_device_class": "cleared (no {device_class} detected)",
-          "turned_off": "turned off",
-          "turned_on": "turned on",
-          "changed_to_state": "changed to {state}",
-          "became_unavailable": "became unavailable",
-          "became_unknown": "became unknown",
-          "detected_tampering": "detected tampering",
-          "cleared_tampering": "cleared tampering",
-          "detected_event": "{event_type} event detected",
-          "detected_event_no_type": "detected an event",
-          "detected_unknown_event": "detected an unknown event",
-          "detected_device_classes": {
-            "battery": "[%key:ui::components::logbook::messages::was_low%]",
-            "battery_charging": "started charging",
-            "carbon_monoxide": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "cold": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "connectivity": "[%key:ui::components::logbook::messages::was_connected%]",
-            "door": "[%key:ui::components::logbook::messages::was_opened%]",
-            "garage_door": "[%key:ui::components::logbook::messages::was_opened%]",
-            "gas": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "heat": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "light": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "lock": "[%key:ui::components::logbook::messages::was_unlocked%]",
-            "moisture": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "motion": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "moving": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "occupancy": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "opening": "[%key:ui::components::logbook::messages::was_opened%]",
-            "plug": "[%key:ui::components::logbook::messages::was_plugged_in%]",
-            "power": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "presence": "[%key:ui::components::logbook::messages::was_at_home%]",
-            "problem": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "running": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "safety": "[%key:ui::components::logbook::messages::was_unsafe%]",
-            "smoke": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "sound": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "tamper": "[%key:ui::components::logbook::messages::detected_tampering%]",
-            "update": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "vibration": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "window": "[%key:ui::components::logbook::messages::was_opened%]"
-          },
-          "cleared_device_classes": {
-            "battery": "[%key:ui::components::logbook::messages::was_normal%]",
-            "battery_charging": "stopped charging",
-            "carbon_monoxide": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "cold": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "connectivity": "[%key:ui::components::logbook::messages::was_disconnected%]",
-            "door": "[%key:ui::components::logbook::messages::was_closed%]",
-            "garage_door": "[%key:ui::components::logbook::messages::was_closed%]",
-            "gas": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "heat": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "light": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "lock": "[%key:ui::components::logbook::messages::was_locked%]",
-            "moisture": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "motion": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "moving": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "occupancy": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "opening": "[%key:ui::components::logbook::messages::was_closed%]",
-            "plug": "[%key:ui::components::logbook::messages::was_unplugged%]",
-            "power": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "presence": "[%key:ui::components::logbook::messages::was_away%]",
-            "problem": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "running": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "safety": "[%key:ui::components::logbook::messages::was_safe%]",
-            "smoke": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "sound": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "tamper": "[%key:ui::components::logbook::messages::cleared_tampering%]",
-            "update": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "vibration": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "window": "[%key:ui::components::logbook::messages::was_closed%]"
-          }
+          "detected_event_no_type": "detected an event"
         }
       },
       "entity": {
@@ -873,6 +803,20 @@
           "labels": "Labels",
           "floor": "Floor"
         }
+      },
+      "time-format-picker": {
+        "formats": {
+          "relative": "Relative",
+          "total": "Total",
+          "datetime": "Date and time",
+          "time": "Time",
+          "date": "Date"
+        },
+        "styles": {
+          "short": "Short",
+          "long": "Long"
+        },
+        "style": "Time format style"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -1213,7 +1157,7 @@
         }
       },
       "siren": {
-        "advanced_controls": "Advanced controls",
+        "more_controls": "More controls",
         "tone": "Tone",
         "duration": "Duration",
         "volume": "Volume"
@@ -1617,6 +1561,7 @@
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
+            "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
@@ -1892,12 +1837,14 @@
         "editor": {
           "name": "Name",
           "icon": "Icon",
-          "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
+          "icon_error": "Icons should be in the format 'prefix:iconname', like 'mdi:home'",
           "default_code": "Default code",
           "default_code_error": "Code does not match code format",
           "calendar_color": "Calendar color",
           "associated_zone": "Associated zone",
           "entity_id": "Entity ID",
+          "copy_entity_id": "Copy entity ID",
+          "restore_entity_id": "Restore entity ID",
           "unit_of_measurement": "Unit of measurement",
           "precipitation_unit": "Precipitation unit",
           "precision": "Display precision",
@@ -2064,7 +2011,7 @@
       },
       "restart": {
         "heading": "Restart Home Assistant",
-        "advanced_options": "Advanced options",
+        "more_options": "More options",
         "backup_in_progress": "A backup is currently being created. The action will automatically proceed once the backup process is complete.",
         "upload_in_progress": "A backup upload is currently in progress. The action will automatically proceed once the upload process is complete.",
         "restore_in_progress": "A backup restore is currently in progress. The action will automatically proceed once the restore process is complete.",
@@ -2139,7 +2086,7 @@
         "generic": {
           "name": "Name",
           "icon": "Icon",
-          "advanced_settings": "Advanced settings"
+          "more_options": "[%key:ui::dialogs::restart::more_options%]"
         },
         "input_datetime": {
           "date": "Date",
@@ -2254,15 +2201,6 @@
         "reporting_header": "Reporting",
         "attribute": "Attribute",
         "min_max_change": "min/max/change"
-      },
-      "zha_manage_device": {
-        "heading": "Manage Zigbee device",
-        "tabs": {
-          "clusters": "Clusters",
-          "bindings": "Bindings",
-          "signature": "Signature",
-          "neighbors": "Neighbors"
-        }
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
@@ -2539,7 +2477,7 @@
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until startup is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
@@ -2690,7 +2628,7 @@
           },
           "developer_tools": {
             "main": "Developer tools",
-            "secondary": "Advanced tools for inspecting and debugging your system"
+            "secondary": "Tools to inspect and debug your system"
           },
           "about": {
             "main": "About",
@@ -2698,6 +2636,10 @@
           },
           "cloud": {
             "secondary": "Loading..."
+          },
+          "infrared": {
+            "main": "Infrared",
+            "secondary": "Control anything with a remote."
           },
           "zwave_js": {
             "main": "Z-Wave",
@@ -2718,6 +2660,10 @@
           "bluetooth": {
             "main": "Bluetooth",
             "secondary": "Local device connectivity"
+          },
+          "radio_frequency": {
+            "main": "Radio frequency",
+            "secondary": "Control radio-based devices."
           },
           "knx": {
             "main": "KNX",
@@ -2759,7 +2705,6 @@
           "group_integrations": "Integrations",
           "group_apps": "Apps",
           "update_all": "Update all",
-          "update_all_failed": "Failed to start updates",
           "no_updates": "No updates available",
           "no_update_entities": {
             "title": "Unable to check for updates",
@@ -2843,9 +2788,8 @@
           "error_loading": "Error loading apps",
           "info": {
             "what_is_an_app": "What is an app?",
-            "what_is_an_app_description": "Apps allow you to extend the functionality around Home Assistant by installing additional applications. They run alongside Home Assistant and provide extra features like network monitoring, code editors, database management, and more.",
+            "what_is_an_app_description": "Apps run alongside Home Assistant and provide extra features like network monitoring, code editors, database management, and more.",
             "why_not_available": "Why you see this page instead of an app store",
-            "why_not_available_description": "Apps are only available if you've used the Home Assistant Operating System installation method. If you installed Home Assistant using any other method then you cannot use apps. Often you can achieve the same result manually, refer to the documentation by the vendor of the application you'd like to install.",
             "installation_hint": "Apps require the Home Assistant Operating System. Learn more about installation methods in the documentation.",
             "learn_more": "Learn more",
             "dismiss": "Don't show again"
@@ -3445,7 +3389,7 @@
             "media": "Media",
             "media_description": "For example, camera recordings.",
             "share_folder": "Share folder",
-            "share_folder_description": "Folder that is often used by apps for advanced or older configurations.",
+            "share_folder_desc": "Folder that is often used by apps for custom or older configurations.",
             "local_apps": "Local apps folder",
             "local_apps_description": "Folder that contains the data of your local apps.",
             "apps": "Apps",
@@ -4290,7 +4234,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
-              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (e.g. `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid {class} unit)` (like `{currency}/{unit1}` or `{currency}/{unit2}`) may be used and will be automatically converted.",
               "cost_entity_helper_energy": "energy",
               "cost_entity_helper_volume": "volume",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
@@ -4319,7 +4263,7 @@
               "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
               "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
               "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
-              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (e.g. `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
+              "cost_entity_helper": "Any entity with a unit of `{currency}/(valid water unit)` (like `{currency}/gal` or `{currency}/m³`) may be used and will be automatically converted.",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water consumption",
@@ -4449,7 +4393,7 @@
         },
         "url": {
           "caption": "Home Assistant URL",
-          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (e.g. to play text-to-speech or other hosted media).",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (for example, to play text-to-speech or other hosted media).",
           "internal_url_label": "Local network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
@@ -5280,7 +5224,7 @@
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
-                    "picker": "Triggers when an event is being received (event is an advanced concept in Home Assistant).",
+                    "picker": "Triggers when an event is being received (events are a building block used across Home Assistant).",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -5339,9 +5283,9 @@
                   "type_input": "Numeric value of another entity",
                   "description": {
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
-                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
-                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                    "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
+                    "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
                   }
                 },
                 "persistent_notification": {
@@ -5410,7 +5354,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Days of the Week",
+                  "weekday": "Days of the week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -5588,7 +5532,7 @@
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "sun": {
@@ -5621,7 +5565,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the week",
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::time::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::time::before%]",
                   "weekdays": {
@@ -5653,7 +5597,7 @@
                   "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "description": {
                     "picker": "Tests if someone (or something) is in a zone.",
-                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
+                    "full": "If {entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} in {zone} {numberOfZones, plural,\n one {zone} \n other {zones}\n}"
                   }
                 }
               }
@@ -5781,7 +5725,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "picker": "Fires an event manually (event is an advanced concept in Home Assistant).",
+                    "picker": "Fires an event manually (events are a building block used across Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
@@ -5979,6 +5923,7 @@
               "template_errors": "Template errors:",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
+              "not_triggered": "This trigger evaluated a relevant change but did not trigger the automation. The reason is shown in the result below.",
               "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
@@ -6002,6 +5947,8 @@
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
               "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
+              "evaluated_not_triggered": "Evaluated a change at {time}",
+              "not_triggered": "Did not trigger at {time}. Select the trigger step details to see why.",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
@@ -6018,7 +5965,8 @@
               "stopped_failed_single": "Stopped because only a single execution is allowed",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
               "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
-              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)",
+              "not_triggered": "Did not trigger"
             }
           }
         },
@@ -7129,6 +7077,20 @@
           "qos": "QoS",
           "retain": "Retain"
         },
+        "infrared": {
+          "title": "Infrared",
+          "status_online": "Online",
+          "status_warning": "Warning",
+          "status_offline": "Offline",
+          "devices_online_summary": "{online}/{total} devices online",
+          "my_devices": "My devices",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "devices_navigation": "Devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "no_devices": "No infrared proxies found"
+        },
         "bluetooth": {
           "title": "Bluetooth",
           "adapters_count": "{count} {count, plural,\n  one {adapter}\n  other {adapters}\n}",
@@ -7189,6 +7151,19 @@
           "scanners": "Scanners",
           "known_devices": "Known devices",
           "unknown_devices": "Unknown devices"
+        },
+        "radio_frequency": {
+          "title": "Radio frequency",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "devices_online_summary": "{online}/{total} devices online",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "no_devices": "No radio frequency devices found",
+          "loading_error": "Failed to load radio frequency devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "devices_navigation": "Devices"
         },
         "dhcp": {
           "title": "DHCP discovery",
@@ -7339,10 +7314,32 @@
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
             "search_again": "Search again"
           },
+          "device_page": {
+            "heading": "Manage Zigbee device",
+            "information": "Device information",
+            "ieee": "IEEE",
+            "nwk": "NWK",
+            "bindings_error": "Failed to load binding options",
+            "no_bindings": "No bindable devices or groups were found",
+            "not_found": "Zigbee device not found",
+            "tabs": {
+              "clusters": "Clusters",
+              "bindings": "Bindings",
+              "signature": "Signature",
+              "neighbors": "Neighbors"
+            },
+            "tab_descriptions": {
+              "signature": "View the raw Zigbee signature for this device.",
+              "neighbors": "View neighboring Zigbee devices reported by this device."
+            }
+          },
           "add_device": "Add device",
           "clusters": {
             "header": "Clusters",
-            "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
+            "change_cluster": "Change cluster",
+            "cluster_description": "Endpoint ID: {endpoint} · ID: {id} · Type: {type}",
+            "load_failed": "Failed to load clusters",
+            "no_clusters": "No clusters found",
             "tabs": {
               "attributes": "Attributes",
               "commands": "Commands"
@@ -7419,6 +7416,8 @@
             "offline": "Offline"
           },
           "device_binding": {
+            "header": "Device binding",
+            "introduction": "Bind this device to another Zigbee device or unbind it.",
             "bind": "Bind",
             "unbind": "Unbind",
             "picker_label": "Bindable devices"
@@ -7438,7 +7437,9 @@
             "name": "Name",
             "lqi": "LQI",
             "relationship": "Relationship",
-            "depth": "Depth"
+            "depth": "Depth",
+            "load_failed": "Failed to load neighbors",
+            "no_neighbors": "No neighbors found"
           },
           "change_channel_dialog": {
             "title": "Change Zigbee channel",
@@ -7497,6 +7498,7 @@
             "provisioned_devices": "Provisioned devices",
             "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
             "not_included": "{count} not included",
+            "not_ready": "{count} not ready",
             "devices_offline": "{count} offline",
             "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
             "rebuild_routes_action": "Rebuild",
@@ -7729,7 +7731,7 @@
             "title": "Add a Z-Wave device",
             "searching_devices": "Searching for devices",
             "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometimes called \"inclusion mode\")",
-            "security_options": "Advanced security options",
+            "security_options": "Security options",
             "choose_inclusion_strategy": "How do you want to add your device",
             "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
@@ -8719,7 +8721,6 @@
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
               "total_consumed": "Total consumed {num} kWh",
-              "total_returned": "Total exported {num} kWh",
               "total_usage": "+{num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
@@ -8802,6 +8803,7 @@
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
+              "over_reported_consumption": "Over-reported consumption",
               "untracked": "untracked",
               "other": "Other"
             },
@@ -9037,7 +9039,7 @@
                 "top": "Top",
                 "bottom": "Bottom"
               },
-              "badges_wrap": "Badges behaviour",
+              "badges_wrap": "Badges behavior",
               "badges_wrap_options": {
                 "wrap": "Wrap",
                 "scroll": "Scroll",
@@ -9182,7 +9184,7 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (for example, on mobile devices)",
               "background": "Background options",
               "background_enabled": "Background",
               "background_enabled_helper": "Display a colored background behind the section",
@@ -9724,6 +9726,7 @@
               "show_state": "Show state",
               "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
+              "time_format": "Time format",
               "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
@@ -9995,7 +9998,7 @@
               "name": "Tile",
               "description": "This card gives you a quick overview of an entity. It allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
-              "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
+              "color_helper": "Inactive state (for example, off or closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
               "icon_hold_action": "Icon hold behavior",
               "icon_double_tap_action": "Icon double tap behavior",

@@ -26,6 +26,7 @@ import type {
   NumberSelector,
 } from "../../../../data/selector";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -36,8 +37,14 @@ interface CombinedStat {
   fiveMin: StatisticValue[];
 }
 
+interface AdjustState {
+  amount: number | undefined;
+}
+
 @customElement("dialog-statistics-adjust-sum")
-export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
+export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProviderMixin<AdjustState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogStatisticsAdjustSumParams;
@@ -145,7 +152,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         >
         <ha-button
           slot="primaryAction"
-          .disabled=${this._busy}
+          .disabled=${this._busy || !this.isDirtyState}
           @click=${this._fixIssue}
         >
           ${this.hass.localize(
@@ -161,6 +168,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         header-title=${this.hass.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
         )}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${content}
@@ -252,6 +260,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   private _clearChosenStatistic() {
     this._chosenStat = undefined;
+    this._initDirtyTracking({ type: "deep" }, { amount: undefined });
   }
 
   private _setChosenStatistic(ev) {
@@ -262,6 +271,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     this._chosenStat = stat;
     this._origAmount = growth;
     this._amount = growth;
+    this._initDirtyTracking({ type: "deep" }, { amount: this._origAmount });
   }
 
   private _dateTimeSelectorChanged(ev) {
@@ -330,6 +340,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   private _amountChanged(ev) {
     this._amount = ev.detail.value;
+    this._updateDirtyState({ amount: this._amount });
   }
 
   private async _fetchStats(): Promise<void> {
@@ -506,6 +517,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

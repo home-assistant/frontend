@@ -1,3 +1,5 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus, mdiThermometer, mdiThermostat } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -23,8 +25,13 @@ import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntityFeature,
 } from "../../data/climate";
+import {
+  apiContext,
+  configContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
 import { UNAVAILABLE } from "../../data/entity/entity";
-import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,
@@ -44,9 +51,23 @@ const SLIDER_MODES: Record<HvacMode, ControlCircularSliderMode> = {
 
 @customElement("ha-state-control-climate-temperature")
 export class HaStateControlClimateTemperature extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: ClimateEntity;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: "show-secondary", type: Boolean })
   public showSecondary = false;
@@ -77,7 +98,7 @@ export class HaStateControlClimateTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
+      (this._config.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
@@ -119,14 +140,14 @@ export class HaStateControlClimateTemperature extends LitElement {
 
   private _callService(type: string) {
     if (type === "high" || type === "low") {
-      this.hass.callService("climate", "set_temperature", {
+      this._api.callService("climate", "set_temperature", {
         entity_id: this.stateObj!.entity_id,
         target_temp_low: this._targetTemperature.low,
         target_temp_high: this._targetTemperature.high,
       });
       return;
     }
-    this.hass.callService("climate", "set_temperature", {
+    this._api.callService("climate", "set_temperature", {
       entity_id: this.stateObj!.entity_id,
       temperature: this._targetTemperature.value,
     });
@@ -164,7 +185,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     if (this.stateObj.state === UNAVAILABLE) {
       return html`
         <p class="label disabled">
-          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+          ${this._formatters.formatEntityState(this.stateObj, UNAVAILABLE)}
         </p>
       `;
     }
@@ -181,9 +202,12 @@ export class HaStateControlClimateTemperature extends LitElement {
     return html`
       <p class="label">
         ${action && action !== "off"
-          ? this.hass.formatEntityAttributeValue(this.stateObj, "hvac_action")
+          ? this._formatters.formatEntityAttributeValue(
+              this.stateObj,
+              "hvac_action"
+            )
           : isTemperatureDisplayed
-            ? this.hass.formatEntityState(this.stateObj)
+            ? this._formatters.formatEntityState(this.stateObj)
             : nothing}
       </p>
     `;
@@ -237,14 +261,13 @@ export class HaStateControlClimateTemperature extends LitElement {
       minimumFractionDigits: digits,
     };
 
-    const unit = hideUnit ? "" : this.hass.config.unit_system.temperature;
+    const unit = hideUnit ? "" : this._config.config.unit_system.temperature;
 
     if (style === "big") {
       return html`
         <ha-big-number
           .value=${temperature}
           .unit=${unit}
-          .hass=${this.hass}
           .formatOptions=${formatOptions}
         ></ha-big-number>
       `;
@@ -252,10 +275,10 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     const formatted = formatNumber(
       temperature,
-      this.hass.locale,
+      this._i18n.locale,
       formatOptions
     );
-    return html`${formatted}${blankBeforeUnit(unit, this.hass.locale)}${unit}`;
+    return html`${formatted}${blankBeforeUnit(unit, this._i18n.locale)}${unit}`;
   }
 
   private _renderCurrent(temperature: number, style: "normal" | "big") {
@@ -266,15 +289,14 @@ export class HaStateControlClimateTemperature extends LitElement {
       return html`
         <ha-big-number
           .value=${temperature}
-          .unit=${this.hass.config.unit_system.temperature}
-          .hass=${this.hass}
+          .unit=${this._config.config.unit_system.temperature}
           .formatOptions=${formatOptions}
         ></ha-big-number>
       `;
     }
 
     return html`
-      ${this.hass.formatEntityAttributeValue(
+      ${this._formatters.formatEntityAttributeValue(
         this.stateObj,
         "current_temperature",
         temperature
@@ -321,7 +343,7 @@ export class HaStateControlClimateTemperature extends LitElement {
     if (this.stateObj.state !== UNAVAILABLE) {
       return html`
         <p class="primary-state">
-          ${this.hass.formatEntityState(this.stateObj)}
+          ${this._formatters.formatEntityState(this.stateObj)}
         </p>
       `;
     }

@@ -1,7 +1,9 @@
+import { startOfYesterday } from "date-fns";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiCog,
+  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -38,6 +40,7 @@ import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { groupBy } from "../../../common/util/group-by";
+import { createColumnsController } from "../../../common/util/responsive-columns";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -97,6 +100,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
+import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
@@ -175,6 +179,8 @@ export interface DeviceAlert {
 
 const DEVICE_ALERTS_INTERVAL = 30000;
 
+const MAX_COLUMNS = 3;
+
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -210,6 +216,8 @@ export class HaConfigDevicePage extends LitElement {
   _entityReg: EntityRegistryEntry[] = [];
 
   private _logbookTime = { recent: 86400 };
+
+  private _columnsController = createColumnsController(this, MAX_COLUMNS);
 
   private _integrations = memoizeOne(
     (
@@ -345,12 +353,12 @@ export class HaConfigDevicePage extends LitElement {
 
   private _batteryEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
-      findBatteryEntity(this.hass, entities)
+      findBatteryEntity(this.hass.states, entities)
   );
 
   private _batteryChargingEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
-      findBatteryChargingEntity(this.hass, entities)
+      findBatteryChargingEntity(this.hass.states, entities)
   );
 
   public willUpdate(changedProps: PropertyValues<this>) {
@@ -749,6 +757,193 @@ export class HaConfigDevicePage extends LitElement {
           `
         : "";
 
+    const infoColumn = html`
+      ${this._deviceAlerts?.length
+        ? html`
+            <div>
+              ${this._deviceAlerts.map(
+                (alert) => html`
+                  <ha-alert .alertType=${alert.level}> ${alert.text} </ha-alert>
+                `
+              )}
+            </div>
+          `
+        : ""}
+      <ha-device-info-card .hass=${this.hass} .device=${device}>
+        ${deviceInfo}
+        ${firstDeviceAction || actions.length
+          ? html`
+              <div class="card-actions" slot="actions">
+                <ha-button
+                  href=${ifDefined(firstDeviceAction!.href)}
+                  rel=${ifDefined(
+                    firstDeviceAction!.target ? "noreferrer" : undefined
+                  )}
+                  appearance="plain"
+                  target=${ifDefined(firstDeviceAction!.target)}
+                  class=${ifDefined(firstDeviceAction!.classes)}
+                  .variant=${firstDeviceAction!.classes?.includes("warning")
+                    ? "danger"
+                    : "brand"}
+                  .action=${firstDeviceAction!.action}
+                  @click=${this._deviceActionClicked}
+                >
+                  ${firstDeviceAction!.label}
+                  ${firstDeviceAction!.icon
+                    ? html`
+                        <ha-svg-icon
+                          class=${ifDefined(firstDeviceAction!.classes)}
+                          .path=${firstDeviceAction!.icon}
+                          slot="start"
+                        ></ha-svg-icon>
+                      `
+                    : nothing}
+                  ${firstDeviceAction!.trailingIcon
+                    ? html`
+                        <ha-svg-icon
+                          .path=${firstDeviceAction!.trailingIcon}
+                          slot="end"
+                        ></ha-svg-icon>
+                      `
+                    : nothing}
+                </ha-button>
+
+                ${actions.length
+                  ? html`
+                      <ha-dropdown
+                        @wa-select=${this._deviceActionSelected}
+                        placement="bottom-end"
+                      >
+                        <ha-icon-button
+                          slot="trigger"
+                          .label=${this.hass.localize("ui.common.menu")}
+                          .path=${mdiDotsVertical}
+                        ></ha-icon-button>
+                        ${actions.map((deviceAction, idx) => {
+                          const dropdownItem = html`<ha-dropdown-item
+                            .value=${idx}
+                            .data=${deviceAction}
+                            .variant=${deviceAction.classes?.includes("warning")
+                              ? "danger"
+                              : "default"}
+                          >
+                            ${deviceAction.icon
+                              ? html`
+                                  <ha-svg-icon
+                                    .path=${deviceAction.icon}
+                                    slot="icon"
+                                  ></ha-svg-icon>
+                                `
+                              : ""}
+                            ${deviceAction.label}
+                            ${deviceAction.trailingIcon
+                              ? html`
+                                  <ha-svg-icon
+                                    slot="details"
+                                    .path=${deviceAction.trailingIcon}
+                                  ></ha-svg-icon>
+                                `
+                              : ""}
+                          </ha-dropdown-item>`;
+                          return deviceAction.href
+                            ? html`<a
+                                href=${deviceAction.href}
+                                target=${ifDefined(deviceAction.target)}
+                                rel=${ifDefined(
+                                  deviceAction.target ? "noreferrer" : undefined
+                                )}
+                                >${dropdownItem}
+                              </a>`
+                            : dropdownItem;
+                        })}
+                      </ha-dropdown>
+                    `
+                  : ""}
+              </div>
+            `
+          : ""}
+      </ha-device-info-card>
+    `;
+
+    const entitiesColumn = html`
+      ${(
+        [
+          "control",
+          "sensor",
+          "notify",
+          "event",
+          "assist",
+          "config",
+          "diagnostic",
+        ] as const
+      ).map((category) =>
+        // Make sure we render controls if no other cards will be rendered
+        entitiesByCategory[category].length > 0 ||
+        (entities.length === 0 && category === "control")
+          ? html`
+              <ha-device-entities-card
+                .hass=${this.hass}
+                .header=${this.hass.localize(
+                  `ui.panel.config.devices.entities.${category}`
+                )}
+                .deviceName=${deviceName}
+                .entities=${entitiesByCategory[category]}
+                .showHidden=${device.disabled_by !== null}
+              >
+              </ha-device-entities-card>
+            `
+          : ""
+      )}
+      <ha-device-via-devices-card
+        .hass=${this.hass}
+        .deviceId=${this.deviceId}
+      ></ha-device-via-devices-card>
+    `;
+
+    const logbookColumn = isComponentLoaded(this.hass.config, "logbook")
+      ? html`
+          <ha-card outlined>
+            <div class="card-header">
+              <span>${this.hass.localize("panel.logbook")}</span>
+              <a
+                href="/logbook?${createSearchParam({
+                  device_id: this.deviceId,
+                  start_date: startOfYesterday().toISOString(),
+                  back: "1",
+                })}"
+              >
+                <ha-icon-button
+                  .path=${mdiChevronRight}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                ></ha-icon-button>
+              </a>
+            </div>
+            <ha-logbook
+              .hass=${this.hass}
+              .time=${this._logbookTime}
+              .entityIds=${this._entityIds(entities)}
+              .deviceIds=${this._deviceIdInList(this.deviceId)}
+              .scope=${"device"}
+              virtualize
+              narrow
+              no-icon
+            ></ha-logbook>
+          </ha-card>
+        `
+      : nothing;
+
+    const columns =
+      this._columnsController.value ?? (this.narrow ? 1 : MAX_COLUMNS);
+
+    const columnContents =
+      columns >= 3
+        ? [[infoColumn, relatedCard], [entitiesColumn], [logbookColumn]]
+        : columns === 2
+          ? [[infoColumn, relatedCard, logbookColumn], [entitiesColumn]]
+          : [[infoColumn, entitiesColumn, relatedCard, logbookColumn]];
+
     return html`<hass-subpage
       .hass=${this.hass}
       .narrow=${this.narrow}
@@ -796,7 +991,7 @@ export class HaConfigDevicePage extends LitElement {
         </ha-dropdown-item>
       </ha-dropdown>
 
-      <div class="container">
+      <div class="container" ${this._columnsController.target()}>
         <div class="header fullwidth">
           ${area
             ? html`<div class="header-name">
@@ -849,175 +1044,9 @@ export class HaConfigDevicePage extends LitElement {
               : ""}
           </div>
         </div>
-        <div class="column">
-          ${this._deviceAlerts?.length
-            ? html`
-                <div>
-                  ${this._deviceAlerts.map(
-                    (alert) => html`
-                      <ha-alert .alertType=${alert.level}>
-                        ${alert.text}
-                      </ha-alert>
-                    `
-                  )}
-                </div>
-              `
-            : ""}
-          <ha-device-info-card .hass=${this.hass} .device=${device}>
-            ${deviceInfo}
-            ${firstDeviceAction || actions.length
-              ? html`
-                  <div class="card-actions" slot="actions">
-                    <ha-button
-                      href=${ifDefined(firstDeviceAction!.href)}
-                      rel=${ifDefined(
-                        firstDeviceAction!.target ? "noreferrer" : undefined
-                      )}
-                      appearance="plain"
-                      target=${ifDefined(firstDeviceAction!.target)}
-                      class=${ifDefined(firstDeviceAction!.classes)}
-                      .variant=${firstDeviceAction!.classes?.includes("warning")
-                        ? "danger"
-                        : "brand"}
-                      .action=${firstDeviceAction!.action}
-                      @click=${this._deviceActionClicked}
-                    >
-                      ${firstDeviceAction!.label}
-                      ${firstDeviceAction!.icon
-                        ? html`
-                            <ha-svg-icon
-                              class=${ifDefined(firstDeviceAction!.classes)}
-                              .path=${firstDeviceAction!.icon}
-                              slot="start"
-                            ></ha-svg-icon>
-                          `
-                        : nothing}
-                      ${firstDeviceAction!.trailingIcon
-                        ? html`
-                            <ha-svg-icon
-                              .path=${firstDeviceAction!.trailingIcon}
-                              slot="end"
-                            ></ha-svg-icon>
-                          `
-                        : nothing}
-                    </ha-button>
-
-                    ${actions.length
-                      ? html`
-                          <ha-dropdown
-                            @wa-select=${this._deviceActionSelected}
-                            placement="bottom-end"
-                          >
-                            <ha-icon-button
-                              slot="trigger"
-                              .label=${this.hass.localize("ui.common.menu")}
-                              .path=${mdiDotsVertical}
-                            ></ha-icon-button>
-                            ${actions.map((deviceAction, idx) => {
-                              const dropdownItem = html`<ha-dropdown-item
-                                .value=${idx}
-                                .data=${deviceAction}
-                                .variant=${deviceAction.classes?.includes(
-                                  "warning"
-                                )
-                                  ? "danger"
-                                  : "default"}
-                              >
-                                ${deviceAction.icon
-                                  ? html`
-                                      <ha-svg-icon
-                                        .path=${deviceAction.icon}
-                                        slot="icon"
-                                      ></ha-svg-icon>
-                                    `
-                                  : ""}
-                                ${deviceAction.label}
-                                ${deviceAction.trailingIcon
-                                  ? html`
-                                      <ha-svg-icon
-                                        slot="details"
-                                        .path=${deviceAction.trailingIcon}
-                                      ></ha-svg-icon>
-                                    `
-                                  : ""}
-                              </ha-dropdown-item>`;
-                              return deviceAction.href
-                                ? html`<a
-                                    href=${deviceAction.href}
-                                    target=${ifDefined(deviceAction.target)}
-                                    rel=${ifDefined(
-                                      deviceAction.target
-                                        ? "noreferrer"
-                                        : undefined
-                                    )}
-                                    >${dropdownItem}
-                                  </a>`
-                                : dropdownItem;
-                            })}
-                          </ha-dropdown>
-                        `
-                      : ""}
-                  </div>
-                `
-              : ""}
-          </ha-device-info-card>
-          ${!this.narrow ? relatedCard : ""}
-        </div>
-        <div class="column">
-          ${(
-            [
-              "control",
-              "sensor",
-              "notify",
-              "event",
-              "assist",
-              "config",
-              "diagnostic",
-            ] as const
-          ).map((category) =>
-            // Make sure we render controls if no other cards will be rendered
-            entitiesByCategory[category].length > 0 ||
-            (entities.length === 0 && category === "control")
-              ? html`
-                  <ha-device-entities-card
-                    .hass=${this.hass}
-                    .header=${this.hass.localize(
-                      `ui.panel.config.devices.entities.${category}`
-                    )}
-                    .deviceName=${deviceName}
-                    .entities=${entitiesByCategory[category]}
-                    .showHidden=${device.disabled_by !== null}
-                  >
-                  </ha-device-entities-card>
-                `
-              : ""
-          )}
-          <ha-device-via-devices-card
-            .hass=${this.hass}
-            .deviceId=${this.deviceId}
-          ></ha-device-via-devices-card>
-        </div>
-        <div class="column">
-          ${this.narrow ? relatedCard : ""}
-          ${isComponentLoaded(this.hass.config, "logbook")
-            ? html`
-                <ha-card outlined>
-                  <h1 class="card-header">
-                    ${this.hass.localize("panel.logbook")}
-                  </h1>
-                  <ha-logbook
-                    .hass=${this.hass}
-                    .time=${this._logbookTime}
-                    .entityIds=${this._entityIds(entities)}
-                    .deviceIds=${this._deviceIdInList(this.deviceId)}
-                    virtualize
-                    narrow
-                    no-icon
-                  ></ha-logbook>
-                </ha-card>
-              `
-            : ""}
-        </div>
+        ${columnContents.map(
+          (contents) => html`<div class="column">${contents}</div>`
+        )}
       </div>
     </hass-subpage>`;
   }
@@ -1627,11 +1656,17 @@ export class HaConfigDevicePage extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         .container {
           display: flex;
           flex-wrap: wrap;
+          gap: var(--ha-space-4);
           margin: auto;
-          max-width: 1000px;
+          max-width: 1280px;
+          box-sizing: border-box;
+          padding: var(--ha-space-2) var(--ha-space-4);
           margin-top: var(--ha-space-8);
           margin-bottom: var(--ha-space-8);
         }
@@ -1692,12 +1727,11 @@ export class HaConfigDevicePage extends LitElement {
 
         .column,
         .fullwidth {
-          padding: var(--ha-space-2);
           box-sizing: border-box;
         }
         .column {
-          width: 33%;
-          flex-grow: 1;
+          flex: 1 1 0;
+          min-width: 0;
         }
         .fullwidth {
           width: 100%;
@@ -1739,10 +1773,6 @@ export class HaConfigDevicePage extends LitElement {
           margin-top: var(--ha-space-4);
         }
 
-        :host([narrow]) .column {
-          width: 100%;
-        }
-
         a {
           text-decoration: none;
           color: var(--primary-color);
@@ -1770,6 +1800,22 @@ export class HaConfigDevicePage extends LitElement {
           color: var(--secondary-text-color);
           --mdc-icon-size: 24px;
           display: block;
+        }
+
+        ha-card:has(ha-logbook) .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
+        }
+
+        ha-card:has(ha-logbook) .card-header a {
+          display: flex;
+          align-items: center;
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
         }
 
         ha-card:has(ha-logbook) {

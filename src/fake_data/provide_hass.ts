@@ -6,6 +6,7 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
   DateFormat,
@@ -20,6 +21,7 @@ import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
+import { ENTITY_COMPONENT_ICONS } from "./entity_component_icons";
 import { getEntity } from "./entities/registry";
 import type { EntityInput } from "./entities/types";
 
@@ -32,6 +34,12 @@ type MockRestCallback = (
   path: string,
   parameters: Record<string, any> | undefined
 ) => any;
+
+interface MockGetIconsMessage {
+  type: "frontend/get_icons";
+  category: IconCategory;
+  integration?: string;
+}
 
 export interface MockHomeAssistant extends HomeAssistant {
   mockEntities: any;
@@ -49,6 +57,14 @@ export interface MockHomeAssistant extends HomeAssistant {
     ) => Awaited<ReturnType<T>>
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
+  // Register a loader that is run (once) the first time an unmocked WS command
+  // or REST path matching `shouldLoad` is received, allowing mocks to be
+  // code-split into a dynamically imported chunk. The loader registers the
+  // missing mocks; the command is then retried.
+  mockLazyLoad(
+    shouldLoad: (commandOrPath: string) => boolean,
+    loader: () => Promise<unknown>
+  );
   mockEvent(event);
   mockTheme(theme: Record<string, string> | null);
   formatEntityState(stateObj: HassEntity, state?: string): string;
@@ -78,6 +94,17 @@ export const provideHass = (
 
   const wsCommands = {};
   const restResponses: [string | RegExp, MockRestCallback][] = [];
+
+  // Optional loader to lazily register mocks on first matching unmocked command.
+  let lazyMatcher: ((commandOrPath: string) => boolean) | undefined;
+  let lazyLoader: (() => Promise<unknown>) | undefined;
+  let lazyLoaderPromise: Promise<unknown> | undefined;
+  const ensureLazyLoaded = () => {
+    if (!lazyLoaderPromise) {
+      lazyLoaderPromise = lazyLoader!();
+    }
+    return lazyLoaderPromise;
+  };
   const eventListeners: Record<string, ((event) => void)[]> = {};
   const entities = {};
   let localResources: Resources = {};
@@ -147,8 +174,7 @@ export const provideHass = (
       hass().entities,
       hass().devices,
       hass().areas,
-      hass().floors,
-      [] // numericDeviceClasses
+      hass().floors
     );
     hass().updateHass({
       formatEntityState,
@@ -230,7 +256,11 @@ export const provideHass = (
         }
       },
       sendMessagePromise: async (msg) => {
-        const callback = wsCommands[msg.type];
+        let callback = wsCommands[msg.type];
+        if (!callback && lazyMatcher?.(msg.type)) {
+          await ensureLazyLoaded();
+          callback = wsCommands[msg.type];
+        }
         return callback
           ? callback(msg, hass())
           : Promise.reject({
@@ -239,7 +269,11 @@ export const provideHass = (
             });
       },
       subscribeMessage: async (onChange, msg) => {
-        const callback = wsCommands[msg.type];
+        let callback = wsCommands[msg.type];
+        if (!callback && lazyMatcher?.(msg.type)) {
+          await ensureLazyLoaded();
+          callback = wsCommands[msg.type];
+        }
         return callback
           ? callback(msg, hass(), onChange)
           : Promise.reject({
@@ -335,9 +369,16 @@ export const provideHass = (
       }
     },
     async callApi(method, path, parameters) {
-      const response = restResponses.find(([resPath]) =>
-        typeof resPath === "string" ? path === resPath : resPath.test(path)
-      );
+      const findResponse = () =>
+        restResponses.find(([resPath]) =>
+          typeof resPath === "string" ? path === resPath : resPath.test(path)
+        );
+
+      let response = findResponse();
+      if (!response && lazyMatcher?.(path)) {
+        await ensureLazyLoaded();
+        response = findResponse();
+      }
 
       return response
         ? response[1](hass(), method, path, parameters)
@@ -366,6 +407,10 @@ export const provideHass = (
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;
+    },
+    mockLazyLoad(shouldLoad, loader) {
+      lazyMatcher = shouldLoad;
+      lazyLoader = loader;
     },
     mockAPI,
     mockEvent(event) {
@@ -414,6 +459,10 @@ export const provideHass = (
     ],
     ...overrideData,
   };
+
+  hassObj.mockWS("frontend/get_icons", ({ category }: MockGetIconsMessage) => ({
+    resources: category === "entity_component" ? ENTITY_COMPONENT_ICONS : {},
+  }));
 
   // Set hass if required
   if (setHassProperty) {

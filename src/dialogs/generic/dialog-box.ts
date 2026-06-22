@@ -13,11 +13,18 @@ import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
+interface DialogBoxDirtyState {
+  value: string;
+}
+
 @customElement("dialog-box")
-class DialogBox extends LitElement {
+class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogBoxParams;
@@ -43,6 +50,10 @@ class DialogBox extends LitElement {
     this._params = params;
     this._validInput = true;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      { value: params.defaultValue ?? "" }
+    );
     await this.updateComplete;
     this._validateInput();
   }
@@ -77,7 +88,7 @@ class DialogBox extends LitElement {
       <ha-dialog
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
-        ?prevent-scrim-close=${confirmPrompt}
+        .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
         @closed=${this._dialogClosed}
         aria-labelledby="dialog-box-title"
         aria-describedby="dialog-box-description"
@@ -212,6 +223,7 @@ class DialogBox extends LitElement {
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
     }
+    this._markDirtyStateClean();
     this._closeDialog();
   }
 
@@ -219,6 +231,9 @@ class DialogBox extends LitElement {
     this._validInput = this._params?.prompt
       ? (this._textField?.checkValidity() ?? true)
       : true;
+    if (this._params?.prompt) {
+      this._updateDirtyState({ value: this._textField?.value ?? "" });
+    }
   }
 
   private _closeDialog() {

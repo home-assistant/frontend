@@ -2464,7 +2464,9 @@ class DialogAddAutomationElement
         ha-automation-add-from-target,
         .groups {
           overflow: auto;
-          flex: 4;
+          /* Fixed-width left column so it does not resize as the right
+             panel's content width changes between groups. */
+          flex: 0 0 360px;
           margin-inline-end: 0;
         }
 
@@ -2500,7 +2502,8 @@ class DialogAddAutomationElement
         }
 
         ha-automation-add-items {
-          flex: 6;
+          flex: 1;
+          min-width: 0;
         }
 
         .content.column ha-automation-add-from-target,

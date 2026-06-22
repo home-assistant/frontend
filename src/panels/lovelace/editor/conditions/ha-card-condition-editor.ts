@@ -486,15 +486,10 @@ export class HaCardConditionEditor extends LitElement {
         --expansion-panel-content-padding: 0;
       }
       .icon-badge-wrapper {
-        display: none;
-      }
-      @media (min-width: 870px) {
-        .icon-badge-wrapper {
-          display: inline-flex;
-          position: relative;
-          color: var(--secondary-text-color);
-          opacity: 0.9;
-        }
+        display: inline-flex;
+        position: relative;
+        color: var(--secondary-text-color);
+        opacity: 0.9;
       }
       h3 {
         margin: 0;

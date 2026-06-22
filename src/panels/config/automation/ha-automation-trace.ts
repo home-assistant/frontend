@@ -320,6 +320,9 @@ export class HaAutomationTrace extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
+    this.hass.loadBackendTranslation("triggers");
+    this.hass.loadBackendTranslation("conditions");
+
     if (!this.automationId) {
       return;
     }

@@ -1,18 +1,25 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
+import {
+  apiContext,
+  internationalizationContext,
+  statesContext,
+} from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-list";
@@ -22,7 +29,20 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -62,7 +82,7 @@ export class HaFilterEntities extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.entities.caption")}
+          ${this._localize("ui.panel.config.entities.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -82,9 +102,10 @@ export class HaFilterEntities extends LitElement {
               <ha-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
-                    this.hass.states,
+                    this._states,
                     this.type,
                     this._filter || "",
+                    this._i18n.locale.language,
                     this.value
                   )}
                   .keyFunction=${this._keyFunction}
@@ -163,9 +184,10 @@ export class HaFilterEntities extends LitElement {
 
   private _entities = memoizeOne(
     (
-      states: HomeAssistant["states"],
+      states: ContextType<typeof statesContext>,
       type: this["type"],
       filter: string,
+      language: string | undefined,
       _value
     ) => {
       const values = Object.values(states);
@@ -180,11 +202,7 @@ export class HaFilterEntities extends LitElement {
                 .includes(filter))
         )
         .sort((a, b) =>
-          stringCompare(
-            computeStateName(a),
-            computeStateName(b),
-            this.hass.locale.language
-          )
+          stringCompare(computeStateName(a), computeStateName(b), language)
         );
     }
   );
@@ -203,7 +221,7 @@ export class HaFilterEntities extends LitElement {
 
     for (const entityId of this.value) {
       if (this.type) {
-        relatedPromises.push(findRelated(this.hass, "entity", entityId));
+        relatedPromises.push(findRelated(this._api, "entity", entityId));
       }
     }
 

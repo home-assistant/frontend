@@ -354,7 +354,9 @@ export class HaSerialPortSelector extends LitElement {
   }
 
   private get _selectorDomain(): string | undefined {
-    return this.context?.handler;
+    // `domain` is the integration domain even in options flows, where the flow
+    // handler is the config entry id instead.
+    return this.context?.domain;
   }
 
   private _memoRecommendedDomains = memoizeOne(
