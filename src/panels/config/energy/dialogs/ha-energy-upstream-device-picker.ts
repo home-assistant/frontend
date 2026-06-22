@@ -15,6 +15,7 @@ import type { PickerComboBoxItem } from "../../../../components/ha-picker-combo-
 import type { PickerValueRenderer } from "../../../../components/ha-picker-field";
 import "../../../../components/ha-svg-icon";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
+import { domainToName } from "../../../../data/integration";
 import {
   getStatisticLabel,
   type StatisticsMetaData,
@@ -31,6 +32,7 @@ const SEARCH_KEYS = [
   { name: "search_labels.friendlyName", weight: 9 },
   { name: "search_labels.deviceName", weight: 8 },
   { name: "search_labels.areaName", weight: 6 },
+  { name: "search_labels.domainName", weight: 4 },
   { name: "id", weight: 2 },
 ];
 
@@ -102,10 +104,25 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     );
     const isExternal = statisticId.includes(":") && !statisticId.includes(".");
 
+    if (isExternal) {
+      const domainName = domainToName(
+        this.hass.localize,
+        statisticId.split(":")[0]
+      );
+      return {
+        id: statisticId,
+        primary: name || label,
+        secondary: domainName,
+        icon_path: mdiChartLine,
+        search_labels: { label, domainName },
+      };
+    }
+
     return {
       id: statisticId,
       primary: name || label,
-      icon_path: isExternal ? mdiChartLine : mdiShape,
+      secondary: this.hass.localize("ui.components.statistic-picker.no_state"),
+      icon_path: mdiShape,
       search_labels: { label },
     };
   };
