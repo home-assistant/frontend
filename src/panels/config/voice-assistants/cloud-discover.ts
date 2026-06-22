@@ -49,13 +49,9 @@ export class CloudDiscover extends LitElement {
               <div class="logos">
                 <voice-assistant-brand-icon
                   .voiceAssistantId=${"cloud.google_assistant"}
-                  .hass=${this.hass}
                 >
                 </voice-assistant-brand-icon>
-                <voice-assistant-brand-icon
-                  .voiceAssistantId=${"cloud.alexa"}
-                  .hass=${this.hass}
-                >
+                <voice-assistant-brand-icon .voiceAssistantId=${"cloud.alexa"}>
                 </voice-assistant-brand-icon>
               </div>
               <h2>

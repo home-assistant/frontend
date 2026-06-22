@@ -260,7 +260,6 @@ export class HuiEntitiesCardEditor
           @input=${this._valueChanged}
         ></ha-input>
         <ha-theme-picker
-          .hass=${this.hass}
           .value=${this._theme}
           .label=${`${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.theme"
