@@ -91,7 +91,11 @@ class PanelDeveloperTools extends LitElement {
                 panel=${tab.panel}
                 .active=${page === tab.panel}
               >
-                ${this.hass.localize(tab.translationKey)}
+                <a
+                  href="/config/developer-tools/${tab.panel}"
+                  @click=${this._handleTabAnchorClick}
+                  >${this.hass.localize(tab.translationKey)}</a
+                >
               </ha-tab-group-tab>
             `
           )}
@@ -103,6 +107,17 @@ class PanelDeveloperTools extends LitElement {
         ></developer-tools-router>
       </ha-top-app-bar-fixed>
     `;
+  }
+
+  private _handleTabAnchorClick(ev: MouseEvent) {
+    // Allow middle-click and modifier-key clicks to open in a new tab/window
+    // natively via the anchor href. Only prevent default for plain left-clicks
+    // so the SPA routing (via wa-tab-show) handles navigation instead.
+    if (!ev.ctrlKey && !ev.metaKey && !ev.shiftKey && ev.button === 0) {
+      ev.preventDefault();
+    } else {
+      ev.stopPropagation();
+    }
   }
 
   private _handlePageSelected(ev: CustomEvent<{ name: string }>) {
@@ -141,6 +156,10 @@ class PanelDeveloperTools extends LitElement {
       --ha-tab-active-text-color: var(--app-header-text-color, white);
       --ha-tab-indicator-color: var(--app-header-text-color, white);
       --ha-tab-track-color: transparent;
+    }
+    ha-tab-group-tab a {
+      color: inherit;
+      text-decoration: none;
     }
   `;
 }
