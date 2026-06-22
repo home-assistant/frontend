@@ -155,9 +155,15 @@ class PanelDeveloperTools extends LitElement {
       --ha-tab-indicator-color: var(--app-header-text-color, white);
       --ha-tab-track-color: transparent;
     }
+    ha-tab-group-tab::part(base) {
+      padding: 0;
+    }
     ha-tab-group-tab a {
       color: inherit;
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 1em 1.5em;
     }
   `;
 }
