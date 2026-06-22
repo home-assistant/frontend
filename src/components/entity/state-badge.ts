@@ -16,14 +16,11 @@ import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { connectionContext } from "../../data/context";
-import type { HomeAssistant } from "../../types";
 import { isBrandUrl } from "../../util/brands-url";
 import "../ha-state-icon";
 
 @customElement("state-badge")
 export class StateBadge extends LitElement {
-  public hass?: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property({ attribute: false }) public overrideIcon?: string;
@@ -194,18 +191,16 @@ export class StateBadge extends LitElement {
     this.style.backgroundImage = backgroundImage;
   }
 
-  // Sign the image URL so brand images (/api/brands/...) get their access
-  // token. `hassUrl` comes from the passed `hass` when available, falling back
-  // to the connection context so this works in components that no longer
-  // provide `hass`. Without a way to sign, a brands request would be rejected
-  // (and logged/blocked by core), so skip it until we can sign.
+  // Sign the image URL via the connection context so brand images
+  // (/api/brands/...) get their access token. Without a way to sign, a brands
+  // request would be rejected (and logged/blocked by core), so skip it until
+  // we can sign.
   private _resolveImageUrl(url: string | undefined): string {
     if (!url) {
       return "";
     }
-    const hassUrl = this.hass?.hassUrl ?? this._connection?.hassUrl;
-    if (hassUrl) {
-      return hassUrl(url);
+    if (this._connection) {
+      return this._connection.hassUrl(url);
     }
     return isBrandUrl(url) ? "" : url;
   }

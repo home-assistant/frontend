@@ -161,11 +161,7 @@ export class HaEntityPicker extends LitElement {
       : undefined;
     if (stateObj) {
       return html`
-        <state-badge
-          slot="start"
-          .stateObj=${stateObj}
-          .hass=${this.hass}
-        ></state-badge>
+        <state-badge slot="start" .stateObj=${stateObj}></state-badge>
       `;
     }
     if (extraOption.icon_path) {
@@ -216,11 +212,7 @@ export class HaEntityPicker extends LitElement {
     );
 
     return html`
-      <state-badge
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        slot="start"
-      ></state-badge>
+      <state-badge .stateObj=${stateObj} slot="start"></state-badge>
       <span slot="headline">${primary}</span>
       <span slot="supporting-text">${secondary}</span>
     `;
@@ -250,7 +242,6 @@ export class HaEntityPicker extends LitElement {
               <state-badge
                 slot="start"
                 .stateObj=${item.stateObj}
-                .hass=${this.hass}
               ></state-badge>
             `}
         <span slot="headline">${item.primary}</span>
