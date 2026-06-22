@@ -13,7 +13,7 @@ import type { HassBaseEl } from "./hass-base-mixin";
 declare global {
   interface Window {
     /** Debugging aid: snapshot of the related context currently provided. */
-    context?: { related?: RelatedIdSets };
+    haContext?: { related?: RelatedIdSets };
   }
 }
 
@@ -24,7 +24,7 @@ declare global {
  * resolves the related entities/devices/areas via `findRelated`, and
  * provides the resolved `RelatedIdSets` to context consumers.
  *
- * The current value is mirrored to `window.context?.related` to make debugging
+ * The current value is mirrored to `window.haContext?.related` to make debugging
  * from the console easier.
  *
  * Clears on actual page navigation (pathname change), not on dialog
@@ -127,10 +127,10 @@ export class RelatedContextProvider {
     }
   };
 
-  // Mirror the provided value to `window.context.related` for console debugging.
+  // Mirror the provided value to `window.haContext?.related` for console debugging.
   private _setValue(value: RelatedIdSets | undefined): void {
     this._provider.setValue(value);
-    const windowContext = (window.context ??= {});
+    const windowContext = (window.haContext ??= {});
     windowContext.related = value;
   }
 }
