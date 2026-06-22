@@ -49,7 +49,7 @@ export const migrateGlanceCardConfig = (
     const { format, ...rest } = e;
     return {
       ...rest,
-      time_format: format,
+      time_format: rest.time_format ?? format,
     };
   });
   if (!changed) {
@@ -60,6 +60,7 @@ export const migrateGlanceCardConfig = (
     entities: newEntities as (GlanceConfigEntity | string)[],
   };
 };
+
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -105,15 +106,15 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GlanceCardConfig): void {
-    const migrateConfig = migrateGlanceCardConfig(config);
+    const migratedConfig = migrateGlanceCardConfig(config);
     this._config = {
       show_name: true,
       show_state: true,
       show_icon: true,
       state_color: true,
-      ...migrateConfig,
+      ...migratedConfig,
     };
-    const entities = processConfigEntities(migrateConfig.entities).map(
+    const entities = processConfigEntities(migratedConfig.entities).map(
       (entityConf) => ({
         hold_action: { action: "more-info" } as MoreInfoActionConfig,
         ...entityConf,
@@ -136,7 +137,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
 
     const columns =
-      migrateConfig.columns || Math.min(migrateConfig.entities.length, 5);
+      migratedConfig.columns || Math.min(migratedConfig.entities.length, 5);
     this.style.setProperty("--glance-column-width", `${100 / columns}%`);
 
     this._configEntities = entities;

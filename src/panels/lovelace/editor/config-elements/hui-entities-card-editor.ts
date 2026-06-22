@@ -210,10 +210,10 @@ export class HuiEntitiesCardEditor
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: EntitiesCardConfig): void {
-    const newConfig = migrateEntitiesCardConfig(config);
-    assert(newConfig, cardConfigStruct);
-    this._config = newConfig;
-    this._configEntities = processEditorEntities(newConfig.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    assert(migratedConfig, cardConfigStruct);
+    this._config = migratedConfig;
+    this._configEntities = processEditorEntities(migratedConfig.entities);
   }
 
   private _showHeaderToggle = memoizeOne((config: EntitiesCardConfig) => {

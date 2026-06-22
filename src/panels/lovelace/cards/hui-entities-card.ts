@@ -64,7 +64,7 @@ export const migrateEntitiesCardConfig = (
     const { format, ...rest } = e;
     return {
       ...rest,
-      time_format: format,
+      time_format: (rest as EntityConfig).time_format ?? format,
     };
   });
   if (!changed) {
@@ -180,12 +180,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       throw new Error("Entities must be specified");
     }
 
-    const migrateConfig = migrateEntitiesCardConfig(config);
-    const entities = processConfigEntities(migrateConfig.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = migrateConfig;
+    this._config = migratedConfig;
     this._configEntities = entities;
-    this._showHeaderToggle = computeShowHeaderToggle(migrateConfig, entities);
+    this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header

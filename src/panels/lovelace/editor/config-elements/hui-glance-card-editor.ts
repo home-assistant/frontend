@@ -21,6 +21,7 @@ import type {
   HaFormSchema,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { migrateGlanceCardConfig } from "../../cards/hui-glance-card";
 import type { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import type { EntityConfig } from "../../entity-rows/types";
@@ -85,9 +86,10 @@ export class HuiGlanceCardEditor
   @state() private _configEntities?: ConfigEntity[];
 
   public setConfig(config: GlanceCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+    const migratedConfig = migrateGlanceCardConfig(config);
+    assert(migratedConfig, cardConfigStruct);
+    this._config = migratedConfig;
+    this._configEntities = processEditorEntities(migratedConfig.entities);
   }
 
   private _subForm = memoizeOne((showTimeFormat?: boolean) => ({
