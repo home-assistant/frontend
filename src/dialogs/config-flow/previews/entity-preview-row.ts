@@ -201,12 +201,7 @@ class EntityPreviewRow extends LitElement {
         stateObj.state === "on" || stateObj.state === "off" || noValue;
       return html`
         ${showToggle
-          ? html`
-              <ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-entity-toggle>
-            `
+          ? html` <ha-entity-toggle .stateObj=${stateObj}></ha-entity-toggle> `
           : this.hass.formatEntityState(stateObj)}
       `;
     }

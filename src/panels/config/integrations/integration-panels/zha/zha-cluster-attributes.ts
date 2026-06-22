@@ -109,7 +109,6 @@ export class ZHAClusterAttributes extends LitElement {
       </div>
       <div class="card-actions">
         <ha-call-service-button
-          .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
           .data=${this._setAttributeServiceData}
