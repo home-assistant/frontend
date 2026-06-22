@@ -370,6 +370,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           maxWidth: "70px",
           sortable: true,
           showNarrow: false,
+          type: "icon",
           valueColumn: "errors_sort",
           template: (automation) =>
             automation.errors?.count
