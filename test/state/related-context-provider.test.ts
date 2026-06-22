@@ -66,11 +66,13 @@ describe("RelatedContextProvider", () => {
 
   beforeEach(() => {
     findRelatedMock.mockReset();
+    window.haContext = {};
     window.history.pushState({}, "", "/lovelace");
   });
 
   afterEach(() => {
     provider?.disconnect();
+    delete window.haContext;
   });
 
   it("resolves an item and publishes the related set, merging the item itself", async () => {
@@ -90,6 +92,11 @@ describe("RelatedContextProvider", () => {
       devices: ["dev1"],
       areas: ["area1"],
     });
+    expect(toArrays(window.haContext?.related)).toEqual({
+      entities: ["light.ac"],
+      devices: ["dev1"],
+      areas: ["area1"],
+    });
   });
 
   it("clears when the detail has no itemId (fireEvent coerces undefined to {})", async () => {
@@ -105,6 +112,7 @@ describe("RelatedContextProvider", () => {
     await tick();
 
     expect(published()).toBeUndefined();
+    expect(window.haContext?.related).toBeUndefined();
     expect(findRelatedMock).not.toHaveBeenCalled();
   });
 
