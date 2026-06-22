@@ -6,7 +6,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { fireEntityRelatedContext } from "../../../../data/context";
+import {
+  fireRelatedContext,
+  type RelatedContextItem,
+} from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
@@ -34,7 +37,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
-import { getConfigEntityId } from "../../common/get-config-entity-id";
+import { getConfigRelatedContext } from "../../common/get-config-related-context";
 import "../../sections/hui-section";
 import { getCardDefaultConfig } from "../get-card-default-config";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
@@ -145,17 +148,20 @@ export class HuiDialogEditCard
       );
     }
 
-    this._updateRelatedContext(getConfigEntityId(this._cardConfig));
+    this._updateRelatedContext(getConfigRelatedContext(this._cardConfig));
   }
 
-  private _relatedEntityId?: string;
+  private _relatedContext?: RelatedContextItem;
 
-  private _updateRelatedContext(entityId: string | undefined): void {
-    if (entityId === this._relatedEntityId) {
+  private _updateRelatedContext(context: RelatedContextItem | undefined): void {
+    if (
+      context?.itemType === this._relatedContext?.itemType &&
+      context?.itemId === this._relatedContext?.itemId
+    ) {
       return;
     }
-    this._relatedEntityId = entityId;
-    fireEntityRelatedContext(this, entityId);
+    this._relatedContext = context;
+    fireRelatedContext(this, context);
   }
 
   protected render() {

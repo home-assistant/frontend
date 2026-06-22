@@ -198,6 +198,19 @@ declare global {
 
 /**
  * Set the related context to an entity (or clear it when no entity), so nearby
+ * pickers float relevant entities.
+ * @param node - The node to fire the event on.
+ * @param context - The context to set, or undefined to clear.
+ */
+export const fireRelatedContext = (
+  node: HTMLElement,
+  context: RelatedContextItem | undefined
+): void => {
+  fireEvent(node, "hass-related-context", context);
+};
+
+/**
+ * Set the related context to an entity (or clear it when no entity), so nearby
  * pickers float relevant entities. Fired by editors.
  * @param node - The node to fire the event on.
  * @param entityId - The entity to set, or undefined to clear.
@@ -206,9 +219,8 @@ export const fireEntityRelatedContext = (
   node: HTMLElement,
   entityId: string | undefined
 ): void => {
-  fireEvent(
+  fireRelatedContext(
     node,
-    "hass-related-context",
     entityId ? { itemType: "entity", itemId: entityId } : undefined
   );
 };
