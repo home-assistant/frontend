@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEntityRelatedContext } from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
@@ -33,6 +34,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
+import { getConfigEntityId } from "../../common/get-config-entity-id";
 import "../../sections/hui-section";
 import { getCardDefaultConfig } from "../get-card-default-config";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
@@ -125,6 +127,7 @@ export class HuiDialogEditCard
     this._cardConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
+    this._updateRelatedContext(undefined);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -141,6 +144,18 @@ export class HuiDialogEditCard
         this._cardConfig!.type
       );
     }
+
+    this._updateRelatedContext(getConfigEntityId(this._cardConfig));
+  }
+
+  private _relatedEntityId?: string;
+
+  private _updateRelatedContext(entityId: string | undefined): void {
+    if (entityId === this._relatedEntityId) {
+      return;
+    }
+    this._relatedEntityId = entityId;
+    fireEntityRelatedContext(this, entityId);
   }
 
   protected render() {

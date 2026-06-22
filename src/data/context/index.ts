@@ -1,6 +1,6 @@
 import { createContext } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import type {
   HomeAssistant,
   HomeAssistantApi,
@@ -195,5 +195,22 @@ declare global {
     "hass-related-context": HASSDomEvent<RelatedContextItem | undefined>;
   }
 }
+
+/**
+ * Set the related context to an entity (or clear it when no entity), so nearby
+ * pickers float relevant entities. Fired by editors.
+ * @param node - The node to fire the event on.
+ * @param entityId - The entity to set, or undefined to clear.
+ */
+export const fireEntityRelatedContext = (
+  node: HTMLElement,
+  entityId: string | undefined
+): void => {
+  fireEvent(
+    node,
+    "hass-related-context",
+    entityId ? { itemType: "entity", itemId: entityId } : undefined
+  );
+};
 
 // #endregion related-context
