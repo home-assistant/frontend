@@ -111,17 +111,11 @@ class PanelDeveloperTools extends LitElement {
   }
 
   private _handleTabAnchorClick(ev: MouseEvent) {
-    // Always stop propagation so the tab-group never sees the click.
-    // This prevents wa-tab-show from firing and double-navigating.
     ev.stopPropagation();
     const href = isNavigationClick(ev);
     if (href) {
-      // Plain left-click: isNavigationClick already called preventDefault()
-      // (prevents full-page anchor navigation); now SPA-navigate directly.
       navigate(href);
     }
-    // For modifier/middle-click: isNavigationClick returned undefined (no
-    // preventDefault), so the browser opens a new tab/window natively.
   }
 
   private _handlePageSelected(ev: CustomEvent<{ name: string }>) {
