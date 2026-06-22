@@ -2,6 +2,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -91,7 +92,11 @@ class PanelDeveloperTools extends LitElement {
                 panel=${tab.panel}
                 .active=${page === tab.panel}
               >
-                ${this.hass.localize(tab.translationKey)}
+                <a
+                  href="/config/developer-tools/${tab.panel}"
+                  @click=${this._handleTabAnchorClick}
+                  >${this.hass.localize(tab.translationKey)}</a
+                >
               </ha-tab-group-tab>
             `
           )}
@@ -103,6 +108,14 @@ class PanelDeveloperTools extends LitElement {
         ></developer-tools-router>
       </ha-top-app-bar-fixed>
     `;
+  }
+
+  private _handleTabAnchorClick(ev: MouseEvent) {
+    ev.stopPropagation();
+    const href = isNavigationClick(ev);
+    if (href) {
+      navigate(href);
+    }
   }
 
   private _handlePageSelected(ev: CustomEvent<{ name: string }>) {
@@ -141,6 +154,16 @@ class PanelDeveloperTools extends LitElement {
       --ha-tab-active-text-color: var(--app-header-text-color, white);
       --ha-tab-indicator-color: var(--app-header-text-color, white);
       --ha-tab-track-color: transparent;
+    }
+    ha-tab-group-tab::part(base) {
+      padding: 0;
+    }
+    ha-tab-group-tab a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      padding: 1em 1.5em;
     }
   `;
 }
