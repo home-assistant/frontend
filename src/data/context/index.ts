@@ -12,11 +12,13 @@ import type {
   HomeAssistantUI,
 } from "../../types";
 import type { RelatedIdSets } from "../../common/search/related-context";
+import type { ConditionDescriptions } from "../condition";
 import type { ConfigEntry } from "../config_entries";
 import type { EntityRegistryEntry } from "../entity/entity_registry";
 import type { DomainManifestLookup } from "../integration";
 import type { LabelRegistryEntry } from "../label/label_registry";
 import type { ItemType } from "../search";
+import type { TriggerDescriptions } from "../trigger";
 
 /**
  * Entity, device, area, and floor registries
@@ -130,6 +132,19 @@ export const configEntriesContext =
  */
 export const manifestsContext =
   createContext<DomainManifestLookup>("manifests");
+
+/**
+ * Lazy loaded trigger platform descriptions, keyed by trigger key.
+ */
+export const triggerDescriptionsContext = createContext<TriggerDescriptions>(
+  "triggerDescriptions"
+);
+
+/**
+ * Lazy loaded condition platform descriptions, keyed by condition key.
+ */
+export const conditionDescriptionsContext =
+  createContext<ConditionDescriptions>("conditionDescriptions");
 
 // #endregion lazy-contexts
 

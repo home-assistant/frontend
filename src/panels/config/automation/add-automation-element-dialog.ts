@@ -7,10 +7,7 @@ import {
   mdiHelpCircleOutline,
   mdiPlus,
 } from "@mdi/js";
-import type {
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -80,13 +77,16 @@ import {
   CONDITION_COLLECTIONS,
   getConditionDomain,
   getConditionObjectId,
-  subscribeConditions,
 } from "../../../data/condition";
 import {
   getConfigEntries,
   type ConfigEntry,
 } from "../../../data/config_entries";
-import { labelsContext } from "../../../data/context";
+import {
+  conditionDescriptionsContext,
+  labelsContext,
+  triggerDescriptionsContext,
+} from "../../../data/context";
 import { getDeviceEntityLookup } from "../../../data/device/device_registry";
 import type { EntityComboBoxItem } from "../../../data/entity/entity_picker";
 import { getFloorAreaLookup } from "../../../data/floor_registry";
@@ -101,7 +101,6 @@ import {
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
-import { subscribeLabFeature } from "../../../data/labs";
 import { filterSelectorEntities } from "../../../data/selector";
 import {
   TARGET_SEPARATOR,
@@ -116,7 +115,6 @@ import {
   TRIGGER_COLLECTIONS,
   getTriggerDomain,
   getTriggerObjectId,
-  subscribeTriggers,
 } from "../../../data/trigger";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
@@ -227,7 +225,13 @@ class DialogAddAutomationElement
 
   @state() private _narrow = false;
 
-  @state() private _triggerDescriptions: TriggerDescriptions = {};
+  @state()
+  @consume({ context: triggerDescriptionsContext, subscribe: true })
+  private _triggerDescriptions: TriggerDescriptions = {};
+
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions: ConditionDescriptions = {};
 
   @state() private _targetItems?: {
     title: string;
@@ -236,11 +240,7 @@ class DialogAddAutomationElement
 
   @state() private _loadItemsError = false;
 
-  @state() private _newTriggersAndConditions = false;
-
   @state() private _openedFromQuery = false;
-
-  @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
@@ -259,10 +259,6 @@ class DialogAddAutomationElement
 
   // #region variables
 
-  private _unsub?: Promise<UnsubscribeFunc>;
-
-  private _unsubscribeLabFeatures?: Promise<UnsubscribeFunc>;
-
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   private _closing = false;
@@ -277,31 +273,6 @@ class DialogAddAutomationElement
       changedProps.get("hass")?.states !== this.hass.states
     ) {
       this._calculateUsedDomains();
-    }
-
-    if (changedProps.has("_newTriggersAndConditions")) {
-      this._subscribeDescriptions();
-    }
-  }
-
-  private _subscribeDescriptions() {
-    this._unsubscribe();
-    if (this._params?.type === "trigger") {
-      this._triggerDescriptions = {};
-      this._unsub = subscribeTriggers(this.hass, (triggers) => {
-        this._triggerDescriptions = {
-          ...this._triggerDescriptions,
-          ...triggers,
-        };
-      });
-    } else if (this._params?.type === "condition") {
-      this._conditionDescriptions = {};
-      this._unsub = subscribeConditions(this.hass, (conditions) => {
-        this._conditionDescriptions = {
-          ...this._conditionDescriptions,
-          ...conditions,
-        };
-      });
     }
   }
 
@@ -334,27 +305,8 @@ class DialogAddAutomationElement
 
     this._loadConfigEntries();
 
-    this._unsubscribe();
     this._fetchManifests();
     this._calculateUsedDomains();
-
-    this._unsubscribeLabFeatures = subscribeLabFeature(
-      this.hass.connection,
-      "automation",
-      "new_triggers_conditions",
-      (feature) => {
-        this._newTriggersAndConditions = feature.enabled;
-        this._tab = this._newTriggersAndConditions ? "targets" : "groups";
-        if (
-          queryTarget &&
-          this._newTriggersAndConditions &&
-          !this._selectedTarget
-        ) {
-          this._selectedTarget = queryTarget;
-          this._getItemsByTarget();
-        }
-      }
-    );
 
     if (!queryTarget) {
       // add initial dialog view state to history
@@ -372,11 +324,9 @@ class DialogAddAutomationElement
     } else if (this._params?.type === "trigger") {
       this.hass.loadBackendTranslation("triggers");
       getTriggerIcons(this.hass.connection, this.hass.config);
-      this._subscribeDescriptions();
     } else if (this._params?.type === "condition") {
       this.hass.loadBackendTranslation("conditions");
       getConditionIcons(this.hass.connection, this.hass.config);
-      this._subscribeDescriptions();
     }
 
     window.addEventListener("resize", this._updateNarrow);
@@ -385,11 +335,7 @@ class DialogAddAutomationElement
     // prevent view mode switch when resizing window
     this._bottomSheetMode = this._narrow;
 
-    if (
-      queryTarget &&
-      this._newTriggersAndConditions &&
-      !this._selectedTarget
-    ) {
+    if (queryTarget && !this._selectedTarget) {
       this._selectedTarget = queryTarget;
       this._tab = "targets";
       this._getItemsByTarget();
@@ -434,7 +380,6 @@ class DialogAddAutomationElement
     }
 
     this.removeKeyboardShortcuts();
-    this._unsubscribe();
     if (this._params) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
@@ -450,7 +395,7 @@ class DialogAddAutomationElement
     this._selectedCollectionIndex = undefined;
     this._selectedGroup = undefined;
     this._selectedTarget = undefined;
-    this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+    this._tab = "targets";
     this._filter = "";
     this._manifests = undefined;
     this._domains = undefined;
@@ -589,7 +534,6 @@ class DialogAddAutomationElement
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("resize", this._updateNarrow);
-    this._unsubscribe();
   }
 
   protected supportedShortcuts(): SupportedShortcuts {
@@ -598,38 +542,9 @@ class DialogAddAutomationElement
     };
   }
 
-  private _unsubscribe() {
-    if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
-      this._unsub = undefined;
-    }
-    if (this._unsubscribeLabFeatures) {
-      this._unsubscribeLabFeatures.then((unsub) => unsub());
-      this._unsubscribeLabFeatures = undefined;
-    }
-  }
-
   // #endregion lifecycle
 
   // #region render
-
-  private _getEmptyNote(automationElementType: string) {
-    if (
-      automationElementType !== "trigger" &&
-      automationElementType !== "condition"
-    ) {
-      return undefined;
-    }
-
-    return this.hass.localize(
-      `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target_note`,
-      {
-        labs_link: html`<a href="/config/labs" @click=${this._close}
-          >${this.hass.localize("ui.panel.config.labs.caption")}</a
-        >`,
-      }
-    );
-  }
 
   protected render() {
     if (!this._params) {
@@ -666,20 +581,17 @@ class DialogAddAutomationElement
     const tabButtons = [
       {
         label: this.hass.localize(
+          "ui.panel.config.automation.editor.tabs.target"
+        ),
+        value: "targets",
+      },
+      {
+        label: this.hass.localize(
           "ui.panel.config.automation.editor.tabs.type"
         ),
         value: "groups",
       },
     ];
-
-    if (this._newTriggersAndConditions) {
-      tabButtons.unshift({
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.tabs.target"
-        ),
-        value: "targets",
-      });
-    }
 
     if (this._params?.type !== "trigger") {
       tabButtons.push({
@@ -763,7 +675,6 @@ class DialogAddAutomationElement
                 this._manifests
               )}
               .convertToItem=${this._convertToItem}
-              .newTriggersAndConditions=${this._newTriggersAndConditions}
               @search-element-picked=${this._searchItemSelected}
             >
             </ha-automation-add-search>`
@@ -889,7 +800,6 @@ class DialogAddAutomationElement
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
-                .emptyNote=${this._getEmptyNote(automationElementType)}
                 .tooltipDescription=${this._tab === "targets"}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&

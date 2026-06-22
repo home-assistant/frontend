@@ -14,10 +14,7 @@ import {
   mdiShape,
   mdiTools,
 } from "@mdi/js";
-import type {
-  HassEntity,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket/dist/types";
+import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -62,7 +59,6 @@ import {
   computeEntityRegistryName,
   sortEntityRegistryByName,
 } from "../../../data/entity/entity_registry";
-import { subscribeLabFeature } from "../../../data/labs";
 import type { SceneEntity } from "../../../data/scene";
 import type { ScriptEntity } from "../../../data/script";
 import type { RelatedResult } from "../../../data/search";
@@ -72,7 +68,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
@@ -146,7 +141,7 @@ const NAVIGATION_ACTIONS: {
 const MAX_COLUMNS = 3;
 
 @customElement("ha-config-area-page")
-class HaConfigAreaPage extends SubscribeMixin(LitElement) {
+class HaConfigAreaPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public areaId!: string;
@@ -160,8 +155,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _related?: RelatedResult;
-
-  @state() private _newTriggersConditions = false;
 
   private _logbookTime = { recent: 86400 };
 
@@ -256,23 +249,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
         itemId: this.areaId,
       });
     }
-  }
-
-  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    if (!isComponentLoaded(this.hass!.config, "automation")) {
-      return [];
-    }
-    return [
-      subscribeLabFeature(
-        this.hass!.connection,
-        "automation",
-        "new_triggers_conditions",
-        (feature) => {
-          this._newTriggersConditions = feature.enabled;
-        }
-      ),
-    ];
   }
 
   protected render() {
@@ -380,32 +356,26 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           </div>`
         : nothing}
-      ${area.picture && !this._newTriggersConditions
-        ? nothing
-        : html`<div class="action-buttons">
-            ${area.picture
-              ? nothing
-              : html`<ha-button
-                  appearance="filled"
-                  .entry=${area}
-                  @click=${this._showSettings}
-                >
-                  <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.config.areas.add_picture")}
-                </ha-button>`}
-            ${this._newTriggersConditions
-              ? html`<ha-button
-                  appearance="filled"
-                  variant="brand"
-                  @click=${this._showAddToDialog}
-                >
-                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.item"
-                  )}
-                </ha-button>`
-              : nothing}
-          </div>`}
+      <div class="action-buttons">
+        ${area.picture
+          ? nothing
+          : html`<ha-button
+              appearance="filled"
+              .entry=${area}
+              @click=${this._showSettings}
+            >
+              <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize("ui.panel.config.areas.add_picture")}
+            </ha-button>`}
+        <ha-button
+          appearance="filled"
+          variant="brand"
+          @click=${this._showAddToDialog}
+        >
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.dialogs.more_info_control.add_to.item")}
+        </ha-button>
+      </div>
       <ha-card
         outlined
         .header=${this.hass.localize("ui.panel.config.devices.caption")}

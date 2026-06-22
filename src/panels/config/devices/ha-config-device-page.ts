@@ -71,7 +71,6 @@ import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
-import { subscribeLabFeature } from "../../../data/labs";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
   fetchDiagnosticHandler,
@@ -206,10 +205,6 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
   private _deviceAlertsActionsTimeout?: number;
-
-  @state() private _newTriggersConditions = false;
-
-  private _unsubLabFeature?: (() => void) | undefined;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -380,7 +375,6 @@ export class HaConfigDevicePage extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
-    this._subscribeLabFeature();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -398,7 +392,6 @@ export class HaConfigDevicePage extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     clearTimeout(this._deviceAlertsActionsTimeout);
-    this._unsubLabFeature?.();
   }
 
   protected render() {
@@ -1408,28 +1401,10 @@ export class HaConfigDevicePage extends LitElement {
     );
     showDeviceAddToDialog(this, {
       device,
-      newTriggersConditions: this._newTriggersConditions,
       entityIds: sceneEntityIds,
       canCreateScene:
         isComponentLoaded(this.hass.config, "scene") &&
         sceneEntityIds.length > 0,
-    });
-  }
-
-  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
-  private _subscribeLabFeature() {
-    if (!isComponentLoaded(this.hass.config, "automation")) {
-      return;
-    }
-    subscribeLabFeature(
-      this.hass.connection,
-      "automation",
-      "new_triggers_conditions",
-      (feature) => {
-        this._newTriggersConditions = feature.enabled;
-      }
-    ).then((unsub) => {
-      this._unsubLabFeature = unsub;
     });
   }
 

@@ -1,9 +1,7 @@
+import { consume } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type {
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
@@ -19,12 +17,8 @@ import {
   type Condition,
 } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
-import {
-  CONDITION_BUILDING_BLOCKS,
-  subscribeConditions,
-} from "../../../../data/condition";
-import { subscribeLabFeature } from "../../../../data/labs";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
+import { conditionDescriptionsContext } from "../../../../data/context";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -38,7 +32,7 @@ import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends AutomationSortableListMixin<Condition>(
-  SubscribeMixin(LitElement)
+  LitElement
 ) {
   @property({ attribute: false }) public conditions!: Condition[];
 
@@ -48,15 +42,12 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
   @property({ type: Boolean, attribute: false }) public editorDirty = false;
 
-  @state() private _conditionDescriptions: ConditionDescriptions = {};
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions: ConditionDescriptions = {};
 
   @queryAll("ha-automation-condition-row")
   private _conditionRowElements?: HaAutomationConditionRow[];
-
-  // @ts-ignore
-  @state() private _newTriggersAndConditions = false;
-
-  private _unsub?: Promise<UnsubscribeFunc>;
 
   private _openedAddDialogFromQuery = false;
 
@@ -70,49 +61,6 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
 
   protected setHighlightedItems(items: Condition[]) {
     this.highlightedConditions = items;
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubscribe();
-  }
-
-  protected hassSubscribe() {
-    return [
-      subscribeLabFeature(
-        this.hass!.connection,
-        "automation",
-        "new_triggers_conditions",
-        (feature) => {
-          this._newTriggersAndConditions = feature.enabled;
-        }
-      ),
-    ];
-  }
-
-  private _subscribeDescriptions() {
-    this._unsubscribe();
-    this._conditionDescriptions = {};
-    this._unsub = subscribeConditions(this.hass, (descriptions) => {
-      this._conditionDescriptions = {
-        ...this._conditionDescriptions,
-        ...descriptions,
-      };
-    });
-  }
-
-  private _unsubscribe() {
-    if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
-      this._unsub = undefined;
-    }
-  }
-
-  protected willUpdate(changedProperties: PropertyValues): void {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has("_newTriggersAndConditions")) {
-      this._subscribeDescriptions();
-    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
