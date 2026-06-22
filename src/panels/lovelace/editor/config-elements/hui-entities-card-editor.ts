@@ -29,7 +29,10 @@ import "../../../../components/ha-theme-picker";
 import "../../../../components/input/ha-input";
 import { isCustomType } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import { computeShowHeaderToggle } from "../../cards/hui-entities-card";
+import {
+  computeShowHeaderToggle,
+  migrateEntitiesCardConfig,
+} from "../../cards/hui-entities-card";
 import type { EntitiesCardConfig } from "../../cards/types";
 import { processConfigEntities } from "../../common/process-config-entities";
 import { timeFormatConfigStruct } from "../../components/types";
@@ -119,7 +122,7 @@ const attributeEntitiesRowConfigStruct = object({
   suffix: optional(string()),
   name: optional(string()),
   icon: optional(string()),
-  format: optional(timeFormatConfigStruct),
+  time_format: optional(timeFormatConfigStruct),
 });
 
 const textEntitiesRowConfigStruct = object({
@@ -207,9 +210,10 @@ export class HuiEntitiesCardEditor
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: EntitiesCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    assert(migratedConfig, cardConfigStruct);
+    this._config = migratedConfig;
+    this._configEntities = processEditorEntities(migratedConfig.entities);
   }
 
   private _showHeaderToggle = memoizeOne((config: EntitiesCardConfig) => {
