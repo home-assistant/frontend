@@ -291,11 +291,7 @@ export class HuiSuggestionEntityTree extends LitElement {
         @click=${this._pickEntity}
       >
         ${stateObj
-          ? html`<state-badge
-              slot="start"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></state-badge>`
+          ? html`<state-badge slot="start" .stateObj=${stateObj}></state-badge>`
           : nothing}
         <span slot="headline">${item.name}</span>
         ${secondary
@@ -514,10 +510,7 @@ export class HuiSuggestionEntityTree extends LitElement {
         <div slot="start" class="leading">
           <span class="chevron-spacer"></span>
           ${stateObj
-            ? html`<state-badge
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></state-badge>`
+            ? html`<state-badge .stateObj=${stateObj}></state-badge>`
             : nothing}
         </div>
         <span slot="headline">${name}</span>

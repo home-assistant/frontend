@@ -548,7 +548,6 @@ class HaLogbookEntry extends LitElement {
       ></ha-state-icon>`;
     }
     return html`<state-badge
-      .hass=${this.hass}
       .overrideIcon=${glyph.icon}
       .overrideImage=${this._brandImage(glyph.domain)}
       .stateColor=${false}
