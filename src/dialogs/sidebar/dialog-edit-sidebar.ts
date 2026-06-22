@@ -1,6 +1,6 @@
 import { mdiDelete, mdiDotsVertical, mdiRestart } from "@mdi/js";
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
@@ -16,7 +16,11 @@ import type {
   DisplayValue,
 } from "../../components/ha-items-display-editor";
 import "../../components/ha-navigation-picker";
-import { computePanels } from "../../components/ha-sidebar";
+import type { HaNavigationPicker } from "../../components/ha-navigation-picker";
+import {
+  computePanels,
+  SHORTCUT_KEY_PREFIX,
+} from "../../components/ha-sidebar";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/ha-dialog";
@@ -57,6 +61,8 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
   @state() private _customShortcuts?: string[];
 
   @state() private _error?: string;
+
+  @query("ha-navigation-picker") private _picker?: HaNavigationPicker;
 
   /**
    * If user has old localStorage values, show a confirmation dialog
@@ -143,13 +149,15 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
    * - Fixed sidebar paths (/config, /profile) — rendered outside the editable list
    * - Already-added shortcut paths — prevent duplicates
    */
-  private _computePickerExcludePaths(): string[] {
-    const panelPaths = Object.values(this.hass.panels).map(
-      (panel) => `/${panel.url_path}`
-    );
-    const fixedPaths = FIXED_PANELS.map((urlPath) => `/${urlPath}`);
-    return [...panelPaths, ...fixedPaths, ...(this._customShortcuts ?? [])];
-  }
+  private _computePickerExcludePaths = memoizeOne(
+    (panels: HomeAssistant["panels"], customShortcuts: string[]): string[] => {
+      const panelPaths = Object.values(panels).map(
+        (panel) => `/${panel.url_path}`
+      );
+      const fixedPaths = FIXED_PANELS.map((urlPath) => `/${urlPath}`);
+      return [...panelPaths, ...fixedPaths, ...customShortcuts];
+    }
+  );
 
   private _renderContent(): TemplateResult {
     if (!this._order || !this._hidden) {
@@ -195,7 +203,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
     ).map((path): DisplayItem => {
       const info = computeNavigationPathInfo(this.hass, path);
       return {
-        value: `shortcut:${path}`,
+        value: `${SHORTCUT_KEY_PREFIX}${path}`,
         label: info.label || path,
         icon: info.icon,
         iconPath: info.iconPath,
@@ -223,7 +231,10 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
         .excludeViews=${true}
         .excludeApps=${true}
         .excludeRelated=${true}
-        .excludePaths=${this._computePickerExcludePaths()}
+        .excludePaths=${this._computePickerExcludePaths(
+          this.hass.panels,
+          this._customShortcuts ?? []
+        )}
         @value-changed=${this._addShortcut}
       ></ha-navigation-picker>
     `;
@@ -280,7 +291,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
   private _actionsRenderer = (
     item: DisplayItem
   ): TemplateResult<1> | typeof nothing => {
-    if (!item.value.startsWith("shortcut:")) return nothing;
+    if (!item.value.startsWith(SHORTCUT_KEY_PREFIX)) return nothing;
     return html`<ha-icon-button
       .path=${mdiDelete}
       .label=${this.hass.localize("ui.common.delete")}
@@ -298,10 +309,10 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
     ev.stopPropagation();
     const path = ev.detail.value;
     if (!path) return;
-    (ev.currentTarget as any).value = "";
+    if (this._picker) this._picker.value = undefined;
     if ((this._customShortcuts ?? []).includes(path)) return;
     this._customShortcuts = [...(this._customShortcuts ?? []), path];
-    this._order = [...(this._order ?? []), `shortcut:${path}`];
+    this._order = [...(this._order ?? []), `${SHORTCUT_KEY_PREFIX}${path}`];
     this._updateDirtyState({
       order: this._order,
       hidden: this._computeHiddenPanels(),
@@ -310,7 +321,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
   };
 
   private _deleteShortcut(itemValue: string): void {
-    const path = itemValue.slice("shortcut:".length);
+    const path = itemValue.slice(SHORTCUT_KEY_PREFIX.length);
     this._customShortcuts = (this._customShortcuts ?? []).filter(
       (p) => p !== path
     );

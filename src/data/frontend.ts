@@ -8,6 +8,8 @@ export interface CoreFrontendUserData {
 }
 
 export interface SidebarFrontendUserData {
+  // Entries are either panel url_paths (e.g. "lovelace") or shortcut keys
+  // prefixed with SHORTCUT_KEY_PREFIX (e.g. "shortcut:/config/automation").
   panelOrder?: string[];
   hiddenPanels?: string[];
   customShortcuts?: string[];

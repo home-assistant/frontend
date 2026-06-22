@@ -112,10 +112,11 @@ export class HaNavigationPicker extends LitElement {
     return (
       [
         !this.excludeRelated && this._navigationGroups.related.length > 0,
-        !this.excludeDashboards,
-        !this.excludeViews,
+        !this.excludeDashboards && this._navigationGroups.dashboards.length > 0,
+        !this.excludeViews && this._navigationGroups.views.length > 0,
         !this.excludeApps && this._navigationGroups.apps.length > 0,
-        !this.excludeOtherRoutes,
+        !this.excludeOtherRoutes &&
+          this._navigationGroups.other_routes.length > 0,
       ].filter(Boolean).length <= 1
     );
   }
@@ -466,17 +467,6 @@ export class HaNavigationPicker extends LitElement {
   protected updated(changedProps: PropertyValues<this>) {
     if (changedProps.has("context")) {
       this._loadRelatedItems();
-    }
-    if (
-      this.excludeDashboards &&
-      this.excludeViews &&
-      this.excludeApps &&
-      this.excludeOtherRoutes
-    ) {
-      // eslint-disable-next-line no-console
-      console.error(
-        "ha-navigation-picker: all groups are excluded — at least one of excludeDashboards, excludeViews, excludeApps, excludeOtherRoutes must be false"
-      );
     }
   }
 

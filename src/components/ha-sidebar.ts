@@ -175,6 +175,8 @@ export interface SidebarShortcutItem {
 
 export type SidebarItem = SidebarPanelItem | SidebarShortcutItem;
 
+export const SHORTCUT_KEY_PREFIX = "shortcut:";
+
 export const computeSidebarItems = (
   panels: HomeAssistant["panels"],
   defaultPanel: string,
@@ -196,7 +198,7 @@ export const computeSidebarItems = (
     customShortcuts.map((path) => {
       const info = computeNavigationPathInfo(hass, path);
       return [
-        `shortcut:${path}`,
+        `${SHORTCUT_KEY_PREFIX}${path}`,
         {
           kind: "shortcut",
           path,
@@ -213,7 +215,7 @@ export const computeSidebarItems = (
   const seen = new Set<string>();
 
   for (const key of panelOrder) {
-    if (key.startsWith("shortcut:")) {
+    if (key.startsWith(SHORTCUT_KEY_PREFIX)) {
       const item = shortcutMap.get(key);
       if (item && !seen.has(key)) {
         result.push(item);
