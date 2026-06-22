@@ -130,7 +130,6 @@ export class HuiAreasDashboardStrategyEditor
               ${entities.length > 0
                 ? html`
                     <ha-entities-display-editor
-                      .hass=${this.hass}
                       .value=${value}
                       .label=${group}
                       @value-changed=${this._entitiesDisplayChanged}
@@ -162,7 +161,6 @@ export class HuiAreasDashboardStrategyEditor
 
     return html`
       <ha-areas-floors-display-editor
-        .hass=${this.hass}
         .value=${value}
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.strategy.areas.areas_display"
