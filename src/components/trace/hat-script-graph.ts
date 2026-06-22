@@ -44,7 +44,6 @@ import type {
   IfActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
@@ -75,8 +74,6 @@ export class HatScriptGraph extends LitElement {
 
   @query("hat-graph-node[active], hat-graph-branch[active]")
   private _activeNode?: HTMLElement;
-
-  public hass!: HomeAssistant;
 
   public renderedNodes: Record<string, NodeInfo> = {};
 
@@ -457,7 +454,6 @@ export class HatScriptGraph extends LitElement {
         ${node.action
           ? html`<ha-service-icon
               slot="icon"
-              .hass=${this.hass}
               .service=${node.action}
             ></ha-service-icon>`
           : nothing}
