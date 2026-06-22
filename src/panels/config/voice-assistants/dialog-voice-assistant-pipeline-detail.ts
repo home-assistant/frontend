@@ -11,6 +11,7 @@ import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type {
   AssistPipeline,
   AssistPipelineMutableParams,
@@ -28,7 +29,9 @@ import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-vo
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
-export class DialogVoiceAssistantPipelineDetail extends LitElement {
+export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
+  Partial<AssistPipeline>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: VoiceAssistantPipelineDetailsDialogParams;
@@ -62,6 +65,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
 
       this._hideWakeWord =
         this._params.hideWakeWord || !this._data.wake_word_entity;
+      this._initDirtyTracking({ type: "deep" }, this._data);
       return;
     }
 
@@ -98,6 +102,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       stt_engine: this._params.pipeline?.stt_engine || sstDefault,
       tts_engine: this._params.pipeline?.tts_engine || ttsDefault,
     };
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
@@ -145,7 +150,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${title}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${!this._hideWakeWord ||
@@ -193,7 +198,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                   )}
-                  <ha-button size="small" href="/config/cloud" slot="action">
+                  <ha-button size="s" href="/config/cloud" slot="action">
                     ${this.hass.localize(
                       "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
                     )}
@@ -234,6 +239,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
             slot="primaryAction"
             @click=${this._updatePipeline}
             .loading=${this._submitting}
+            .disabled=${!this.isDirtyState}
           >
             ${isExistingPipeline
               ? this.hass.localize(
@@ -266,6 +272,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         value[key] = ev.detail.value[key];
       });
     this._data = { ...this._data, ...value };
+    this._updateDirtyState(this._data);
   }
 
   private async _updatePipeline() {
@@ -299,6 +306,7 @@ export class DialogVoiceAssistantPipelineDetail extends LitElement {
         // eslint-disable-next-line no-console
         console.error("No createPipeline function provided");
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err?.message || "Unknown error";

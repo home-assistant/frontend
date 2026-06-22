@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiEyedropper } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,19 +11,21 @@ import {
   rgb2hs,
   rgb2hsv,
 } from "../../../../common/color/convert-color";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { throttle } from "../../../../common/util/throttle";
 import "../../../../components/ha-hs-color-picker";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-labeled-slider";
+import { apiContext } from "../../../../data/context";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   getLightCurrentModeRgbColor,
   LightColorMode,
   lightSupportsColorMode,
 } from "../../../../data/light";
-import type { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -32,7 +35,13 @@ declare global {
 
 @customElement("light-color-rgb-picker")
 class LightRgbColorPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
 
@@ -109,7 +118,7 @@ class LightRgbColorPicker extends LitElement {
       ${supportsRgbw || supportsRgbww
         ? html`<ha-labeled-slider
             labeled
-            .caption=${this.hass.localize("ui.card.light.color_brightness")}
+            .caption=${this._localize("ui.card.light.color_brightness")}
             icon="mdi:brightness-7"
             min="0"
             max="100"
@@ -121,7 +130,7 @@ class LightRgbColorPicker extends LitElement {
         ? html`
             <ha-labeled-slider
               labeled
-              .caption=${this.hass.localize("ui.card.light.white_value")}
+              .caption=${this._localize("ui.card.light.white_value")}
               icon="mdi:file-word-box"
               min="0"
               max="100"
@@ -135,7 +144,7 @@ class LightRgbColorPicker extends LitElement {
         ? html`
             <ha-labeled-slider
               labeled
-              .caption=${this.hass.localize("ui.card.light.cold_white_value")}
+              .caption=${this._localize("ui.card.light.cold_white_value")}
               icon="mdi:file-word-box-outline"
               min="0"
               max="100"
@@ -145,7 +154,7 @@ class LightRgbColorPicker extends LitElement {
             ></ha-labeled-slider>
             <ha-labeled-slider
               labeled
-              .caption=${this.hass.localize("ui.card.light.warm_white_value")}
+              .caption=${this._localize("ui.card.light.warm_white_value")}
               icon="mdi:file-word-box"
               min="0"
               max="100"
@@ -212,10 +221,7 @@ class LightRgbColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (
-      this._isInteracting ||
-      (!changedProps.has("entityId") && !changedProps.has("hass"))
-    ) {
+    if (this._isInteracting || !changedProps.has("stateObj")) {
       return;
     }
 
@@ -346,7 +352,7 @@ class LightRgbColorPicker extends LitElement {
 
   private _applyColor(color: LightColor, params?: Record<string, any>) {
     fireEvent(this, "color-changed", color);
-    this.hass.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
       ...color,
       ...params,

@@ -27,6 +27,8 @@ import {
   TimeZone,
 } from "../data/translation";
 import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { deepEqual } from "../common/util/deep-equal";
+import { preserveUnchangedRecord } from "../common/util/preserve-unchanged-record";
 import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -265,28 +267,58 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             display_precision: entity.dp,
           };
         }
-        this._updateHass({ entities });
+        const updatedEntities = preserveUnchangedRecord(
+          this.hass?.entities,
+          entities,
+          deepEqual
+        );
+        // When the display payload is unchanged (a registry event that doesn't
+        // touch it), skip the update entirely instead of churning a new hass.
+        if (updatedEntities !== this.hass?.entities) {
+          this._updateHass({ entities: updatedEntities });
+        }
       });
       subscribeDeviceRegistry(conn, (deviceReg) => {
         const devices: HomeAssistant["devices"] = {};
         for (const device of deviceReg) {
           devices[device.id] = device;
         }
-        this._updateHass({ devices });
+        const updatedDevices = preserveUnchangedRecord(
+          this.hass?.devices,
+          devices,
+          deepEqual
+        );
+        if (updatedDevices !== this.hass?.devices) {
+          this._updateHass({ devices: updatedDevices });
+        }
       });
       subscribeAreaRegistry(conn, (areaReg) => {
         const areas: HomeAssistant["areas"] = {};
         for (const area of areaReg) {
           areas[area.area_id] = area;
         }
-        this._updateHass({ areas });
+        const updatedAreas = preserveUnchangedRecord(
+          this.hass?.areas,
+          areas,
+          deepEqual
+        );
+        if (updatedAreas !== this.hass?.areas) {
+          this._updateHass({ areas: updatedAreas });
+        }
       });
       subscribeFloorRegistry(conn, (floorReg) => {
         const floors: HomeAssistant["floors"] = {};
         for (const floor of floorReg) {
           floors[floor.floor_id] = floor;
         }
-        this._updateHass({ floors });
+        const updatedFloors = preserveUnchangedRecord(
+          this.hass?.floors,
+          floors,
+          deepEqual
+        );
+        if (updatedFloors !== this.hass?.floors) {
+          this._updateHass({ floors: updatedFloors });
+        }
       });
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
@@ -313,8 +345,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
       clearInterval(this.__backendPingInterval);
 
-      // Fetch the brands access token on initial connect and schedule refresh
-      fetchAndScheduleBrandsAccessToken(this.hass!);
+      this._refreshBrandsAccessToken();
 
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
@@ -340,8 +371,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
 
-      // Refresh the brands access token on reconnect and restart refresh schedule
-      fetchAndScheduleBrandsAccessToken(this.hass!);
+      this._refreshBrandsAccessToken();
 
       // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
@@ -362,5 +392,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       broadcastConnectionStatus("disconnected");
       clearInterval(this.__backendPingInterval);
       clearBrandsTokenRefresh();
+    }
+
+    private async _refreshBrandsAccessToken() {
+      // The brands WS handler may not be registered yet after a server restart;
+      // fetchAndScheduleBrandsAccessToken retries internally. If the token
+      // changed, re-render so any brand <img> elements that rendered against a
+      // different (or missing) token recompute their src and re-fetch.
+      const changed = await fetchAndScheduleBrandsAccessToken(this.hass!);
+      if (changed) {
+        this._updateHass({});
+      }
     }
   };

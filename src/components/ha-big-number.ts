@@ -1,10 +1,12 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
-import type { HomeAssistant } from "../types";
+import { internationalizationContext } from "../data/context";
 
 @customElement("ha-big-number")
 export class HaBigNumber extends LitElement {
@@ -15,17 +17,16 @@ export class HaBigNumber extends LitElement {
   @property({ attribute: "unit-position" })
   public unitPosition: "top" | "bottom" = "top";
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false })
   public formatOptions: Intl.NumberFormatOptions = {};
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
   protected render() {
-    const formatted = formatNumber(
-      this.value,
-      this.hass?.locale,
-      this.formatOptions
-    );
+    const locale = this._i18n!.locale;
+    const formatted = formatNumber(this.value, locale, this.formatOptions);
     const [integer] = formatted.includes(".")
       ? formatted.split(".")
       : formatted.split(",");
@@ -33,9 +34,7 @@ export class HaBigNumber extends LitElement {
     const temperatureDecimal = formatted.replace(integer, "");
 
     const formattedValue = `${this.value}${
-      this.unit
-        ? `${blankBeforeUnit(this.unit, this.hass?.locale)}${this.unit}`
-        : ""
+      this.unit ? `${blankBeforeUnit(this.unit, locale)}${this.unit}` : ""
     }`;
 
     const unitBottom = this.unitPosition === "bottom";

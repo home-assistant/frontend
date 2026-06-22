@@ -294,6 +294,7 @@ export class HaDrawer extends LitElement {
       border-inline-end: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
       box-sizing: border-box;
       transition: width var(--ha-animation-duration-normal) ease;
+      z-index: 6;
     }
 
     .app-content {

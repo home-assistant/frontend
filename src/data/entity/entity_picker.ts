@@ -41,45 +41,75 @@ export const entityComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
+export interface GetEntitiesOptions {
+  includeDomains?: string[];
+  excludeDomains?: string[];
+  entityFilter?: HaEntityPickerEntityFilterFunc;
+  includeDeviceClasses?: string[];
+  includeUnitOfMeasurement?: string[];
+  includeEntities?: string[];
+  excludeEntities?: string[];
+  value?: string;
+  idPrefix?: string;
+}
+
 export const getEntities = (
   hass: HomeAssistant,
-  includeDomains?: string[],
-  excludeDomains?: string[],
-  entityFilter?: HaEntityPickerEntityFilterFunc,
-  includeDeviceClasses?: string[],
-  includeUnitOfMeasurement?: string[],
-  includeEntities?: string[],
-  excludeEntities?: string[],
-  value?: string,
-  idPrefix = ""
+  options?: GetEntitiesOptions
 ): EntityComboBoxItem[] => {
+  const {
+    includeDomains,
+    excludeDomains,
+    entityFilter,
+    includeDeviceClasses,
+    includeUnitOfMeasurement,
+    includeEntities,
+    excludeEntities,
+    value,
+    idPrefix = "",
+  } = options ?? {};
+
   let items: EntityComboBoxItem[];
 
   let entityIds = Object.keys(hass.states);
 
+  // These run over every entity, so use Sets for O(1) membership instead of
+  // repeated Array.includes scans.
   if (includeEntities) {
+    const includeEntitiesSet = new Set(includeEntities);
     entityIds = entityIds.filter((entityId) =>
-      includeEntities.includes(entityId)
+      includeEntitiesSet.has(entityId)
     );
   }
 
   if (excludeEntities) {
+    const excludeEntitiesSet = new Set(excludeEntities);
     entityIds = entityIds.filter(
-      (entityId) => !excludeEntities.includes(entityId)
+      (entityId) => !excludeEntitiesSet.has(entityId)
     );
   }
 
   if (includeDomains) {
+    const includeDomainsSet = new Set(includeDomains);
     entityIds = entityIds.filter((eid) =>
-      includeDomains.includes(computeDomain(eid))
+      includeDomainsSet.has(computeDomain(eid))
     );
   }
 
   if (excludeDomains) {
+    const excludeDomainsSet = new Set(excludeDomains);
     entityIds = entityIds.filter(
-      (eid) => !excludeDomains.includes(computeDomain(eid))
+      (eid) => !excludeDomainsSet.has(computeDomain(eid))
     );
   }
+
+  // These values are the same for every entity, so compute them once instead
+  // of inside the map over (potentially thousands of) entities.
+  const isRTL = computeRTL(
+    hass.language,
+    hass.translationMetadata.translations
+  );
+  const domainNames = new Map<string, string>();
 
   items = entityIds.map<EntityComboBoxItem>((entityId) => {
     const stateObj = hass.states[entityId];
@@ -94,12 +124,12 @@ export const getEntities = (
       hass.floors
     );
 
-    const domainName = domainToName(hass.localize, computeDomain(entityId));
-
-    const isRTL = computeRTL(
-      hass.language,
-      hass.translationMetadata.translations
-    );
+    const domain = computeDomain(entityId);
+    let domainName = domainNames.get(domain);
+    if (domainName === undefined) {
+      domainName = domainToName(hass.localize, domain);
+      domainNames.set(domain, domainName);
+    }
 
     const primary = entityName || deviceName || entityId;
     const secondary = [areaName, entityName ? deviceName : undefined]

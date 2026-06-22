@@ -80,7 +80,6 @@ class HaAttributes extends LitElement {
                       </div>
                       <div class="value">
                         <ha-attribute-value
-                          .hass=${this.hass}
                           .attribute=${attribute}
                           .stateObj=${this.stateObj}
                         ></ha-attribute-value>

@@ -135,9 +135,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     const offlineDevices = nodes.filter(
       (node) => node.status === NodeStatus.Dead
     ).length;
-    const notReadyDevices =
-      nodes.filter((node) => !node.ready && node.status !== NodeStatus.Dead)
-        .length + provisioningDevices;
+    // Not-ready nodes are included but their interview has not completed yet.
+    // They are distinct from the provisioning entries, which are not included.
+    const notReadyDevices = nodes.filter(
+      (node) => !node.ready && node.status !== NodeStatus.Dead
+    ).length;
 
     return html`
       <hass-subpage
@@ -170,7 +172,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         </div>
         <ha-button
           slot="fab"
-          size="large"
+          size="l"
           @click=${this._addNodeClicked}
           .disabled=${this._status !== "connected" ||
           (this._network?.controller.inclusion_state !== InclusionState.Idle &&
@@ -201,8 +203,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
     if (notReadyDevices > 0) {
       statusParts.push(
-        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_included", {
+        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_ready", {
           count: notReadyDevices,
+        })
+      );
+    }
+    if (provisioningDevices > 0) {
+      statusParts.push(
+        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_included", {
+          count: provisioningDevices,
         })
       );
     }
@@ -482,7 +491,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._downloadBackup}
                     >
                       <ha-svg-icon
@@ -508,7 +517,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._restoreButtonClick}
                     >
                       ${this.hass.localize(
@@ -537,7 +546,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       appearance="plain"
                       slot="end"
-                      size="small"
+                      size="s"
                       @click=${this._openConfigFlow}
                     >
                       ${this.hass.localize(
@@ -978,7 +987,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           gap: var(--ha-space-4);
         }
 
-        ha-button[size="small"] ha-svg-icon {
+        ha-button[size="s"] ha-svg-icon {
           --mdc-icon-size: 16px;
         }
 

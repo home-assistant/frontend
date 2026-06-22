@@ -52,6 +52,23 @@ export const rowStyles = css`
   ha-automation-row-event-chip.event-chip {
     position: absolute;
   }
+
+  .icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .note-indicator {
+    color: var(--ha-color-on-neutral-normal);
+  }
+  .note-indicator + ha-tooltip::part(body) {
+    cursor: default;
+    max-width: 300px;
+  }
+  .note-indicator + ha-tooltip p {
+    white-space: pre-wrap;
+    margin: 0;
+  }
 `;
 
 export const editorStyles = css`

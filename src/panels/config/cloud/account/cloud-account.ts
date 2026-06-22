@@ -218,7 +218,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               .cloudStatus=${this.cloudStatus}
             ></cloud-ice-servers-pref>
 
-            <ha-tip .hass=${this.hass}>
+            <ha-tip>
               <a href="/config/voice-assistants">
                 ${this.hass.localize(
                   "ui.panel.config.cloud.account.tip_moved_voice_assistants"

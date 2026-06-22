@@ -84,7 +84,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
           `
         : nothing}
       <ha-dropdown @wa-select=${this._addBadge}>
-        <ha-button slot="trigger" appearance="filled" size="small">
+        <ha-button slot="trigger" appearance="filled" size="s">
           <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
           ${this.hass.localize(`ui.panel.lovelace.editor.heading-badges.add`)}
         </ha-button>

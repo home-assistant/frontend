@@ -688,9 +688,9 @@ export class HaConfigEntities extends LitElement {
         }
 
         const labels = labelReg && entry?.labels;
-        const labelsEntries = (labels || []).map(
-          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-        );
+        const labelsEntries = (labels || [])
+          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
 
         const entityName = computeEntityEntryName(
           entry as EntityRegistryEntry,
@@ -774,7 +774,11 @@ export class HaConfigEntities extends LitElement {
             .checked=${selected}
             .indeterminate=${partial}
           ></ha-checkbox>
-          <ha-label .color=${label.color} .description=${label.description}>
+          <ha-label
+            .color=${label.color}
+            .description=${label.description}
+            class="text-ellipsis"
+          >
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1010,7 +1014,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-domains>
         <ha-filter-integrations
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1050,7 +1053,7 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         ${includeAddDeviceFab
-          ? html`<ha-button size="large" @click=${this._addDevice} slot="fab">
+          ? html`<ha-button size="l" @click=${this._addDevice} slot="fab">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.devices.add_device")}
             </ha-button>`
@@ -1092,6 +1095,7 @@ export class HaConfigEntities extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
@@ -1099,7 +1103,7 @@ export class HaConfigEntities extends LitElement {
     const label = this._searchParms.get("label");
     const voiceAssistant = this._searchParms.get("voice_assistant");
 
-    if (!domain && !configEntry && !label && !device) {
+    if (!area && !domain && !configEntry && !label && !device) {
       return;
     }
 
@@ -1108,6 +1112,7 @@ export class HaConfigEntities extends LitElement {
 
     this._filters = {
       "ha-filter-states": [],
+      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
       "ha-filter-integrations": domain ? [domain] : [],
       "ha-filter-devices": device ? [device] : [],
       "ha-filter-labels": label ? [label] : [],
@@ -1173,9 +1178,17 @@ export class HaConfigEntities extends LitElement {
       return;
     }
 
+    // Only the *set* of entity ids matters for the list below. A plain state
+    // value change on an existing entity cannot add an "entity without unique
+    // id", so detecting a newly added entity lets us skip the (potentially
+    // large) rebuild on every state update, which fires constantly.
+    const stateEntityAdded =
+      changedProps.has("hass") &&
+      (!oldHass ||
+        Object.keys(this.hass.states).some((id) => !(id in oldHass.states)));
+
     if (
-      (changedProps.has("hass") &&
-        (!oldHass || oldHass.states !== this.hass.states)) ||
+      stateEntityAdded ||
       changedProps.has("_entities") ||
       changedProps.has("_entitySources") ||
       changedProps.has("_exposedEntities")
@@ -1672,9 +1685,13 @@ ${rejected
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;
         }
-        ha-dropdown::part(menu),
-        ha-dropdown::part(submenu) {
+        ha-dropdown::part(menu) {
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
+        }
+        ha-dropdown-item::part(submenu) {
+          max-width: calc(60vw - var(--ha-space-8));
+          max-height: calc(100vh - var(--ha-space-8));
+          overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;

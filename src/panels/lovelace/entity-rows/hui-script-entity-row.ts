@@ -2,7 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-button";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ScriptEntity } from "../../../data/script";
 import { canRun, hasScriptFields } from "../../../data/script";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -50,7 +50,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.state === "on"
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               variant="danger"
               @click=${this._cancelScript}
             >
@@ -66,10 +66,9 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<ha-button
               appearance="plain"
-              size="small"
+              size="s"
               @click=${this._runScript}
-              .disabled=${isUnavailableState(stateObj.state) ||
-              !canRun(stateObj)}
+              .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
             >
               ${this._config.action_name ||
               this.hass!.localize("ui.card.script.run")}

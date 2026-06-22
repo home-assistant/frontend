@@ -6,8 +6,9 @@ import {
   mdiInformationOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
@@ -39,7 +40,9 @@ class HaAlert extends LitElement {
 
   @property({ type: Boolean }) public dismissable = false;
 
-  @property({ attribute: false }) public localize?: LocalizeFunc;
+  @state()
+  @consumeLocalize()
+  private _localize?: LocalizeFunc;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -68,7 +71,7 @@ class HaAlert extends LitElement {
               ${this.dismissable
                 ? html`<ha-icon-button
                     @click=${this._dismissClicked}
-                    .label=${this.localize!("ui.common.dismiss_alert")}
+                    .label=${this._localize?.("ui.common.dismiss_alert")}
                     .path=${mdiClose}
                   ></ha-icon-button>`
                 : nothing}

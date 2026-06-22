@@ -24,7 +24,7 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: dev
           persist-credentials: false
@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli@23.7.3 deploy --dir=cast/dist --alias dev
+          npx -y netlify-cli deploy --dir=cast/dist --alias dev
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_CAST_SITE_ID }}
@@ -60,7 +60,7 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           ref: master
           persist-credentials: false
@@ -82,7 +82,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli@23.7.3 deploy --dir=cast/dist --prod
+          npx -y netlify-cli deploy --dir=cast/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_CAST_SITE_ID }}

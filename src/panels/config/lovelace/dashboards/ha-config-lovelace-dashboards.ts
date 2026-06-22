@@ -281,7 +281,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hideable: false,
         template: (dashboard) => html`
           <ha-icon-overflow-menu
-            .hass=${this.hass}
             narrow
             .items=${[
               {
@@ -441,7 +440,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             </ha-dropdown-item>
           </a>
         </ha-dropdown>
-        <ha-button slot="fab" size="large" @click=${this._addDashboard}>
+        <ha-button slot="fab" size="l" @click=${this._addDashboard}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.add_dashboard"

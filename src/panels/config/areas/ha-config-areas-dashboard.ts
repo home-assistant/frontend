@@ -82,8 +82,6 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public route!: Route;
 
   @state() private _hierarchy?: AreasFloorHierarchy;
@@ -169,7 +167,6 @@ export class HaConfigAreasDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
@@ -321,7 +318,7 @@ export class HaConfigAreasDashboard extends LitElement {
             : nothing}
         </div>
         <ha-dropdown slot="fab" @wa-select=${this._handleCreateAction}>
-          <ha-button slot="trigger" id="fab" size="large">
+          <ha-button slot="trigger" id="fab" size="l">
             <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
             ${this.hass.localize("ui.common.add")}
           </ha-button>

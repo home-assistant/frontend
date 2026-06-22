@@ -78,7 +78,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       <hui-view-badges
-        .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
@@ -90,7 +89,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       ></div>
       ${this.lovelace?.editMode
         ? html`
-            <ha-button size="large" @click=${this._addCard}>
+            <ha-button size="l" @click=${this._addCard}>
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
             </ha-button>

@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
@@ -19,6 +20,10 @@ import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { SidebarConfig } from "../../../data/automation";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import type {
   Constructor,
   HomeAssistant,
@@ -46,7 +51,13 @@ export const ManualEditorMixin = <TConfig>(
 
     @property({ attribute: false }) public config!: TConfig;
 
-    @property({ attribute: false }) public dirty = false;
+    @consume({ context: dirtyStateContext, subscribe: true })
+    @state()
+    private _dirtyState?: DirtyStateContext;
+
+    protected get dirty(): boolean {
+      return this._dirtyState?.isDirty ?? false;
+    }
 
     @state() protected pastedConfig?: TConfig;
 
@@ -114,7 +125,7 @@ export const ManualEditorMixin = <TConfig>(
             <div class="fab-positioner">
               <ha-button
                 slot="fab"
-                size="large"
+                size="l"
                 class=${this.dirty ? "dirty" : ""}
                 .disabled=${this.saving}
                 @click=${this.saveConfig}

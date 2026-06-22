@@ -6,7 +6,7 @@ import { getColorByIndex } from "../common/color/colors";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
-import { isUnavailableState } from "./entity/entity";
+import { UNAVAILABLE } from "./entity/entity";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
 
 export interface Calendar {
@@ -54,7 +54,7 @@ export enum RecurrenceRange {
   THISANDFUTURE = "THISANDFUTURE",
 }
 
-export const enum CalendarEntityFeature {
+export enum CalendarEntityFeature {
   CREATE_EVENT = 1,
   DELETE_EVENT = 2,
   UPDATE_EVENT = 4,
@@ -120,7 +120,7 @@ export const getCalendars = (
     .filter(
       (eid) =>
         computeDomain(eid) === "calendar" &&
-        !isUnavailableState(hass.states[eid].state) &&
+        hass.states[eid].state !== UNAVAILABLE &&
         hass.entities[eid]?.hidden !== true
     )
     .sort()
@@ -256,6 +256,7 @@ export const normalizeSubscriptionEventData = (
     dtstart: eventStart,
     dtend: eventEnd,
     description: eventData.description ?? undefined,
+    location: eventData.location ?? undefined,
     uid: eventData.uid ?? undefined,
     recurrence_id: eventData.recurrence_id ?? undefined,
     rrule: eventData.rrule ?? undefined,

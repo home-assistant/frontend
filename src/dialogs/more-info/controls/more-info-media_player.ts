@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -11,12 +12,14 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import {
   startMediaProgressInterval,
@@ -37,6 +40,11 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import {
+  apiContext,
+  connectionContext,
+  formattersContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
@@ -51,12 +59,30 @@ import {
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+} from "../../../types";
 import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
@@ -116,12 +142,14 @@ class MoreInfoMediaPlayer extends LitElement {
       MediaPlayerEntityFeature.VOLUME_SET
     );
 
+    const assumedState = this.stateObj.attributes.assumed_state === true;
+
     return html`${(supportsFeature(
       this.stateObj!,
       MediaPlayerEntityFeature.VOLUME_SET
     ) ||
       supportsFeature(this.stateObj!, MediaPlayerEntityFeature.VOLUME_STEP)) &&
-    stateActive(this.stateObj!)
+    (stateActive(this.stateObj!) || assumedState)
       ? html`
           <div class="volume">
             ${supportsMute
@@ -130,7 +158,7 @@ class MoreInfoMediaPlayer extends LitElement {
                     .path=${this.stateObj.attributes.is_volume_muted
                       ? mdiVolumeOff
                       : mdiVolumeHigh}
-                    .label=${this.hass.localize(
+                    .label=${this._localize(
                       `ui.card.media_player.${
                         this.stateObj.attributes.is_volume_muted
                           ? "media_volume_unmute"
@@ -149,7 +177,7 @@ class MoreInfoMediaPlayer extends LitElement {
                   <ha-icon-button
                     action="volume_down"
                     .path=${mdiVolumeMinus}
-                    .label=${this.hass.localize(
+                    .label=${this._localize(
                       "ui.card.media_player.media_volume_down"
                     )}
                     @click=${this._handleClick}
@@ -157,7 +185,7 @@ class MoreInfoMediaPlayer extends LitElement {
                   <ha-icon-button
                     action="volume_up"
                     .path=${mdiVolumePlus}
-                    .label=${this.hass.localize(
+                    .label=${this._localize(
                       "ui.card.media_player.media_volume_up"
                     )}
                     @click=${this._handleClick}
@@ -208,13 +236,13 @@ class MoreInfoMediaPlayer extends LitElement {
     const sourceList = this.stateObj.attributes.source_list || [];
 
     return html`<ha-tooltip for="source-button">
-        ${this.hass.localize(`ui.card.media_player.source`)}
+        ${this._localize(`ui.card.media_player.source`)}
       </ha-tooltip>
       <ha-dropdown @wa-select=${this._handleSourceChange}>
         <ha-icon-button
           id="source-button"
           slot="trigger"
-          .label=${this.hass.localize(`ui.card.media_player.source`)}
+          .label=${this._localize(`ui.card.media_player.source`)}
           .path=${mdiLoginVariant}
         >
         </ha-icon-button>
@@ -224,7 +252,7 @@ class MoreInfoMediaPlayer extends LitElement {
               .value=${source}
               .selected=${source === this.stateObj?.attributes.source}
             >
-              ${this.hass.formatEntityAttributeValue(
+              ${this._formatters.formatEntityAttributeValue(
                 this.stateObj!,
                 "source",
                 source
@@ -247,7 +275,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     return html`<ha-tooltip for="sound-mode-button">
-        ${this.hass.localize(`ui.card.media_player.sound_mode`)}
+        ${this._localize(`ui.card.media_player.sound_mode`)}
       </ha-tooltip>
       <ha-dropdown @wa-select=${this._handleSoundModeChange}>
         <ha-icon-button
@@ -263,7 +291,7 @@ class MoreInfoMediaPlayer extends LitElement {
               .value=${soundMode}
               .selected=${soundMode === this.stateObj?.attributes.sound_mode}
             >
-              ${this.hass.formatEntityAttributeValue(
+              ${this._formatters.formatEntityAttributeValue(
                 this.stateObj!,
                 "sound_mode",
                 soundMode
@@ -287,7 +315,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
     return html`<ha-icon-button
         @click=${this._showGroupMediaPlayers}
-        .title=${this.hass.localize("ui.card.media_player.join")}
+        .title=${this._localize("ui.card.media_player.join")}
         id="grouping-button"
       >
         <div class="grouping">
@@ -298,7 +326,7 @@ class MoreInfoMediaPlayer extends LitElement {
         </div>
       </ha-icon-button>
       <ha-tooltip for="grouping-button">
-        ${this.hass.localize("ui.card.media_player.join")}
+        ${this._localize("ui.card.media_player.join")}
       </ha-tooltip>`;
   }
 
@@ -313,12 +341,14 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   protected render() {
-    if (!this.stateObj) {
+    if (!this.stateObj || !this._localize) {
       return nothing;
     }
 
     if (this.stateObj.state === UNAVAILABLE) {
-      return this._renderEmptyCover(this.hass.formatEntityState(this.stateObj));
+      return this._renderEmptyCover(
+        this._formatters.formatEntityState(this.stateObj)
+      );
     }
 
     const stateObj = this.stateObj;
@@ -327,8 +357,8 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.entity_picture_local ||
       stateObj.attributes.entity_picture ||
       "";
-    const coverUrl = coverUrlRaw ? this.hass.hassUrl(coverUrlRaw) : "";
-    const playerObj = new HassMediaPlayerEntity(this.hass, this.stateObj);
+    const coverUrl = coverUrlRaw ? this._connection.hassUrl(coverUrlRaw) : "";
+    const playerObj = new HassMediaPlayerEntity(this._api, this.stateObj);
 
     const position = Math.max(Math.floor(playerObj.currentProgress || 0), 0);
     const duration = Math.max(stateObj.attributes.media_duration || 0, 0);
@@ -352,7 +382,7 @@ class MoreInfoMediaPlayer extends LitElement {
             />
           </div>`
         : this._renderEmptyCover(
-            this.hass.formatEntityState(this.stateObj),
+            this._formatters.formatEntityState(this.stateObj),
             mdiMusicNote
           )}
       ${primaryTitle || secondaryTitle
@@ -386,7 +416,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 max=${duration}
                 step="1"
                 .value=${position}
-                aria-label=${this.hass.localize(
+                aria-label=${this._localize(
                   "ui.card.media_player.track_position"
                 )}
                 @change=${this._handleMediaSeekChanged}
@@ -413,7 +443,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       action=${action}
                       @click=${this._handleClick}
                       .path=${control.icon}
-                      .label=${this.hass.localize(
+                      .label=${this._localize(
                         `ui.card.media_player.${control.action}`
                       )}
                     >
@@ -431,14 +461,14 @@ class MoreInfoMediaPlayer extends LitElement {
                   ? html`<ha-button
                       variant="brand"
                       appearance="filled"
-                      size="medium"
+                      size="m"
                       action=${action}
                       @click=${this._handleClick}
                       class="center-control"
                     >
                       <ha-svg-icon
                         .path=${control.icon}
-                        aria-label=${this.hass.localize(
+                        aria-label=${this._localize(
                           `ui.card.media_player.${control.action}`
                         )}
                       ></ha-svg-icon>
@@ -452,7 +482,7 @@ class MoreInfoMediaPlayer extends LitElement {
                       action=${action}
                       @click=${this._handleClick}
                       .path=${control.icon}
-                      .label=${this.hass.localize(
+                      .label=${this._localize(
                         `ui.card.media_player.${control.action}`
                       )}
                     >
@@ -467,7 +497,7 @@ class MoreInfoMediaPlayer extends LitElement {
           supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
             ? this._renderControlButton(
                 "browse_media",
-                this.hass.localize("ui.card.media_player.browse_media"),
+                this._localize("ui.card.media_player.browse_media"),
                 mdiPlayBoxMultiple,
                 this._showBrowseMedia
               )
@@ -477,7 +507,7 @@ class MoreInfoMediaPlayer extends LitElement {
           ${turnOn
             ? this._renderControlButton(
                 "turn_on",
-                this.hass.localize(`ui.card.media_player.${turnOn.action}`),
+                this._localize(`ui.card.media_player.${turnOn.action}`),
                 turnOn.icon,
                 this._handleClick,
                 turnOn.action
@@ -486,7 +516,7 @@ class MoreInfoMediaPlayer extends LitElement {
           ${turnOff
             ? this._renderControlButton(
                 "turn_off",
-                this.hass.localize(`ui.card.media_player.${turnOff.action}`),
+                this._localize(`ui.card.media_player.${turnOff.action}`),
                 turnOff.icon,
                 this._handleClick,
                 turnOff.action
@@ -708,7 +738,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
   private _handleClick(e: MouseEvent): void {
     handleMediaControlClick(
-      this.hass!,
+      this._api,
       this.stateObj!,
       (e.currentTarget as HTMLElement).getAttribute("action")!
     );
@@ -748,14 +778,14 @@ class MoreInfoMediaPlayer extends LitElement {
   }
 
   private _toggleMute() {
-    this.hass!.callService("media_player", "volume_mute", {
+    this._api.callService("media_player", "volume_mute", {
       entity_id: this.stateObj!.entity_id,
       is_volume_muted: !this.stateObj!.attributes.is_volume_muted,
     });
   }
 
   private _setVolume(value: number) {
-    this.hass!.callService("media_player", "volume_set", {
+    this._api.callService("media_player", "volume_set", {
       entity_id: this.stateObj!.entity_id,
       volume_level: value / 100,
     });
@@ -767,7 +797,7 @@ class MoreInfoMediaPlayer extends LitElement {
       return;
     }
 
-    this.hass.callService("media_player", "select_source", {
+    this._api.callService("media_player", "select_source", {
       entity_id: this.stateObj!.entity_id,
       source,
     });
@@ -779,7 +809,7 @@ class MoreInfoMediaPlayer extends LitElement {
       return;
     }
 
-    this.hass.callService("media_player", "select_sound_mode", {
+    this._api.callService("media_player", "select_sound_mode", {
       entity_id: this.stateObj!.entity_id,
       sound_mode: soundMode,
     });
@@ -791,7 +821,7 @@ class MoreInfoMediaPlayer extends LitElement {
       entityId: this.stateObj!.entity_id,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
         mediaPlayerPlayMedia(
-          this.hass,
+          this._api,
           this.stateObj!.entity_id,
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
@@ -811,7 +841,7 @@ class MoreInfoMediaPlayer extends LitElement {
     }
 
     const newValue = (e.target as any).value;
-    this.hass.callService("media_player", "media_seek", {
+    this._api.callService("media_player", "media_seek", {
       entity_id: this.stateObj.entity_id,
       seek_position: newValue,
     });

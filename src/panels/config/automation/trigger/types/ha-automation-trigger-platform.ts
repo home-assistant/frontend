@@ -29,6 +29,7 @@ const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
   "trigger",
   "target",
   "alias",
+  "note",
   "id",
   "variables",
   "enabled",
@@ -200,6 +201,9 @@ export class HaPlatformTrigger extends LitElement {
               <ha-icon-button
                 .path=${mdiHelpCircleOutline}
                 class="help-icon"
+                .label=${this.hass.localize(
+                  "ui.components.service-control.integration_doc"
+                )}
               ></ha-icon-button>
             </a>`
           : nothing}

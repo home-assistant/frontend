@@ -16,10 +16,11 @@ import {
   union,
 } from "superstruct";
 import { ContextProvider } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { hasLocation } from "../../../../common/entity/has_location";
+import { getEntityLocation } from "../../../../common/entity/get_entity_location";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { orderProperties } from "../../../../common/util/order-properties";
 import "../../../../components/ha-form/ha-form";
@@ -275,9 +276,12 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     this._locationEntities = !this.hass
       ? []
       : Object.keys(this.hass!.states).filter((entity_id) =>
-          hasLocation(this.hass!.states[entity_id])
+          getEntityLocation(this.hass!.states[entity_id], this.hass!.states)
         );
   }
+
+  private _entityHasLocation = (stateObj: HassEntity) =>
+    !!getEntityLocation(stateObj, this.hass!.states);
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -320,7 +324,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       <hui-entity-editor
         .hass=${this.hass}
         .entities=${configEntities}
-        .entityFilter=${hasLocation}
+        .entityFilter=${this._entityHasLocation}
         can-edit
         .required=${!this._config.show_all}
         @entities-changed=${this._entitiesValueChanged}
@@ -611,6 +615,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           margin: 0;
           margin-bottom: var(--ha-space-1);
           color: var(--secondary-text-color);
+        }
+        ha-selector-select {
+          display: block;
+          margin-inline-start: var(--ha-space-1);
         }
       `,
     ];

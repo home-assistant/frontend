@@ -26,7 +26,7 @@ jobs:
     if: github.repository_owner == 'home-assistant'
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -36,7 +36,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@f6f29a7ee3fa0eccadf3620a7b9ee00ab54ec03b # master
+        uses: home-assistant/actions/helpers/verify-version@e91ad1948e57189485b9c1ad608af0c303946f89 # master
 
       - name: Setup Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
@@ -77,14 +77,27 @@ jobs:
         env:
           GITHUB_REF: ${{ github.ref }}
         run: |
-          # Sleep to give pypi time to populate the new version across mirrors
-          sleep 240
           version=$(echo "$GITHUB_REF" | awk -F"/" '{print $NF}' )
+          # Wait for the package to become available on PyPI
+          echo "Waiting for home-assistant-frontend==$version to appear on PyPI..."
+          for i in $(seq 1 30); do
+            status=$(curl -s -o /dev/null -w "%{http_code}" "https://pypi.org/pypi/home-assistant-frontend/$version/json")
+            if [ "$status" = "200" ]; then
+              echo "Package is available on PyPI!"
+              break
+            fi
+            if [ "$i" = "30" ]; then
+              echo "Timed out waiting for package to appear on PyPI"
+              exit 1
+            fi
+            echo "Not available yet (HTTP $status), retrying in 30 seconds... ($i/30)"
+            sleep 30
+          done
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       # home-assistant/wheels doesn't support SHA pinning
       - name: Build wheels
-        uses: home-assistant/wheels@e5742a69d69f0e274e2689c998900c7d19652c21 # 2025.12.0
+        uses: home-assistant/wheels@34957438948e0b3dcde73c77750643dadae594f5 # 2026.06.0
         with:
           abi: cp314
           tag: musllinux_1_2
@@ -100,7 +113,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
       - name: Setup Node

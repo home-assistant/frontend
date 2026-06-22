@@ -95,10 +95,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   "ui.panel.config.voice_assistants.satellite_wizard.local.failed_secondary"
                 )}
               </p>
-              <ha-button
-                appearance="plain"
-                size="small"
-                @click=${this._prevStep}
+              <ha-button appearance="plain" size="s" @click=${this._prevStep}
                 >${this.hass.localize("ui.common.back")}</ha-button
               >
               <ha-button
@@ -108,7 +105,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 )}
                 target="_blank"
                 rel="noreferrer noopener"
-                size="small"
+                size="s"
                 appearance="plain"
               >
                 <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
@@ -131,10 +128,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                     "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_secondary"
                   )}
                 </p>
-                <ha-button
-                  appearance="plain"
-                  size="small"
-                  @click=${this._prevStep}
+                <ha-button appearance="plain" size="s" @click=${this._prevStep}
                   >${this.hass.localize("ui.common.back")}</ha-button
                 >
                 <ha-button
@@ -145,7 +139,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   target="_blank"
                   rel="noreferrer noopener"
                   appearance="plain"
-                  size="small"
+                  size="s"
                 >
                   <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
                   ${this.hass.localize(

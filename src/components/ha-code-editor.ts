@@ -1600,8 +1600,8 @@ export class HaCodeEditor extends ReactiveElement {
           // Filter states based on what's typed
           const filteredStates = typedText
             ? states.filter((entityState) =>
-                entityState.label
-                  .toLowerCase()
+                entityState.displayLabel
+                  ?.toLowerCase()
                   .startsWith(typedText.toLowerCase())
               )
             : states;
@@ -1658,8 +1658,8 @@ export class HaCodeEditor extends ReactiveElement {
               // Filter states based on what's typed
               const filteredStates = typedText
                 ? states.filter((entityState) =>
-                    entityState.label
-                      .toLowerCase()
+                    entityState.displayLabel
+                      ?.toLowerCase()
                       .startsWith(typedText.toLowerCase())
                   )
                 : states;

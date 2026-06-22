@@ -48,7 +48,6 @@ class StepFlowAbort extends LitElement {
         showConfigFlowDialog(this.params.dialogParentElement!, {
           dialogClosedCallback: this.params.dialogClosedCallback,
           startFlowHandler: this.handler,
-          showAdvanced: this.hass.userData?.showAdvanced,
           navigateToResult: this.params.navigateToResult,
         });
       },

@@ -1,11 +1,10 @@
 import { mdiPlayBox, mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import { getSignedPath } from "../../data/auth";
 import type { MediaPickedEvent } from "../../data/media-player";
 import {
   MediaClassBrowserSettings,
@@ -13,14 +12,10 @@ import {
 } from "../../data/media-player";
 import type { MediaSelector, MediaSelectorValue } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import {
-  brandsUrl,
-  extractDomainFromBrandUrl,
-  isBrandUrl,
-} from "../../util/brands-url";
 import "../ha-alert";
 import "../ha-form/ha-form";
 import type { SchemaUnion } from "../ha-form/types";
+import "../media-player/ha-media-browser-thumbnail";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../ha-picture-upload";
@@ -54,8 +49,6 @@ export class HaMediaSelector extends LitElement {
     filter_entity?: string | string[];
   };
 
-  @state() private _thumbnailUrl?: string | null;
-
   private _contextEntities: string[] | undefined;
 
   private get _hasAccept(): boolean {
@@ -66,35 +59,6 @@ export class HaMediaSelector extends LitElement {
     if (changedProps.has("context")) {
       if (!this._hasAccept) {
         this._contextEntities = ensureArray(this.context?.filter_entity);
-      }
-    }
-
-    if (changedProps.has("value")) {
-      const thumbnail = this.value?.metadata?.thumbnail;
-      const oldThumbnail = (changedProps.get("value") as this["value"])
-        ?.metadata?.thumbnail;
-      if (thumbnail === oldThumbnail) {
-        return;
-      }
-      if (thumbnail && isBrandUrl(thumbnail)) {
-        // The backend is not aware of the theme used by the users,
-        // so we rewrite the URL to show a proper icon
-        this._thumbnailUrl = brandsUrl(
-          {
-            domain: extractDomainFromBrandUrl(thumbnail),
-            type: "icon",
-            darkOptimized: this.hass.themes?.darkMode,
-          },
-          this.hass.auth.data.hassUrl
-        );
-      } else if (thumbnail && thumbnail.startsWith("/")) {
-        this._thumbnailUrl = undefined;
-        // Thumbnails served by local API require authentication
-        getSignedPath(this.hass, thumbnail).then((signedPath) => {
-          this._thumbnailUrl = signedPath.path;
-        });
-      } else {
-        this._thumbnailUrl = thumbnail;
       }
     }
   }
@@ -186,10 +150,12 @@ export class HaMediaSelector extends LitElement {
                               ),
                           })}
                           image"
-                          style=${this._thumbnailUrl
-                            ? `background-image: url(${this._thumbnailUrl});`
-                            : ""}
-                        ></div>
+                        >
+                          <ha-media-browser-thumbnail
+                            .hass=${this.hass}
+                            .url=${this.value.metadata.thumbnail}
+                          ></ha-media-browser-thumbnail>
+                        </div>
                       `
                     : html`
                         <div class="icon-holder image">
@@ -224,7 +190,7 @@ export class HaMediaSelector extends LitElement {
               ? html`<div>
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     variant="danger"
                     @click=${this._clearValue}
                   >
@@ -410,13 +376,11 @@ export class HaMediaSelector extends LitElement {
       right: 0;
       left: 0;
       bottom: 0;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
+      --ha-media-browser-thumbnail-fit: cover;
     }
     .centered-image {
       margin: 4px;
-      background-size: contain;
+      --ha-media-browser-thumbnail-fit: contain;
     }
     .icon-holder {
       display: flex;

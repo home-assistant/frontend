@@ -4,7 +4,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { clamp } from "../../../common/number/clamp";
 import "../../../components/ha-control-number-buttons";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
   type MediaPlayerEntity,
@@ -89,7 +89,7 @@ class HuiMediaPlayerVolumeButtonsCardFeature
     }
 
     const stateObj = this._stateObj;
-    const disabled = isUnavailableState(stateObj.state);
+    const disabled = stateObj.state === UNAVAILABLE;
 
     const position =
       stateObj.attributes.volume_level != null

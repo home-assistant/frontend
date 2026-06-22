@@ -183,6 +183,7 @@ export class HaControlSelectMenu extends LitElement {
         gap: 10px;
         width: 100%;
         user-select: none;
+        font-family: var(--ha-font-family-body, inherit);
         font-style: normal;
         font-weight: var(--ha-font-weight-normal);
         letter-spacing: 0.25px;

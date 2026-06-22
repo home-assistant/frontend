@@ -1,10 +1,15 @@
+import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import { css, html, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import { fetchBlueprints } from "../../../data/blueprint";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import type { BlueprintScriptConfig } from "../../../data/script";
 import { saveFabStyles } from "../automation/styles";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
@@ -15,7 +20,9 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
   @property({ type: Boolean }) public saving = false;
 
-  @property({ type: Boolean }) public dirty = false;
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext;
 
   protected get _config(): BlueprintScriptConfig {
     return this.config;
@@ -34,8 +41,8 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
       <ha-button
         slot="fab"
-        size="large"
-        class=${this.dirty ? "dirty" : ""}
+        size="l"
+        class=${this._dirtyState?.isDirty ? "dirty" : ""}
         .disabled=${this.saving}
         @click=${this._saveScript}
       >

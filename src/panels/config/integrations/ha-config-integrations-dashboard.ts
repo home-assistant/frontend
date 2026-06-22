@@ -27,7 +27,6 @@ import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
-import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
@@ -129,8 +128,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public configEntries?: ConfigEntryExtended[];
@@ -164,8 +161,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   @state() private _searchParams = new URLSearchParams(window.location.search);
 
   @state() private _filter: string = history.state?.filter || "";
-
-  @state() private _diagnosticHandlers?: Record<string, boolean>;
 
   @state() private _logInfos?: Record<string, IntegrationLogInfo>;
 
@@ -388,16 +383,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     this._handleRouteChanged();
     this._scanUSBDevices();
     this._scanImprovDevices();
-
-    if (isComponentLoaded(this.hass.config, "diagnostics")) {
-      fetchDiagnosticHandlers(this.hass).then((infos) => {
-        const handlers = {};
-        for (const info of infos) {
-          handlers[info.domain] = info.handlers.config_entry;
-        }
-        this._diagnosticHandlers = handlers;
-      });
-    }
   }
 
   protected updated(changed: PropertyValues<this>) {
@@ -513,7 +498,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .backPath=${this._searchParams.has("historyBack")
           ? undefined
           : "/config"}
@@ -560,7 +544,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         )}
                         <ha-button
                           appearance="plain"
-                          size="small"
+                          size="s"
                           @click=${this._toggleShowDisabled}
                         >
                           ${this.hass.localize(
@@ -653,9 +637,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
                     .domainEntities=${this._domainEntities[domain] || []}
-                    .supportsDiagnostics=${this._diagnosticHandlers
-                      ? this._diagnosticHandlers[domain]
-                      : false}
                     .logInfo=${this._logInfos
                       ? this._logInfos[domain]
                       : nothing}
@@ -680,7 +661,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     <ha-button
                       @click=${this._createFlow}
                       appearance="filled"
-                      size="small"
+                      size="s"
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${this.hass.localize(
@@ -712,7 +693,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         <ha-button
                           @click=${this._createFlow}
                           appearance="filled"
-                          size="small"
+                          size="s"
                         >
                           <ha-svg-icon
                             slot="start"
@@ -726,7 +707,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     `
                   : ""}
         </div>
-        <ha-button slot="fab" size="large" @click=${this._createFlow}>
+        <ha-button slot="fab" size="l" @click=${this._createFlow}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.integrations.add_integration")}
         </ha-button>
@@ -989,7 +970,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
               this.hass,
               integration.supported_by!
             ),
-            showAdvanced: this.hass.userData?.showAdvanced,
           });
         },
       });
@@ -1045,9 +1025,13 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         .container {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          grid-gap: 8px 8px;
-          padding: 8px 16px 16px;
+          grid-template-columns: repeat(
+            auto-fill,
+            minmax(min(300px, 100%), 1fr)
+          );
+          gap: var(--ha-space-4);
+          padding: var(--ha-space-4);
+          margin: var(--ha-space-2);
         }
         .empty-message {
           margin: auto;

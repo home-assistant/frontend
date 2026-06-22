@@ -26,7 +26,7 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { SelectOption } from "../../../../data/selector";
-import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
+import { SENSOR_NUMERIC_DEVICE_CLASSES } from "../../../../data/sensor_numeric_device_classes";
 import type { HomeAssistant } from "../../../../types";
 import type {
   LovelaceCardFeatureConfig,
@@ -76,8 +76,6 @@ export class HuiAreaCardEditor
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: AreaCardConfig;
-
-  @state() private _numericDeviceClasses?: string[];
 
   @state() private _featureContext: AreaCardFeatureContext = {};
 
@@ -344,14 +342,6 @@ export class HuiAreaCardEditor
     };
   }
 
-  protected async updated() {
-    if (this.hass && !this._numericDeviceClasses) {
-      const { numeric_device_classes: sensorNumericDeviceClasses } =
-        await getSensorNumericDeviceClasses(this.hass);
-      this._numericDeviceClasses = sensorNumericDeviceClasses;
-    }
-  }
-
   private _featuresSchema = memoizeOne(
     (localize: LocalizeFunc, vertical: boolean) =>
       [
@@ -399,7 +389,7 @@ export class HuiAreaCardEditor
     const possibleSensorClasses = this._sensorClassesForArea(
       this._config.area,
       this._config.exclude_entities,
-      this._numericDeviceClasses
+      SENSOR_NUMERIC_DEVICE_CLASSES
     );
     const binarySelectOptions = this._buildBinaryOptions(
       possibleBinaryClasses,

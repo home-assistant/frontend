@@ -1,57 +1,62 @@
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+import { consume, type ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { consumeEntityState } from "../../common/decorators/consume-context-entry";
 import type { User } from "../../data/user";
 import { computeUserInitials } from "../../data/user";
-import type { CurrentUser, HomeAssistant } from "../../types";
+import { connectionContext, statesContext } from "../../data/context";
+import type { CurrentUser } from "../../types";
 
 @customElement("ha-user-badge")
 class UserBadge extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public user?: User | CurrentUser;
 
-  @state() private _personPicture?: string;
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
 
-  private _personEntityId?: string;
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
 
-  public willUpdate(changedProps: PropertyValues<this>) {
+  @state() private _personEntityId?: string;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["_personEntityId"] })
+  private _personState?: HassEntity;
+
+  public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (changedProps.has("user")) {
-      this._getPersonPicture();
-      return;
-    }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    // Re-scan for the user's person entity when the user changes, or when the
+    // states change while we don't have a (still-present) person entity. Once
+    // resolved, `_personState` keeps the picture up to date via
+    // `consumeEntityState`, so there's no need to rescan on every state update.
     if (
-      this._personEntityId &&
-      oldHass &&
-      this.hass.states[this._personEntityId] !==
-        oldHass.states[this._personEntityId]
+      changedProps.has("user") ||
+      (changedProps.has("_states") &&
+        (!this._personEntityId || !this._states?.[this._personEntityId]))
     ) {
-      const entityState = this.hass.states[this._personEntityId];
-      if (entityState) {
-        this._personPicture = entityState.attributes.entity_picture;
-      } else {
-        this._getPersonPicture();
-      }
-    } else if (!this._personEntityId && oldHass) {
-      this._getPersonPicture();
+      this._updatePersonEntityId();
     }
   }
 
   protected render() {
-    if (!this.hass || !this.user) {
+    if (!this.user) {
       return nothing;
     }
-    const picture = this._personPicture;
+    const picture =
+      this._personEntityId &&
+      (this._personState?.attributes.entity_picture as string | undefined);
 
-    if (picture) {
+    if (picture && this._connection) {
       return html`<div
         style=${styleMap({
-          backgroundImage: `url(${this.hass.hassUrl(picture)})`,
+          backgroundImage: `url(${this._connection.hassUrl(picture)})`,
         })}
         class="picture"
       ></div>`;
@@ -64,20 +69,18 @@ class UserBadge extends LitElement {
     </div>`;
   }
 
-  private _getPersonPicture() {
+  private _updatePersonEntityId() {
     this._personEntityId = undefined;
-    this._personPicture = undefined;
-    if (!this.hass || !this.user) {
+    if (!this.user || !this._states) {
       return;
     }
-    for (const entity of Object.values(this.hass.states)) {
+    for (const entity of Object.values(this._states)) {
       if (
         entity.attributes.user_id === this.user.id &&
         computeStateDomain(entity) === "person"
       ) {
         this._personEntityId = entity.entity_id;
-        this._personPicture = entity.attributes.entity_picture;
-        break;
+        return;
       }
     }
   }

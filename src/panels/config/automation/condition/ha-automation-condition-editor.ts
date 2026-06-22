@@ -123,6 +123,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     ev.stopPropagation();
     const value = {
       ...(this.condition.alias ? { alias: this.condition.alias } : {}),
+      ...(this.condition.note ? { note: this.condition.note } : {}),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });

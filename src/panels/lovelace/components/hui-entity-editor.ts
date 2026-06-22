@@ -229,9 +229,6 @@ export class HuiEntityEditor extends LitElement {
   }
 
   static styles = css`
-    ha-entity-picker {
-      margin-top: 8px;
-    }
     .entity {
       display: flex;
       align-items: center;
@@ -250,9 +247,19 @@ export class HuiEntityEditor extends LitElement {
     .entity ha-entity-picker {
       flex-grow: 1;
     }
+    ha-entity-picker:is([add-button]) {
+      display: block;
+      margin-inline-start: var(--ha-space-1);
+      margin-bottom: var(--ha-space-1);
+    }
     ha-md-list {
       gap: 8px;
       padding-top: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-md-list:has(> *) {
+      margin-bottom: var(--ha-space-2);
     }
     ha-md-list-item {
       border: 1px solid var(--divider-color);

@@ -21,7 +21,7 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-state-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -173,9 +173,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const entityState = stateObj.state;
 
     const isOffState =
-      !stateActive(stateObj) && !isUnavailableState(entityState);
+      !stateActive(stateObj) &&
+      entityState !== UNAVAILABLE &&
+      entityState !== UNKNOWN;
     const isUnavailable =
-      isUnavailableState(entityState) ||
+      entityState === UNAVAILABLE ||
+      entityState === UNKNOWN ||
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
@@ -750,9 +753,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ha-icon-button[action="media_play"],
     ha-icon-button[action="media_play_pause"],
     ha-icon-button[action="media_pause"],
-    ha-icon-button[action="media_stop"],
-    ha-icon-button[action="turn_on"],
-    ha-icon-button[action="turn_off"] {
+    ha-icon-button[action="media_stop"] {
       --ha-icon-button-size: 56px;
       --mdc-icon-size: 40px;
     }
@@ -841,8 +842,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     .narrow ha-icon-button[action="media_play"],
     .narrow ha-icon-button[action="media_play_pause"],
-    .narrow ha-icon-button[action="media_pause"],
-    .narrow ha-icon-button[action="turn_on"] {
+    .narrow
+      ha-icon-button[action="media_pause"]
+      .narrow
+      ha-icon-button[action="media_stop"] {
       --ha-icon-button-size: 50px;
       --mdc-icon-size: 36px;
     }

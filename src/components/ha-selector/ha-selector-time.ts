@@ -1,13 +1,22 @@
+import { consume } from "@lit/context";
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { transform } from "../../common/decorators/transform";
 import type { TimeSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import { internationalizationContext } from "../../data/context";
+import type { FrontendLocaleData } from "../../data/translation";
+import type { HomeAssistantInternationalization } from "../../types";
 import "../ha-time-input";
 import type { HaTimeInput } from "../ha-time-input";
 
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: TimeSelector;
 
@@ -31,7 +40,7 @@ export class HaTimeSelector extends LitElement {
     return html`
       <ha-time-input
         .value=${typeof this.value === "string" ? this.value : undefined}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
         .disabled=${this.disabled}
         .required=${this.required}
         clearable

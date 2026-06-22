@@ -131,7 +131,6 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                   ${editMode
                     ? html`
                         <hui-card-edit-mode
-                          .hass=${this.hass}
                           .lovelace=${this.lovelace!}
                           .path=${cardPath}
                           .hiddenOverlay=${this._dragging}

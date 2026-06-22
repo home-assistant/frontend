@@ -2,6 +2,7 @@ import {
   mdiAlertCircleOutline,
   mdiCheckCircleOutline,
   mdiChevronDown,
+  mdiCircleOffOutline,
   mdiHelpCircleOutline,
   mdiProgressClock,
   mdiProgressWrench,
@@ -43,7 +44,7 @@ class HaTracePicker extends LitElement {
         slot="field"
         appearance="filled"
         variant="neutral"
-        size="small"
+        size="s"
         @click=${this._openPicker}
       >
         ${this._renderTracePickerValue(this.value!)}
@@ -84,6 +85,11 @@ class HaTracePicker extends LitElement {
           "ui.panel.config.automation.trace.picker.debugged"
         );
         item.icon_path = mdiProgressWrench;
+      } else if (trace.not_triggered) {
+        item.secondary = this.hass.localize(
+          "ui.panel.config.automation.trace.picker.not_triggered"
+        );
+        item.icon_path = mdiCircleOffOutline;
       } else if (trace.script_execution === "finished") {
         item.secondary = this.hass.localize(
           "ui.panel.config.automation.trace.picker.finished",

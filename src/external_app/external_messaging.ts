@@ -320,6 +320,18 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
+export interface MatterCommissionFinish {
+  name: string | null;
+  success: boolean;
+}
+
+export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
+  id: number;
+  type: "command";
+  command: "matter/commission/finish";
+  payload: MatterCommissionFinish;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -331,6 +343,7 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
+  | EMIncomingMessageMatterCommissionFinish
   | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
@@ -346,6 +359,7 @@ export interface ExternalConfig {
   canWriteTag?: boolean;
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
+  hasMatterStatusReport?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;

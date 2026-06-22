@@ -1,7 +1,7 @@
 import type { HomeAssistant } from "../types";
 import type { Selector } from "./selector";
 
-export const enum AITaskEntityFeature {
+export enum AITaskEntityFeature {
   GENERATE_DATA = 1,
   SUPPORT_ATTACHMENTS = 2,
   GENERATE_IMAGE = 4,

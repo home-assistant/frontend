@@ -86,7 +86,7 @@ export class HuiUnusedEntities extends LitElement {
           selected: this._selectedEntities.length,
         })}"
       >
-        <ha-button size="large" @click=${this._addToLovelaceView}>
+        <ha-button size="l" @click=${this._addToLovelaceView}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}
         </ha-button>

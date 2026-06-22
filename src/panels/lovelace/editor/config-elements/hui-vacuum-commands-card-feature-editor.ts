@@ -3,17 +3,24 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import "../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../types";
-import { supportsVacuumCommand } from "../../card-features/hui-vacuum-commands-card-feature";
+import {
+  supportsVacuumCommand,
+  VACUUM_DEFAULT_COMMANDS,
+} from "../../card-features/hui-vacuum-commands-card-feature";
 import type {
   LovelaceCardFeatureContext,
   VacuumCommandsCardFeatureConfig,
 } from "../../card-features/types";
 import { VACUUM_COMMANDS } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+import {
+  customizableListData,
+  customizableListSchema,
+  processCustomizableListValue,
+} from "./customizable-list-feature";
 
 @customElement("hui-vacuum-commands-card-feature-editor")
 export class HuiVacuumCommandsCardFeatureEditor
@@ -31,27 +38,19 @@ export class HuiVacuumCommandsCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, stateObj?: HassEntity) =>
-      [
-        {
-          name: "commands",
-          selector: {
-            select: {
-              multiple: true,
-              mode: "list",
-              options: VACUUM_COMMANDS.filter(
-                (command) =>
-                  stateObj && supportsVacuumCommand(stateObj, command)
-              ).map((command) => ({
-                value: command,
-                label: `${localize(
-                  `ui.panel.lovelace.editor.features.types.vacuum-commands.commands_list.${command}`
-                )}`,
-              })),
-            },
-          },
-        },
-      ] as const
+    (stateObj: HassEntity | undefined, customize: boolean) =>
+      customizableListSchema({
+        field: "commands",
+        customize,
+        options: VACUUM_COMMANDS.filter(
+          (command) => stateObj && supportsVacuumCommand(stateObj, command)
+        ).map((command) => ({
+          value: command,
+          label: this.hass!.localize(
+            `ui.panel.lovelace.editor.features.types.vacuum-commands.commands_list.${command}`
+          ),
+        })),
+      })
   );
 
   protected render() {
@@ -60,15 +59,16 @@ export class HuiVacuumCommandsCardFeatureEditor
     }
 
     const stateObj = this.context?.entity_id
-      ? this.hass.states[this.context?.entity_id]
+      ? this.hass.states[this.context.entity_id]
       : undefined;
 
-    const schema = this._schema(this.hass.localize, stateObj);
+    const data = customizableListData(this._config, "commands");
+    const schema = this._schema(stateObj, data.customize);
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -77,23 +77,27 @@ export class HuiVacuumCommandsCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const stateObj = this.context?.entity_id
+      ? this.hass!.states[this.context.entity_id]
+      : undefined;
+    const defaults = VACUUM_DEFAULT_COMMANDS.filter(
+      (command) => stateObj && supportsVacuumCommand(stateObj, command)
+    );
+    const config =
+      processCustomizableListValue<VacuumCommandsCardFeatureConfig>(
+        ev.detail.value,
+        "commands",
+        defaults
+      );
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) => {
-    switch (schema.name) {
-      case "commands":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.features.types.vacuum-commands.${schema.name}`
-        );
-      default:
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}`
-        );
-    }
-  };
+  ) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.features.types.vacuum-commands.${schema.name}`
+    );
 }
 
 declare global {

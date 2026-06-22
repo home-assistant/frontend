@@ -150,7 +150,7 @@ class HaInputSelectForm extends LitElement {
             .disabled=${this.disabled}
           ></ha-input>
           <ha-button
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._addOption}
             .disabled=${this.disabled}

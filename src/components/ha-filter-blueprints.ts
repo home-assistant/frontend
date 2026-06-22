@@ -3,6 +3,8 @@ import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
@@ -19,6 +21,10 @@ import "./ha-list";
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -54,7 +60,7 @@ export class HaFilterBlueprints extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.blueprint.caption")}
+          ${this._localize("ui.panel.config.blueprint.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button

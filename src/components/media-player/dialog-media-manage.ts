@@ -227,7 +227,7 @@ class DialogMediaManage extends LitElement {
                 </ha-list>
               `}
         ${isComponentLoaded(this.hass.config, "hassio")
-          ? html`<ha-tip .hass=${this.hass}>
+          ? html`<ha-tip>
               ${this.hass.localize(
                 "ui.components.media-browser.file_management.tip_media_storage",
                 {

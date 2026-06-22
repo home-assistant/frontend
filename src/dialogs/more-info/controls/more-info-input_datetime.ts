@@ -1,20 +1,37 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
+import { apiContext, internationalizationContext } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import {
   setInputDateTimeValue,
   stateToIsoDateString,
 } from "../../../data/input_datetime";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+  ValueChangedEvent,
+} from "../../../types";
 
 @customElement("more-info-input_datetime")
 class MoreInfoInputDatetime extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   protected render() {
     if (!this.stateObj) {
@@ -25,7 +42,7 @@ class MoreInfoInputDatetime extends LitElement {
       ${this.stateObj.attributes.has_date
         ? html`
             <ha-date-input
-              .locale=${this.hass.locale}
+              .locale=${this._locale}
               .value=${stateToIsoDateString(this.stateObj)}
               .disabled=${this.stateObj.state === UNAVAILABLE}
               @value-changed=${this._dateChanged}
@@ -41,7 +58,7 @@ class MoreInfoInputDatetime extends LitElement {
                 : this.stateObj.attributes.has_date
                   ? this.stateObj.state.split(" ")[1]
                   : this.stateObj.state}
-              .locale=${this.hass.locale}
+              .locale=${this._locale}
               .disabled=${this.stateObj.state === UNAVAILABLE}
               @value-changed=${this._timeChanged}
               @click=${this._stopEventPropagation}
@@ -57,7 +74,7 @@ class MoreInfoInputDatetime extends LitElement {
 
   private _timeChanged(ev: ValueChangedEvent<string>): void {
     setInputDateTimeValue(
-      this.hass!,
+      this._api.callService,
       this.stateObj!.entity_id,
       ev.detail.value,
       this.stateObj!.attributes.has_date
@@ -68,7 +85,7 @@ class MoreInfoInputDatetime extends LitElement {
 
   private _dateChanged(ev: ValueChangedEvent<string>): void {
     setInputDateTimeValue(
-      this.hass!,
+      this._api.callService,
       this.stateObj!.entity_id,
       this.stateObj!.attributes.has_time
         ? this.stateObj!.state.split(" ")[1]

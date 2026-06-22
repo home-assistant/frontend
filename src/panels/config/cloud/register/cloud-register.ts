@@ -84,7 +84,10 @@ export class CloudRegister extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.cloud.register.information3"
                 )}
-                <a href="https://www.nabucasa.com" target="_blank"
+                <a
+                  href="https://www.nabucasa.com"
+                  target="_blank"
+                  rel="noreferrer"
                   >Nabu&nbsp;Casa,&nbsp;Inc</a
                 >
                 ${this.hass.localize(
@@ -217,7 +220,7 @@ export class CloudRegister extends LitElement {
 
     try {
       await cloudRegister(this.hass, email, password);
-      this._verificationEmailSent(email);
+      this._verificationEmailSent(email, "account_created");
     } catch (err: any) {
       this._password = "";
       this._requestInProgress = false;
@@ -238,15 +241,18 @@ export class CloudRegister extends LitElement {
 
     const email = emailField.value || "";
 
+    this._requestInProgress = true;
+
     const doResend = async (username: string) => {
       try {
         await cloudResendVerification(this.hass, username);
-        this._verificationEmailSent(username);
+        this._verificationEmailSent(username, "verification_email_sent");
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {
           await doResend(username.toLowerCase());
         } else {
+          this._requestInProgress = false;
           this._error =
             err && err.body && err.body.message
               ? err.body.message
@@ -258,13 +264,16 @@ export class CloudRegister extends LitElement {
     await doResend(email);
   }
 
-  private _verificationEmailSent(email: string) {
+  private _verificationEmailSent(
+    email: string,
+    messageKey: "account_created" | "verification_email_sent"
+  ) {
     this._requestInProgress = false;
     this._password = "";
     fireEvent(this, "cloud-email-changed", { value: email });
     fireEvent(this, "cloud-done", {
       flashMessage: this.hass.localize(
-        "ui.panel.config.cloud.register.account_created"
+        `ui.panel.config.cloud.register.${messageKey}`
       ),
     });
   }

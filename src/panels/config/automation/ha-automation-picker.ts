@@ -169,15 +169,19 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _filter = "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "automation-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
+
+  private _fromUrl = false;
 
   @state() private _expandedFilter?: string;
 
@@ -247,6 +251,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       if (filteredAutomations === null) {
         return [];
       }
+      // Build lookups once instead of scanning the registries for every row.
+      const entityRegLookup = new Map(
+        entityReg.map((reg) => [reg.entity_id, reg])
+      );
+      const labelLookup = labelReg
+        ? new Map(labelReg.map((label) => [label.label_id, label]))
+        : undefined;
       return (
         filteredAutomations
           ? automations.filter((automation) =>
@@ -254,14 +265,13 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             )
           : automations
       ).map((automation) => {
-        const entityRegEntry = entityReg.find(
-          (reg) => reg.entity_id === automation.entity_id
-        );
+        const entityRegEntry = entityRegLookup.get(automation.entity_id);
         const category = entityRegEntry?.categories.automation;
         const labels = labelReg && entityRegEntry?.labels;
         const label_entries = (labels || [])
-          .map((lbl) => labelReg!.find((label) => label.label_id === lbl)!)
-          .filter(Boolean);
+          .map((lbl) => labelLookup!.get(lbl))
+          .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
+
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           automation.entity_id
@@ -691,14 +701,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                 target="_blank"
                 appearance="plain"
                 rel="noreferrer"
-                size="small"
+                size="s"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
                 <ha-svg-icon slot="end" .path=${mdiOpenInNew}> </ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}
-        <ha-button slot="fab" size="large" @click=${this._createNew}>
+        <ha-button slot="fab" size="l" @click=${this._createNew}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.automation.picker.add_automation"
@@ -760,19 +770,36 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      const hasUrlFilter =
+        this._searchParms.has("area") ||
+        this._searchParms.has("blueprint") ||
+        this._searchParms.has("device") ||
+        this._searchParms.has("label");
+      if (!hasUrlFilter) {
+        this._filters = this._storageFilters;
+      }
+      if (this._searchParms.has("area")) {
+        this._filterArea();
+      }
+      if (this._searchParms.has("device")) {
+        this._filterDevice();
+      }
+      if (this._searchParms.has("blueprint")) {
+        this._filterBlueprint();
+      }
+      if (this._searchParms.has("label")) {
+        this._filterLabel();
+      }
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_entityReg")) {
       this._applyFilters();
-    }
-  }
-
-  firstUpdated() {
-    if (this._searchParms.has("blueprint")) {
-      this._filterBlueprint();
-    }
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
     }
   }
 
@@ -793,6 +820,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         items: undefined,
       },
     };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   };
 
@@ -803,6 +833,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
@@ -853,11 +886,44 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     this._filteredEntityIds = filteredEntityIds;
   }
 
+  private _filterArea() {
+    const area = this._searchParms.get("area");
+    if (!area) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-floor-areas": {
+        value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
+  private _filterDevice() {
+    const device = this._searchParms.get("device");
+    if (!device) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-devices": {
+        value: [device],
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
   private _filterLabel() {
     const label = this._searchParms.get("label");
     if (!label) {
       return;
     }
+    this._fromUrl = true;
     this._filters = {
       ...this._filters,
       "ha-filter-labels": {
@@ -873,6 +939,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     if (!blueprint) {
       return;
     }
+    this._fromUrl = true;
     const related = await findRelated(
       this.hass,
       "automation_blueprint",
@@ -890,6 +957,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 

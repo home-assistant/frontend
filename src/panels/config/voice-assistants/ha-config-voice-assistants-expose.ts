@@ -539,7 +539,7 @@ export class VoiceAssistantsExpose extends LitElement {
                   ? html`
                       <ha-button
                         appearance="plain"
-                        size="small"
+                        size="s"
                         @click=${this._exposeSelected}
                         >${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
@@ -547,7 +547,7 @@ export class VoiceAssistantsExpose extends LitElement {
                       >
                       <ha-button
                         appearance="plain"
-                        size="small"
+                        size="s"
                         @click=${this._unexposeSelected}
                         >${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
@@ -585,7 +585,7 @@ export class VoiceAssistantsExpose extends LitElement {
               </div>
             `
           : ""}
-        <ha-button slot="fab" size="large" @click=${this._addEntry}>
+        <ha-button slot="fab" size="l" @click=${this._addEntry}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.voice_assistants.expose.add")}
         </ha-button>

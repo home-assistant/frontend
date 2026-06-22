@@ -39,6 +39,7 @@ import { subscribeLabelRegistry } from "../data/label/label_registry";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { LazyContextProvider } from "./lazy-context-provider";
+import { RelatedContextProvider } from "./related-context-provider";
 
 export const contextMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -201,6 +202,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       }),
     };
 
+    private __relatedContextProvider = new RelatedContextProvider(this);
+
     protected hassConnected() {
       super.hassConnected();
       for (const [key, value] of Object.entries(this.hass!)) {
@@ -214,6 +217,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.setConnection(connection);
       }
+
+      this.__relatedContextProvider.connect();
     }
 
     protected _updateHass(obj: Partial<HomeAssistant>) {
@@ -244,5 +249,6 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.unsubscribe();
       }
+      this.__relatedContextProvider.disconnect();
     }
   };

@@ -128,7 +128,6 @@ export class HaLocationsEditor extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-map
-        .hass=${this.hass}
         .layers=${this._getLayers(this._circles, this._locationMarkers)}
         .zoom=${this.zoom}
         .autoFit=${this.autoFit}

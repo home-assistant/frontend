@@ -95,6 +95,7 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
+  note?: string;
   /** @deprecated Use `trigger` instead */
   platform?: string;
   trigger: string;
@@ -179,7 +180,7 @@ export interface PersistentNotificationTrigger extends BaseTrigger {
 
 export interface ZoneTrigger extends BaseTrigger {
   trigger: "zone";
-  entity_id: string;
+  entity_id: string | string[];
   zone: string;
   event: "enter" | "leave";
 }
@@ -240,6 +241,7 @@ export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 interface BaseCondition {
   condition: string;
   alias?: string;
+  note?: string;
   enabled?: boolean;
   options?: Record<string, unknown>;
 }
@@ -375,7 +377,7 @@ export const expandConditionWithShorthand = (
 };
 
 export const triggerAutomationActions = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entityId: string
 ) => {
   hass.callService("automation", "trigger", {
@@ -483,6 +485,17 @@ export const migrateAutomationTrigger = (
     }
     delete trigger.platform;
   }
+
+  if ("options" in trigger) {
+    if (trigger.options && "behavior" in trigger.options) {
+      if (trigger.options.behavior === "any") {
+        trigger.options.behavior = "each";
+      } else if (trigger.options.behavior === "last") {
+        trigger.options.behavior = "all";
+      }
+    }
+  }
+
   return trigger;
 };
 
@@ -607,6 +620,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   delete: () => void;
   close: (focus?: boolean) => void;
+  editNote: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
@@ -668,6 +682,7 @@ export interface OptionSidebarConfig extends BaseSidebarConfig {
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
+  note?: string;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {

@@ -130,11 +130,56 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _newTarget?: TargetItem;
 
-  private _getDevicesMemoized = memoizeOne(getDevices);
+  private _getDevicesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      configEntryLookup: Record<string, ConfigEntry>,
+      includeDomains?: string[],
+      includeDeviceClasses?: string[],
+      deviceFilter?: HaDevicePickerDeviceFilterFunc,
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      excludeDevices?: string[],
+      value?: string,
+      idPrefix?: string
+    ) =>
+      getDevices(hass, configEntryLookup, {
+        includeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value,
+        idPrefix,
+      })
+  );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getEntitiesMemoized = memoizeOne(getEntities);
+  private _getEntitiesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      includeDomains?: string[],
+      excludeDomains?: string[],
+      entityFilter?: HaEntityPickerEntityFilterFunc,
+      includeDeviceClasses?: string[],
+      includeUnitOfMeasurement?: string[],
+      includeEntities?: string[],
+      excludeEntities?: string[],
+      value?: string,
+      idPrefix?: string
+    ) =>
+      getEntities(hass, {
+        includeDomains,
+        excludeDomains,
+        entityFilter,
+        includeDeviceClasses,
+        includeUnitOfMeasurement,
+        includeEntities,
+        excludeEntities,
+        value,
+        idPrefix,
+      })
+  );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
@@ -919,7 +964,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           this.hass,
           configEntryLookup,
           includeDomains,
-          undefined,
           includeDeviceClasses,
           deviceFilter,
           entityFilter,

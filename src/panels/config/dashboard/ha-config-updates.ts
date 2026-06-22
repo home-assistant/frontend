@@ -1,9 +1,9 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
@@ -14,62 +14,51 @@ import "../../../components/ha-spinner";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import "../../../components/progress/ha-progress-ring";
-import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
-import { subscribeDeviceRegistry } from "../../../data/device/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity/entity_registry";
+import {
+  areasContext,
+  devicesContext,
+  fullEntitiesContext,
+  statesContext,
+} from "../../../data/context";
+import { entityRegistryByEntityId } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 @customElement("ha-config-updates")
-class HaConfigUpdates extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+class HaConfigUpdates extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public updateEntities?: UpdateEntity[];
 
-  @state() private _devices?: DeviceRegistryEntry[];
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
-  @state() private _entities?: EntityRegistryEntry[];
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeDeviceRegistry(this.hass.connection, (entries) => {
-        this._devices = entries;
-      }),
-      subscribeEntityRegistry(this.hass.connection!, (entities) => {
-        this._entities = entities.filter((entity) => entity.device_id !== null);
-      }),
-    ];
-  }
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
 
-  private getDeviceEntry = memoizeOne(
-    (deviceId: string): DeviceRegistryEntry | undefined =>
-      this._devices?.find((device) => device.id === deviceId)
-  );
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: ContextType<typeof areasContext>;
 
-  private getEntityEntry = memoizeOne(
-    (entityId: string): EntityRegistryEntry | undefined =>
-      this._entities?.find((entity) => entity.entity_id === entityId)
-  );
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entities: ContextType<typeof fullEntitiesContext> = [];
 
   private _renderUpdateProgress(entity: UpdateEntity) {
     if (entity.attributes.update_percentage != null) {
       return html`<ha-progress-ring
         size="small"
         .value=${entity.attributes.update_percentage}
-        .label=${this.hass.localize(
-          "ui.panel.config.updates.update_in_progress"
-        )}
+        .label=${this._localize("ui.panel.config.updates.update_in_progress")}
       ></ha-progress-ring>`;
     }
 
     if (entity.attributes.in_progress) {
       return html`<ha-spinner
         size="small"
-        .ariaLabel=${this.hass.localize(
+        .ariaLabel=${this._localize(
           "ui.panel.config.updates.update_in_progress"
         )}
       ></ha-spinner>`;
@@ -84,29 +73,27 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     }
 
     const updates = this.updateEntities;
+    const entities = entityRegistryByEntityId(this._entities);
 
     return html`
       <ha-list-base
-        aria-label=${this.hass.localize("ui.panel.config.updates.caption")}
+        aria-label=${this._localize("ui.panel.config.updates.caption")}
       >
         ${updates.map((entity) => {
-          const entityEntry = this.getEntityEntry(entity.entity_id);
+          const entityEntry = entities[entity.entity_id];
           const deviceEntry =
             entityEntry && entityEntry.device_id
-              ? this.getDeviceEntry(entityEntry.device_id)
+              ? this._devices[entityEntry.device_id]
               : undefined;
 
           const areaName =
             deviceEntry && deviceEntry.entry_type !== "service"
-              ? getDeviceArea(deviceEntry, this.hass.areas)?.name ||
-                this.hass.localize("ui.panel.config.updates.no_area")
+              ? getDeviceArea(deviceEntry, this._areas)?.name ||
+                this._localize("ui.panel.config.updates.no_area")
               : undefined;
 
           return html`
             <ha-list-item-button
-              class=${ifDefined(
-                entity.attributes.skipped_version ? "skipped" : undefined
-              )}
               .entity_id=${entity.entity_id}
               .hasMeta=${!this.narrow}
               @click=${this._openMoreInfo}
@@ -115,7 +102,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 <state-badge
                   .title=${entity.attributes.title ||
                   entity.attributes.friendly_name}
-                  .hass=${this.hass}
                   .stateObj=${entity}
                   class=${ifDefined(
                     this.narrow && entity.attributes.in_progress
@@ -133,8 +119,8 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 >${deviceEntry
                   ? computeDeviceNameDisplay(
                       deviceEntry,
-                      this.hass.localize,
-                      this.hass.states
+                      this._localize,
+                      this._states
                     )
                   : entity.attributes.friendly_name}</span
               >
@@ -142,7 +128,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 ${areaName ? html`${areaName} ⸱ ` : nothing}
                 ${entity.attributes.title} ${entity.attributes.latest_version}
                 ${entity.attributes.skipped_version
-                  ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
+                  ? `(${this._localize("ui.panel.config.updates.skipped")})`
                   : nothing}
               </span>
               ${!this.narrow
@@ -166,9 +152,6 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        .skipped {
-          background: var(--secondary-background-color);
-        }
         ha-list-item-button {
           --md-list-item-leading-icon-size: 40px;
         }

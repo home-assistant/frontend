@@ -1,4 +1,6 @@
 import type { HassConfig } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+import { html, nothing } from "lit";
 import {
   subHours,
   differenceInDays,
@@ -31,10 +33,10 @@ import {
   formatDateWeekdayVeryShortDate,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import type { ECOption } from "../../../../../resources/echarts/echarts";
-import { filterXSS } from "../../../../../common/util/xss";
+import type { HaECOption } from "../../../../../resources/echarts/echarts";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
 export { fillDataGapsAndRoundCaps } from "../../../../../components/chart/round-caps";
@@ -110,15 +112,31 @@ export function getCommonOptions(
   formatTotal?: (total: number) => string,
   detailedDailyData = false,
   yAxisFractionDigits = 1
-): ECOption {
+): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
-  const suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
+  let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
 
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
 
-  const monthTimeAxis: ECOption = {
+  // Extend suggestedMax so compare bars that land past the main end
+  // (e.g. Feb compared to Jan) stay visible instead of being clipped.
+  if (compare) {
+    const transformedCompareEnd = getCompareTransform(
+      start,
+      compareStart
+    )(compareEnd);
+    if (transformedCompareEnd.getTime() > suggestedMax.getTime()) {
+      suggestedMax = getSuggestedMax(
+        suggestedPeriod,
+        transformedCompareEnd,
+        detailedDailyData
+      );
+    }
+  }
+
+  const monthTimeAxis: HaECOption = {
     xAxis: {
       type: "time",
       min: subDays(start, MONTH_TIME_AXIS_PADDING),
@@ -130,7 +148,7 @@ export function getCommonOptions(
       splitNumber: Math.min(differenceInCalendarMonths(end, start), 5),
     },
   };
-  const normalTimeAxis: ECOption = {
+  const normalTimeAxis: HaECOption = {
     xAxis: {
       type: "time",
       min: start,
@@ -138,7 +156,7 @@ export function getCommonOptions(
     },
   };
 
-  const options: ECOption = {
+  const options: HaECOption = {
     ...(suggestedPeriod === "month" ? monthTimeAxis : normalTimeAxis),
     yAxis: {
       type: "value",
@@ -163,7 +181,7 @@ export function getCommonOptions(
     },
     tooltip: {
       trigger: "axis",
-      formatter: (params: TopLevelFormatterParams): string => {
+      formatter: (params: TopLevelFormatterParams) => {
         // trigger: "axis" gives an array of params, but "item" gives a single param
         if (Array.isArray(params)) {
           const mainItems: CallbackDataParams[] = [];
@@ -175,7 +193,7 @@ export function getCommonOptions(
               mainItems.push(param);
             }
           });
-          return [mainItems, compareItems]
+          const sections = [mainItems, compareItems]
             .map((items) =>
               formatTooltip(
                 items,
@@ -188,8 +206,12 @@ export function getCommonOptions(
                 formatTotal
               )
             )
-            .filter(Boolean)
-            .join("<br><br>");
+            .filter((s): s is TemplateResult => s !== nothing);
+          if (sections.length === 0) return nothing;
+          return html`${sections.map(
+            (section, i) =>
+              html`${i > 0 ? html`<br /><br />` : nothing}${section}`
+          )}`;
         }
         return formatTooltip(
           [params],
@@ -216,9 +238,9 @@ function formatTooltip(
   showCompareYear: boolean,
   unit?: string,
   formatTotal?: (total: number) => string
-) {
+): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
-    return "";
+    return nothing;
   }
   // displayX may be shifted from the period start (see EnergyDataPoint);
   // originalStart has the real date for display. Gap-filled entries lack it.
@@ -242,77 +264,74 @@ function formatTooltip(
       period += ` – ${formatTime(addHours(date, 1), locale, config)}`;
     }
   }
-  const title = `<h4 style="text-align: center; margin: 0;">${period}</h4>`;
 
   let sumPositive = 0;
   let countPositive = 0;
-  let sumNegative = 0;
-  let countNegative = 0;
-  const values = params
-    .map((param) => {
-      const y = param.value?.[1] as number;
-      const value = formatNumber(
-        y,
-        locale,
-        y < 0.1 ? { maximumFractionDigits: 3 } : undefined
-      );
-      if (value === "0") {
-        return false;
-      }
-      if (param.componentSubType === "bar") {
-        if (y > 0) {
-          sumPositive += y;
-          countPositive++;
-        } else {
-          sumNegative += y;
-          countNegative++;
-        }
-      }
-      return `${param.marker} ${filterXSS(param.seriesName!)}: <div style="direction:ltr; display: inline;">${value} ${unit}</div>`;
-    })
-    .filter(Boolean);
-  let footer = "";
-  if (sumPositive !== 0 && countPositive > 1 && formatTotal) {
-    footer += `<br><b>${formatTotal(sumPositive)}</b>`;
+  const rows: TemplateResult[] = [];
+  for (const param of params) {
+    const y = param.value?.[1] as number;
+    const value = formatNumber(
+      y,
+      locale,
+      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
+    );
+    if (value === "0") {
+      continue;
+    }
+    // Only the positive bars (consumption) are summed into a total. Negative
+    // bars mix unrelated categories (grid export and battery charge), so they
+    // are not totaled.
+    if (param.componentSubType === "bar" && y > 0) {
+      sumPositive += y;
+      countPositive++;
+    }
+    rows.push(
+      html`<ha-chart-tooltip-marker
+          .color=${String(param.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${param.seriesName}:
+        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+    );
   }
-  if (sumNegative !== 0 && countNegative > 1 && formatTotal) {
-    footer += `<br><b>${formatTotal(sumNegative)}</b>`;
+  if (rows.length === 0) {
+    return nothing;
   }
-  return values.length > 0 ? `${title}${values.join("<br>")}${footer}` : "";
-}
-
-function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
-  const item =
-    datapoint && typeof datapoint === "object" && "value" in datapoint
-      ? datapoint
-      : { value: datapoint };
-  return Number(item.value?.[0]);
+  return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
+    ${rows.map(
+      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
+    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
+      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+      : nothing}`;
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {
-  const buckets = Array.from(
-    new Set(
-      datasets
-        .map((dataset) =>
-          dataset.data!.map((datapoint) => getDatapointX(datapoint))
-        )
-        .flat()
-    )
-  ).sort((a, b) => a - b);
+  // Single pass per datapoint: normalise it to a LineDataItemOption, compute
+  // its x once, collect every x into the shared bucket set, and build each
+  // dataset's lookup map at the same time. This avoids re-deriving x and
+  // re-discriminating the tuple/object shape in a separate pass.
+  const bucketSet = new Set<number>();
+  const dataMaps: Map<number, LineDataItemOption>[] = [];
 
-  datasets.forEach((dataset) => {
+  for (const dataset of datasets) {
     const dataMap = new Map<number, LineDataItemOption>();
-    dataset.data!.forEach((datapoint) => {
+    for (const datapoint of dataset.data!) {
       const item: LineDataItemOption =
         datapoint && typeof datapoint === "object" && "value" in datapoint
           ? datapoint
           : ({ value: datapoint } as LineDataItemOption);
-      const x = getDatapointX(datapoint);
+      const x = Number(item.value?.[0]);
+      bucketSet.add(x);
       if (!Number.isNaN(x)) {
         dataMap.set(x, item);
       }
-    });
+    }
+    dataMaps.push(dataMap);
+  }
 
+  const buckets = Array.from(bucketSet).sort((a, b) => a - b);
+
+  datasets.forEach((dataset, index) => {
+    const dataMap = dataMaps[index];
     dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
   });
 
@@ -347,25 +366,75 @@ export function computeStatMidpoint(
   return (start + end) / 2;
 }
 
+export interface UntrackedSplit {
+  /** Untracked consumption per timestamp, clamped to >= 0. */
+  positive: Record<number, number>;
+  /** Negative untracked per timestamp — only timestamps where the raw value
+   * was below zero (tracked devices reported more than total consumption). */
+  negative: Record<number, number>;
+}
+
+/**
+ * Split untracked energy consumption into positive and negative parts per
+ * timestamp.
+ *
+ * Untracked is `used_total - sum(tracked device consumption)`. It can go
+ * negative when meters report at coarser resolution than device sensors
+ * (e.g. an integer-kWh grid meter vs fractional device sensors). The positive
+ * part is the genuine untracked consumption; the negative part is surfaced as
+ * a separate, toggleable series so users can hide it without losing it as a
+ * diagnostic signal.
+ */
+export function splitUntrackedConsumption(
+  usedTotal: Record<number, number>,
+  totalDeviceConsumption: Record<number, number>
+): UntrackedSplit {
+  const positive: Record<number, number> = {};
+  const negative: Record<number, number> = {};
+  for (const time of Object.keys(usedTotal)) {
+    const ts = Number(time);
+    const raw = usedTotal[ts] - (totalDeviceConsumption[ts] || 0);
+    positive[ts] = Math.max(0, raw);
+    if (raw < 0) {
+      negative[ts] = raw;
+    }
+  }
+  return { positive, negative };
+}
+
 export function getCompareTransform(start: Date, compareStart?: Date) {
   if (!compareStart) {
     return (ts: Date) => ts;
   }
+  const compareDayDiff = differenceInDays(start, compareStart);
   const compareYearDiff = differenceInYears(start, compareStart);
   if (
     compareYearDiff !== 0 &&
     start.getTime() === startOfYear(start).getTime()
   ) {
-    return (ts: Date) => addYears(ts, compareYearDiff);
+    // addYears clamps Feb 29 -> Feb 28 across leap-year boundaries; fall back
+    // to a day-shift so each compare day keeps a unique x position.
+    return (ts: Date) => {
+      const shifted = addYears(ts, compareYearDiff);
+      return shifted.getDate() === ts.getDate()
+        ? shifted
+        : addDays(ts, compareDayDiff);
+    };
   }
   const compareMonthDiff = differenceInMonths(start, compareStart);
   if (
     compareMonthDiff !== 0 &&
     start.getTime() === startOfMonth(start).getTime()
   ) {
-    return (ts: Date) => addMonths(ts, compareMonthDiff);
+    // addMonths clamps Jan 31 -> Feb 28 when shifting between unequal-length
+    // months; fall back to a day-shift so each compare day keeps a unique x.
+    return (ts: Date) => {
+      const shifted = addMonths(ts, compareMonthDiff);
+      return shifted.getDate() === ts.getDate()
+        ? shifted
+        : addDays(ts, compareDayDiff);
+    };
   }
-  const compareDayDiff = differenceInDays(start, compareStart);
   if (compareDayDiff !== 0 && start.getTime() === startOfDay(start).getTime()) {
     return (ts: Date) => addDays(ts, compareDayDiff);
   }

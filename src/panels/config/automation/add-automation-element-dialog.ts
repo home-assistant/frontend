@@ -30,6 +30,7 @@ import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -128,7 +129,14 @@ import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
-import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import {
+  ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM,
+  ADD_AUTOMATION_ELEMENT_QUERY_PARAM,
+  PASTE_VALUE,
+  getAddAutomationElementTargetFromQuery,
+} from "./show-add-automation-element-dialog";
 import { getTargetText } from "./target/get_target_text";
 
 const TYPES = {
@@ -230,6 +238,8 @@ class DialogAddAutomationElement
 
   @state() private _newTriggersAndConditions = false;
 
+  @state() private _openedFromQuery = false;
+
   @state() private _conditionDescriptions: ConditionDescriptions = {};
 
   @state()
@@ -295,9 +305,30 @@ class DialogAddAutomationElement
     }
   }
 
-  public showDialog(params): void {
+  public showDialog(params: AddAutomationElementDialogParams): void {
     this._params = params;
     this._resetVariables();
+
+    const queryTarget = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      params.type
+    );
+    this._openedFromQuery = !!queryTarget;
+
+    if (queryTarget) {
+      const searchParams = new URLSearchParams(mainWindow.location.search);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_QUERY_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_ENTITY_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_DEVICE_TARGET_PARAM);
+      searchParams.delete(ADD_AUTOMATION_ELEMENT_AREA_TARGET_PARAM);
+      mainWindow.history.replaceState(
+        mainWindow.history.state,
+        "",
+        constructUrlCurrentPath(searchParams.toString())
+      );
+    }
 
     this.addKeyboardShortcuts();
 
@@ -314,16 +345,26 @@ class DialogAddAutomationElement
       (feature) => {
         this._newTriggersAndConditions = feature.enabled;
         this._tab = this._newTriggersAndConditions ? "targets" : "groups";
+        if (
+          queryTarget &&
+          this._newTriggersAndConditions &&
+          !this._selectedTarget
+        ) {
+          this._selectedTarget = queryTarget;
+          this._getItemsByTarget();
+        }
       }
     );
 
-    // add initial dialog view state to history
-    mainWindow.history.pushState(
-      {
-        dialogData: {},
-      },
-      ""
-    );
+    if (!queryTarget) {
+      // add initial dialog view state to history
+      mainWindow.history.pushState(
+        {
+          dialogData: {},
+        },
+        ""
+      );
+    }
 
     if (this._params?.type === "action") {
       this.hass.loadBackendTranslation("services");
@@ -343,6 +384,16 @@ class DialogAddAutomationElement
 
     // prevent view mode switch when resizing window
     this._bottomSheetMode = this._narrow;
+
+    if (
+      queryTarget &&
+      this._newTriggersAndConditions &&
+      !this._selectedTarget
+    ) {
+      this._selectedTarget = queryTarget;
+      this._tab = "targets";
+      this._getItemsByTarget();
+    }
   }
 
   public closeDialog(historyState?: any) {
@@ -407,6 +458,7 @@ class DialogAddAutomationElement
     this._narrow = false;
     this._targetItems = undefined;
     this._loadItemsError = false;
+    this._openedFromQuery = false;
   }
 
   private _updateNarrow = () => {
@@ -676,7 +728,7 @@ class DialogAddAutomationElement
               active-variant="brand"
               .buttons=${tabButtons}
               .active=${this._tab}
-              size="small"
+              size="s"
               full-width
               @value-changed=${this._switchTab}
             ></ha-button-toggle-group>`
@@ -743,37 +795,33 @@ class DialogAddAutomationElement
                           class="paste"
                           @click=${this._paste}
                         >
-                          <div class="shortcut-label">
-                            <div class="label">
-                              <div>
-                                ${this.hass.localize(
-                                  `ui.panel.config.automation.editor.${automationElementType}s.paste`
-                                )}
-                              </div>
-                              <div class="supporting-text">
-                                ${this.hass.localize(
-                                  // @ts-ignore
-                                  `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
-                                )}
-                              </div>
-                            </div>
-                            ${!this._narrow
-                              ? html`<span class="shortcut">
-                                  <span
-                                    >${isMac
-                                      ? html`<ha-svg-icon
-                                          slot="start"
-                                          .path=${mdiAppleKeyboardCommand}
-                                        ></ha-svg-icon>`
-                                      : this.hass.localize(
-                                          "ui.panel.config.automation.editor.ctrl"
-                                        )}</span
-                                  >
-                                  <span>+</span>
-                                  <span>V</span>
-                                </span>`
-                              : nothing}
+                          <div slot="headline" class="label">
+                            ${this.hass.localize(
+                              `ui.panel.config.automation.editor.${automationElementType}s.paste`
+                            )}
                           </div>
+                          <div slot="supporting-text">
+                            ${this.hass.localize(
+                              // @ts-ignore
+                              `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
+                            )}
+                          </div>
+                          ${!this._narrow
+                            ? html`<span slot="end" class="shortcut">
+                                <span
+                                  >${isMac
+                                    ? html`<ha-svg-icon
+                                        slot="start"
+                                        .path=${mdiAppleKeyboardCommand}
+                                      ></ha-svg-icon>`
+                                    : this.hass.localize(
+                                        "ui.panel.config.automation.editor.ctrl"
+                                      )}</span
+                                >
+                                <span>+</span>
+                                <span>V</span>
+                              </span>`
+                            : nothing}
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiContentPaste}
@@ -891,7 +939,9 @@ class DialogAddAutomationElement
               ></ha-icon-button>
             `
           : nothing}
-        ${this._narrow && (this._selectedGroup || this._selectedTarget)
+        ${this._narrow &&
+        (this._selectedGroup || this._selectedTarget) &&
+        !this._openedFromQuery
           ? html`<ha-icon-button-prev
               slot="navigationIcon"
               @click=${this._back}
@@ -2243,7 +2293,14 @@ class DialogAddAutomationElement
 
       if (targetId) {
         return getTargetText(
-          this.hass,
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+          },
+          this.hass.states,
+          this.hass.localize,
           targetType as "floor" | "area" | "device" | "entity" | "label",
           targetId,
           this._getLabel
@@ -2407,7 +2464,9 @@ class DialogAddAutomationElement
         ha-automation-add-from-target,
         .groups {
           overflow: auto;
-          flex: 4;
+          /* Fixed-width left column so it does not resize as the right
+             panel's content width changes between groups. */
+          flex: 0 0 360px;
           margin-inline-end: 0;
         }
 
@@ -2443,7 +2502,8 @@ class DialogAddAutomationElement
         }
 
         ha-automation-add-items {
-          flex: 6;
+          flex: 1;
+          min-width: 0;
         }
 
         .content.column ha-automation-add-from-target,
@@ -2485,23 +2545,16 @@ class DialogAddAutomationElement
         ha-svg-icon.plus {
           color: var(--primary-color);
         }
-        .shortcut-label {
-          display: flex;
-          gap: var(--ha-space-3);
-          justify-content: space-between;
-        }
-        .shortcut-label .supporting-text {
-          color: var(--secondary-text-color);
-          font-size: var(--ha-font-size-s);
-        }
-        .shortcut-label .shortcut {
+
+        .shortcut {
           --mdc-icon-size: var(--ha-space-3);
           display: inline-flex;
           flex-direction: row;
           align-items: center;
           gap: 2px;
+          margin-right: var(--ha-space-4);
         }
-        .shortcut-label .shortcut span {
+        .shortcut span {
           font-size: var(--ha-font-size-s);
           font-family: var(--ha-font-family-code);
           color: var(--ha-color-text-secondary);

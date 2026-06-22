@@ -92,14 +92,15 @@ import {
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../../../dialogs/more-info/show-ha-more-info-dialog";
+import { MobileAwareMixin } from "../../../../../mixins/mobile-aware-mixin";
 import { mdiHomeAssistant } from "../../../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../../resources/styles";
 import type { Route } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import { getAppDisplayName } from "../../common/app";
-import "../components/supervisor-app-metric";
-import "../../components/supervisor-apps-tag";
 import "../../components/supervisor-apps-state";
+import "../../components/supervisor-apps-tag";
+import "../components/supervisor-app-metric";
 import { extractChangelog } from "../util/supervisor-app";
 import "./supervisor-app-system-managed";
 
@@ -123,7 +124,7 @@ const RATING_ICON = {
 const POLL_INTERVAL_SECONDS = 5;
 
 @customElement("supervisor-app-info")
-class SupervisorAppInfo extends LitElement {
+class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
@@ -163,6 +164,9 @@ class SupervisorAppInfo extends LitElement {
 
   private _pollInterval?: number;
 
+  protected mobileSizeQuery =
+    "all and (max-width: 1120px), all and (max-height: 500px)";
+
   private get _currentAddon(): HassioAddonDetails | StoreAddonDetails {
     return this._addon || this.addon;
   }
@@ -181,23 +185,25 @@ class SupervisorAppInfo extends LitElement {
   private _renderInfoCard() {
     const systemManaged = this._isSystemManaged(this._currentAddon);
 
-    return html`<ha-card outlined>
+    return html` <ha-card outlined>
       <div class="card-content">
         <div class="addon-header">
-          ${this._currentAddon.logo
-            ? html`
-                <img
-                  class="logo"
-                  alt=""
-                  src="/api/hassio/addons/${this._currentAddon.slug}/logo"
-                />
-              `
-            : nothing}
           <div class="title">
-            ${getAppDisplayName(
-              this._currentAddon.name,
-              this._currentAddon.stage
-            )}
+            ${this._currentAddon.logo
+              ? html`
+                  <img
+                    class="logo"
+                    alt=""
+                    src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                  />
+                `
+              : nothing}
+            ${!this.narrow
+              ? getAppDisplayName(
+                  this._currentAddon.name,
+                  this._currentAddon.stage
+                )
+              : nothing}
             <div class="description">
               ${this._currentAddon.version
                 ? html`
@@ -235,17 +241,7 @@ class SupervisorAppInfo extends LitElement {
             ? html`<supervisor-apps-state
                 .state=${this._currentAddon.state}
               ></supervisor-apps-state>`
-            : html`
-                <ha-progress-button
-                  .disabled=${!this._currentAddon.available}
-                  @click=${this._installClicked}
-                  .iconPath=${mdiApplicationImport}
-                >
-                  ${this.i18n.localize(
-                    "ui.panel.config.apps.dashboard.install"
-                  )}
-                </ha-progress-button>
-              `}
+            : nothing}
         </div>
 
         <ha-chip-set class="capabilities">
@@ -509,7 +505,8 @@ class SupervisorAppInfo extends LitElement {
       </div>
       ${(this._currentAddon.update_available && this._updateEntityId) ||
       this._computeShowWebUI ||
-      this._computeShowIngressUI
+      this._computeShowIngressUI ||
+      !this._currentAddon.version
         ? html`
             <div class="card-actions">
               ${this._currentAddon.update_available && this._updateEntityId
@@ -543,6 +540,19 @@ class SupervisorAppInfo extends LitElement {
                         "ui.panel.config.apps.dashboard.open_web_ui"
                       )}
                     </ha-button>
+                  `
+                : nothing}
+              ${!this._currentAddon.version
+                ? html`
+                    <ha-progress-button
+                      .disabled=${!this._currentAddon.available}
+                      @click=${this._installClicked}
+                      .iconPath=${mdiApplicationImport}
+                    >
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.install"
+                      )}
+                    </ha-progress-button>
                   `
                 : nothing}
             </div>
@@ -863,11 +873,11 @@ class SupervisorAppInfo extends LitElement {
           `
         : nothing}
       <div
-        class="app ${this.narrow || !this._currentAddon.version
+        class="app ${this._isMobileSize || !this._currentAddon.version
           ? "column"
           : ""}"
       >
-        ${this.narrow || !this._currentAddon.version
+        ${this._isMobileSize || !this._currentAddon.version
           ? html`
               ${this._renderInfoCard()}
               ${this._currentAddon.version
@@ -1493,16 +1503,17 @@ class SupervisorAppInfo extends LitElement {
         }
         .addon-header {
           display: flex;
-          padding-inline-start: var(--ha-space-2);
-          padding-inline-end: initial;
           font-size: var(--ha-font-size-2xl);
           color: var(--ha-card-header-color, var(--primary-text-color));
           align-items: center;
           gap: var(--ha-space-2);
+          flex-wrap: wrap;
+          margin-bottom: var(--ha-space-4);
         }
 
         .addon-header .title {
           flex: 1;
+          margin-inline-end: var(--ha-space-4);
         }
 
         .addon-header .title .description {
@@ -1521,17 +1532,15 @@ class SupervisorAppInfo extends LitElement {
           color: var(--error-color);
           margin-bottom: var(--ha-space-4);
         }
-        .description {
-          margin-bottom: var(--ha-space-4);
-        }
         .description a {
           color: var(--primary-color);
         }
 
         img.logo {
           max-width: 100%;
-          max-height: 60px;
+          max-height: 40px;
           display: block;
+          margin-bottom: var(--ha-space-2);
         }
         ha-assist-chip {
           --md-sys-color-primary: var(--text-primary-color);

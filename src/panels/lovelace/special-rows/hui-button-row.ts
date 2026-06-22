@@ -76,7 +76,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         <div .title=${name}>${name}</div>
         <ha-button
           appearance="filled"
-          size="small"
+          size="s"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),

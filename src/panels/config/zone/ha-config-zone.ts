@@ -137,7 +137,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             <div class="empty">
               ${hass.localize("ui.panel.config.zone.no_zones_created_yet")}
               <br />
-              <ha-button size="small" @click=${this._createZone}>
+              <ha-button size="s" @click=${this._createZone}>
                 ${hass.localize("ui.panel.config.zone.create_zone")}</ha-button
               >
             </div>
@@ -234,7 +234,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
@@ -269,7 +268,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
-        <ha-button slot="fab" size="large" @click=${this._createZone}>
+        <ha-button slot="fab" size="l" @click=${this._createZone}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${hass.localize("ui.panel.config.zone.create_zone")}
         </ha-button>

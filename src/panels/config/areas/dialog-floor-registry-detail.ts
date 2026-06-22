@@ -24,13 +24,25 @@ import type {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showAreaRegistryDetailDialog } from "./show-dialog-area-registry-detail";
 import type { FloorRegistryDetailDialogParams } from "./show-dialog-floor-registry-detail";
 
+interface FloorFormState {
+  name: string;
+  aliases: string[];
+  icon: string | null;
+  level: number | null;
+  addedAreas: string[];
+  removedAreas: string[];
+}
+
 @customElement("dialog-floor-registry-detail")
-class DialogFloorDetail extends LitElement {
+class DialogFloorDetail extends DirtyStateProviderMixin<FloorFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
@@ -65,6 +77,18 @@ class DialogFloorDetail extends LitElement {
     this._addedAreas.clear();
     this._removedAreas.clear();
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): FloorFormState {
+    return {
+      name: this._name,
+      aliases: this._aliases,
+      icon: this._icon,
+      level: this._level,
+      addedAreas: [...this._addedAreas].sort(),
+      removedAreas: [...this._removedAreas].sort(),
+    };
   }
 
   public closeDialog(): void {
@@ -112,7 +136,7 @@ class DialogFloorDetail extends LitElement {
         header-title=${entry
           ? this.hass.localize("ui.panel.config.floors.editor.update_floor")
           : this.hass.localize("ui.panel.config.floors.editor.create_floor")}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
@@ -210,7 +234,6 @@ class DialogFloorDetail extends LitElement {
                 </p>`}
             <ha-area-picker
               no-add
-              .hass=${this.hass}
               @value-changed=${this._addArea}
               .excludeAreas=${areas.map((a) => a.area_id)}
               .addButtonLabel=${this.hass.localize(
@@ -230,7 +253,6 @@ class DialogFloorDetail extends LitElement {
               )}
             </p>
             <ha-aliases-editor
-              .hass=${this.hass}
               .aliases=${this._aliases}
               @value-changed=${this._aliasesChanged}
             ></ha-aliases-editor>
@@ -247,7 +269,8 @@ class DialogFloorDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${!!this._submitting}
+            .disabled=${!!this._submitting ||
+            (!!this._params?.entry && !this.isDirtyState)}
           >
             ${entry
               ? this.hass.localize("ui.common.save")
@@ -272,10 +295,12 @@ class DialogFloorDetail extends LitElement {
     if (this._addedAreas.has(areaId)) {
       this._addedAreas.delete(areaId);
       this._addedAreas = new Set(this._addedAreas);
+      this._updateDirtyState(this._currentState());
       return;
     }
     this._removedAreas.add(areaId);
     this._removedAreas = new Set(this._removedAreas);
+    this._updateDirtyState(this._currentState());
   }
 
   private _addArea(ev) {
@@ -287,15 +312,18 @@ class DialogFloorDetail extends LitElement {
     if (this._removedAreas.has(areaId)) {
       this._removedAreas.delete(areaId);
       this._removedAreas = new Set(this._removedAreas);
+      this._updateDirtyState(this._currentState());
       return;
     }
     this._addedAreas.add(areaId);
     this._addedAreas = new Set(this._addedAreas);
+    this._updateDirtyState(this._currentState());
   }
 
   private _nameChanged(ev: InputEvent) {
     this._error = undefined;
     this._name = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
   }
 
   private _levelChanged(ev: InputEvent) {
@@ -304,11 +332,13 @@ class DialogFloorDetail extends LitElement {
       (ev.target as HaInput).value === ""
         ? null
         : Number((ev.target as HaInput).value);
+    this._updateDirtyState(this._currentState());
   }
 
   private _iconChanged(ev) {
     this._error = undefined;
     this._icon = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry() {
@@ -339,6 +369,7 @@ class DialogFloorDetail extends LitElement {
           this._removedAreas
         );
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =
@@ -351,6 +382,7 @@ class DialogFloorDetail extends LitElement {
 
   private _aliasesChanged(ev: CustomEvent): void {
     this._aliases = ev.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   static get styles(): CSSResultGroup {

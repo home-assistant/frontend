@@ -1,6 +1,7 @@
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
+  HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import type { Describe } from "superstruct";
@@ -36,6 +37,7 @@ export const isMaxMode = arrayLiteralIncludes(MODES_MAX);
 
 export const baseActionStruct = object({
   alias: optional(string()),
+  note: optional(string()),
   continue_on_error: optional(boolean()),
   enabled: optional(boolean()),
 });
@@ -103,8 +105,12 @@ export interface Field {
   selector?: any;
 }
 
+const getScriptFields = (services: HassServices, entityId: string) =>
+  services.script[computeObjectId(entityId)]?.fields;
+
 interface BaseAction {
   alias?: string;
+  note?: string;
   continue_on_error?: boolean;
   enabled?: boolean;
 }
@@ -195,6 +201,7 @@ export interface ForEachRepeat extends BaseRepeat {
 
 export interface Option {
   alias?: string;
+  note?: string;
   conditions: string | Condition[];
   sequence: Action | Action[];
 }
@@ -388,31 +395,41 @@ export const getActionType = (action: Action): ActionType => {
 export const isAction = (value: unknown): value is Action =>
   getActionType(value as Action) !== "unknown";
 
-export const hasScriptFields = (
-  hass: HomeAssistant,
+export const hasScriptFieldsForServices = (
+  services: HassServices,
   entityId: string
 ): boolean => {
-  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  const fields = getScriptFields(services, entityId);
   return fields !== undefined && Object.keys(fields).length > 0;
 };
 
-export const hasRequiredScriptFields = (
+export const hasScriptFields = (
   hass: HomeAssistant,
   entityId: string
+): boolean => hasScriptFieldsForServices(hass.services, entityId);
+
+export const hasRequiredScriptFieldsForServices = (
+  services: HassServices,
+  entityId: string
 ): boolean => {
-  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  const fields = getScriptFields(services, entityId);
   return (
     fields !== undefined &&
     Object.values(fields).some((field) => field.required)
   );
 };
 
-export const requiredScriptFieldsFilled = (
+export const hasRequiredScriptFields = (
   hass: HomeAssistant,
+  entityId: string
+): boolean => hasRequiredScriptFieldsForServices(hass.services, entityId);
+
+export const requiredScriptFieldsFilledForServices = (
+  services: HassServices,
   entityId: string,
   data?: Record<string, any>
 ): boolean => {
-  const fields = hass.services.script[computeObjectId(entityId)]?.fields;
+  const fields = getScriptFields(services, entityId);
   if (fields === undefined || Object.keys(fields).length === 0) {
     return true;
   }
@@ -426,6 +443,13 @@ export const requiredScriptFieldsFilled = (
     return true;
   });
 };
+
+export const requiredScriptFieldsFilled = (
+  hass: HomeAssistant,
+  entityId: string,
+  data?: Record<string, any>
+): boolean =>
+  requiredScriptFieldsFilledForServices(hass.services, entityId, data);
 
 export const migrateAutomationAction = (
   action: Action | Action[]

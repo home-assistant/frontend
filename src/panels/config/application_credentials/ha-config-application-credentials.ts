@@ -112,7 +112,6 @@ export class HaConfigApplicationCredentials extends LitElement {
           showNarrow: true,
           template: (credential) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {
@@ -176,7 +175,7 @@ export class HaConfigApplicationCredentials extends LitElement {
             ? html`
                 <ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   @click=${this._deleteSelected}
                   variant="danger"
                   >${this.hass.localize(
@@ -200,11 +199,7 @@ export class HaConfigApplicationCredentials extends LitElement {
                 </ha-help-tooltip>
               `}
         </div>
-        <ha-button
-          slot="fab"
-          size="large"
-          @click=${this._addApplicationCredential}
-        >
+        <ha-button slot="fab" size="l" @click=${this._addApplicationCredential}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.application_credentials.picker.add_application_credential"

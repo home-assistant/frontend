@@ -2,7 +2,7 @@ import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
@@ -13,7 +13,7 @@ import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
-import { isUnavailableState } from "../../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../../data/entity/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { CustomBadgeEntry } from "../../../../data/lovelace_custom_cards";
@@ -66,9 +66,18 @@ export class HuiBadgePicker extends LitElement {
 
   @state() private _height?: number;
 
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
+
+  public async focus(): Promise<void> {
+    await this.updateComplete;
+    // Wait for the input's inner wa-input to render so focus delegation works.
+    await this._searchInput?.updateComplete;
+    this._searchInput?.focus();
+  }
 
   private _filterBadges = memoizeOne(
     (badgeElements: BadgeElement[], filter?: string): BadgeElement[] => {
@@ -84,6 +93,7 @@ export class HuiBadgePicker extends LitElement {
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
         ignoreDiacritics: true,
+        ignoreLocation: true,
       };
       const fuse = new Fuse(badges, options);
       badges = fuse.search(filter).map((result) => result.item);
@@ -235,12 +245,14 @@ export class HuiBadgePicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        !isUnavailableState(this.hass!.states[eid].state)
+        this.hass!.states[eid].state !== UNAVAILABLE &&
+        this.hass!.states[eid].state !== UNKNOWN
     );
 
     this._loadBages();

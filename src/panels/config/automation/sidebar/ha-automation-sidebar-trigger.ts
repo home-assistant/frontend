@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -18,9 +19,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type {
   LegacyTrigger,
+  Trigger,
+  TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
 import {
@@ -30,11 +34,11 @@ import {
 } from "../../../../data/trigger";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
+import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
-import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 
 @customElement("ha-automation-sidebar-trigger")
 export default class HaAutomationSidebarTrigger extends LitElement {
@@ -125,7 +129,24 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
           </div>
         </ha-dropdown-item>
-
+        ${type !== "list"
+          ? html`<ha-dropdown-item
+              slot="menu-items"
+              value="edit_note"
+              .disabled=${this.disabled}
+            >
+              <ha-svg-icon
+                slot="icon"
+                .path=${mdiCommentEditOutline}
+              ></ha-svg-icon>
+              <div class="overflow-label">
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.note.${(this.config.config as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
+                )}
+                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+              </div>
+            </ha-dropdown-item>`
+          : nothing}
         ${!this.yamlMode &&
         !("id" in this.config.config) &&
         !this._requestShowId
@@ -321,6 +342,14 @@ export default class HaAutomationSidebarTrigger extends LitElement {
             sidebar
           ></ha-automation-trigger-editor>`
         )}
+        ${!isTriggerList(this.config.config) &&
+        this.config.config.note?.trim() &&
+        !this.yamlMode
+          ? html`<ha-automation-note
+              @edit-note=${this.config.editNote}
+              .note=${this.config.config.note}
+            ></ha-automation-note>`
+          : nothing}
       </ha-automation-sidebar-card>
     `;
   }
@@ -371,6 +400,9 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     switch (action) {
       case "rename":
         this.config.rename();
+        break;
+      case "edit_note":
+        this.config.editNote();
         break;
       case "show_id":
         this._showTriggerId();

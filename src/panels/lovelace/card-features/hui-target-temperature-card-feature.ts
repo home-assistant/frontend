@@ -3,6 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -121,10 +122,13 @@ class HuiTargetTemperatureCardFeature
     return this._stateObj!.attributes.max_temp;
   }
 
-  private async _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
-    const target = (ev.currentTarget as any).target ?? "value";
+  private async _valueChanged(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
+    const target =
+      (ev.currentTarget as HTMLElement & { target?: Target }).target ?? "value";
 
     this._targetTemperature = {
       ...this._targetTemperature,

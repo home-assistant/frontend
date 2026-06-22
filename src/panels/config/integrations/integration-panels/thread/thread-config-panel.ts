@@ -92,6 +92,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               this._configEntryId || ""
             )}
             target="_blank"
+            rel="noreferrer"
             @click=${this._signUrl}
           >
             <ha-dropdown-item>
@@ -125,7 +126,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     href=${documentationUrl(this.hass, `/integrations/thread`)}
                     target="_blank"
                   >
@@ -157,7 +158,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-actions">
                     <ha-button
-                      size="small"
+                      size="s"
                       @click=${this._importExternalThreadCredentials}
                     >
                       ${this.hass.localize(
@@ -322,7 +323,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   )}
                   <ha-button
                     appearance="plain"
-                    size="small"
+                    size="s"
                     .otbr=${otbrForNetwork}
                     @click=${this._resetBorderRouterEvent}
                     >${this.hass.localize(
@@ -334,7 +335,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ${network.dataset && !network.dataset.preferred
         ? html`<div class="card-actions">
             <ha-button
-              size="small"
+              size="s"
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
               >${this.hass.localize(
@@ -353,7 +354,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               )}
             </p>
             <ha-button
-              size="small"
+              size="s"
               .networkDataset=${network.dataset}
               @click=${this._sendCredentials}
               >${this.hass.localize(
@@ -506,7 +507,6 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         this._refresh();
       },
       startFlowHandler: "otbr",
-      showAdvanced: this.hass.userData?.showAdvanced,
     });
   }
 

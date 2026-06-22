@@ -138,8 +138,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @property({ attribute: false }) public configEntries?: ConfigEntry[];
 
   @property({ attribute: false })
@@ -672,7 +670,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                   )}
                   <ha-button
-                    size="small"
+                    size="s"
                     variant="warning"
                     slot="action"
                     @click=${this._handleDisableDebugLogging}
@@ -698,7 +696,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           <ha-button
                             slot="end"
                             variant="success"
-                            size="small"
+                            size="s"
                             .flow=${flow}
                             @click=${this._continueFlow}
                           >

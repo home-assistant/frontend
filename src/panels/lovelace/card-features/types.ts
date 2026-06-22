@@ -1,6 +1,7 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
+import type { ForecastPrecipitationType } from "../../../data/weather";
 
 export type ButtonCardData = Record<string, any>;
 
@@ -57,6 +58,7 @@ export interface LockOpenDoorCardFeatureConfig {
 export const MEDIA_PLAYER_PLAYBACK_CONTROLS = [
   "turn_on",
   "turn_off",
+  "power",
   "media_play",
   "media_pause",
   "media_play_pause",
@@ -76,6 +78,7 @@ export type MediaPlayerPlaybackControl =
 export interface MediaPlayerPlaybackCardFeatureConfig {
   type: "media-player-playback";
   controls?: MediaPlayerPlaybackControl[];
+  hide_disabled_controls?: boolean;
 }
 
 export interface MediaPlayerSourceCardFeatureConfig {
@@ -250,6 +253,27 @@ export interface TrendGraphCardFeatureConfig {
   detail?: boolean;
 }
 
+export type ForecastResolution = "daily" | "twice_daily" | "hourly";
+
+export interface TemperatureForecastCardFeatureConfig {
+  type: "temperature-forecast";
+  forecast_type?: ForecastResolution;
+  days_to_show?: number;
+  hours_to_show?: number;
+  color?: string;
+  show_labels?: boolean;
+}
+
+export interface PrecipitationForecastCardFeatureConfig {
+  type: "precipitation-forecast";
+  forecast_type?: ForecastResolution;
+  days_to_show?: number;
+  hours_to_show?: number;
+  precipitation_type?: ForecastPrecipitationType;
+  color?: string;
+  show_labels?: boolean;
+}
+
 export const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
@@ -304,6 +328,8 @@ export type LovelaceCardFeatureConfig =
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | TrendGraphCardFeatureConfig
+  | TemperatureForecastCardFeatureConfig
+  | PrecipitationForecastCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig

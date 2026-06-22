@@ -17,9 +17,10 @@ import type {
   ChooseActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import { getDataFromPath } from "../../data/trace";
+import { getDataFromPath, isTriggerPath } from "../../data/trace";
 import "../../panels/logbook/ha-logbook-renderer";
 import type { HomeAssistant } from "../../types";
+import "../ha-alert";
 import "../ha-code-editor";
 import "../ha-icon-button";
 import "../ha-tab-group";
@@ -32,6 +33,12 @@ const TRACE_PATH_TABS = [
   "changed_variables",
   "logbook",
 ] as const;
+
+// A repeat keeps only its last iterations, so the array index is not the real
+// one. Use the recorded repeat.index when we have it.
+const iterationNumber = (trace: ActionTraceStep, index: number): number =>
+  (trace.changed_variables?.repeat as { index?: number } | undefined)?.index ??
+  index + 1;
 
 @customElement("ha-trace-path-details")
 export class HaTracePathDetails extends LitElement {
@@ -63,7 +70,7 @@ export class HaTracePathDetails extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="padded-box trace-info">
-        ${this._renderSelectedTraceInfo()}
+        ${this._renderNotTriggeredNotice()} ${this._renderSelectedTraceInfo()}
       </div>
 
       <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
@@ -87,6 +94,22 @@ export class HaTracePathDetails extends LitElement {
           ? this._renderChangedVars()
           : this._renderLogbook()}
     `;
+  }
+
+  private _renderNotTriggeredNotice() {
+    if (
+      !this.trace.not_triggered ||
+      !this.selected?.path ||
+      !isTriggerPath(this.selected.path) ||
+      !(this.selected.path in this.trace.trace)
+    ) {
+      return nothing;
+    }
+    return html`<ha-alert alert-type="info">
+      ${this.hass!.localize(
+        "ui.panel.config.automation.trace.path.not_triggered"
+      )}
+    </ha-alert>`;
   }
 
   private _renderSelectedTraceInfo() {
@@ -150,8 +173,15 @@ export class HaTracePathDetails extends LitElement {
 
       parts.push(
         data.map((trace, idx) => {
-          const { path, timestamp, result, error, changed_variables, ...rest } =
-            trace as any;
+          const {
+            path,
+            timestamp,
+            result,
+            error,
+            template_errors,
+            changed_variables,
+            ...rest
+          } = trace as any;
 
           if (result?.enabled === false) {
             return html`${this.hass!.localize(
@@ -207,7 +237,7 @@ export class HaTracePathDetails extends LitElement {
               : html`<h3>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
-                    { number: idx + 1 }
+                    { number: iterationNumber(trace, idx) }
                   )}
                 </h3>`}
             ${curPath
@@ -238,6 +268,18 @@ export class HaTracePathDetails extends LitElement {
                       error: error,
                     }
                   )}
+                </div>`
+              : nothing}
+            ${template_errors?.length
+              ? html`<div class="error">
+                  ${this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.template_errors"
+                  )}
+                  <ul>
+                    ${template_errors.map(
+                      (templateError: string) => html`<li>${templateError}</li>`
+                    )}
+                  </ul>
                 </div>`
               : nothing}
             ${result
@@ -299,7 +341,7 @@ export class HaTracePathDetails extends LitElement {
               ? html`<p>
                   ${this.hass!.localize(
                     "ui.panel.config.automation.trace.path.iteration",
-                    { number: idx + 1 }
+                    { number: iterationNumber(trace, idx) }
                   )}
                 </p>`
               : ""}
@@ -369,15 +411,11 @@ export class HaTracePathDetails extends LitElement {
     return entries.length
       ? html`
           <ha-logbook-renderer
-            relative-time
             .hass=${this.hass}
             .entries=${entries}
             .narrow=${this.narrow}
           ></ha-logbook-renderer>
-          <hat-logbook-note
-            .hass=${this.hass}
-            .domain=${this.trace.domain}
-          ></hat-logbook-note>
+          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
           ${this.hass!.localize(
@@ -407,6 +445,11 @@ export class HaTracePathDetails extends LitElement {
 
         .error {
           color: var(--error-color);
+        }
+
+        .error ul {
+          margin: var(--ha-space-1) 0;
+          padding-left: var(--ha-space-6);
         }
 
         ha-tab-group {

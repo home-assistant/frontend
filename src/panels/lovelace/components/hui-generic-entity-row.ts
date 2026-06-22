@@ -115,7 +115,6 @@ export class HuiGenericEntityRow extends LitElement {
                               </ha-tooltip>
                               <ha-relative-time
                                 id="last-changed${this._secondaryInfoElementId}"
-                                .hass=${this.hass}
                                 .datetime=${stateObj.last_changed}
                                 capitalize
                               ></ha-relative-time>
@@ -136,7 +135,6 @@ export class HuiGenericEntityRow extends LitElement {
                                 <ha-relative-time
                                   id="last-updated${this
                                     ._secondaryInfoElementId}"
-                                  .hass=${this.hass}
                                   .datetime=${stateObj.last_updated}
                                   capitalize
                                 ></ha-relative-time>
@@ -160,7 +158,6 @@ export class HuiGenericEntityRow extends LitElement {
                                     <ha-relative-time
                                       id="last-triggered${this
                                         ._secondaryInfoElementId}"
-                                      .hass=${this.hass}
                                       .datetime=${stateObj.attributes
                                         .last_triggered}
                                       capitalize

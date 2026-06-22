@@ -101,7 +101,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         template: (tag) => html`
           ${tag.last_scanned_datetime
             ? html`<ha-relative-time
-                .hass=${this.hass}
                 .datetime=${tag.last_scanned_datetime}
                 capitalize
               ></ha-relative-time>`
@@ -133,7 +132,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       type: "overflow-menu",
       template: (tag) => html`
         <ha-icon-overflow-menu
-          .hass=${this.hass}
           narrow
           .items=${[
             {
@@ -210,7 +208,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-button slot="fab" size="large" @click=${this._addTag}>
+        <ha-button slot="fab" size="l" @click=${this._addTag}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.tag.add_tag")}
         </ha-button>

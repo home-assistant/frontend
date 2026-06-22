@@ -25,6 +25,7 @@ import type { GenDataTaskResult } from "../../../../data/ai_task";
 import type { AutomationConfig } from "../../../../data/automation";
 import type { ScriptConfig } from "../../../../data/script";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -38,8 +39,18 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 
+interface AutomationSaveState {
+  name?: string;
+  description?: string;
+  icon?: string;
+  entryUpdates: EntityRegistryUpdate;
+}
+
 @customElement("ha-dialog-automation-save")
-class DialogAutomationSave extends LitElement implements HassDialog {
+class DialogAutomationSave
+  extends DirtyStateProviderMixin<AutomationSaveState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -81,6 +92,16 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       this._entryUpdates.labels.length > 0 ? "labels" : "",
       this._entryUpdates.area ? "area" : "",
     ].filter(Boolean);
+
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        name: this._newName,
+        description: this._newDescription,
+        icon: this._newIcon,
+        entryUpdates: this._entryUpdates,
+      }
+    );
   }
 
   public closeDialog(): boolean {
@@ -194,7 +215,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       ${this._visibleOptionals.includes("area")
         ? html` <ha-area-picker
             id="area"
-            .hass=${this.hass}
             .value=${this._entryUpdates.area}
             @value-changed=${this._registryEntryChanged}
           ></ha-area-picker>`
@@ -253,6 +273,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         .open=${this._open}
         @closed=${this._dialogClosed}
         header-title=${this._params.title || title}
+        .preventScrimClose=${this.isDirtyState}
       >
         ${this._params.hideInputs
           ? nothing
@@ -282,7 +303,11 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!!this._params.config.alias && !this.isDirtyState}
+          >
             ${this.hass.localize(
               this._params.config.alias && !this._params.onDiscard
                 ? "ui.panel.config.automation.editor.rename"
@@ -300,17 +325,28 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
+  private _trackDirtyState() {
+    this._updateDirtyState({
+      name: this._newName,
+      description: this._newDescription,
+      icon: this._newIcon,
+      entryUpdates: this._entryUpdates,
+    });
+  }
+
   private _registryEntryChanged(ev) {
     ev.stopPropagation();
     const id: string = ev.target.id;
     const value = ev.detail.value;
 
     this._entryUpdates = { ...this._entryUpdates, [id]: value };
+    this._trackDirtyState();
   }
 
   private _iconChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._newIcon = ev.detail.value || undefined;
+    this._trackDirtyState();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -321,6 +357,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     } else {
       this._newName = target.value;
     }
+    this._trackDirtyState();
   }
 
   private _handleDiscard() {
@@ -388,6 +425,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         this._visibleOptionals = [...this._visibleOptionals, "labels"];
       }
     }
+    this._trackDirtyState();
   }
 
   private async _save(): Promise<void> {

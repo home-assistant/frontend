@@ -25,6 +25,7 @@ import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -51,6 +52,8 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   @state() private _newTriggersAndConditions = false;
 
   private _unsub?: Promise<UnsubscribeFunc>;
+
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Trigger[] {
     return this.triggers;
@@ -176,7 +179,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.add"
@@ -234,6 +237,34 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (!this.hass) {
+      return;
+    }
+
+    const addTriggerTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      "trigger"
+    );
+
+    if (changedProps.has("triggers") && addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.triggers.length === 0 &&
+      addTriggerTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addTriggerDialog());
+    } else if (this._openedAddDialogFromQuery && !addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
 
     if (
       changedProps.has("triggers") &&

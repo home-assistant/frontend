@@ -14,6 +14,7 @@ import type {
   ECElementEvent,
   LegendComponentOption,
   LineSeriesOption,
+  TooltipOption,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
@@ -29,21 +30,58 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
-import { filterXSS } from "../../common/util/xss";
 import { uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type {
+  ECOption,
+  HaECOption,
+  HaECSeries,
+  HaECSeriesItem,
+  HaTooltipOption,
+} from "../../resources/echarts/echarts";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { downSampleLineData } from "./down-sample";
+import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
+
+type RawSeriesOption = Exclude<
+  NonNullable<ECOption["series"]>,
+  readonly unknown[]
+>;
+
+const toEChartsFormatter = (
+  fn: ReturnType<typeof wrapLitTooltipFormatter>
+): NonNullable<TooltipOption["formatter"]> =>
+  fn as NonNullable<TooltipOption["formatter"]>;
+
+const convertHaTooltipFormatter = (tooltip: HaTooltipOption): TooltipOption => {
+  const { formatter, ...rest } = tooltip;
+  const next: TooltipOption = { ...rest };
+  if (typeof formatter === "function") {
+    next.formatter = toEChartsFormatter(wrapLitTooltipFormatter(formatter));
+  } else if (formatter !== undefined) {
+    next.formatter = formatter;
+  }
+  return next;
+};
+
+const processSeriesTooltipFormatter = (s: HaECSeriesItem): RawSeriesOption => {
+  if (s.tooltip && typeof s.tooltip.formatter === "function") {
+    return {
+      ...s,
+      tooltip: convertHaTooltipFormatter(s.tooltip),
+    } as RawSeriesOption;
+  }
+  return s as RawSeriesOption;
+};
 
 export type CustomLegendOption = ECOption["legend"] & {
   type: "custom";
@@ -66,9 +104,9 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public data: ECOption["series"] = [];
+  @property({ attribute: false }) public data: HaECSeries = [];
 
-  @property({ attribute: false }) public options?: ECOption;
+  @property({ attribute: false }) public options?: HaECOption;
 
   @property({ type: String }) public height?: string;
 
@@ -356,6 +394,18 @@ export class HaChartBase extends LitElement {
       return nothing;
     }
     const datasets = ensureArray(this.data!);
+    // Index datasets by id and name so each legend item is an O(1) lookup
+    // instead of scanning every dataset twice. Charts can have many series.
+    const datasetById = new Map<unknown, (typeof datasets)[number]>();
+    const datasetByName = new Map<unknown, (typeof datasets)[number]>();
+    for (const dataset of datasets) {
+      if (dataset.id !== undefined && !datasetById.has(dataset.id)) {
+        datasetById.set(dataset.id, dataset);
+      }
+      if (dataset.name !== undefined && !datasetByName.has(dataset.name)) {
+        datasetByName.set(dataset.name, dataset);
+      }
+    }
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -375,10 +425,10 @@ export class HaChartBase extends LitElement {
             return nothing;
           }
           let itemStyle: Record<string, any> = {};
-          let id = "";
           let value = "";
           let noLabelClick = false;
           const name = typeof item === "string" ? item : (item.name ?? "");
+          let id: string;
           if (typeof item === "string") {
             id = item;
           } else {
@@ -388,9 +438,7 @@ export class HaChartBase extends LitElement {
             noLabelClick = item.noLabelClick ?? false;
           }
           const labelClickable = this.clickLabelForMoreInfo && !noLabelClick;
-          const dataset =
-            datasets.find((d) => d.id === id) ??
-            datasets.find((d) => d.name === id);
+          const dataset = datasetById.get(id) ?? datasetByName.get(id);
           itemStyle = {
             color: dataset?.color as string,
             ...(dataset?.itemStyle as { borderColor?: string }),
@@ -614,7 +662,7 @@ export class HaChartBase extends LitElement {
 
   // Return an array of all IDs associated with the legend item of the primaryId
   private _getAllIdsFromLegend(
-    options: ECOption | undefined,
+    options: HaECOption | undefined,
     primaryId: string
   ): string[] {
     if (!options) return [primaryId];
@@ -634,7 +682,7 @@ export class HaChartBase extends LitElement {
 
   // Parses the options structure and adds all ids of unselected legend items to hiddenDatasets.
   // No known need to remove items at this time.
-  private _updateHiddenStatsFromOptions(options: ECOption | undefined) {
+  private _updateHiddenStatsFromOptions(options: HaECOption | undefined) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       | LegendComponentOption
@@ -757,22 +805,34 @@ export class HaChartBase extends LitElement {
       xAxis,
     };
 
-    const isMobile = window.matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
-    if (isMobile && options.tooltip) {
-      // mobile charts are full width so we need to confine the tooltip to the chart
-      const tooltips = Array.isArray(options.tooltip)
-        ? options.tooltip
-        : [options.tooltip];
-      tooltips.forEach((tooltip) => {
-        tooltip.confine = true;
-        tooltip.appendTo = undefined;
-        tooltip.triggerOn = "click";
-      });
-      options.tooltip = tooltips;
+    if (options.tooltip) {
+      const isMobile = window.matchMedia(
+        "all and (max-width: 450px), all and (max-height: 500px)"
+      ).matches;
+      // Shallow-copy each tooltip object so wrap/mobile mutations don't leak
+      // back into the caller's options.tooltip reference (callers may cache the
+      // options object via memoizeOne, in which case in-place mutation would
+      // pollute that cache across chart instances).
+      const processTooltip = (tooltip: HaTooltipOption): TooltipOption => {
+        const next = convertHaTooltipFormatter(tooltip);
+        if (isMobile) {
+          // mobile charts are full width so we need to confine the tooltip to the chart
+          next.confine = true;
+          next.appendTo = undefined;
+          next.triggerOn = "click";
+        }
+        return next;
+      };
+      const haTooltip = options.tooltip;
+      const processedTooltip = Array.isArray(haTooltip)
+        ? haTooltip.map(processTooltip)
+        : processTooltip(haTooltip);
+      return {
+        ...options,
+        tooltip: processedTooltip,
+      } as ECOption;
     }
-    return options;
+    return options as ECOption;
   }
 
   private _createTheme(style: CSSStyleDeclaration) {
@@ -956,30 +1016,16 @@ export class HaChartBase extends LitElement {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
       | XAXisOption
       | undefined;
-    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
-      | YAXisOption
-      | undefined;
     const series = ensureArray(this.data).map((s) => {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined
         : s.data;
+      let result = {
+        ...s,
+        data,
+      } as HaECSeriesItem;
       if (data && s.type === "line") {
-        if (yAxis?.type === "log") {
-          // set <=0 values to null so they render as gaps on a log graph
-          return {
-            ...s,
-            data: (data as LineSeriesOption["data"])!.map((v) =>
-              Array.isArray(v)
-                ? [
-                    v[0],
-                    typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
-                    ...v.slice(2),
-                  ]
-                : v
-            ),
-          };
-        }
-        if (s.sampling === "minmax") {
+        if ((s as LineSeriesOption).sampling === "minmax") {
           const minX = xAxis?.min
             ? xAxis.min instanceof Date
               ? xAxis.min.getTime()
@@ -994,8 +1040,8 @@ export class HaChartBase extends LitElement {
                 ? xAxis.max
                 : undefined
             : undefined;
-          return {
-            ...s,
+          result = {
+            ...result,
             sampling: undefined,
             data: downSampleLineData(
               data as LineSeriesOption["data"],
@@ -1003,11 +1049,10 @@ export class HaChartBase extends LitElement {
               minX,
               maxX
             ),
-          };
+          } as HaECSeriesItem;
         }
       }
-      const name = filterXSS(String(s.name ?? s.id ?? ""));
-      return { ...s, name, data };
+      return processSeriesTooltipFormatter(result);
     });
     return series as ECOption["series"];
   }
@@ -1344,8 +1389,8 @@ export class HaChartBase extends LitElement {
   }
 
   private _compareCustomLegendOptions(
-    oldOptions: ECOption | undefined,
-    newOptions: ECOption | undefined
+    oldOptions: HaECOption | undefined,
+    newOptions: HaECOption | undefined
   ): boolean {
     const oldLegends = ensureArray(
       oldOptions?.legend || []
@@ -1485,7 +1530,9 @@ export class HaChartBase extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      line-height: 1;
+      /* overflow: hidden clips descenders (e.g. "g", parentheses) with a tight
+         line-height, so give the line box room to contain them */
+      line-height: var(--ha-line-height-condensed);
     }
     @media (hover: hover) {
       .chart-legend .label.clickable:hover {
@@ -1522,6 +1569,25 @@ export class HaChartBase extends LitElement {
     }
     .chart-legend .legend-toggle ha-svg-icon {
       --mdc-icon-size: 18px;
+    }
+    /* On touch devices, enlarge the toggle tap target via taller rows and
+       leading padding (which also separates it from the previous item), while
+       keeping the icon tight to its own label so the pairing stays clear.
+       Drop the now-pointless row gap and li padding. */
+    @media (pointer: coarse) {
+      .chart-legend ul {
+        row-gap: 0;
+      }
+      /* Only grow the toggle rows, not the expand/collapse chip's row. */
+      .chart-legend li:has(.legend-toggle) {
+        height: 40px;
+        padding: 0;
+      }
+      .chart-legend .legend-toggle {
+        padding: 11px;
+        padding-inline-end: 4px;
+        margin: 0;
+      }
     }
     ha-assist-chip {
       height: 100%;

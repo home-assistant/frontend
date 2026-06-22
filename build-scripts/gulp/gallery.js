@@ -57,7 +57,9 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
       if (descriptionContent === "") {
         hasDescription = false;
       } else {
-        descriptionContent = marked(descriptionContent).replace(/`/g, "\\`");
+        descriptionContent = marked(descriptionContent)
+          .replace(/\\/g, "\\\\")
+          .replace(/`/g, "\\`");
         fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
         fs.writeFileSync(
           path.resolve(galleryBuild, `${pageId}-description.ts`),
@@ -101,8 +103,25 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
     if (!toProcess) {
       console.error("Unknown category", group.category);
-      if (!group.pages) {
+      if (!group.subsections && !group.pages) {
         group.pages = [];
+      }
+      continue;
+    }
+
+    if (group.subsections) {
+      // Listed pages keep their per-subsection order.
+      for (const subsection of group.subsections) {
+        for (const page of subsection.pages) {
+          if (!toProcess.delete(page)) {
+            console.error("Found unreferenced demo", page);
+          }
+        }
+      }
+      // Any remaining pages land in a trailing "Other" subsection.
+      const leftover = Array.from(toProcess).sort();
+      if (leftover.length) {
+        group.subsections.push({ header: "Other", pages: leftover });
       }
       continue;
     }

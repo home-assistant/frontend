@@ -274,7 +274,7 @@ class ErrorLogCard extends LitElement {
                   !this._scrolledToBottomController.value) ||
                 false,
             })}"
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._scrollToBottom}
           >

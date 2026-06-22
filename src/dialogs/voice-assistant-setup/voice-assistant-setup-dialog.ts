@@ -343,9 +343,9 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     this._step = this._previousSteps.pop()!;
   }
 
-  private _goToNextStep(ev?: CustomEvent) {
+  private async _goToNextStep(ev?: CustomEvent) {
     if (ev?.detail?.updateConfig) {
-      this._fetchAssistConfiguration();
+      await this._fetchAssistConfiguration();
     }
     if (ev?.detail?.nextStep) {
       this._nextStep = ev.detail.nextStep;

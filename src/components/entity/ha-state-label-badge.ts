@@ -8,8 +8,9 @@ import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { unitFromParts, valueFromParts } from "../../common/entity/value_parts";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
-import { isUnavailableState, UNAVAILABLE } from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
 import type { HomeAssistant } from "../../types";
@@ -163,19 +164,18 @@ export class HaStateLabelBadge extends LitElement {
       case "sun":
       case "timer":
         return null;
-      // @ts-expect-error we don't break and go to default
       case "sensor":
         if (entry?.platform === "moon") {
           return null;
         }
-      // eslint-disable-next-line: disable=no-fallthrough
+        break;
       default:
-        return isUnavailableState(entityState.state)
-          ? "—"
-          : this.hass!.formatEntityStateToParts(entityState).find(
-              (part) => part.type === "value"
-            )?.value;
+        break;
     }
+    if (entityState.state === UNAVAILABLE || entityState.state === UNKNOWN) {
+      return "—";
+    }
+    return valueFromParts(this.hass!.formatEntityStateToParts(entityState));
   }
 
   private _computeShowIcon(
@@ -209,7 +209,7 @@ export class HaStateLabelBadge extends LitElement {
     _timerTimeRemaining = 0
   ) {
     // For unavailable states or certain domains, use a special translation that is truncated to fit within the badge label
-    if (isUnavailableState(entityState.state)) {
+    if (entityState.state === UNAVAILABLE || entityState.state === UNKNOWN) {
       return this.hass!.localize(`state_badge.default.${entityState.state}`);
     }
     const domainStateKey = getTruncatedKey(domain, entityState.state);
@@ -224,9 +224,7 @@ export class HaStateLabelBadge extends LitElement {
       return secondsToDuration(_timerTimeRemaining);
     }
     return (
-      this.hass!.formatEntityStateToParts(entityState).find(
-        (part) => part.type === "unit"
-      )?.value || null
+      unitFromParts(this.hass!.formatEntityStateToParts(entityState)) || null
     );
   }
 

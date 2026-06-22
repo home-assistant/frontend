@@ -64,6 +64,10 @@ class HaPanelDevTemplate extends LitElement {
 
   private _inited = false;
 
+  // Bumped on every (re)subscribe so a superseded render can be detected and
+  // its late-arriving results discarded.
+  private _subscribeRequestId = 0;
+
   private _tipResizeObserver?: ResizeObserver;
 
   public connectedCallback() {
@@ -180,7 +184,7 @@ class HaPanelDevTemplate extends LitElement {
               ${this.hass.localize("ui.common.clear")}
             </ha-button>
           </div>
-          <ha-tip .hass=${this.hass}>
+          <ha-tip>
             ${this.hass.localize(
               "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
               {
@@ -502,8 +506,14 @@ ${type === "object"
   }
 
   private async _subscribeTemplate() {
+    const requestId = ++this._subscribeRequestId;
     this._rendering = true;
     await this._unsubscribeTemplate();
+    // A newer render started while we were unsubscribing; let it win so we do
+    // not leave a stale subscription running that overwrites the result.
+    if (requestId !== this._subscribeRequestId) {
+      return;
+    }
     this._error = undefined;
     this._errorLevel = undefined;
     this._templateResult = undefined;
@@ -511,6 +521,10 @@ ${type === "object"
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
+          // Ignore results from a render that has since been superseded.
+          if (requestId !== this._subscribeRequestId) {
+            return;
+          }
           if ("error" in result) {
             // We show the latest error, or a warning if there are no errors
             if (result.level === "ERROR" || this._errorLevel !== "ERROR") {

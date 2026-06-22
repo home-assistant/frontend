@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
@@ -22,6 +23,7 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -31,6 +33,7 @@ import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../badges/hui-badge";
 import "../../sections/hui-section";
 import { addBadge, replaceBadge } from "../config-util";
+import { getBadgeDefaultConfig } from "../get-badge-default-config";
 import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
@@ -52,7 +55,7 @@ declare global {
 
 @customElement("hui-dialog-edit-badge")
 export class HuiDialogEditBadge
-  extends LitElement
+  extends DirtyStateProviderMixin<LovelaceBadgeConfig>()(LitElement)
   implements HassDialog<EditBadgeDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -80,8 +83,6 @@ export class HuiDialogEditBadge
 
   @state() private _documentationURL?: string;
 
-  @state() private _dirty = false;
-
   public async showDialog(params: EditBadgeDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -101,7 +102,6 @@ export class HuiDialogEditBadge
 
     if ("badgeConfig" in params) {
       this._badgeConfig = params.badgeConfig;
-      this._dirty = true;
     } else {
       const badge = this._containerConfig.badges?.[params.badgeIndex];
       this._badgeConfig = badge != null ? ensureBadgeConfig(badge) : badge;
@@ -111,10 +111,21 @@ export class HuiDialogEditBadge
     if (this._badgeConfig && !Object.isFrozen(this._badgeConfig)) {
       this._badgeConfig = deepFreeze(this._badgeConfig);
     }
+    const effectiveDefaults = this._badgeConfig?.type
+      ? await getBadgeDefaultConfig(this._badgeConfig.type)
+      : undefined;
+    const normalize = (config: LovelaceBadgeConfig) =>
+      stripDefaults(config, effectiveDefaults);
+    if ("badgeConfig" in params && this._badgeConfig) {
+      this._initDirtyTracking({ type: "deep" }, { type: "" }, normalize);
+      this._updateDirtyState(this._badgeConfig);
+    } else {
+      this._initDirtyTracking({ type: "deep" }, this._badgeConfig, normalize);
+    }
   }
 
   public closeDialog(): boolean {
-    if (this._dirty) {
+    if (this.isEffectiveDirtyState) {
       this._confirmCancel();
       return false;
     }
@@ -128,7 +139,6 @@ export class HuiDialogEditBadge
     this._badgeConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
-    this._dirty = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -193,7 +203,7 @@ export class HuiDialogEditBadge
       <ha-dialog
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        prevent-scrim-close
+        .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
@@ -278,18 +288,14 @@ export class HuiDialogEditBadge
           >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
-          ${this._badgeConfig !== undefined && this._dirty
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  ?disabled=${!this._canSave || this._saving}
-                  @click=${this._save}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize("ui.common.save")}
-                </ha-button>
-              `
-            : nothing}
+          <ha-button
+            slot="primaryAction"
+            ?disabled=${!this._canSave || this._saving || !this.isDirtyState}
+            @click=${this._save}
+            .loading=${this._saving}
+          >
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -305,11 +311,14 @@ export class HuiDialogEditBadge
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    this._badgeConfig = deepFreeze(ev.detail.config);
+  private _handleConfigChanged(
+    ev: HASSDomEvent<ConfigChangedEvent<LovelaceBadgeConfig>>
+  ) {
+    const config = deepFreeze(ev.detail.config);
+    this._badgeConfig = config;
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
-    this._dirty = true;
+    this._updateDirtyState(config);
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
@@ -365,7 +374,7 @@ export class HuiDialogEditBadge
     if (ev) {
       ev.stopPropagation();
     }
-    this._dirty = false;
+    this._discardDirtyStateChanges();
     this.closeDialog();
   }
 
@@ -373,7 +382,7 @@ export class HuiDialogEditBadge
     if (!this._canSave) {
       return;
     }
-    if (!this._dirty) {
+    if (!this.isDirtyState) {
       this.closeDialog();
       return;
     }
@@ -389,7 +398,7 @@ export class HuiDialogEditBadge
           )
     );
     this._saving = false;
-    this._dirty = false;
+    this._markDirtyStateClean();
     showSaveSuccessToast(this, this.hass);
     this.closeDialog();
   }

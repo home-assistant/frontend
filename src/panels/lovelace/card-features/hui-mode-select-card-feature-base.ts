@@ -210,7 +210,6 @@ export abstract class HuiModeSelectCardFeatureBase<
   protected _renderOptionIcon(option: HuiModeSelectOption): TemplateResult<1> {
     return html`<ha-attribute-icon
       slot="graphic"
-      .hass=${this.hass!}
       .stateObj=${this._stateObj}
       .attribute=${this._attribute}
       .attributeValue=${option.value}
@@ -219,7 +218,6 @@ export abstract class HuiModeSelectCardFeatureBase<
 
   private _renderMenuIcon = (value: string): TemplateResult<1> =>
     html`<ha-attribute-icon
-      .hass=${this.hass!}
       .stateObj=${this._stateObj}
       .attribute=${this._attribute}
       .attributeValue=${value}

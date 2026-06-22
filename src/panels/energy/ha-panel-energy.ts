@@ -6,6 +6,8 @@ import "../../components/ha-alert";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
+import type { EnergyFrontendSystemData } from "../../data/frontend";
+import { fetchFrontendSystemData } from "../../data/frontend";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -14,6 +16,7 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
+import { DEFAULT_POWER_COLLECTION_KEY } from "./constants";
 
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
@@ -24,6 +27,8 @@ class PanelEnergy extends LitElement {
   @property({ attribute: false }) public panel?: PanelInfo;
 
   @state() private _lovelace?: Lovelace;
+
+  @state() private _config: EnergyFrontendSystemData = {};
 
   @property({ attribute: false }) public route?: {
     path: string;
@@ -57,8 +62,21 @@ class PanelEnergy extends LitElement {
     await Promise.all([
       this.hass.loadFragmentTranslation("lovelace"),
       this.hass.loadFragmentTranslation("energy"),
+      this._loadSystemData(),
     ]);
     this._loadConfig();
+  }
+
+  private async _loadSystemData() {
+    try {
+      const data = await fetchFrontendSystemData(
+        this.hass.connection,
+        "energy"
+      );
+      this._config = data || {};
+    } catch (_err) {
+      this._config = {};
+    }
   }
 
   private async _loadConfig() {
@@ -86,7 +104,16 @@ class PanelEnergy extends LitElement {
 
   private async _setLovelace() {
     const config: LovelaceConfig = await generateLovelaceDashboardStrategy(
-      { strategy: { type: "energy" } },
+      {
+        strategy: {
+          type: "energy",
+          default_collection:
+            this.route?.path === "/now"
+              ? DEFAULT_POWER_COLLECTION_KEY
+              : undefined,
+          hidden_cards: this._config.hidden_cards,
+        },
+      },
       this.hass
     );
 
@@ -155,7 +182,8 @@ class PanelEnergy extends LitElement {
     navigate(`/config/energy/${tab}?historyBack=1`);
   }
 
-  private _reloadConfig() {
+  private async _reloadConfig() {
+    await this._loadSystemData();
     this._loadConfig();
   }
 

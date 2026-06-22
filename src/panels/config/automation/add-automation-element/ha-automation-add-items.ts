@@ -161,7 +161,13 @@ export class HaAutomationAddItems extends LitElement {
 
     return html`<div class="selected-target">
       ${getTargetIcon(
-        this.hass,
+        {
+          entities: this.hass.entities,
+          devices: this.hass.devices,
+          areas: this.hass.areas,
+          floors: this.hass.floors,
+        },
+        this.hass.states,
         target[0],
         target[1],
         this.configEntryLookup,

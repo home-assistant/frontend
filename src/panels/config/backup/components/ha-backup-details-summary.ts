@@ -4,8 +4,8 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/list/ha-list-base";
 import {
   computeBackupSize,
   computeBackupType,
@@ -59,8 +59,8 @@ class HaBackupDetailsSummary extends LitElement {
         </div>
         <div class="card-content">
           ${errors.length ? this._renderErrorSummary(errors) : nothing}
-          <ha-md-list class="summary">
-            <ha-md-list-item>
+          <ha-list-base class="summary">
+            <ha-list-item-base>
               <span slot="headline">
                 ${this.hass.localize("ui.panel.config.backup.backup_type")}
               </span>
@@ -69,8 +69,8 @@ class HaBackupDetailsSummary extends LitElement {
                   `ui.panel.config.backup.type.${computeBackupType(this.backup, this.isHassio)}`
                 )}
               </span>
-            </ha-md-list-item>
-            <ha-md-list-item>
+            </ha-list-item-base>
+            <ha-list-item-base>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.backup.details.summary.size"
@@ -79,16 +79,16 @@ class HaBackupDetailsSummary extends LitElement {
               <span slot="supporting-text">
                 ${bytesToString(computeBackupSize(this.backup))}
               </span>
-            </ha-md-list-item>
-            <ha-md-list-item>
+            </ha-list-item-base>
+            <ha-list-item-base>
               <span slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.backup.details.summary.created"
                 )}
               </span>
               <span slot="supporting-text">${formattedDate}</span>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-base>
+          </ha-list-base>
         </div>
       </ha-card>
     `;
@@ -148,23 +148,17 @@ class HaBackupDetailsSummary extends LitElement {
       display: flex;
       justify-content: flex-end;
     }
-    ha-md-list {
-      background: none;
-      padding: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
+      padding-bottom: var(--ha-space-3);
     }
-    ha-md-list-item {
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
-      --md-list-item-two-line-container-height: 64px;
+    ha-list-base.summary ha-list-item-base::part(headline) {
+      font-size: var(--ha-font-size-s);
+      color: var(--ha-color-text-secondary);
     }
-    ha-md-list.summary ha-md-list-item {
-      --md-list-item-supporting-text-size: 1rem;
-      --md-list-item-label-text-size: 0.875rem;
-
-      --md-list-item-label-text-color: var(--secondary-text-color);
-      --md-list-item-supporting-text-color: var(--primary-text-color);
-    }
-    ha-md-list-item [slot="supporting-text"] {
+    ha-list-item-base [slot="supporting-text"] {
+      font-size: var(--ha-font-size-m);
+      color: var(--ha-color-text-primary);
       display: flex;
       align-items: center;
       flex-direction: row;

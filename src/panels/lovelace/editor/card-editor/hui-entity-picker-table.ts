@@ -219,7 +219,6 @@ export class HuiEntityPickerTable extends LitElement {
         hidden: narrow,
         template: (entity) => html`
           <ha-relative-time
-            .hass=${this.hass!}
             .datetime=${entity.last_changed}
             capitalize
           ></ha-relative-time>

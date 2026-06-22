@@ -818,7 +818,8 @@ const describeLegacyTrigger = (
   if (trigger.trigger === "device" && trigger.device_id) {
     const config = trigger as DeviceTrigger;
     const localized = localizeDeviceAutomationTrigger(
-      hass,
+      hass.localize,
+      hass.states,
       entityRegistry,
       config
     );
@@ -1123,6 +1124,9 @@ const describeLegacyCondition = (
         hasAttribute: attribute !== "" ? "true" : "false",
         attribute: attribute,
         numberOfEntities: entities.length,
+        // With "any", entities are joined with "or", which takes a singular
+        // verb in English even for multiple entities ("A or B is ...").
+        matchAny: condition.match === "any" ? "true" : "false",
         entities:
           condition.match === "any"
             ? formatListWithOrs(hass.locale, entities)
@@ -1336,7 +1340,8 @@ const describeLegacyCondition = (
   if (condition.condition === "device" && condition.device_id) {
     const config = condition as DeviceCondition;
     const localized = localizeDeviceAutomationCondition(
-      hass,
+      hass.localize,
+      hass.states,
       entityRegistry,
       config
     );

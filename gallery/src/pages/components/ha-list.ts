@@ -20,7 +20,6 @@ import "../../../../src/components/item/ha-list-item-option";
 import "../../../../src/components/list/ha-list-base";
 import "../../../../src/components/list/ha-list-nav";
 import "../../../../src/components/list/ha-list-selectable";
-import type { HaListSelectedDetail } from "../../../../src/components/list/types";
 
 type Appearance = "line" | "checkbox";
 type Position = "start" | "end";
@@ -185,7 +184,7 @@ export class DemoHaList extends LitElement {
       <ha-card header="Single select, appearance=line">
         <ha-list-selectable
           aria-label="Single select"
-          @ha-list-selected=${this._onSingle}
+          @ha-list-item-selected=${this._onSingle}
         >
           ${this._options.map(
             (o, i) => html`
@@ -205,7 +204,8 @@ export class DemoHaList extends LitElement {
         <ha-list-selectable
           multi
           aria-label="Multi select line"
-          @ha-list-selected=${this._onMultiLine}
+          @ha-list-item-selected=${this._onMultiLineSelected}
+          @ha-list-item-deselected=${this._onMultiLineDeselected}
         >
           ${this._options.map(
             (o, i) => html`
@@ -227,7 +227,8 @@ export class DemoHaList extends LitElement {
         <ha-list-selectable
           multi
           aria-label="Multi checkbox start"
-          @ha-list-selected=${this._onMultiCheckStart}
+          @ha-list-item-selected=${this._onMultiCheckStartSelected}
+          @ha-list-item-deselected=${this._onMultiCheckStartDeselected}
         >
           ${this._options.map(
             (o, i) => html`
@@ -253,7 +254,8 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
         <ha-list-selectable
           multi
           aria-label="Multi checkbox end"
-          @ha-list-selected=${this._onMultiCheckEnd}
+          @ha-list-item-selected=${this._onMultiCheckEndSelected}
+          @ha-list-item-deselected=${this._onMultiCheckEndDeselected}
         >
           ${this._options.map(
             (o, i) => html`
@@ -347,20 +349,58 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
     this._buttonClicks++;
   };
 
-  private _onSingle = (ev: CustomEvent<HaListSelectedDetail>) => {
-    this._single = ev.detail.index;
+  private _withIndex(
+    value: number | Set<number>,
+    index: number,
+    selected: boolean
+  ): Set<number> {
+    const next = new Set(value instanceof Set ? value : []);
+    if (selected) {
+      next.add(index);
+    } else {
+      next.delete(index);
+    }
+    return next;
+  }
+
+  private _onSingle = (ev: CustomEvent<number>) => {
+    this._single = ev.detail;
   };
 
-  private _onMultiLine = (ev: CustomEvent<HaListSelectedDetail>) => {
-    this._multiLine = ev.detail.index;
+  private _onMultiLineSelected = (ev: CustomEvent<number>) => {
+    this._multiLine = this._withIndex(this._multiLine, ev.detail, true);
   };
 
-  private _onMultiCheckStart = (ev: CustomEvent<HaListSelectedDetail>) => {
-    this._multiCheckStart = ev.detail.index;
+  private _onMultiLineDeselected = (ev: CustomEvent<number>) => {
+    this._multiLine = this._withIndex(this._multiLine, ev.detail, false);
   };
 
-  private _onMultiCheckEnd = (ev: CustomEvent<HaListSelectedDetail>) => {
-    this._multiCheckEnd = ev.detail.index;
+  private _onMultiCheckStartSelected = (ev: CustomEvent<number>) => {
+    this._multiCheckStart = this._withIndex(
+      this._multiCheckStart,
+      ev.detail,
+      true
+    );
+  };
+
+  private _onMultiCheckStartDeselected = (ev: CustomEvent<number>) => {
+    this._multiCheckStart = this._withIndex(
+      this._multiCheckStart,
+      ev.detail,
+      false
+    );
+  };
+
+  private _onMultiCheckEndSelected = (ev: CustomEvent<number>) => {
+    this._multiCheckEnd = this._withIndex(this._multiCheckEnd, ev.detail, true);
+  };
+
+  private _onMultiCheckEndDeselected = (ev: CustomEvent<number>) => {
+    this._multiCheckEnd = this._withIndex(
+      this._multiCheckEnd,
+      ev.detail,
+      false
+    );
   };
 
   static styles = css`

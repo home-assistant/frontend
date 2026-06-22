@@ -18,6 +18,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -58,6 +59,7 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
+import { computeDeviceAreaLabel } from "../../../data/device/device_picker";
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -249,12 +251,13 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!area && !domain && !configEntry && !label) {
       return;
     }
 
@@ -267,6 +270,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           ...((this._filters["ha-filter-states"]?.value as string[]) || []),
           "disabled",
         ],
+        items: undefined,
+      },
+      "ha-filter-floor-areas": {
+        value: area ? { areas: [area] } : undefined,
         items: undefined,
       },
       "ha-filter-integrations": {
@@ -445,6 +452,12 @@ export class HaConfigDeviceDashboard extends LitElement {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
       }
 
+      // Build a label lookup once instead of scanning labelReg for every
+      // label of every device.
+      const labelLookup = labelReg
+        ? new Map(labelReg.map((label) => [label.label_id, label]))
+        : undefined;
+
       const formattedOutputDevices = outputDevices.map((device) => {
         const deviceEntries = sortConfigEntries(
           device.config_entries
@@ -455,20 +468,32 @@ export class HaConfigDeviceDashboard extends LitElement {
 
         const labels = labelReg && device?.labels;
         const labelsEntries = (labels || [])
-          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .map((lbl) => labelLookup!.get(lbl))
           .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
 
-        let floorName;
-        if (
-          device.area_id &&
-          areas[device.area_id]?.floor_id &&
-          this.hass.floors
-        ) {
-          const floorId = areas[device.area_id].floor_id;
-          if (this.hass.floors[floorId!]) {
-            floorName = computeFloorName(this.hass.floors[floorId!]);
-          }
-        }
+        const { areaName } = computeDeviceAreaLabel(
+          device,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.states,
+          this.hass.localize,
+          this.hass.language,
+          this.hass.translationMetadata,
+          device.via_device_id
+            ? deviceEntityLookup[device.via_device_id]
+            : undefined
+        );
+
+        const floorArea =
+          getDeviceArea(device, areas) ??
+          (device.via_device_id && this.hass.devices[device.via_device_id]
+            ? getDeviceArea(this.hass.devices[device.via_device_id], areas)
+            : undefined);
+        const floorId = floorArea?.floor_id;
+        const floorName =
+          floorId && this.hass.floors?.[floorId]
+            ? computeFloorName(this.hass.floors[floorId])
+            : undefined;
 
         return {
           ...device,
@@ -484,10 +509,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           manufacturer:
             device.manufacturer ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
-          area:
-            device.area_id && areas[device.area_id]
-              ? areas[device.area_id].name
-              : undefined,
+          area: areaName,
           floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
@@ -500,6 +522,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
+          firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
             this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -588,6 +611,13 @@ export class HaConfigDeviceDashboard extends LitElement {
         title: localize("ui.panel.config.devices.data_table.model"),
         sortable: true,
         filterable: true,
+        minWidth: "120px",
+      },
+      firmware_version: {
+        title: localize("ui.panel.config.devices.data_table.firmware_version"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
         minWidth: "120px",
       },
       battery_entity: {
@@ -787,7 +817,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-button slot="fab" size="large" @click=${this._addDevice}>
+        <ha-button slot="fab" size="l" @click=${this._addDevice}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.devices.add_device")}
         </ha-button>
@@ -822,7 +852,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-integrations
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -967,7 +996,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
     const batteryEntity = findBatteryEntity(
-      this.hass,
+      this.hass.states,
       deviceEntityLookup[deviceId] || []
     );
     return batteryEntity ? batteryEntity.entity_id : undefined;
@@ -978,7 +1007,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
     const batteryChargingEntity = findBatteryChargingEntity(
-      this.hass,
+      this.hass.states,
       deviceEntityLookup[deviceId] || []
     );
     return batteryChargingEntity ? batteryChargingEntity.entity_id : undefined;

@@ -354,6 +354,7 @@ export class HaConfigEntryRow extends LitElement {
                 <a
                   href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
                   target="_blank"
+                  rel="noreferrer"
                   @click=${this._signUrl}
                 >
                   <ha-dropdown-item value="diagnostics">
@@ -626,7 +627,6 @@ export class HaConfigEntryRow extends LitElement {
   private _handleReconfigure = async () => {
     showConfigFlowDialog(this, {
       startFlowHandler: this.data.entry.domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
       manifest: await fetchIntegrationManifest(
         this.hass,
         this.data.entry.domain

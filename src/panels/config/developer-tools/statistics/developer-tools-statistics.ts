@@ -274,7 +274,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 @click=${this._fixIssue}
                 .data=${statistic.issues}
                 appearance="plain"
-                size="small"
+                size="s"
               >
                 ${localize(
                   statistic.issues.some((issue) =>

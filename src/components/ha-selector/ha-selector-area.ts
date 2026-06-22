@@ -91,7 +91,6 @@ export class HaAreaSelector extends LitElement {
     if (!this.selector.area?.multiple) {
       return html`
         <ha-area-picker
-          .hass=${this.hass}
           .value=${this.value}
           .label=${this.label}
           .helper=${this.helper}

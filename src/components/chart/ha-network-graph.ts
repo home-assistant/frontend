@@ -1,6 +1,6 @@
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 
@@ -11,7 +11,7 @@ import type {
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
 import type { HomeAssistant } from "../../types";
@@ -78,7 +78,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public tooltipFormatter?: (
     params: TopLevelFormatterParams
-  ) => string;
+  ) => TemplateResult | typeof nothing | null;
 
   /**
    * Optional callback that returns additional searchable strings for a node.
@@ -182,7 +182,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   }
 
   private _createOptions = memoizeOne(
-    (categories?: NetworkData["categories"]): ECOption => ({
+    (categories?: NetworkData["categories"]): HaECOption => ({
       tooltip: {
         trigger: "item",
         confine: true,

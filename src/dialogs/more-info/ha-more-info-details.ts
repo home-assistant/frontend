@@ -13,6 +13,11 @@ import { computeShownAttributes } from "../../data/entity/entity_attributes";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 import "../../components/ha-yaml-editor";
+import { computeDomain } from "../../common/entity/compute_domain";
+import type { FeatureEnum } from "../../common/entity/get_domain_features";
+import { getFeatures } from "../../common/entity/get_domain_features";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { titleCase } from "../../common/string/title-case";
 
 interface DetailsViewParams {
   entityId: string;
@@ -177,6 +182,12 @@ class HaMoreInfoDetails extends LitElement {
       </div>`;
     }
 
+    let featureEnum: FeatureEnum | undefined;
+    if (this._stateObj?.attributes.supported_features !== undefined) {
+      const domain = computeDomain(this.params!.entityId);
+      featureEnum = getFeatures(domain);
+    }
+
     return attributes.map(
       (attribute) => html`
         <div class="data-entry">
@@ -189,14 +200,34 @@ class HaMoreInfoDetails extends LitElement {
             )}
           </div>
           <div class="value">
-            <ha-attribute-value
-              .hass=${this.hass}
-              .attribute=${attribute}
-              .stateObj=${this._stateObj}
-            ></ha-attribute-value>
+            ${attribute === "supported_features" && featureEnum
+              ? this._renderFeatures(featureEnum, this._stateObj!)
+              : html`
+                  <ha-attribute-value
+                    .attribute=${attribute}
+                    .stateObj=${this._stateObj}
+                  ></ha-attribute-value>
+                `}
           </div>
         </div>
       `
+    );
+  }
+
+  private _renderFeatures(
+    featureEnum: FeatureEnum,
+    stateObj: HassEntity
+  ): string {
+    return (
+      Object.entries(featureEnum)
+        .filter(([_key, value]) => typeof value === "number")
+        .map(([key, value]) =>
+          supportsFeature(stateObj, value as number)
+            ? titleCase(key.replaceAll("_", "\u00A0").toLowerCase())
+            : undefined
+        )
+        .filter(Boolean)
+        .join(", ") || this.hass.localize("ui.common.none")
     );
   }
 

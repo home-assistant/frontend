@@ -12,6 +12,8 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
@@ -24,7 +26,6 @@ import {
   type LovelaceBadgeConfig,
 } from "../../../data/lovelace/config/badge";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
@@ -36,14 +37,16 @@ import type { Lovelace } from "../types";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ type: Array }) public path!: LovelaceCardPath;
 
   @property({ attribute: "hidden-overlay", type: Boolean })
   public hiddenOverlay = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   public _menuOpened = false;
@@ -134,28 +137,26 @@ export class HuiBadgeEditMode extends LitElement {
           </ha-icon-button>
           <ha-dropdown-item value="edit">
             <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.edit")}
+            ${this._localize("ui.panel.lovelace.editor.edit_card.edit")}
           </ha-dropdown-item>
           <ha-dropdown-item value="duplicate">
             <ha-svg-icon
               slot="icon"
               .path=${mdiPlusCircleMultipleOutline}
             ></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.lovelace.editor.edit_card.duplicate"
-            )}
+            ${this._localize("ui.panel.lovelace.editor.edit_card.duplicate")}
           </ha-dropdown-item>
           <ha-dropdown-item value="copy">
             <ha-svg-icon slot="icon" .path=${mdiContentCopy}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
+            ${this._localize("ui.panel.lovelace.editor.edit_card.copy")}
           </ha-dropdown-item>
           <ha-dropdown-item value="cut">
             <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
+            ${this._localize("ui.panel.lovelace.editor.edit_card.cut")}
           </ha-dropdown-item>
           <wa-divider></wa-divider>
           <ha-dropdown-item value="delete" variant="danger">
-            ${this.hass.localize("ui.panel.lovelace.editor.edit_card.delete")}
+            ${this._localize("ui.panel.lovelace.editor.edit_card.delete")}
             <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
           </ha-dropdown-item>
         </ha-dropdown>

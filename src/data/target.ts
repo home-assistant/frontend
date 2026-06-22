@@ -3,7 +3,7 @@ import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { HaDevicePickerDeviceFilterFunc } from "../components/device/ha-device-picker";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
-import type { HomeAssistant } from "../types";
+import type { CallWS, HomeAssistant } from "../types";
 import type { AreaRegistryEntry } from "./area/area_registry";
 import type { FloorComboBoxItem } from "./area_floor_picker";
 import type { DevicePickerItem } from "./device/device_picker";
@@ -47,12 +47,12 @@ export interface ExtractFromTargetResultReferenced {
 }
 
 export const extractFromTarget = async (
-  hass: HomeAssistant,
+  callWS: CallWS,
   target: HassServiceTarget,
   expandGroup = false,
   primaryEntitiesOnly = true
 ) =>
-  hass.callWS<ExtractFromTargetResult>({
+  callWS<ExtractFromTargetResult>({
     type: "extract_from_target",
     target,
     expand_group: expandGroup,
