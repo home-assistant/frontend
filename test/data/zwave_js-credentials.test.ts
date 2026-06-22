@@ -3,7 +3,6 @@ import {
   getZwaveCredentialCapabilities,
   getZwaveUsers,
   setZwaveUser,
-  addZwaveUser,
   deleteZwaveUser,
   deleteZwaveAllUsers,
   setZwaveCredential,
@@ -170,20 +169,13 @@ describe("zwave_js-credentials", () => {
       );
       expect(result.user_id).toBe(1);
     });
-  });
 
-  describe("addZwaveUser", () => {
-    const addUserResponse = (inner: unknown) =>
-      ({
-        callService: vi
-          .fn()
-          .mockResolvedValue({ response: { [ENTITY_ID]: inner } }),
-      }) as unknown as HomeAssistant;
+    it("creates a new user with a credential and returns the slot", async () => {
+      // Omitting user_id makes set_user create a new user and write the
+      // credential in one call, returning the allocated credential_slot.
+      const hass = setUserResponse({ user_id: 1, credential_slot: 1 });
 
-    it("calls add_user with user and credential, returning the slot", async () => {
-      const hass = addUserResponse({ user_id: 1, credential_slot: 1 });
-
-      const result = await addZwaveUser(hass, ENTITY_ID, {
+      const result = await setZwaveUser(hass, ENTITY_ID, {
         user_name: "Alice",
         user_type: "general",
         active: true,
@@ -193,7 +185,7 @@ describe("zwave_js-credentials", () => {
 
       expect(hass.callService).toHaveBeenCalledWith(
         "zwave_js",
-        "add_user",
+        "set_user",
         {
           user_name: "Alice",
           user_type: "general",
@@ -214,7 +206,7 @@ describe("zwave_js-credentials", () => {
       } as unknown as HomeAssistant;
 
       await expect(
-        addZwaveUser(hass, ENTITY_ID, {
+        setZwaveUser(hass, ENTITY_ID, {
           credential_type: "pin_code",
           credential_data: "1234",
         })

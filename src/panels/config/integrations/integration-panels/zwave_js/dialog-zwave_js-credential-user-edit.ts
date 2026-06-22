@@ -18,7 +18,6 @@ import {
   DEFAULT_CREDENTIAL_MAX_LENGTH,
   DEFAULT_CREDENTIAL_MIN_LENGTH,
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
-  addZwaveUser,
   deleteZwaveCredential,
   enterableCredentialTypes,
   getCredentialError,
@@ -508,12 +507,9 @@ class DialogZwaveCredentialUserEdit extends LitElement {
     credentialType: ZwaveCredentialType
   ): Promise<void> {
     const params = this._params!;
-    // Create the user and write the credential in a single call. This is the
-    // only way to add a user on User Code CC locks, where the user and code
-    // share a slot. If the credential write fails, the service rolls the user
-    // back so the lock is never left with a credential-less user.
     try {
-      await addZwaveUser(this.hass, params.entity_id, {
+      await setZwaveUser(this.hass, params.entity_id, {
+        // Omit user_id to create a new user with the given credential.
         user_name: this._supportsUserNames ? this._userName.trim() : undefined,
         user_type: this._userType,
         active: true,
