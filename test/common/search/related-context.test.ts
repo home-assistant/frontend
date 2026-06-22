@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildRelatedIdSets } from "../../../src/common/search/related-context";
+import {
+  buildRelatedIdSets,
+  sortRelatedFirst,
+} from "../../../src/common/search/related-context";
 import type { RelatedIdSets } from "../../../src/common/search/related-context";
+import type { PickerComboBoxItem } from "../../../src/components/ha-picker-combo-box";
 import type { RelatedResult } from "../../../src/data/search";
 
 const toArrays = (value: RelatedIdSets) => ({
@@ -8,6 +12,14 @@ const toArrays = (value: RelatedIdSets) => ({
   devices: [...value.devices].sort(),
   areas: [...value.areas].sort(),
 });
+
+const item = (id: string, isRelated?: boolean): PickerComboBoxItem => ({
+  id,
+  primary: id,
+  ...(isRelated === undefined ? {} : { isRelated }),
+});
+
+const orderOf = (items: PickerComboBoxItem[]) => items.map((i) => i.id);
 
 describe("buildRelatedIdSets", () => {
   it("builds empty sets with no arguments", () => {
@@ -75,5 +87,50 @@ describe("buildRelatedIdSets", () => {
       itemId: "light.ac",
     });
     expect([...result.entities]).toEqual(["light.ac"]);
+  });
+});
+
+describe("sortRelatedFirst", () => {
+  it("floats related items above unrelated ones", () => {
+    const items = [
+      item("a", false),
+      item("b", true),
+      item("c", false),
+      item("d", true),
+    ];
+    expect(orderOf(sortRelatedFirst(items))).toEqual(["b", "d", "a", "c"]);
+  });
+
+  it("preserves relative order within each group (stable)", () => {
+    const items = [
+      item("r1", true),
+      item("u1", false),
+      item("r2", true),
+      item("u2", false),
+      item("r3", true),
+    ];
+    expect(orderOf(sortRelatedFirst(items))).toEqual([
+      "r1",
+      "r2",
+      "r3",
+      "u1",
+      "u2",
+    ]);
+  });
+
+  it("treats a missing isRelated flag as unrelated", () => {
+    const items = [item("plain"), item("related", true)];
+    expect(orderOf(sortRelatedFirst(items))).toEqual(["related", "plain"]);
+  });
+
+  it("keeps order when nothing is related", () => {
+    const items = [item("a"), item("b"), item("c")];
+    expect(orderOf(sortRelatedFirst(items))).toEqual(["a", "b", "c"]);
+  });
+
+  it("does not mutate the input array", () => {
+    const items = [item("a", false), item("b", true)];
+    sortRelatedFirst(items);
+    expect(orderOf(items)).toEqual(["a", "b"]);
   });
 });
