@@ -72,7 +72,6 @@ export class CloudGooglePref extends LitElement {
         <h1 class="card-header">
           <voice-assistant-brand-icon
             .voiceAssistantId=${"cloud.google_assistant"}
-            .hass=${this.hass}
           >
           </voice-assistant-brand-icon
           >${this.hass.localize("ui.panel.config.cloud.account.google.title")}

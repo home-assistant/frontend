@@ -8,7 +8,6 @@ import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -22,8 +21,6 @@ import "../panels/config/voice-assistants/expose/expose-assistant-icon";
 
 @customElement("ha-filter-voice-assistants")
 export class HaFilterVoiceAssistants extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -78,7 +75,6 @@ export class HaFilterVoiceAssistants extends LitElement {
                     <voice-assistant-brand-icon
                       slot="graphic"
                       .voiceAssistantId=${voiceAssistantId}
-                      .hass=${this.hass}
                     >
                     </voice-assistant-brand-icon>
                     ${voiceAssistants[voiceAssistantId].name}

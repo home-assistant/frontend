@@ -217,7 +217,6 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
                 <voice-assistant-brand-icon
                   slot="start"
                   .voiceAssistantId=${key}
-                  .hass=${this.hass}
                 >
                 </voice-assistant-brand-icon>
                 <span slot="headline">${voiceAssistants[key].name}</span>
