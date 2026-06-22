@@ -780,7 +780,6 @@ export class HaAutomationAddSearch extends LitElement {
       return multiTermSortedSearch<PickerComboBoxItem>(
         items,
         searchTerm,
-        searchKeys,
         (item) => item.id,
         fuseIndex
       );
