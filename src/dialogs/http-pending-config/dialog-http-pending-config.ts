@@ -315,6 +315,7 @@ export class DialogHttpPendingConfig
       ha-alert {
         display: block;
         margin-top: var(--ha-space-4);
+        margin-bottom: var(--ha-space-4);
       }
     `,
   ];
