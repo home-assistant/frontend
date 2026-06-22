@@ -121,7 +121,7 @@ export class RelatedContextProvider {
         context.itemId
       );
       if (this._contextMatches(context)) {
-        this._setValue(buildRelatedIdSets(related));
+        this._setValue(buildRelatedIdSets(related, context));
       }
     } catch (_err) {
       if (this._contextMatches(context)) {
