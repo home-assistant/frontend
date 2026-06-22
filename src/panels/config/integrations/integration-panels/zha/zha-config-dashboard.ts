@@ -182,10 +182,7 @@ class ZHAConfigDashboard extends LitElement {
         </div>
         <div class="card-content">
           <ha-md-list>
-            <ha-md-list-item
-              type="link"
-              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
-            >
+            <ha-md-list-item type="link" href="/config/zha/devices">
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(

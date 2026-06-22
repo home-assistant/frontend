@@ -7396,6 +7396,21 @@
             "associated_entities": "Associated entities",
             "no_associated_entities": "This endpoint has no associated entities"
           },
+          "devices": {
+            "caption": "Devices",
+            "fetch_error": "Failed to fetch devices: {reason}",
+            "columns": {
+              "name": "Name",
+              "manufacturer": "Manufacturer",
+              "model": "Model",
+              "available": "Availability",
+              "power_source": "Power source"
+            },
+            "filter": {
+              "available": "Available",
+              "unavailable": "Unavailable"
+            }
+          },
           "visualization": {
             "header": "Zigbee visualization",
             "caption": "Visualization",
