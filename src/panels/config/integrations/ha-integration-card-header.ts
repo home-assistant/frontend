@@ -93,7 +93,7 @@ export class HaIntegrationCardHeader extends LitElement {
     }
     .header img {
       margin-inline-start: initial;
-      margin-inline-end: 16px;
+      margin-inline-end: var(--ha-space-4);
       width: 40px;
       height: 40px;
       direction: var(--direction);
@@ -135,8 +135,8 @@ export class HaIntegrationCardHeader extends LitElement {
       white-space: nowrap;
     }
     .secondary > ha-svg-icon {
-      margin-right: 4px;
-      margin-inline-end: 4px;
+      margin-right: var(--ha-space-1);
+      margin-inline-end: var(--ha-space-1);
       margin-inline-start: initial;
       flex-shrink: 0;
     }
