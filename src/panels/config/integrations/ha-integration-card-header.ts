@@ -83,6 +83,7 @@ export class HaIntegrationCardHeader extends LitElement {
   static styles = css`
     :host {
       display: block;
+      flex: 1;
       padding-bottom: var(--ha-space-2);
     }
     .header {

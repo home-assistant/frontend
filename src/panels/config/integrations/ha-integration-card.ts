@@ -146,6 +146,9 @@ export class HaIntegrationCard extends LitElement {
         }
         .card-content {
           padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
         .debug-logging {
           --state-color: var(--warning-color);
