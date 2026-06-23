@@ -42,7 +42,7 @@ export class MoreInfoLogbook extends LitElement {
         .hass=${this.hass}
         .time=${this._time}
         .entityIds=${this._entityIdAsList(this.entityId)}
-        .scope=${"entity"}
+        name-detail="none"
         narrow
         no-icon
         graph-color

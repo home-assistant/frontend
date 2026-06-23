@@ -13,7 +13,7 @@ import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
-import type { LogbookScope } from "./logbook-entry-model";
+import type { LogbookNameDetail } from "./logbook-entry-model";
 
 interface LogbookTimePeriod {
   now: Date;
@@ -67,9 +67,10 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "show-cause" }) public showCause =
     false;
 
-  // Surface scope: removes the context (and, for "entity", the subject name)
-  // the surface already implies.
-  @property({ attribute: false }) public scope?: LogbookScope;
+  // How much naming detail an entity row shows; `none` also hides the name when
+  // the surface already implies the subject.
+  @property({ type: String, attribute: "name-detail" })
+  public nameDetail?: LogbookNameDetail;
 
   @property({ attribute: "show-more-link", type: Boolean })
   public showMoreLink = true;
@@ -130,7 +131,7 @@ export class HaLogbook extends LitElement {
         .noIcon=${this.noIcon}
         .graphColor=${this.graphColor}
         .showCause=${this.showCause}
-        .scope=${this.scope}
+        .nameDetail=${this.nameDetail}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}

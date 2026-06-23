@@ -619,7 +619,7 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
                 .time=${this._logbookTime}
                 .entityIds=${this._allEntities(memberships)}
                 .deviceIds=${this._allDeviceIds(memberships.devices)}
-                .scope=${"area"}
+                name-detail="device"
                 virtualize
                 narrow
                 no-icon
