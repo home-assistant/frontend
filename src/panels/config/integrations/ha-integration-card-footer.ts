@@ -212,7 +212,6 @@ export class HaIntegrationCardFooter extends LitElement {
     .footer {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       border-top: var(--ha-border-width-sm) solid
         var(--ha-color-border-neutral-quiet);
       padding-top: var(--ha-space-2);

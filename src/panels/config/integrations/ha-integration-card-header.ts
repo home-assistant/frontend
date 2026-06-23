@@ -122,7 +122,6 @@ export class HaIntegrationCardHeader extends LitElement {
     .secondary {
       min-width: 0;
       --mdc-icon-size: 20px;
-      -webkit-line-clamp: 1;
       font-size: var(--ha-font-size-s);
       display: flex;
       flex-direction: row;
