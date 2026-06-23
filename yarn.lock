@@ -6734,6 +6734,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"babel-plugin-polyfill-corejs3@npm:1.0.0, babel-plugin-polyfill-corejs3@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "babel-plugin-polyfill-corejs3@npm:1.0.0"
+  dependencies:
+    "@babel/helper-define-polyfill-provider": "npm:^1.0.0"
+    core-js-compat: "npm:^3.48.0"
+  peerDependencies:
+    "@babel/core": ^7.4.0 || ^8.0.0
+  checksum: 10/80f8dd7f0f4d5050b2377c1122fa729f3bd5580e8b00f2f806c1f2316b0804865b63ade373a4472bb43c0c4624264154639698dbb173464f035d3d59db315e1e
+  languageName: node
+  linkType: hard
+
 "babel-plugin-polyfill-corejs3@npm:^0.14.0":
   version: 0.14.2
   resolution: "babel-plugin-polyfill-corejs3@npm:0.14.2"
@@ -6743,18 +6755,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
   checksum: 10/bb500bfec712eb5e8c9058dc299677a5325af7e09ebd725c89719f2f555eca3f2b1a8644137c8e67d7fc83d7be48a7189a1a385b61ed2cf63dbb64e79461b9ee
-  languageName: node
-  linkType: hard
-
-"babel-plugin-polyfill-corejs3@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "babel-plugin-polyfill-corejs3@npm:1.0.0"
-  dependencies:
-    "@babel/helper-define-polyfill-provider": "npm:^1.0.0"
-    core-js-compat: "npm:^3.48.0"
-  peerDependencies:
-    "@babel/core": ^7.4.0 || ^8.0.0
-  checksum: 10/80f8dd7f0f4d5050b2377c1122fa729f3bd5580e8b00f2f806c1f2316b0804865b63ade373a4472bb43c0c4624264154639698dbb173464f035d3d59db315e1e
   languageName: node
   linkType: hard
 
@@ -9703,6 +9703,7 @@ __metadata:
     "@webcomponents/scoped-custom-element-registry": "npm:0.0.10"
     "@webcomponents/webcomponentsjs": "npm:2.8.0"
     babel-loader: "npm:10.1.1"
+    babel-plugin-polyfill-corejs3: "npm:1.0.0"
     babel-plugin-template-html-minifier: "patch:babel-plugin-template-html-minifier@npm%3A4.1.0#~/.yarn/patches/babel-plugin-template-html-minifier-npm-4.1.0-9a3c00055a.patch"
     barcode-detector: "npm:3.2.0"
     browserslist-useragent-regexp: "npm:4.1.4"

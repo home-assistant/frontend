@@ -157,6 +157,7 @@
     "@types/tar": "7.0.87",
     "@vitest/coverage-v8": "4.1.9",
     "babel-loader": "10.1.1",
+    "babel-plugin-polyfill-corejs3": "1.0.0",
     "babel-plugin-template-html-minifier": "patch:babel-plugin-template-html-minifier@npm%3A4.1.0#~/.yarn/patches/babel-plugin-template-html-minifier-npm-4.1.0-9a3c00055a.patch",
     "browserslist-useragent-regexp": "4.1.4",
     "del": "8.0.1",
