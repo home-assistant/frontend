@@ -27,6 +27,8 @@ import type { LogbookCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
+const NAME_DETAILS = ["auto", "none", "entity", "device", "area"] as const;
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -36,11 +38,9 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     target: optional(targetStruct),
     state_filter: optional(array(string())),
-    name_detail: optional(enums(["auto", "none", "entity", "device", "area"])),
+    name_detail: optional(enums(NAME_DETAILS)),
   })
 );
-
-const NAME_DETAILS = ["auto", "none", "entity", "device", "area"] as const;
 
 @customElement("hui-logbook-card-editor")
 export class HuiLogbookCardEditor
