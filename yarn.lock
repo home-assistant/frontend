@@ -9746,7 +9746,7 @@ __metadata:
     husky: "npm:9.1.7"
     idb-keyval: "npm:6.2.5"
     intl-messageformat: "npm:11.2.8"
-    js-yaml: "npm:4.2.0"
+    js-yaml: "npm:5.0.0"
     jsdom: "npm:29.1.1"
     jszip: "npm:3.10.1"
     leaflet: "npm:1.9.4"
@@ -10693,7 +10693,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:4.2.0, js-yaml@npm:^4.1.0":
+"js-yaml@npm:5.0.0":
+  version: 5.0.0
+  resolution: "js-yaml@npm:5.0.0"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.mjs
+  checksum: 10/51691da5a1b3894ffdd6ffe386d061fecf8769d135560dce8f3d3b7c5f7b167ec7fbe2c232c91135d58216b2f6ba215e85ac60fe569c46f0a9024f2ff6dec47e
+  languageName: node
+  linkType: hard
+
+"js-yaml@npm:^4.1.0":
   version: 4.2.0
   resolution: "js-yaml@npm:4.2.0"
   dependencies:
