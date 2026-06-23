@@ -216,6 +216,7 @@ export class HaIntegrationCardFooter extends LitElement {
       border-top: var(--ha-border-width-sm) solid
         var(--ha-color-border-neutral-quiet);
       padding-top: var(--ha-space-2);
+      min-height: var(--ha-space-8);
     }
     .count-badge {
       color: var(--ha-color-text-secondary);
