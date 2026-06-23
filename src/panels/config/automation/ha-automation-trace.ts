@@ -34,7 +34,7 @@ import type {
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
 import type { AutomationEntity } from "../../../data/automation";
-import { fullEntitiesContext } from "../../../data/context";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
@@ -377,9 +377,8 @@ export class HaAutomationTrace extends LitElement {
           (entry) => entry.entity_id === this._entityId
         )?.area_id
       : undefined;
-    fireEvent(
+    fireRelatedContext(
       this,
-      "hass-related-context",
       areaId
         ? {
             itemType: "area",
