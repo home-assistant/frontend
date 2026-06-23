@@ -125,6 +125,7 @@ export class HaIntegrationCardHeader extends LitElement {
       font-size: var(--ha-font-size-s);
       display: flex;
       flex-direction: row;
+      align-items: flex-start;
     }
     .secondary > span {
       position: relative;
