@@ -29,7 +29,7 @@ import type {
   LogbookCauseType,
   LogbookGlyph,
   LogbookItem,
-  LogbookScope,
+  LogbookNameDetail,
   LogbookValue,
 } from "./logbook-entry-model";
 import {
@@ -63,7 +63,8 @@ class HaLogbookEntry extends LitElement {
 
   @property({ type: Boolean, attribute: false }) public graphColor = false;
 
-  @property({ attribute: false }) public scope?: LogbookScope;
+  @property({ type: String, attribute: "name-detail" })
+  public nameDetail?: LogbookNameDetail;
 
   @property({ type: Boolean, attribute: false }) public firstOfDay = false;
 
@@ -83,7 +84,7 @@ class HaLogbookEntry extends LitElement {
     const seenEntityIds: string[] = [];
 
     const item = computeLogbookItem(this.hass, entry, {
-      scope: this.scope,
+      nameDetail: this.nameDetail,
       userIdToName: this.userIdToName,
     });
 
@@ -98,7 +99,7 @@ class HaLogbookEntry extends LitElement {
       ? `/config/${traceContext.domain}/trace/${traceContext.item_id}?run_id=${traceContext.run_id}`
       : undefined;
 
-    const hideName = this.scope === "entity";
+    const hideName = this.nameDetail === "none";
     const layout: EntryLayout =
       !this.narrow && !this.noIcon ? "timeline" : hideName ? "inline" : "list";
     const node = layout === "timeline" ? "icon" : "dot";
@@ -224,7 +225,7 @@ class HaLogbookEntry extends LitElement {
   }
 
   private _renderTimeline(ctx: LogbookRenderItem) {
-    const hideName = this.scope === "entity";
+    const hideName = this.nameDetail === "none";
     const rtl = computeRTL(
       this.hass.language,
       this.hass.translationMetadata.translations

@@ -9460,7 +9460,15 @@
             "logbook": {
               "name": "Activity",
               "description": "This card shows a list of events for entities.",
-              "state_filter": "State filter"
+              "state_filter": "State filter",
+              "name_detail": "Name detail",
+              "name_detail_options": {
+                "auto": "Automatic",
+                "none": "None",
+                "entity": "Entity",
+                "device": "Device ▸ Entity",
+                "area": "Area ▸ Device ▸ Entity"
+              }
             },
             "history-graph": {
               "name": "History graph",

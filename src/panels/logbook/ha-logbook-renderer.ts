@@ -13,7 +13,7 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-entry";
-import type { LogbookScope } from "./logbook-entry-model";
+import type { LogbookNameDetail } from "./logbook-entry-model";
 import { sameDay } from "./logbook-entry-model";
 
 declare global {
@@ -47,7 +47,8 @@ class HaLogbookRenderer extends LitElement {
   @property({ type: Boolean, attribute: "show-cause" }) public showCause =
     false;
 
-  @property({ attribute: false }) public scope?: LogbookScope;
+  @property({ type: String, attribute: "name-detail" })
+  public nameDetail?: LogbookNameDetail;
 
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
@@ -137,7 +138,7 @@ class HaLogbookRenderer extends LitElement {
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}
           .graphColor=${this.graphColor}
-          .scope=${this.scope}
+          .nameDetail=${this.nameDetail}
           .firstOfDay=${firstOfDay}
           .lastOfDay=${lastOfDay}
           .showRelative=${this._showRelative}
