@@ -10,6 +10,7 @@ import {
   mdiPlaylistEdit,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -41,6 +42,8 @@ import "../../../config/automation/condition/types/ha-automation-condition-state
 import "../../../config/automation/condition/types/ha-automation-condition-sun";
 import "../../../config/automation/condition/types/ha-automation-condition-template";
 import "../../../config/automation/condition/types/ha-automation-condition-zone";
+import "../../../config/automation/target/ha-automation-row-targets";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -426,6 +429,18 @@ export class HaCardConditionEditor extends LitElement {
 
     const hideLiveTest = this._hideLiveTest(condition);
 
+    const contextEntityId =
+      condition.condition === "state" || condition.condition === "numeric_state"
+        ? (condition as StateCondition | NumericStateCondition).entity ||
+          (this._entityContext?.mode === "current"
+            ? this._entityContext.entityId
+            : undefined)
+        : undefined;
+
+    const contextTarget: HassServiceTarget | undefined = contextEntityId
+      ? { entity_id: contextEntityId }
+      : undefined;
+
     return html`
       <div class="container">
         <ha-expansion-panel left-chevron>
@@ -461,6 +476,12 @@ export class HaCardConditionEditor extends LitElement {
                 `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
               ) || condition.condition
             }
+            ${contextTarget
+              ? html`<ha-automation-row-targets
+                  .target=${contextTarget}
+                  .interactive=${true}
+                ></ha-automation-row-targets>`
+              : nothing}
           </h3>
           <ha-automation-row-event-chip
             .show=${this._testingResult !== undefined}
@@ -703,6 +724,10 @@ export class HaCardConditionEditor extends LitElement {
         margin: 0;
         font-size: inherit;
         font-weight: inherit;
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-2);
+        flex-wrap: wrap;
       }
       .content {
         padding: 12px;
