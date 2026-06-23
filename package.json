@@ -28,7 +28,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "7.29.7",
+    "@babel/runtime": "8.0.0",
     "@braintree/sanitize-url": "7.1.2",
     "@codemirror/autocomplete": "6.20.3",
     "@codemirror/commands": "6.10.3",
@@ -127,10 +127,10 @@
     "xss": "1.0.15"
   },
   "devDependencies": {
-    "@babel/core": "7.29.7",
+    "@babel/core": "8.0.0",
     "@babel/helper-define-polyfill-provider": "1.0.0",
-    "@babel/plugin-transform-runtime": "7.29.7",
-    "@babel/preset-env": "7.29.7",
+    "@babel/plugin-transform-runtime": "8.0.0",
+    "@babel/preset-env": "8.0.0",
     "@bundle-stats/plugin-webpack-filter": "4.22.2",
     "@eslint/js": "10.0.1",
     "@html-eslint/eslint-plugin": "0.62.0",
@@ -157,7 +157,7 @@
     "@types/tar": "7.0.87",
     "@vitest/coverage-v8": "4.1.9",
     "babel-loader": "10.1.1",
-    "babel-plugin-template-html-minifier": "4.1.0",
+    "babel-plugin-template-html-minifier": "patch:babel-plugin-template-html-minifier@npm%3A4.1.0#~/.yarn/patches/babel-plugin-template-html-minifier-npm-4.1.0-9a3c00055a.patch",
     "browserslist-useragent-regexp": "4.1.4",
     "del": "8.0.1",
     "eslint": "10.5.0",
