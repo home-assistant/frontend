@@ -496,11 +496,13 @@ class HUIRoot extends LitElement {
             .active=${this._curView === index}
             .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
+            data-path=${view.path || index}
+            @auxclick=${this._handleViewTabNewTabClick}
+            @click=${this._handleViewTabNewTabClick}
             class=${classMap({
               "icon-only": Boolean(icon_only),
               "icon-and-title": Boolean(icon_and_title),
               "hide-tab": Boolean(hidden),
-              "linked-tab": !this._editMode,
             })}
           >
             ${this._editMode
@@ -531,14 +533,7 @@ class HUIRoot extends LitElement {
                     .disabled=${(this._curView! as number) + 1 === views.length}
                   ></ha-icon-button-arrow-next>
                 `
-              : html`
-                  <a
-                    href=${this._viewUrl(view.path || index)}
-                    @click=${this._handleViewTabClick}
-                  >
-                    ${tabContent}
-                  </a>
-                `}
+              : tabContent}
           </ha-tab-group-tab>
         `;
       })}
@@ -576,19 +571,13 @@ class HUIRoot extends LitElement {
                   `
                 : html`
                     ${isSubview || this.backButton
-                      ? this._backPath
-                        ? html`
-                            <ha-icon-button-arrow-prev
-                              slot="navigationIcon"
-                              .href=${this._backPath}
-                            ></ha-icon-button-arrow-prev>
-                          `
-                        : html`
-                            <ha-icon-button-arrow-prev
-                              slot="navigationIcon"
-                              @click=${this._goBack}
-                            ></ha-icon-button-arrow-prev>
-                          `
+                      ? html`
+                          <ha-icon-button-arrow-prev
+                            slot="navigationIcon"
+                            .href=${this._backPath}
+                            @click=${this._handleBackClick}
+                          ></ha-icon-button-arrow-prev>
+                        `
                       : html`
                           <ha-menu-button
                             slot="navigationIcon"
@@ -897,6 +886,13 @@ class HUIRoot extends LitElement {
     }
   }
 
+  private _handleBackClick(ev: MouseEvent): void {
+    if (this._backPath && !isNavigationClick(ev)) {
+      return;
+    }
+    this._goBack();
+  }
+
   private get _backPath(): string | undefined {
     const views = this.lovelace?.config.views ?? [];
     const curViewConfig =
@@ -1114,10 +1110,21 @@ class HUIRoot extends LitElement {
       : `${this.route!.prefix}/${path}${location.search}`;
   }
 
-  private _handleViewTabClick(ev: MouseEvent): void {
-    const href = isNavigationClick(ev);
-    if (!href) {
-      ev.stopPropagation();
+  private _handleViewTabNewTabClick(ev: MouseEvent): void {
+    if (
+      this._editMode ||
+      (ev.button !== 1 && !ev.metaKey && !ev.ctrlKey && !ev.shiftKey)
+    ) {
+      return;
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const tab = ev.currentTarget as HTMLElement;
+    const path = tab.dataset.path;
+    if (path) {
+      window.open(this._viewUrl(path), "_blank", "noreferrer");
     }
   }
 
@@ -1475,26 +1482,6 @@ class HUIRoot extends LitElement {
         }
         ha-tab-group-tab.icon-only::part(base),
         ha-tab-group-tab.icon-and-title::part(base) {
-          padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2 - 2px);
-          padding-bottom: calc(
-            (var(--ha-tab-group-tab-height) - 20px) / 2 - 4px
-          );
-        }
-        ha-tab-group-tab.linked-tab::part(base) {
-          padding: 0;
-        }
-        ha-tab-group-tab.linked-tab a {
-          align-items: center;
-          box-sizing: border-box;
-          color: inherit;
-          display: inline-flex;
-          height: var(--ha-tab-group-tab-height);
-          padding-inline-start: var(--ha-tab-padding-start, var(--wa-space-l));
-          padding-inline-end: var(--ha-tab-padding-end, var(--wa-space-l));
-          text-decoration: none;
-        }
-        ha-tab-group-tab.linked-tab.icon-only a,
-        ha-tab-group-tab.linked-tab.icon-and-title a {
           padding-top: calc((var(--ha-tab-group-tab-height) - 20px) / 2 - 2px);
           padding-bottom: calc(
             (var(--ha-tab-group-tab-height) - 20px) / 2 - 4px
