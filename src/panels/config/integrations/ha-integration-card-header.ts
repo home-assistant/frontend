@@ -135,9 +135,7 @@ export class HaIntegrationCardHeader extends LitElement {
       white-space: nowrap;
     }
     .secondary > ha-svg-icon {
-      margin-right: var(--ha-space-1);
       margin-inline-end: var(--ha-space-1);
-      margin-inline-start: initial;
       flex-shrink: 0;
     }
     .error ha-svg-icon {

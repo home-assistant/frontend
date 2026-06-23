@@ -229,9 +229,7 @@ export class HaIntegrationCardFooter extends LitElement {
     .icon {
       color: var(--label-badge-grey);
       padding: var(--ha-space-1);
-      margin-left: var(--ha-space-2);
       margin-inline-start: var(--ha-space-2);
-      margin-inline-end: initial;
     }
     .icon.custom {
       color: var(--warning-color);
