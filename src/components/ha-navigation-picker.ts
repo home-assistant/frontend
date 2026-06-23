@@ -243,7 +243,6 @@ export class HaNavigationPicker extends LitElement {
         items = multiTermSortedSearch(
           items,
           searchString,
-          DEFAULT_SEARCH_KEYS,
           (item) => item.id,
           fuseIndex
         );

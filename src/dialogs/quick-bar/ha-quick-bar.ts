@@ -460,8 +460,7 @@ export class QuickBar extends LitElement {
           navigateItems = this._filterGroup(
             "navigate",
             navigateItems,
-            filter,
-            navigateComboBoxKeys
+            filter
           ) as NavigationComboBoxItem[];
         }
 
@@ -482,8 +481,7 @@ export class QuickBar extends LitElement {
           commandItems = this._filterGroup(
             "command",
             commandItems,
-            filter,
-            commandComboBoxKeys
+            filter
           ) as ActionCommandComboBoxItem[];
         }
 
@@ -513,8 +511,7 @@ export class QuickBar extends LitElement {
             this._filterGroup(
               "entity",
               entityItems,
-              filter,
-              entityComboBoxKeys
+              filter
             ) as EntityComboBoxItem[]
           );
         } else {
@@ -550,7 +547,7 @@ export class QuickBar extends LitElement {
 
         if (filter) {
           deviceItems = sortRelatedFirst(
-            this._filterGroup("device", deviceItems, filter, deviceComboBoxKeys)
+            this._filterGroup("device", deviceItems, filter)
           );
         } else {
           deviceItems = this._sortRelatedByLabel(deviceItems);
@@ -582,7 +579,7 @@ export class QuickBar extends LitElement {
 
         if (filter) {
           areaItems = sortRelatedFirst(
-            this._filterGroup("area", areaItems, filter, areaComboBoxKeys)
+            this._filterGroup("area", areaItems, filter)
           );
         } else {
           areaItems = this._sortRelatedByLabel(areaItems);
@@ -660,15 +657,13 @@ export class QuickBar extends LitElement {
   private _filterGroup(
     type: QuickBarSection,
     items: PickerComboBoxItem[],
-    searchTerm: string,
-    weightedKeys: FuseWeightedKey[]
+    searchTerm: string
   ) {
     const fuseIndex = this._fuseIndexes[type](items);
 
     return multiTermSortedSearch(
       items,
       searchTerm,
-      weightedKeys,
       (item: PickerComboBoxItem) => item.id,
       fuseIndex
     );

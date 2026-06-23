@@ -1116,7 +1116,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return multiTermSortedSearch(
         items,
         searchTerm,
-        weightedKeys,
         (item) => item.id,
         fuseIndex
       );
