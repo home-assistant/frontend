@@ -20,6 +20,9 @@ export class HatGraphNode extends LitElement {
   @property({ attribute: "not-enabled", reflect: true, type: Boolean })
   notEnabled = false;
 
+  @property({ attribute: "not-triggered", reflect: true, type: Boolean })
+  notTriggered = false;
+
   @property({ attribute: "graph-start", reflect: true, type: Boolean })
   graphStart = false;
 
@@ -126,6 +129,9 @@ export class HatGraphNode extends LitElement {
     :host(:hover) circle {
       --stroke-clr: var(--hover-clr);
       --icon-clr: var(--default-icon-clr);
+    }
+    :host([not-triggered]) circle {
+      stroke-dasharray: 4 3;
     }
     :host([not-enabled]) circle {
       --stroke-clr: var(--disabled-clr);

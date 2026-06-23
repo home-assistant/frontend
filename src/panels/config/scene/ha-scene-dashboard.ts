@@ -512,7 +512,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         ></ha-icon-button>
 
         <ha-filter-floor-areas
-          .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -522,7 +521,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
-          .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-devices"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -532,7 +530,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-entities
-          .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-entities"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -542,7 +539,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-entities>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -561,7 +557,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
         <ha-filter-voice-assistants
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-voice-assistants"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"

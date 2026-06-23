@@ -101,7 +101,6 @@ class DialogMediaPlayerBrowse extends LitElement {
           </span>
           <ha-media-manage-button
             slot="actionItems"
-            .hass=${this.hass}
             .currentItem=${this._currentItem}
             @media-refresh=${this._refreshMedia}
           ></ha-media-manage-button>

@@ -69,7 +69,6 @@ export class HuiServiceButtonElement
 
     return html`
       <ha-call-service-button
-        .hass=${this.hass}
         .domain=${this._domain}
         .service=${this._service}
         .data=${this._config.data ?? this._config.service_data}

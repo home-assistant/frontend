@@ -86,7 +86,6 @@ export class HuiStateBadgeElement
 
     return html`
       <ha-state-label-badge
-        .hass=${this.hass}
         .state=${stateObj}
         .name=${this._config.name === undefined
           ? computeStateName(stateObj)

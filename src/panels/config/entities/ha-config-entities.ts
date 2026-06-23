@@ -985,7 +985,6 @@ export class HaConfigEntities extends LitElement {
             </ha-alert>`
           : nothing}
         <ha-filter-floor-areas
-          .hass=${this.hass}
           type="entity"
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -995,7 +994,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
-          .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -1005,7 +1003,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-domains
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-domains"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1035,7 +1032,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-states>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -1044,7 +1040,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-voice-assistants
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-voice-assistants"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"

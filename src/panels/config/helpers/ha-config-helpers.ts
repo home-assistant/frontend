@@ -669,7 +669,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         class=${this.narrow ? "narrow" : ""}
       >
         <ha-filter-floor-areas
-          .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-floor-areas"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -679,7 +678,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
-          .hass=${this.hass}
           .type=${"entity"}
           .value=${this._filters["ha-filter-devices"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -689,7 +687,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -708,7 +705,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
         <ha-filter-voice-assistants
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-voice-assistants"]}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"

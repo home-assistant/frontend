@@ -73,7 +73,6 @@ export class HaThemeSettings extends LitElement {
         ${this.showThemePicker
           ? html`
               <ha-theme-picker
-                .hass=${this.hass}
                 .label=${this.labels?.theme}
                 .noThemeLabel=${this.labels?.noTheme}
                 .value=${themeSettings?.theme || undefined}

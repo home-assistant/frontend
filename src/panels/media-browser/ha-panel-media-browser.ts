@@ -109,7 +109,6 @@ class PanelMediaBrowser extends LitElement {
         </h1>
         <ha-media-manage-button
           slot="actionItems"
-          .hass=${this.hass}
           .currentItem=${this._currentItem}
           @media-refresh=${this._refreshMedia}
         ></ha-media-manage-button>

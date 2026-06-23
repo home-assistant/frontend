@@ -60,7 +60,7 @@ export class DialogManageCloudhook extends LitElement {
       >
         <div>
           <p>
-            ${!cloudhook.managed
+            ${cloudhook.managed
               ? html`
                   ${this.hass!.localize(
                     "ui.panel.config.cloud.dialog_cloudhook.managed_by_integration"

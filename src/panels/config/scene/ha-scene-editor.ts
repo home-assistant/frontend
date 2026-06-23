@@ -454,7 +454,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                             ${this._mode === "live"
                               ? html`
                                   <state-badge
-                                    .hass=${this.hass}
                                     .stateObj=${entityStateObj}
                                     slot="graphic"
                                   ></state-badge>
@@ -545,7 +544,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                             >
                               ${this._mode === "live"
                                 ? html` <state-badge
-                                    .hass=${this.hass}
                                     .stateObj=${entityStateObj}
                                     slot="graphic"
                                   ></state-badge>`

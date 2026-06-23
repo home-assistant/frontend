@@ -322,6 +322,7 @@ export interface ZWaveJSDataCollectionStatus {
 export interface ZWaveJSRefreshNodeStatusMessage {
   event: string;
   stage?: string;
+  progress?: number;
 }
 
 export interface ZWaveJSRebuildRoutesStatusMessage {

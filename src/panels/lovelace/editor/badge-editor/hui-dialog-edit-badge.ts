@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEntityRelatedContext } from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
@@ -31,6 +32,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../badges/hui-badge";
+import { getConfigEntityId } from "../../common/get-config-entity-id";
 import "../../sections/hui-section";
 import { addBadge, replaceBadge } from "../config-util";
 import { getBadgeDefaultConfig } from "../get-badge-default-config";
@@ -139,25 +141,38 @@ export class HuiDialogEditBadge
     this._badgeConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
+    this._updateRelatedContext(undefined);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (
-      !this._badgeConfig ||
-      this._documentationURL !== undefined ||
-      !changedProps.has("_badgeConfig")
-    ) {
+    if (!changedProps.has("_badgeConfig")) {
       return;
     }
 
-    const oldConfig = changedProps.get("_badgeConfig") as LovelaceBadgeConfig;
+    if (this._badgeConfig && this._documentationURL === undefined) {
+      const oldConfig = changedProps.get("_badgeConfig") as LovelaceBadgeConfig;
 
-    if (oldConfig?.type !== this._badgeConfig!.type) {
-      this._documentationURL = this._badgeConfig!.type
-        ? getBadgeDocumentationURL(this.hass, this._badgeConfig!.type)
-        : undefined;
+      if (oldConfig?.type !== this._badgeConfig.type) {
+        this._documentationURL = this._badgeConfig.type
+          ? getBadgeDocumentationURL(this.hass, this._badgeConfig.type)
+          : undefined;
+      }
     }
+
+    this._updateRelatedContext(
+      this._badgeConfig ? getConfigEntityId(this._badgeConfig) : undefined
+    );
+  }
+
+  private _relatedEntityId?: string;
+
+  private _updateRelatedContext(entityId: string | undefined): void {
+    if (entityId === this._relatedEntityId) {
+      return;
+    }
+    this._relatedEntityId = entityId;
+    fireEntityRelatedContext(this, entityId);
   }
 
   protected render() {

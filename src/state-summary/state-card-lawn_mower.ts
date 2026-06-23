@@ -25,7 +25,6 @@ class StateCardLawnMower extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         <ha-lawn_mower-action-button
-          .hass=${this.hass}
           .stateObj=${stateObj}
         ></ha-lawn_mower-action-button>
       </div>

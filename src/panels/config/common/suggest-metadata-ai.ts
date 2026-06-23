@@ -69,15 +69,18 @@ export async function generateMetadataSuggestionTask<T>(
     include.floor ? fetchFloors(connection) : Promise.resolve(undefined),
   ]);
 
+  // Offer the names (not the internal IDs) to the model. The model has no idea
+  // what an ID means, and processMetadataSuggestion maps the chosen name back
+  // to its ID.
   const categoryOptions = categories
-    ? Object.entries(categories).map(([id, name]) => ({
-        value: id,
+    ? Object.values(categories).map((name) => ({
+        value: name,
         label: name,
       }))
     : [];
   const floorOptions = floors
     ? Object.values(floors).map((floor) => ({
-        value: floor.floor_id,
+        value: floor.name,
         label: floor.name,
       }))
     : [];

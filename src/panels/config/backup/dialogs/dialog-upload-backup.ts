@@ -86,7 +86,6 @@ export class DialogUploadBackup
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
         <ha-file-upload
-          .hass=${this.hass}
           .uploading=${this._uploading}
           .icon=${mdiFolderUpload}
           .accept=${SUPPORTED_UPLOAD_FORMAT}

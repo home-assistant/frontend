@@ -1,4 +1,3 @@
-import timezones from "google-timezones-json";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -26,6 +25,7 @@ import type { ClockCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { TimeFormat } from "../../../../data/translation";
+import { getTimezoneOptions } from "../../../../components/ha-timezone-picker";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -36,7 +36,7 @@ const cardConfigStruct = assign(
       union([literal("small"), literal("medium"), literal("large")])
     ),
     time_format: optional(enums(Object.values(TimeFormat))),
-    time_zone: optional(enums(Object.keys(timezones))),
+    time_zone: optional(enums(getTimezoneOptions().map((option) => option.id))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
     // Analog clock options

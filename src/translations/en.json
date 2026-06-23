@@ -2477,7 +2477,7 @@
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until startup is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
@@ -5530,7 +5530,7 @@
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "sun": {
@@ -5921,6 +5921,7 @@
               "template_errors": "Template errors:",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
+              "not_triggered": "This trigger evaluated a relevant change but did not trigger the automation. The reason is shown in the result below.",
               "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
@@ -5944,6 +5945,8 @@
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
               "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
+              "evaluated_not_triggered": "Evaluated a change at {time}",
+              "not_triggered": "Did not trigger at {time}. Select the trigger step details to see why.",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
@@ -5960,7 +5963,8 @@
               "stopped_failed_single": "Stopped because only a single execution is allowed",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
               "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
-              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)",
+              "not_triggered": "Did not trigger"
             }
           }
         },
@@ -7492,6 +7496,7 @@
             "provisioned_devices": "Provisioned devices",
             "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
             "not_included": "{count} not included",
+            "not_ready": "{count} not ready",
             "devices_offline": "{count} offline",
             "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
             "rebuild_routes_action": "Rebuild",
@@ -8796,6 +8801,7 @@
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
+              "over_reported_consumption": "Over-reported consumption",
               "untracked": "untracked",
               "other": "Other"
             },

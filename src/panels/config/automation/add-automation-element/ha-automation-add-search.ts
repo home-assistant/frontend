@@ -375,7 +375,6 @@ export class HaAutomationAddSearch extends LitElement {
                     <state-badge
                       slot="start"
                       .stateObj=${(item as EntityComboBoxItem).stateObj}
-                      .hass=${this.hass}
                     ></state-badge>
                   `
                 : type === "device" && (item as DevicePickerItem).domain
@@ -780,7 +779,6 @@ export class HaAutomationAddSearch extends LitElement {
       return multiTermSortedSearch<PickerComboBoxItem>(
         items,
         searchTerm,
-        searchKeys,
         (item) => item.id,
         fuseIndex
       );
