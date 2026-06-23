@@ -176,7 +176,6 @@ class OnboardingLocation extends LitElement {
       </div>
       <ha-locations-editor
         class="flex"
-        .hass=${this.hass}
         .locations=${this._markerLocations(
           this._location,
           this._places,
