@@ -104,6 +104,8 @@ export class VoiceAssistantsExpose extends LitElement {
     string[] | undefined
   >;
 
+  @state() private _googleAliases?: Record<string, string[]>;
+
   @storage({
     key: "voice-expose-table-sort",
     state: false,
@@ -158,7 +160,8 @@ export class VoiceAssistantsExpose extends LitElement {
         | undefined,
       _language: string,
       localize: LocalizeFunc,
-      entitiesToCheck?: any[]
+      entitiesToCheck?: any[],
+      googleAliases?: Record<string, string[]>
     ): DataTableColumnContainer => ({
       icon: {
         title: "",
@@ -199,9 +202,15 @@ export class VoiceAssistantsExpose extends LitElement {
         sortable: true,
         filterable: true,
         template: (entry) => {
-          const aliases = entry.aliases.filter(
+          const registryAliases = entry.aliases.filter(
             (a: string | null) => a !== null
           );
+          const aliases = [
+            ...new Set([
+              ...registryAliases,
+              ...(googleAliases?.[entry.entity_id] ?? []),
+            ]),
+          ];
           return aliases.length === 0
             ? "-"
             : aliases.length === 1
@@ -457,6 +466,14 @@ export class VoiceAssistantsExpose extends LitElement {
       // TODO add supported entity for assist
       conversation: undefined,
     };
+    this._googleAliases = googleEntities
+      ? Object.fromEntries(
+          googleEntities.map((entity) => [
+            entity.entity_id,
+            (entity.aliases ?? []).filter(Boolean),
+          ])
+        )
+      : undefined;
   }
 
   public willUpdate(changedProperties: PropertyValues): void {
@@ -503,7 +520,8 @@ export class VoiceAssistantsExpose extends LitElement {
           this._supportedEntities,
           this.hass.language,
           this.hass.localize,
-          filteredEntities
+          filteredEntities,
+          this._googleAliases
         )}
         .data=${filteredEntities}
         .searchLabel=${this.hass.localize(
