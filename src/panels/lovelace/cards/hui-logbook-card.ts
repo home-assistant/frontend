@@ -9,6 +9,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
 import { navigate } from "../../../common/navigate";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
@@ -17,6 +18,7 @@ import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import type { HaLogbook } from "../../logbook/ha-logbook";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-warning";
@@ -191,6 +193,60 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
   );
 
+  private _getNameDetail(): LogbookNameDetail | undefined {
+    const nameDetail = this._config?.name_detail ?? "auto";
+    if (nameDetail !== "auto") {
+      return nameDetail;
+    }
+    const entityIds = this._getEntityIds();
+    if (!entityIds) {
+      return undefined;
+    }
+    return this._getAutoNameDetail(
+      entityIds,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
+  }
+
+  // Pick the least detail the targeted entities need to stay unambiguous: a
+  // single entity needs no name, a shared device needs only the entity name, a
+  // shared area needs the device, otherwise show the full context.
+  private _getAutoNameDetail = memoizeOne(
+    (
+      entityIds: string[],
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"]
+    ): LogbookNameDetail => {
+      if (entityIds.length <= 1) {
+        return "none";
+      }
+      const deviceIds = new Set<string | undefined>();
+      const areaIds = new Set<string | undefined>();
+      for (const entityId of entityIds) {
+        const entry = entities[entityId];
+        const { device, area } = entry
+          ? getEntityEntryContext(entry, entities, devices, areas, floors)
+          : { device: null, area: null };
+        deviceIds.add(device?.id);
+        areaIds.add(area?.area_id);
+      }
+      // An entity without a device or area counts as its own group: it does not
+      // share the context, so it must not collapse the level.
+      if (deviceIds.size === 1 && !deviceIds.has(undefined)) {
+        return "entity";
+      }
+      if (areaIds.size === 1 && !areaIds.has(undefined)) {
+        return "device";
+      }
+      return "area";
+    }
+  );
+
   protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
     if (changedProperties.has("layout")) {
@@ -256,6 +312,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
             .stateFilter=${this._stateFilter}
+            .nameDetail=${this._getNameDetail()}
             narrow
             no-icon
             virtualize

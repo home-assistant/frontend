@@ -4,13 +4,13 @@ import { cleanupMediaTitle } from "../data/media-player";
 import type { HomeAssistant } from "../types";
 
 export default class MediaPlayerEntity {
-  public hass: HomeAssistant;
+  public hass: Pick<HomeAssistant, "callService">;
 
   public stateObj: HassEntity;
 
   private _attr: Record<string, any>;
 
-  constructor(hass: HomeAssistant, stateObj: HassEntity) {
+  constructor(hass: Pick<HomeAssistant, "callService">, stateObj: HassEntity) {
     this.hass = hass;
     this.stateObj = stateObj;
     this._attr = stateObj.attributes;

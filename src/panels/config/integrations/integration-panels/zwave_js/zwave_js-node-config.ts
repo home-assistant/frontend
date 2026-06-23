@@ -121,8 +121,7 @@ class ZWaveJSNodeConfig extends LitElement {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.node_config.header"
         )}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/devices/device/${this.deviceId}"
       >
         <ha-config-section
           .narrow=${this.narrow}

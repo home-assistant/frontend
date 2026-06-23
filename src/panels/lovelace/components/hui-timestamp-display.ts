@@ -3,9 +3,18 @@ import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatDate } from "../../../common/datetime/format_date";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { formatTime } from "../../../common/datetime/format_time";
+import {
+  formatDate,
+  formatDateNumeric,
+} from "../../../common/datetime/format_date";
+import {
+  formatDateTime,
+  formatDateTimeNumeric,
+} from "../../../common/datetime/format_date_time";
+import {
+  formatTime,
+  formatTimeWithSeconds,
+} from "../../../common/datetime/format_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import { transform } from "../../../common/decorators/transform";
@@ -23,11 +32,23 @@ import type { TimestampRenderingFormat } from "./types";
 
 const FORMATS: Record<
   string,
-  (ts: Date, lang: FrontendLocaleData, config: HassConfig) => string
+  Record<
+    string,
+    (ts: Date, lang: FrontendLocaleData, config: HassConfig) => string
+  >
 > = {
-  date: formatDate,
-  datetime: formatDateTime,
-  time: formatTime,
+  date: {
+    default: formatDate,
+    short: formatDateNumeric,
+  },
+  datetime: {
+    default: formatDateTime,
+    short: formatDateTimeNumeric,
+  },
+  time: {
+    default: formatTime,
+    long: formatTimeWithSeconds,
+  },
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
@@ -90,12 +111,21 @@ class HuiTimestampDisplay extends LitElement {
     }
 
     const format = this._format;
+    const formatType = this._formatType;
 
-    if (INTERVAL_FORMAT.includes(format)) {
+    if (INTERVAL_FORMAT.includes(formatType)) {
       return html` ${this._relative} `;
     }
-    if (format in FORMATS) {
-      return html` ${FORMATS[format](this.ts, this._locale, this._config)} `;
+    if (formatType in FORMATS) {
+      const style =
+        typeof format === "string"
+          ? "default"
+          : format.style && format.style in FORMATS[formatType]
+            ? format.style
+            : "default";
+      return html`
+        ${FORMATS[formatType][style](this.ts, this._locale, this._config)}
+      `;
     }
     return html`${this._localize(
       "ui.panel.lovelace.components.timestamp-display.invalid_format"
@@ -110,13 +140,18 @@ class HuiTimestampDisplay extends LitElement {
     this._startInterval();
   }
 
-  private get _format(): string {
+  private get _format(): TimestampRenderingFormat {
     return this.format || "relative";
+  }
+
+  private get _formatType(): string {
+    const format = this._format;
+    return typeof format === "string" ? format : format.type;
   }
 
   private _startInterval(): void {
     this._clearInterval();
-    if (this._connected && INTERVAL_FORMAT.includes(this._format)) {
+    if (this._connected && INTERVAL_FORMAT.includes(this._formatType)) {
       this._updateRelative();
       this._interval = window.setInterval(() => this._updateRelative(), 1000);
     }
@@ -131,10 +166,12 @@ class HuiTimestampDisplay extends LitElement {
 
   private _updateRelative(): void {
     if (this.ts && this._locale) {
+      const style =
+        typeof this._format === "object" ? this._format.style : undefined;
       this._relative =
-        this._format === "relative"
-          ? relativeTime(this.ts, this._locale)
-          : relativeTime(new Date(), this._locale, this.ts, false);
+        this._formatType === "relative"
+          ? relativeTime(this.ts, this._locale, undefined, undefined, style)
+          : relativeTime(new Date(), this._locale, this.ts, false, style);
 
       this._relative = this.capitalize
         ? capitalizeFirstLetter(this._relative)

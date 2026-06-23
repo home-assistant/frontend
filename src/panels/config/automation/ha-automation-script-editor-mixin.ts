@@ -8,12 +8,11 @@ import type {
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
-import { fullEntitiesContext } from "../../../data/context";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   showAlertDialog,
@@ -167,9 +166,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
 
       this._relatedContextAreaId = areaId;
-      fireEvent(
+      fireRelatedContext(
         this,
-        "hass-related-context",
         areaId
           ? {
               itemType: "area",

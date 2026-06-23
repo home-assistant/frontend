@@ -184,8 +184,11 @@ export const createHistoricState = (
 // translate the bare description here.
 export const localizeTriggerSource = (
   localize: LocalizeFunc,
-  source: string
+  source: string | null
 ) => {
+  if (!source) {
+    return "";
+  }
   for (const key of Object.keys(triggerPhrases) as TriggerPhraseKey[]) {
     const phrase = triggerPhrases[key];
     if (source.startsWith(phrase)) {

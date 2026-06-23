@@ -53,6 +53,15 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public static getDefaultConfig(): Partial<PictureEntityCardConfig> {
+    return {
+      show_name: true,
+      show_state: true,
+      camera_view: "auto",
+      fit_mode: "cover",
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;

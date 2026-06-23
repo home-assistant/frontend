@@ -171,10 +171,7 @@ export class DeveloperYamlConfig extends LitElement {
             )}
           </div>
           <div class="card-actions">
-            <ha-call-service-button
-              .hass=${this.hass}
-              domain="homeassistant"
-              service="reload_all"
+            <ha-call-service-button domain="homeassistant" service="reload_all"
               >${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.yaml.section.reloading.all"
               )}
@@ -182,7 +179,6 @@ export class DeveloperYamlConfig extends LitElement {
           </div>
           <div class="card-actions">
             <ha-call-service-button
-              .hass=${this.hass}
               domain="homeassistant"
               service="reload_core_config"
               >${this.hass.localize(
@@ -194,7 +190,6 @@ export class DeveloperYamlConfig extends LitElement {
             (reloadable) => html`
               <div class="card-actions">
                 <ha-call-service-button
-                  .hass=${this.hass}
                   .domain=${reloadable.domain}
                   service="reload"
                   >${reloadable.name}

@@ -1,18 +1,21 @@
+import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../components/ha-camera-stream";
+import { customElement, property, state } from "lit/decorators";
+import { connectionContext } from "../../../data/context";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantConnection } from "../../../types";
 
 @customElement("more-info-image")
 class MoreInfoImage extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: HomeAssistantConnection;
 
   @property({ attribute: false }) public stateObj?: ImageEntity;
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._connection || !this.stateObj) {
       return nothing;
     }
     const imageUrl = computeImageUrl(this.stateObj);
@@ -21,7 +24,7 @@ class MoreInfoImage extends LitElement {
     }
     return html`<img
       alt=${this.stateObj.attributes.friendly_name || this.stateObj.entity_id}
-      src=${this.hass.hassUrl(imageUrl)}
+      src=${this._connection.hassUrl(imageUrl)}
     /> `;
   }
 

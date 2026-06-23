@@ -192,7 +192,6 @@ class DialogLightColorFavorite extends DirtyStateProviderMixin<LightColorFavorit
           ${this._mode === "color_temp"
             ? html`
                 <light-color-temp-picker
-                  .hass=${this.hass}
                   .stateObj=${this.stateObj}
                   @color-changed=${this._colorChanged}
                 >
@@ -202,7 +201,6 @@ class DialogLightColorFavorite extends DirtyStateProviderMixin<LightColorFavorit
           ${this._mode === "color"
             ? html`
                 <light-color-rgb-picker
-                  .hass=${this.hass}
                   .stateObj=${this.stateObj}
                   @color-changed=${this._colorChanged}
                 >

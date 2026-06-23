@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../types";
 export const integrationsWithPanel = {
   bluetooth: "config/bluetooth",
   dhcp: "config/dhcp",
+  infrared: "config/infrared",
   matter: "config/matter",
   mqtt: "config/mqtt",
   ssdp: "config/ssdp",

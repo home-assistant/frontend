@@ -107,10 +107,7 @@ export class AssistPref extends LitElement {
     return html`
       <ha-card outlined>
         <h1 class="card-header">
-          <voice-assistant-brand-icon
-            .voiceAssistantId=${"conversation"}
-            .hass=${this.hass}
-          >
+          <voice-assistant-brand-icon .voiceAssistantId=${"conversation"}>
           </voice-assistant-brand-icon
           >Assist
         </h1>

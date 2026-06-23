@@ -7,7 +7,7 @@ import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistantFormatters } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
 
-export const enum CoverEntityFeature {
+export enum CoverEntityFeature {
   OPEN = 1,
   CLOSE = 2,
   SET_POSITION = 4,

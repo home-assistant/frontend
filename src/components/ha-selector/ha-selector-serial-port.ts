@@ -1,5 +1,6 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiClose, mdiConnection, mdiMemory, mdiPencil, mdiUsb } from "@mdi/js";
+import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -405,11 +406,12 @@ export class HaSerialPortSelector extends LitElement {
       }
       let groupItems: SerialPickerItem[] = grouped[type];
       if (searchString) {
+        const fuseIndex = Fuse.createIndex(DEFAULT_SEARCH_KEYS, groupItems);
         groupItems = multiTermSortedSearch(
           groupItems,
           searchString,
-          DEFAULT_SEARCH_KEYS,
-          (item) => item.id
+          (item) => item.id,
+          fuseIndex
         );
       }
       if (!groupItems.length) {

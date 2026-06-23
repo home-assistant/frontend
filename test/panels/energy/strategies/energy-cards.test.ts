@@ -7,7 +7,11 @@ import {
   applicableEnergyCardKeys,
   ENERGY_CARD_CATALOG,
   energyCardKey,
+  hasEnergySource,
+  hasGasRateSource,
+  hasWaterRateSource,
   isEnergyCardHidden,
+  isEnergyCardVisible,
   isEnergyViewEmpty,
 } from "../../../../src/panels/energy/strategies/energy-cards";
 
@@ -31,6 +35,16 @@ const GRID_RETURN = source({
 const SOLAR = source({ type: "solar", stat_energy_from: "sensor.solar" });
 const GAS = source({ type: "gas", stat_energy_from: "sensor.gas" });
 const WATER = source({ type: "water", stat_energy_from: "sensor.water" });
+const GAS_RATE = source({
+  type: "gas",
+  stat_energy_from: "sensor.gas",
+  stat_rate: "sensor.gas_rate",
+});
+const WATER_RATE = source({
+  type: "water",
+  stat_energy_from: "sensor.water",
+  stat_rate: "sensor.water_rate",
+});
 
 describe("energyCardKey", () => {
   it("joins the view path and card type", () => {
@@ -126,5 +140,88 @@ describe("isEnergyViewEmpty", () => {
   it("is false when the view has no applicable cards at all", () => {
     // Water source configured, but the gas view has nothing applicable.
     expect(isEnergyViewEmpty("gas", prefs, [])).toBe(false);
+  });
+});
+
+describe("source predicates", () => {
+  it("hasEnergySource matches grid/solar/battery sources only", () => {
+    expect(hasEnergySource(makePrefs({ energy_sources: [SOLAR] }))).toBe(true);
+    expect(hasEnergySource(makePrefs({ energy_sources: [GRID_RETURN] }))).toBe(
+      true
+    );
+    expect(hasEnergySource(makePrefs({ energy_sources: [GAS, WATER] }))).toBe(
+      false
+    );
+  });
+
+  it("hasWaterRateSource / hasGasRateSource require a rate statistic", () => {
+    expect(hasWaterRateSource(makePrefs({ energy_sources: [WATER] }))).toBe(
+      false
+    );
+    expect(
+      hasWaterRateSource(makePrefs({ energy_sources: [WATER_RATE] }))
+    ).toBe(true);
+    expect(hasGasRateSource(makePrefs({ energy_sources: [GAS] }))).toBe(false);
+    expect(hasGasRateSource(makePrefs({ energy_sources: [GAS_RATE] }))).toBe(
+      true
+    );
+  });
+});
+
+describe("isEnergyCardVisible", () => {
+  const solarPrefs = makePrefs({ energy_sources: [SOLAR] });
+
+  it("is true when the card applies and is not hidden", () => {
+    expect(
+      isEnergyCardVisible(
+        "electricity",
+        "energy-solar-graph",
+        solarPrefs,
+        undefined
+      )
+    ).toBe(true);
+  });
+
+  it("is false when the card applies but is hidden", () => {
+    expect(
+      isEnergyCardVisible("electricity", "energy-solar-graph", solarPrefs, [
+        "electricity.energy-solar-graph",
+      ])
+    ).toBe(false);
+  });
+
+  it("is false when the card does not apply to the preferences", () => {
+    // No solar source -> the solar graph never applies, hidden or not.
+    expect(
+      isEnergyCardVisible(
+        "electricity",
+        "energy-solar-graph",
+        makePrefs({ energy_sources: [GRID_RETURN] }),
+        undefined
+      )
+    ).toBe(false);
+  });
+
+  it("is false for a card type that is not in the catalog for the view", () => {
+    expect(
+      isEnergyCardVisible("gas", "energy-solar-graph", solarPrefs, undefined)
+    ).toBe(false);
+  });
+
+  it("equals isApplicable && !hidden for every catalog entry", () => {
+    // A config that exercises every source type, so many cards apply.
+    const richPrefs = makePrefs({
+      energy_sources: [GRID_RETURN, SOLAR, GAS, WATER],
+    });
+    for (const card of ENERGY_CARD_CATALOG) {
+      const cardType = card.key.slice(card.view.length + 1);
+      expect(
+        isEnergyCardVisible(card.view, cardType, richPrefs, undefined)
+      ).toBe(card.isApplicable(richPrefs));
+      // Hiding the card's own key always wins.
+      expect(
+        isEnergyCardVisible(card.view, cardType, richPrefs, [card.key])
+      ).toBe(false);
+    }
   });
 });

@@ -61,7 +61,11 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
 
   private _dateChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
-      setDateValue(this.hass!, this._config!.entity, ev.detail.value);
+      setDateValue(
+        this.hass!.callService,
+        this._config!.entity,
+        ev.detail.value
+      );
     }
   }
 

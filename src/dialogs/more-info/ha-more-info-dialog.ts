@@ -59,14 +59,12 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import { subscribeLabFeature } from "../../data/labs";
 import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
 import { ScrollableFadeMixin } from "../../mixins/scrollable-fade-mixin";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -126,7 +124,7 @@ const DEFAULT_VIEW: MoreInfoView = "info";
 export class MoreInfoDialog extends DirtyStateProviderMixin<
   EntitySettingsState | Helper | Record<string, string[]> | null,
   "entity-registry" | "helper" | "vacuum-segment-mapping"
->()(SubscribeMixin(ScrollableFadeMixin(LitElement))) {
+>()(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
@@ -162,8 +160,6 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   @state() private _detailsYamlMode = false;
 
   @state() private _isEscapeEnabled = true;
-
-  @state() private _newTriggersAndConditions = false;
 
   protected scrollFadeThreshold = 24;
 
@@ -260,22 +256,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
 
   private _shouldShowAddEntityTo(): boolean {
     return (
-      (this._newTriggersAndConditions && !!this.hass.user?.is_admin) ||
+      !!this.hass.user?.is_admin ||
       !!this.hass.auth.external?.config.hasEntityAddTo
     );
-  }
-
-  protected hassSubscribe() {
-    return [
-      subscribeLabFeature(
-        this.hass.connection,
-        "automation",
-        "new_triggers_conditions",
-        (feature) => {
-          this._newTriggersAndConditions = feature.enabled;
-        }
-      ),
-    ];
   }
 
   private _getDeviceId(): string | null {

@@ -1,3 +1,5 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html } from "lit";
@@ -5,10 +7,12 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../common/const";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
@@ -17,7 +21,11 @@ import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { WaterHeaterEntity } from "../../data/water_heater";
 import { WaterHeaterEntityFeature } from "../../data/water_heater";
-import type { HomeAssistant } from "../../types";
+import {
+  apiContext,
+  configContext,
+  formattersContext,
+} from "../../data/context";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,
@@ -25,9 +33,23 @@ import {
 
 @customElement("ha-state-control-water_heater-temperature")
 export class HaStateControlWaterHeaterTemperature extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: WaterHeaterEntity;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: "show-current", type: Boolean })
   public showCurrent = false;
@@ -49,7 +71,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   private get _step() {
     return (
       this.stateObj.attributes.target_temp_step ||
-      (this.hass.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
+      (this._config.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
@@ -77,7 +99,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
   private _debouncedCallService = debounce(() => this._callService(), 1000);
 
   private _callService() {
-    this.hass.callService("water_heater", "set_temperature", {
+    this._api.callService("water_heater", "set_temperature", {
       entity_id: this.stateObj!.entity_id,
       temperature: this._targetTemperature,
     });
@@ -98,7 +120,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     if (this.stateObj.state === UNAVAILABLE) {
       return html`
         <p class="label disabled">
-          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+          ${this._formatters.formatEntityState(this.stateObj, UNAVAILABLE)}
         </p>
       `;
     }
@@ -111,12 +133,14 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
       !this._targetTemperature
     ) {
       return html`
-        <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
+        <p class="label">
+          ${this._formatters.formatEntityState(this.stateObj)}
+        </p>
       `;
     }
 
     return html`
-      <p class="label">${this.hass.localize("ui.card.water_heater.target")}</p>
+      <p class="label">${this._localize("ui.card.water_heater.target")}</p>
     `;
   }
 
@@ -148,8 +172,7 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     return html`
       <ha-big-number
         .value=${temperature}
-        .unit=${this.hass.config.unit_system.temperature}
-        .hass=${this.hass}
+        .unit=${this._config.config.unit_system.temperature}
         .formatOptions=${formatOptions}
       ></ha-big-number>
     `;
@@ -162,9 +185,9 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
 
     return html`
       <p class="label">
-        ${this.hass.localize("ui.card.water_heater.currently")}
+        ${this._localize("ui.card.water_heater.currently")}
         <span>
-          ${this.hass.formatEntityAttributeValue(
+          ${this._formatters.formatEntityAttributeValue(
             this.stateObj,
             "current_temperature",
             temperature

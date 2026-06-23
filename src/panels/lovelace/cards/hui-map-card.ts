@@ -211,7 +211,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       <ha-card id="card" .header=${this._config.title}>
         <div id="root">
           <ha-map
-            .hass=${this.hass}
             .entities=${this._filteredMapEntities}
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}

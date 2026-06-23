@@ -99,7 +99,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   private _timeChanged(ev: ValueChangedEvent<string>): void {
     const stateObj = this.hass!.states[this._config!.entity];
     setInputDateTimeValue(
-      this.hass!,
+      this.hass!.callService,
       stateObj.entity_id,
       ev.detail.value,
       stateObj.attributes.has_date ? stateObj.state.split(" ")[0] : undefined
@@ -110,7 +110,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     const stateObj = this.hass!.states[this._config!.entity];
 
     setInputDateTimeValue(
-      this.hass!,
+      this.hass!.callService,
       stateObj.entity_id,
       stateObj.attributes.has_time ? stateObj.state.split(" ")[1] : undefined,
       ev.detail.value

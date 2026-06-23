@@ -50,18 +50,18 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
 
     const attribute = stateObj.attributes[this._config.attribute];
     let date: Date | undefined;
-    if (this._config.format) {
+    if (this._config.time_format) {
       date = new Date(attribute);
     }
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${this._config.prefix}
-        ${this._config.format && checkValidDate(date)
+        ${this._config.time_format && checkValidDate(date)
           ? html` <hui-timestamp-display
               .hass=${this.hass}
               .ts=${date}
-              .format=${this._config.format}
+              .format=${this._config.time_format}
               capitalize
             ></hui-timestamp-display>`
           : attribute !== undefined

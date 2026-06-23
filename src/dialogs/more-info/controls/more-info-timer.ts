@@ -1,18 +1,28 @@
+import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-button";
 import "../../../components/ha-duration-input";
 import type { HaDurationData } from "../../../components/ha-duration-input";
+import { apiContext } from "../../../data/context";
 import type { TimerEntity } from "../../../data/timer";
 import { timerDurationData } from "../../../data/timer";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { HomeAssistantApi, ValueChangedEvent } from "../../../types";
 
 @customElement("more-info-timer")
 class MoreInfoTimer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: TimerEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @state() private _duration?: HaDurationData;
 
@@ -26,7 +36,7 @@ class MoreInfoTimer extends LitElement {
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this.stateObj) {
       return nothing;
     }
 
@@ -42,14 +52,14 @@ class MoreInfoTimer extends LitElement {
         ${timerState === "idle"
           ? html`
               <ha-button appearance="plain" size="s" @click=${this._start}>
-                ${this.hass.localize("ui.card.timer.actions.start")}
+                ${this._localize("ui.card.timer.actions.start")}
               </ha-button>
             `
           : nothing}
         ${timerState === "active" || timerState === "paused"
           ? html`
               <ha-button appearance="plain" size="s" @click=${this._start}>
-                ${this.hass.localize("ui.card.timer.actions.set")}
+                ${this._localize("ui.card.timer.actions.set")}
               </ha-button>
             `
           : nothing}
@@ -61,7 +71,7 @@ class MoreInfoTimer extends LitElement {
                 .action=${"pause"}
                 @click=${this._handleActionClick}
               >
-                ${this.hass.localize("ui.card.timer.actions.pause")}
+                ${this._localize("ui.card.timer.actions.pause")}
               </ha-button>
             `
           : nothing}
@@ -73,7 +83,7 @@ class MoreInfoTimer extends LitElement {
                 .action=${"start"}
                 @click=${this._handleActionClick}
               >
-                ${this.hass.localize("ui.card.timer.actions.start")}
+                ${this._localize("ui.card.timer.actions.start")}
               </ha-button>
             `
           : nothing}
@@ -85,7 +95,7 @@ class MoreInfoTimer extends LitElement {
                 .action=${"cancel"}
                 @click=${this._handleActionClick}
               >
-                ${this.hass.localize("ui.card.timer.actions.cancel")}
+                ${this._localize("ui.card.timer.actions.cancel")}
               </ha-button>
               <ha-button
                 appearance="plain"
@@ -93,7 +103,7 @@ class MoreInfoTimer extends LitElement {
                 .action=${"finish"}
                 @click=${this._handleActionClick}
               >
-                ${this.hass.localize("ui.card.timer.actions.finish")}
+                ${this._localize("ui.card.timer.actions.finish")}
               </ha-button>
             `
           : nothing}
@@ -111,7 +121,7 @@ class MoreInfoTimer extends LitElement {
   // entered duration. timer.start has no upper bound, so values beyond the
   // configured duration are accepted.
   private _start(): void {
-    this.hass.callService("timer", "start", {
+    this._api.callService("timer", "start", {
       entity_id: this.stateObj!.entity_id,
       ...(this._duration ? { duration: this._duration } : {}),
     });
@@ -119,7 +129,7 @@ class MoreInfoTimer extends LitElement {
 
   private _handleActionClick(e: MouseEvent): void {
     const action = (e.currentTarget as any).action;
-    this.hass.callService("timer", action, {
+    this._api.callService("timer", action, {
       entity_id: this.stateObj!.entity_id,
     });
   }

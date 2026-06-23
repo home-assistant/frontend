@@ -1,4 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import { consume } from "@lit/context";
 import { mdiPlus, mdiShape } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -6,10 +7,14 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
+import type { RelatedIdSets } from "../../common/search/related-context";
+import { relatedContext } from "../../data/context";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   entityComboBoxKeys,
   getEntities,
+  markEntitiesRelated,
+  sortEntitiesByRelatedRank,
   type EntityComboBoxItem,
 } from "../../data/entity/entity_picker";
 import { domainToName } from "../../data/integration";
@@ -131,6 +136,20 @@ export class HaEntityPicker extends LitElement {
 
   @state() private _pendingEntityId?: string;
 
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
+
+  private get _hasRelatedContext(): boolean {
+    const related = this._relatedIdSets;
+    return (
+      !!related &&
+      (related.entities.size > 0 ||
+        related.devices.size > 0 ||
+        related.areas.size > 0)
+    );
+  }
+
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
       this._pendingEntityId &&
@@ -161,11 +180,7 @@ export class HaEntityPicker extends LitElement {
       : undefined;
     if (stateObj) {
       return html`
-        <state-badge
-          slot="start"
-          .stateObj=${stateObj}
-          .hass=${this.hass}
-        ></state-badge>
+        <state-badge slot="start" .stateObj=${stateObj}></state-badge>
       `;
     }
     if (extraOption.icon_path) {
@@ -216,11 +231,7 @@ export class HaEntityPicker extends LitElement {
     );
 
     return html`
-      <state-badge
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        slot="start"
-      ></state-badge>
+      <state-badge .stateObj=${stateObj} slot="start"></state-badge>
       <span slot="headline">${primary}</span>
       <span slot="supporting-text">${secondary}</span>
     `;
@@ -250,7 +261,6 @@ export class HaEntityPicker extends LitElement {
               <state-badge
                 slot="start"
                 .stateObj=${item.stateObj}
-                .hass=${this.hass}
               ></state-badge>
             `}
         <span slot="headline">${item.primary}</span>
@@ -333,8 +343,22 @@ export class HaEntityPicker extends LitElement {
       })
   );
 
+  private _sortByRelatedContext = memoizeOne(
+    (
+      items: EntityComboBoxItem[],
+      related: RelatedIdSets,
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      language: string
+    ): EntityComboBoxItem[] =>
+      sortEntitiesByRelatedRank(
+        markEntitiesRelated(items, related, entities, devices),
+        language
+      )
+  );
+
   private _getItems = () => {
-    const items = this._getEntitiesMemoized(
+    const entityItems = this._getEntitiesMemoized(
       this.hass,
       this.includeDomains,
       this.excludeDomains,
@@ -345,14 +369,23 @@ export class HaEntityPicker extends LitElement {
       this.excludeEntities,
       this.value
     );
+    const sortedItems = this._hasRelatedContext
+      ? this._sortByRelatedContext(
+          entityItems,
+          this._relatedIdSets!,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.locale.language
+        )
+      : entityItems;
     if (this.extraOptions?.length) {
       const resolvedExtras = this.extraOptions.map((opt) => ({
         ...opt,
         stateObj: opt.entity_id ? this.hass.states[opt.entity_id] : undefined,
       }));
-      return [...resolvedExtras, ...items];
+      return [...resolvedExtras, ...sortedItems];
     }
-    return items;
+    return sortedItems;
   };
 
   private _shouldHideClearIcon() {
@@ -384,6 +417,7 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         .searchKeys=${entityComboBoxKeys}
+        .noSort=${this._hasRelatedContext}
         use-top-label
         .addButtonLabel=${this.addButton
           ? (this.addButtonLabel ??
@@ -402,17 +436,23 @@ export class HaEntityPicker extends LitElement {
     search,
     filteredItems
   ) => {
+    // Float related items to the top by closeness, keeping search relevance
+    // order within each tier.
+    const items = this._hasRelatedContext
+      ? sortEntitiesByRelatedRank(filteredItems)
+      : filteredItems;
+
     // If there is exact match for entity id, put it first
-    const index = filteredItems.findIndex(
+    const index = items.findIndex(
       (item) => item.stateObj?.entity_id === search
     );
     if (index === -1) {
-      return filteredItems;
+      return items;
     }
 
-    const [exactMatch] = filteredItems.splice(index, 1);
-    filteredItems.unshift(exactMatch);
-    return filteredItems;
+    const [exactMatch] = items.splice(index, 1);
+    items.unshift(exactMatch);
+    return items;
   };
 
   public async open() {

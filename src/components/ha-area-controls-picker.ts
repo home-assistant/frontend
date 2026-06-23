@@ -173,7 +173,6 @@ export class HaAreaControlsPicker extends LitElement {
             domainItems = multiTermSortedSearch(
               domainItems,
               searchString,
-              this._domainSearchKeys,
               (item) => item.id,
               fuseIndex
             );
@@ -226,7 +225,6 @@ export class HaAreaControlsPicker extends LitElement {
             entityItems = multiTermSortedSearch(
               entityItems,
               searchString,
-              this._entitySearchKeys,
               (item) => item.id,
               fuseIndex
             );

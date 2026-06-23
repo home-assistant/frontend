@@ -97,29 +97,36 @@ describe("entityDisplay", () => {
     areas: { area_1: mockArea({ area_id: "area_1", name: "Allée" }) },
   });
 
-  it("shows 'Area ▸ Device' with no scope", () => {
+  it("shows 'Area ▸ Device' with no name detail (defaults to full)", () => {
     expect(entityDisplay(hass, "sensor.allee_battery")).toEqual({
       primary: "Battery state",
       secondary: "Allée ▸ Caméra Allée",
     });
   });
 
-  it("shows device only in an area-scoped logbook", () => {
+  it("shows 'Area ▸ Device' for the 'area' name detail", () => {
     expect(entityDisplay(hass, "sensor.allee_battery", "area")).toEqual({
+      primary: "Battery state",
+      secondary: "Allée ▸ Caméra Allée",
+    });
+  });
+
+  it("shows the device only for the 'device' name detail", () => {
+    expect(entityDisplay(hass, "sensor.allee_battery", "device")).toEqual({
       primary: "Battery state",
       secondary: "Caméra Allée",
     });
   });
 
-  it("shows no context in a device-scoped logbook", () => {
-    expect(entityDisplay(hass, "sensor.allee_battery", "device")).toEqual({
+  it("shows no context for the 'entity' name detail", () => {
+    expect(entityDisplay(hass, "sensor.allee_battery", "entity")).toEqual({
       primary: "Battery state",
       secondary: undefined,
     });
   });
 
-  it("shows no context in an entity-scoped logbook", () => {
-    expect(entityDisplay(hass, "sensor.allee_battery", "entity")).toEqual({
+  it("shows no context for the 'none' name detail", () => {
+    expect(entityDisplay(hass, "sensor.allee_battery", "none")).toEqual({
       primary: "Battery state",
       secondary: undefined,
     });

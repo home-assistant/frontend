@@ -5,7 +5,14 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { isEnergyCardHidden } from "./energy-cards";
+import {
+  hasGasRateSource,
+  hasPowerDevices,
+  hasPowerSources,
+  hasWaterRateDevices,
+  hasWaterRateSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
@@ -31,27 +38,6 @@ export class PowerViewStrategy extends ReactiveElement {
     }
     const prefs = energyCollection.prefs;
 
-    const hasPowerSources = prefs?.energy_sources.some((source) => {
-      if (source.type === "solar" && source.stat_rate) return true;
-      if (source.type === "battery" && source.stat_rate) return true;
-      if (source.type === "grid") {
-        return !!source.stat_rate || !!source.power_config;
-      }
-      return false;
-    });
-    const hasPowerDevices = prefs?.device_consumption.some(
-      (device) => device.stat_rate
-    );
-    const hasWaterDevices = prefs?.device_consumption_water.some(
-      (device) => device.stat_rate
-    );
-    const hasWaterSources = prefs?.energy_sources.some(
-      (source) => source.type === "water" && source.stat_rate
-    );
-    const hasGasSources = prefs?.energy_sources.some(
-      (source) => source.type === "gas" && source.stat_rate
-    );
-
     const chartsSection: LovelaceSectionConfig = {
       type: "grid",
       cards: [],
@@ -63,46 +49,50 @@ export class PowerViewStrategy extends ReactiveElement {
       sections: [chartsSection],
     };
 
+    const hasPowerSrc = !!prefs && hasPowerSources(prefs);
+    const hasPowerDev = !!prefs && hasPowerDevices(prefs);
+    const hasWaterDev = !!prefs && hasWaterRateDevices(prefs);
+    const hasWaterSrc = !!prefs && hasWaterRateSource(prefs);
+    const hasGasSrc = !!prefs && hasGasRateSource(prefs);
+
     // No sources configured
     if (
       !prefs ||
-      (!hasPowerSources &&
-        !hasPowerDevices &&
-        !hasWaterDevices &&
-        !hasWaterSources &&
-        !hasGasSources)
+      (!hasPowerSrc &&
+        !hasPowerDev &&
+        !hasWaterDev &&
+        !hasWaterSrc &&
+        !hasGasSrc)
     ) {
       return view;
     }
 
-    if (hasPowerSources) {
+    if (hasPowerSrc) {
       badges.push({
         type: "power-total",
         collection_key: collectionKey,
       });
-
-      if (!isEnergyCardHidden("now", "power-sources-graph", hidden)) {
-        chartsSection.cards!.push({
-          title: hass.localize(
-            "ui.panel.energy.cards.power_sources_graph_title"
-          ),
-          type: "power-sources-graph",
-          collection_key: collectionKey,
-          grid_options: {
-            columns: 36,
-          },
-        });
-      }
     }
 
-    if (hasGasSources) {
+    if (isEnergyCardVisible("now", "power-sources-graph", prefs, hidden)) {
+      chartsSection.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
+        type: "power-sources-graph",
+        collection_key: collectionKey,
+        grid_options: {
+          columns: 36,
+        },
+      });
+    }
+
+    if (hasGasSrc) {
       badges.push({
         type: "gas-total",
         collection_key: collectionKey,
       });
     }
 
-    if (hasWaterSources) {
+    if (hasWaterSrc) {
       badges.push({
         type: "water-total",
         collection_key: collectionKey,
@@ -118,7 +108,7 @@ export class PowerViewStrategy extends ReactiveElement {
       }
     });
 
-    if (hasPowerDevices && !isEnergyCardHidden("now", "power-sankey", hidden)) {
+    if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption,
         hass,
@@ -136,10 +126,7 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (
-      hasWaterDevices &&
-      !isEnergyCardHidden("now", "water-flow-sankey", hidden)
-    ) {
+    if (isEnergyCardVisible("now", "water-flow-sankey", prefs, hidden)) {
       const showFloorsAndAreas = shouldShowFloorsAndAreas(
         prefs.device_consumption_water,
         hass,

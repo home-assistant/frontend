@@ -21,28 +21,10 @@ import {
   isNumericSensorDeviceClass,
   SENSOR_TIMESTAMP_DEVICE_CLASSES,
 } from "../../data/sensor";
+import { TIMESTAMP_STATE_DOMAINS } from "../const";
 
 // Domains whose state is a timezone-agnostic date and/or time string.
 const DATE_TIME_DOMAINS = new Set(["date", "input_datetime", "time"]);
-
-// Domains whose state is a timestamp.
-const TIMESTAMP_DOMAINS = new Set([
-  "ai_task",
-  "button",
-  "conversation",
-  "event",
-  "image",
-  "infrared",
-  "input_button",
-  "notify",
-  "radio_frequency",
-  "scene",
-  "stt",
-  "tag",
-  "tts",
-  "wake_word",
-  "datetime",
-]);
 
 // Maps Intl.NumberFormat part types to ValuePart types for monetary states.
 const MONETARY_TYPE_MAP: Record<string, ValuePart["type"]> = {
@@ -178,7 +160,8 @@ const computeStateToPartsFromEntityAttributes = (
           const type = MONETARY_TYPE_MAP[part.type];
           if (!type) continue;
           const last = valueParts[valueParts.length - 1];
-          // Merge consecutive value parts (e.g. "-" + "12" + "." + "00" → "-12.00")
+          // Merge consecutive value parts so the number stays a single part
+          // (e.g. "-" + "12" + "." + "00" → "-12.00")
           if (type === "value" && last?.type === "value") {
             last.value += part.value;
           } else {
@@ -273,7 +256,7 @@ const computeStateToPartsFromEntityAttributes = (
 
   // state is a timestamp
   if (
-    TIMESTAMP_DOMAINS.has(domain) ||
+    TIMESTAMP_STATE_DOMAINS.has(domain) ||
     (domain === "sensor" &&
       SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(attributes.device_class))
   ) {

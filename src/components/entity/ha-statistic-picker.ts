@@ -343,11 +343,7 @@ export class HaStatisticPicker extends LitElement {
     return html`
       ${item.stateObj
         ? html`
-            <state-badge
-              .hass=${this.hass}
-              .stateObj=${item.stateObj}
-              slot="start"
-            ></state-badge>
+            <state-badge .stateObj=${item.stateObj} slot="start"></state-badge>
           `
         : item.icon_path
           ? html`
@@ -488,7 +484,6 @@ export class HaStatisticPicker extends LitElement {
                 <state-badge
                   slot="start"
                   .stateObj=${item.stateObj}
-                  .hass=${this.hass}
                 ></state-badge>
               `
             : nothing}

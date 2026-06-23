@@ -508,7 +508,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         </div>
 
         <ha-filter-states
-          .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
           .value=${this._filters[TYPE_FILTER]}
           .states=${this._states(this.hass.localize, isHassio)}
@@ -517,7 +516,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
         ></ha-filter-states>
         <ha-filter-states
-          .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.locations")}
           .value=${this._filters[LOCATIONS_FILTER]}
           .states=${this._locations(

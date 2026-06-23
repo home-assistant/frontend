@@ -1,9 +1,12 @@
+import { consume, type ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext } from "../data/context";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-button";
 
 const STATES_INTERCEPTABLE: Record<
@@ -46,7 +49,10 @@ const STATES_INTERCEPTABLE: Record<
 
 @customElement("ha-vacuum-state")
 export class HaVacuumState extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -68,19 +74,19 @@ export class HaVacuumState extends LitElement {
   }
 
   private _computeInterceptable(
-    state: string,
+    stateString: string,
     supportedFeatures: number | undefined
   ) {
-    return state in STATES_INTERCEPTABLE && supportedFeatures !== 0;
+    return stateString in STATES_INTERCEPTABLE && supportedFeatures !== 0;
   }
 
-  private _computeLabel(state: string, interceptable: boolean) {
+  private _computeLabel(stateString: string, interceptable: boolean) {
     return interceptable
-      ? this.hass.localize(
-          `ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`
+      ? this._localize(
+          `ui.card.vacuum.actions.${STATES_INTERCEPTABLE[stateString].action}`
         )
-      : this.hass.localize(
-          `component.vacuum.entity_component._.state.${state}`
+      : this._localize(
+          `component.vacuum.entity_component._.state.${stateString}`
         );
   }
 
@@ -88,7 +94,7 @@ export class HaVacuumState extends LitElement {
     ev.stopPropagation();
     const stateObj = this.stateObj;
     const service = STATES_INTERCEPTABLE[stateObj.state].service;
-    await this.hass.callService("vacuum", service, {
+    await this._api.callService("vacuum", service, {
       entity_id: stateObj.entity_id,
     });
   }

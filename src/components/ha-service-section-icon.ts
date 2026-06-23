@@ -1,8 +1,9 @@
 import { consume } from "@lit/context";
+import { initialState } from "@lit/task";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { until } from "lit/directives/until";
 import type { Connection, HassConfig } from "home-assistant-js-websocket";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { transform } from "../common/decorators/transform";
 import { configContext, connectionContext } from "../data/context";
 import { serviceSectionIcon } from "../data/icons";
@@ -31,6 +32,23 @@ export class HaServiceSectionIcon extends LitElement {
   })
   private _connection?: Connection;
 
+  private _iconTask = new AsyncValueTask(this, {
+    task: ([icon, connection, config, service, section]) => {
+      if (icon || !connection || !config || !service || !section) {
+        return initialState;
+      }
+      return serviceSectionIcon(connection, config, service, section);
+    },
+    args: () =>
+      [
+        this.icon,
+        this._connection,
+        this._config,
+        this.service,
+        this.section,
+      ] as const,
+  });
+
   protected render() {
     if (this.icon) {
       return html`<ha-icon .icon=${this.icon}></ha-icon>`;
@@ -44,19 +62,12 @@ export class HaServiceSectionIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = serviceSectionIcon(
-      this._connection,
-      this._config,
-      this.service,
-      this.section
-    ).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
-      }
-      return this._renderFallback();
-    });
-
-    return html`${until(icon)}`;
+    if (!this._iconTask.resolved) {
+      return nothing;
+    }
+    return this._iconTask.value
+      ? html`<ha-icon .icon=${this._iconTask.value}></ha-icon>`
+      : this._renderFallback();
   }
 
   private _renderFallback() {

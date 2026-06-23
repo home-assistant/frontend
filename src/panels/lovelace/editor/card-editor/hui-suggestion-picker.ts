@@ -168,11 +168,7 @@ export class HuiSuggestionPicker extends LitElement {
       </ha-section-title>
       <ha-combo-box-item compact class="selected-entity">
         ${stateObj
-          ? html`<state-badge
-              slot="start"
-              .hass=${this.hass}
-              .stateObj=${stateObj}
-            ></state-badge>`
+          ? html`<state-badge slot="start" .stateObj=${stateObj}></state-badge>`
           : nothing}
         <span slot="headline">${primary}</span>
         ${secondary
