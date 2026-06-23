@@ -155,16 +155,16 @@ export const getRecorderInfo = (conn: Connection) =>
 
 export type EntityRecordingDisabler = "user";
 
-export interface RecordedEntityOptions {
+export interface RecorderEntityOptions {
   recording_disabled_by: EntityRecordingDisabler | null;
 }
 
-export const getRecordedEntity = (
+export const getRecorderEntityOptions = (
   hass: Pick<HomeAssistant, "callWS">,
   entity_id: string
 ) =>
-  hass.callWS<RecordedEntityOptions>({
-    type: "recorder/recorded_entities/get",
+  hass.callWS<RecorderEntityOptions>({
+    type: "recorder/entity_options/get",
     entity_id,
   });
 

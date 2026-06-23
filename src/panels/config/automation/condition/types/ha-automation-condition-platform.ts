@@ -20,7 +20,7 @@ import {
 } from "../../../../../data/condition";
 import type { IntegrationManifest } from "../../../../../data/integration";
 import { fetchIntegrationManifest } from "../../../../../data/integration";
-import { getRecordedEntity } from "../../../../../data/recorder";
+import { getRecorderEntityOptions } from "../../../../../data/recorder";
 import type { TargetSelector } from "../../../../../data/selector";
 import {
   extractFromTarget,
@@ -594,7 +594,7 @@ export class HaPlatformCondition extends LitElement {
       }
       const recordingDisabled = await Promise.all(
         referenced_entities.map((entityId) =>
-          getRecordedEntity(this.hass, entityId)
+          getRecorderEntityOptions(this.hass, entityId)
             .then((options) => options.recording_disabled_by !== null)
             // Unknown entity or command unavailable on older cores: don't warn.
             .catch(() => false)
