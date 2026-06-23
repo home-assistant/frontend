@@ -105,11 +105,10 @@ class ZHAConfigDashboard extends LitElement {
       `;
     }
 
-    const devices = this._configEntry
-      ? Object.values(this.hass.devices).filter((device) =>
-          device.config_entries.includes(this._configEntry!.entry_id)
-        )
-      : [];
+    const configEntry = this._configEntry;
+    const devices = Object.values(this.hass.devices).filter((device) =>
+      device.config_entries.includes(configEntry.entry_id)
+    );
     const deviceCount = devices.length;
 
     let entityCount = 0;
