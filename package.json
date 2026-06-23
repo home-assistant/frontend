@@ -127,10 +127,10 @@
     "xss": "1.0.15"
   },
   "devDependencies": {
-    "@babel/core": "8.0.0",
+    "@babel/core": "8.0.1",
     "@babel/helper-define-polyfill-provider": "1.0.0",
-    "@babel/plugin-transform-runtime": "8.0.0",
-    "@babel/preset-env": "8.0.0",
+    "@babel/plugin-transform-runtime": "8.0.1",
+    "@babel/preset-env": "8.0.2",
     "@bundle-stats/plugin-webpack-filter": "4.22.2",
     "@eslint/js": "10.0.1",
     "@html-eslint/eslint-plugin": "0.62.0",
