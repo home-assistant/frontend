@@ -1011,13 +1011,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
           )}</span
         >
         <span slot="secondary">
-          ${this.entry.aliases.filter((a) => a !== null).length
-            ? this.entry.aliases
-                .filter((a): a is string => a !== null)
-                .join(", ")
-            : this.hass.localize(
-                "ui.dialogs.entity_registry.editor.no_aliases"
-              )}
+          ${this.hass.localize(
+            "ui.dialogs.entity_registry.editor.voice_assistants_description"
+          )}
         </span>
         <ha-icon-next slot="meta"></ha-icon-next>
       </ha-list-item>

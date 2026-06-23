@@ -7,6 +7,7 @@ import type { ExposeEntitySettings } from "../../../../data/expose";
 import { voiceAssistants } from "../../../../data/expose";
 import "../../../../panels/config/voice-assistants/entity-voice-settings";
 import type { HomeAssistant } from "../../../../types";
+import { showVoiceAssistantSettingsView } from "./show-view-voice-assistant-settings";
 
 @customElement("ha-more-info-view-voice-assistants")
 class MoreInfoViewVoiceAssistants extends LitElement {
@@ -33,7 +34,17 @@ class MoreInfoViewVoiceAssistants extends LitElement {
       .entityId=${this.entry.entity_id}
       .entry=${this.entry}
       .exposed=${this._calculateExposed(this.entry)}
+      @edit-assistant=${this._editAssistant}
     ></entity-voice-settings>`;
+  }
+
+  private _editAssistant(ev: CustomEvent) {
+    const assistant = ev.detail.assistant;
+    showVoiceAssistantSettingsView(
+      this,
+      voiceAssistants[assistant].name,
+      assistant
+    );
   }
 
   static get styles(): CSSResultGroup {

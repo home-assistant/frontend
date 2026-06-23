@@ -172,12 +172,23 @@ export const removeCloudData = (hass: HomeAssistant) =>
 export const updateCloudGoogleEntityConfig = (
   hass: HomeAssistant,
   entity_id: string,
-  disable_2fa: boolean
+  values: { disable_2fa?: boolean; name?: string | null; aliases?: string[] }
 ) =>
   hass.callWS({
     type: "cloud/google_assistant/entities/update",
     entity_id,
-    disable_2fa,
+    ...values,
+  });
+
+export const updateCloudAlexaEntityConfig = (
+  hass: HomeAssistant,
+  entity_id: string,
+  name: string | null
+) =>
+  hass.callWS({
+    type: "cloud/alexa/entities/update",
+    entity_id,
+    name,
   });
 
 export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>

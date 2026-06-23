@@ -708,6 +708,9 @@ export class VoiceAssistantsExpose extends LitElement {
       exposedEntitiesChanged: () => {
         fireEvent(this, "exposed-entities-changed");
       },
+      entityEntryUpdated: (entry) => {
+        this._extEntities = { ...this._extEntities, [entityId]: entry };
+      },
     });
   }
 

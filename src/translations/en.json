@@ -1962,7 +1962,7 @@
             "stream_orientation_8": "Rotate right"
           },
           "voice_assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
-          "no_aliases": "Configure aliases and expose settings for voice assistants"
+          "voice_assistants_description": "Configure aliases and expose settings for voice assistants"
         }
       },
       "recreate_entity_ids": {
@@ -1999,9 +1999,11 @@
         "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]"
       },
       "voice-settings": {
-        "expose_header": "Expose",
-        "aliases_header": "Aliases",
-        "aliases_description": "Aliases are alternative names to call your entity. Only supported by Assist and Google Assistant.",
+        "edit_settings": "Edit {assistant} settings",
+        "name": "Name",
+        "name_description": "Leave empty to use the entity's default name.",
+        "aliases": "Aliases",
+        "aliases_count": "{count} {count, plural,\n one {alias}\n other {aliases}\n}",
         "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
         "entity_name_alias_description": "Default name. Disable it if you want your voice assistants to ignore it and just use aliases.",
         "ask_pin": "Ask for PIN",
