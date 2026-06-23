@@ -106,7 +106,7 @@ export class HaIntegrationCardFooter extends LitElement {
               </span>`
             : nothing}
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
-            ? html`<div class="icon cloud">
+            ? html`<span class="icon cloud">
                 <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
                 <ha-tooltip
                   for="icon-cloud"
@@ -121,12 +121,12 @@ export class HaIntegrationCardFooter extends LitElement {
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
                   )}
                 </ha-tooltip>
-              </div>`
+              </span>`
             : nothing}
           ${this.manifest &&
           !this.manifest?.config_flow &&
           !this.items.every((itm) => itm.source === "system")
-            ? html`<div class="icon yaml">
+            ? html`<span class="icon yaml">
                 <ha-svg-icon
                   id="icon-yaml"
                   .path=${mdiFileCodeOutline}
@@ -144,7 +144,7 @@ export class HaIntegrationCardFooter extends LitElement {
                     "ui.panel.config.integrations.config_entry.no_config_flow"
                   )}
                 </ha-tooltip>
-              </div>`
+              </span>`
             : nothing}
         </div>
       </div>
