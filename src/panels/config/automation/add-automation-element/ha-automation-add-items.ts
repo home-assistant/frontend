@@ -1,5 +1,5 @@
 import { mdiInformationOutline, mdiPlus } from "@mdi/js";
-import { LitElement, css, html, nothing, type TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -39,8 +39,6 @@ export class HaAutomationAddItems extends LitElement {
   @property({ attribute: "select-label" }) public selectLabel!: string;
 
   @property({ attribute: "empty-label" }) public emptyLabel!: string;
-
-  @property({ attribute: false }) public emptyNote?: string | TemplateResult;
 
   @property({ attribute: false }) public target?: Target;
 
@@ -83,9 +81,6 @@ export class HaAutomationAddItems extends LitElement {
             ? html`${this.emptyLabel}
               ${this.target
                 ? html`<div>${this._renderTarget(this.target)}</div>`
-                : nothing}
-              ${this.emptyNote
-                ? html`<div class="empty-note">${this.emptyNote}</div>`
                 : nothing}`
             : repeat(
                 this.items,
@@ -230,17 +225,6 @@ export class HaAutomationAddItems extends LitElement {
           max(var(--safe-area-inset-bottom), var(--ha-space-3));
         line-height: var(--ha-line-height-expanded);
         justify-content: center;
-      }
-
-      .empty-note {
-        color: var(--ha-color-text-secondary);
-        margin-top: var(--ha-space-2);
-        text-align: center;
-      }
-
-      .empty-note a {
-        color: currentColor;
-        text-decoration: underline;
       }
 
       .items.error {
