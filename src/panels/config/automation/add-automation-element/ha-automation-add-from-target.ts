@@ -63,6 +63,7 @@ import {
 } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
+import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 
 interface Level1Entries {
   open: boolean;
@@ -92,6 +93,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public manifests?: DomainManifestLookup;
+
+  // Section title + group rows (Time, Location) for the targetless element
+  // groups. Picking a row drills into that group's items, just like selecting
+  // the matching group in the "by type" tab.
+  @property({ attribute: false }) public timeLocationLabel?: string;
+
+  @property({ attribute: false })
+  public timeLocationGroups?: AddAutomationElementListItem[];
+
+  @property({ attribute: false }) public selectedGroup?: string;
 
   // #endregion properties
 
@@ -182,8 +193,20 @@ export default class HaAutomationAddFromTarget extends LitElement {
         ? this._renderNarrow(this._entries, this.value)
         : html`
             ${this._renderFloors(this.narrow, this._entries, this.value)}
+            ${this._renderTimeLocation(
+              this.narrow,
+              this.timeLocationLabel,
+              this.timeLocationGroups,
+              this.selectedGroup
+            )}
             ${this._renderUnassigned(this.narrow, this._entries, this.value)}
-            ${this._renderLabels(this.narrow, this.value)}
+            ${this._renderLabels(
+              this.narrow,
+              this.states,
+              this._registries,
+              this._labelRegistry,
+              this.value
+            )}
           `}
       ${this.narrow && this._showShowMoreButton && !this._fullHeight
         ? html`
@@ -343,14 +366,58 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   );
 
+  private _renderTimeLocation = memoizeOne(
+    (
+      narrow: boolean,
+      label?: string,
+      groups?: AddAutomationElementListItem[],
+      selectedGroup?: string
+    ) => {
+      if (!label || !groups?.length) {
+        return nothing;
+      }
+
+      return html`<ha-section-title>${label}</ha-section-title>
+        <ha-list-base>
+          ${groups.map(
+            (group) =>
+              html`<ha-list-item-button
+                .value=${group.key}
+                @click=${this._selectTimeLocationGroup}
+                class=${group.key === selectedGroup ? "selected" : ""}
+              >
+                ${group.icon
+                  ? html`<span slot="start">${group.icon}</span>`
+                  : group.iconPath
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${group.iconPath}
+                      ></ha-svg-icon>`
+                    : nothing}
+                <div slot="headline">${group.name}</div>
+                ${narrow
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  : nothing}
+              </ha-list-item-button>`
+          )}
+        </ha-list-base>`;
+    }
+  );
+
   private _renderLabels = memoizeOne(
-    (narrow: boolean, value?: SingleHassServiceTarget) => {
+    (
+      narrow: boolean,
+      states: ContextType<typeof statesContext>,
+      registries: ContextType<typeof registriesContext>,
+      labelRegistry: LabelRegistryEntry[],
+      value?: SingleHassServiceTarget
+    ) => {
       const labels = this._getLabelsMemoized(
-        this.states,
-        this._registries.areas,
-        this._registries.devices,
-        this._registries.entities,
-        this._labelRegistry,
+        states,
+        registries.areas,
+        registries.devices,
+        registries.entities,
+        labelRegistry,
         undefined,
         undefined,
         undefined,
@@ -1173,6 +1240,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
+  private _selectTimeLocationGroup(ev: CustomEvent) {
+    const value = (ev.currentTarget as any).value;
+    if (value) {
+      fireEvent(this, "time-location-group-selected", { value });
+    }
+  }
+
   private async _valueChanged(itemId: string, expand = false) {
     const [type, id] = itemId.split(TARGET_SEPARATOR, 2);
 
@@ -1511,5 +1585,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-add-from-target": HaAutomationAddFromTarget;
+  }
+  interface HASSDomEvents {
+    "time-location-group-selected": { value: string };
   }
 }

@@ -1,4 +1,4 @@
-import { mdiMapClock, mdiShape } from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
 import type { Connection } from "home-assistant-js-websocket";
 
 import { computeDomain } from "../common/entity/compute_domain";
@@ -14,15 +14,17 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
       dynamicGroups: {},
-      time_location: {
-        icon: mdiMapClock,
+      time: {
+        icon: mdiClockOutline,
         members: {
-          calendar: {},
-          sun: {},
           time: {},
           time_pattern: {},
-          zone: {},
         },
+        domains: ["calendar", "schedule"],
+      },
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
       },
       event: {},
       geo_location: {},

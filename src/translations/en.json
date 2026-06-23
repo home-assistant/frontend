@@ -5107,6 +5107,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
+            "time_sun": "Time and sun",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -5182,8 +5183,11 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "time_location": {
-                  "label": "Time and location"
+                "time": {
+                  "label": "Time"
+                },
+                "sun": {
+                  "label": "Sun"
                 },
                 "generic": {
                   "label": "Generic"
@@ -5460,8 +5464,11 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "time_location": {
-                  "label": "Time and location"
+                "time": {
+                  "label": "Time"
+                },
+                "sun": {
+                  "label": "Sun"
                 },
                 "generic": {
                   "label": "Generic"

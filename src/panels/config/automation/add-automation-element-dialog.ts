@@ -192,6 +192,11 @@ const DYNAMIC_KEYWORDS = [
 
 const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
+// Group keys surfaced as their own section in the "by target" tab because
+// their elements have no target (time/calendar/schedule, sun). Picking one
+// drills into its items, like selecting the matching group in the "by type" tab.
+const TIME_LOCATION_GROUPS = ["time", "sun"];
+
 type CollectionGroupType = "helper" | "other" | "dynamic" | "customDynamic";
 
 @customElement("add-automation-element-dialog")
@@ -683,13 +688,28 @@ class DialogAddAutomationElement
                 .hass=${this.hass}
                 .value=${this._selectedTarget}
                 @value-changed=${this._handleTargetSelected}
+                @time-location-group-selected=${this
+                  ._handleTimeLocationGroupSelected}
                 .narrow=${this._narrow}
+                .timeLocationLabel=${this._getTimeLocationLabel(
+                  automationElementType
+                )}
+                .timeLocationGroups=${this._getTimeLocationGroups(
+                  automationElementType,
+                  this.hass.localize,
+                  automationElementType === "condition"
+                    ? this._conditionDescriptions
+                    : this._triggerDescriptions
+                )}
+                .selectedGroup=${this._selectedGroup}
                 class=${classMap({
                   "ha-scrollbar": true,
-                  hidden: !!this._getAddFromTargetHidden(
-                    this._narrow,
-                    this._selectedTarget
-                  ),
+                  hidden:
+                    !!this._getAddFromTargetHidden(
+                      this._narrow,
+                      this._selectedTarget
+                    ) ||
+                    (this._narrow && !!this._selectedGroup),
                 })}
                 .manifests=${this._manifests}
               ></ha-automation-add-from-target>`
@@ -795,12 +815,13 @@ class DialogAddAutomationElement
                     )
                   : undefined}
                 .selectLabel=${this.hass.localize(
-                  `ui.panel.config.automation.editor.${this._tab === "groups" ? `${automationElementType}s.select` : "select_target"}` as LocalizeKeys
+                  `ui.panel.config.automation.editor.${this._tab === "groups" || this._selectedGroup ? `${automationElementType}s.select` : "select_target"}` as LocalizeKeys
                 )}
                 .emptyLabel=${this.hass.localize(
                   `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
                 )}
-                .tooltipDescription=${this._tab === "targets"}
+                .tooltipDescription=${this._tab === "targets" &&
+                !this._selectedGroup}
                 .target=${(this._tab === "targets" &&
                   this._selectedTarget &&
                   ([
@@ -960,7 +981,7 @@ class DialogAddAutomationElement
             items: this._getBlockItems(this._params!.type, this.hass.localize),
           },
         ]
-      : !this._filter && this._tab === "groups" && this._selectedGroup
+      : !this._filter && this._selectedGroup
         ? [
             {
               title: this.hass.localize(
@@ -1018,7 +1039,10 @@ class DialogAddAutomationElement
         Object.entries(grp).map(([key, options]) =>
           options.members
             ? flattenGroups(options.members)
-            : this._convertToItem(key, options, type, localize)
+            : options.domains
+              ? // domain elements are appended below from the backend descriptions
+                []
+              : this._convertToItem(key, options, type, localize)
         );
 
       const items = flattenGroups(groups).flat();
@@ -1059,6 +1083,8 @@ class DialogAddAutomationElement
       let genericCollectionIndex = -1;
       let dynamicCollectionIndex = -1;
 
+      const exclusiveDomains = this._getExclusiveDomains(type);
+
       collections.forEach((collection, index) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
@@ -1089,7 +1115,8 @@ class DialogAddAutomationElement
               triggerDescriptions,
               manifests,
               domains,
-              types
+              types,
+              exclusiveDomains
             )
           );
 
@@ -1108,7 +1135,8 @@ class DialogAddAutomationElement
               conditionDescriptions,
               manifests,
               domains,
-              types
+              types,
+              exclusiveDomains
             )
           );
 
@@ -1141,9 +1169,19 @@ class DialogAddAutomationElement
         }
 
         groups.push(
-          ...collectionGroups.map(([key, options]) =>
-            this._convertToItem(key, options, type, localize)
-          )
+          ...collectionGroups
+            .filter(([, options]) =>
+              this._groupHasItems(
+                type,
+                options,
+                type === "condition"
+                  ? conditionDescriptions
+                  : triggerDescriptions
+              )
+            )
+            .map(([key, options]) =>
+              this._convertToItem(key, options, type, localize)
+            )
         );
 
         if (groups.length) {
@@ -1240,11 +1278,28 @@ class DialogAddAutomationElement
         return this._services(localize, services, manifests, group);
       }
 
-      const groups = this._getGroups(type, group, collectionIndex);
+      const groupDef =
+        TYPES[type].collections[collectionIndex]?.groups[group] ??
+        TYPES[type].collections.find((collection) => group in collection.groups)
+          ?.groups[group];
 
-      const result = Object.entries(groups).map(([key, options]) =>
-        this._convertToItem(key, options, type, localize)
-      );
+      let result: AddAutomationElementListItem[];
+
+      if (groupDef?.domains && !groupDef.members) {
+        // Curated group whose items come solely from backend domains (e.g. Sun).
+        result = this._getDomainElementItems(type, groupDef.domains, localize);
+      } else {
+        const groups = this._getGroups(type, group, collectionIndex);
+        result = Object.entries(groups).map(([key, options]) =>
+          this._convertToItem(key, options, type, localize)
+        );
+        if (groupDef?.domains) {
+          // Curated group with both static members and backend domains (Time).
+          result.push(
+            ...this._getDomainElementItems(type, groupDef.domains, localize)
+          );
+        }
+      }
 
       if (type === "action") {
         if (!this._selectedGroup) {
@@ -1364,7 +1419,8 @@ class DialogAddAutomationElement
     triggers: TriggerDescriptions,
     manifests: DomainManifestLookup | undefined,
     domains: Set<string> | undefined,
-    types: CollectionGroupType[]
+    types: CollectionGroupType[],
+    exclusiveDomains: Set<string>
   ): AddAutomationElementListItem[] => {
     if (!triggers || !manifests) {
       return [];
@@ -1374,7 +1430,7 @@ class DialogAddAutomationElement
     Object.keys(triggers).forEach((trigger) => {
       const domain = getTriggerDomain(trigger);
 
-      if (addedDomains.has(domain)) {
+      if (addedDomains.has(domain) || exclusiveDomains.has(domain)) {
         return;
       }
       addedDomains.add(domain);
@@ -1436,7 +1492,8 @@ class DialogAddAutomationElement
     conditions: ConditionDescriptions,
     manifests: DomainManifestLookup | undefined,
     domains: Set<string> | undefined,
-    types: CollectionGroupType[]
+    types: CollectionGroupType[],
+    exclusiveDomains: Set<string>
   ): AddAutomationElementListItem[] => {
     if (!conditions || !manifests) {
       return [];
@@ -1446,7 +1503,7 @@ class DialogAddAutomationElement
     Object.keys(conditions).forEach((condition) => {
       const domain = getConditionDomain(condition);
 
-      if (addedDomains.has(domain)) {
+      if (addedDomains.has(domain) || exclusiveDomains.has(domain)) {
         return;
       }
       addedDomains.add(domain);
@@ -1706,22 +1763,93 @@ class DialogAddAutomationElement
     options,
     type: AddAutomationElementDialogParams["type"],
     localize: LocalizeFunc
-  ): AddAutomationElementListItem => ({
-    key,
-    name: localize(
-      // @ts-ignore
-      `ui.panel.config.automation.editor.${type}s.${
-        options.members ? "groups" : "type"
-      }.${key}.label`
-    ),
-    description: localize(
-      // @ts-ignore
-      `ui.panel.config.automation.editor.${type}s.${
-        options.members ? "groups" : "type"
-      }.${key}.description${options.members ? "" : ".picker"}`
-    ),
-    iconPath: options.icon || TYPES[type].icons[key],
-  });
+  ): AddAutomationElementListItem => {
+    // A group either lists explicit members or bundles backend element domains.
+    const isGroup = !!(options.members || options.domains);
+    return {
+      key,
+      name: localize(
+        // @ts-ignore
+        `ui.panel.config.automation.editor.${type}s.${
+          isGroup ? "groups" : "type"
+        }.${key}.label`
+      ),
+      description: localize(
+        // @ts-ignore
+        `ui.panel.config.automation.editor.${type}s.${
+          isGroup ? "groups" : "type"
+        }.${key}.description${isGroup ? "" : ".picker"}`
+      ),
+      iconPath: options.icon || TYPES[type].icons[key],
+    };
+  };
+
+  // Domains owned exclusively by a curated group, i.e. a group that bundles
+  // only domains and no static members (e.g. "sun" under the Sun group). Those
+  // are hidden from the generic dynamic domain grouping so they don't appear
+  // both standalone and inside the curated group. Domains of a mixed group
+  // (static members + domains, e.g. "calendar"/"schedule" under Time) are NOT
+  // hidden — they still surface as their own domain group as well.
+  private _getExclusiveDomains = memoizeOne(
+    (type: AddAutomationElementDialogParams["type"]): Set<string> => {
+      const domains = new Set<string>();
+      TYPES[type].collections.forEach((collection) =>
+        Object.values(collection.groups).forEach((group) => {
+          if (group.domains && !group.members) {
+            group.domains.forEach((domain) => domains.add(domain));
+          }
+        })
+      );
+      return domains;
+    }
+  );
+
+  private _getDomainElementItems(
+    type: AddAutomationElementDialogParams["type"],
+    domains: string[],
+    localize: LocalizeFunc
+  ): AddAutomationElementListItem[] {
+    const domainSet = new Set(domains);
+    if (type === "trigger") {
+      return Object.keys(this._triggerDescriptions)
+        .filter((trigger) => domainSet.has(getTriggerDomain(trigger)))
+        .map((trigger) =>
+          this._getTriggerListItem(localize, getTriggerDomain(trigger), trigger)
+        );
+    }
+    if (type === "condition") {
+      return Object.keys(this._conditionDescriptions)
+        .filter((condition) => domainSet.has(getConditionDomain(condition)))
+        .map((condition) =>
+          this._getConditionListItem(
+            localize,
+            getConditionDomain(condition),
+            condition
+          )
+        );
+    }
+    return [];
+  }
+
+  private _groupHasItems(
+    type: AddAutomationElementDialogParams["type"],
+    options: { members?: object; domains?: string[] },
+    descriptions: TriggerDescriptions | ConditionDescriptions
+  ): boolean {
+    if (options.members && Object.keys(options.members).length) {
+      return true;
+    }
+    if (options.domains) {
+      const domainSet = new Set(options.domains);
+      const getDomain =
+        type === "condition" ? getConditionDomain : getTriggerDomain;
+      return Object.keys(descriptions).some((key) =>
+        domainSet.has(getDomain(key))
+      );
+    }
+    // plain single-element group
+    return true;
+  }
 
   private _getDomainGroupedListItems(
     localize: LocalizeFunc,
@@ -1965,6 +2093,8 @@ class DialogAddAutomationElement
   ) => {
     this._targetItems = undefined;
     this._loadItemsError = false;
+    this._selectedGroup = undefined;
+    this._selectedCollectionIndex = undefined;
     this._selectedTarget = ev.detail.value;
     mainWindow.history.pushState(
       {
@@ -1985,6 +2115,67 @@ class DialogAddAutomationElement
 
     this._getItemsByTarget();
   };
+
+  // Time & location groups have no target; picking one drills into its items
+  // (the same list as the matching group in the "by type" tab).
+  private _handleTimeLocationGroupSelected = (
+    ev: ValueChangedEvent<string>
+  ) => {
+    this._targetItems = undefined;
+    this._loadItemsError = false;
+    this._selectedTarget = undefined;
+    this._selectedGroup = ev.detail.value;
+    this._selectedCollectionIndex = 0;
+    mainWindow.history.pushState(
+      {
+        dialogData: {
+          group: this._selectedGroup,
+          collectionIndex: this._selectedCollectionIndex,
+        },
+      },
+      ""
+    );
+
+    requestAnimationFrame(() => {
+      if (this._narrow) {
+        this._contentElement?.scrollTo(0, 0);
+      } else {
+        this._itemsListElement?.scrollTo(0, 0);
+      }
+    });
+  };
+
+  private _getTimeLocationLabel(
+    type: AddAutomationElementDialogParams["type"]
+  ): string | undefined {
+    if (type !== "trigger" && type !== "condition") {
+      return undefined;
+    }
+    return this.hass.localize("ui.panel.config.automation.editor.time_sun");
+  }
+
+  private _getTimeLocationGroups = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      localize: LocalizeFunc,
+      descriptions: TriggerDescriptions | ConditionDescriptions
+    ): AddAutomationElementListItem[] => {
+      if (type !== "trigger" && type !== "condition") {
+        return [];
+      }
+      return TIME_LOCATION_GROUPS.map(
+        (group) => [group, TYPES[type].collections[0].groups[group]] as const
+      )
+        .filter(
+          ([, options]) =>
+            options && this._groupHasItems(type, options, descriptions)
+        )
+        .map(([group, options]) =>
+          this._convertToItem(group, options, type, localize)
+        )
+        .filter((item) => item.name);
+    }
+  );
 
   private _getDefaultStateItems(
     type: "trigger" | "condition"
