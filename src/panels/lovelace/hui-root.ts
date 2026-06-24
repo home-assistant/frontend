@@ -27,6 +27,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -472,6 +473,22 @@ class HUIRoot extends LitElement {
         const title_only = !icon_only && !icon_and_title;
         const hidden =
           !this._editMode && (view.subview || _isTabHiddenForUser(view));
+        const tabContent = html`
+          ${icon_only || icon_and_title
+            ? html`<ha-icon
+                class=${classMap({
+                  "child-view-icon": Boolean(view.subview),
+                })}
+                title=${ifDefined(view.title)}
+                .icon=${view.icon}
+              ></ha-icon>`
+            : nothing}
+          ${icon_and_title ? view.title : nothing}
+          ${title_only
+            ? view.title ||
+              this.hass.localize("ui.panel.lovelace.views.unnamed_view")
+            : nothing}
+        `;
         return html`
           <ha-tab-group-tab
             slot="nav"
@@ -479,6 +496,9 @@ class HUIRoot extends LitElement {
             .active=${this._curView === index}
             .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
+            data-path=${view.path || index}
+            @auxclick=${this._handleViewTabNewTabClick}
+            @click=${this._handleViewTabNewTabClick}
             class=${classMap({
               "icon-only": Boolean(icon_only),
               "icon-and-title": Boolean(icon_and_title),
@@ -495,24 +515,7 @@ class HUIRoot extends LitElement {
                     @click=${this._moveViewLeft}
                     .disabled=${this._curView === 0}
                   ></ha-icon-button-arrow-prev>
-                `
-              : nothing}
-            ${icon_only || icon_and_title
-              ? html`<ha-icon
-                  class=${classMap({
-                    "child-view-icon": Boolean(view.subview),
-                  })}
-                  title=${ifDefined(view.title)}
-                  .icon=${view.icon}
-                ></ha-icon>`
-              : nothing}
-            ${icon_and_title ? view.title : nothing}
-            ${title_only
-              ? view.title ||
-                this.hass.localize("ui.panel.lovelace.views.unnamed_view")
-              : nothing}
-            ${this._editMode
-              ? html`
+                  ${tabContent}
                   <ha-icon-button
                     .title=${this.hass!.localize(
                       "ui.panel.lovelace.editor.edit_view.edit"
@@ -530,7 +533,7 @@ class HUIRoot extends LitElement {
                     .disabled=${(this._curView! as number) + 1 === views.length}
                   ></ha-icon-button-arrow-next>
                 `
-              : nothing}
+              : tabContent}
           </ha-tab-group-tab>
         `;
       })}
@@ -571,7 +574,8 @@ class HUIRoot extends LitElement {
                       ? html`
                           <ha-icon-button-arrow-prev
                             slot="navigationIcon"
-                            @click=${this._goBack}
+                            .href=${this._backPath}
+                            @click=${this._handleBackClick}
                           ></ha-icon-button-arrow-prev>
                         `
                       : html`
@@ -882,6 +886,27 @@ class HUIRoot extends LitElement {
     }
   }
 
+  private _handleBackClick(ev: MouseEvent): void {
+    if (this._backPath && !isNavigationClick(ev)) {
+      return;
+    }
+    this._goBack();
+  }
+
+  private get _backPath(): string | undefined {
+    const views = this.lovelace?.config.views ?? [];
+    const curViewConfig =
+      typeof this._curView === "number" ? views[this._curView] : undefined;
+
+    if (curViewConfig?.back_path != null) {
+      return curViewConfig.back_path;
+    }
+    if (this.backPath) {
+      return this.backPath;
+    }
+    return curViewConfig?.subview ? this.route!.prefix : undefined;
+  }
+
   private _addDevice = async () => {
     await this.hass.loadFragmentTranslation("config");
     showAddIntegrationDialog(this, { navigateToResult: true });
@@ -1071,13 +1096,35 @@ class HUIRoot extends LitElement {
   }
 
   private _navigateToView(path: string | number, replace?: boolean) {
-    const url = this.lovelace!.editMode
-      ? `${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`
-      : `${this.route!.prefix}/${path}${location.search}`;
+    const url = this._viewUrl(path);
 
     const currentUrl = `${location.pathname}${location.search}`;
     if (currentUrl !== url) {
       navigate(url, { replace });
+    }
+  }
+
+  private _viewUrl(path: string | number): string {
+    return this.lovelace!.editMode
+      ? `${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`
+      : `${this.route!.prefix}/${path}${location.search}`;
+  }
+
+  private _handleViewTabNewTabClick(ev: MouseEvent): void {
+    if (
+      this._editMode ||
+      (ev.button !== 1 && !ev.metaKey && !ev.ctrlKey && !ev.shiftKey)
+    ) {
+      return;
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const tab = ev.currentTarget as HTMLElement;
+    const path = tab.dataset.path;
+    if (path) {
+      window.open(this._viewUrl(path), "_blank", "noreferrer");
     }
   }
 
