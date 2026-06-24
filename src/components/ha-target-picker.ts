@@ -1116,7 +1116,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return multiTermSortedSearch(
         items,
         searchTerm,
-        weightedKeys,
         (item) => item.id,
         fuseIndex
       );
@@ -1233,7 +1232,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   <state-badge
                     slot="start"
                     .stateObj=${(item as EntityComboBoxItem).stateObj}
-                    .hass=${this.hass}
                   ></state-badge>
                 `
               : type === "device" && (item as DevicePickerItem).domain

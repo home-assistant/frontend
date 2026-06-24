@@ -41,7 +41,7 @@ export const autocompleteLoginFields = (schema: HaFormSchema[]) =>
   });
 
 export const getSignedPath = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   path: string
 ): Promise<SignedPath> => hass.callWS({ type: "auth/sign_path", path });
 

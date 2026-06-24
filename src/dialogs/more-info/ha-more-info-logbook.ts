@@ -42,11 +42,10 @@ export class MoreInfoLogbook extends LitElement {
         .hass=${this.hass}
         .time=${this._time}
         .entityIds=${this._entityIdAsList(this.entityId)}
+        name-detail="none"
         narrow
         no-icon
-        no-name
-        show-indicator
-        relative-time
+        graph-color
       ></ha-logbook>
     `;
   }

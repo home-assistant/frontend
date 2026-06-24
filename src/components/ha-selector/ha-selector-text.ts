@@ -3,15 +3,13 @@ import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-textarea";
 import "../input/ha-input";
 import "../input/ha-input-multi";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property() public value?: any;
 
   @property() public name?: string;

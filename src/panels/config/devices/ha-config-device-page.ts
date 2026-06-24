@@ -1,7 +1,9 @@
+import { startOfYesterday } from "date-fns";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { consume } from "@lit/context";
 import {
   mdiCog,
+  mdiChevronRight,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -24,10 +26,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
-import {
-  fireEvent,
-  type HASSDomCurrentTargetEvent,
-} from "../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -63,13 +62,12 @@ import {
   disableConfigEntry,
   sortConfigEntries,
 } from "../../../data/config_entries";
-import { fullEntitiesContext } from "../../../data/context";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device/device_registry";
-import { subscribeLabFeature } from "../../../data/labs";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
   fetchDiagnosticHandler,
@@ -98,6 +96,7 @@ import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
+import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
 import "../../logbook/ha-logbook";
@@ -203,10 +202,6 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
   private _deviceAlertsActionsTimeout?: number;
-
-  @state() private _newTriggersConditions = false;
-
-  private _unsubLabFeature?: (() => void) | undefined;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -350,12 +345,12 @@ export class HaConfigDevicePage extends LitElement {
 
   private _batteryEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
-      findBatteryEntity(this.hass, entities)
+      findBatteryEntity(this.hass.states, entities)
   );
 
   private _batteryChargingEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
-      findBatteryChargingEntity(this.hass, entities)
+      findBatteryChargingEntity(this.hass.states, entities)
   );
 
   public willUpdate(changedProps: PropertyValues<this>) {
@@ -377,15 +372,13 @@ export class HaConfigDevicePage extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
-    this._subscribeLabFeature();
   }
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("deviceId")) {
       this._findRelated();
-      // Broadcast device context for quick bar
-      fireEvent(this, "hass-related-context", {
+      fireRelatedContext(this, {
         itemType: "device",
         itemId: this.deviceId,
       });
@@ -395,7 +388,6 @@ export class HaConfigDevicePage extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     clearTimeout(this._deviceAlertsActionsTimeout);
-    this._unsubLabFeature?.();
   }
 
   protected render() {
@@ -900,12 +892,29 @@ export class HaConfigDevicePage extends LitElement {
     const logbookColumn = isComponentLoaded(this.hass.config, "logbook")
       ? html`
           <ha-card outlined>
-            <h1 class="card-header">${this.hass.localize("panel.logbook")}</h1>
+            <div class="card-header">
+              <span>${this.hass.localize("panel.logbook")}</span>
+              <a
+                href="/logbook?${createSearchParam({
+                  device_id: this.deviceId,
+                  start_date: startOfYesterday().toISOString(),
+                  back: "1",
+                })}"
+              >
+                <ha-icon-button
+                  .path=${mdiChevronRight}
+                  .label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                ></ha-icon-button>
+              </a>
+            </div>
             <ha-logbook
               .hass=${this.hass}
               .time=${this._logbookTime}
               .entityIds=${this._entityIds(entities)}
               .deviceIds=${this._deviceIdInList(this.deviceId)}
+              name-detail="entity"
               virtualize
               narrow
               no-icon
@@ -1388,28 +1397,10 @@ export class HaConfigDevicePage extends LitElement {
     );
     showDeviceAddToDialog(this, {
       device,
-      newTriggersConditions: this._newTriggersConditions,
       entityIds: sceneEntityIds,
       canCreateScene:
         isComponentLoaded(this.hass.config, "scene") &&
         sceneEntityIds.length > 0,
-    });
-  }
-
-  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
-  private _subscribeLabFeature() {
-    if (!isComponentLoaded(this.hass.config, "automation")) {
-      return;
-    }
-    subscribeLabFeature(
-      this.hass.connection,
-      "automation",
-      "new_triggers_conditions",
-      (feature) => {
-        this._newTriggersConditions = feature.enabled;
-      }
-    ).then((unsub) => {
-      this._unsubLabFeature = unsub;
     });
   }
 
@@ -1780,6 +1771,22 @@ export class HaConfigDevicePage extends LitElement {
           color: var(--secondary-text-color);
           --mdc-icon-size: 24px;
           display: block;
+        }
+
+        ha-card:has(ha-logbook) .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
+        }
+
+        ha-card:has(ha-logbook) .card-header a {
+          display: flex;
+          align-items: center;
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
         }
 
         ha-card:has(ha-logbook) {

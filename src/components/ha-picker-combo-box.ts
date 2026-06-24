@@ -492,7 +492,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
         this._allItems,
         searchString,
-        this.searchKeys || DEFAULT_SEARCH_KEYS,
         (item) => item.id,
         index
       );

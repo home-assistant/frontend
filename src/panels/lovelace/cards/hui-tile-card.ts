@@ -73,6 +73,12 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public static getDefaultConfig(): Partial<TileCardConfig> {
+    return {
+      features_position: "bottom",
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: TileCardConfig;
@@ -264,6 +270,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .stateObj=${stateObj}
             .hass=${this.hass}
             .content=${this._config.state_content}
+            .timeFormat=${this._config.time_format}
           >
           </state-display>
         `;

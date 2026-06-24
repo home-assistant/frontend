@@ -180,7 +180,7 @@ export interface PersistentNotificationTrigger extends BaseTrigger {
 
 export interface ZoneTrigger extends BaseTrigger {
   trigger: "zone";
-  entity_id: string;
+  entity_id: string | string[];
   zone: string;
   event: "enter" | "leave";
 }
@@ -377,7 +377,7 @@ export const expandConditionWithShorthand = (
 };
 
 export const triggerAutomationActions = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entityId: string
 ) => {
   hass.callService("automation", "trigger", {

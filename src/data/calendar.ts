@@ -54,7 +54,7 @@ export enum RecurrenceRange {
   THISANDFUTURE = "THISANDFUTURE",
 }
 
-export const enum CalendarEntityFeature {
+export enum CalendarEntityFeature {
   CREATE_EVENT = 1,
   DELETE_EVENT = 2,
   UPDATE_EVENT = 4,

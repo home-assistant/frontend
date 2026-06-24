@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCircle,
+  mdiCircleOffOutline,
   mdiCircleOutline,
   mdiProgressClock,
   mdiProgressWrench,
@@ -18,7 +19,7 @@ import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { fullEntitiesContext } from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../data/logbook";
-import { localizeTriggerDescription } from "../../data/logbook";
+import { localizeTriggerSource } from "../../data/logbook";
 import type {
   ChooseAction,
   IfAction,
@@ -323,6 +324,23 @@ class ActionRenderer {
   }
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
+    if (this.trace.not_triggered) {
+      this._renderEntry(
+        triggerStep.path,
+        this.hass.localize(
+          "ui.panel.config.automation.trace.messages.evaluated_not_triggered",
+          {
+            time: formatDateTimeWithSeconds(
+              new Date(triggerStep.timestamp),
+              this.hass.locale,
+              this.hass.config
+            ),
+          }
+        ),
+        mdiCircleOffOutline
+      );
+      return index + 1;
+    }
     this._renderEntry(
       triggerStep.path,
       this.hass.localize(
@@ -333,7 +351,7 @@ class ActionRenderer {
             : "other",
           alias: triggerStep.changed_variables.trigger?.alias,
           triggeredPath: triggerStep.path === "trigger" ? "manual" : "trigger",
-          trigger: localizeTriggerDescription(
+          trigger: localizeTriggerSource(
             this.hass.localize,
             this.trace.trigger
           ),
@@ -724,6 +742,16 @@ export class HaAutomationTracer extends LitElement {
           "ui.panel.config.automation.trace.messages.debugged"
         ),
         icon: mdiProgressWrench,
+      };
+    } else if (this.trace.not_triggered) {
+      entry = {
+        description: this.hass.localize(
+          "ui.panel.config.automation.trace.messages.not_triggered",
+          {
+            time: renderFinishedAt(),
+          }
+        ),
+        icon: mdiCircleOffOutline,
       };
     } else if (this.trace.script_execution === "finished") {
       entry = {

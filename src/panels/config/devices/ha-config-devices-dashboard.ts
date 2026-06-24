@@ -842,7 +842,6 @@ export class HaConfigDeviceDashboard extends LitElement {
             </ha-alert>`
           : nothing}
         <ha-filter-floor-areas
-          .hass=${this.hass}
           type="device"
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -860,7 +859,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-integrations>
         <ha-filter-states
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-states"]?.value}
           .states=${this._states(this.hass.localize)}
           .label=${this.hass.localize("ui.panel.config.devices.picker.state")}
@@ -871,7 +869,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-states>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -996,7 +993,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
     const batteryEntity = findBatteryEntity(
-      this.hass,
+      this.hass.states,
       deviceEntityLookup[deviceId] || []
     );
     return batteryEntity ? batteryEntity.entity_id : undefined;
@@ -1007,7 +1004,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
     const batteryChargingEntity = findBatteryChargingEntity(
-      this.hass,
+      this.hass.states,
       deviceEntityLookup[deviceId] || []
     );
     return batteryChargingEntity ? batteryChargingEntity.entity_id : undefined;

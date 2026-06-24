@@ -4,7 +4,6 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import type { ColorTempSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-labeled-slider";
 import { generateColorTemperatureGradient } from "../../dialogs/more-info/components/lights/light-color-temp-picker";
 import {
@@ -15,8 +14,6 @@ import {
 
 @customElement("ha-selector-color_temp")
 export class HaColorTempSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: ColorTempSelector;
 
   @property() public value?: string;

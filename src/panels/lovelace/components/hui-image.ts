@@ -268,7 +268,6 @@ export class HuiImage extends LitElement {
           ? html`
               <ha-camera-stream
                 muted
-                .hass=${this.hass}
                 .stateObj=${cameraObj}
                 .fitMode=${this.fitMode}
                 .aspectRatio=${this._ratio

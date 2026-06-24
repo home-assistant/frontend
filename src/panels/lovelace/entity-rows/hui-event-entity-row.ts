@@ -73,7 +73,7 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
               : html`<hui-timestamp-display
                   .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
-                  .format=${this._config.format}
+                  .format=${this._config.time_format}
                   capitalize
                 ></hui-timestamp-display>`}
           </div>

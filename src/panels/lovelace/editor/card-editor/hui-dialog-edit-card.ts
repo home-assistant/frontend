@@ -6,7 +6,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireRelatedContext,
+  type RelatedContextItem,
+} from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -32,7 +37,9 @@ import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
+import { getConfigRelatedContext } from "../../common/get-config-related-context";
 import "../../sections/hui-section";
+import { getCardDefaultConfig } from "../get-card-default-config";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { GUIModeChangedEvent } from "../types";
@@ -95,16 +102,21 @@ export class HuiDialogEditCard
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
+    const effectiveDefaults = this._cardConfig?.type
+      ? await getCardDefaultConfig(this._cardConfig.type)
+      : undefined;
+    const normalize = (config: LovelaceCardConfig) =>
+      stripDefaults(config, effectiveDefaults);
     if (params.isNew && this._cardConfig) {
-      this._initDirtyTracking({ type: "deep" }, { type: "" });
+      this._initDirtyTracking({ type: "deep" }, { type: "" }, normalize);
       this._updateDirtyState(this._cardConfig);
     } else {
-      this._initDirtyTracking({ type: "deep" }, this._cardConfig);
+      this._initDirtyTracking({ type: "deep" }, this._cardConfig, normalize);
     }
   }
 
   public closeDialog(): boolean {
-    if (this.isDirtyState) {
+    if (this.isEffectiveDirtyState) {
       this._confirmCancel();
       return false;
     }
@@ -118,6 +130,7 @@ export class HuiDialogEditCard
     this._cardConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
+    this._updateRelatedContext(undefined);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -134,6 +147,21 @@ export class HuiDialogEditCard
         this._cardConfig!.type
       );
     }
+
+    this._updateRelatedContext(getConfigRelatedContext(this._cardConfig));
+  }
+
+  private _relatedContext?: RelatedContextItem;
+
+  private _updateRelatedContext(context: RelatedContextItem | undefined): void {
+    if (
+      context?.itemType === this._relatedContext?.itemType &&
+      context?.itemId === this._relatedContext?.itemId
+    ) {
+      return;
+    }
+    this._relatedContext = context;
+    fireRelatedContext(this, context);
   }
 
   protected render() {
@@ -172,7 +200,7 @@ export class HuiDialogEditCard
       <ha-dialog
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        .preventScrimClose=${this.isDirtyState}
+        .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}

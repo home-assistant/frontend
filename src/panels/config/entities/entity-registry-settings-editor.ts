@@ -38,7 +38,7 @@ import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input";
 import {
   CAMERA_ORIENTATIONS,
-  CAMERA_SUPPORT_STREAM,
+  CameraEntityFeature,
   type CameraPreferences,
   fetchCameraCapabilities,
   fetchCameraPrefs,
@@ -281,7 +281,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (domain === "camera" && isComponentLoaded(this.hass.config, "stream")) {
       const stateObj: HassEntity | undefined =
         this.hass.states[this.entry.entity_id];
-      if (stateObj && supportsFeature(stateObj, CAMERA_SUPPORT_STREAM)) {
+      if (stateObj && supportsFeature(stateObj, CameraEntityFeature.STREAM)) {
         this._fetchCameraPrefs();
       }
     }

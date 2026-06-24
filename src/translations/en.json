@@ -444,6 +444,9 @@
       "loading": "Loading",
       "refresh": "Refresh",
       "cancel": "Cancel",
+      "upload_file_too_large": "Uploaded file {name} is too large",
+      "upload_image_too_large": "Uploaded image {name} is too large",
+      "unknown_error": "Unknown error",
       "delete": "Delete",
       "delete_all": "Delete all",
       "download": "Download",
@@ -466,6 +469,7 @@
       "save": "Save",
       "apply": "Apply",
       "add": "Add",
+      "auto": "Auto",
       "create": "Create",
       "edit": "Edit",
       "edit_item": "Edit {name}",
@@ -496,7 +500,8 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "none": "None"
     },
     "components": {
       "input": {
@@ -670,17 +675,28 @@
       },
       "logbook": {
         "entries_not_found": "No activity found.",
-        "triggered_by": "triggered by",
-        "triggered_by_automation": "triggered by automation",
-        "triggered_by_script": "triggered by script",
-        "triggered_by_action": "triggered by action",
-        "triggered_by_numeric_state_of": "triggered by numeric state of",
-        "triggered_by_state_of": "triggered by state of",
-        "triggered_by_event": "triggered by event",
-        "triggered_by_time": "triggered by time",
-        "triggered_by_time_pattern": "triggered by time pattern",
-        "triggered_by_homeassistant_stopping": "triggered by Home Assistant stopping",
-        "triggered_by_homeassistant_starting": "triggered by Home Assistant starting",
+        "automation_triggered": "Triggered",
+        "script_ran": "Ran",
+        "view_trace": "View trace",
+        "trigger_type": {
+          "calendar": "[%key:ui::panel::config::automation::editor::triggers::type::calendar::label%]",
+          "conversation": "[%key:ui::panel::config::automation::editor::triggers::type::conversation::label%]",
+          "device": "[%key:ui::panel::config::automation::editor::triggers::type::device::label%]",
+          "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
+          "geo_location": "[%key:ui::panel::config::automation::editor::triggers::type::geo_location::label%]",
+          "homeassistant": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::label%]",
+          "mqtt": "[%key:ui::panel::config::automation::editor::triggers::type::mqtt::label%]",
+          "numeric_state": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
+          "persistent_notification": "[%key:ui::panel::config::automation::editor::triggers::type::persistent_notification::label%]",
+          "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+          "sun": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
+          "tag": "[%key:ui::panel::config::automation::editor::triggers::type::tag::label%]",
+          "template": "[%key:ui::panel::config::automation::editor::triggers::type::template::label%]",
+          "time": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
+          "time_pattern": "[%key:ui::panel::config::automation::editor::triggers::type::time_pattern::label%]",
+          "webhook": "[%key:ui::panel::config::automation::editor::triggers::type::webhook::label%]",
+          "zone": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]"
+        },
         "numeric_state_of": "numeric state of",
         "state_of": "state of",
         "event": "event",
@@ -688,105 +704,18 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
-        "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
+        "cause": {
+          "by": "By {name}",
+          "by_automation": "By automation: {name}",
+          "by_script": "By script: {name}",
+          "by_state_change": "By state change: {name}",
+          "scheduled": "Scheduled",
+          "via": "Via {name}"
+        },
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
-          "was_away": "was detected away",
-          "was_at_state": "was detected at {state}",
-          "rose": "rose",
-          "set": "set",
-          "was_low": "was low",
-          "was_normal": "was normal",
-          "was_connected": "was connected",
-          "was_disconnected": "was disconnected",
-          "was_opened": "was opened",
-          "was_closed": "was closed",
-          "is_opening": "is opening",
-          "is_opened": "is opened",
-          "is_closing": "is closing",
-          "was_unlocked": "was unlocked",
-          "was_locked": "was locked",
-          "is_unlocking": "is unlocking",
-          "is_locking": "is locking",
-          "is_jammed": "is jammed",
-          "was_plugged_in": "was plugged in",
-          "was_unplugged": "was unplugged",
-          "was_at_home": "was detected at home",
-          "was_unsafe": "was unsafe",
-          "was_safe": "was safe",
-          "detected_device_class": "detected {device_class}",
-          "cleared_device_class": "cleared (no {device_class} detected)",
-          "turned_off": "turned off",
-          "turned_on": "turned on",
-          "changed_to_state": "changed to {state}",
-          "became_unavailable": "became unavailable",
-          "became_unknown": "became unknown",
-          "detected_tampering": "detected tampering",
-          "cleared_tampering": "cleared tampering",
-          "detected_event": "{event_type} event detected",
-          "detected_event_no_type": "detected an event",
-          "detected_unknown_event": "detected an unknown event",
-          "detected_device_classes": {
-            "battery": "[%key:ui::components::logbook::messages::was_low%]",
-            "battery_charging": "started charging",
-            "carbon_monoxide": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "cold": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "connectivity": "[%key:ui::components::logbook::messages::was_connected%]",
-            "door": "[%key:ui::components::logbook::messages::was_opened%]",
-            "garage_door": "[%key:ui::components::logbook::messages::was_opened%]",
-            "gas": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "heat": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "light": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "lock": "[%key:ui::components::logbook::messages::was_unlocked%]",
-            "moisture": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "motion": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "moving": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "occupancy": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "opening": "[%key:ui::components::logbook::messages::was_opened%]",
-            "plug": "[%key:ui::components::logbook::messages::was_plugged_in%]",
-            "power": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "presence": "[%key:ui::components::logbook::messages::was_at_home%]",
-            "problem": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "running": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "safety": "[%key:ui::components::logbook::messages::was_unsafe%]",
-            "smoke": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "sound": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "tamper": "[%key:ui::components::logbook::messages::detected_tampering%]",
-            "update": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "vibration": "[%key:ui::components::logbook::messages::detected_device_class%]",
-            "window": "[%key:ui::components::logbook::messages::was_opened%]"
-          },
-          "cleared_device_classes": {
-            "battery": "[%key:ui::components::logbook::messages::was_normal%]",
-            "battery_charging": "stopped charging",
-            "carbon_monoxide": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "cold": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "connectivity": "[%key:ui::components::logbook::messages::was_disconnected%]",
-            "door": "[%key:ui::components::logbook::messages::was_closed%]",
-            "garage_door": "[%key:ui::components::logbook::messages::was_closed%]",
-            "gas": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "heat": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "light": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "lock": "[%key:ui::components::logbook::messages::was_locked%]",
-            "moisture": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "motion": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "moving": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "occupancy": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "opening": "[%key:ui::components::logbook::messages::was_closed%]",
-            "plug": "[%key:ui::components::logbook::messages::was_unplugged%]",
-            "power": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "presence": "[%key:ui::components::logbook::messages::was_away%]",
-            "problem": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "running": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "safety": "[%key:ui::components::logbook::messages::was_safe%]",
-            "smoke": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "sound": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "tamper": "[%key:ui::components::logbook::messages::cleared_tampering%]",
-            "update": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "vibration": "[%key:ui::components::logbook::messages::cleared_device_class%]",
-            "window": "[%key:ui::components::logbook::messages::was_closed%]"
-          }
+          "detected_event_no_type": "detected an event"
         }
       },
       "entity": {
@@ -874,6 +803,20 @@
           "labels": "Labels",
           "floor": "Floor"
         }
+      },
+      "time-format-picker": {
+        "formats": {
+          "relative": "Relative",
+          "total": "Total",
+          "datetime": "Date and time",
+          "time": "Time",
+          "date": "Date"
+        },
+        "styles": {
+          "short": "Short",
+          "long": "Long"
+        },
+        "style": "Time format style"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -1214,7 +1157,7 @@
         }
       },
       "siren": {
-        "advanced_controls": "Advanced controls",
+        "more_controls": "More controls",
         "tone": "Tone",
         "duration": "Duration",
         "volume": "Volume"
@@ -1618,6 +1561,7 @@
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
             "thread": "[%key:ui::panel::config::dashboard::thread::main%]",
             "bluetooth": "[%key:ui::panel::config::dashboard::bluetooth::main%]",
+            "radio_frequency": "[%key:ui::panel::config::dashboard::radio_frequency::main%]",
             "knx": "[%key:ui::panel::config::dashboard::knx::main%]",
             "insteon": "[%key:ui::panel::config::dashboard::insteon::main%]",
             "voice-assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
@@ -2142,7 +2086,7 @@
         "generic": {
           "name": "Name",
           "icon": "Icon",
-          "advanced_settings": "Advanced settings"
+          "more_options": "[%key:ui::dialogs::restart::more_options%]"
         },
         "input_datetime": {
           "date": "Date",
@@ -2533,7 +2477,7 @@
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting. Not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup. Not everything will be available until it is finished.",
-      "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}. Not everything will be available until startup is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
@@ -2693,6 +2637,10 @@
           "cloud": {
             "secondary": "Loading..."
           },
+          "infrared": {
+            "main": "Infrared",
+            "secondary": "Control anything with a remote."
+          },
           "zwave_js": {
             "main": "Z-Wave",
             "secondary": "Sub-GHz mesh protocol"
@@ -2712,6 +2660,10 @@
           "bluetooth": {
             "main": "Bluetooth",
             "secondary": "Local device connectivity"
+          },
+          "radio_frequency": {
+            "main": "Radio frequency",
+            "secondary": "Control radio-based devices."
           },
           "knx": {
             "main": "KNX",
@@ -5223,7 +5175,6 @@
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
-              "no_items_for_target_note": "This is a {labs_link} feature. More triggers will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5270,7 +5221,7 @@
                   "context_user_picked": "User firing event",
                   "context_user_pick": "Select user",
                   "description": {
-                    "picker": "Triggers when an event is being received (event is an advanced concept in Home Assistant).",
+                    "picker": "Triggers when an event is being received (events are a building block used across Home Assistant).",
                     "full": "When {eventTypes} event is fired"
                   }
                 },
@@ -5400,7 +5351,7 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
-                  "weekday": "Days of the Week",
+                  "weekday": "Days of the week",
                   "weekdays": {
                     "mon": "[%key:ui::weekdays::monday%]",
                     "tue": "[%key:ui::weekdays::tuesday%]",
@@ -5502,7 +5453,6 @@
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
               "no_items_for_target": "No conditions available for",
-              "no_items_for_target_note": "This is a {labs_link} feature. More conditions will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5578,7 +5528,7 @@
                   "description": {
                     "picker": "Tests if an entity (or attribute) is in a specific state.",
                     "no_entity": "If state confirmed",
-                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} are}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                    "full": "If{hasAttribute, select, \n true { {attribute} of}\n other {}\n} {numberOfEntities, plural,\n =0 {an entity is}\n one {{entities} is}\n other {{entities} {matchAny, select,\n true {is}\n other {are}\n}}\n} {numberOfStates, plural,\n =0 {a state}\n other {{states}}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n }"
                   }
                 },
                 "sun": {
@@ -5611,7 +5561,7 @@
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::time::label%]",
                   "after": "After",
                   "before": "Before",
-                  "weekday": "Weekdays",
+                  "weekday": "Days of the week",
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::time::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::time::before%]",
                   "weekdays": {
@@ -5771,7 +5721,7 @@
                   "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_type%]",
                   "event_data": "[%key:ui::panel::config::automation::editor::triggers::type::event::event_data%]",
                   "description": {
-                    "picker": "Fires an event manually (event is an advanced concept in Home Assistant).",
+                    "picker": "Fires an event manually (events are a building block used across Home Assistant).",
                     "full": "Manually fire event {name}",
                     "template": "based on a template"
                   }
@@ -5969,6 +5919,7 @@
               "template_errors": "Template errors:",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
+              "not_triggered": "This trigger evaluated a relevant change but did not trigger the automation. The reason is shown in the result below.",
               "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
@@ -5992,6 +5943,8 @@
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
               "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
+              "evaluated_not_triggered": "Evaluated a change at {time}",
+              "not_triggered": "Did not trigger at {time}. Select the trigger step details to see why.",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
@@ -6008,7 +5961,8 @@
               "stopped_failed_single": "Stopped because only a single execution is allowed",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
               "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
-              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)",
+              "not_triggered": "Did not trigger"
             }
           }
         },
@@ -6568,8 +6522,7 @@
             "actions": {
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
-            },
-            "no_device_automations": "There are no automations, scripts or scenes available for this device."
+            }
           },
           "script": {
             "scripts_heading": "Scripts",
@@ -7119,6 +7072,20 @@
           "qos": "QoS",
           "retain": "Retain"
         },
+        "infrared": {
+          "title": "Infrared",
+          "status_online": "Online",
+          "status_warning": "Warning",
+          "status_offline": "Offline",
+          "devices_online_summary": "{online}/{total} devices online",
+          "my_devices": "My devices",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "devices_navigation": "Devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "no_devices": "No infrared proxies found"
+        },
         "bluetooth": {
           "title": "Bluetooth",
           "adapters_count": "{count} {count, plural,\n  one {adapter}\n  other {adapters}\n}",
@@ -7179,6 +7146,19 @@
           "scanners": "Scanners",
           "known_devices": "Known devices",
           "unknown_devices": "Unknown devices"
+        },
+        "radio_frequency": {
+          "title": "Radio frequency",
+          "status_online": "Online",
+          "status_offline": "Offline",
+          "devices_online_summary": "{online}/{total} devices online",
+          "devices_count": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+          "no_devices": "No radio frequency devices found",
+          "loading_error": "Failed to load radio frequency devices",
+          "name": "Name",
+          "type": "Type",
+          "last_used": "Last used",
+          "devices_navigation": "Devices"
         },
         "dhcp": {
           "title": "DHCP discovery",
@@ -7513,6 +7493,7 @@
             "provisioned_devices": "Provisioned devices",
             "provisioned_count": "{count} {count, plural,\n  one {provisioned device}\n  other {provisioned devices}\n}",
             "not_included": "{count} not included",
+            "not_ready": "{count} not ready",
             "devices_offline": "{count} offline",
             "rebuild_routes_description": "Rebuilding routes creates heavy traffic and may degrade performance for minutes to hours",
             "rebuild_routes_action": "Rebuild",
@@ -7745,7 +7726,7 @@
             "title": "Add a Z-Wave device",
             "searching_devices": "Searching for devices",
             "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometimes called \"inclusion mode\")",
-            "security_options": "Advanced security options",
+            "security_options": "Security options",
             "choose_inclusion_strategy": "How do you want to add your device",
             "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
@@ -8817,6 +8798,7 @@
             },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
+              "over_reported_consumption": "Over-reported consumption",
               "untracked": "untracked",
               "other": "Other"
             },
@@ -9475,7 +9457,15 @@
             "logbook": {
               "name": "Activity",
               "description": "This card shows a list of events for entities.",
-              "state_filter": "State filter"
+              "state_filter": "State filter",
+              "name_detail": "Name detail",
+              "name_detail_options": {
+                "auto": "Automatic",
+                "none": "None",
+                "entity": "Entity",
+                "device": "Device ▸ Entity",
+                "area": "Area ▸ Device ▸ Entity"
+              }
             },
             "history-graph": {
               "name": "History graph",
@@ -9739,6 +9729,7 @@
               "show_state": "Show state",
               "show_last_changed": "Show last changed",
               "tap_action": "Tap behavior",
+              "time_format": "Time format",
               "interactions": "Interactions",
               "title": "Title",
               "theme": "Theme",
@@ -10498,7 +10489,15 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_badge": "By badge"
+            "by_badge": "By badge",
+            "with_name": "With name",
+            "suggestions_title": "[%key:ui::panel::lovelace::editor::cardpicker::suggestions_title%]",
+            "community_title": "[%key:ui::panel::lovelace::editor::cardpicker::community_title%]",
+            "selected_entity": "[%key:ui::panel::lovelace::editor::cardpicker::selected_entity%]",
+            "content_empty_title": "[%key:ui::panel::lovelace::editor::cardpicker::content_empty_title%]",
+            "content_empty_description": "Or browse all badge types.",
+            "browse_badges": "Browse all badges",
+            "not_found": "Can't find the badge you want?"
           },
           "header-footer": {
             "header": "Header",

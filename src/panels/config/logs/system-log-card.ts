@@ -190,10 +190,7 @@ export class SystemLogCard extends LitElement {
                       >`}
 
                 <div class="card-actions">
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    domain="system_log"
-                    service="clear"
+                  <ha-call-service-button domain="system_log" service="clear"
                     >${this.hass.localize(
                       "ui.panel.config.logs.clear"
                     )}</ha-call-service-button

@@ -65,9 +65,7 @@ class MoreInfoSirenAdvancedControls extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.components.siren.advanced_controls"
-        )}
+        header-title=${this.hass.localize("ui.components.siren.more_controls")}
         @closed=${this._dialogClosed}
       >
         <div>

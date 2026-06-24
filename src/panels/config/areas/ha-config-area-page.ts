@@ -1,5 +1,7 @@
+import { startOfYesterday } from "date-fns";
 import { consume } from "@lit/context";
 import {
+  mdiChevronRight,
   mdiDelete,
   mdiDevices,
   mdiDotsVertical,
@@ -12,24 +14,19 @@ import {
   mdiShape,
   mdiTools,
 } from "@mdi/js";
-import type {
-  HassEntity,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket/dist/types";
+import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import {
-  fireEvent,
-  type HASSDomCurrentTargetEvent,
-} from "../../../common/dom/fire_event";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
+import { createSearchParam } from "../../../common/url/search-params";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
@@ -51,7 +48,7 @@ import {
   updateAreaRegistryEntry,
 } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
-import { fullEntitiesContext } from "../../../data/context";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { sortDeviceRegistryByName } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -59,7 +56,6 @@ import {
   computeEntityRegistryName,
   sortEntityRegistryByName,
 } from "../../../data/entity/entity_registry";
-import { subscribeLabFeature } from "../../../data/labs";
 import type { SceneEntity } from "../../../data/scene";
 import type { ScriptEntity } from "../../../data/script";
 import type { RelatedResult } from "../../../data/search";
@@ -69,7 +65,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { isHelperDomain } from "../helpers/const";
@@ -143,7 +138,7 @@ const NAVIGATION_ACTIONS: {
 const MAX_COLUMNS = 3;
 
 @customElement("ha-config-area-page")
-class HaConfigAreaPage extends SubscribeMixin(LitElement) {
+class HaConfigAreaPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public areaId!: string;
@@ -157,8 +152,6 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
   _entityReg: EntityRegistryEntry[] = [];
 
   @state() private _related?: RelatedResult;
-
-  @state() private _newTriggersConditions = false;
 
   private _logbookTime = { recent: 86400 };
 
@@ -248,28 +241,11 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     super.updated(changedProps);
     if (changedProps.has("areaId")) {
       this._findRelated();
-      fireEvent(this, "hass-related-context", {
+      fireRelatedContext(this, {
         itemType: "area",
         itemId: this.areaId,
       });
     }
-  }
-
-  // When new_triggers_conditions labs feature is promoted, this whole method can be removed.
-  protected hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    if (!isComponentLoaded(this.hass!.config, "automation")) {
-      return [];
-    }
-    return [
-      subscribeLabFeature(
-        this.hass!.connection,
-        "automation",
-        "new_triggers_conditions",
-        (feature) => {
-          this._newTriggersConditions = feature.enabled;
-        }
-      ),
-    ];
   }
 
   protected render() {
@@ -377,32 +353,26 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           </div>`
         : nothing}
-      ${area.picture && !this._newTriggersConditions
-        ? nothing
-        : html`<div class="action-buttons">
-            ${area.picture
-              ? nothing
-              : html`<ha-button
-                  appearance="filled"
-                  .entry=${area}
-                  @click=${this._showSettings}
-                >
-                  <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
-                  ${this.hass.localize("ui.panel.config.areas.add_picture")}
-                </ha-button>`}
-            ${this._newTriggersConditions
-              ? html`<ha-button
-                  appearance="filled"
-                  variant="brand"
-                  @click=${this._showAddToDialog}
-                >
-                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.add_to.item"
-                  )}
-                </ha-button>`
-              : nothing}
-          </div>`}
+      <div class="action-buttons">
+        ${area.picture
+          ? nothing
+          : html`<ha-button
+              appearance="filled"
+              .entry=${area}
+              @click=${this._showSettings}
+            >
+              <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize("ui.panel.config.areas.add_picture")}
+            </ha-button>`}
+        <ha-button
+          appearance="filled"
+          variant="brand"
+          @click=${this._showAddToDialog}
+        >
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.dialogs.more_info_control.add_to.item")}
+        </ha-button>
+      </div>
       <ha-card
         outlined
         .header=${this.hass.localize("ui.panel.config.devices.caption")}
@@ -596,12 +566,30 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
     const logbookColumn = html`
       ${isComponentLoaded(this.hass.config, "logbook")
         ? html`
-            <ha-card outlined .header=${this.hass.localize("panel.logbook")}>
+            <ha-card outlined>
+              <div class="card-header logbook-header">
+                <span>${this.hass.localize("panel.logbook")}</span>
+                <a
+                  href="/logbook?${createSearchParam({
+                    area_id: this.areaId,
+                    start_date: startOfYesterday().toISOString(),
+                    back: "1",
+                  })}"
+                >
+                  <ha-icon-button
+                    .path=${mdiChevronRight}
+                    .label=${this.hass.localize(
+                      "ui.dialogs.more_info_control.show_more"
+                    )}
+                  ></ha-icon-button>
+                </a>
+              </div>
               <ha-logbook
                 .hass=${this.hass}
                 .time=${this._logbookTime}
                 .entityIds=${this._allEntities(memberships)}
                 .deviceIds=${this._allDeviceIds(memberships.devices)}
+                name-detail="device"
                 virtualize
                 narrow
                 no-icon
@@ -979,6 +967,22 @@ class HaConfigAreaPage extends SubscribeMixin(LitElement) {
           opacity: 0.5;
           border-radius: var(--ha-border-radius-circle);
         }
+        .logbook-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--ha-space-4) var(--ha-space-4) 0;
+        }
+
+        .logbook-header a {
+          display: flex;
+          align-items: center;
+          color: var(--primary-text-color);
+          margin-right: calc(var(--ha-space-2) * -1);
+          margin-inline-end: calc(var(--ha-space-2) * -1);
+          margin-inline-start: initial;
+        }
+
         ha-logbook {
           height: 400px;
         }

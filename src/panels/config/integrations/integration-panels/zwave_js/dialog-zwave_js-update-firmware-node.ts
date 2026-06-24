@@ -130,7 +130,6 @@ class DialogZWaveJSUpdateFirmwareNode extends DirtyStateProviderMixin<FirmwareFo
     }
 
     const beginFirmwareUpdateHTML = html`<ha-file-upload
-        .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFileUpload}
         .label=${this.hass.localize(

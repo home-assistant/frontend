@@ -1,5 +1,5 @@
 import type { PickerComboBoxItem } from "../../components/ha-picker-combo-box";
-import type { RelatedResult } from "../../data/search";
+import type { ItemType, RelatedResult } from "../../data/search";
 
 export interface RelatedIdSets {
   areas: Set<string>;
@@ -8,14 +8,30 @@ export interface RelatedIdSets {
 }
 
 /**
- * Build a set of related IDs for a given related result.
+ * Build a set of related IDs, merging in the current (queried) item.
+ * `search/related` does not echo the queried item back, but it is the closest
+ * related item (e.g. a card editor's own entity), so it is merged into the
+ * matching group when it is an area, device, or entity.
  * @param related - The related result to build the sets from.
- * @returns The related ID sets.
+ * @param current - The queried item to merge in.
+ * @returns The related ID sets, including the current item.
  */
-export const buildRelatedIdSets = (related?: RelatedResult): RelatedIdSets => ({
-  areas: new Set(related?.area || []),
-  devices: new Set(related?.device || []),
-  entities: new Set(related?.entity || []),
+export const buildRelatedIdSets = (
+  related?: RelatedResult,
+  current?: { itemType: ItemType; itemId: string }
+): RelatedIdSets => ({
+  areas: new Set([
+    ...(related?.area || []),
+    ...(current?.itemType === "area" ? [current.itemId] : []),
+  ]),
+  devices: new Set([
+    ...(related?.device || []),
+    ...(current?.itemType === "device" ? [current.itemId] : []),
+  ]),
+  entities: new Set([
+    ...(related?.entity || []),
+    ...(current?.itemType === "entity" ? [current.itemId] : []),
+  ]),
 });
 
 /**

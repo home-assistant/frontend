@@ -1,11 +1,13 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { isEnergyCardHidden } from "./energy-cards";
+import { hasGasSource, isEnergyCardVisible } from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
@@ -43,12 +45,8 @@ export class GasViewStrategy extends ReactiveElement {
     }
     const prefs = energyCollection.prefs;
 
-    const hasGasSources = prefs?.energy_sources.some(
-      (source) => source.type === "gas"
-    );
-
     // No gas sources available
-    if (!prefs || !hasGasSources) {
+    if (!prefs || !hasGasSource(prefs)) {
       return view;
     }
 
@@ -62,7 +60,7 @@ export class GasViewStrategy extends ReactiveElement {
       },
     });
 
-    if (!isEnergyCardHidden("gas", "energy-gas-graph", hidden)) {
+    if (isEnergyCardVisible("gas", "energy-gas-graph", prefs, hidden)) {
       section.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
         type: "energy-gas-graph",
@@ -73,7 +71,7 @@ export class GasViewStrategy extends ReactiveElement {
       });
     }
 
-    if (!isEnergyCardHidden("gas", "energy-sources-table", hidden)) {
+    if (isEnergyCardVisible("gas", "energy-sources-table", prefs, hidden)) {
       section.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"

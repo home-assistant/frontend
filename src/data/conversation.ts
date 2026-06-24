@@ -1,7 +1,7 @@
 import { ensureArray } from "../common/array/ensure-array";
 import type { HomeAssistant } from "../types";
 
-export const enum ConversationEntityFeature {
+export enum ConversationEntityFeature {
   CONTROL = 1,
 }
 

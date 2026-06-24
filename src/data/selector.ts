@@ -82,6 +82,7 @@ export type Selector =
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
+  | UiTimeFormatSelector
   | BackupLocationSelector;
 
 export interface ActionSelector {
@@ -599,6 +600,10 @@ export interface UiStateContentSelector {
     allow_name?: boolean;
     allow_context?: boolean;
   } | null;
+}
+
+export interface UiTimeFormatSelector {
+  ui_time_format: {} | null;
 }
 
 export interface EntityNameSelector {

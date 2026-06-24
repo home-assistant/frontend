@@ -378,7 +378,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             ${this._config.secondary_info_attribute ===
                             "wind_speed"
                               ? getWind(
-                                  this.hass,
+                                  this.hass.formatEntityAttributeValue,
+                                  this.hass.localize,
                                   stateObj,
                                   stateObj.attributes.wind_speed,
                                   stateObj.attributes.wind_bearing

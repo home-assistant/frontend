@@ -135,9 +135,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     const offlineDevices = nodes.filter(
       (node) => node.status === NodeStatus.Dead
     ).length;
-    const notReadyDevices =
-      nodes.filter((node) => !node.ready && node.status !== NodeStatus.Dead)
-        .length + provisioningDevices;
+    // Not-ready nodes are included but their interview has not completed yet.
+    // They are distinct from the provisioning entries, which are not included.
+    const notReadyDevices = nodes.filter(
+      (node) => !node.ready && node.status !== NodeStatus.Dead
+    ).length;
 
     return html`
       <hass-subpage
@@ -201,8 +203,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     }
     if (notReadyDevices > 0) {
       statusParts.push(
-        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_included", {
+        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_ready", {
           count: notReadyDevices,
+        })
+      );
+    }
+    if (provisioningDevices > 0) {
+      statusParts.push(
+        this.hass.localize("ui.panel.config.zwave_js.dashboard.not_included", {
+          count: provisioningDevices,
         })
       );
     }

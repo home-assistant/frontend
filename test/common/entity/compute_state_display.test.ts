@@ -3,6 +3,7 @@ import { assert, beforeEach, describe, expect, it } from "vitest";
 import {
   computeStateDisplay,
   computeStateDisplayFromEntityAttributes,
+  computeStateToParts,
 } from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../src/data/entity/entity_registry";
@@ -571,6 +572,34 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       minimumFractionDigits: 2,
     }).format(-12);
     expect(result).toBe(expected);
+  });
+
+  it("Splits a negative monetary value into multiple value parts", () => {
+    const parts = computeStateToParts(
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      (() => {}) as any,
+      {
+        entity_id: "sensor.balance",
+        state: "-12.95",
+        attributes: {
+          device_class: "monetary",
+          unit_of_measurement: "USD",
+        },
+      } as any,
+      {
+        language: "en",
+      } as FrontendLocaleData,
+      {} as HassConfig,
+      {} as any
+    );
+
+    const valueParts = parts.filter((part) => part.type === "value");
+
+    // The currency symbol splits the number, so the minus sign ends up in a
+    // separate value part from the digits. Taking only the first value part
+    // (as the gauge card did) would drop everything but the sign.
+    expect(valueParts.length).toBeGreaterThan(1);
+    expect(valueParts.map((part) => part.value).join("")).toBe("-12.95");
   });
 });
 

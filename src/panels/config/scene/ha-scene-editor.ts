@@ -42,6 +42,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
 import {
+  fireRelatedContext,
   fullEntitiesContext,
   type RelatedContextItem,
 } from "../../../data/context";
@@ -454,7 +455,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                             ${this._mode === "live"
                               ? html`
                                   <state-badge
-                                    .hass=${this.hass}
                                     .stateObj=${entityStateObj}
                                     slot="graphic"
                                   ></state-badge>
@@ -545,7 +545,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                             >
                               ${this._mode === "live"
                                 ? html` <state-badge
-                                    .hass=${this.hass}
                                     .stateObj=${entityStateObj}
                                     slot="graphic"
                                   ></state-badge>`
@@ -735,7 +734,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     }
 
     this._relatedContext = context;
-    fireEvent(this, "hass-related-context", context);
+    fireRelatedContext(this, context);
   }
 
   private _handleMenuAction(ev: HaDropdownSelectEvent) {

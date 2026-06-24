@@ -4,10 +4,12 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/progress/ha-progress-ring";
 import { reinterviewZwaveNode } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -21,7 +23,11 @@ class DialogZWaveJSReinterviewNode extends LitElement {
 
   @state() private _status?: string;
 
+  // Completed interview stages for rendering checklists
+  // Can be removed once min schema is bumped to 50
   @state() private _stages?: string[];
+
+  @state() private _progress?: number;
 
   @state() private _open = false;
 
@@ -31,6 +37,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     params: ZWaveJSReinterviewNodeDialogParams
   ): Promise<void> {
     this._stages = undefined;
+    this._progress = undefined;
     this.device_id = params.device_id;
     this._open = true;
   }
@@ -67,7 +74,21 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-spinner></ha-spinner>
+                ${this._progress !== undefined
+                  ? html`
+                      <ha-progress-ring
+                        size="large"
+                        .value=${this._progress}
+                        aria-label=${this.hass.localize(
+                          "ui.panel.config.zwave_js.reinterview_node.in_progress"
+                        )}
+                      >
+                        ${Math.round(this._progress)}${blankBeforePercent(
+                          this.hass.locale
+                        )}%
+                      </ha-progress-ring>
+                    `
+                  : html`<ha-spinner></ha-spinner>`}
                 <div class="status">
                   <p>
                     <b>
@@ -119,7 +140,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
               </div>
             `
           : ``}
-        ${this._stages
+        ${this._progress === undefined && this._stages
           ? html`
               <div class="stages">
                 ${this._stages.map(
@@ -173,7 +194,16 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     if (message.event === "interview started") {
       this._status = "started";
     }
-    if (message.event === "interview stage completed") {
+    if (message.event === "interview progress") {
+      this._status = "started";
+      this._progress = message.progress;
+    }
+    // If upstream supports granular progress reporting,
+    // ignore the legacy per-stage events that drive the stage checklist.
+    if (
+      message.event === "interview stage completed" &&
+      this._progress === undefined
+    ) {
       if (this._stages === undefined) {
         this._stages = [message.stage];
       } else {
@@ -205,6 +235,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     this.device_id = undefined;
     this._status = undefined;
     this._stages = undefined;
+    this._progress = undefined;
 
     this._unsubscribe();
 
@@ -246,6 +277,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         }
 
         .flex-container ha-spinner,
+        .flex-container ha-progress-ring,
         .flex-container ha-svg-icon {
           margin-right: 20px;
           margin-inline-end: 20px;

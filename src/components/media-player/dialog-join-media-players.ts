@@ -100,7 +100,6 @@ class DialogJoinMediaPlayers extends LitElement {
           : nothing}
         <div class="content">
           <ha-media-player-toggle
-            .hass=${this.hass}
             .entityId=${entityId}
             checked
             disabled
@@ -108,7 +107,6 @@ class DialogJoinMediaPlayers extends LitElement {
           ${this._mediaPlayerEntities(this.hass.entities).map(
             (entity) =>
               html`<ha-media-player-toggle
-                .hass=${this.hass}
                 .entityId=${entity.entity_id}
                 .checked=${this._selectedEntities.includes(entity.entity_id)}
                 @change=${this._handleSelectedChange}
