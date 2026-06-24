@@ -1,5 +1,6 @@
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { mockApplicationCredentials } from "./application_credentials";
+import { mockAssist } from "./assist";
 import { mockAutomation } from "./automation";
 import { mockBackup } from "./backup";
 import { mockBlueprint } from "./blueprint";
@@ -37,4 +38,5 @@ export const mockConfigPanel = (hass: MockHomeAssistant) => {
   mockScene(hass);
   mockSearch(hass);
   mockTags(hass);
+  mockAssist(hass);
 };
