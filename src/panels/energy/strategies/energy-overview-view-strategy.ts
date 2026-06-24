@@ -1,10 +1,12 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import { hasWaterSource, isEnergyCardVisible } from "./energy-cards";
 

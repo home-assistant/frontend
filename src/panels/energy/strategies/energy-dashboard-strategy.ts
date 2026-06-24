@@ -1,6 +1,8 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  DEFAULT_POWER_COLLECTION_KEY,
   EMPTY_PREFERENCES,
   getEnergyDataCollection,
 } from "../../../data/energy";
@@ -11,10 +13,6 @@ import type { LovelaceStrategyViewConfig } from "../../../data/lovelace/config/v
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
-import {
-  DEFAULT_ENERGY_COLLECTION_KEY,
-  DEFAULT_POWER_COLLECTION_KEY,
-} from "../constants";
 import type { EnergyViewPath } from "./energy-cards";
 import {
   hasDeviceConsumption,
@@ -160,6 +158,9 @@ async function fetchEnergyPrefs(
 ): Promise<EnergyPreferences> {
   const collection = getEnergyDataCollection(hass, {
     key: defaultCollection || DEFAULT_ENERGY_COLLECTION_KEY,
+    // When landing directly on the "Now" view this warms its real-time
+    // collection, so it must be created with midnight rollover too.
+    midnightRollover: defaultCollection === DEFAULT_POWER_COLLECTION_KEY,
   });
 
   return await new Promise<EnergyPreferences>((resolve) => {
