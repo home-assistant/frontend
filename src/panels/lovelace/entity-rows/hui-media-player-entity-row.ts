@@ -425,7 +425,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       flex-grow: 2;
       flex-shrink: 2;
       width: 100%;
-      margin: 1px;
+      /* Horizontal margin leaves room for the thumb at 0% and 100% so it
+         isn't clipped by the card's overflow-x: hidden. */
+      margin: 1px var(--ha-space-2);
     }
   `;
 }
