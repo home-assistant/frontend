@@ -5,6 +5,16 @@ __metadata:
   version: 10
   cacheKey: 10
 
+"@ampproject/remapping@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@ampproject/remapping@npm:2.3.0"
+  dependencies:
+    "@jridgewell/gen-mapping": "npm:^0.3.5"
+    "@jridgewell/trace-mapping": "npm:^0.3.24"
+  checksum: 10/f3451525379c68a73eb0a1e65247fbf28c0cccd126d93af21c75fceff77773d43c0d4a2d51978fb131aff25b5f2cb41a9fe48cc296e61ae65e679c4f6918b0ab
+  languageName: node
+  linkType: hard
+
 "@apideck/better-ajv-errors@npm:^0.3.1":
   version: 0.3.7
   resolution: "@apideck/better-ajv-errors@npm:0.3.7"
@@ -5108,6 +5118,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sveltejs/acorn-typescript@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "@sveltejs/acorn-typescript@npm:1.0.10"
+  peerDependencies:
+    acorn: ^8.9.0
+  checksum: 10/5770f9bdcfdac2c5454318fffb8ba0a7ddbdd002221016d2e32855588bb5727d09cafc48923ac55404f5e4680f7a844599b91987931445fec608428137b38462
+  languageName: node
+  linkType: hard
+
 "@swc/helpers@npm:0.5.23":
   version: 0.5.23
   resolution: "@swc/helpers@npm:0.5.23"
@@ -6291,7 +6310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.10.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.16.0, acorn@npm:^8.5.0":
+"acorn@npm:^8.10.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.16.0":
   version: 8.17.0
   resolution: "acorn@npm:8.17.0"
   bin:
@@ -6769,28 +6788,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-template-html-minifier@npm:4.1.0":
-  version: 4.1.0
-  resolution: "babel-plugin-template-html-minifier@npm:4.1.0"
-  dependencies:
-    clean-css: "npm:^4.2.1"
-    html-minifier-terser: "npm:^5.0.0"
-    is-builtin-module: "npm:^3.0.0"
-  checksum: 10/d7582da510cbb947cdc06accfcc03b8da89e7634e0890902ccc8ba55467eb43a312bd5833362e40f3c6aa1b22bafba84d51f6d6d84232c17f10c59f017ac52c6
-  languageName: node
-  linkType: hard
-
-"babel-plugin-template-html-minifier@patch:babel-plugin-template-html-minifier@npm%3A4.1.0#~/.yarn/patches/babel-plugin-template-html-minifier-npm-4.1.0-9a3c00055a.patch":
-  version: 4.1.0
-  resolution: "babel-plugin-template-html-minifier@patch:babel-plugin-template-html-minifier@npm%3A4.1.0#~/.yarn/patches/babel-plugin-template-html-minifier-npm-4.1.0-9a3c00055a.patch::version=4.1.0&hash=4a6de3"
-  dependencies:
-    clean-css: "npm:^4.2.1"
-    html-minifier-terser: "npm:^5.0.0"
-    is-builtin-module: "npm:^3.0.0"
-  checksum: 10/cd119f593f1228f13c9beb934ec2a8479d2403b12b7215b1df839a4e831fc627711ca124d1c9300b9d971f18e0b2f48ffe59310033f469e4a176a7c290dcc10b
-  languageName: node
-  linkType: hard
-
 "bach@npm:^2.0.1":
   version: 2.0.1
   resolution: "bach@npm:2.0.1"
@@ -6922,6 +6919,13 @@ __metadata:
   version: 0.1.0
   resolution: "bmp-js@npm:0.1.0"
   checksum: 10/9597f41038f4a326bc465d009e2e170203fc296219a743efbcf531289913680761f155be8a2e586c0b48c59644e46449be556a5ec5b09c413b7e84a05db25fd4
+  languageName: node
+  linkType: hard
+
+"boolbase@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "boolbase@npm:1.0.0"
+  checksum: 10/3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
   languageName: node
   linkType: hard
 
@@ -7063,13 +7067,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"builtin-modules@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "builtin-modules@npm:3.3.0"
-  checksum: 10/62e063ab40c0c1efccbfa9ffa31873e4f9d57408cb396a2649981a0ecbce56aabc93c28feaccbc5658c95aab2703ad1d11980e62ec2e5e72637404e1eb60f39e
-  languageName: node
-  linkType: hard
-
 "bytes@npm:3.0.0":
   version: 3.0.0
   resolution: "bytes@npm:3.0.0"
@@ -7150,7 +7147,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camel-case@npm:^4.1.1, camel-case@npm:^4.1.2":
+"camel-case@npm:^4.1.2":
   version: 4.1.2
   resolution: "camel-case@npm:4.1.2"
   dependencies:
@@ -7461,6 +7458,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "commander@npm:11.1.0"
+  checksum: 10/66bd2d8a0547f6cb1d34022efb25f348e433b0e04ad76a65279b1b09da108f59a4d3001ca539c60a7a46ea38bcf399fc17d91adad76a8cf43845d8dcbaf5cda1
+  languageName: node
+  linkType: hard
+
 "commander@npm:^14.0.2":
   version: 14.0.3
   resolution: "commander@npm:14.0.3"
@@ -7468,17 +7472,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^15.0.0":
+  version: 15.0.0
+  resolution: "commander@npm:15.0.0"
+  checksum: 10/a5dab1f5c3f1bf2ea19e8089f650f7fb65c3ed88e13ddde62e490d34b20057bcb2cd3de5b6ddc8aae93286083f8256ca0b812df842f574cbebe0e40f5b2f98f7
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.20.0, commander@npm:^2.20.3":
   version: 2.20.3
   resolution: "commander@npm:2.20.3"
   checksum: 10/90c5b6898610cd075984c58c4f88418a4fb44af08c1b1415e9854c03171bec31b336b7f3e4cefe33de994b3f12b03c5e2d638da4316df83593b9e82554e7e95b
-  languageName: node
-  linkType: hard
-
-"commander@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "commander@npm:4.1.1"
-  checksum: 10/3b2dc4125f387dab73b3294dbcb0ab2a862f9c0ad748ee2b27e3544d25325b7a8cdfbcc228d103a98a716960b14478114a5206b5415bd48cdafa38797891562c
   languageName: node
   linkType: hard
 
@@ -7670,13 +7674,43 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-tree@npm:^3.0.0, css-tree@npm:^3.1.0, css-tree@npm:^3.2.1":
+"css-select@npm:^5.1.0":
+  version: 5.2.2
+  resolution: "css-select@npm:5.2.2"
+  dependencies:
+    boolbase: "npm:^1.0.0"
+    css-what: "npm:^6.1.0"
+    domhandler: "npm:^5.0.2"
+    domutils: "npm:^3.0.1"
+    nth-check: "npm:^2.0.1"
+  checksum: 10/ebb6a88446433312d1a16301afd1c5f75090805b730dbbdccb0338b0d6ca7922410375f16dde06673ef7da086e2cf3b9ad91afe9a8e0d2ee3625795cb5e0170d
+  languageName: node
+  linkType: hard
+
+"css-tree@npm:^3.0.0, css-tree@npm:^3.0.1, css-tree@npm:^3.1.0, css-tree@npm:^3.2.1":
   version: 3.2.1
   resolution: "css-tree@npm:3.2.1"
   dependencies:
     mdn-data: "npm:2.27.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10/9945b387bdec756738c34d64b8287f05ca6645f51d1c8abaaa5822ec3e74533604103aaad164b8100afd8495e92120be7c1c6afbe5be89f867acc5b456ddd79c
+  languageName: node
+  linkType: hard
+
+"css-tree@npm:~2.2.0":
+  version: 2.2.1
+  resolution: "css-tree@npm:2.2.1"
+  dependencies:
+    mdn-data: "npm:2.0.28"
+    source-map-js: "npm:^1.0.1"
+  checksum: 10/1959c4b0e268bf8db1b3a1776a5ba9ae3a464ccd1226bfa62799cb0a3d0039006e21fb95cec4dec9d687a9a9b90f692dff2d230b631527ece700f4bfb419aaf3
+  languageName: node
+  linkType: hard
+
+"css-what@npm:^6.1.0":
+  version: 6.2.2
+  resolution: "css-what@npm:6.2.2"
+  checksum: 10/3c5a53be94728089bd1716f915f7f96adde5dd8bf374610eb03982266f3d860bf1ebaf108cda30509d02ef748fe33eaa59aa75911e2c49ee05a85ef1f9fb5223
   languageName: node
   linkType: hard
 
@@ -7693,6 +7727,15 @@ __metadata:
   version: 0.0.10
   resolution: "cssfilter@npm:0.0.10"
   checksum: 10/1e45182f42de848f092f50a313113c28a88e4ac98333bf1603ee1c3b200384a3bc83c12e35cd61135e3b0f218295f600d51120ca1f926b7958b2d3262d711214
+  languageName: node
+  linkType: hard
+
+"csso@npm:^5.0.5":
+  version: 5.0.5
+  resolution: "csso@npm:5.0.5"
+  dependencies:
+    css-tree: "npm:~2.2.0"
+  checksum: 10/4036fb2b9f8ed6b948349136b39e0b19ffb5edee934893a37b55e9a116186c4ae2a9d3ba66fbdbc07fa44a853fb478cd2d8733e4743473dcd364e7f21444ff34
   languageName: node
   linkType: hard
 
@@ -8006,7 +8049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"domutils@npm:^3.2.1":
+"domutils@npm:^3.0.1, domutils@npm:^3.2.1":
   version: 3.2.2
   resolution: "domutils@npm:3.2.2"
   dependencies:
@@ -9604,15 +9647,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"he@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "he@npm:1.2.0"
-  bin:
-    he: bin/he
-  checksum: 10/d09b2243da4e23f53336e8de3093e5c43d2c39f8d0d18817abfa32ce3e9355391b2edb4bb5edc376aea5d4b0b59d6a0482aab4c52bc02ef95751e4b818e847f1
-  languageName: node
-  linkType: hard
-
 "hls.js@npm:1.6.16":
   version: 1.6.16
   resolution: "hls.js@npm:1.6.16"
@@ -9624,6 +9658,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
+    "@ampproject/remapping": "npm:2.3.0"
     "@babel/core": "npm:8.0.1"
     "@babel/helper-define-polyfill-provider": "npm:1.0.0"
     "@babel/plugin-transform-runtime": "npm:8.0.1"
@@ -9704,7 +9739,6 @@ __metadata:
     "@webcomponents/webcomponentsjs": "npm:2.8.0"
     babel-loader: "npm:10.1.1"
     babel-plugin-polyfill-corejs3: "npm:1.0.0"
-    babel-plugin-template-html-minifier: "patch:babel-plugin-template-html-minifier@npm%3A4.1.0#~/.yarn/patches/babel-plugin-template-html-minifier-npm-4.1.0-9a3c00055a.patch"
     barcode-detector: "npm:3.2.0"
     browserslist-useragent-regexp: "npm:4.1.4"
     cally: "npm:0.9.2"
@@ -9763,6 +9797,7 @@ __metadata:
     map-stream: "npm:0.0.7"
     marked: "npm:18.0.5"
     memoize-one: "npm:6.0.0"
+    minify-literals: "npm:2.0.2"
     node-vibrant: "npm:4.0.4"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
@@ -9841,6 +9876,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"html-minifier-next@npm:^6.2.8":
+  version: 6.2.11
+  resolution: "html-minifier-next@npm:6.2.11"
+  dependencies:
+    commander: "npm:^15.0.0"
+    entities: "npm:^8.0.0"
+    lightningcss: "npm:^1.32.0"
+    svgo: "npm:^4.0.1"
+    terser: "npm:^5.47.1"
+  peerDependencies:
+    "@swc/core": ^1.15.7
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+  bin:
+    hmn: cli.js
+    html-minifier-next: cli.js
+  checksum: 10/d2b3923f77fff918ab09a9cfdfc3819b89dd928e1e64c60dcb39a2b08ddf6bbd3c696d90e8feb830fed11cd5d5757b271de65cb9d1713ddc171ee9668708eda6
+  languageName: node
+  linkType: hard
+
 "html-minifier-terser@npm:7.2.0":
   version: 7.2.0
   resolution: "html-minifier-terser@npm:7.2.0"
@@ -9855,23 +9911,6 @@ __metadata:
   bin:
     html-minifier-terser: cli.js
   checksum: 10/7320095dbf08c361b45e855bd840d1d21fe86326afee775503594163532ebaaed9bb1c9dc98232b03c169dc24b56f30c294d559bca0cade59f9c950a1992db82
-  languageName: node
-  linkType: hard
-
-"html-minifier-terser@npm:^5.0.0":
-  version: 5.1.1
-  resolution: "html-minifier-terser@npm:5.1.1"
-  dependencies:
-    camel-case: "npm:^4.1.1"
-    clean-css: "npm:^4.2.3"
-    commander: "npm:^4.1.1"
-    he: "npm:^1.2.0"
-    param-case: "npm:^3.0.3"
-    relateurl: "npm:^0.2.7"
-    terser: "npm:^4.6.3"
-  bin:
-    html-minifier-terser: cli.js
-  checksum: 10/97d45614e8f07ba66ea66015cfa80759e3e270b475430f8a5d67586876deaad535db97be3247dee3dd2ed51aeafcd1d6bfaf02276fec12e56cf5e4141e52ae28
   languageName: node
   linkType: hard
 
@@ -10171,15 +10210,6 @@ __metadata:
     call-bound: "npm:^1.0.3"
     has-tostringtag: "npm:^1.0.2"
   checksum: 10/051fa95fdb99d7fbf653165a7e6b2cba5d2eb62f7ffa81e793a790f3fb5366c91c1b7b6af6820aa2937dd86c73aa3ca9d9ca98f500988457b1c59692c52ba911
-  languageName: node
-  linkType: hard
-
-"is-builtin-module@npm:^3.0.0":
-  version: 3.2.1
-  resolution: "is-builtin-module@npm:3.2.1"
-  dependencies:
-    builtin-modules: "npm:^3.3.0"
-  checksum: 10/e8f0ffc19a98240bda9c7ada84d846486365af88d14616e737d280d378695c8c448a621dcafc8332dbf0fcd0a17b0763b845400709963fa9151ddffece90ae88
   languageName: node
   linkType: hard
 
@@ -11458,6 +11488,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mdn-data@npm:2.0.28":
+  version: 2.0.28
+  resolution: "mdn-data@npm:2.0.28"
+  checksum: 10/aec475e0c078af00498ce2f9434d96a1fdebba9814d14b8f72cd6d5475293f4b3972d0538af2d5c5053d35e1b964af08b7d162b98e9846e9343990b75e4baef1
+  languageName: node
+  linkType: hard
+
 "mdn-data@npm:2.27.1":
   version: 2.27.1
   resolution: "mdn-data@npm:2.27.1"
@@ -11553,6 +11590,19 @@ __metadata:
   version: 5.0.1
   resolution: "mimic-function@npm:5.0.1"
   checksum: 10/eb5893c99e902ccebbc267c6c6b83092966af84682957f79313311edb95e8bb5f39fb048d77132b700474d1c86d90ccc211e99bae0935447a4834eb4c882982c
+  languageName: node
+  linkType: hard
+
+"minify-literals@npm:2.0.2":
+  version: 2.0.2
+  resolution: "minify-literals@npm:2.0.2"
+  dependencies:
+    "@sveltejs/acorn-typescript": "npm:^1.0.10"
+    acorn: "npm:^8.16.0"
+    html-minifier-next: "npm:^6.2.8"
+    lightningcss: "npm:^1.32.0"
+    magic-string: "npm:^0.30.21"
+  checksum: 10/51de4b6affcebe082f00709241b8d1587aff06164cf9fd5797ffc45b322c14d0f77e9085171bd78cc35c5a9b0a22c5211f36d177a50fe5d0f8c57e6c10735838
   languageName: node
   linkType: hard
 
@@ -11981,6 +12031,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nth-check@npm:^2.0.1":
+  version: 2.1.1
+  resolution: "nth-check@npm:2.1.1"
+  dependencies:
+    boolbase: "npm:^1.0.0"
+  checksum: 10/5afc3dafcd1573b08877ca8e6148c52abd565f1d06b1eb08caf982e3fa289a82f2cae697ffb55b5021e146d60443f1590a5d6b944844e944714a5b549675bcd3
+  languageName: node
+  linkType: hard
+
 "object-assign@npm:^4":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
@@ -12237,7 +12296,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"param-case@npm:^3.0.3, param-case@npm:^3.0.4":
+"param-case@npm:^3.0.4":
   version: 3.0.4
   resolution: "param-case@npm:3.0.4"
   dependencies:
@@ -13347,6 +13406,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sax@npm:^1.5.0":
+  version: 1.6.0
+  resolution: "sax@npm:1.6.0"
+  checksum: 10/0909cedcd9f011ceeac80c0240a92d64ef712cf6c04e0f6ee236a8d812f86a59f61bee6bb5da28d75306db050b99e0593051ea77351795822253b984af6cf044
+  languageName: node
+  linkType: hard
+
 "saxes@npm:^6.0.0":
   version: 6.0.0
   resolution: "saxes@npm:6.0.0"
@@ -13727,14 +13793,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.2.1":
+"source-map-js@npm:^1.0.1, source-map-js@npm:^1.2.1":
   version: 1.2.1
   resolution: "source-map-js@npm:1.2.1"
   checksum: 10/ff9d8c8bf096d534a5b7707e0382ef827b4dd360a577d3f34d2b9f48e12c9d230b5747974ee7c607f0df65113732711bb701fe9ece3c7edbd43cb2294d707df3
   languageName: node
   linkType: hard
 
-"source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.20":
+"source-map-support@npm:~0.5.20":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
   dependencies:
@@ -13751,7 +13817,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:^0.6.0, source-map@npm:~0.6.0, source-map@npm:~0.6.1":
+"source-map@npm:^0.6.0, source-map@npm:~0.6.0":
   version: 0.6.1
   resolution: "source-map@npm:0.6.1"
   checksum: 10/59ef7462f1c29d502b3057e822cdbdae0b0e565302c4dd1a95e11e793d8d9d62006cdc10e0fd99163ca33ff2071360cf50ee13f90440806e7ed57d81cba2f7ff
@@ -14222,6 +14288,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svgo@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "svgo@npm:4.0.1"
+  dependencies:
+    commander: "npm:^11.1.0"
+    css-select: "npm:^5.1.0"
+    css-tree: "npm:^3.0.1"
+    css-what: "npm:^6.1.0"
+    csso: "npm:^5.0.5"
+    picocolors: "npm:^1.1.1"
+    sax: "npm:^1.5.0"
+  bin:
+    svgo: ./bin/svgo.js
+  checksum: 10/8791aa12f3d1a5b3da12a67c2f880917512eaf32dad40563ae474deefff0630a4ce2259e06730f02150756ac77cc8b06598d30fb3ed3f02f085e6cbfbd344fb6
+  languageName: node
+  linkType: hard
+
 "symbol-tree@npm:^3.2.4":
   version: 3.2.4
   resolution: "symbol-tree@npm:3.2.4"
@@ -14330,20 +14413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser@npm:^4.6.3":
-  version: 4.8.1
-  resolution: "terser@npm:4.8.1"
-  dependencies:
-    commander: "npm:^2.20.0"
-    source-map: "npm:~0.6.1"
-    source-map-support: "npm:~0.5.12"
-  bin:
-    terser: bin/terser
-  checksum: 10/f58024a8bbf08d6421aea69b14f95da2a6e85a6d9a8b93895379084bd39ea70755d82f8676e9a56fde35ebaefbcb7b5d7920af537ffa1b87f638d39608941ea9
-  languageName: node
-  linkType: hard
-
-"terser@npm:^5.15.1, terser@npm:^5.17.4, terser@npm:^5.31.1":
+"terser@npm:^5.15.1, terser@npm:^5.17.4, terser@npm:^5.31.1, terser@npm:^5.47.1":
   version: 5.48.0
   resolution: "terser@npm:5.48.0"
   dependencies:

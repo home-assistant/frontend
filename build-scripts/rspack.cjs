@@ -73,31 +73,42 @@ const createRspackConfig = ({
         {
           test: /\.m?js$|\.ts$/,
           exclude: /node_modules[\\/]core-js/,
-          use: (info) => [
-            {
-              loader: "babel-loader",
-              options: {
-                ...bundle.babelOptions({
-                  latestBuild,
-                  isProdBuild,
-                  isTestBuild,
-                  sw: info.issuerLayer === "sw",
-                }),
-                cacheDirectory: !isProdBuild,
-                cacheCompression: false,
+          use: (info) =>
+            [
+              {
+                loader: "babel-loader",
+                options: {
+                  ...bundle.babelOptions({
+                    latestBuild,
+                    isTestBuild,
+                    sw: info.issuerLayer === "sw",
+                  }),
+                  cacheDirectory: !isProdBuild,
+                  cacheCompression: false,
+                },
               },
-            },
-            !latestBuild &&
-              info.resource.startsWith(
-                `${litHtmlDevelopmentRoot}${path.sep}`
-              ) && {
-                loader: litDisableDevModeLoader,
+              // Minify lit html/svg/css tagged template literals for production.
+              // Must run after swc (TS/decorators stripped, but templates kept at
+              // ES2021) and before babel — otherwise the legacy build lowers
+              // html`` to _taggedTemplateLiteral() calls that can no longer be
+              // matched, leaving legacy templates unminified.
+              isProdBuild && {
+                loader: path.join(
+                  __dirname,
+                  "minify-template-literals-loader.cjs"
+                ),
               },
-            {
-              loader: "builtin:swc-loader",
-              options: bundle.swcOptions(),
-            },
-          ],
+              !latestBuild &&
+                info.resource.startsWith(
+                  `${litHtmlDevelopmentRoot}${path.sep}`
+                ) && {
+                  loader: litDisableDevModeLoader,
+                },
+              {
+                loader: "builtin:swc-loader",
+                options: bundle.swcOptions(),
+              },
+            ].filter(Boolean),
           resolve: {
             fullySpecified: false,
           },

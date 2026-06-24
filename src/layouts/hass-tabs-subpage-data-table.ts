@@ -793,6 +793,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     ha-input-search {
       flex: 1;
     }
+    @media (min-width: 871px) {
+      ha-input-search {
+        --ha-input-search-height: 32px;
+        --ha-input-search-border-radius: 10px;
+      }
+    }
     .search-toolbar {
       display: flex;
       align-items: center;
