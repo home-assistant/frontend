@@ -122,7 +122,7 @@ import {
   getEntityIdTableColumn,
   getLabelsTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
 import "../integrations/ha-integration-overflow-menu";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";

@@ -27,7 +27,7 @@ import "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import {
   loadPersonDetailDialog,
   showPersonDetailDialog,

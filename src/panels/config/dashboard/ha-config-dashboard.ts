@@ -43,7 +43,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { isMac } from "../../../util/is_mac";
 import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import "../repairs/ha-config-repairs";
 import "./ha-config-navigation";
 import "./ha-config-updates";

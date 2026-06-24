@@ -57,7 +57,7 @@ import {
   getCreatedAtTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
 
 type ConfigTranslationKey = FlattenObjectKeys<

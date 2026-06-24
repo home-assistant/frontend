@@ -118,7 +118,7 @@ import {
   getLabelsTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import type { Helper } from "../helpers/const";
 import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";

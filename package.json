@@ -22,7 +22,8 @@
     "postpack": "pinst --enable",
     "test": "vitest run --config test/vitest.config.ts",
     "test:bench": "vitest bench --run --config test/vitest.bench.config.ts",
-    "test:coverage": "vitest run --config test/vitest.config.ts --coverage"
+    "test:coverage": "vitest run --config test/vitest.config.ts --coverage",
+    "check-bundlesize": "node build-scripts/check-bundle-size.cjs"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
