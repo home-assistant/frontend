@@ -1,5 +1,5 @@
 import { mdiDotsVertical } from "@mdi/js";
-import { DEFAULT_SCHEMA, Type } from "js-yaml";
+import { defineScalarTag, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -47,12 +47,11 @@ const SUPPORTED_UI_TYPES = [
   "schema",
 ];
 
-const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
-  new Type("!secret", {
-    kind: "scalar",
-    construct: (data) => `!secret ${data}`,
-  }),
-]);
+const secretTag = defineScalarTag("!secret", {
+  resolve: (data) => `!secret ${data}`,
+});
+
+const ADDON_YAML_SCHEMA = YAML11_SCHEMA.withTags(secretTag);
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
