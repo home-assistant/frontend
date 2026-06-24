@@ -9,11 +9,17 @@ import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
 import {
   apiContext,
+  areasContext,
   configContext,
   connectionContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
   formattersContext,
   internationalizationContext,
   registriesContext,
+  servicesContext,
+  statesContext,
   uiContext,
 } from "../data/context";
 import { updateHassGroups } from "../data/context/updateContext";
@@ -132,21 +138,46 @@ export const provideHass = (
       }
     : undefined;
 
+  // The individual (non-grouped) contexts that contextMixin also provides.
+  // Components such as ha-area-picker / ha-entity-picker consume these directly
+  // (e.g. `Object.values(areas)`), so they must be provided alongside the
+  // grouped contexts or those components throw once they render.
+  const singleContextProviders = provideContexts
+    ? {
+        states: new ContextProvider(baseEl(), { context: statesContext }),
+        services: new ContextProvider(baseEl(), { context: servicesContext }),
+        entities: new ContextProvider(baseEl(), { context: entitiesContext }),
+        devices: new ContextProvider(baseEl(), { context: devicesContext }),
+        areas: new ContextProvider(baseEl(), { context: areasContext }),
+        floors: new ContextProvider(baseEl(), { context: floorsContext }),
+      }
+    : undefined;
+
   const updateContextProviders = (newHass: HomeAssistant) => {
-    if (!contextProviders) {
-      return;
+    if (contextProviders) {
+      (
+        Object.keys(contextProviders) as (keyof typeof contextProviders)[]
+      ).forEach((group) => {
+        const provider = contextProviders[group];
+        provider.setValue(
+          (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
+            newHass,
+            provider.value
+          )
+        );
+      });
     }
-    (
-      Object.keys(contextProviders) as (keyof typeof contextProviders)[]
-    ).forEach((group) => {
-      const provider = contextProviders[group];
-      provider.setValue(
-        (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
-          newHass,
-          provider.value
-        )
-      );
-    });
+    if (singleContextProviders) {
+      (
+        Object.keys(
+          singleContextProviders
+        ) as (keyof typeof singleContextProviders)[]
+      ).forEach((key) => {
+        (singleContextProviders[key] as ContextProvider<any>).setValue(
+          newHass[key]
+        );
+      });
+    }
   };
 
   const wsCommands = {};

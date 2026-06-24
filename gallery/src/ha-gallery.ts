@@ -22,11 +22,17 @@ import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
 import {
   apiContext,
+  areasContext,
   configContext,
   connectionContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
   formattersContext,
   internationalizationContext,
   registriesContext,
+  servicesContext,
+  statesContext,
   uiContext,
 } from "../../src/data/context";
 import { updateHassGroups } from "../../src/data/context/updateContext";
@@ -142,6 +148,18 @@ class HaGallery extends LitElement {
     formatters: new ContextProvider(this, { context: formattersContext }),
   };
 
+  // The individual (non-grouped) contexts contextMixin also provides. Components
+  // such as ha-area-picker / ha-entity-picker consume these directly, so the
+  // fallback must cover them too.
+  private _singleContextProviders = {
+    states: new ContextProvider(this, { context: statesContext }),
+    services: new ContextProvider(this, { context: servicesContext }),
+    entities: new ContextProvider(this, { context: entitiesContext }),
+    devices: new ContextProvider(this, { context: devicesContext }),
+    areas: new ContextProvider(this, { context: areasContext }),
+    floors: new ContextProvider(this, { context: floorsContext }),
+  };
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     // Refresh the fallback contexts before each render so theme/page changes in
@@ -157,6 +175,14 @@ class HaGallery extends LitElement {
           hass,
           provider.value
         )
+      );
+    });
+    (
+      Object.keys(this._singleContextProviders) as (keyof typeof this
+        ._singleContextProviders)[]
+    ).forEach((key) => {
+      (this._singleContextProviders[key] as ContextProvider<any>).setValue(
+        hass[key]
       );
     });
   }
