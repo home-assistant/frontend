@@ -1,4 +1,4 @@
-import { getTimeZones } from "@vvo/tzdb";
+import { getTimeZones, timeZonesNames } from "@vvo/tzdb";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -21,14 +21,25 @@ const ADDITIONAL_TIMEZONES: PickerComboBoxItem[] = [
 ];
 
 export const getTimezoneOptions = (): PickerComboBoxItem[] => {
-  const options: PickerComboBoxItem[] = getTimeZones({ includeUtc: true }).map(
-    (timezone) => {
-      return {
-        id: timezone.name,
-        primary: timezone.rawFormat,
-        secondary: timezone.name,
-      };
-    }
+  const options: PickerComboBoxItem[] = Array.from(
+    new Map(
+      getTimeZones({ includeUtc: true })
+        .flatMap((timezone) => {
+          const groupArray = Array.isArray(timezone.group)
+            ? timezone.group
+            : [timezone.group];
+          const filteredGroup = groupArray.filter((gName) =>
+            timeZonesNames.includes(gName)
+          );
+
+          return [timezone.name, ...filteredGroup].map((nameString) => ({
+            id: nameString,
+            primary: timezone.rawFormat,
+            secondary: nameString,
+          }));
+        })
+        .map((item) => [item.id, item])
+    ).values()
   );
 
   for (const timezone of ADDITIONAL_TIMEZONES) {
@@ -36,7 +47,6 @@ export const getTimezoneOptions = (): PickerComboBoxItem[] => {
       options.push(timezone);
     }
   }
-
   return options;
 };
 
