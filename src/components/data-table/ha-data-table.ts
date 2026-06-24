@@ -1456,8 +1456,12 @@ export class HaDataTable extends LitElement {
         ha-input-search {
           flex: 1;
           padding: var(--ha-space-3);
-          --ha-input-search-height: 32px;
-          --ha-input-search-border-radius: 10px;
+        }
+        @media (min-width: 871px) {
+          ha-input-search {
+            --ha-input-search-height: 32px;
+            --ha-input-search-border-radius: 10px;
+          }
         }
         slot[name="header"] {
           display: block;
