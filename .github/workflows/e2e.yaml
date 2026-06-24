@@ -229,16 +229,12 @@ jobs:
           path: test/e2e/reports/combined/
           retention-days: 14
 
-      - name: Post report link to PR
+      - name: Post report to PR
         if: github.event_name == 'pull_request' && needs.e2e-local.result == 'failure'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const body = `## Playwright E2E tests failed\n\nThe combined HTML report is available as a workflow artifact.\n\n[View workflow run](${runUrl})`;
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              body,
-            });
+            const { default: postReportComment } = await import(
+              `${process.env.GITHUB_WORKSPACE}/test/e2e/post-report-comment.mjs`
+            );
+            await postReportComment({ github, context, core });
