@@ -4,5 +4,6 @@ export default defineConfig({
   reporter: [
     ["html", { outputFolder: "reports/combined", open: "never" }],
     ["json", { outputFile: "reports/combined/results.json" }],
+    ["markdown", { outputFile: "reports/combined/report.md" }],
   ],
 });

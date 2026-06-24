@@ -229,13 +229,37 @@ jobs:
           path: test/e2e/reports/combined/
           retention-days: 14
 
-      - name: Post report link to PR
+      - name: Post report to PR
         if: github.event_name == 'pull_request' && needs.e2e-local.result == 'failure'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           script: |
+            const fs = require("fs");
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const body = `## Playwright E2E tests failed\n\nThe combined HTML report is available as a workflow artifact.\n\n[View workflow run](${runUrl})`;
+
+            let summary = "";
+            try {
+              summary = fs.readFileSync("test/e2e/reports/combined/report.md", "utf8");
+            } catch {
+              summary = "_No report was generated._";
+            }
+
+            // GitHub comment bodies cap at 65536 chars; leave headroom.
+            const MAX = 60000;
+            if (summary.length > MAX) {
+              summary = `${summary.slice(0, MAX)}\n\n_…report truncated, see the full HTML report artifact._`;
+            }
+
+            const body = [
+              "## Playwright E2E tests failed",
+              "",
+              summary,
+              "",
+              "The combined HTML report is available as a workflow artifact.",
+              "",
+              `[View workflow run](${runUrl})`,
+            ].join("\n");
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
