@@ -100,7 +100,6 @@ export class HuiCalendarCardEditor
         ")"}
       </h3>
       <ha-entities-picker
-        .hass=${this.hass!}
         .value=${this._config.entities}
         .includeDomains=${["calendar"]}
         @value-changed=${this._entitiesChanged}

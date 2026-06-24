@@ -168,7 +168,6 @@ export class HuiEntityEditor extends LitElement {
                       ></ha-svg-icon>
                     </div>
                     <ha-entity-picker
-                      .hass=${this.hass}
                       .value=${entityConf.entity}
                       .index=${index}
                       .entityFilter=${this.entityFilter}
@@ -180,7 +179,6 @@ export class HuiEntityEditor extends LitElement {
             </div>
           </ha-sortable>`}
       <ha-entity-picker
-        .hass=${this.hass}
         .entityFilter=${this.entityFilter}
         @value-changed=${this._addEntity}
         add-button

@@ -584,7 +584,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                       <ha-entity-picker
                         @value-changed=${this._entityPicked}
                         .excludeDomains=${SCENE_IGNORED_DOMAINS}
-                        .hass=${this.hass}
                         label=${this.hass.localize(
                           "ui.panel.config.scene.editor.entities.add"
                         )}

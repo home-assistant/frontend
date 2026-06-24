@@ -45,7 +45,6 @@ export class HaZoneTrigger extends LitElement {
         .value=${entity_id ? ensureArray(entity_id) : []}
         .disabled=${this.disabled}
         @value-changed=${this._entityPicked}
-        .hass=${this.hass}
         .entityFilter=${zoneAndLocationFilter}
       ></ha-entities-picker>
       <ha-entity-picker
@@ -55,7 +54,6 @@ export class HaZoneTrigger extends LitElement {
         .value=${zone}
         .disabled=${this.disabled}
         @value-changed=${this._zonePicked}
-        .hass=${this.hass}
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
 

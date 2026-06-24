@@ -228,7 +228,6 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
           ></ha-textarea>
           <ha-entity-picker
             name="calendar"
-            .hass=${this.hass}
             .label=${this.hass.localize("ui.components.calendar.label")}
             .value=${this._calendarId!}
             .includeDomains=${CALENDAR_DOMAINS}
