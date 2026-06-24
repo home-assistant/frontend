@@ -84,12 +84,7 @@ module.exports.swcOptions = () => ({
   },
 });
 
-module.exports.babelOptions = ({
-  latestBuild,
-  isProdBuild,
-  isTestBuild,
-  sw,
-}) => ({
+module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
   babelrc: false,
   compact: false,
   assumptions: {
@@ -123,28 +118,6 @@ module.exports.babelOptions = ({
       {
         modules: ["@mdi/js"],
         ignoreModuleNotFound: true,
-      },
-    ],
-    // Minify template literals for production
-    isProdBuild && [
-      "template-html-minifier",
-      {
-        modules: {
-          ...Object.fromEntries(
-            ["lit", "lit-element", "lit-html"].map((m) => [
-              m,
-              [
-                "html",
-                { name: "svg", encapsulation: "svg" },
-                { name: "css", encapsulation: "style" },
-              ],
-            ])
-          ),
-          "@polymer/polymer/lib/utils/html-tag.js": ["html"],
-        },
-        strictCSS: true,
-        htmlMinifier: module.exports.htmlMinifierOptions,
-        failOnError: false, // we can turn this off in case of false positives
       },
     ],
     // Import helpers and regenerator from runtime package.
