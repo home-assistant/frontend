@@ -127,6 +127,7 @@
     "xss": "1.0.15"
   },
   "devDependencies": {
+    "@ampproject/remapping": "2.3.0",
     "@babel/core": "8.0.1",
     "@babel/helper-define-polyfill-provider": "1.0.0",
     "@babel/plugin-transform-runtime": "8.0.1",

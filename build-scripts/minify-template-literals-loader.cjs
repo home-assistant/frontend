@@ -1,4 +1,4 @@
-/* global module */
+/* global module, require */
 // rspack/webpack loader that minifies the HTML, SVG, and CSS inside lit
 // tagged template literals using `minify-literals` (html-minifier-next +
 // lightningcss). Replaces the unmaintained babel-plugin-template-html-minifier.
@@ -8,6 +8,8 @@
 // `html`/`css`/`svg` tagged templates are still intact at ES2021. Running after
 // babel instead would miss the legacy build, where babel lowers the templates
 // to `_taggedTemplateLiteral()` calls that no longer look like tagged templates.
+
+const remapping = require("@ampproject/remapping");
 
 // minify-literals is ESM-only, so load it via dynamic import from this CJS loader.
 let minifyPromise;
@@ -42,11 +44,20 @@ module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
     )
     .then((result) => {
       if (!result) {
-        // No tagged templates changed; pass through untouched.
+        // No tagged templates changed; pass through untouched (incl. incoming map).
         callback(null, source, map, meta);
-      } else {
-        callback(null, result.code, result.map ?? map, meta);
+        return;
       }
+      // minify-literals builds its map from `source` alone, so `result.map`
+      // describes minified output -> this loader's input (the swc output), not
+      // the original file. Compose it over the incoming map (swc output ->
+      // original source) so the map handed downstream still points at the
+      // original source; otherwise every minified file's source map is wrong.
+      const outMap =
+        map && result.map
+          ? remapping([result.map, map], () => null)
+          : (result.map ?? map);
+      callback(null, result.code, outMap, meta);
     })
     .catch(callback);
 };
