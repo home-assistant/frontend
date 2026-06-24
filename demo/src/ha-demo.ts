@@ -53,6 +53,7 @@ const CONFIG_PANEL_COMMANDS = [
   "config/scene/config",
   "search/related",
   "tag/list",
+  "assist_pipeline/",
 ];
 
 @customElement("ha-demo")
