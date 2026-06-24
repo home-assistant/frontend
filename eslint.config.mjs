@@ -241,6 +241,12 @@ export default tseslint.config(
     },
   },
   {
+    files: [".github/scripts/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     plugins: {
       html,
     },
