@@ -219,7 +219,6 @@ class DialogPersonDetail
                     )}
                   </p>
                   <ha-entities-picker
-                    .hass=${this.hass}
                     .value=${this._deviceTrackers}
                     .includeDomains=${includeDomains}
                     .pickedEntityLabel=${this.hass.localize(

@@ -91,7 +91,6 @@ export class HaMediaSelector extends LitElement {
         ? nothing
         : html`
             <ha-entity-picker
-              .hass=${this.hass}
               .value=${entityId}
               .label=${this.label ||
               this.hass.localize(

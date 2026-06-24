@@ -54,7 +54,6 @@ export class HuiGraphFooterEditor
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
           )}
-          .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}

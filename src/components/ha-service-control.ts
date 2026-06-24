@@ -558,7 +558,6 @@ export class HaServiceControl extends LitElement {
         ></ha-settings-row>`
       : entityId
         ? html`<ha-entity-picker
-            .hass=${this.hass}
             .disabled=${this.disabled}
             .value=${this._value?.data?.entity_id}
             .label=${this.hass.localize(

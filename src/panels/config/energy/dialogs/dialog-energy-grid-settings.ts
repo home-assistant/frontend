@@ -328,7 +328,6 @@ export class DialogEnergyGridSettings
         ${this._importCostType === "entity"
           ? html`
               <ha-entity-picker
-                .hass=${this.hass}
                 .value=${this._source.entity_energy_price}
                 .label=${this.hass.localize(
                   "ui.panel.config.energy.grid.dialog.cost_entity_label"
@@ -416,7 +415,6 @@ export class DialogEnergyGridSettings
               ${this._exportCostType === "entity"
                 ? html`
                     <ha-entity-picker
-                      .hass=${this.hass}
                       .value=${this._source.entity_energy_price_export}
                       .label=${this.hass.localize(
                         "ui.panel.config.energy.grid.dialog.compensation_entity_label"

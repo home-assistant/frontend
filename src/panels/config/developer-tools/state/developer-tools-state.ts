@@ -220,7 +220,6 @@ class HaPanelDevState extends LitElement {
           <div class="inputs">
             <ha-entity-picker
               autofocus
-              .hass=${this.hass}
               .value=${this._entityId}
               @value-changed=${this._entityIdChanged}
               show-entity-id

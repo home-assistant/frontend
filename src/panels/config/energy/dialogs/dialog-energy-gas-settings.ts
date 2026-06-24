@@ -269,7 +269,6 @@ export class DialogEnergyGasSettings
           : this._costs === "entity"
             ? html`<ha-entity-picker
                 class="price-options"
-                .hass=${this.hass}
                 include-domains='["sensor", "input_number"]'
                 .value=${this._source.entity_energy_price}
                 .label=${this.hass.localize(

@@ -99,7 +99,6 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="gen_data_entity_id"
-              .hass=${this.hass}
               .disabled=${this._prefs === undefined &&
               isComponentLoaded(this.hass.config, "ai_task")}
               .value=${this._gen_data_entity_id ||
@@ -119,7 +118,6 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="gen_image_entity_id"
-              .hass=${this.hass}
               .disabled=${this._prefs === undefined &&
               isComponentLoaded(this.hass.config, "ai_task")}
               .value=${this._gen_image_entity_id ||

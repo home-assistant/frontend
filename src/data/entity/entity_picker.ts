@@ -58,7 +58,17 @@ export interface GetEntitiesOptions {
 }
 
 export const getEntities = (
-  hass: HomeAssistant,
+  hass: Pick<
+    HomeAssistant,
+    | "states"
+    | "entities"
+    | "devices"
+    | "areas"
+    | "floors"
+    | "language"
+    | "translationMetadata"
+    | "localize"
+  >,
   options?: GetEntitiesOptions
 ): EntityComboBoxItem[] => {
   const {

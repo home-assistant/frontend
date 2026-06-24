@@ -50,7 +50,6 @@ export class HomeFavoritesEditor extends LitElement {
       </ha-sortable>
       <ha-entity-picker
         add-button
-        .hass=${this.hass}
         .addButtonLabel=${this.hass.localize(
           "ui.panel.lovelace.editor.strategy.home.add_favorite_entity"
         )}
