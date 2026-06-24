@@ -48,6 +48,8 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
+  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
   return {
     name,
     mode: isProdBuild ? "production" : "development",
@@ -132,6 +134,47 @@ const createRspackConfig = ({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
       }),
+      // Babel can miscompile Lit's pre-minified runtime when downleveling to
+      // ES5. Compile lit-html from its development sources for legacy builds,
+      // then let the normal production minifier handle the final bundle.
+      !latestBuild &&
+        new rspack.NormalModuleReplacementPlugin(
+          /^(?:lit-html(?:\/.*)?|\.{1,2}\/.*\.js)$/,
+          (resource) => {
+            if (resource.request === "lit-html") {
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                "lit-html.js"
+              );
+              return;
+            }
+            if (resource.request.startsWith("lit-html/")) {
+              if (resource.request.startsWith("lit-html/development/")) {
+                return;
+              }
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                resource.request.slice("lit-html/".length)
+              );
+              return;
+            }
+            if (
+              resource.context.startsWith(`${litHtmlRoot}${path.sep}`) &&
+              resource.context !== litHtmlDevelopmentRoot &&
+              !resource.context.startsWith(
+                `${litHtmlDevelopmentRoot}${path.sep}`
+              )
+            ) {
+              resource.request = path.join(
+                litHtmlDevelopmentRoot,
+                path.relative(
+                  litHtmlRoot,
+                  path.resolve(resource.context, resource.request)
+                )
+              );
+            }
+          }
+        ),
       new rspack.DefinePlugin(
         bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
       ),
