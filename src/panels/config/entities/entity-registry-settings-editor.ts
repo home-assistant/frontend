@@ -196,7 +196,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _name!: string;
 
-  @state() private _type: "main" | "additional" = "additional";
+  @state() private _inheritName = false;
 
   @state() private _icon!: string;
 
@@ -266,12 +266,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return;
     }
 
-    this._type =
-      this.entry.device_id &&
-      !computeEntityEntryName(this.entry, this.hass.devices)
-        ? "main"
-        : "additional";
-    this._name = this._type === "main" ? "" : this.entry.name || "";
+    this._inheritName =
+      !!this.entry.device_id &&
+      !computeEntityEntryName(this.entry, this.hass.devices);
+    this._name = this._inheritName ? "" : this.entry.name || "";
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
@@ -482,18 +480,18 @@ export class EntityRegistrySettingsEditor extends LitElement {
           ? html`<ha-select
                 class="type"
                 .label=${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.entity_type"
+                  "ui.dialogs.entity_registry.editor.name"
                 )}
-                .value=${this._type}
+                .value=${this._inheritName ? "inherit" : "specific"}
                 .options=${[
                   {
-                    value: "main",
+                    value: "inherit",
                     label: this.hass.localize(
                       "ui.dialogs.entity_registry.editor.main_entity"
                     ),
                   },
                   {
-                    value: "additional",
+                    value: "specific",
                     label: this.hass.localize(
                       "ui.dialogs.entity_registry.editor.additional_entity"
                     ),
@@ -503,7 +501,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 @selected=${this._entityNameModeChanged}
               ></ha-select>
               <ha-input-helper-text>
-                ${this._type === "main"
+                ${this._inheritName
                   ? html`${this.hass.localize(
                       "ui.dialogs.entity_registry.editor.main_entity_description"
                     )}
@@ -524,7 +522,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                       "ui.dialogs.entity_registry.editor.additional_entity_description"
                     )}
               </ha-input-helper-text>
-              ${this._type === "main"
+              ${this._inheritName
                 ? nothing
                 : html`<ha-input
                     inset-label
@@ -1681,12 +1679,12 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (!value) {
       return;
     }
-    this._type = value === "main" ? "main" : "additional";
-    this._name = this._type === "main" ? "" : this.entry.name || "";
+    this._inheritName = value === "inherit";
+    this._name = this._inheritName ? "" : this.entry.name || "";
   }
 
   private _computeName(): string | null {
-    if (this._device && this._type === "main") {
+    if (this._device && this._inheritName) {
       // No original_name → keep null; forcing main on a named entity → "".
       if (this.entry.name == null && !this.entry.original_name) {
         return null;
