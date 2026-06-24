@@ -1,5 +1,8 @@
 /* global module */
 
 module.exports = function litDisableDevModeLoader(source) {
-  return source.replace(/\bconst DEV_MODE = true;/g, "const DEV_MODE = false;");
+  return source.replace(
+    /\b(const|let|var) DEV_MODE = true;/g,
+    "$1 DEV_MODE = false;"
+  );
 };
