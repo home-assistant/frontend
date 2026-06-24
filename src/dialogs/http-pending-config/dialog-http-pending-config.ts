@@ -1,7 +1,7 @@
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import secondsToDuration from "../../common/datetime/seconds_to_duration";
+import { formatNumericDuration } from "../../common/datetime/format_duration";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-alert";
 import "../../components/ha-button";
@@ -159,7 +159,12 @@ export class DialogHttpPendingConfig
                           "ui.dialogs.http_pending_config.auto_revert",
                           {
                             time:
-                              secondsToDuration(this._secondsRemaining) ?? "0",
+                              formatNumericDuration(this.hass.locale, {
+                                minutes: Math.floor(
+                                  this._secondsRemaining / 60
+                                ),
+                                seconds: this._secondsRemaining % 60,
+                              }) ?? "0",
                           }
                         )}
                       </p>
