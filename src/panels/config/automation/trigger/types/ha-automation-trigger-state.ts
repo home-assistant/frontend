@@ -153,7 +153,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
               name: "from_match",
               selector: {
                 button_toggle: {
-                  size: "small",
+                  size: "s",
                   options: [
                     {
                       value: "is",
@@ -207,7 +207,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
               name: "to_match",
               selector: {
                 button_toggle: {
-                  size: "small",
+                  size: "s",
                   options: [
                     {
                       value: "is",
