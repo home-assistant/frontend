@@ -189,7 +189,7 @@ jobs:
     name: Report
     needs: [e2e-local]
     runs-on: ubuntu-latest
-    if: always()
+    if: ${{ !cancelled() }}
     permissions:
       contents: read
       pull-requests: write
