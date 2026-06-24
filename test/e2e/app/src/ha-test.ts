@@ -66,7 +66,9 @@ export class HaTest extends HomeAssistantAppEl {
         this._updateHass(hassUpdate),
     };
 
-    const hass = provideHass(this, initial, true);
+    // `false` for contexts: HomeAssistantAppEl already provides them via
+    // `contextMixin`, so let provideHass skip them to avoid duplicate providers.
+    const hass = provideHass(this, initial, true, false);
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(

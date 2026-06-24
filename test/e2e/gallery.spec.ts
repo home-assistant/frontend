@@ -54,29 +54,16 @@ async function assertPageLoads(page: Page, hash: string, selector: string) {
 }
 
 // Errors that are gallery-harness artifacts rather than bugs in the component
-// under test. The gallery feeds demos a synchronous mock `hass`, but migrated
-// components now read `localize`/formatters from Lit context, which resolves
-// asynchronously — so a demo can render one frame before the context lands and
-// throw a transient "undefined" error during init. These don't prevent the
-// demo from rendering (the toBeAttached check above still has to pass), and
-// they're timing-dependent, so we filter the whole init-error family here.
+// under test. The Lit-context init-error family that used to live here is gone:
+// ha-gallery now provides fallback contexts for every demo (mirroring the real
+// app's root), so context-consuming components resolve `localize`, formatters,
+// config, etc. synchronously instead of throwing during init.
 const IGNORED_ERRORS: RegExp[] = [
   /ResizeObserver/,
   /Non-Error/,
   /Extension context/,
   // Plain objects thrown by mock WebSocket/data-fetch show up as "Object".
   /^Object$/,
-  // localize consumed from context before it resolves (`this.localize` /
-  // `this._localize is not a function`, or `hass.localize` read as undefined).
-  /_?localize is not a function/,
-  /Cannot read properties of undefined \(reading 'localize'\)/,
-  // Formatters consumed from context before it resolves.
-  /Cannot read properties of undefined \(reading 'format[A-Za-z]+'\)/,
-  // hass API methods consumed from context before it resolves (e.g. the
-  // update demo fetches release notes via callWS during init).
-  /Cannot read properties of undefined \(reading 'call(WS|Api|Service)'\)/,
-  // locale fields read before the mock locale is wired up.
-  /Cannot read properties of undefined \(reading '(time|number|date)_format'\)/,
   // hui-group-entity-row calls .some() on a possibly-undefined entity_id array
   // from mock state data — pre-existing gallery data issue.
   /Cannot read properties of undefined \(reading 'some'\)/,
