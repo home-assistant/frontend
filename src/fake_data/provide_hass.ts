@@ -97,11 +97,15 @@ export const provideHass = (
   elements,
   overrideData: Partial<HomeAssistant> = {},
   setHassProperty = false,
-  // Opt-in to providing the grouped Lit contexts (config, formatters, api, …)
-  // that the real app's root element provides via `contextMixin`. Needed for
-  // gallery demos that render context-consuming components (e.g. the climate
-  // temperature control) without the full app shell.
-  provideContexts = false
+  // Provide the grouped Lit contexts (registries, internationalization, api,
+  // connection, ui, config, formatters) that the real app's root element
+  // provides via `contextMixin`. On by default so that any standalone hass root
+  // (e.g. a gallery demo) automatically feeds context-consuming components the
+  // same way the real app does, instead of each demo wiring up a partial set by
+  // hand. Pass `false` for hosts that already provide these contexts themselves
+  // via `contextMixin` (the full app shell — `ha-demo`, `ha-test`), to avoid
+  // registering duplicate providers on the same element.
+  provideContexts = true
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
   // Can happen because we store sidebar, more info etc on hass.

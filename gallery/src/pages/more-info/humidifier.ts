@@ -54,7 +54,7 @@ class DemoMoreInfoHumidifier extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    const hass = provideHass(this._demoRoot, {}, false, true);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
