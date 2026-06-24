@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const SHADOWS = ["s", "m", "l"] as const;
@@ -17,7 +18,9 @@ export class DemoMiscBoxShadow extends LitElement {
                   (size) => html`
                     <div
                       class="box"
-                      style="box-shadow: var(--ha-box-shadow-${size})"
+                      style=${styleMap({
+                        boxShadow: `var(--ha-box-shadow-${size})`,
+                      })}
                     >
                       ${size}
                     </div>
