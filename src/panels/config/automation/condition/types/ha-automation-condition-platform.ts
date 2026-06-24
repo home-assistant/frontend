@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-checkbox";
@@ -61,7 +62,7 @@ export class HaPlatformCondition extends LitElement {
   @state() private _targetHasUnrecordedEntity = false;
 
   // Incremented on each recording check so stale async responses are ignored.
-  private _recordingCheckToken = 0;
+  private _recordingCheckId = 0;
 
   public static get defaultConfig(): PlatformCondition {
     return { condition: "" };
@@ -569,13 +570,10 @@ export class HaPlatformCondition extends LitElement {
     if (!duration) {
       return false;
     }
-    const seconds =
-      (duration.days || 0) * 86400 +
-      (duration.hours || 0) * 3600 +
-      (duration.minutes || 0) * 60 +
-      (duration.seconds || 0) +
-      (duration.milliseconds || 0) / 1000;
-    return seconds > MAX_HISTORY_PRIMING_LOOKBACK_HOURS * 3600;
+    return (
+      durationDataToSeconds(duration) >
+      MAX_HISTORY_PRIMING_LOOKBACK_HOURS * 3600
+    );
   }
 
   private async _updateDurationPrimingInfo(): Promise<void> {
@@ -584,7 +582,7 @@ export class HaPlatformCondition extends LitElement {
 
     // Recording status only matters for an entity condition that has both a
     // target and a `for:` duration.
-    const token = ++this._recordingCheckToken;
+    const checkId = ++this._recordingCheckId;
     if (
       forValue === undefined ||
       forValue === "" ||
@@ -602,7 +600,7 @@ export class HaPlatformCondition extends LitElement {
         target
       );
       // Ignore if a newer check superseded this one.
-      if (token !== this._recordingCheckToken) {
+      if (checkId !== this._recordingCheckId) {
         return;
       }
       if (!referenced_entities.length) {
@@ -617,13 +615,13 @@ export class HaPlatformCondition extends LitElement {
             .catch(() => false)
         )
       );
-      if (token !== this._recordingCheckToken) {
+      if (checkId !== this._recordingCheckId) {
         return;
       }
       this._targetHasUnrecordedEntity = recordingDisabled.some(Boolean);
     } catch (_err) {
       // Target resolution failed; fall back to no warning rather than guessing.
-      if (token === this._recordingCheckToken) {
+      if (checkId === this._recordingCheckId) {
         this._targetHasUnrecordedEntity = false;
       }
     }
