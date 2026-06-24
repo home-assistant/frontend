@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
@@ -6,6 +7,16 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  uiContext,
+} from "../data/context";
+import { updateHassGroups } from "../data/context/updateContext";
 import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
@@ -85,12 +96,54 @@ export interface MockHomeAssistant extends HomeAssistant {
 export const provideHass = (
   elements,
   overrideData: Partial<HomeAssistant> = {},
-  setHassProperty = false
+  setHassProperty = false,
+  // Opt-in to providing the grouped Lit contexts (config, formatters, api, …)
+  // that the real app's root element provides via `contextMixin`. Needed for
+  // gallery demos that render context-consuming components (e.g. the climate
+  // temperature control) without the full app shell.
+  provideContexts = false
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
   // Can happen because we store sidebar, more info etc on hass.
   const baseEl = () => elements[0];
   const hass = (): MockHomeAssistant => baseEl().hass;
+
+  const contextProviders = provideContexts
+    ? {
+        registries: new ContextProvider(baseEl(), {
+          context: registriesContext,
+        }),
+        internationalization: new ContextProvider(baseEl(), {
+          context: internationalizationContext,
+        }),
+        api: new ContextProvider(baseEl(), { context: apiContext }),
+        connection: new ContextProvider(baseEl(), {
+          context: connectionContext,
+        }),
+        ui: new ContextProvider(baseEl(), { context: uiContext }),
+        config: new ContextProvider(baseEl(), { context: configContext }),
+        formatters: new ContextProvider(baseEl(), {
+          context: formattersContext,
+        }),
+      }
+    : undefined;
+
+  const updateContextProviders = (newHass: HomeAssistant) => {
+    if (!contextProviders) {
+      return;
+    }
+    (
+      Object.keys(contextProviders) as (keyof typeof contextProviders)[]
+    ).forEach((group) => {
+      const provider = contextProviders[group];
+      provider.setValue(
+        (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
+          newHass,
+          provider.value
+        )
+      );
+    });
+  };
 
   const wsCommands = {};
   const restResponses: [string | RegExp, MockRestCallback][] = [];
@@ -396,6 +449,7 @@ export const provideHass = (
       elements.forEach((el) => {
         el.hass = newHass;
       });
+      updateContextProviders(newHass);
     },
     updateStates,
     updateTranslations,
@@ -457,6 +511,10 @@ export const provideHass = (
         value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
       },
     ],
+    formatEntityName: (stateObj, type) =>
+      typeof type === "string"
+        ? type
+        : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
     ...overrideData,
   };
 

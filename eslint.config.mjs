@@ -235,6 +235,12 @@ export default tseslint.config(
     },
   },
   {
+    files: ["test/e2e/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
     plugins: {
       html,
     },

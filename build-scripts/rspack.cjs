@@ -1,4 +1,3 @@
-/* global require, module, __dirname */
 const { existsSync } = require("fs");
 const path = require("path");
 const rspack = require("@rspack/core");
@@ -349,6 +348,11 @@ const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
 const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
 
+const createE2eTestAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+  createRspackConfig(
+    bundle.config.e2eTestApp({ isProdBuild, latestBuild, isStatsBuild })
+  );
+
 module.exports = {
   createAppConfig,
   createDemoConfig,
@@ -356,4 +360,5 @@ module.exports = {
   createGalleryConfig,
   createRspackConfig,
   createLandingPageConfig,
+  createE2eTestAppConfig,
 };
