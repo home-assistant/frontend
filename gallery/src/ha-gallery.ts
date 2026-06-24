@@ -166,8 +166,9 @@ class HaGallery extends LitElement {
     // the gallery hass propagate to consuming components.
     const hass = this._galleryHass;
     (
-      Object.keys(this._contextProviders) as (keyof typeof this
-        ._contextProviders)[]
+      Object.keys(
+        this._contextProviders
+      ) as (keyof typeof this._contextProviders)[]
     ).forEach((group) => {
       const provider = this._contextProviders[group];
       provider.setValue(
@@ -178,8 +179,9 @@ class HaGallery extends LitElement {
       );
     });
     (
-      Object.keys(this._singleContextProviders) as (keyof typeof this
-        ._singleContextProviders)[]
+      Object.keys(
+        this._singleContextProviders
+      ) as (keyof typeof this._singleContextProviders)[]
     ).forEach((key) => {
       (this._singleContextProviders[key] as ContextProvider<any>).setValue(
         hass[key]
