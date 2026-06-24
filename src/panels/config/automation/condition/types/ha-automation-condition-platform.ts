@@ -1,14 +1,16 @@
-import { mdiHelpCircleOutline } from "@mdi/js";
+import { mdiAlertOutline, mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-alert";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-selector/ha-selector";
 import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-tooltip";
 import type {
   ForDict,
   PlatformCondition,
@@ -246,7 +248,6 @@ export class HaPlatformCondition extends LitElement {
               conditionName
             )
           )}
-      ${this._renderDurationPrimingInfo()}
     `;
   }
 
@@ -304,7 +305,7 @@ export class HaPlatformCondition extends LitElement {
         @click=${showOptional ? this._toggleCheckbox : undefined}
         >${this.hass.localize(
           `component.${domain}.conditions.${conditionName}.fields.${fieldName}.name`
-        ) || fieldName}</span
+        ) || fieldName}${this._renderForPrimingInfo(fieldName)}</span
       >
       ${description
         ? html`<span
@@ -513,7 +514,27 @@ export class HaPlatformCondition extends LitElement {
     }
   }
 
-  private _renderDurationPrimingInfo() {
+  // Shows a small info icon beside the `for` duration field's label, with a
+  // tooltip explaining when history priming can't fully cover the duration.
+  private _renderForPrimingInfo(fieldName: string) {
+    if (fieldName !== "for") {
+      return nothing;
+    }
+    const text = this._durationPrimingInfoText();
+    if (!text) {
+      return nothing;
+    }
+    return html`<ha-svg-icon
+        id="for-priming-info"
+        tabindex="0"
+        class="priming-info-icon"
+        .path=${mdiAlertOutline}
+        @click=${stopPropagation}
+      ></ha-svg-icon>
+      <ha-tooltip for="for-priming-info">${text}</ha-tooltip>`;
+  }
+
+  private _durationPrimingInfoText(): string | undefined {
     const forValue = this.condition.options?.for;
 
     // Priming only happens for entity conditions that have a `for:` duration.
@@ -522,27 +543,23 @@ export class HaPlatformCondition extends LitElement {
       forValue === "" ||
       !this.description?.target
     ) {
-      return nothing;
+      return undefined;
     }
 
     if (this._targetHasUnrecordedEntity) {
-      return html`<ha-alert alert-type="info" class="priming-info">
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.duration_priming.entity_not_recorded"
-        )}
-      </ha-alert>`;
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.duration_priming.entity_not_recorded"
+      );
     }
 
     if (this._durationExceedsLookback(forValue)) {
-      return html`<ha-alert alert-type="info" class="priming-info">
-        ${this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.duration_priming.history_capped",
-          { hours: MAX_HISTORY_PRIMING_LOOKBACK_HOURS }
-        )}
-      </ha-alert>`;
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.duration_priming.history_capped",
+        { hours: MAX_HISTORY_PRIMING_LOOKBACK_HOURS }
+      );
     }
 
-    return nothing;
+    return undefined;
   }
 
   private _durationExceedsLookback(forValue: unknown): boolean {
@@ -667,9 +684,14 @@ export class HaPlatformCondition extends LitElement {
     .clickable {
       cursor: pointer;
     }
-    .priming-info {
-      display: block;
-      margin: var(--ha-space-2) var(--ha-space-4) 0;
+    .priming-info-icon {
+      --mdc-icon-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--warning-color);
+      margin-inline-start: var(--ha-space-1);
+      vertical-align: middle;
+      cursor: help;
     }
   `;
 }
