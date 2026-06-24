@@ -54,7 +54,7 @@ const formatFailure = (failure) => {
   return [
     `<details><summary>❌ ${failure.title} <code>${failure.location}</code></summary>`,
     "",
-    "```",
+    "```ts",
     output,
     "```",
     "",
