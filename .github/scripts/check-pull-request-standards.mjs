@@ -43,7 +43,12 @@ export default async function checkPullRequestStandards({
   const { owner, repo } = context.repo;
   const issue_number = pr.number;
 
-  const body = (pr.body || "").replace(/<!--[\s\S]*?-->/g, "");
+  let body = pr.body || "";
+  let previous;
+  do {
+    previous = body;
+    body = body.replace(/<!--[\s\S]*?-->/g, "");
+  } while (body !== previous);
   const normalized = body.toLowerCase();
 
   // Ignore 404s from mutations that race manual edits or cancelled runs.
