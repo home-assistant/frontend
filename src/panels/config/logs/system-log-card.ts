@@ -109,7 +109,10 @@ export class SystemLogCard extends LitElement {
               `
             : html`
                 <div class="header">
-                  <h1 class="card-header">${this.header || "Logs"}</h1>
+                  <h1 class="card-header">
+                    ${this.header ||
+                    this.hass.localize("ui.panel.config.logs.caption")}
+                  </h1>
                   <div class="header-buttons">
                     <ha-icon-button
                       .path=${mdiDownload}
