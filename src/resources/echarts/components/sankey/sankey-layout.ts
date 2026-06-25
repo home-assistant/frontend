@@ -504,10 +504,34 @@ function countAllCrossings(
   return total;
 }
 
-// Allow a couple of extra sweeps beyond what a single pass needs: a plateau
-// move (see tryReplace) often only pays off once a neighbouring section is
-// re-sorted on a later pass, and that can ripple across several depths.
-const MAX_SORT_ITERATIONS = 6;
+// A section is "multi-parent" when at least one of its real nodes draws from
+// two or more distinct parents in the previous section. In the energy/power/
+// water cards only the source/home layers do this (grid/solar/battery feed
+// home + battery_in + grid_return); every later section (floors, areas,
+// devices) is a pure single-parent tree level. Pass-throughs are always
+// single-parent (one source/target chain) and never make a section multi-parent.
+function sectionHasMultipleParents(
+  section: Node[],
+  prevDepth: number,
+  depths: number[]
+): boolean {
+  return section.some((node) => {
+    if (isPassThroughNode(node)) {
+      return false;
+    }
+    const parentIds = new Set(
+      getNeighborIds(node, "source", prevDepth, depths).map((n) => n.id)
+    );
+    return parentIds.size > 1;
+  });
+}
+
+// The head barycenter sweep (STEP 1) only touches the multi-parent head
+// sections (the single-parent tree below is placed deterministically in
+// STEP 2), so a single forward+backward pass converges in practice and the loop
+// early-exits on the first no-change sweep. The cap is just headroom for unusual
+// topologies with several interacting head sections.
+const MAX_SORT_ITERATIONS = 4;
 
 export function sortNodesInSections(
   nodesPerSection: Record<number, Node[]>,
@@ -515,30 +539,30 @@ export function sortNodesInSections(
   edges: GraphEdge[]
 ): Record<number, Node[]> {
   const sections: Node[][] = depths.map((d) => [...(nodesPerSection[d] || [])]);
-  // Id→index lookup per section, kept in sync with sections. Rebuilt only when
-  // a section's order actually changes (inside tryReplace).
+  // Id→index lookup per section, kept in sync with sections.
   const sectionMaps: Map<string, number>[] = sections.map(buildIdIndexMap);
 
-  // Running total of crossings across every boundary. A section reorder only
-  // touches its two adjacent boundaries, so the live total can be maintained
-  // incrementally: it never increases (tryReplace rejects worsening moves), so
-  // it is monotonically non-increasing across the whole sweep.
-  let liveCrossings = countAllCrossings(sections, sectionMaps, depths, edges);
+  // Classify each section past the root. Multi-parent sections (the
+  // intentionally-ordered source/home layers) are minimized by barycenter in
+  // PASS 2; the rest are single-parent tree levels placed deterministically in
+  // PASS 1. Classification reads only the graph, so it is stable across passes.
+  const multiParent = depths.map(
+    (_d, i) =>
+      i >= 1 && sectionHasMultipleParents(sections[i], depths[i - 1], depths)
+  );
 
-  // Best (fewest-crossing) layout seen so far, captured the instant a move
-  // strictly improves on it. We return THIS, not the live `sections`.
+  // Best (fewest-crossing) head ordering seen so far, seeded from the original
+  // input so the head is provably never worse than the seed.
   const snapshot = (): Node[][] => sections.map((s) => s.slice());
+  let liveCrossings = countAllCrossings(sections, sectionMaps, depths, edges);
   let bestCrossings = liveCrossings;
   let bestSections = snapshot();
 
-  // Replace a section with a candidate ordering when crossings on its adjacent
-  // boundaries do not increase. Accepting equal-crossing ("plateau") moves lets
-  // the sweep realign a section with its parents even when the payoff only
-  // appears after a neighbouring section is re-sorted on a later pass — the
-  // local optimum a strict gate gets stuck in. Whenever an accepted move
-  // strictly lowers the global total we snapshot it as the best; that snapshot
-  // is what guarantees the result is never worse than the seed and keeps the
-  // output deterministic and idempotent despite plateau churn.
+  // Replace a multi-parent section with a candidate ordering when crossings on
+  // its adjacent boundaries do not increase. Accepting equal-crossing
+  // ("plateau") moves lets the sweep escape local optima; the best snapshot
+  // (captured only on a strict global decrease) is what seeds the head order,
+  // so the result is deterministic and never worse than the seed.
   const tryReplace = (i: number, candidate: Node[]): boolean => {
     const before = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
     const sectionSnapshot = sections[i];
@@ -559,39 +583,97 @@ export function sortNodesInSections(
     return false;
   };
 
-  for (let iter = 0; iter < MAX_SORT_ITERATIONS; iter++) {
-    let changed = false;
+  // STEP 1 — settle the multi-parent head sections (sources → home/battery_in/
+  // grid_return) by barycenter. These layers have nodes with several parents and
+  // so no single parent position to inherit; we minimize their crossings by the
+  // weighted average of neighbour positions, iterating forward then backward
+  // until the order is stable. The backward sweep is restricted to multi-parent
+  // neighbours, so the head order never depends on its single-parent children —
+  // that is what keeps the whole result idempotent, because STEP 2 re-derives
+  // those children purely from the settled head. The root section (index 0) is
+  // never reordered.
+  if (multiParent.some(Boolean)) {
+    for (let iter = 0; iter < MAX_SORT_ITERATIONS; iter++) {
+      let changed = false;
 
-    for (let i = 1; i < sections.length; i++) {
-      const prevDepth = depths[i - 1];
-      const result = sortSectionByBarycenter(
-        sections[i],
-        sectionMaps[i - 1],
-        (node) => getNeighborIds(node, "source", prevDepth, depths)
-      );
-      if (result.changed && tryReplace(i, result.sorted)) {
-        changed = true;
+      for (let i = 1; i < sections.length; i++) {
+        if (!multiParent[i]) {
+          continue;
+        }
+        const prevDepth = depths[i - 1];
+        const result = sortSectionByBarycenter(
+          sections[i],
+          sectionMaps[i - 1],
+          (node) => getNeighborIds(node, "source", prevDepth, depths)
+        );
+        if (result.changed && tryReplace(i, result.sorted)) {
+          changed = true;
+        }
       }
-    }
 
-    for (let i = sections.length - 2; i >= 0; i--) {
-      const nextDepth = depths[i + 1];
-      const result = sortSectionByBarycenter(
-        sections[i],
-        sectionMaps[i + 1],
-        (node) => getNeighborIds(node, "target", nextDepth, depths)
-      );
-      if (result.changed && tryReplace(i, result.sorted)) {
-        changed = true;
+      for (let i = sections.length - 2; i >= 1; i--) {
+        if (!multiParent[i] || !multiParent[i + 1]) {
+          continue;
+        }
+        const nextDepth = depths[i + 1];
+        const result = sortSectionByBarycenter(
+          sections[i],
+          sectionMaps[i + 1],
+          (node) => getNeighborIds(node, "target", nextDepth, depths)
+        );
+        if (result.changed && tryReplace(i, result.sorted)) {
+          changed = true;
+        }
       }
-    }
 
-    if (!changed || bestCrossings === 0) break;
+      if (!changed || bestCrossings === 0) break;
+    }
   }
+
+  // STEP 2 — deterministic hierarchy placement. Starting from the best head
+  // ordering, walk left to right and order every single-parent section by the
+  // position of each node's single parent in the already-final previous section
+  // (sortSectionByBarycenter with one parent reduces to a stable sort by that
+  // parent's index). This is the classic layered-tree drawing: each parent's
+  // children stay contiguous, every single-parent boundary is crossing-free,
+  // pass-throughs travel along their chain, and the user-configured floor/area
+  // order is preserved because same-parent siblings keep their seed index.
+  // It runs unconditionally — grouping a parent's children under it must win
+  // even on a crossing-neutral plateau (the #52852 fix) — and because it is a
+  // pure function of the settled head, re-running yields the identical layout.
+  const finalSections = bestSections.map((s) => s.slice());
+  const finalMaps = finalSections.map(buildIdIndexMap);
+  for (let i = 1; i < finalSections.length; i++) {
+    if (multiParent[i]) {
+      continue;
+    }
+    const prevDepth = depths[i - 1];
+    const { sorted } = sortSectionByBarycenter(
+      finalSections[i],
+      finalMaps[i - 1],
+      (node) => getNeighborIds(node, "source", prevDepth, depths)
+    );
+    finalSections[i] = sorted;
+    finalMaps[i] = buildIdIndexMap(sorted);
+  }
+
+  // Hierarchy placement makes every single-parent boundary crossing-free, so on
+  // the energy/water cards (multi-parent only at the head) it can only lower the
+  // total. Guard the general graph: if regrouping somehow raised crossings (only
+  // possible for a multi-parent section sitting *below* single-parent ones,
+  // which the cards never produce), fall back to the gated best head so the
+  // never-worse-than-seed guarantee always holds. Ties keep the grouped layout.
+  const finalCrossings = countAllCrossings(
+    finalSections,
+    finalMaps,
+    depths,
+    edges
+  );
+  const chosen = finalCrossings <= bestCrossings ? finalSections : bestSections;
 
   const sortedSections: Record<number, Node[]> = {};
   depths.forEach((depth, i) => {
-    sortedSections[depth] = bestSections[i];
+    sortedSections[depth] = chosen[i];
   });
   return sortedSections;
 }

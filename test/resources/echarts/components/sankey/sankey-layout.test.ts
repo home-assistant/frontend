@@ -896,6 +896,289 @@ describe("Sankey Layout Functions", () => {
       const again = sortNodesInSections(result, [0, 1, 2, 3], edges);
       expect(sectionIds(again)).toEqual(sectionIds(result));
     });
+
+    it("groups single-parent siblings under their parent and keeps configured sibling order", () => {
+      // Two floors, two areas each, fed to the engine interleaved (not grouped
+      // by floor). The deterministic hierarchy pass must regroup areas under
+      // their floor, and within a floor preserve the configured (seed) order:
+      // a1 before a2, b1 before b2.
+      const e = {
+        hFa: { source: "home", target: "floor_a", value: 2 },
+        hFb: { source: "home", target: "floor_b", value: 2 },
+        faA1: { source: "floor_a", target: "a1", value: 1 },
+        faA2: { source: "floor_a", target: "a2", value: 1 },
+        fbB1: { source: "floor_b", target: "b1", value: 1 },
+        fbB2: { source: "floor_b", target: "b2", value: 1 },
+      };
+      const testNodes: Record<string, TestNode> = {
+        home: {
+          id: "home",
+          depth: 0,
+          value: 4,
+          inEdges: [],
+          outEdges: [e.hFa, e.hFb],
+        },
+        floor_a: {
+          id: "floor_a",
+          depth: 1,
+          value: 2,
+          inEdges: [e.hFa],
+          outEdges: [e.faA1, e.faA2],
+        },
+        floor_b: {
+          id: "floor_b",
+          depth: 1,
+          value: 2,
+          inEdges: [e.hFb],
+          outEdges: [e.fbB1, e.fbB2],
+        },
+        a1: { id: "a1", depth: 2, value: 1, inEdges: [e.faA1], outEdges: [] },
+        a2: { id: "a2", depth: 2, value: 1, inEdges: [e.faA2], outEdges: [] },
+        b1: { id: "b1", depth: 2, value: 1, inEdges: [e.fbB1], outEdges: [] },
+        b2: { id: "b2", depth: 2, value: 1, inEdges: [e.fbB2], outEdges: [] },
+      };
+      const { nodes: graph, edges } = buildGraph(testNodes);
+      const input = {
+        0: [graph.home],
+        1: [graph.floor_a, graph.floor_b],
+        2: [graph.a1, graph.b1, graph.a2, graph.b2], // interleaved
+      };
+      const result = sortNodesInSections(input, [0, 1, 2], edges);
+
+      expect(sectionIds(result)).toEqual({
+        0: ["home"],
+        1: ["floor_a", "floor_b"],
+        2: ["a1", "a2", "b1", "b2"],
+      });
+      expectIdentityPreserved(result, input);
+    });
+
+    it("orders a single-parent section by parent position, ignoring flow magnitude", () => {
+      // childB carries a far larger flow than childA, but a single-parent
+      // section is ordered by parent position (hierarchy), never by value.
+      const edgeACa = { source: "A", target: "childA", value: 1 };
+      const edgeBCb = { source: "B", target: "childB", value: 100 };
+      const testNodes: Record<string, TestNode> = {
+        A: { id: "A", depth: 0, value: 1, inEdges: [], outEdges: [edgeACa] },
+        B: { id: "B", depth: 0, value: 100, inEdges: [], outEdges: [edgeBCb] },
+        childA: {
+          id: "childA",
+          depth: 1,
+          value: 1,
+          inEdges: [edgeACa],
+          outEdges: [],
+        },
+        childB: {
+          id: "childB",
+          depth: 1,
+          value: 100,
+          inEdges: [edgeBCb],
+          outEdges: [],
+        },
+      };
+      const { nodes: graph, edges } = buildGraph(testNodes);
+      const input = { 0: [graph.A, graph.B], 1: [graph.childB, graph.childA] };
+      const result = sortNodesInSections(input, [0, 1], edges);
+
+      expect(sectionIds(result)).toEqual({
+        0: ["A", "B"],
+        1: ["childA", "childB"],
+      });
+      expectIdentityPreserved(result, input);
+    });
+
+    it("keeps the single-parent tree hierarchical below a multi-parent source layer", () => {
+      // grid + solar feed home (a genuine multi-parent section that stays under
+      // the barycenter sweep); the floor/area tree below is single-parent and
+      // must regroup by parent regardless of the multi-parent head.
+      const e = {
+        gH: { source: "grid", target: "home", value: 2 },
+        sH: { source: "solar", target: "home", value: 2 },
+        hFa: { source: "home", target: "floor_a", value: 2 },
+        hFb: { source: "home", target: "floor_b", value: 2 },
+        faA: { source: "floor_a", target: "area_a", value: 2 },
+        fbB: { source: "floor_b", target: "area_b", value: 2 },
+      };
+      const testNodes: Record<string, TestNode> = {
+        grid: { id: "grid", depth: 0, value: 2, inEdges: [], outEdges: [e.gH] },
+        solar: {
+          id: "solar",
+          depth: 0,
+          value: 2,
+          inEdges: [],
+          outEdges: [e.sH],
+        },
+        home: {
+          id: "home",
+          depth: 1,
+          value: 4,
+          inEdges: [e.gH, e.sH],
+          outEdges: [e.hFa, e.hFb],
+        },
+        floor_a: {
+          id: "floor_a",
+          depth: 2,
+          value: 2,
+          inEdges: [e.hFa],
+          outEdges: [e.faA],
+        },
+        floor_b: {
+          id: "floor_b",
+          depth: 2,
+          value: 2,
+          inEdges: [e.hFb],
+          outEdges: [e.fbB],
+        },
+        area_a: {
+          id: "area_a",
+          depth: 3,
+          value: 2,
+          inEdges: [e.faA],
+          outEdges: [],
+        },
+        area_b: {
+          id: "area_b",
+          depth: 3,
+          value: 2,
+          inEdges: [e.fbB],
+          outEdges: [],
+        },
+      };
+      const { nodes: graph, edges } = buildGraph(testNodes);
+      const input = {
+        0: [graph.grid, graph.solar],
+        1: [graph.home],
+        2: [graph.floor_a, graph.floor_b],
+        3: [graph.area_b, graph.area_a], // reversed; must regroup under floors
+      };
+      const result = sortNodesInSections(input, [0, 1, 2, 3], edges);
+
+      expect(sectionIds(result)).toEqual({
+        0: ["grid", "solar"],
+        1: ["home"],
+        2: ["floor_a", "floor_b"],
+        3: ["area_a", "area_b"],
+      });
+      expectIdentityPreserved(result, input);
+    });
+
+    it("regroups single-parent children after a multi-parent head is reordered (idempotent)", () => {
+      // A multi-parent head section [H0,H1,H2] (only H1 draws from two sources)
+      // gets reordered by the barycenter sweep. Its single-parent children must
+      // then be regrouped under the *settled* head — H1's children before H2's
+      // child — and the result must be idempotent. Before the head/tree passes
+      // were ordered correctly the children stayed grouped against the head's
+      // SEED order, which both mis-grouped them and broke f(f(x)) === f(x).
+      const e = {
+        s0h0: { source: "S0", target: "H0", value: 6 },
+        s0h1: { source: "S0", target: "H1", value: 7 },
+        s1h1: { source: "S1", target: "H1", value: 5 },
+        s2h2: { source: "S2", target: "H2", value: 6 },
+        h1d0: { source: "H1", target: "D0", value: 7 },
+        h1d2: { source: "H1", target: "D2", value: 9 },
+        h2d1: { source: "H2", target: "D1", value: 7 },
+      };
+      const testNodes: Record<string, TestNode> = {
+        S0: {
+          id: "S0",
+          depth: 0,
+          value: 13,
+          inEdges: [],
+          outEdges: [e.s0h0, e.s0h1],
+        },
+        S1: { id: "S1", depth: 0, value: 5, inEdges: [], outEdges: [e.s1h1] },
+        S2: { id: "S2", depth: 0, value: 6, inEdges: [], outEdges: [e.s2h2] },
+        H0: { id: "H0", depth: 1, value: 6, inEdges: [e.s0h0], outEdges: [] },
+        H1: {
+          id: "H1",
+          depth: 1,
+          value: 12,
+          inEdges: [e.s1h1, e.s0h1],
+          outEdges: [e.h1d0, e.h1d2],
+        },
+        H2: {
+          id: "H2",
+          depth: 1,
+          value: 6,
+          inEdges: [e.s2h2],
+          outEdges: [e.h2d1],
+        },
+        D0: { id: "D0", depth: 2, value: 7, inEdges: [e.h1d0], outEdges: [] },
+        D1: { id: "D1", depth: 2, value: 7, inEdges: [e.h2d1], outEdges: [] },
+        D2: { id: "D2", depth: 2, value: 9, inEdges: [e.h1d2], outEdges: [] },
+      };
+      const { nodes: graph, edges } = buildGraph(testNodes);
+      const input = {
+        0: [graph.S0, graph.S1, graph.S2],
+        1: [graph.H2, graph.H1, graph.H0],
+        2: [graph.D1, graph.D2, graph.D0],
+      };
+      const result = sortNodesInSections(input, [0, 1, 2], edges);
+
+      // Head settles to barycenter order [H0,H1,H2]; children regroup under it:
+      // H1's children (D2,D0) precede H2's child (D1).
+      expect(sectionIds(result)).toEqual({
+        0: ["S0", "S1", "S2"],
+        1: ["H0", "H1", "H2"],
+        2: ["D2", "D0", "D1"],
+      });
+      expectIdentityPreserved(result, input);
+
+      // Idempotent: re-feeding the output yields the identical order.
+      const again = sortNodesInSections(result, [0, 1, 2], edges);
+      expect(sectionIds(again)).toEqual(sectionIds(result));
+    });
+
+    it("lets single-parent children follow their reordered multi-parent parent to reach 0 crossings", () => {
+      // root [a,b,c,d]; section 1 [m1,m2] is multi-parent with a clean split
+      // (c,d -> m1 ; a,b -> m2); section 2 [x<-m1, y<-m2] single-parent. The
+      // optimum needs BOTH the parent order swapped (m2,m1) AND the children to
+      // follow (y,x) — placing the tree after the head settles reaches it.
+      const e = {
+        am2: { source: "a", target: "m2", value: 1 },
+        bm2: { source: "b", target: "m2", value: 1 },
+        cm1: { source: "c", target: "m1", value: 1 },
+        dm1: { source: "d", target: "m1", value: 1 },
+        m1x: { source: "m1", target: "x", value: 2 },
+        m2y: { source: "m2", target: "y", value: 2 },
+      };
+      const testNodes: Record<string, TestNode> = {
+        a: { id: "a", depth: 0, value: 1, inEdges: [], outEdges: [e.am2] },
+        b: { id: "b", depth: 0, value: 1, inEdges: [], outEdges: [e.bm2] },
+        c: { id: "c", depth: 0, value: 1, inEdges: [], outEdges: [e.cm1] },
+        d: { id: "d", depth: 0, value: 1, inEdges: [], outEdges: [e.dm1] },
+        m1: {
+          id: "m1",
+          depth: 1,
+          value: 2,
+          inEdges: [e.cm1, e.dm1],
+          outEdges: [e.m1x],
+        },
+        m2: {
+          id: "m2",
+          depth: 1,
+          value: 2,
+          inEdges: [e.am2, e.bm2],
+          outEdges: [e.m2y],
+        },
+        x: { id: "x", depth: 2, value: 2, inEdges: [e.m1x], outEdges: [] },
+        y: { id: "y", depth: 2, value: 2, inEdges: [e.m2y], outEdges: [] },
+      };
+      const { nodes: graph, edges } = buildGraph(testNodes);
+      const input = {
+        0: [graph.a, graph.b, graph.c, graph.d],
+        1: [graph.m1, graph.m2],
+        2: [graph.x, graph.y],
+      };
+      const result = sortNodesInSections(input, [0, 1, 2], edges);
+
+      expect(sectionIds(result)).toEqual({
+        0: ["a", "b", "c", "d"],
+        1: ["m2", "m1"],
+        2: ["y", "x"],
+      });
+      expectIdentityPreserved(result, input);
+    });
   });
 
   describe("dominantNeighborIndex", () => {
