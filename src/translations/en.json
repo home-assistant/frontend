@@ -7168,6 +7168,7 @@
           "loading_error": "Failed to load radio frequency devices",
           "name": "Name",
           "type": "Type",
+          "frequencies": "Frequencies",
           "last_used": "Last used",
           "devices_navigation": "Devices"
         },
