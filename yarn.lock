@@ -6240,6 +6240,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vvo/tzdb@npm:6.198.0":
+  version: 6.198.0
+  resolution: "@vvo/tzdb@npm:6.198.0"
+  checksum: 10/702d25ed7e7a55c4ee3c81e5de79cdb5d11c73bc02e511fa8f93eb497e6ada1b198805469f9e203bef6ea304b914637a6c570f19ade405b6e97d45181a0216a1
+  languageName: node
+  linkType: hard
+
 "@webcomponents/scoped-custom-element-registry@npm:0.0.10":
   version: 0.0.10
   resolution: "@webcomponents/scoped-custom-element-registry@npm:0.0.10"
@@ -9511,13 +9518,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-timezones-json@npm:1.2.0":
-  version: 1.2.0
-  resolution: "google-timezones-json@npm:1.2.0"
-  checksum: 10/c83fdaa3681de7b63704aa5d5c644fecd1e2c46047eb65716fd0a1ef28a778b1bbfd6f521c499247b4d7afdc085c7d8bbdbea56398492d395ef9c8d87a648b11
-  languageName: node
-  linkType: hard
-
 "gopd@npm:^1.0.1, gopd@npm:^1.2.0":
   version: 1.2.0
   resolution: "gopd@npm:1.2.0"
@@ -9774,6 +9774,7 @@ __metadata:
     "@types/tar": "npm:7.0.87"
     "@vibrant/color": "npm:4.0.4"
     "@vitest/coverage-v8": "npm:4.1.9"
+    "@vvo/tzdb": "npm:6.198.0"
     "@webcomponents/scoped-custom-element-registry": "npm:0.0.10"
     "@webcomponents/webcomponentsjs": "npm:2.8.0"
     babel-loader: "npm:10.1.1"
@@ -9807,7 +9808,6 @@ __metadata:
     generate-license-file: "npm:4.2.1"
     glob: "npm:13.0.6"
     globals: "npm:17.6.0"
-    google-timezones-json: "npm:1.2.0"
     gulp: "npm:5.0.1"
     gulp-brotli: "npm:3.0.0"
     gulp-json-transform: "npm:0.5.0"
