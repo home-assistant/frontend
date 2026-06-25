@@ -331,6 +331,28 @@ export function computeBarycenter(
   return totalWeight > 0 ? weightedSum / totalWeight : fallback;
 }
 
+// Index of the single highest-weight neighbor present in the reference
+// section (ties on weight broken by the earliest edge). Used only as a
+// barycenter tie-break so a node stays beside its dominant neighbor's group
+// instead of falling back to a stale seed index. Falls back to the node's own
+// index when it has no resolvable neighbor, matching computeBarycenter.
+export function dominantNeighborIndex(
+  neighbors: WeightedNeighbor[],
+  referenceIdIndexMap: Map<string, number>,
+  fallback: number
+): number {
+  let bestIdx = fallback;
+  let bestWeight = -Infinity;
+  neighbors.forEach(({ id, weight }) => {
+    const idx = referenceIdIndexMap.get(id);
+    if (idx !== undefined && weight > bestWeight) {
+      bestWeight = weight;
+      bestIdx = idx;
+    }
+  });
+  return bestIdx;
+}
+
 function buildIdIndexMap(section: Node[]): Map<string, number> {
   const map = new Map<string, number>();
   section.forEach((node, index) => map.set(node.id, index));
@@ -342,12 +364,20 @@ function sortSectionByBarycenter(
   referenceMap: Map<string, number>,
   getNeighbors: (node: Node) => WeightedNeighbor[]
 ): { sorted: Node[]; changed: boolean } {
-  const decorated = section.map((node, index) => ({
-    node,
-    index,
-    barycenter: computeBarycenter(getNeighbors(node), referenceMap, index),
-  }));
-  decorated.sort((a, b) => a.barycenter - b.barycenter || a.index - b.index);
+  const decorated = section.map((node, index) => {
+    const neighbors = getNeighbors(node);
+    return {
+      node,
+      index,
+      barycenter: computeBarycenter(neighbors, referenceMap, index),
+      // Tie-break that keeps a node next to its dominant neighbor's group.
+      anchor: dominantNeighborIndex(neighbors, referenceMap, index),
+    };
+  });
+  decorated.sort(
+    (a, b) =>
+      a.barycenter - b.barycenter || a.anchor - b.anchor || a.index - b.index
+  );
   const sorted = decorated.map((d) => d.node);
   const changed = sorted.some((n, idx) => n !== section[idx]);
   return { sorted, changed };
@@ -452,7 +482,32 @@ function crossingsAdjacentTo(
   return total;
 }
 
-const MAX_SORT_ITERATIONS = 4;
+function countAllCrossings(
+  sections: Node[][],
+  sectionMaps: Map<string, number>[],
+  depths: number[],
+  edges: GraphEdge[]
+): number {
+  let total = 0;
+  for (let i = 0; i < sections.length - 1; i++) {
+    total += countCrossings(
+      getEdgeSegmentsBetween(
+        depths[i],
+        depths[i + 1],
+        depths,
+        edges,
+        sectionMaps[i],
+        sectionMaps[i + 1]
+      )
+    );
+  }
+  return total;
+}
+
+// Allow a couple of extra sweeps beyond what a single pass needs: a plateau
+// move (see tryReplace) often only pays off once a neighbouring section is
+// re-sorted on a later pass, and that can ripple across several depths.
+const MAX_SORT_ITERATIONS = 6;
 
 export function sortNodesInSections(
   nodesPerSection: Record<number, Node[]>,
@@ -464,9 +519,26 @@ export function sortNodesInSections(
   // a section's order actually changes (inside tryReplace).
   const sectionMaps: Map<string, number>[] = sections.map(buildIdIndexMap);
 
-  // Replace a section with a candidate ordering only when crossings strictly
-  // drop on either side. This keeps user-intended ordering intact when
-  // barycenter would shuffle nodes without improving the layout.
+  // Running total of crossings across every boundary. A section reorder only
+  // touches its two adjacent boundaries, so the live total can be maintained
+  // incrementally: it never increases (tryReplace rejects worsening moves), so
+  // it is monotonically non-increasing across the whole sweep.
+  let liveCrossings = countAllCrossings(sections, sectionMaps, depths, edges);
+
+  // Best (fewest-crossing) layout seen so far, captured the instant a move
+  // strictly improves on it. We return THIS, not the live `sections`.
+  const snapshot = (): Node[][] => sections.map((s) => s.slice());
+  let bestCrossings = liveCrossings;
+  let bestSections = snapshot();
+
+  // Replace a section with a candidate ordering when crossings on its adjacent
+  // boundaries do not increase. Accepting equal-crossing ("plateau") moves lets
+  // the sweep realign a section with its parents even when the payoff only
+  // appears after a neighbouring section is re-sorted on a later pass — the
+  // local optimum a strict gate gets stuck in. Whenever an accepted move
+  // strictly lowers the global total we snapshot it as the best; that snapshot
+  // is what guarantees the result is never worse than the seed and keeps the
+  // output deterministic and idempotent despite plateau churn.
   const tryReplace = (i: number, candidate: Node[]): boolean => {
     const before = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
     const sectionSnapshot = sections[i];
@@ -474,7 +546,12 @@ export function sortNodesInSections(
     sections[i] = candidate;
     sectionMaps[i] = buildIdIndexMap(candidate);
     const after = crossingsAdjacentTo(i, sections, sectionMaps, depths, edges);
-    if (after < before) {
+    if (after <= before) {
+      liveCrossings += after - before;
+      if (liveCrossings < bestCrossings) {
+        bestCrossings = liveCrossings;
+        bestSections = snapshot();
+      }
       return true;
     }
     sections[i] = sectionSnapshot;
@@ -509,12 +586,12 @@ export function sortNodesInSections(
       }
     }
 
-    if (!changed) break;
+    if (!changed || bestCrossings === 0) break;
   }
 
   const sortedSections: Record<number, Node[]> = {};
   depths.forEach((depth, i) => {
-    sortedSections[depth] = sections[i];
+    sortedSections[depth] = bestSections[i];
   });
   return sortedSections;
 }

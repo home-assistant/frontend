@@ -12,6 +12,7 @@ import {
   getPassThroughSections,
   createPassThroughNode,
   computeBarycenter,
+  dominantNeighborIndex,
   sortNodesInSections,
 } from "../../../../../src/resources/echarts/components/sankey/sankey-layout";
 
@@ -755,6 +756,188 @@ describe("Sankey Layout Functions", () => {
         1: ["B"],
       });
       expectIdentityPreserved(result, input);
+    });
+
+    it("untangles a plateau-trapped subtree to remove an avoidable crossing (#52852)", () => {
+      // Realistic consumption tree: home → floors → areas → devices, plus two
+      // devices that attach higher up — one on a floor with no area
+      // (dev_floor_outside) and one straight on home (dev_home) — which the
+      // engine threads through with pass-throughs. The seed splits
+      // floor_outside's subtree: its pass-through child sits *after*
+      // floor_foundation's area. Pulling it back trades a crossing from the
+      // (1,2) boundary to the (2,3) boundary — a net-zero "plateau" the old
+      // strict gate refused, leaving the crossing. The plateau-escape must now
+      // take that step and let the device section follow, reaching 0 crossings.
+      const e = {
+        homeFo: { source: "home", target: "floor_outside", value: 1 },
+        homeFf: { source: "home", target: "floor_foundation", value: 1 },
+        foHvac: { source: "floor_outside", target: "area_hvac", value: 1 },
+        ffParking: {
+          source: "floor_foundation",
+          target: "area_parking",
+          value: 1,
+        },
+        hvacDev: { source: "area_hvac", target: "dev_hvac", value: 1 },
+        parkingDev: { source: "area_parking", target: "dev_parking", value: 1 },
+        foDev: {
+          source: "floor_outside",
+          target: "dev_floor_outside",
+          value: 1,
+        },
+        homeDev: { source: "home", target: "dev_home", value: 1 },
+      };
+      const testNodes: Record<string, TestNode> = {
+        home: {
+          id: "home",
+          depth: 0,
+          value: 4,
+          inEdges: [],
+          outEdges: [e.homeFo, e.homeFf, e.homeDev],
+        },
+        floor_outside: {
+          id: "floor_outside",
+          depth: 1,
+          value: 2,
+          inEdges: [e.homeFo],
+          outEdges: [e.foHvac, e.foDev],
+        },
+        floor_foundation: {
+          id: "floor_foundation",
+          depth: 1,
+          value: 1,
+          inEdges: [e.homeFf],
+          outEdges: [e.ffParking],
+        },
+        area_hvac: {
+          id: "area_hvac",
+          depth: 2,
+          value: 1,
+          inEdges: [e.foHvac],
+          outEdges: [e.hvacDev],
+        },
+        area_parking: {
+          id: "area_parking",
+          depth: 2,
+          value: 1,
+          inEdges: [e.ffParking],
+          outEdges: [e.parkingDev],
+        },
+        dev_hvac: {
+          id: "dev_hvac",
+          depth: 3,
+          value: 1,
+          inEdges: [e.hvacDev],
+          outEdges: [],
+        },
+        dev_parking: {
+          id: "dev_parking",
+          depth: 3,
+          value: 1,
+          inEdges: [e.parkingDev],
+          outEdges: [],
+        },
+        dev_floor_outside: {
+          id: "dev_floor_outside",
+          depth: 3,
+          value: 1,
+          inEdges: [e.foDev],
+          outEdges: [],
+        },
+        dev_home: {
+          id: "dev_home",
+          depth: 3,
+          value: 1,
+          inEdges: [e.homeDev],
+          outEdges: [],
+        },
+      };
+      const { nodes: graph, edges } = buildGraph(testNodes);
+      const ptHome1 = createPassThroughNode("home", "dev_home", 1, 1);
+      const ptFo2 = createPassThroughNode(
+        "floor_outside",
+        "dev_floor_outside",
+        2,
+        1
+      );
+      const ptHome2 = createPassThroughNode("home", "dev_home", 2, 1);
+
+      // Seed order from ha-sankey-chart: pass-throughs appended after the real
+      // children, so floor_outside's subtree is broken across the section.
+      const input = {
+        0: [graph.home],
+        1: [graph.floor_outside, graph.floor_foundation, ptHome1],
+        2: [graph.area_hvac, graph.area_parking, ptFo2, ptHome2],
+        3: [
+          graph.dev_hvac,
+          graph.dev_parking,
+          graph.dev_floor_outside,
+          graph.dev_home,
+        ],
+      };
+      const result = sortNodesInSections(input, [0, 1, 2, 3], edges);
+
+      // floor_outside's children (area_hvac and its pass-through) are now
+      // contiguous, ahead of floor_foundation's; the layout is crossing-free.
+      expect(sectionIds(result)).toEqual({
+        0: ["home"],
+        1: ["floor_outside", "floor_foundation", "home-dev_home-1"],
+        2: [
+          "area_hvac",
+          "floor_outside-dev_floor_outside-2",
+          "area_parking",
+          "home-dev_home-2",
+        ],
+        3: ["dev_hvac", "dev_floor_outside", "dev_parking", "dev_home"],
+      });
+      expectIdentityPreserved(result, input);
+
+      // Re-running on the result must not drift: plateau churn is discarded and
+      // the best snapshot is returned, so the order is stable (idempotent).
+      const again = sortNodesInSections(result, [0, 1, 2, 3], edges);
+      expect(sectionIds(again)).toEqual(sectionIds(result));
+    });
+  });
+
+  describe("dominantNeighborIndex", () => {
+    it("returns the index of the single heaviest neighbor", () => {
+      const map = new Map([
+        ["light", 0],
+        ["heavy", 3],
+      ]);
+      const result = dominantNeighborIndex(
+        [
+          { id: "light", weight: 1 },
+          { id: "heavy", weight: 5 },
+        ],
+        map,
+        9
+      );
+      expect(result).toBe(3);
+    });
+
+    it("breaks weight ties by the earliest edge", () => {
+      const map = new Map([
+        ["a", 2],
+        ["b", 4],
+      ]);
+      const result = dominantNeighborIndex(
+        [
+          { id: "a", weight: 1 },
+          { id: "b", weight: 1 },
+        ],
+        map,
+        9
+      );
+      expect(result).toBe(2);
+    });
+
+    it("falls back when no neighbor is in the reference section", () => {
+      const result = dominantNeighborIndex(
+        [{ id: "missing", weight: 1 }],
+        new Map(),
+        7
+      );
+      expect(result).toBe(7);
     });
   });
 });
