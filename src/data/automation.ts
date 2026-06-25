@@ -331,7 +331,14 @@ export interface AutomationElementGroupCollection {
 
 export type AutomationElementGroup = Record<
   string,
-  { icon?: string; members?: AutomationElementGroup }
+  {
+    icon?: string;
+    members?: AutomationElementGroup;
+    // Backend element domains (e.g. "calendar", "sun") whose triggers/conditions
+    // are bundled into this group instead of appearing as their own dynamic
+    // domain group.
+    domains?: string[];
+  }
 >;
 
 export type LegacyCondition =

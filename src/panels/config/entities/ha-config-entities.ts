@@ -1019,7 +1019,6 @@ export class HaConfigEntities extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-integrations>
         <ha-filter-states
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.entities.picker.headers.status"
           )}

@@ -1,0 +1,251 @@
+/**
+ * E2E tests for the HA test app (port 8095).
+ *
+ * Run with:
+ *   yarn test:e2e:app
+ */
+import { test, expect, type Page } from "@playwright/test";
+import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+// The test app is built with __DEMO__=true which enables hash-based routing.
+// Panel paths must use hash URLs: /#/lovelace, /#/energy, etc.
+// Scenario selection uses query params: /?scenario=foo (always at root).
+
+/** Navigate to a panel (hash routing) and wait for app to initialize. */
+async function goToPanel(page: Page, path: string) {
+  // Paths starting with /? are root-level (scenario selection); panel paths
+  // need to use hash routing (/#/panelname).
+  const url = path.startsWith("/?") ? path : `/#${path}`;
+  await page.goto(url);
+  await page.waitForSelector("ha-test", { state: "attached" });
+  // Wait for the app to finish initialising (hassConnected sets panels)
+  await page.waitForFunction(() => Boolean((window as any).__mockHass));
+}
+
+// ---------------------------------------------------------------------------
+// App shell
+// ---------------------------------------------------------------------------
+
+test.describe("App shell", () => {
+  test("page loads and ha-test element mounts", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    await goToPanel(page, "/");
+
+    await expect(page.locator("ha-test")).toBeAttached();
+    expect(errors).toHaveLength(0);
+  });
+
+  test("sidebar renders with expected panels", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+
+    // Regular panels use #sidebar-panel-{urlPath} inside ha-sidebar's shadow root
+    for (const urlPath of ["lovelace", "energy", "history"]) {
+      // eslint-disable-next-line no-await-in-loop
+      await expect(
+        page.locator(
+          `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-panel-${urlPath}`
+        )
+      ).toBeAttached();
+    }
+    // Config has its own special element with id="sidebar-config"
+    await expect(
+      page.locator(
+        `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
+      )
+    ).toBeAttached();
+  });
+
+  test("non-admin user does NOT see config panel in sidebar", async ({
+    page,
+  }) => {
+    // Navigate to a panel route so the sidebar actually renders, then apply
+    // the non-admin scenario via query param.
+    await goToPanel(page, "/?scenario=non-admin#/lovelace");
+
+    // Wait for the sidebar to mount before asserting on its contents.
+    await expect(
+      page.locator("ha-test >> home-assistant-main >> ha-sidebar")
+    ).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    // Config panel is adminOnly — should not appear for non-admin.
+    const configLink = page.locator(
+      `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
+    );
+    await expect(configLink).not.toBeAttached();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Panel navigation
+// ---------------------------------------------------------------------------
+
+test.describe("Panel navigation", () => {
+  test("navigates to lovelace dashboard", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+    await expect(
+      page.locator("ha-panel-lovelace, hui-root").first()
+    ).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  test("navigates to energy panel", async ({ page }) => {
+    await goToPanel(page, "/energy");
+    await expect(
+      page.locator("ha-panel-energy, energy-view").first()
+    ).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  test("navigates to history panel", async ({ page }) => {
+    await goToPanel(page, "/history");
+    await expect(
+      page.locator("ha-panel-history, history-panel").first()
+    ).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  test("navigates to developer-tools panel", async ({ page }) => {
+    // Since 2026.2 developer-tools is part of the config panel
+    await goToPanel(page, "/config/developer-tools");
+    await expect(
+      page.locator("ha-panel-config, developer-tools-main").first()
+    ).toBeAttached({ timeout: PANEL_TIMEOUT });
+  });
+
+  test("navigates to profile panel", async ({ page }) => {
+    await goToPanel(page, "/profile");
+    await expect(
+      page.locator("ha-panel-profile, ha-config-user-profile").first()
+    ).toBeAttached({ timeout: PANEL_TIMEOUT });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Lovelace
+// ---------------------------------------------------------------------------
+
+test.describe("Lovelace dashboard", () => {
+  test("renders cards", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+    // At least one card should appear
+    await expect(page.locator("hui-card, hui-tile-card").first()).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  test("admin user sees edit button", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+    // The edit FAB / menu button is present for admins
+    await expect(
+      page.locator("[data-testid='edit-mode-button'], ha-menu-button")
+    ).toBeAttached({ timeout: QUICK_TIMEOUT });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// More-info dialog (light)
+// ---------------------------------------------------------------------------
+
+test.describe("Light more-info dialog", () => {
+  test("opens more-info dialog for a light entity", async ({ page }) => {
+    // The light-more-info scenario seeds light.test_light synchronously.
+    await goToPanel(page, "/?scenario=light-more-info#/lovelace");
+
+    // Fire the standard hass-more-info event from the app root. The HA shell
+    // listens for this and opens ha-more-info-dialog via its dialog manager.
+    await page.evaluate(() => {
+      const el = document.querySelector("ha-test");
+      el?.dispatchEvent(
+        new CustomEvent("hass-more-info", {
+          detail: { entityId: "light.test_light" },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    });
+
+    const dialog = page.locator("ha-more-info-dialog");
+    await expect(dialog).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    // Confirm it actually rendered our entity, not a generic empty dialog.
+    await expect(dialog.locator("span.title")).toContainText("Test Light", {
+      timeout: QUICK_TIMEOUT,
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Theming
+// ---------------------------------------------------------------------------
+
+test.describe("Theming", () => {
+  test("dark theme sets darkMode flag", async ({ page }) => {
+    await goToPanel(page, "/?scenario=dark-theme#/lovelace");
+
+    // The dark-theme scenario sets selectedTheme.dark = true, which causes
+    // _applyTheme() to set themes.darkMode = true on the element.
+    await page.waitForFunction(
+      () =>
+        (document.querySelector("ha-test") as any)?.hass?.themes?.darkMode ===
+        true,
+      { timeout: QUICK_TIMEOUT }
+    );
+  });
+
+  test("custom theme applies CSS variables", async ({ page }) => {
+    await goToPanel(page, "/?scenario=custom-theme#/lovelace");
+
+    // The custom-theme scenario sets --primary-color to #e91e63. Wait until
+    // _applyTheme has propagated the value to <html> before reading it — the
+    // scenario fires before hassConnected, but the variable lands on :root in
+    // the same tick mockTheme is called.
+    await page.waitForFunction(
+      () =>
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--primary-color")
+          .trim() !== "",
+      { timeout: QUICK_TIMEOUT }
+    );
+
+    const primaryColor = await page.evaluate(() =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--primary-color")
+        .trim()
+    );
+    // Compare normalised — some browsers serialise as rgb().
+    expect(primaryColor.toLowerCase()).toMatch(
+      /#e91e63|rgb\(233,\s*30,\s*99\)/
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Config panel
+// ---------------------------------------------------------------------------
+
+test.describe("Config panel", () => {
+  test("config panel loads without JS errors", async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+
+    await goToPanel(page, "/config");
+    await expect(
+      page.locator("ha-panel-config, ha-config-dashboard").first()
+    ).toBeAttached({ timeout: PANEL_TIMEOUT + 5_000 });
+
+    // Filter known pre-existing errors from vendor code
+    const realErrors = errors.filter(
+      (e) => !e.includes("ResizeObserver") && !e.includes("Non-Error")
+    );
+    expect(realErrors).toHaveLength(0);
+  });
+});

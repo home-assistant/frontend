@@ -50,7 +50,6 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         >
           <div class="card-content">
             <ha-entity-picker
-              .hass=${this.hass}
               .helper=${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.description"
               )}

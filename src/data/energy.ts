@@ -42,6 +42,12 @@ import {
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
+// Collection key for the statistics-based energy dashboard views (Overview,
+// Electricity, Gas, Water).
+export const DEFAULT_ENERGY_COLLECTION_KEY = "energy_dashboard";
+// Collection key for the real-time "Now" view (live power + 5-minute stats).
+export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
+
 // All collection keys created this session
 const energyCollectionKeys = new Set<string | undefined>();
 
@@ -787,9 +793,30 @@ const findEnergyDataCollection = (
   return (hass.connection as any)[key];
 };
 
+// When does the collection's day period need to roll over to the next day?
+// With `midnightRollover` (the real-time "Now" view) it rolls over right at
+// midnight. Otherwise it waits an hour, until the new day's first hourly
+// statistic exists — rolling over at midnight would show an empty graph.
+export const getNextEnergyPeriodStart = (
+  midnightRollover: boolean,
+  now: Date,
+  locale: HomeAssistant["locale"],
+  config: HomeAssistant["config"]
+): Date => {
+  const dayEnd = calcDate(now, endOfDay, locale, config);
+  return midnightRollover ? addMilliseconds(dayEnd, 1) : addHours(dayEnd, 1);
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
-  options: { prefs?: EnergyPreferences; key?: string } = {}
+  options: {
+    prefs?: EnergyPreferences;
+    key?: string;
+    // The real-time "Now" view opts in to rolling its day period over at
+    // midnight rather than an hour later (it shows live data, so it always
+    // tracks today and never falls back to yesterday in the first hour).
+    midnightRollover?: boolean;
+  } = {}
 ): EnergyCollection => {
   const [key, collectionKey] = convertCollectionKeyToConnection(
     hass,
@@ -798,6 +825,8 @@ export const getEnergyDataCollection = (
   if ((hass.connection as any)[key]) {
     return (hass.connection as any)[key];
   }
+
+  const midnightRollover = options.midnightRollover ?? false;
 
   energyCollectionKeys.add(collectionKey);
 
@@ -857,12 +886,16 @@ export const getEnergyDataCollection = (
 
   const now = new Date();
   const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
-  // Set start to start of today if we have data for today, otherwise yesterday
+  // Set start to start of today if we have data for today, otherwise yesterday.
+  // The real-time "Now" view always tracks today; it shows live data even
+  // before today's first statistic exists, so it never falls back to yesterday.
   const preferredPeriod =
     (localStorage.getItem(`energy-default-period-${key}`) as DateRange) ||
     "today";
   const period =
-    preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
+    preferredPeriod === "today" && hour === "0" && !midnightRollover
+      ? "yesterday"
+      : preferredPeriod;
 
   const [start, end] = calcDateRange(hass.locale, hass.config, period);
   collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
@@ -886,10 +919,12 @@ export const getEnergyDataCollection = (
         collection.refresh();
         scheduleUpdatePeriod();
       },
-      addHours(
-        calcDate(new Date(), endOfDay, hass.locale, hass.config),
-        1
-      ).getTime() - Date.now() // Switch to next day an hour after the day changed
+      getNextEnergyPeriodStart(
+        midnightRollover,
+        new Date(),
+        hass.locale,
+        hass.config
+      ).getTime() - Date.now()
     );
   };
   scheduleUpdatePeriod();

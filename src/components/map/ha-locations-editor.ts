@@ -13,7 +13,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
-import type { HomeAssistant, ThemeMode } from "../../types";
+import type { ThemeMode } from "../../types";
 import "../ha-input-helper-text";
 import "./ha-map";
 import type { HaMap } from "./ha-map";
@@ -45,8 +45,6 @@ export interface MarkerLocation {
 
 @customElement("ha-locations-editor")
 export class HaLocationsEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public locations?: MarkerLocation[];
 
   @property() public helper?: string;

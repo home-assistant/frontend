@@ -81,7 +81,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                   : html`
                       <ha-entity-picker
                         hide-clear-icon
-                        .hass=${this.hass}
                         .value=${(entityConf as EntityConfig).entity}
                         .index=${index}
                         @value-changed=${this._valueChanged}
@@ -112,7 +111,6 @@ export class HuiEntitiesCardRowEditor extends LitElement {
       </ha-sortable>
       <ha-entity-picker
         class="add-entity"
-        .hass=${this.hass}
         @value-changed=${this._addEntity}
         add-button
       ></ha-entity-picker>

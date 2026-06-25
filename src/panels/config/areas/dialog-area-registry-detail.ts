@@ -251,7 +251,6 @@ class DialogAreaDetail
       >
         <div class="content">
           <ha-entity-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.areas.editor.temperature_entity"
             )}
@@ -266,7 +265,6 @@ class DialogAreaDetail
           ></ha-entity-picker>
 
           <ha-entity-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.areas.editor.humidity_entity"
             )}

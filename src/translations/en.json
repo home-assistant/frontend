@@ -5107,6 +5107,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
+            "time_sun": "Time and sun",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -5175,7 +5176,6 @@
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
-              "no_items_for_target_note": "This is a {labs_link} feature. More triggers will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5183,8 +5183,11 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "time_location": {
-                  "label": "Time and location"
+                "time": {
+                  "label": "Time"
+                },
+                "sun": {
+                  "label": "Sun"
                 },
                 "generic": {
                   "label": "Generic"
@@ -5437,6 +5440,10 @@
               "invalid_condition": "Invalid condition configuration",
               "validation_failed": "Condition validation failed",
               "test_failed": "Error occurred while testing condition",
+              "duration_priming": {
+                "entity_not_recorded": "One or more of the selected entities aren''t being recorded, so their history can''t be used. After a restart or reload, this condition only becomes true once they''ve been in the matching state for the full duration.",
+                "history_capped": "Only the last {hours} hours of history are checked. For longer durations, after a restart or reload this condition only becomes true once the entities have been in the matching state for the full duration."
+              },
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
@@ -5454,7 +5461,6 @@
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
               "no_items_for_target": "No conditions available for",
-              "no_items_for_target_note": "This is a {labs_link} feature. More conditions will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5462,8 +5468,11 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "time_location": {
-                  "label": "Time and location"
+                "time": {
+                  "label": "Time"
+                },
+                "sun": {
+                  "label": "Sun"
                 },
                 "generic": {
                   "label": "Generic"
@@ -6524,8 +6533,7 @@
             "actions": {
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
-            },
-            "no_device_automations": "There are no automations, scripts or scenes available for this device."
+            }
           },
           "script": {
             "scripts_heading": "Scripts",
@@ -7160,6 +7168,7 @@
           "loading_error": "Failed to load radio frequency devices",
           "name": "Name",
           "type": "Type",
+          "frequencies": "Frequencies",
           "last_used": "Last used",
           "devices_navigation": "Devices"
         },
@@ -9460,7 +9469,15 @@
             "logbook": {
               "name": "Activity",
               "description": "This card shows a list of events for entities.",
-              "state_filter": "State filter"
+              "state_filter": "State filter",
+              "name_detail": "Name detail",
+              "name_detail_options": {
+                "auto": "Automatic",
+                "none": "None",
+                "entity": "Entity",
+                "device": "Device ▸ Entity",
+                "area": "Area ▸ Device ▸ Entity"
+              }
             },
             "history-graph": {
               "name": "History graph",
@@ -10484,7 +10501,15 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_badge": "By badge"
+            "by_badge": "By badge",
+            "with_name": "With name",
+            "suggestions_title": "[%key:ui::panel::lovelace::editor::cardpicker::suggestions_title%]",
+            "community_title": "[%key:ui::panel::lovelace::editor::cardpicker::community_title%]",
+            "selected_entity": "[%key:ui::panel::lovelace::editor::cardpicker::selected_entity%]",
+            "content_empty_title": "[%key:ui::panel::lovelace::editor::cardpicker::content_empty_title%]",
+            "content_empty_description": "Or browse all badge types.",
+            "browse_badges": "Browse all badges",
+            "not_found": "Can't find the badge you want?"
           },
           "header-footer": {
             "header": "Header",

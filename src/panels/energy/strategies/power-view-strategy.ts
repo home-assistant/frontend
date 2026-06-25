@@ -1,9 +1,11 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
   hasGasRateSource,
@@ -32,6 +34,8 @@ export class PowerViewStrategy extends ReactiveElement {
 
     const energyCollection = getEnergyDataCollection(hass, {
       key: collectionKey,
+      // The "Now" view is real-time; roll its day period over at midnight.
+      midnightRollover: true,
     });
     if (!energyCollection.prefs) {
       await energyCollection.refresh();

@@ -747,7 +747,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
       SCANNER_SOURCE_TYPES.includes(stateObj?.attributes?.source_type)
         ? html`
             <ha-entity-picker
-              .hass=${this.hass}
               .value=${this._associatedZone}
               .label=${this.hass.localize(
                 "ui.dialogs.entity_registry.editor.associated_zone"

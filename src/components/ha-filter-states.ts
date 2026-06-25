@@ -5,7 +5,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -14,8 +13,6 @@ import "./ha-list";
 
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: string[];

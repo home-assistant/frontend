@@ -41,7 +41,11 @@ export class HaInputSearch extends HaInput {
     ...HaInput.styles,
     css`
       :host([appearance="outlined"]) wa-input.no-label::part(base) {
-        height: 40px;
+        height: var(--ha-input-search-height, 40px);
+        border-radius: var(
+          --ha-input-search-border-radius,
+          var(--ha-border-radius-md)
+        );
       }
     `,
   ];

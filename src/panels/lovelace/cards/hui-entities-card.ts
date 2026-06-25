@@ -49,6 +49,33 @@ export const computeShowHeaderToggle = <
   return !!config.show_header_toggle;
 };
 
+export const migrateEntitiesCardConfig = (
+  config: EntitiesCardConfig
+): EntitiesCardConfig => {
+  let changed = false;
+  const newEntities = config.entities?.map((e) => {
+    if (typeof e !== "object") {
+      return e;
+    }
+    if (!("format" in e)) {
+      return e;
+    }
+    changed = true;
+    const { format, ...rest } = e;
+    return {
+      ...rest,
+      time_format: (rest as EntityConfig).time_format ?? format,
+    };
+  });
+  if (!changed) {
+    return config;
+  }
+  return {
+    ...config,
+    entities: newEntities as (LovelaceRowConfig | string)[],
+  };
+};
+
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -153,11 +180,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       throw new Error("Entities must be specified");
     }
 
-    const entities = processConfigEntities(config.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = config;
+    this._config = migratedConfig;
     this._configEntities = entities;
-    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
+    this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header

@@ -1,0 +1,195 @@
+#!/usr/bin/env node
+// Checks that a pull request follows the contribution standards: it must use the
+// PR template, tick exactly one "Type of change" option, and describe the change.
+// Labels and comments the PR when it does not, and fails the check so it blocks
+// merging. Invoked from the `check` job in .github/workflows/pull-request-standards.yaml
+// via actions/github-script:
+//
+//   const { default: checkStandards } =
+//     await import(`${process.env.GITHUB_WORKSPACE}/.github/scripts/check-pull-request-standards.mjs`);
+//   await checkStandards({ github, context, core });
+
+export default async function checkPullRequestStandards({
+  github,
+  context,
+  core,
+}) {
+  const pr = context.payload.pull_request;
+
+  // Exempt bots (Copilot agent, dependabot), drafts, and maintainers.
+  if (pr.user.type === "Bot") {
+    core.info(`Skipping bot author: ${pr.user.login}`);
+    return;
+  }
+  if (pr.draft) {
+    core.info("Skipping draft pull request");
+    return;
+  }
+  try {
+    await github.rest.orgs.checkMembershipForUser({
+      org: "home-assistant",
+      username: pr.user.login,
+    });
+    core.info(`Skipping organization member: ${pr.user.login}`);
+    return;
+  } catch (_error) {
+    core.info(
+      `${pr.user.login} is not an organization member, checking standards`
+    );
+  }
+
+  const label = "Needs Template";
+  const marker = "<!-- pr-standards-check -->";
+  const { owner, repo } = context.repo;
+  const issue_number = pr.number;
+
+  let body = pr.body || "";
+  let previous;
+  do {
+    previous = body;
+    body = body.replace(/<!--[\s\S]*?-->/g, "");
+  } while (body !== previous);
+  const normalized = body.toLowerCase();
+
+  // Ignore 404s from mutations that race manual edits or cancelled runs.
+  const ignoreMissing = async (fn) => {
+    try {
+      await fn();
+    } catch (error) {
+      if (error.status === 404) {
+        core.info("Target already removed, nothing to do");
+        return;
+      }
+      throw error;
+    }
+  };
+
+  // Hide/restore our comment via GraphQL (REST cannot minimize).
+  const setMinimized = async (subjectId, minimized) => {
+    const mutation = minimized
+      ? `mutation($id: ID!) {
+           minimizeComment(input: { subjectId: $id, classifier: RESOLVED }) {
+             clientMutationId
+           }
+         }`
+      : `mutation($id: ID!) {
+           unminimizeComment(input: { subjectId: $id }) {
+             clientMutationId
+           }
+         }`;
+    try {
+      await github.graphql(mutation, { id: subjectId });
+    } catch (error) {
+      core.info(
+        `Could not ${minimized ? "minimize" : "restore"} comment: ${error.message}`
+      );
+    }
+  };
+
+  // Content of a "## <name>" section, or null when the heading is absent.
+  const section = (name) => {
+    const match = body.match(
+      new RegExp(`##\\s${name}([\\s\\S]*?)(?=\\n##\\s|$)`, "i")
+    );
+    return match ? match[1] : null;
+  };
+
+  const problems = [];
+
+  const requiredHeadings = [
+    "## proposed change",
+    "## type of change",
+    "## checklist",
+  ];
+  if (requiredHeadings.some((h) => !normalized.includes(h))) {
+    problems.push(
+      "Use the pull request template without removing its sections."
+    );
+  }
+
+  const typeOfChange = section("type of change");
+  if (typeOfChange !== null) {
+    const ticked = (typeOfChange.match(/-\s*\[[xX]\]/g) || []).length;
+    if (ticked !== 1) {
+      problems.push('Select exactly one option under "Type of change".');
+    }
+  }
+
+  const proposedChange = section("proposed change");
+  if (proposedChange !== null && proposedChange.trim().length === 0) {
+    problems.push('Describe your changes under "Proposed change".');
+  }
+
+  const isValid = problems.length === 0;
+
+  const comments = await github.paginate(github.rest.issues.listComments, {
+    owner,
+    repo,
+    issue_number,
+    per_page: 100,
+  });
+  const existing = comments.find((c) => c.body.includes(marker));
+  const hasLabel = pr.labels.some((l) => l.name === label);
+
+  if (isValid) {
+    core.info("Pull request standards met");
+
+    if (hasLabel) {
+      await ignoreMissing(() =>
+        github.rest.issues.removeLabel({
+          owner,
+          repo,
+          issue_number,
+          name: label,
+        })
+      );
+    }
+    if (existing) {
+      await setMinimized(existing.node_id, true);
+    }
+    return;
+  }
+
+  core.info(`Pull request standards not met:\n- ${problems.join("\n- ")}`);
+
+  if (!hasLabel) {
+    await github.rest.issues.addLabels({
+      owner,
+      repo,
+      issue_number,
+      labels: [label],
+    });
+  }
+
+  const message =
+    `${marker}\n` +
+    `Hey @${pr.user.login}!\n\n` +
+    `Thank you for your contribution! To help reviewers, please update ` +
+    `this pull request to follow our pull request standards:\n\n` +
+    problems.map((p) => `- ${p}`).join("\n") +
+    `\n\n` +
+    `Please complete the ` +
+    `[PR template](https://github.com/home-assistant/frontend/blob/dev/.github/PULL_REQUEST_TEMPLATE.md?plain=1) ` +
+    `and see the [developer docs](https://developers.home-assistant.io/docs/review-process) ` +
+    `for more on creating a great pull request (see point 6).`;
+
+  if (existing) {
+    await github.rest.issues.updateComment({
+      owner,
+      repo,
+      comment_id: existing.id,
+      body: message,
+    });
+    await setMinimized(existing.node_id, false);
+  } else {
+    await github.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number,
+      body: message,
+    });
+  }
+
+  // Fail this check so it can block the PR from being merged
+  core.setFailed(`Pull request standards not met:\n- ${problems.join("\n- ")}`);
+}

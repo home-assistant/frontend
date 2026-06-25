@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import { mdiCog, mdiMenu } from "@mdi/js";
 import type { Connection } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -19,6 +20,22 @@ import "../../src/components/ha-svg-icon";
 import "../../src/components/ha-top-app-bar-fixed";
 import "../../src/managers/notification-manager";
 import { haStyle } from "../../src/resources/styles";
+import {
+  apiContext,
+  areasContext,
+  configContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  servicesContext,
+  statesContext,
+  uiContext,
+} from "../../src/data/context";
+import { updateHassGroups } from "../../src/data/context/updateContext";
 import type { HomeAssistant, ThemeSettings } from "../../src/types";
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import {
@@ -112,6 +129,65 @@ class HaGallery extends LitElement {
   private _narrow = window.matchMedia("(max-width: 600px)").matches;
 
   @state() private _drawerOpen = !this._narrow;
+
+  // Fallback Lit context providers for the whole gallery. The real app's root
+  // element provides these via `contextMixin`; here we mirror that so demos
+  // which render context-consuming components without setting up their own hass
+  // (e.g. bare component demos) still resolve `localize`, formatters, config,
+  // etc. instead of throwing during init. Demos that call `provideHass`
+  // register their own providers closer in the tree, which take precedence.
+  private _contextProviders = {
+    registries: new ContextProvider(this, { context: registriesContext }),
+    internationalization: new ContextProvider(this, {
+      context: internationalizationContext,
+    }),
+    api: new ContextProvider(this, { context: apiContext }),
+    connection: new ContextProvider(this, { context: connectionContext }),
+    ui: new ContextProvider(this, { context: uiContext }),
+    config: new ContextProvider(this, { context: configContext }),
+    formatters: new ContextProvider(this, { context: formattersContext }),
+  };
+
+  // The individual (non-grouped) contexts contextMixin also provides. Components
+  // such as ha-area-picker / ha-entity-picker consume these directly, so the
+  // fallback must cover them too.
+  private _singleContextProviders = {
+    states: new ContextProvider(this, { context: statesContext }),
+    services: new ContextProvider(this, { context: servicesContext }),
+    entities: new ContextProvider(this, { context: entitiesContext }),
+    devices: new ContextProvider(this, { context: devicesContext }),
+    areas: new ContextProvider(this, { context: areasContext }),
+    floors: new ContextProvider(this, { context: floorsContext }),
+  };
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    // Refresh the fallback contexts before each render so theme/page changes in
+    // the gallery hass propagate to consuming components.
+    const hass = this._galleryHass;
+    (
+      Object.keys(
+        this._contextProviders
+      ) as (keyof typeof this._contextProviders)[]
+    ).forEach((group) => {
+      const provider = this._contextProviders[group];
+      provider.setValue(
+        (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
+          hass,
+          provider.value
+        )
+      );
+    });
+    (
+      Object.keys(
+        this._singleContextProviders
+      ) as (keyof typeof this._singleContextProviders)[]
+    ).forEach((key) => {
+      (this._singleContextProviders[key] as ContextProvider<any>).setValue(
+        hass[key]
+      );
+    });
+  }
 
   render() {
     const isSettingsPage = this._page === SETTINGS_PAGE;
@@ -576,6 +652,21 @@ class HaGallery extends LitElement {
       callWS: async () => undefined,
       fetchWithAuth: async () => new Response(),
       sendWS: () => undefined,
+      formatEntityState: (stateObj, stateValue) =>
+        (stateValue != null ? stateValue : stateObj.state) ?? "",
+      formatEntityStateToParts: (stateObj, stateValue) => [
+        {
+          type: "value",
+          value: (stateValue != null ? stateValue : stateObj.state) ?? "",
+        },
+      ],
+      formatEntityAttributeName: (_stateObj, attribute) => attribute,
+      formatEntityAttributeValue: (stateObj, attribute, value) =>
+        value != null ? value : (stateObj.attributes[attribute] ?? ""),
+      formatEntityName: (stateObj, type) =>
+        typeof type === "string"
+          ? type
+          : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
     } as unknown as HomeAssistant;
   }
 

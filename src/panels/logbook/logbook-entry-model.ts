@@ -35,8 +35,10 @@ export const classifyLogbookEntry = (
   return "integration";
 };
 
-// A device lives in exactly one area, so `device` (and `entity`) imply it too.
-export type LogbookScope = "entity" | "device" | "area";
+// How much naming detail an entity row shows, from least to most. The value is
+// the broadest part shown: `none` (name hidden), `entity`, `device` (device ▸
+// entity), `area` (area ▸ device ▸ entity).
+export type LogbookNameDetail = "none" | "entity" | "device" | "area";
 
 export interface EntityDisplay {
   primary?: string;
@@ -46,7 +48,7 @@ export interface EntityDisplay {
 export const entityDisplay = (
   hass: HomeAssistant,
   entityId: string,
-  scope?: LogbookScope
+  nameDetail?: LogbookNameDetail
 ): EntityDisplay => {
   const stateObj = hass.states[entityId] as HassEntity | undefined;
   if (!stateObj) {
@@ -69,14 +71,15 @@ export const entityDisplay = (
   const deviceQualifier = entityName ? deviceName : undefined;
 
   let parts: (string | undefined)[];
-  switch (scope) {
+  switch (nameDetail) {
+    case "none":
     case "entity":
-    case "device":
       parts = [];
       break;
-    case "area":
+    case "device":
       parts = [deviceQualifier];
       break;
+    case "area":
     default:
       parts = [areaName, deviceQualifier];
   }
@@ -307,7 +310,7 @@ export interface LogbookItem {
 }
 
 export interface BuildLogbookItemOptions {
-  scope?: LogbookScope;
+  nameDetail?: LogbookNameDetail;
   userIdToName?: Record<string, string>;
 }
 
@@ -328,7 +331,7 @@ export const computeLogbookItem = (
     : undefined;
 
   const display = entry.entity_id
-    ? entityDisplay(hass, entry.entity_id, opts.scope)
+    ? entityDisplay(hass, entry.entity_id, opts.nameDetail)
     : undefined;
 
   return {

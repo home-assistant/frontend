@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
@@ -6,6 +7,22 @@ import {
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
+import {
+  apiContext,
+  areasContext,
+  configContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  floorsContext,
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  servicesContext,
+  statesContext,
+  uiContext,
+} from "../data/context";
+import { updateHassGroups } from "../data/context/updateContext";
 import type { IconCategory } from "../data/icons";
 import type { EntityRegistryDisplayEntry } from "../data/entity/entity_registry";
 import {
@@ -85,12 +102,83 @@ export interface MockHomeAssistant extends HomeAssistant {
 export const provideHass = (
   elements,
   overrideData: Partial<HomeAssistant> = {},
-  setHassProperty = false
+  setHassProperty = false,
+  // Provide the grouped Lit contexts (registries, internationalization, api,
+  // connection, ui, config, formatters) that the real app's root element
+  // provides via `contextMixin`. On by default so that any standalone hass root
+  // (e.g. a gallery demo) automatically feeds context-consuming components the
+  // same way the real app does, instead of each demo wiring up a partial set by
+  // hand. Pass `false` for hosts that already provide these contexts themselves
+  // via `contextMixin` (the full app shell — `ha-demo`, `ha-test`), to avoid
+  // registering duplicate providers on the same element.
+  provideContexts = true
 ): MockHomeAssistant => {
   elements = ensureArray(elements);
   // Can happen because we store sidebar, more info etc on hass.
   const baseEl = () => elements[0];
   const hass = (): MockHomeAssistant => baseEl().hass;
+
+  const contextProviders = provideContexts
+    ? {
+        registries: new ContextProvider(baseEl(), {
+          context: registriesContext,
+        }),
+        internationalization: new ContextProvider(baseEl(), {
+          context: internationalizationContext,
+        }),
+        api: new ContextProvider(baseEl(), { context: apiContext }),
+        connection: new ContextProvider(baseEl(), {
+          context: connectionContext,
+        }),
+        ui: new ContextProvider(baseEl(), { context: uiContext }),
+        config: new ContextProvider(baseEl(), { context: configContext }),
+        formatters: new ContextProvider(baseEl(), {
+          context: formattersContext,
+        }),
+      }
+    : undefined;
+
+  // The individual (non-grouped) contexts that contextMixin also provides.
+  // Components such as ha-area-picker / ha-entity-picker consume these directly
+  // (e.g. `Object.values(areas)`), so they must be provided alongside the
+  // grouped contexts or those components throw once they render.
+  const singleContextProviders = provideContexts
+    ? {
+        states: new ContextProvider(baseEl(), { context: statesContext }),
+        services: new ContextProvider(baseEl(), { context: servicesContext }),
+        entities: new ContextProvider(baseEl(), { context: entitiesContext }),
+        devices: new ContextProvider(baseEl(), { context: devicesContext }),
+        areas: new ContextProvider(baseEl(), { context: areasContext }),
+        floors: new ContextProvider(baseEl(), { context: floorsContext }),
+      }
+    : undefined;
+
+  const updateContextProviders = (newHass: HomeAssistant) => {
+    if (contextProviders) {
+      (
+        Object.keys(contextProviders) as (keyof typeof contextProviders)[]
+      ).forEach((group) => {
+        const provider = contextProviders[group];
+        provider.setValue(
+          (updateHassGroups[group] as (h: HomeAssistant, v?: any) => any)(
+            newHass,
+            provider.value
+          )
+        );
+      });
+    }
+    if (singleContextProviders) {
+      (
+        Object.keys(
+          singleContextProviders
+        ) as (keyof typeof singleContextProviders)[]
+      ).forEach((key) => {
+        (singleContextProviders[key] as ContextProvider<any>).setValue(
+          newHass[key]
+        );
+      });
+    }
+  };
 
   const wsCommands = {};
   const restResponses: [string | RegExp, MockRestCallback][] = [];
@@ -396,6 +484,7 @@ export const provideHass = (
       elements.forEach((el) => {
         el.hass = newHass;
       });
+      updateContextProviders(newHass);
     },
     updateStates,
     updateTranslations,
@@ -457,6 +546,10 @@ export const provideHass = (
         value: value !== null ? value : (stateObj.attributes[attribute] ?? ""),
       },
     ],
+    formatEntityName: (stateObj, type) =>
+      typeof type === "string"
+        ? type
+        : (stateObj.attributes.friendly_name ?? stateObj.entity_id),
     ...overrideData,
   };
 

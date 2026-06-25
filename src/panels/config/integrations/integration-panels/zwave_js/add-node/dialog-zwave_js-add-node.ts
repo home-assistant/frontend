@@ -252,7 +252,6 @@ class DialogZWaveJSAddNode extends LitElement {
       return html`
         <div>
           <ha-qr-scanner
-            .hass=${this.hass}
             @qr-code-scanned=${this._qrCodeScanned}
             @qr-code-closed=${this.closeDialog}
             @qr-code-more-options=${this._qrScanShowMoreOptions}
