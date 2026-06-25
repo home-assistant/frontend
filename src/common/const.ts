@@ -111,7 +111,7 @@ export const DOMAINS_WITH_DYNAMIC_PICTURE = new Set([
 ]);
 
 /** Domains that use a timestamp for state. */
-export const TIMESTAMP_STATE_DOMAINS = new Set([
+const TIMESTAMP_STATE_DOMAINS_LIST = [
   "ai_task",
   "button",
   "conversation",
@@ -127,7 +127,14 @@ export const TIMESTAMP_STATE_DOMAINS = new Set([
   "tts",
   "wake_word",
   "datetime",
-]);
+] as const;
+
+export type TimestampStateDomain =
+  (typeof TIMESTAMP_STATE_DOMAINS_LIST)[number];
+
+export const TIMESTAMP_STATE_DOMAINS = new Set<string>(
+  TIMESTAMP_STATE_DOMAINS_LIST
+);
 
 /** Temperature units. */
 export const UNIT_C = "°C";
