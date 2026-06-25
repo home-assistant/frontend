@@ -41,7 +41,7 @@ export class DialogSupportPackage extends LitElement {
       <ha-dialog
         .open=${this._open}
         width="full"
-        header-title=${this.hass.localize(
+        .headerTitle=${this.hass.localize(
           "ui.panel.config.cloud.account.download_support_package"
         )}
         @closed=${this._dialogClosed}
