@@ -25,6 +25,7 @@ import { mockLovelace } from "../../../../demo/src/stubs/lovelace";
 import { mockMediaPlayer } from "../../../../demo/src/stubs/media_player";
 import { mockPersistentNotification } from "../../../../demo/src/stubs/persistent_notification";
 import { mockRecorder } from "../../../../demo/src/stubs/recorder";
+import { mockSearch } from "../../../../demo/src/stubs/search";
 import { mockSensor } from "../../../../demo/src/stubs/sensor";
 import { mockSystemLog } from "../../../../demo/src/stubs/system_log";
 import { mockTemplate } from "../../../../demo/src/stubs/template";
@@ -100,6 +101,7 @@ export class HaTest extends HomeAssistantAppEl {
     mockConfigEntries(hass);
     mockIcons(hass);
     mockPersistentNotification(hass);
+    mockSearch(hass);
 
     // Load default entities from the sections config
     hass.addEntities(energyEntities());
