@@ -1,3 +1,4 @@
+import type { ExtEntityRegistryEntry } from "../../../../../src/data/entity/entity_registry";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 
 export type Scenario = (hass: MockHomeAssistant) => Promise<void> | void;
@@ -56,6 +57,36 @@ const lightMoreInfoScenario: Scenario = async (hass) => {
       },
     },
   ]);
+
+  // The base entity registry stub only mocks the list/get_entries commands, so
+  // the more-info settings view falls back to its "no unique ID" warning. Mock
+  // the single-entry lookup (config/entity_registry/get) so the settings view
+  // renders the real entity-registry-settings panel.
+  const registryEntry: ExtEntityRegistryEntry = {
+    created_at: 0,
+    modified_at: 0,
+    id: "test_light",
+    entity_id: "light.test_light",
+    unique_id: "test_light_unique_id",
+    name: null,
+    icon: null,
+    platform: "demo",
+    config_entry_id: null,
+    config_subentry_id: null,
+    device_id: null,
+    area_id: null,
+    labels: [],
+    disabled_by: null,
+    hidden_by: null,
+    entity_category: null,
+    has_entity_name: false,
+    original_name: "Test Light",
+    options: null,
+    categories: {},
+    capabilities: {},
+    aliases: [],
+  };
+  hass.mockWS("config/entity_registry/get", () => registryEntry);
 };
 
 // ── Registry ──────────────────────────────────────────────────────────────
