@@ -147,7 +147,7 @@
     "@playwright/test": "1.61.0",
     "@rsdoctor/rspack-plugin": "1.5.15",
     "@rspack/core": "2.0.8",
-    "@rspack/dev-server": "2.0.3",
+    "@rspack/dev-server": "2.1.0",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.26",
     "@types/chromecast-caf-sender": "1.0.11",
