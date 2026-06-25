@@ -154,16 +154,23 @@ class DialogTagDetail
             ? html`
                 <div>
                   <p>
-                    ${this.hass!.localize("ui.panel.config.tag.detail.usage", {
-                      companion_link: html`<a
-                        href="https://companion.home-assistant.io/"
-                        target="_blank"
-                        rel="noreferrer"
-                        >${this.hass!.localize(
-                          "ui.panel.config.tag.detail.companion_apps"
-                        )}</a
-                      >`,
-                    })}
+                    ${this._params.openWrite
+                      ? this.hass!.localize(
+                          "ui.panel.config.tag.detail.usage_companion"
+                        )
+                      : this.hass!.localize(
+                          "ui.panel.config.tag.detail.usage",
+                          {
+                            companion_link: html`<a
+                              href="https://companion.home-assistant.io/"
+                              target="_blank"
+                              rel="noreferrer"
+                              >${this.hass!.localize(
+                                "ui.panel.config.tag.detail.companion_apps"
+                              )}</a
+                            >`,
+                          }
+                        )}
                   </p>
                 </div>
                 <div id="qr">
@@ -227,6 +234,15 @@ class DialogTagDetail
                 ${this.hass!.localize(
                   "ui.panel.config.tag.detail.create_and_write"
                 )}
+              </ha-button>`
+            : ""}
+          ${this._params.openWrite && this._params.entry
+            ? html`<ha-button
+                slot="primaryAction"
+                @click=${this._writeEntry}
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize("ui.panel.config.tag.detail.write")}
               </ha-button>`
             : ""}
         </ha-dialog-footer>
@@ -297,6 +313,13 @@ class DialogTagDetail
       return;
     }
     openWrite(tag);
+  }
+
+  private _writeEntry() {
+    if (!this._params?.entry || !this._params.openWrite) {
+      return;
+    }
+    this._params.openWrite(this._params.entry);
   }
 
   private async _deleteEntry() {

@@ -3781,8 +3781,10 @@
             "update": "Update",
             "create": "Create",
             "create_and_write": "Create and write",
+            "write": "Write",
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
+            "usage_companion": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Press write to write this tag to a programmable NFC tag, or copy and print the QR code below.",
             "companion_apps": "Companion apps"
           }
         },
