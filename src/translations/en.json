@@ -715,7 +715,18 @@
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
-          "detected_event_no_type": "detected an event"
+          "detected_event_no_type": "Event detected",
+          "pressed": "Pressed",
+          "activated": "Activated",
+          "scanned": "Scanned",
+          "updated": "Updated",
+          "sent": "Sent",
+          "detected": "Detected",
+          "transcribed": "Transcribed",
+          "spoke": "Spoke",
+          "responded": "Responded",
+          "ran": "Ran",
+          "command_sent": "Command sent"
         }
       },
       "entity": {
