@@ -26,12 +26,8 @@ const getMinifier = () => {
 // default.
 //
 // `keepClosingSlash` is required for `svg`` templates: SVG elements such as
-// `<path />` and `<circle />` are not void elements in HTML, so without the
-// trailing slash the parser nests every following sibling inside the first one,
-// breaking the markup (e.g. the thermostat circular slider gauge). The previous
-// minifier preserved these via its per-template `encapsulation: "svg"` option;
-// minify-literals treats all templates as HTML, so we keep the slash globally
-// (harmless for HTML, where HTML5 ignores it).
+// `<path />` and `<circle />` are not void elements in HTML, so dropping the
+// trailing slash would break the markup. It is harmless for HTML.
 const htmlOptions = {
   caseSensitive: true,
   collapseWhitespace: true,
