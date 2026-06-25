@@ -159,7 +159,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       value: panel.url_path,
       label:
         (getPanelTitle(this.hass, panel) || panel.url_path) +
-        `${defaultPanel === panel.url_path ? " (default)" : ""}`,
+        `${defaultPanel === panel.url_path ? ` (${this.hass.localize("ui.panel.config.apps.dashboard.capability.role.default")})` : ""}`,
       icon: getPanelIcon(panel),
       iconPath: getPanelIconPath(panel),
       disableHiding: panel.url_path === defaultPanel,
