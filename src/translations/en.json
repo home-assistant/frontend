@@ -6194,7 +6194,8 @@
             "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "loading": "Loading"
           }
         },
         "scene": {
@@ -6342,6 +6343,7 @@
           },
           "account": {
             "download_support_package": "Download support package",
+            "support_package_generating_preview": "Generating preview",
             "support_package_privacy_warning": "This file may contain personal data about your home. Avoid sharing them with unverified or untrusted parties.",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",

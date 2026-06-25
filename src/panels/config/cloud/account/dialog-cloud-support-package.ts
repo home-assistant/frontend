@@ -54,7 +54,9 @@ export class DialogSupportPackage extends LitElement {
           : html`
               <div class="progress-container">
                 <ha-spinner></ha-spinner>
-                Generating preview
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.support_package_generating_preview"
+                )}...
               </div>
             `}
         <div slot="footer" class="footer">
