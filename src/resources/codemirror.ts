@@ -56,8 +56,18 @@ export { tags } from "@lezer/highlight";
 
 const _yamlWithJinja = jinja({ base: yaml() });
 
+// The jinja2 mode is rendered on a YAML base, whose line comment is "#". In a
+// template that is meaningless, so toggle-comment (Ctrl+/) should use the Jinja
+// block comment "{# #}" instead. Scope this to the jinja2 language only so the
+// plain YAML mode keeps its "#" comment.
+const _jinjaCommentTokens = Prec.highest(
+  EditorState.languageData.of(() => [
+    { commentTokens: { block: { open: "{#", close: "#}" } } },
+  ])
+);
+
 export const langs = {
-  jinja2: _yamlWithJinja,
+  jinja2: [_yamlWithJinja, _jinjaCommentTokens],
   yaml: _yamlWithJinja,
 };
 
