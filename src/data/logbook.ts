@@ -27,6 +27,7 @@ export interface LogbookEntry {
   source?: string; // The trigger source (English phrase, parsed for the cause)
   domain?: string;
   state?: string; // The state of the entity
+  attributes?: { event_type?: string }; // Selected attributes the backend surfaces
   // Context data
   context_id?: string;
   context_user_id?: string;
@@ -241,13 +242,13 @@ export const parseTriggerSource = (source: string): ParsedTriggerSource => {
 };
 
 // Short label shown instead of the bare timestamp for each timestamp-state
-// domain. Typed to TIMESTAMP_STATE_DOMAINS minus datetime (a real value), so a
-// new timestamp domain won't compile until it gets a label here.
+// domain. Typed to TIMESTAMP_STATE_DOMAINS minus datetime (a real value) and
+// event (handled separately via its event type), so a new timestamp domain
+// won't compile until it gets a label here.
 type LogbookActionMessage =
   | "pressed"
   | "activated"
   | "scanned"
-  | "detected_event_no_type"
   | "updated"
   | "sent"
   | "detected"
@@ -258,14 +259,13 @@ type LogbookActionMessage =
   | "command_sent";
 
 const STATE_ACTION_MESSAGES: Record<
-  Exclude<TimestampStateDomain, "datetime">,
+  Exclude<TimestampStateDomain, "datetime" | "event">,
   LogbookActionMessage
 > = {
   button: "pressed",
   input_button: "pressed",
   scene: "activated",
   tag: "scanned",
-  event: "detected_event_no_type",
   image: "updated",
   notify: "sent",
   wake_word: "detected",
@@ -281,8 +281,18 @@ export const localizeStateMessage = (
   hass: HomeAssistant,
   state: string,
   stateObj: HassEntity,
-  domain: string
+  domain: string,
+  attributes?: LogbookEntry["attributes"]
 ): string => {
+  // Events show the triggered event type, falling back to a generic label when
+  // the type is unknown (the timestamp state is meaningless on its own).
+  if (domain === "event") {
+    const eventType = attributes?.event_type;
+    if (eventType != null) {
+      return hass.formatEntityAttributeValue(stateObj, "event_type", eventType);
+    }
+    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
+  }
   const actionKey: LogbookActionMessage | undefined =
     STATE_ACTION_MESSAGES[domain as keyof typeof STATE_ACTION_MESSAGES];
   if (actionKey) {
