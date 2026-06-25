@@ -24,11 +24,16 @@ const getMinifier = () => {
 // (html-minifier-next is option-compatible with html-minifier-terser). CSS in
 // css`` templates and inline <style> is handled by minify-literals' lightningcss
 // default.
+//
+// `keepClosingSlash` is required for `svg`` templates: SVG elements such as
+// `<path />` and `<circle />` are not void elements in HTML, so dropping the
+// trailing slash would break the markup. It is harmless for HTML.
 const htmlOptions = {
   caseSensitive: true,
   collapseWhitespace: true,
   conservativeCollapse: true,
   decodeEntities: true,
+  keepClosingSlash: true,
   removeComments: true,
   removeRedundantAttributes: true,
 };
