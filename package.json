@@ -28,6 +28,7 @@
     "test:e2e:show-report": "yarn playwright show-report test/e2e/reports/combined",
     "test:e2e:demo": "playwright test --config test/e2e/playwright.demo.config.ts",
     "test:e2e:app": "playwright test --config test/e2e/playwright.app.config.ts",
+    "test:e2e:app:dev": "test/e2e/app/script/develop_app",
     "test:e2e:gallery": "playwright test --config test/e2e/playwright.gallery.config.ts"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
