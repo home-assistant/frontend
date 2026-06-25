@@ -5,7 +5,7 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
-import { UNAVAILABLE } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { setValue } from "../../../data/input_text";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -91,7 +91,9 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                   @change=${this._selectedValueChanged}
                 ></ha-slider>
                 <span class="state">
-                  ${this.hass.formatEntityState(stateObj)}
+                  ${stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
+                    ? "—"
+                    : this.hass.formatEntityState(stateObj)}
                 </span>
               </div>
             `
