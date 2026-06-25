@@ -37,7 +37,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
 
