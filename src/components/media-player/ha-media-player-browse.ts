@@ -809,7 +809,9 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _manualItem(): MediaPlayerItem {
     return {
       ...MANUAL_ITEM_BASE,
-      title: this.hass.localize("ui.components.selector.types.manual"),
+      title: this.hass.localize(
+        "ui.components.selectors.selector.types.manual"
+      ),
     };
   }
 
