@@ -1044,8 +1044,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         }
 
         ha-more-info-history-and-logbook {
-          padding: var(--ha-space-2) var(--ha-space-6) var(--ha-space-6)
-            var(--ha-space-6);
+          padding: var(--ha-space-2) 0 var(--ha-space-6) 0;
           display: block;
         }
 

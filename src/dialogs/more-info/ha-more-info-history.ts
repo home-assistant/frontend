@@ -278,6 +278,7 @@ export class MoreInfoHistory extends LitElement {
         justify-content: space-between;
         align-items: center;
         margin-bottom: var(--ha-space-2);
+        padding-inline: var(--ha-space-6);
       }
       .header > a,
       a:visited {
@@ -289,6 +290,12 @@ export class MoreInfoHistory extends LitElement {
       }
       h2 {
         margin: 0;
+      }
+      ha-alert,
+      state-history-charts,
+      statistics-chart {
+        display: block;
+        padding-inline: var(--ha-space-6);
       }
     `,
   ];

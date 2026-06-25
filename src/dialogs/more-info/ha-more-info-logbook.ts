@@ -70,6 +70,7 @@ export class MoreInfoLogbook extends LitElement {
       css`
         ha-logbook {
           --logbook-max-height: 250px;
+          --logbook-horizontal-padding: var(--ha-space-6);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-logbook {
@@ -82,6 +83,7 @@ export class MoreInfoLogbook extends LitElement {
           justify-content: space-between;
           align-items: center;
           margin-bottom: var(--ha-space-2);
+          padding-inline: var(--ha-space-6);
         }
         .header > a,
         a:visited {

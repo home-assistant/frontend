@@ -197,7 +197,8 @@ class HaLogbookRenderer extends LitElement {
 
         .date {
           margin: var(--ha-space-2) 0 0;
-          padding: var(--ha-space-2) var(--ha-space-4) 0;
+          padding: var(--ha-space-2)
+            var(--logbook-horizontal-padding, var(--ha-space-4)) 0;
           font-weight: var(--ha-font-weight-medium);
         }
 

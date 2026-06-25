@@ -8,6 +8,7 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -126,6 +127,7 @@ class HaLogbookEntry extends LitElement {
           [`node-${node}`]: true,
           "last-of-day": this.lastOfDay,
           [`category-${ctx.category}`]: true,
+          "time-am-pm": useAmPm(this.hass.locale),
         })}"
       >
         ${layout === "timeline"
@@ -591,7 +593,7 @@ class HaLogbookEntry extends LitElement {
           width: 100%;
           box-sizing: border-box;
           /* No vertical padding: the rail must reach the row edges to stay continuous between nodes. */
-          padding: 0 var(--ha-space-4);
+          padding: 0 var(--logbook-horizontal-padding, var(--ha-space-4));
           grid-auto-rows: minmax(60px, auto);
           line-height: var(--ha-line-height-normal);
           align-items: stretch;
@@ -913,12 +915,21 @@ class HaLogbookEntry extends LitElement {
 
         .time-chip {
           flex-shrink: 0;
+          text-align: end;
           line-height: 1;
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
           font-variant-numeric: tabular-nums;
           cursor: pointer;
           user-select: none;
+        }
+
+        .time-chip {
+          min-width: 4.5em;
+        }
+
+        .entry.time-am-pm .time-chip {
+          min-width: 6em;
         }
 
         .time-chip:hover {

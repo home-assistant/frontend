@@ -1,4 +1,3 @@
-import { mdiChevronRight } from "@mdi/js";
 import { startOfYesterday } from "date-fns";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -10,10 +9,10 @@ import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
-import { navigate } from "../../../common/navigate";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
 import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
@@ -72,6 +71,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   @state() private _targetPickerValue: HassServiceTarget = {};
 
   @state() private _stateFilter?: string[];
+
+  private _showMoreLinkId = `logbook-${Math.random().toString(36).substring(2, 9)}`;
 
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
@@ -140,10 +141,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._targetPickerValue = target;
 
     this._stateFilter = ensureArray(config.state_filter);
-  }
-
-  private _showMore() {
-    navigate(this._showMoreUrl());
   }
 
   private _showMoreUrl(): string {
@@ -291,16 +288,21 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card class=${classMap({ "no-header": !this._config!.title })}>
         ${this._config!.title
-          ? html`<div class="card-header">
-              <h1 class="name">${this._config!.title}</h1>
-              <ha-icon-button
-                .path=${mdiChevronRight}
-                .label=${this.hass.localize(
+          ? html`<h1 class="card-header">
+              ${this._config!.title}
+              <a
+                id=${this._showMoreLinkId}
+                href=${this._showMoreUrl()}
+                aria-label=${this.hass.localize(
                   "ui.dialogs.more_info_control.show_more"
                 )}
-                @click=${this._showMore}
-              ></ha-icon-button>
-            </div>`
+              >
+                <ha-icon-next></ha-icon-next>
+              </a>
+              <ha-tooltip for=${this._showMoreLinkId} placement="left">
+                ${this.hass.localize("ui.dialogs.more_info_control.show_more")}
+              </ha-tooltip>
+            </h1>`
           : nothing}
         <div class="content">
           <ha-logbook
@@ -336,26 +338,18 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 16px 16px 0;
+          padding-bottom: 0;
         }
 
-        .card-header .name {
-          margin: 0;
-          font-size: var(--ha-card-header-font-size, 1.4rem);
-          font-weight: var(--ha-card-header-font-weight, 500);
-          color: var(--ha-card-header-color, var(--primary-text-color));
-        }
-
-        .card-header a {
+        .card-header ha-icon-next {
+          --ha-icon-button-size: 24px;
+          line-height: 24px;
           color: var(--primary-text-color);
-          margin-right: calc(var(--ha-space-2) * -1);
-          margin-inline-end: calc(var(--ha-space-2) * -1);
-          margin-inline-start: initial;
         }
 
         .content {
           height: 100%;
-          padding: 0 16px 16px;
+          padding: 0 0 16px;
         }
 
         .no-header .content {
