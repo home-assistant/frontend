@@ -2,8 +2,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
+import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
 import type { EntitySelector } from "../../data/selector";
@@ -37,10 +39,14 @@ export class HaEntitySelector extends LitElement {
 
   @state() private _createDomains: string[] | undefined;
 
+  private _deviceIntegrationLookup = memoizeOne(getDeviceIntegrationLookup);
+
   private _hasIntegration(selector: EntitySelector) {
     return (
       selector.entity?.filter &&
-      ensureArray(selector.entity.filter).some((filter) => filter.integration)
+      ensureArray(selector.entity.filter).some(
+        (filter) => filter.integration || filter.device?.integration
+      )
     );
   }
 
@@ -114,13 +120,21 @@ export class HaEntitySelector extends LitElement {
     if (!this.selector?.entity?.filter) {
       return true;
     }
+    const deviceIntegrationLookup = this._entitySources
+      ? this._deviceIntegrationLookup(
+          this._entitySources,
+          Object.values(this.hass.entities),
+          Object.values(this.hass.devices)
+        )
+      : undefined;
     return ensureArray(this.selector.entity.filter).some((filter) =>
       filterSelectorEntities(
         filter,
         entity,
         this._entitySources,
         this.hass.entities,
-        this.hass.devices
+        this.hass.devices,
+        deviceIntegrationLookup
       )
     );
   };
