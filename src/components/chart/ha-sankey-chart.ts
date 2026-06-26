@@ -11,10 +11,10 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
-import { filterXSS } from "../../common/util/xss";
 import "./ha-chart-base";
+import "./ha-chart-tooltip-marker";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
 
@@ -64,12 +64,14 @@ export class HaSankeyChart extends LitElement {
 
   public chart?: EChartsType;
 
+  private _currentZoom = 1;
+
   @state() private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect,
   });
 
   render() {
-    const options = {
+    const options: HaECOption = {
       grid: {
         top: 0,
         bottom: 0,
@@ -81,14 +83,16 @@ export class HaSankeyChart extends LitElement {
         formatter: this._renderTooltip,
         appendTo: document.body,
       },
-    } as ECOption;
+    };
 
     return html`<ha-chart-base
+      .hass=${this.hass}
       .data=${this._createData(this.data, this._sizeController.value?.width)}
       .options=${options}
       height="100%"
       .extraComponents=${[SankeyChart]}
       @chart-click=${this._handleChartClick}
+      @chart-sankeyroam=${this._handleChartSankeyRoam}
     ></ha-chart-base>`;
   }
 
@@ -97,16 +101,28 @@ export class HaSankeyChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
+    // Keep numbers and units left-to-right, even in RTL locales.
+    const formattedValue = html`<div style="direction:ltr; display: inline;">
+      ${value}
+    </div>`;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return `${params.marker} ${filterXSS(node?.label ?? data.id)}<br>${value}`;
+      return html`<ha-chart-tooltip-marker
+          .color=${String(params.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${node?.label ?? data.id}<br />${formattedValue}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
-      return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
+      return html`${source?.label ?? data.source} →
+        ${target?.label ?? data.target}<br />${formattedValue}`;
     }
     return null;
+  };
+
+  private _handleChartSankeyRoam = (ev: CustomEvent) => {
+    this._currentZoom = ev.detail.zoom;
   };
 
   private _handleChartClick = (ev: CustomEvent<ECElementEvent>) => {
@@ -180,6 +196,7 @@ export class HaSankeyChart extends LitElement {
       })),
       links,
       draggable: false,
+      scaleLimit: { min: 1, max: 4 },
       orient: this.vertical ? "vertical" : "horizontal",
       nodeWidth: 15,
       nodeGap: NODE_GAP,
@@ -210,7 +227,7 @@ export class HaSankeyChart extends LitElement {
               ""
             );
           const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
-          const availableWidth = params.rect.width + 6;
+          const availableWidth = (params.rect.width + 6) * this._currentZoom;
           const fontSize = Math.min(
             FONT_SIZE,
             (availableWidth / wordWidth) * FONT_SIZE
@@ -223,7 +240,7 @@ export class HaSankeyChart extends LitElement {
           };
         }
 
-        const availableHeight = params.rect.height + 8; // account for the margin
+        const availableHeight = (params.rect.height + 8) * this._currentZoom; // account for the margin
         const fontSize = Math.min(
           (availableHeight / params.labelRect.height) * FONT_SIZE,
           FONT_SIZE
@@ -282,20 +299,26 @@ export class HaSankeyChart extends LitElement {
   }
 
   private _findParentIndex(id: string, links: Link[], sections: Node[][]) {
-    const parent = links.find((l) => l.target === id)?.source;
-    if (!parent) {
+    const parents = links.filter((l) => l.target === id).map((l) => l.source);
+    if (parents.length === 0) {
       return -1;
     }
-    let offset = 0;
-    for (let i = sections.length - 1; i >= 0; i--) {
-      const section = sections[i];
-      const index = section.findIndex((n) => n.id === parent);
-      if (index !== -1) {
-        return offset + index;
+    let sum = 0;
+    let count = 0;
+    for (const parent of parents) {
+      let offset = 0;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        const index = section.findIndex((n) => n.id === parent);
+        if (index !== -1) {
+          sum += offset + index;
+          count++;
+          break;
+        }
+        offset += section.length;
       }
-      offset += section.length;
     }
-    return -1;
+    return count > 0 ? sum / count : -1;
   }
 
   static styles = css`

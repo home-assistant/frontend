@@ -96,7 +96,8 @@ export class EnergyGasSettings extends LitElement {
                             ></ha-icon>`
                           : html`<ha-svg-icon .path=${mdiFire}></ha-svg-icon>`}
                         <span class="content"
-                          >${getStatisticLabel(
+                          >${source.name ||
+                          getStatisticLabel(
                             this.hass,
                             source.stat_energy_from,
                             this.statsMetadata?.[source.stat_energy_from]
@@ -123,11 +124,7 @@ export class EnergyGasSettings extends LitElement {
               `
             : ""}
           <div class="row">
-            <ha-button
-              @click=${this._addSource}
-              appearance="filled"
-              size="small"
-            >
+            <ha-button @click=${this._addSource} appearance="filled" size="s">
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.gas.add_gas_source"
@@ -141,6 +138,7 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
+      statsMetadata: this.statsMetadata,
       allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         undefined,
@@ -164,12 +162,12 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
+      statsMetadata: this.statsMetadata,
       allowedGasUnitClass: getEnergyGasUnitClass(
         this.preferences,
         origSource.stat_energy_from,
         this.statsMetadata
       ),
-      metadata: this.statsMetadata?.[origSource.stat_energy_from],
       gas_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "gas"
       ) as GasSourceTypeEnergyPreference[],

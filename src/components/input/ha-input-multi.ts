@@ -2,10 +2,10 @@ import { consume, type ContextType } from "@lit/context";
 import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
-import { localizeContext } from "../../data/context";
+import { internationalizationContext } from "../../data/context";
 import { haStyle } from "../../resources/styles";
 import "../ha-button";
 import "../ha-icon-button";
@@ -64,8 +64,10 @@ class HaInputMulti extends LitElement {
   public updateOnBlur = false;
 
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize?: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
+  @query("ha-input[data-last]") private _lastInput?: HaInput;
 
   protected render() {
     return html`
@@ -109,7 +111,7 @@ class HaInputMulti extends LitElement {
                     .index=${index}
                     slot="navigationIcon"
                     .label=${this.removeLabel ??
-                    this.localize?.("ui.common.remove") ??
+                    this._i18n?.localize("ui.common.remove") ??
                     "Remove"}
                     @click=${this._removeItem}
                     .path=${mdiDeleteOutline}
@@ -128,7 +130,7 @@ class HaInputMulti extends LitElement {
       </ha-sortable>
       <div class="layout horizontal">
         <ha-button
-          size="small"
+          size="s"
           appearance="filled"
           @click=${this._addItem}
           .disabled=${this.disabled ||
@@ -137,10 +139,10 @@ class HaInputMulti extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.addLabel ??
           (this.label
-            ? this.localize?.("ui.components.multi-textfield.add_item", {
+            ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
                 item: this.label,
               })
-            : this.localize?.("ui.common.add")) ??
+            : this._i18n?.localize("ui.common.add")) ??
           "Add"}
         </ha-button>
       </div>
@@ -163,10 +165,7 @@ class HaInputMulti extends LitElement {
     const items = [...this._items, ""];
     this._fireChanged(items);
     await this.updateComplete;
-    const field = this.shadowRoot?.querySelector(`ha-input[data-last]`) as
-      | HaInput
-      | undefined;
-    field?.focus();
+    this._lastInput?.focus();
   }
 
   private async _editItem(ev: Event) {

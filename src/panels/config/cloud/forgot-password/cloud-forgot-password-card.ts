@@ -2,15 +2,15 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import "../../../../components/ha-textfield";
-import { haStyle } from "../../../../resources/styles";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import { cloudForgotPassword } from "../../../../data/cloud";
 import { forgotPasswordHaCloud } from "../../../../data/onboarding";
+import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
 @customElement("cloud-forgot-password-card")
@@ -31,7 +31,7 @@ export class CloudForgotPasswordCard extends LitElement {
 
   @state() private _error?: string;
 
-  @query("#email", true) public emailField!: HaTextField;
+  @query("#email", true) public emailField!: HaInput;
 
   protected render(): TemplateResult {
     if (this.cardLess) {
@@ -59,7 +59,7 @@ export class CloudForgotPasswordCard extends LitElement {
         ${this._error
           ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
-        <ha-textfield
+        <ha-input
           autofocus
           id="email"
           label=${this.localize(`ui.panel.${this.translationKeyPanel}.email`)}
@@ -71,7 +71,7 @@ export class CloudForgotPasswordCard extends LitElement {
           .validationMessage=${this.localize(
             `ui.panel.${this.translationKeyPanel}.email_error_msg`
           )}
-        ></ha-textfield>
+        ></ha-input>
       </div>
       <div class="card-actions">
         <ha-progress-button
@@ -126,7 +126,7 @@ export class CloudForgotPasswordCard extends LitElement {
   private async _handleEmailPasswordReset() {
     const emailField = this.emailField;
 
-    const email = emailField.value;
+    const email = emailField.value ?? "";
 
     if (!emailField.reportValidity()) {
       emailField.focus();
@@ -150,7 +150,7 @@ export class CloudForgotPasswordCard extends LitElement {
         h1 {
           margin: 0;
         }
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
         .card-actions {

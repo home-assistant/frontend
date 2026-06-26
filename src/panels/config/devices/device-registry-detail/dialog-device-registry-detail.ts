@@ -3,21 +3,32 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
+import "../../../../components/ha-adaptive-dialog";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
-import "../../../../components/ha-adaptive-dialog";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-labels-picker";
 import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/ha-textfield";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 
+interface DeviceFormState {
+  nameByUser: string;
+  areaId: string;
+  labels: string[];
+  disabledBy: DeviceRegistryEntry["disabled_by"];
+}
+
 @customElement("dialog-device-registry-detail")
-class DialogDeviceRegistryDetail extends LitElement {
+class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -46,7 +57,17 @@ class DialogDeviceRegistryDetail extends LitElement {
     this._labels = this._params.device.labels || [];
     this._disabledBy = this._params.device.disabled_by;
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
+  }
+
+  private _currentState(): DeviceFormState {
+    return {
+      nameByUser: this._nameByUser,
+      areaId: this._areaId,
+      labels: this._labels,
+      disabledBy: this._disabledBy,
+    };
   }
 
   public closeDialog(): void {
@@ -66,10 +87,13 @@ class DialogDeviceRegistryDetail extends LitElement {
     const device = this._params.device;
     return html`
       <ha-adaptive-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        header-title=${computeDeviceNameDisplay(device, this.hass)}
-        prevent-scrim-close
+        header-title=${computeDeviceNameDisplay(
+          device,
+          this.hass.localize,
+          this.hass.states
+        )}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
@@ -77,7 +101,7 @@ class DialogDeviceRegistryDetail extends LitElement {
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
             : ""}
           <div class="form">
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._nameByUser}
               @input=${this._nameChanged}
@@ -86,9 +110,8 @@ class DialogDeviceRegistryDetail extends LitElement {
               )}
               .placeholder=${device.name || ""}
               .disabled=${this._submitting}
-            ></ha-textfield>
+            ></ha-input>
             <ha-area-picker
-              .hass=${this.hass}
               .value=${this._areaId}
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
@@ -154,7 +177,7 @@ class DialogDeviceRegistryDetail extends LitElement {
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting}
+            .disabled=${this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize("ui.dialogs.device-registry-detail.update")}
           </ha-button>
@@ -163,21 +186,25 @@ class DialogDeviceRegistryDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev): void {
+  private _nameChanged(ev: InputEvent): void {
     this._error = undefined;
-    this._nameByUser = ev.target.value;
+    this._nameByUser = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
   }
 
   private _areaPicked(event: CustomEvent): void {
     this._areaId = event.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _labelsChanged(event: CustomEvent): void {
     this._labels = event.detail.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _disabledByChanged(ev: Event): void {
     this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry(): Promise<void> {
@@ -189,6 +216,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         labels: this._labels || null,
         disabled_by: this._disabledBy || null,
       });
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error =
@@ -209,11 +237,12 @@ class DialogDeviceRegistryDetail extends LitElement {
           margin-inline-end: auto;
           margin-inline-start: initial;
         }
-        ha-textfield,
+        ha-input,
         ha-labels-picker,
         ha-area-picker {
           display: block;
-          margin-bottom: 16px;
+          margin-bottom: var(--ha-space-4);
+          --ha-input-padding-bottom: 0;
         }
         ha-switch {
           margin-right: 16px;

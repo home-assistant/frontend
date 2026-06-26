@@ -3,11 +3,10 @@ import type { Map, TileLayer } from "leaflet";
 // Sets up a Leaflet map on the provided DOM element
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type LeafletModuleType = typeof import("leaflet");
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (
-  mapElement: HTMLElement
+  mapElement: HTMLElement,
+  initialView?: { latitude: number; longitude: number; zoom?: number }
 ): Promise<[Map, LeafletModuleType, TileLayer]> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
@@ -32,22 +31,16 @@ export const setupLeafletMap = async (
   markerClusterStyle.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(markerClusterStyle);
 
-  map.setView([52.3731339, 4.8903147], 13);
+  if (initialView) {
+    map.setView(
+      [initialView.latitude, initialView.longitude],
+      initialView.zoom ?? 13
+    );
+  }
 
   const tileLayer = createTileLayer(Leaflet).addTo(map);
 
   return [map, Leaflet, tileLayer];
-};
-
-export const replaceTileLayer = (
-  leaflet: LeafletModuleType,
-  map: Map,
-  tileLayer: TileLayer
-): TileLayer => {
-  map.removeLayer(tileLayer);
-  tileLayer = createTileLayer(leaflet);
-  tileLayer.addTo(map);
-  return tileLayer;
 };
 
 const createTileLayer = (leaflet: LeafletModuleType): TileLayer =>

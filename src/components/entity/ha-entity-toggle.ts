@@ -1,3 +1,4 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -6,13 +7,9 @@ import { customElement, property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import {
-  UNAVAILABLE,
-  UNKNOWN,
-  isUnavailableState,
-} from "../../data/entity/entity";
+import { apiContext } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
-import type { HomeAssistant } from "../../types";
 import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
@@ -20,12 +17,21 @@ import "../ha-switch";
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
   !STATES_OFF.includes(stateObj.state) &&
-  !isUnavailableState(stateObj.state);
+  stateObj.state !== UNAVAILABLE &&
+  stateObj.state !== UNKNOWN;
+
+/**
+ * @element ha-entity-toggle
+ *
+ * @cssprop --ha-entity-toggle-switch-width - Width of the switch track. Defaults to `38px`.
+ * @cssprop --ha-entity-toggle-switch-size - Height of the switch track. Defaults to `20px`.
+ * @cssprop --ha-entity-toggle-switch-thumb-size - Size of the switch thumb. Defaults to `14px`.
+ */
 
 @customElement("ha-entity-toggle")
 export class HaEntityToggle extends LitElement {
-  // hass is not a property so that we only re-render on stateObj changes
-  public hass?: HomeAssistant;
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -35,7 +41,7 @@ export class HaEntityToggle extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
-      return html` <ha-switch disabled></ha-switch> `;
+      return html`<ha-switch disabled></ha-switch> `;
     }
 
     if (
@@ -80,12 +86,12 @@ export class HaEntityToggle extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("click", (ev) => ev.stopPropagation());
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
       this._isOn = isOn(this.stateObj);
@@ -113,7 +119,7 @@ export class HaEntityToggle extends LitElement {
   // result in the entity to be turned on. Since the state is not changing,
   // the resync is not called automatic.
   private async _callService(turnOn): Promise<void> {
-    if (!this.hass || !this.stateObj) {
+    if (!this._api || !this.stateObj) {
       return;
     }
     forwardHaptic(this, "light");
@@ -144,7 +150,7 @@ export class HaEntityToggle extends LitElement {
     this._isOn = turnOn;
 
     try {
-      await this.hass.callService(serviceDomain, service, {
+      await this._api.callService(serviceDomain, service, {
         entity_id: this.stateObj.entity_id,
       });
     } finally {
@@ -160,8 +166,14 @@ export class HaEntityToggle extends LitElement {
 
   static styles = css`
     :host {
+      display: flex;
+      align-items: center;
       white-space: nowrap;
-      min-width: 38px;
+    }
+    ha-switch {
+      --ha-switch-width: var(--ha-entity-toggle-switch-width, 38px);
+      --ha-switch-size: var(--ha-entity-toggle-switch-size, 20px);
+      --ha-switch-thumb-size: var(--ha-entity-toggle-switch-thumb-size, 14px);
     }
     ha-icon-button {
       --ha-icon-button-size: 40px;
@@ -170,9 +182,6 @@ export class HaEntityToggle extends LitElement {
     }
     ha-icon-button.state-active {
       color: var(--ha-icon-button-active-color, var(--primary-color));
-    }
-    ha-switch {
-      padding: 13px 5px;
     }
   `;
 }

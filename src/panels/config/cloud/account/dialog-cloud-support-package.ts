@@ -8,7 +8,6 @@ import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-textarea";
 import { fetchSupportPackage } from "../../../../data/cloud";
 import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
@@ -40,10 +39,11 @@ export class DialogSupportPackage extends LitElement {
   protected render() {
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="full"
-        header-title="Download support package"
+        .headerTitle=${this.hass.localize(
+          "ui.panel.config.cloud.account.download_support_package"
+        )}
         @closed=${this._dialogClosed}
       >
         ${this._supportPackage
@@ -54,13 +54,16 @@ export class DialogSupportPackage extends LitElement {
           : html`
               <div class="progress-container">
                 <ha-spinner></ha-spinner>
-                Generating preview...
+                ${this.hass.localize(
+                  "ui.panel.config.cloud.account.support_package_generating_preview"
+                )}...
               </div>
             `}
         <div slot="footer" class="footer">
           <ha-alert>
-            This file may contain personal data about your home. Avoid sharing
-            them with unverified or untrusted parties.
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.support_package_privacy_warning"
+            )}
           </ha-alert>
           <hr />
           <ha-dialog-footer>
@@ -69,10 +72,10 @@ export class DialogSupportPackage extends LitElement {
               appearance="plain"
               @click=${this.closeDialog}
             >
-              Close
+              ${this.hass.localize("ui.common.close")}
             </ha-button>
             <ha-button slot="primaryAction" @click=${this._download}>
-              Download
+              ${this.hass.localize("ui.common.download")}
             </ha-button>
           </ha-dialog-footer>
         </div>

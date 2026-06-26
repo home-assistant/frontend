@@ -25,6 +25,7 @@ import type {
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import type { TimestampRenderingFormat } from "../components/types";
 import type { LovelaceElementConfig } from "../elements/types";
 import type {
@@ -196,6 +197,7 @@ export interface EnergyDistributionCardConfig extends EnergyCardConfig {
 }
 export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
+  show_legend?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
@@ -238,6 +240,10 @@ export interface EnergySelfSufficiencyGaugeCardConfig extends EnergyCardConfig {
 
 export interface EnergyGridNeutralityGaugeCardConfig extends EnergyCardConfig {
   type: "energy-grid-neutrality-gauge";
+}
+
+export interface EnergyGridBalanceCardConfig extends EnergyCardConfig {
+  type: "energy-grid-balance";
 }
 
 export interface EnergyCarbonGaugeCardConfig extends EnergyCardConfig {
@@ -329,7 +335,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
-  format?: TimestampRenderingFormat;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -382,6 +388,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   theme?: string;
   state_filter?: string[];
+  name_detail?: "auto" | LogbookNameDetail;
 }
 
 export interface MapEntityConfig extends EntityConfig {
@@ -415,6 +422,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
   cluster?: boolean;
+  conditions?: Condition[];
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {
@@ -453,8 +461,14 @@ export interface MediaControlCardConfig extends LovelaceCardConfig {
   theme?: string;
 }
 
+export interface GraphEntityConfig {
+  entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  color?: string;
+}
+
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
@@ -467,12 +481,12 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
 }
 
 export interface StatisticsGraphCardConfig extends EnergyCardBaseConfig {
-  entities: (EntityConfig | string)[];
+  entities: (GraphEntityConfig | string)[];
   unit?: string;
   days_to_show?: number;
   period?: "auto" | StatisticPeriod;
   stat_types?: StatisticType | StatisticType[];
-  chart_type?: "line" | "bar";
+  chart_type?: "line" | "bar" | "line-stack" | "bar-stack";
   min_y_axis?: number;
   max_y_axis?: number;
   fit_y_data?: boolean;
@@ -530,6 +544,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
   entity: string;
+  show_entity_picture?: boolean;
   name?: string | EntityNameItem | EntityNameItem[];
   image?: string | MediaSelectorValue;
   camera_image?: string;
@@ -653,6 +668,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {
@@ -667,6 +683,17 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface ShortcutCardConfig extends LovelaceCardConfig {
+  label?: string;
+  description?: string;
+  icon?: string;
+  color?: string;
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

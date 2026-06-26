@@ -1,13 +1,20 @@
 import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
 
-import "../../../../../../components/ha-fade-in";
+import { blankBeforePercent } from "../../../../../../common/translations/blank_before_percent";
+import "../../../../../../components/animation/ha-fade-in";
 import "../../../../../../components/ha-spinner";
+import "../../../../../../components/progress/ha-progress-ring";
 import { WakeLockMixin } from "../../../../../../mixins/wakelock-mixin";
+import type { HomeAssistant } from "../../../../../../types";
 
 @customElement("zwave-js-add-node-loading")
 export class ZWaveJsAddNodeLoading extends WakeLockMixin(LitElement) {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public description?: string;
+
+  @property({ type: Number }) public progress?: number;
 
   @property({ type: Number }) public delay = 0;
 
@@ -15,7 +22,15 @@ export class ZWaveJsAddNodeLoading extends WakeLockMixin(LitElement) {
     return html`
       <ha-fade-in .delay=${this.delay}>
         <div class="loading">
-          <ha-spinner size="large"></ha-spinner>
+          ${this.progress !== undefined
+            ? html`
+                <ha-progress-ring size="large" .value=${this.progress}>
+                  ${Math.round(this.progress)}${blankBeforePercent(
+                    this.hass.locale
+                  )}%
+                </ha-progress-ring>
+              `
+            : html`<ha-spinner size="large"></ha-spinner>`}
         </div>
         ${this.description ? html`<p>${this.description}</p>` : nothing}
       </ha-fade-in>

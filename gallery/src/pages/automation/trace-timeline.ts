@@ -1,5 +1,6 @@
 /* eslint-disable lit/no-template-arrow */
 
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
@@ -23,6 +24,33 @@ const traces: DemoTrace[] = [
     error: 'Variable "beer" cannot be None',
   }),
   mockDemoTrace({ state: "stopped", script_execution: "cancelled" }),
+  mockDemoTrace({
+    state: "stopped",
+    script_execution: "not_triggered",
+    not_triggered: true,
+    // Not-triggered traces have no trigger description.
+    trigger: null,
+    trace: {
+      "trigger/0": [
+        {
+          path: "trigger/0",
+          changed_variables: {
+            trigger: {
+              id: "0",
+              idx: "0",
+              alias: null,
+              platform: "light.turned_on",
+            },
+          },
+          result: {
+            reason: "new_state_not_a_match",
+            data: { entity_id: "light.bed_light", to_state: "off" },
+          },
+          timestamp: "2021-03-25T04:36:51.223693+00:00",
+        },
+      ],
+    },
+  }),
 ];
 
 @customElement("demo-automation-trace-timeline")
@@ -51,7 +79,7 @@ export class DemoAutomationTraceTimeline extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");

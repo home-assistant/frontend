@@ -1,15 +1,19 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { areasContext, floorsContext } from "../data/context";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import { getFloors } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-expansion-panel";
 import "./ha-floor-icon";
 import "./ha-items-display-editor";
@@ -30,7 +34,17 @@ const UNASSIGNED_FLOOR = "__unassigned__";
 
 @customElement("ha-areas-floors-display-editor")
 export class HaAreasFloorsDisplayEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: areasContext, subscribe: true })
+  @state()
+  private _areas!: ContextType<typeof areasContext>;
+
+  @consume({ context: floorsContext, subscribe: true })
+  @state()
+  private _floors!: ContextType<typeof floorsContext>;
 
   @property() public label?: string;
 
@@ -51,13 +65,14 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
 
   protected render(): TemplateResult {
     const groupedAreasItems = this._groupedAreasItems(
-      this.hass.areas,
-      this.hass.floors
+      this._areas,
+      this._floors
     );
 
     const filteredFloors = this._sortedFloors(
-      this.hass.floors,
-      this.value?.floors_display?.order
+      this._floors,
+      this.value?.floors_display?.order,
+      this._localize
     ).filter(
       (floor) =>
         // Only include floors that have areas assigned to them
@@ -107,7 +122,6 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                       ></ha-svg-icon>
                     `}
                 <ha-items-display-editor
-                  .hass=${this.hass}
                   .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}
                   .floorId=${floor.floor_id}
@@ -125,15 +139,14 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
 
   private _groupedAreasItems = memoizeOne(
     (
-      hassAreas: HomeAssistant["areas"],
-      // update items if floors change
-      _hassFloors: HomeAssistant["floors"]
+      areas: ContextType<typeof areasContext>,
+      floors: ContextType<typeof floorsContext>
     ): Record<string, DisplayItem[]> => {
-      const areas = Object.values(hassAreas);
+      const areaList = Object.values(areas);
 
-      const groupedItems: Record<string, DisplayItem[]> = areas.reduce(
+      const groupedItems: Record<string, DisplayItem[]> = areaList.reduce(
         (acc, area) => {
-          const { floor } = getAreaContext(area, this.hass.floors);
+          const { floor } = getAreaContext(area, floors);
           const floorId = floor?.floor_id ?? UNASSIGNED_FLOOR;
 
           if (!acc[floorId]) {
@@ -156,23 +169,24 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
 
   private _sortedFloors = memoizeOne(
     (
-      hassFloors: HomeAssistant["floors"],
-      order: string[] | undefined
+      floors: ContextType<typeof floorsContext>,
+      order: string[] | undefined,
+      localize: LocalizeFunc
     ): FloorRegistryEntry[] => {
-      const floors = getFloors(hassFloors, order);
-      const noFloors = floors.length === 0;
-      floors.push({
+      const sortedFloors = getFloors(floors, order);
+      const noFloors = sortedFloors.length === 0;
+      sortedFloors.push({
         floor_id: UNASSIGNED_FLOOR,
         name: noFloors
-          ? this.hass.localize("ui.panel.lovelace.strategy.areas.areas")
-          : this.hass.localize("ui.panel.lovelace.strategy.areas.other_areas"),
+          ? localize("ui.panel.lovelace.strategy.areas.areas")
+          : localize("ui.panel.lovelace.strategy.areas.other_areas"),
         icon: null,
         level: null,
         aliases: [],
         created_at: 0,
         modified_at: 0,
       });
-      return floors;
+      return sortedFloors;
     }
   );
 
@@ -181,8 +195,9 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const newIndex = ev.detail.newIndex;
     const oldIndex = ev.detail.oldIndex;
     const floorIds = this._sortedFloors(
-      this.hass.floors,
-      this.value?.floors_display?.order
+      this._floors,
+      this.value?.floors_display?.order,
+      this._localize
     ).map((floor) => floor.floor_id);
     const newOrder = [...floorIds];
     const movedFloorId = newOrder.splice(oldIndex, 1)[0];
@@ -205,8 +220,9 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const currentFloorId = (ev.currentTarget as any).floorId;
 
     const floorIds = this._sortedFloors(
-      this.hass.floors,
-      this.value?.floors_display?.order
+      this._floors,
+      this.value?.floors_display?.order,
+      this._localize
     ).map((floor) => floor.floor_id);
 
     const oldAreaDisplay = this.value?.areas_display ?? {};
@@ -224,14 +240,14 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
         continue;
       }
       const hidden = oldHidden.filter((areaId) => {
-        const id = this.hass.areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
+        const id = this._areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
         return id === floorId;
       });
       if (hidden?.length) {
         newHidden.push(...hidden);
       }
       const order = oldOrder.filter((areaId) => {
-        const id = this.hass.areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
+        const id = this._areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
         return id === floorId;
       });
       if (order?.length) {

@@ -6,7 +6,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { labelsContext } from "../data/context";
@@ -17,6 +16,7 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import { getLabelColorStyle } from "./ha-label";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
 import "./ha-tooltip";
@@ -101,14 +101,13 @@ export class HaLabelsPicker extends LitElement {
       language: string
     ) =>
       value
-        ?.map(
-          (id) =>
-            labels?.find((label) => label.label_id === id) || {
-              label_id: id,
-              name: id,
-            }
-        )
-        .sort((a, b) => stringCompare(a?.name || "", b?.name || "", language))
+        ?.map((id) => labels?.find((label) => label.label_id === id))
+        .filter((label): label is LabelRegistryEntry => label !== undefined)
+        .sort((a, b) => stringCompare(a.name, b.name, language))
+        .map((label) => ({
+          ...label,
+          style: getLabelColorStyle(label.color),
+        }))
   );
 
   protected render(): TemplateResult {
@@ -135,9 +134,6 @@ export class HaLabelsPicker extends LitElement {
                 (label) => label?.label_id,
                 (label) => {
                   if (!label) return nothing;
-                  const color = label.color
-                    ? computeCssColor(label.color)
-                    : undefined;
                   const elementId = "label-" + label.label_id;
                   return html`
                     <ha-tooltip
@@ -154,7 +150,7 @@ export class HaLabelsPicker extends LitElement {
                       .disabled=${this.disabled}
                       .label=${label.name}
                       selected
-                      style=${color ? `--color: ${color}` : ""}
+                      style=${label.style}
                     >
                       ${label.icon
                         ? html`<ha-icon
@@ -169,7 +165,7 @@ export class HaLabelsPicker extends LitElement {
             : nothing}
           <ha-button
             id="picker"
-            size="small"
+            size="s"
             appearance="filled"
             @click=${this._openPicker}
             .disabled=${this.disabled}
@@ -239,8 +235,10 @@ export class HaLabelsPicker extends LitElement {
       height: var(--ha-space-8);
     }
     ha-input-chip {
-      --md-input-chip-selected-container-color: var(--color, var(--grey-color));
-      --ha-input-chip-selected-container-opacity: 0.5;
+      --md-input-chip-selected-container-color: var(
+        --ha-label-background-color,
+        var(--grey-color)
+      );
       --md-input-chip-selected-outline-width: 1px;
     }
     label {

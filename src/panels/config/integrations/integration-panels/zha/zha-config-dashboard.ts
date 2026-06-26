@@ -13,14 +13,17 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { navigate } from "../../../../../common/navigate";
 import { animationStyles } from "../../../../../resources/theme/animations.globals";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
+
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -64,29 +67,58 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _error?: string;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    if (this.hass) {
-      this.hass.loadBackendTranslation("config_panel", "zha", false);
-      this._fetchConfigEntry();
-      this._fetchConfiguration();
-      this._fetchDevicesAndGroups();
+    if (!this.hass) {
+      return;
     }
+    if (!isComponentLoaded(this.hass.config, "zha")) {
+      navigate("/config/integrations", { replace: true });
+      return;
+    }
+    this.hass.loadBackendTranslation("config_panel", "zha", false);
+    this._load();
+  }
+
+  private async _load(): Promise<void> {
+    await this._fetchConfigEntry();
+    if (!this._configEntry) {
+      return;
+    }
+    this._fetchConfiguration();
+    this._fetchDevicesAndGroups();
   }
 
   protected render(): TemplateResult {
-    const deviceIds = new Set<string>();
+    if (!this._configEntry) {
+      return html`
+        <hass-subpage
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .header=${this.hass.localize("ui.panel.config.zha.network.caption")}
+          back-path="/config"
+        >
+          <div class="loading">
+            <ha-spinner></ha-spinner>
+          </div>
+        </hass-subpage>
+      `;
+    }
+
+    const configEntry = this._configEntry;
+    const devices = Object.values(this.hass.devices).filter((device) =>
+      device.config_entries.includes(configEntry.entry_id)
+    );
+    const deviceCount = devices.length;
+
     let entityCount = 0;
     for (const entity of Object.values(this.hass.entities)) {
       if (entity.platform === "zha") {
         entityCount++;
-        if (entity.device_id) {
-          deviceIds.add(entity.device_id);
-        }
       }
     }
     const deviceOnline =
-      this._offlineDevices < deviceIds.size || deviceIds.size === 0;
+      this._offlineDevices < deviceCount || deviceCount === 0;
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -96,18 +128,16 @@ class ZHAConfigDashboard extends LitElement {
         has-fab
       >
         <div class="container">
-          ${this._renderNetworkStatus(deviceOnline, deviceIds.size)}
-          ${this._renderMyNetworkCard(deviceIds, entityCount)}
+          ${this._renderNetworkStatus(deviceOnline, deviceCount)}
+          ${this._renderMyNetworkCard(deviceCount, entityCount)}
           ${this._renderNavigationCard()} ${this._renderBackupCard()}
         </div>
 
         <a href="/config/zha/add" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize("ui.panel.config.zha.add_device")}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
+          <ha-button size="l">
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.zha.add_device")}
+          </ha-button>
         </a>
       </hass-subpage>
     `;
@@ -165,7 +195,7 @@ class ZHAConfigDashboard extends LitElement {
     `;
   }
 
-  private _renderMyNetworkCard(deviceIds: Set<string>, entityCount: number) {
+  private _renderMyNetworkCard(deviceCount: number, entityCount: number) {
     return html`
       <ha-card class="nav-card">
         <div class="card-header">
@@ -189,7 +219,7 @@ class ZHAConfigDashboard extends LitElement {
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.device_count",
-                  { count: deviceIds.size }
+                  { count: deviceCount }
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
@@ -318,7 +348,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-button
                 appearance="plain"
                 slot="end"
-                size="small"
+                size="s"
                 @click=${this._createAndDownloadBackup}
               >
                 <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
@@ -341,7 +371,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-button
                 appearance="plain"
                 slot="end"
-                size="small"
+                size="s"
                 @click=${this._openOptionFlow}
               >
                 ${this.hass.localize(
@@ -462,6 +492,12 @@ class ZHAConfigDashboard extends LitElement {
           margin-top: var(--ha-space-6);
         }
 
+        .loading {
+          display: flex;
+          justify-content: center;
+          padding: var(--ha-space-12);
+        }
+
         ha-md-list {
           background: none;
           padding: 0;
@@ -471,7 +507,7 @@ class ZHAConfigDashboard extends LitElement {
           --md-item-overflow: visible;
         }
 
-        ha-button[size="small"] ha-svg-icon {
+        ha-button[size="s"] ha-svg-icon {
           --mdc-icon-size: 16px;
         }
 

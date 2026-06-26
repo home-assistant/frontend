@@ -3,12 +3,14 @@ import type {
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
+  MessageBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
 import type { Statistics } from "./recorder";
 
@@ -124,8 +126,8 @@ export const subscribeHistory = (
   startTime: Date,
   endTime: Date,
   entityIds: string[]
-): Promise<() => Promise<void>> => {
-  const params = {
+): Promise<() => Promise<void>> =>
+  subscribeHistoryStream(hass, callbackFunction, () => ({
     type: "history/stream",
     entity_ids: entityIds,
     start_time: startTime.toISOString(),
@@ -134,13 +136,7 @@ export const subscribeHistory = (
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
-  };
-  const stream = new HistoryStream(hass);
-  return hass.connection.subscribeMessage<HistoryStreamMessage>(
-    (message) => callbackFunction(stream.processMessage(message)),
-    params
-  );
-};
+  }));
 
 export class HistoryStream {
   hass: HomeAssistant;
@@ -169,60 +165,70 @@ export class HistoryStream {
       ? (new Date().getTime() - 60 * 60 * this.hoursToShow * 1000) / 1000
       : undefined;
     const newHistory: HistoryStates = {};
-    for (const entityId of Object.keys(this.combinedHistory)) {
-      newHistory[entityId] = [];
-    }
-    for (const entityId of Object.keys(streamMessage.states)) {
-      newHistory[entityId] = [];
-    }
-    for (const entityId of Object.keys(newHistory)) {
-      if (
-        entityId in this.combinedHistory &&
-        entityId in streamMessage.states
-      ) {
+    // Build the union of entity ids (existing first, then new ones) in a
+    // single pass and process each entity inline. The per-entity slot is
+    // always assigned below before being read, so there is no need to
+    // pre-seed every key with an empty array first.
+    const streamStates = streamMessage.states;
+    const processEntity = (entityId: string) => {
+      const inCombined = entityId in this.combinedHistory;
+      const inStream = entityId in streamStates;
+      if (inCombined && inStream) {
         const entityCombinedHistory = this.combinedHistory[entityId];
         const lastEntityCombinedHistory =
           entityCombinedHistory[entityCombinedHistory.length - 1];
         newHistory[entityId] = entityCombinedHistory.concat(
-          streamMessage.states[entityId]
+          streamStates[entityId]
         );
-        if (
-          streamMessage.states[entityId][0].lu < lastEntityCombinedHistory.lu
-        ) {
+        if (streamStates[entityId][0].lu < lastEntityCombinedHistory.lu) {
           // If the history is out of order we have to sort it.
           newHistory[entityId] = newHistory[entityId].sort(
             (a, b) => a.lu - b.lu
           );
         }
-      } else if (entityId in this.combinedHistory) {
+      } else if (inCombined) {
         newHistory[entityId] = this.combinedHistory[entityId];
       } else {
-        newHistory[entityId] = streamMessage.states[entityId];
+        newHistory[entityId] = streamStates[entityId];
+        return;
       }
-      // Remove old history
-      if (purgeBeforePythonTime && entityId in this.combinedHistory) {
-        const expiredStates = newHistory[entityId].filter(
-          (state) => state.lu < purgeBeforePythonTime
-        );
-        if (!expiredStates.length) {
-          continue;
+      // Remove old history (only entities present in combinedHistory reach
+      // here without an early return).
+      if (purgeBeforePythonTime) {
+        // Single pass: split into kept (lu >= cutoff, preserving order) and
+        // track the last expired state (lu < cutoff) without allocating a
+        // second array.
+        const states = newHistory[entityId];
+        const kept: EntityHistoryState[] = [];
+        let lastExpiredState: EntityHistoryState | undefined;
+        for (const state of states) {
+          if (state.lu < purgeBeforePythonTime) {
+            lastExpiredState = state;
+          } else {
+            kept.push(state);
+          }
         }
-        newHistory[entityId] = newHistory[entityId].filter(
-          (state) => state.lu >= purgeBeforePythonTime
-        );
-        if (
-          newHistory[entityId].length &&
-          newHistory[entityId][0].lu === purgeBeforePythonTime
-        ) {
-          continue;
+        if (!lastExpiredState) {
+          return;
+        }
+        newHistory[entityId] = kept;
+        if (kept.length && kept[0].lu === purgeBeforePythonTime) {
+          return;
         }
         // Update the first entry to the start time state
         // as we need to preserve the start time state and
         // only expire the rest of the history as it ages.
-        const lastExpiredState = expiredStates[expiredStates.length - 1];
         lastExpiredState.lu = purgeBeforePythonTime;
         delete lastExpiredState.lc;
-        newHistory[entityId].unshift(lastExpiredState);
+        kept.unshift(lastExpiredState);
+      }
+    };
+    for (const entityId of Object.keys(this.combinedHistory)) {
+      processEntity(entityId);
+    }
+    for (const entityId of Object.keys(streamStates)) {
+      if (!(entityId in this.combinedHistory)) {
+        processEntity(entityId);
       }
     }
     this.combinedHistory = newHistory;
@@ -238,26 +244,81 @@ export const subscribeHistoryStatesTimeWindow = (
   noAttributes?: boolean,
   minimalResponse = true,
   significantChangesOnly = true
-): Promise<() => Promise<void>> => {
-  const params = {
-    type: "history/stream",
-    entity_ids: entityIds,
-    start_time: new Date(
-      new Date().getTime() - 60 * 60 * hoursToShow * 1000
-    ).toISOString(),
-    minimal_response: minimalResponse,
-    significant_changes_only: significantChangesOnly,
-    no_attributes:
-      noAttributes ??
-      !entityIds.some((entityId) =>
-        entityIdHistoryNeedsAttributes(hass, entityId)
-      ),
-  };
-  const stream = new HistoryStream(hass, hoursToShow);
-  return hass.connection.subscribeMessage<HistoryStreamMessage>(
-    (message) => callbackFunction(stream.processMessage(message)),
-    params
+): Promise<() => Promise<void>> =>
+  subscribeHistoryStream(
+    hass,
+    callbackFunction,
+    () => ({
+      type: "history/stream",
+      entity_ids: entityIds,
+      // Recomputed on every (re)subscribe so the replay window stays anchored
+      // to "now" after a reconnect instead of replaying a stale window.
+      start_time: new Date(
+        new Date().getTime() - 60 * 60 * hoursToShow * 1000
+      ).toISOString(),
+      minimal_response: minimalResponse,
+      significant_changes_only: significantChangesOnly,
+      no_attributes:
+        noAttributes ??
+        !entityIds.some((entityId) =>
+          entityIdHistoryNeedsAttributes(hass, entityId)
+        ),
+    }),
+    hoursToShow
   );
+
+/**
+ * Subscribe to a history stream with transparent reconnect handling.
+ *
+ * Auto-resubscribe in home-assistant-js-websocket replays the original
+ * `subscribeMessage` call, which reuses the `HistoryStream` (its
+ * `combinedHistory` would merge stale state with the replayed stream) and the
+ * original `start_time` (which is stale after a disconnect for time-window
+ * subscriptions). Instead, we disable the library's auto-resubscribe and
+ * reimplement it here: on every `ready` event we build fresh params and start
+ * a fresh `HistoryStream`, so consumers don't need to listen for reconnects.
+ */
+const subscribeHistoryStream = async (
+  hass: HomeAssistant,
+  callbackFunction: (data: HistoryStates) => void,
+  buildParams: () => MessageBase,
+  hoursToShow?: number
+): Promise<() => Promise<void>> => {
+  let currentUnsub: (() => Promise<void>) | undefined;
+  let disposed = false;
+
+  const doSubscribe = async () => {
+    const stream = new HistoryStream(hass, hoursToShow);
+    const unsub = await hass.connection.subscribeMessage<HistoryStreamMessage>(
+      (message) => callbackFunction(stream.processMessage(message)),
+      buildParams(),
+      { resubscribe: false }
+    );
+    if (disposed) {
+      unsub().catch(() => undefined);
+      return;
+    }
+    currentUnsub = unsub;
+  };
+
+  const onReady = () => {
+    if (disposed) return;
+    currentUnsub = undefined;
+    // Reconnect failures (e.g. history component not yet loaded) are swallowed;
+    // consumers retry via their own component-availability logic.
+    doSubscribe().catch(() => undefined);
+  };
+
+  await doSubscribe();
+  hass.connection.addEventListener("ready", onReady);
+
+  return async () => {
+    disposed = true;
+    hass.connection.removeEventListener("ready", onReady);
+    if (currentUnsub) {
+      await currentUnsub();
+    }
+  };
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
@@ -296,7 +357,6 @@ const processTimelineEntity = (
       state_localize: computeStateDisplayFromEntityAttributes(
         localize,
         locale,
-        [], // numeric device classes not used for Timeline
         config,
         entities[entityId],
         entityId,
@@ -331,16 +391,18 @@ const processLineChartEntities = (
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
 
-  Object.keys(entities).forEach((entityId) => {
+  const entityIds = Object.keys(entities);
+  entityIds.forEach((entityId) => {
     const states = entities[entityId];
     const first: EntityHistoryState = states[0];
     const domain = computeDomain(entityId);
+    const useLastUpdated = DOMAINS_USE_LAST_UPDATED.includes(domain);
     const processedStates: LineChartState[] = [];
 
     for (const state of states) {
       let processedState: LineChartState;
 
-      if (DOMAINS_USE_LAST_UPDATED.includes(domain)) {
+      if (useLastUpdated) {
         processedState = {
           state: state.s,
           last_changed: state.lu * 1000,
@@ -362,13 +424,11 @@ const processLineChartEntities = (
         };
       }
 
+      const len = processedStates.length;
       if (
-        processedStates.length > 1 &&
-        equalState(
-          processedState,
-          processedStates[processedStates.length - 1]
-        ) &&
-        equalState(processedState, processedStates[processedStates.length - 2])
+        len > 1 &&
+        equalState(processedState, processedStates[len - 1]) &&
+        equalState(processedState, processedStates[len - 2])
       ) {
         continue;
       }
@@ -394,9 +454,15 @@ const processLineChartEntities = (
   return {
     unit,
     device_class,
-    identifier: Object.keys(entities).join(""),
+    identifier: entityIds.join(""),
     data,
   };
+};
+
+const SPECIAL_DOMAIN_CLASSES: Record<string, string | undefined> = {
+  climate: "temperature",
+  humidifier: "humidity",
+  water_heater: "temperature",
 };
 
 const NUMERICAL_DOMAINS = ["counter", "input_number", "number"];
@@ -407,20 +473,12 @@ const isNumericFromDomain = (domain: string) =>
 const isNumericFromAttributes = (attributes: Record<string, any>) =>
   "unit_of_measurement" in attributes || "state_class" in attributes;
 
-const isNumericSensorEntity = (
-  stateObj: HassEntity,
-  sensorNumericalDeviceClasses: string[]
-) =>
-  stateObj.attributes.device_class != null &&
-  sensorNumericalDeviceClasses.includes(stateObj.attributes.device_class);
-
 const BLANK_UNIT = " ";
 
 export const convertStatisticsToHistory = (
   hass: HomeAssistant,
   statistics: Statistics,
   statisticIds: string[],
-  sensorNumericDeviceClasses: string[],
   splitDeviceClasses = false
 ): HistoryResult => {
   // Maintain the statistic id ordering
@@ -448,7 +506,6 @@ export const convertStatisticsToHistory = (
     statsHistoryStates,
     [],
     hass.localize,
-    sensorNumericDeviceClasses,
     splitDeviceClasses,
     true
   );
@@ -478,7 +535,6 @@ export const computeHistory = (
   stateHistory: HistoryStates,
   entityIds: string[],
   localize: LocalizeFunc,
-  sensorNumericalDeviceClasses: string[],
   splitDeviceClasses = false,
   forceNumeric = false
 ): HistoryResult => {
@@ -525,7 +581,6 @@ export const computeHistory = (
       domain,
       currentState,
       numericStateFromHistory,
-      sensorNumericalDeviceClasses,
       forceNumeric
     );
 
@@ -543,14 +598,8 @@ export const computeHistory = (
       }[domain];
     }
 
-    const specialDomainClasses = {
-      climate: "temperature",
-      humidifier: "humidity",
-      water_heater: "temperature",
-    };
-
     const deviceClass: string | undefined =
-      specialDomainClasses[domain] ||
+      SPECIAL_DOMAIN_CLASSES[domain] ||
       (currentState?.attributes || numericStateFromHistory?.a)?.device_class;
 
     const key = computeGroupKey(unit, deviceClass, splitDeviceClasses);
@@ -606,7 +655,6 @@ export const isNumericEntity = (
   domain: string,
   currentState: HassEntity | undefined,
   numericStateFromHistory: EntityHistoryState | undefined,
-  sensorNumericalDeviceClasses: string[],
   forceNumeric = false
 ): boolean =>
   forceNumeric ||
@@ -614,7 +662,7 @@ export const isNumericEntity = (
   (currentState != null && isNumericFromAttributes(currentState.attributes)) ||
   (currentState != null &&
     domain === "sensor" &&
-    isNumericSensorEntity(currentState, sensorNumericalDeviceClasses)) ||
+    isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
 
 export const mergeHistoryResults = (
@@ -675,16 +723,18 @@ export const mergeHistoryResults = (
     }
 
     const newLineItem: LineChartUnit = { ...historyItem, data: [] };
+    const historyDataByEntity = new Map(
+      historyItem.data.map((d) => [d.entity_id, d])
+    );
+    const ltsDataByEntity = new Map(ltsItem.data.map((d) => [d.entity_id, d]));
     const entities = new Set([
-      ...historyItem.data.map((d) => d.entity_id),
-      ...ltsItem.data.map((d) => d.entity_id),
+      ...historyDataByEntity.keys(),
+      ...ltsDataByEntity.keys(),
     ]);
 
     for (const entity of entities) {
-      const historyDataItem = historyItem.data.find(
-        (d) => d.entity_id === entity
-      );
-      const ltsDataItem = ltsItem.data.find((d) => d.entity_id === entity);
+      const historyDataItem = historyDataByEntity.get(entity);
+      const ltsDataItem = ltsDataByEntity.get(entity);
 
       if (!historyDataItem || !ltsDataItem) {
         newLineItem.data.push(historyDataItem || ltsDataItem!);

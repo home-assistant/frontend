@@ -11,6 +11,9 @@ import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-switch";
+import type { HaControlSwitch } from "../../../../src/components/ha-control-switch";
+import type { HASSDomTargetEvent } from "../../../../src/common/dom/fire_event";
+import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
 const switches: {
   id: string;
@@ -44,65 +47,72 @@ const switches: {
 export class DemoHaControlSwitch extends LitElement {
   @state() private checked = false;
 
-  handleValueChanged(e: any) {
-    this.checked = e.target.checked as boolean;
+  handleValueChanged(e: HASSDomTargetEvent<HaControlSwitch>) {
+    this.checked = e.target.checked;
   }
 
   protected render(): TemplateResult {
     return html`
-      ${repeat(switches, (sw) => {
-        const { id, label, ...config } = sw;
-        return html`
-          <ha-card>
-            <div class="card-content">
-              <label id=${id}>${label}</label>
-              <pre>Config: ${JSON.stringify(config)}</pre>
-              <ha-control-switch
-                .checked=${this.checked}
-                class=${ifDefined(config.class)}
-                @change=${this.handleValueChanged}
-                .pathOn=${mdiLightbulb}
-                .pathOff=${mdiLightbulbOff}
-                .label=${label}
-                ?disabled=${config.disabled}
-                ?reversed=${config.reversed}
-              >
-              </ha-control-switch>
-            </div>
-          </ha-card>
-        `;
-      })}
-      <ha-card>
-        <div class="card-content">
-          <p class="title"><b>Vertical</b></p>
-          <div class="vertical-switches">
-            ${repeat(switches, (sw) => {
-              const { id, label, ...config } = sw;
-              return html`
-                <ha-control-switch
-                  .checked=${this.checked}
-                  vertical
-                  class=${ifDefined(config.class)}
-                  @change=${this.handleValueChanged}
-                  .label=${label}
-                  .pathOn=${mdiGarageOpen}
-                  .pathOff=${mdiGarage}
-                  ?disabled=${config.disabled}
-                  ?reversed=${config.reversed}
-                >
-                </ha-control-switch>
-              `;
-            })}
-          </div>
-        </div>
-      </ha-card>
+      <demo-theme-comparison>
+        ${THEME_COMPARISON_PANELS.map(
+          ({ slot }) => html`
+            <ha-card slot=${slot}>
+              ${repeat(switches, (sw) => {
+                const { id, label, ...config } = sw;
+                return html`
+                  <div class="card-content">
+                    <label id="${slot}-${id}">${label}</label>
+                    <pre>Config: ${JSON.stringify(config)}</pre>
+                    <ha-control-switch
+                      .checked=${this.checked}
+                      class=${ifDefined(config.class)}
+                      @change=${this.handleValueChanged}
+                      .pathOn=${mdiLightbulb}
+                      .pathOff=${mdiLightbulbOff}
+                      .label=${label}
+                      ?disabled=${config.disabled}
+                      ?reversed=${config.reversed}
+                    >
+                    </ha-control-switch>
+                  </div>
+                `;
+              })}
+              <div class="card-content">
+                <p class="title"><b>Vertical</b></p>
+                <div class="vertical-switches">
+                  ${repeat(switches, (sw) => {
+                    const { label, ...config } = sw;
+                    return html`
+                      <ha-control-switch
+                        .checked=${this.checked}
+                        vertical
+                        class=${ifDefined(config.class)}
+                        @change=${this.handleValueChanged}
+                        .label=${label}
+                        .pathOn=${mdiGarageOpen}
+                        .pathOff=${mdiGarage}
+                        ?disabled=${config.disabled}
+                        ?reversed=${config.reversed}
+                      >
+                      </ha-control-switch>
+                    `;
+                  })}
+                </div>
+              </div>
+            </ha-card>
+          `
+        )}
+      </demo-theme-comparison>
     `;
   }
 
   static styles = css`
+    :host {
+      display: block;
+    }
     ha-card {
-      max-width: 600px;
-      margin: 24px auto;
+      margin: 0;
+      width: 100%;
     }
     pre {
       margin-top: 0;

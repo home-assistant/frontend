@@ -84,6 +84,10 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     };
   }
 
+  public static getDefaultConfig(): Partial<EntityBadgeConfig> {
+    return DEFAULT_CONFIG;
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() protected _config?: EntityBadgeConfig;
@@ -181,6 +185,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         .stateObj=${stateObj}
         .hass=${this.hass}
         .content=${this._config.state_content}
+        .timeFormat=${this._config.time_format}
         .name=${name}
       >
       </state-display>
@@ -217,7 +222,6 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
             : html`
                 <ha-state-icon
                   slot="icon"
-                  .hass=${this.hass}
                   .stateObj=${stateObj}
                   .icon=${this._config.icon}
                 ></ha-state-icon>

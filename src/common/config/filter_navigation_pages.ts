@@ -21,6 +21,9 @@ export const filterNavigationPages = (
     if (page.path === "#external-app-configuration") {
       return hass.auth.external?.config.hasSettingsScreen;
     }
+    if (page.adminOnly && !hass.user?.is_admin) {
+      return false;
+    }
     // Only show Bluetooth page if there are Bluetooth config entries
     if (page.component === "bluetooth") {
       return options.hasBluetoothConfigEntries ?? false;

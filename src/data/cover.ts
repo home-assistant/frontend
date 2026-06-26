@@ -4,10 +4,10 @@ import type {
 } from "home-assistant-js-websocket";
 import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantFormatters } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
 
-export const enum CoverEntityFeature {
+export enum CoverEntityFeature {
   OPEN = 1,
   CLOSE = 2,
   SET_POSITION = 4,
@@ -28,36 +28,6 @@ export const coverSupportsTiltPosition = (stateObj: CoverEntity) =>
 
 export const coverSupportsAnyPosition = (stateObj: CoverEntity) =>
   coverSupportsPosition(stateObj) || coverSupportsTiltPosition(stateObj);
-
-export const normalizeCoverFavoritePositions = (
-  positions?: number[]
-): number[] => {
-  if (!positions) {
-    return [];
-  }
-
-  const unique = new Set<number>();
-  const normalized: number[] = [];
-
-  for (const position of positions) {
-    const value = Number(position);
-
-    if (isNaN(value)) {
-      continue;
-    }
-
-    const clamped = Math.max(0, Math.min(100, Math.round(value)));
-
-    if (unique.has(clamped)) {
-      continue;
-    }
-
-    unique.add(clamped);
-    normalized.push(clamped);
-  }
-
-  return normalized;
-};
 
 export function isFullyOpen(stateObj: CoverEntity) {
   if (stateObj.attributes.current_position !== undefined) {
@@ -152,7 +122,7 @@ export interface CoverEntity extends HassEntityBase {
 
 export function computeCoverPositionStateDisplay(
   stateObj: CoverEntity,
-  hass: HomeAssistant,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   position?: number
 ) {
   const statePosition = stateActive(stateObj)
@@ -163,7 +133,7 @@ export function computeCoverPositionStateDisplay(
   const currentPosition = position ?? statePosition;
 
   return currentPosition && currentPosition !== 100
-    ? hass.formatEntityAttributeValue(
+    ? formatEntityAttributeValue(
         stateObj,
         // Always use position as it's the same formatting as tilt position
         "current_position",

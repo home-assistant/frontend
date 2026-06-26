@@ -210,14 +210,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.clearSelection();
   }
 
-  protected willUpdate(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues<this>) {
     if (
       changedProperties.has("tabs") ||
       (changedProperties.has("hass") &&
-        (this.hass?.config.components !==
-          changedProperties.get("hass")?.config.components ||
-          this.hass?.userData?.showAdvanced !==
-            changedProperties.get("hass")?.userData?.showAdvanced))
+        this.hass?.config.components !==
+          changedProperties.get("hass")?.config.components)
     ) {
       this.showTabs =
         this.tabs.filter((page) => canShowPage(this.hass, page)).length > 1;
@@ -283,8 +281,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               .label=${localize("ui.components.subpage-data-table.sort_by", {
                 sortColumn:
                   this._sortColumn && this.columns[this._sortColumn]
-                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}` ||
-                      ""
+                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}`
                     : "",
               })}
             >
@@ -394,7 +391,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       <hass-tabs-subpage
         .hass=${this.hass}
         .localizeFunc=${this.localizeFunc}
-        .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
@@ -505,7 +501,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   `
                 : ""}
               <ha-data-table
-                .hass=${this.hass}
                 .narrow=${this.narrow}
                 .columns=${this.columns}
                 .data=${this.data}
@@ -554,7 +549,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       </hass-tabs-subpage>
       ${this.showFilters && !showPane
         ? html`<ha-dialog
-            .hass=${this.hass}
             .open=${true}
             width="full"
             header-title=${localize("ui.components.subpage-data-table.filters")}
@@ -798,6 +792,12 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
     ha-input-search {
       flex: 1;
+    }
+    @media (min-width: 871px) {
+      ha-input-search {
+        --ha-input-search-height: 32px;
+        --ha-input-search-border-radius: 10px;
+      }
     }
     .search-toolbar {
       display: flex;

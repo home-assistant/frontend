@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
@@ -27,13 +27,18 @@ import {
   updateEntityRegistryEntry,
 } from "../../../../data/entity/entity_registry";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { VacuumSegmentMappingDialogParams } from "./show-dialog-vacuum-segment-mapping";
 
+interface VacuumSegmentMappingState {
+  areaMapping: Record<string, string[]>;
+}
+
 @customElement("dialog-vacuum-segment-mapping")
 export class DialogVacuumSegmentMapping
-  extends LitElement
+  extends DirtyStateProviderMixin<VacuumSegmentMappingState>()(LitElement)
   implements HassDialog<VacuumSegmentMappingDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,6 +50,9 @@ export class DialogVacuumSegmentMapping
   @state() private _areaMapping?: Record<string, string[]>;
 
   @state() private _submitting = false;
+
+  @query("ha-vacuum-segment-area-mapper")
+  private _mapper?: HaVacuumSegmentAreaMapper;
 
   private _entry?: ExtEntityRegistryEntry;
 
@@ -74,6 +82,10 @@ export class DialogVacuumSegmentMapping
     } else {
       this._areaMapping = {};
     }
+    this._initDirtyTracking(
+      { type: "deep" },
+      { areaMapping: this._areaMapping }
+    );
   }
 
   private _dialogClosed(): void {
@@ -83,6 +95,7 @@ export class DialogVacuumSegmentMapping
 
   private _valueChanged(ev: CustomEvent) {
     this._areaMapping = ev.detail.value;
+    this._updateDirtyState({ areaMapping: ev.detail.value });
   }
 
   private async _save() {
@@ -91,9 +104,7 @@ export class DialogVacuumSegmentMapping
     this._submitting = true;
 
     try {
-      const mapper = this.renderRoot.querySelector(
-        "ha-vacuum-segment-area-mapper"
-      ) as HaVacuumSegmentAreaMapper;
+      const mapper = this._mapper!;
 
       const options: VacuumEntityOptions = {
         ...(this._entry?.options?.vacuum ?? {}),
@@ -106,6 +117,7 @@ export class DialogVacuumSegmentMapping
         options: options,
       });
 
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (_err: any) {
       // Error will be shown by the system
@@ -156,14 +168,19 @@ export class DialogVacuumSegmentMapping
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         @closed=${this._dialogClosed}
+        .preventScrimClose=${this.isDirtyState}
         .headerTitle=${this.hass.localize(
           "ui.dialogs.vacuum_segment_mapping.title"
         )}
         .headerSubtitle=${breadcrumb.join(
-          computeRTL(this.hass) ? " ◂ " : " ▸ "
+          computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ "
         )}
       >
         <ha-vacuum-segment-area-mapper
@@ -184,7 +201,7 @@ export class DialogVacuumSegmentMapping
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._submitting}
+            .disabled=${this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>

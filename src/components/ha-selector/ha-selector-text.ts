@@ -3,15 +3,13 @@ import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-textarea";
 import "../input/ha-input";
 import "../input/ha-input-multi";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property() public value?: any;
 
   @property() public name?: string;
@@ -65,21 +63,20 @@ export class HaTextSelector extends LitElement {
         .label=${this.label}
         .placeholder=${this.placeholder}
         .value=${this.value || ""}
-        .helper=${this.helper}
-        helperPersistent
+        .hint=${this.helper}
         .disabled=${this.disabled}
         @input=${this._handleChange}
         autocapitalize="none"
         .autocomplete=${this.selector.text?.autocomplete}
         spellcheck="false"
         .required=${this.required}
-        autogrow
+        resize="auto"
       ></ha-textarea>`;
     }
     return html`<ha-input
       .name=${this.name}
       .value=${this.value || ""}
-      .placeholder=${this.placeholder || ""}
+      .placeholder=${this.placeholder || this.selector.text?.placeholder || ""}
       .hint=${this.helper}
       .disabled=${this.disabled}
       .type=${this.selector.text?.type}

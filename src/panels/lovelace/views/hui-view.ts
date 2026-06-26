@@ -42,7 +42,10 @@ import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
-import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
+import {
+  checkStrategyShouldRegenerate,
+  generateLovelaceViewStrategy,
+} from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { getViewType } from "./get-view-type";
 
@@ -149,7 +152,7 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
-  public willUpdate(changedProperties: PropertyValues<typeof this>): void {
+  public willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     /*
@@ -185,10 +188,13 @@ export class HUIView extends ReactiveElement {
     if (oldHass && this.hass && this.lovelace && isStrategyView(viewConfig)) {
       if (
         this.hass.config.state === "RUNNING" &&
-        (oldHass.entities !== this.hass.entities ||
-          oldHass.devices !== this.hass.devices ||
-          oldHass.areas !== this.hass.areas ||
-          oldHass.floors !== this.hass.floors)
+        (oldHass.config.state !== "RUNNING" ||
+          checkStrategyShouldRegenerate(
+            "view",
+            viewConfig.strategy,
+            oldHass,
+            this.hass
+          ))
       ) {
         this._debounceRefreshConfig();
       }

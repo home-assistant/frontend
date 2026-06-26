@@ -22,8 +22,8 @@ import type { EnergyGridNeutralityGaugeCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: "var(--energy-grid-consumption-color)" },
-  { level: 0, stroke: "var(--energy-grid-return-color)" },
+  { level: -1, stroke: "var(--energy-grid-return-color)" },
+  { level: 0, stroke: "var(--energy-grid-consumption-color)" },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
@@ -75,7 +75,7 @@ class HuiEnergyGridGaugeCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -107,9 +107,9 @@ class HuiEnergyGridGaugeCard
 
     if (consumedFromGrid !== null && returnedToGrid !== null) {
       if (returnedToGrid > consumedFromGrid) {
-        value = 1 - consumedFromGrid / returnedToGrid;
+        value = (1 - consumedFromGrid / returnedToGrid) * -1;
       } else if (returnedToGrid < consumedFromGrid) {
-        value = (1 - returnedToGrid / consumedFromGrid) * -1;
+        value = 1 - returnedToGrid / consumedFromGrid;
       } else {
         value = 0;
       }

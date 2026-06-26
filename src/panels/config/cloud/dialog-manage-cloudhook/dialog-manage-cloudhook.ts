@@ -51,7 +51,6 @@ export class DialogManageCloudhook extends LitElement {
         : documentationUrl(this.hass!, `/integrations/${webhook.domain}/`);
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass!.localize(
           "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
@@ -61,7 +60,7 @@ export class DialogManageCloudhook extends LitElement {
       >
         <div>
           <p>
-            ${!cloudhook.managed
+            ${cloudhook.managed
               ? html`
                   ${this.hass!.localize(
                     "ui.panel.config.cloud.dialog_cloudhook.managed_by_integration"

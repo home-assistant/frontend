@@ -1,107 +1,87 @@
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiAccountGroup, mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import { customElement } from "lit/decorators";
 import "../../components/ha-dialog";
-import "../../components/ha-list";
-import "../../components/ha-list-item";
+import "../../components/ha-svg-icon";
+import "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-nav";
+import { DialogMixin } from "../../dialogs/dialog-mixin";
+import type { CommunityDialogParams } from "./show-community-dialog";
 
 @customElement("community-dialog")
-class DialogCommunity extends LitElement {
-  @property({ attribute: false }) public localize?: LocalizeFunc;
-
-  @state() private _open = false;
-
-  public async showDialog(params): Promise<void> {
-    this.localize = params.localize;
-    this._open = true;
-  }
-
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this.localize = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
+class DialogCommunity extends DialogMixin<CommunityDialogParams>(LitElement) {
   protected render() {
-    if (!this.localize) {
+    if (!this.params?.localize) {
       return nothing;
     }
     return html`<ha-dialog
-      .open=${this._open}
-      header-title=${this.localize(
+      open
+      header-title=${this.params.localize(
         "ui.panel.page-onboarding.welcome.community"
       )}
-      @closed=${this._dialogClosed}
     >
-      <ha-list>
-        <a
+      <ha-list-nav>
+        <ha-list-item-button
           target="_blank"
           rel="noreferrer noopener"
           href="https://community.home-assistant.io/"
         >
-          <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/icons/favicon-192x192.png"
-              slot="graphic"
-              alt="Home Assistant Logo"
-            />
-            ${this.localize("ui.panel.page-onboarding.welcome.forums")}
-            <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-          </ha-list-item>
-        </a>
-        <a
+          <img
+            src="/static/icons/favicon-192x192.png"
+            slot="start"
+            alt="Home Assistant Logo"
+          />
+          <span slot="headline">
+            ${this.params.localize("ui.panel.page-onboarding.welcome.forums")}
+          </span>
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+        </ha-list-item-button>
+        <ha-list-item-button
           target="_blank"
           rel="noreferrer noopener"
           href="https://newsletter.openhomefoundation.org/"
         >
-          <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/icons/logo_ohf.svg"
-              slot="graphic"
-              alt="Open Home Foundation Logo"
-            />
-            ${this.localize(
+          <img
+            src="/static/icons/logo_ohf.svg"
+            slot="start"
+            alt="Open Home Foundation Logo"
+          />
+          <span slot="headline">
+            ${this.params.localize(
               "ui.panel.page-onboarding.welcome.open_home_newsletter"
             )}
-            <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-          </ha-list-item>
-        </a>
-        <a
+          </span>
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+        </ha-list-item-button>
+        <ha-list-item-button
           target="_blank"
           rel="noreferrer noopener"
           href="https://www.home-assistant.io/join-chat"
         >
-          <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/images/logo_discord.png"
-              slot="graphic"
-              alt="Discord Logo"
-            />
-            ${this.localize("ui.panel.page-onboarding.welcome.discord")}
-            <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-          </ha-list-item>
-        </a>
-        <a
+          <img
+            src="/static/images/logo_discord.png"
+            slot="start"
+            alt="Discord Logo"
+          />
+          <span slot="headline">
+            ${this.params.localize("ui.panel.page-onboarding.welcome.discord")}
+          </span>
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+        </ha-list-item-button>
+        <ha-list-item-button
           target="_blank"
           rel="noreferrer noopener"
           href="https://fosstodon.org/@homeassistant"
         >
-          <ha-list-item hasMeta graphic="icon">
-            <img
-              src="/static/images/logo_mastodon.svg"
-              slot="graphic"
-              alt="Mastodon Logo"
-            />
-            ${this.localize("ui.panel.page-onboarding.welcome.mastodon")}
-            <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
-          </ha-list-item>
-        </a>
-      </ha-list>
+          <ha-svg-icon .path=${mdiAccountGroup} slot="start"></ha-svg-icon>
+          <span slot="headline">
+            ${this.params.localize(
+              "ui.panel.page-onboarding.welcome.social_media"
+            )}
+          </span>
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+        </ha-list-item-button>
+      </ha-list-nav>
     </ha-dialog>`;
   }
 
@@ -109,12 +89,12 @@ class DialogCommunity extends LitElement {
     ha-dialog {
       --dialog-content-padding: 0;
     }
-    ha-list-item {
-      height: 56px;
-      --mdc-list-item-meta-size: 20px;
+    img {
+      width: 32px;
+      height: 32px;
     }
-    a {
-      text-decoration: none;
+    ha-svg-icon {
+      color: var(--ha-color-text-secondary);
     }
   `;
 }

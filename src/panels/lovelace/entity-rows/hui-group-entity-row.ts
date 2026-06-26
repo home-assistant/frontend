@@ -36,7 +36,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -58,12 +58,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${this._computeCanToggle(this.hass, stateObj.attributes.entity_id)
-          ? html`
-              <ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-entity-toggle>
-            `
+          ? html` <ha-entity-toggle .stateObj=${stateObj}></ha-entity-toggle> `
           : html`
               <div class="text-content">
                 ${this.hass.formatEntityState(stateObj)}

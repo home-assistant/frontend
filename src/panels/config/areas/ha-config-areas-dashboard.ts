@@ -2,9 +2,11 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiDelete,
   mdiDotsVertical,
+  mdiFloorPlan,
   mdiHelpCircleOutline,
   mdiPencil,
   mdiPlus,
+  mdiSofa,
   mdiSort,
 } from "@mdi/js";
 import {
@@ -24,9 +26,10 @@ import {
   type AreasFloorHierarchy,
 } from "../../../common/areas/areas-floor-hierarchy";
 import { formatListWithAnds } from "../../../common/string/format-list";
+import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
@@ -51,14 +54,13 @@ import {
 import "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { showAreasFloorsOrderDialog } from "./show-dialog-areas-floors-order";
 import { showFloorRegistryDetailDialog } from "./show-dialog-floor-registry-detail";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -80,13 +82,11 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public route!: Route;
 
-  private _searchParms = new URLSearchParams(window.location.search);
-
   @state() private _hierarchy?: AreasFloorHierarchy;
+
+  private _searchParms = new URLSearchParams(window.location.search);
 
   private _blockHierarchyUpdate = false;
 
@@ -167,7 +167,6 @@ export class HaConfigAreasDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
@@ -318,27 +317,20 @@ export class HaConfigAreasDashboard extends LitElement {
               `
             : nothing}
         </div>
-        <ha-fab
-          slot="fab"
-          class="floor"
-          .label=${this.hass.localize(
-            "ui.panel.config.areas.picker.create_floor"
-          )}
-          extended
-          @click=${this._createFloor}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize(
-            "ui.panel.config.areas.picker.create_area"
-          )}
-          extended
-          @click=${this._createArea}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-dropdown slot="fab" @wa-select=${this._handleCreateAction}>
+          <ha-button slot="trigger" id="fab" size="l">
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${this.hass.localize("ui.common.add")}
+          </ha-button>
+          <ha-dropdown-item value="create_floor">
+            <ha-svg-icon .path=${mdiFloorPlan} slot="icon"></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.areas.picker.create_floor")}
+          </ha-dropdown-item>
+          <ha-dropdown-item value="create_area">
+            <ha-svg-icon .path=${mdiSofa} slot="icon"></ha-svg-icon>
+            ${this.hass.localize("ui.panel.config.areas.picker.create_area")}
+          </ha-dropdown-item>
+        </ha-dropdown>
       </hass-tabs-subpage>
     `;
   }
@@ -399,7 +391,7 @@ export class HaConfigAreasDashboard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     loadAreaRegistryDetailDialog();
   }
@@ -555,6 +547,15 @@ export class HaConfigAreasDashboard extends LitElement {
     const action = ev.detail.item.value;
     if (action === "reorder") {
       this._showReorderDialog();
+    }
+  }
+
+  private _handleCreateAction(ev: HaDropdownSelectEvent) {
+    const action = ev.detail.item.value;
+    if (action === "create_floor") {
+      this._createFloor();
+    } else if (action === "create_area") {
+      this._createArea();
     }
   }
 

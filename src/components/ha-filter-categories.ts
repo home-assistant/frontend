@@ -8,9 +8,9 @@ import {
   mdiTag,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import type { CategoryRegistryEntry } from "../data/category_registry";
@@ -48,6 +48,8 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
   @state() private _categories: CategoryRegistryEntry[] = [];
 
   @state() private _shouldRender = false;
+
+  @query("ha-list") private _list?: HTMLElement;
 
   protected hassSubscribeRequiredHostProps = ["scope"];
 
@@ -165,12 +167,11 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - (49 + 48)}px`;
+        this._list!.style.height = `${this.clientHeight - (49 + 48)}px`;
       }, 300);
     }
   }

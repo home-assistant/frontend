@@ -4,6 +4,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
@@ -67,7 +68,7 @@ class HuiHumidifierToggleCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProp: PropertyValues): void {
+  protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
     if (
       (changedProp.has("hass") || changedProp.has("context")) &&
@@ -81,8 +82,10 @@ class HuiHumidifierToggleCardFeature
     }
   }
 
-  private async _valueChanged(ev: CustomEvent) {
-    const newState = (ev.detail as any).value as HumidifierState;
+  private async _valueChanged(
+    ev: HASSDomEvent<HASSDomEvents["value-changed"]>
+  ) {
+    const newState = ev.detail.value as HumidifierState;
 
     if (newState === this._stateObj!.state) return;
 

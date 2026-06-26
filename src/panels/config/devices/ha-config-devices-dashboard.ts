@@ -1,4 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { consume } from "@lit/context";
 import {
   mdiCancel,
@@ -10,16 +11,14 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -36,14 +35,14 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
-
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-integrations";
@@ -60,6 +59,7 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
+import { computeDeviceAreaLabel } from "../../../data/device/device_picker";
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -86,18 +86,17 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
-import { configSections } from "../ha-panel-config";
+import {
+  getAreaTableColumn,
+  getCreatedAtTableColumn,
+  getFloorTableColumn,
+  getLabelsTableColumn,
+  getModifiedAtTableColumn,
+} from "../common/data-table-columns";
+import { configSections } from "../config-sections";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import {
-  getAreaTableColumn,
-  getFloorTableColumn,
-  getLabelsTableColumn,
-  getCreatedAtTableColumn,
-  getModifiedAtTableColumn,
-} from "../common/data-table-columns";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -146,15 +145,17 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _filter: string = history.state?.filter || "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "devices-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
 
   @state() private _expandedFilter?: string;
 
@@ -190,6 +191,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   });
 
   private _ignoreLocationChange = false;
+
+  private _fromUrl = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -231,6 +234,7 @@ export class HaConfigDeviceDashboard extends LitElement {
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
       this._setFiltersFromUrl();
     }
     if (changedProps.has("_selected")) {
@@ -247,15 +251,17 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   private _setFiltersFromUrl() {
+    const area = this._searchParms.get("area");
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
     const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!area && !domain && !configEntry && !label) {
       return;
     }
 
+    this._fromUrl = true;
     this._filter = history.state?.filter || "";
 
     this._filters = {
@@ -264,6 +270,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           ...((this._filters["ha-filter-states"]?.value as string[]) || []),
           "disabled",
         ],
+        items: undefined,
+      },
+      "ha-filter-floor-areas": {
+        value: area ? { areas: [area] } : undefined,
         items: undefined,
       },
       "ha-filter-integrations": {
@@ -298,6 +308,9 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _devicesAndFilterDomains = memoizeOne(
@@ -439,6 +452,12 @@ export class HaConfigDeviceDashboard extends LitElement {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
       }
 
+      // Build a label lookup once instead of scanning labelReg for every
+      // label of every device.
+      const labelLookup = labelReg
+        ? new Map(labelReg.map((label) => [label.label_id, label]))
+        : undefined;
+
       const formattedOutputDevices = outputDevices.map((device) => {
         const deviceEntries = sortConfigEntries(
           device.config_entries
@@ -448,27 +467,40 @@ export class HaConfigDeviceDashboard extends LitElement {
         );
 
         const labels = labelReg && device?.labels;
-        const labelsEntries = (labels || []).map(
-          (lbl) => labelReg!.find((label) => label.label_id === lbl)!
+        const labelsEntries = (labels || [])
+          .map((lbl) => labelLookup!.get(lbl))
+          .filter((entry): entry is LabelRegistryEntry => entry !== undefined);
+
+        const { areaName } = computeDeviceAreaLabel(
+          device,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.states,
+          this.hass.localize,
+          this.hass.language,
+          this.hass.translationMetadata,
+          device.via_device_id
+            ? deviceEntityLookup[device.via_device_id]
+            : undefined
         );
 
-        let floorName;
-        if (
-          device.area_id &&
-          areas[device.area_id]?.floor_id &&
-          this.hass.floors
-        ) {
-          const floorId = areas[device.area_id].floor_id;
-          if (this.hass.floors[floorId!]) {
-            floorName = computeFloorName(this.hass.floors[floorId!]);
-          }
-        }
+        const floorArea =
+          getDeviceArea(device, areas) ??
+          (device.via_device_id && this.hass.devices[device.via_device_id]
+            ? getDeviceArea(this.hass.devices[device.via_device_id], areas)
+            : undefined);
+        const floorId = floorArea?.floor_id;
+        const floorName =
+          floorId && this.hass.floors?.[floorId]
+            ? computeFloorName(this.hass.floors[floorId])
+            : undefined;
 
         return {
           ...device,
           name: computeDeviceNameDisplay(
             device,
-            this.hass,
+            this.hass.localize,
+            this.hass.states,
             deviceEntityLookup[device.id]
           ),
           model:
@@ -477,10 +509,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           manufacturer:
             device.manufacturer ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
-          area:
-            device.area_id && areas[device.area_id]
-              ? areas[device.area_id].name
-              : undefined,
+          area: areaName,
           floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
@@ -493,6 +522,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                 "ui.panel.config.devices.data_table.no_integration"
               ),
           domains: deviceEntries.map((entry) => entry.domain),
+          firmware_version: device.sw_version || undefined,
           battery_entity: [
             this._batteryEntity(device.id, deviceEntityLookup),
             this._batteryChargingEntity(device.id, deviceEntityLookup),
@@ -581,6 +611,13 @@ export class HaConfigDeviceDashboard extends LitElement {
         title: localize("ui.panel.config.devices.data_table.model"),
         sortable: true,
         filterable: true,
+        minWidth: "120px",
+      },
+      firmware_version: {
+        title: localize("ui.panel.config.devices.data_table.firmware_version"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
         minWidth: "120px",
       },
       battery_entity: {
@@ -681,7 +718,6 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((deviceId) =>
           this.hass.devices[deviceId]?.labels.includes(label.label_id)
         );
@@ -700,10 +736,9 @@ export class HaConfigDeviceDashboard extends LitElement {
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
           <ha-label
-            style=${color ? `--color: ${color}` : ""}
+            .color=${label.color}
             .description=${label.description || undefined}
           >
             ${label.icon
@@ -782,14 +817,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.devices.add_device")}
-          extended
-          @click=${this._addDevice}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._addDevice}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.devices.add_device")}
+        </ha-button>
         ${Array.isArray(this._filters.config_entry?.value) &&
         this._filters.config_entry?.value.length
           ? html`<ha-alert slot="filter-pane">
@@ -811,7 +842,6 @@ export class HaConfigDeviceDashboard extends LitElement {
             </ha-alert>`
           : nothing}
         <ha-filter-floor-areas
-          .hass=${this.hass}
           type="device"
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -821,7 +851,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-integrations
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-integrations"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -830,7 +859,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-integrations>
         <ha-filter-states
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-states"]?.value}
           .states=${this._states(this.hass.localize)}
           .label=${this.hass.localize("ui.panel.config.devices.picker.state")}
@@ -841,7 +869,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-states>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -956,6 +983,9 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   private _batteryEntity(
@@ -963,7 +993,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
     const batteryEntity = findBatteryEntity(
-      this.hass,
+      this.hass.states,
       deviceEntityLookup[deviceId] || []
     );
     return batteryEntity ? batteryEntity.entity_id : undefined;
@@ -974,7 +1004,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
     const batteryChargingEntity = findBatteryChargingEntity(
-      this.hass,
+      this.hass.states,
       deviceEntityLookup[deviceId] || []
     );
     return batteryChargingEntity ? batteryChargingEntity.entity_id : undefined;
@@ -1253,10 +1283,6 @@ ${rejected
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
       `,
       haStyle,

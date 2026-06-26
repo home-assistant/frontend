@@ -6,9 +6,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-button";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-radio";
 import "../../../components/ha-settings-row";
-import "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   changeHostOptions,
@@ -55,13 +54,13 @@ export class HassioHostname extends LitElement {
               "ui.panel.config.network.supervisor.hostname.description"
             )}
           </p>
-          <ha-textfield
+          <ha-input
             .disabled=${this._processing}
             .value=${this._hostname}
             @change=${this._handleChange}
             placeholder="homeassistant"
           >
-          </ha-textfield>
+          </ha-input>
         </div>
         <div class="card-actions">
           <ha-button
@@ -76,8 +75,8 @@ export class HassioHostname extends LitElement {
     `;
   }
 
-  private _handleChange(ev) {
-    this._hostname = ev.target.value;
+  private _handleChange(ev: InputEvent) {
+    this._hostname = (ev.target as HTMLInputElement).value;
   }
 
   private async _save() {
@@ -97,7 +96,7 @@ export class HassioHostname extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
-    ha-textfield {
+    ha-input {
       width: 100%;
     }
     .card-actions {

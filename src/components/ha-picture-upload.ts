@@ -78,7 +78,6 @@ export class HaPictureUpload extends LitElement {
 
       return html`
         <ha-file-upload
-          .hass=${this.hass}
           .icon=${mdiImagePlus}
           .label=${this.label ||
           this.hass.localize("ui.components.picture-upload.label")}
@@ -102,7 +101,7 @@ export class HaPictureUpload extends LitElement {
         <div>
           <ha-button
             appearance="plain"
-            size="small"
+            size="s"
             variant="danger"
             @click=${this._handleChangeClick}
           >

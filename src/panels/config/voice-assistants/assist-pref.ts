@@ -81,7 +81,7 @@ export class AssistPref extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
     listAssistPipelines(this.hass).then((pipelines) => {
@@ -107,10 +107,7 @@ export class AssistPref extends LitElement {
     return html`
       <ha-card outlined>
         <h1 class="card-header">
-          <voice-assistant-brand-icon
-            .voiceAssistantId=${"conversation"}
-            .hass=${this.hass}
-          >
+          <voice-assistant-brand-icon .voiceAssistantId=${"conversation"}>
           </voice-assistant-brand-icon
           >Assist
         </h1>
@@ -208,7 +205,7 @@ export class AssistPref extends LitElement {
           appearance="filled"
           @click=${this._addPipeline}
           class="add"
-          size="small"
+          size="s"
         >
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"

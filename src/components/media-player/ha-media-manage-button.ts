@@ -1,13 +1,16 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFolderEdit } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import { configContext } from "../../data/context";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   isLocalMediaSourceContentId,
   isImageUploadMediaSourceContentId,
 } from "../../data/media_source";
-import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-svg-icon";
 import "../ha-button";
 import { showMediaManageDialog } from "./show-media-manage-dialog";
@@ -20,7 +23,13 @@ declare global {
 
 @customElement("ha-media-manage-button")
 class MediaManageButton extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) currentItem?: MediaPlayerItem;
 
@@ -31,18 +40,16 @@ class MediaManageButton extends LitElement {
       !this.currentItem ||
       !(
         isLocalMediaSourceContentId(this.currentItem.media_content_id || "") ||
-        (this.hass!.user?.is_admin &&
+        (this._config.user?.is_admin &&
           isImageUploadMediaSourceContentId(this.currentItem.media_content_id))
       )
     ) {
       return nothing;
     }
     return html`
-      <ha-button appearance="filled" size="small" @click=${this._manage}>
+      <ha-button appearance="filled" size="s" @click=${this._manage}>
         <ha-svg-icon .path=${mdiFolderEdit} slot="start"></ha-svg-icon>
-        ${this.hass.localize(
-          "ui.components.media-browser.file_management.manage"
-        )}
+        ${this._localize("ui.components.media-browser.file_management.manage")}
       </ha-button>
     `;
   }

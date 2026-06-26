@@ -6,6 +6,9 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
   class extends superClass {
+    /** Provided by `DirtyStateProviderMixin`. */
+    declare isDirtyState: boolean;
+
     private _handleClick = async (e: MouseEvent) => {
       // get the right target, otherwise the composedPath would return <home-assistant> in the new event
       const target = e.composedPath()[0];
@@ -30,10 +33,10 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       window.removeEventListener("beforeunload", this._handleUnload);
     }
 
-    protected willUpdate(changedProperties: PropertyValues): void {
+    protected willUpdate(changedProperties: PropertyValues<this>): void {
       super.willUpdate(changedProperties);
 
-      if (this.isDirty) {
+      if (this.isDirtyState) {
         window.addEventListener("click", this._handleClick, true);
         window.addEventListener("beforeunload", this._handleUnload);
       } else {
@@ -45,11 +48,6 @@ export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
       super.disconnectedCallback();
 
       this._removeListeners();
-    }
-
-    // eslint-disable-next-line @typescript-eslint/class-literal-property-style
-    protected get isDirty(): boolean {
-      return false;
     }
 
     protected async promptDiscardChanges(): Promise<boolean> {

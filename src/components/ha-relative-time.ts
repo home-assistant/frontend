@@ -1,18 +1,24 @@
+import { consume } from "@lit/context";
 import { parseISO } from "date-fns";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { relativeTime } from "../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
-import type { HomeAssistant } from "../types";
+import { internationalizationContext } from "../data/context";
+import type { HomeAssistantInternationalization } from "../types";
 
 @customElement("ha-relative-time")
 class HaRelativeTime extends ReactiveElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public datetime?: string | Date;
 
+  @property() public format: Intl.RelativeTimeFormatStyle = "long";
+
   @property({ type: Boolean }) public capitalize = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: HomeAssistantInternationalization;
 
   private _interval?: number;
 
@@ -32,13 +38,15 @@ class HaRelativeTime extends ReactiveElement {
     return this;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this._updateRelative();
-  }
-
-  protected update(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
+    if (changedProps.has("datetime")) {
+      if (this.datetime) {
+        this._startInterval();
+      } else {
+        this._clearInterval();
+      }
+    }
     this._updateRelative();
   }
 
@@ -57,16 +65,28 @@ class HaRelativeTime extends ReactiveElement {
   }
 
   private _updateRelative(): void {
+    if (!this._i18n) {
+      return;
+    }
+
     if (!this.datetime) {
-      this.innerHTML = this.hass.localize("ui.components.relative_time.never");
+      this.textContent = this._i18n.localize(
+        "ui.components.relative_time.never"
+      );
     } else {
       const date =
         typeof this.datetime === "string"
           ? parseISO(this.datetime)
           : this.datetime;
 
-      const relTime = relativeTime(date, this.hass.locale);
-      this.innerHTML = this.capitalize
+      const relTime = relativeTime(
+        date,
+        this._i18n.locale,
+        undefined,
+        true,
+        this.format
+      );
+      this.textContent = this.capitalize
         ? capitalizeFirstLetter(relTime)
         : relTime;
     }

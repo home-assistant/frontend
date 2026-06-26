@@ -1,18 +1,22 @@
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import {
   computeCloseIcon,
   computeOpenIcon,
 } from "../../common/entity/cover_icon";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-control-button";
 import "../../components/ha-control-button-group";
 import "../../components/ha-control-slider";
 import "../../components/ha-svg-icon";
+import { apiContext } from "../../data/context";
 import type { CoverEntity } from "../../data/cover";
 import {
   CoverEntityFeature,
@@ -23,7 +27,7 @@ import {
   canStop,
   canStopTilt,
 } from "../../data/cover";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantApi } from "../../types";
 
 type CoverButton =
   | "open"
@@ -103,34 +107,40 @@ export const getCoverLayout = memoizeOne(
 
 @customElement("ha-state-control-cover-buttons")
 export class HaStateControlCoverButtons extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
   private _onOpenTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "open_cover", {
+    this._api.callService("cover", "open_cover", {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
   private _onCloseTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "close_cover", {
+    this._api.callService("cover", "close_cover", {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
   private _onOpenTiltTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "open_cover_tilt", {
+    this._api.callService("cover", "open_cover_tilt", {
       entity_id: this.stateObj!.entity_id,
     });
   }
 
   private _onCloseTiltTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "close_cover_tilt", {
+    this._api.callService("cover", "close_cover_tilt", {
       entity_id: this.stateObj!.entity_id,
     });
   }
@@ -138,12 +148,12 @@ export class HaStateControlCoverButtons extends LitElement {
   private _onStopTap(ev): void {
     ev.stopPropagation();
     if (supportsFeature(this.stateObj, CoverEntityFeature.STOP)) {
-      this.hass!.callService("cover", "stop_cover", {
+      this._api.callService("cover", "stop_cover", {
         entity_id: this.stateObj!.entity_id,
       });
     }
     if (supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT)) {
-      this.hass!.callService("cover", "stop_cover_tilt", {
+      this._api.callService("cover", "stop_cover_tilt", {
         entity_id: this.stateObj!.entity_id,
       });
     }
@@ -153,7 +163,7 @@ export class HaStateControlCoverButtons extends LitElement {
     if (button === "open") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize("ui.card.cover.open_cover")}
+          .label=${this._localize("ui.card.cover.open_cover")}
           @click=${this._onOpenTap}
           .disabled=${!canOpen(this.stateObj)}
           data-button="open"
@@ -165,7 +175,7 @@ export class HaStateControlCoverButtons extends LitElement {
     if (button === "close") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize("ui.card.cover.close_cover")}
+          .label=${this._localize("ui.card.cover.close_cover")}
           @click=${this._onCloseTap}
           .disabled=${!canClose(this.stateObj)}
           data-button="close"
@@ -177,7 +187,7 @@ export class HaStateControlCoverButtons extends LitElement {
     if (button === "stop") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize("ui.card.cover.stop_cover")}
+          .label=${this._localize("ui.card.cover.stop_cover")}
           @click=${this._onStopTap}
           .disabled=${!canStop(this.stateObj) && !canStopTilt(this.stateObj)}
           data-button="stop"
@@ -189,7 +199,7 @@ export class HaStateControlCoverButtons extends LitElement {
     if (button === "open-tilt") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
+          .label=${this._localize("ui.card.cover.open_tilt_cover")}
           @click=${this._onOpenTiltTap}
           .disabled=${!canOpenTilt(this.stateObj)}
           data-button="open-tilt"
@@ -201,7 +211,7 @@ export class HaStateControlCoverButtons extends LitElement {
     if (button === "close-tilt") {
       return html`
         <ha-control-button
-          .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
+          .label=${this._localize("ui.card.cover.close_tilt_cover")}
           @click=${this._onCloseTiltTap}
           .disabled=${!canCloseTilt(this.stateObj)}
           data-button="close-tilt"

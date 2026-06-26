@@ -9,13 +9,22 @@ import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog-header";
 import "../../components/ha-svg-icon";
+import "../../components/ha-textarea";
+import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { HomeAssistant } from "../../types";
 import type { DialogBoxParams } from "./show-dialog-box";
 
+interface DialogBoxDirtyState {
+  value: string;
+}
+
 @customElement("dialog-box")
-class DialogBox extends LitElement {
+class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogBoxParams;
@@ -28,7 +37,7 @@ class DialogBox extends LitElement {
 
   @state() private _validInput = true;
 
-  @query("ha-input") private _textField?: HaInput;
+  @query("ha-input, ha-textarea") private _textField?: HaInput | HaTextArea;
 
   private _closePromise?: Promise<void>;
 
@@ -41,6 +50,10 @@ class DialogBox extends LitElement {
     this._params = params;
     this._validInput = true;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      { value: params.defaultValue ?? "" }
+    );
     await this.updateComplete;
     this._validateInput();
   }
@@ -75,7 +88,7 @@ class DialogBox extends LitElement {
       <ha-dialog
         .open=${this._open}
         type=${confirmPrompt ? "alert" : "standard"}
-        ?prevent-scrim-close=${confirmPrompt}
+        .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
         @closed=${this._dialogClosed}
         aria-labelledby="dialog-box-title"
         aria-describedby="dialog-box-description"
@@ -90,7 +103,7 @@ class DialogBox extends LitElement {
                 ></ha-icon-button
               ></slot>`
             : nothing}
-          <span
+          <h1
             class=${classMap({ title: true, alert: confirmPrompt })}
             slot="title"
             id="dialog-box-title"
@@ -102,14 +115,14 @@ class DialogBox extends LitElement {
                 ></ha-svg-icon> `
               : nothing}
             ${dialogTitle}
-          </span>
+          </h1>
           ${this._params.subtitle
             ? html`<span slot="subtitle">${this._params.subtitle}</span>`
             : nothing}
         </ha-dialog-header>
         <div id="dialog-box-description">
           ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
-          ${this._params.prompt
+          ${this._params.prompt && !this._params.multiline
             ? html`
                 <ha-input
                   autofocus
@@ -131,7 +144,19 @@ class DialogBox extends LitElement {
                     : nothing}
                 </ha-input>
               `
-            : nothing}
+            : this._params.prompt && this._params.multiline
+              ? html`
+                  <ha-textarea
+                    resize="auto"
+                    autofocus
+                    .value=${this._params.defaultValue}
+                    .placeholder=${this._params.placeholder}
+                    .label=${this._params.inputLabel}
+                    .disabled=${this._loading}
+                    @input=${this._validateInput}
+                  ></ha-textarea>
+                `
+              : nothing}
         </div>
         <ha-dialog-footer slot="footer">
           ${confirmPrompt
@@ -198,6 +223,7 @@ class DialogBox extends LitElement {
     if (this._params!.confirm) {
       this._params!.confirm(this._textField?.value);
     }
+    this._markDirtyStateClean();
     this._closeDialog();
   }
 
@@ -205,6 +231,9 @@ class DialogBox extends LitElement {
     this._validInput = this._params?.prompt
       ? (this._textField?.checkValidity() ?? true)
       : true;
+    if (this._params?.prompt) {
+      this._updateDirtyState({ value: this._textField?.value ?? "" });
+    }
   }
 
   private _closeDialog() {
@@ -247,6 +276,11 @@ class DialogBox extends LitElement {
     }
     ha-input {
       width: 100%;
+    }
+    .title {
+      font-weight: inherit;
+      font-size: inherit;
+      margin: inherit;
     }
     .title.alert {
       padding: 0 var(--ha-space-2);

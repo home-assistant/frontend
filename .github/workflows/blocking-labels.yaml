@@ -1,0 +1,35 @@
+name: Blocking labels
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
+    branches:
+      - dev
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check for labels which block the Pull Request from being merged
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out workflow scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+      - name: Check for blocking labels
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const { default: checkBlockingLabels } = await import(
+              `${process.env.GITHUB_WORKSPACE}/.github/scripts/check-blocking-labels.mjs`
+            );
+            await checkBlockingLabels({ github, context, core });

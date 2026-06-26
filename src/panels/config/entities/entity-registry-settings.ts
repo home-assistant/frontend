@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "@lit/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
@@ -13,6 +14,10 @@ import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../data/context/dirty-state";
 import { updateDeviceRegistryEntry } from "../../../data/device/device_registry";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -38,6 +43,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @property({ type: Object }) public entry!: ExtEntityRegistryEntry;
 
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext;
+
   @state() private _helperConfigEntry?: ConfigEntry;
 
   @state() private _error?: string;
@@ -47,7 +56,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @query("entity-registry-settings-editor")
   private _registryEditor?: EntityRegistrySettingsEditor;
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("entry")) {
       this._fetchHelperConfigEntry();
@@ -90,7 +99,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                 ? html`${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.device_disabled"
                     )}<ha-button
-                      size="small"
+                      size="s"
                       variant="warning"
                       @click=${this._openDeviceSettings}
                       slot="action"
@@ -106,7 +115,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
                       this.entry.disabled_by!
                     )
                       ? html`<ha-button
-                          size="small"
+                          size="s"
                           variant="warning"
                           slot="action"
                           @click=${this._enableEntry}
@@ -131,7 +140,6 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .entry=${this.entry}
           .helperConfigEntry=${this._helperConfigEntry}
           .disabled=${!!this._submitting}
-          @change=${this._entityRegistryChanged}
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
@@ -144,15 +152,15 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>
-        <ha-button @click=${this._updateEntry} .loading=${!!this._submitting}>
+        <ha-button
+          @click=${this._updateEntry}
+          .disabled=${!this._dirtyState?.isDirty || !!this._submitting}
+          .loading=${!!this._submitting}
+        >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
       </div>
     `;
-  }
-
-  private _entityRegistryChanged() {
-    this._error = undefined;
   }
 
   private _openDeviceSettings() {
@@ -200,8 +208,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+    this._error = undefined;
     try {
       const result = await this._registryEditor!.updateEntry();
+      this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
       }

@@ -62,7 +62,7 @@ export const AREA_CONTROLS_BUTTONS: Record<
 };
 
 export const getAreaControlEntities = (
-  controls: AreaControlDomain[],
+  controls: readonly AreaControlDomain[],
   areaId: string,
   excludeEntities: string[] | undefined,
   hass: HomeAssistant

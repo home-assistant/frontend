@@ -15,6 +15,7 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceViewFooterConfig } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -24,7 +25,9 @@ import "./hui-view-footer-settings-editor";
 import type { EditViewFooterDialogParams } from "./show-edit-view-footer-dialog";
 
 @customElement("hui-dialog-edit-view-footer")
-export class HuiDialogEditViewFooter extends LitElement {
+export class HuiDialogEditViewFooter extends DirtyStateProviderMixin<LovelaceViewFooterConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: EditViewFooterDialogParams;
@@ -32,8 +35,6 @@ export class HuiDialogEditViewFooter extends LitElement {
   @state() private _config?: LovelaceViewFooterConfig;
 
   @state() private _saving = false;
-
-  @state() private _dirty = false;
 
   @state() private _yamlMode = false;
 
@@ -53,8 +54,8 @@ export class HuiDialogEditViewFooter extends LitElement {
   public showDialog(params: EditViewFooterDialogParams): void {
     this._params = params;
 
-    this._dirty = false;
     this._config = this._params.config;
+    this._initDirtyTracking({ type: "deep" }, this._config);
     this._open = true;
   }
 
@@ -66,7 +67,6 @@ export class HuiDialogEditViewFooter extends LitElement {
     this._params = undefined;
     this._config = undefined;
     this._yamlMode = false;
-    this._dirty = false;
     this._saving = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -81,7 +81,6 @@ export class HuiDialogEditViewFooter extends LitElement {
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          .hass=${this.hass}
           autofocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
@@ -102,10 +101,10 @@ export class HuiDialogEditViewFooter extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         width="medium"
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
         class=${this._yamlMode ? "yaml-mode" : ""}
       >
@@ -130,7 +129,7 @@ export class HuiDialogEditViewFooter extends LitElement {
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._config || !this._dirty}
+            .disabled=${!this._config || !this.isDirtyState}
             @click=${this._save}
             .loading=${this._saving}
           >
@@ -155,8 +154,9 @@ export class HuiDialogEditViewFooter extends LitElement {
       ev.detail.config &&
       !deepEqual(this._config, ev.detail.config)
     ) {
-      this._config = ev.detail.config;
-      this._dirty = true;
+      const config: LovelaceViewFooterConfig = ev.detail.config;
+      this._config = config;
+      this._updateDirtyState(config);
     }
   }
 
@@ -165,8 +165,9 @@ export class HuiDialogEditViewFooter extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = ev.detail.value;
-    this._dirty = true;
+    const config: LovelaceViewFooterConfig = ev.detail.value;
+    this._config = config;
+    this._updateDirtyState(config);
   }
 
   private async _save(): Promise<void> {

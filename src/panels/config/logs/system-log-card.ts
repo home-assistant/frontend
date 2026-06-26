@@ -1,4 +1,5 @@
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -108,7 +109,10 @@ export class SystemLogCard extends LitElement {
               `
             : html`
                 <div class="header">
-                  <h1 class="card-header">${this.header || "Logs"}</h1>
+                  <h1 class="card-header">
+                    ${this.header ||
+                    this.hass.localize("ui.panel.config.logs.caption")}
+                  </h1>
                   <div class="header-buttons">
                     <ha-icon-button
                       .path=${mdiDownload}
@@ -189,10 +193,7 @@ export class SystemLogCard extends LitElement {
                       >`}
 
                 <div class="card-actions">
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    domain="system_log"
-                    service="clear"
+                  <ha-call-service-button domain="system_log" service="clear"
                     >${this.hass.localize(
                       "ui.panel.config.logs.clear"
                     )}</ha-call-service-button
@@ -204,7 +205,7 @@ export class SystemLogCard extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     this.fetchData();
     this.loaded = true;

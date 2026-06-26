@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { getConfigSubpageTitle, getPanelTitleFromUrlPath } from "../data/panel";
-import { configSections } from "../panels/config/ha-panel-config";
+import { configSections } from "../panels/config/config-sections";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
@@ -18,7 +18,7 @@ export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(
   class extends superClass {
     private _previousPath?: string;
 
-    protected updated(changedProps: PropertyValues): void {
+    protected updated(changedProps: PropertyValues<this>): void {
       super.updated(changedProps);
       if (!changedProps.has("hass") || !this.hass) {
         return;

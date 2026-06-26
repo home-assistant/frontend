@@ -8,6 +8,7 @@ import type { HomeAssistant } from "../../../types";
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
+import { getConfigEntityId } from "../common/get-config-entity-id";
 import { checkConditionsMet } from "../common/validate-condition";
 import { tryCreateCardElement } from "../create-element/create-card-element";
 import { createErrorCardElement } from "../create-element/create-element-base";
@@ -166,15 +167,22 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     this._updateVisibility();
   }
 
-  protected willUpdate(changedProps: PropertyValues<typeof this>): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
+
+    if (changedProps.has("config")) {
+      this._conditionContext = {
+        ...this._conditionContext,
+        entity_id: this.config ? getConfigEntityId(this.config) : undefined,
+      };
+    }
 
     if (!this._element) {
       this.load();
     }
   }
 
-  protected update(changedProps: PropertyValues<typeof this>) {
+  protected update(changedProps: PropertyValues<this>) {
     super.update(changedProps);
 
     if (this._element) {
@@ -257,7 +265,11 @@ export class HuiCard extends ConditionalListenerMixin<LovelaceCardConfig>(
     const visible =
       conditionsMet ??
       (!this.config?.visibility ||
-        checkConditionsMet(this.config.visibility, this.hass));
+        checkConditionsMet(
+          this.config.visibility,
+          this.hass,
+          this._conditionContext
+        ));
     this._setElementVisibility(visible);
   }
 

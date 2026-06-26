@@ -1,11 +1,10 @@
 import type { List, SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -14,8 +13,6 @@ import "./ha-list";
 
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: string[];
@@ -86,13 +83,13 @@ export class HaFilterStates extends LitElement {
     `;
   }
 
-  protected willUpdate(changed) {
+  protected willUpdate(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       this._shouldRender = true;
     }
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if ((changed.has("expanded") || changed.has("states")) && this.expanded) {
       setTimeout(async () => {
         if (!this.expanded) return;

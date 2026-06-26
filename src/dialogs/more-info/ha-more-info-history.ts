@@ -7,6 +7,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../components/chart/state-history-charts";
 import "../../components/chart/statistics-chart";
+import "../../components/ha-alert";
 import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
@@ -18,9 +19,8 @@ import type {
   StatisticsTypes,
 } from "../../data/recorder";
 import { fetchStatistics, getStatisticMetadata } from "../../data/recorder";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import type { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -48,7 +48,7 @@ export class MoreInfoHistory extends LitElement {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
-  private _error?: string;
+  @state() private _error?: { code: string; message: string };
 
   private _metadata?: Record<string, StatisticsMetaData>;
 
@@ -57,7 +57,7 @@ export class MoreInfoHistory extends LitElement {
       return nothing;
     }
 
-    return html`${isComponentLoaded(this.hass, "history")
+    return html`${isComponentLoaded(this.hass.config, "history")
       ? html`<div class="header">
             <div>
               <h2>
@@ -80,7 +80,10 @@ export class MoreInfoHistory extends LitElement {
                 >`}
           </div>
           ${this._error
-            ? html`<div class="errors">${this._error}</div>`
+            ? html`<ha-alert alert-type="error">
+                ${this.hass.localize("ui.components.history_charts.error")}:
+                ${this._error.message || this._error.code}
+              </ha-alert>`
             : this._statistics
               ? html`<statistics-chart
                   .hass=${this.hass}
@@ -103,7 +106,7 @@ export class MoreInfoHistory extends LitElement {
       : ""}`;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (changedProps.has("entityId")) {
@@ -123,6 +126,20 @@ export class MoreInfoHistory extends LitElement {
       this._showMoreHref = `/history?${createSearchParam(params)}`;
 
       this._getStateHistory();
+    } else if (
+      changedProps.has("hass") &&
+      this.entityId &&
+      !this._subscribed &&
+      !this._error
+    ) {
+      // Retry when components become available after backend restart
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        oldHass &&
+        oldHass.config.components !== this.hass.config.components
+      ) {
+        this._getStateHistory();
+      }
     }
   }
 
@@ -141,7 +158,7 @@ export class MoreInfoHistory extends LitElement {
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
@@ -204,7 +221,7 @@ export class MoreInfoHistory extends LitElement {
 
   private async _getStateHistory(): Promise<void> {
     if (
-      isComponentLoaded(this.hass, "recorder") &&
+      isComponentLoaded(this.hass.config, "recorder") &&
       computeDomain(this.entityId) === "sensor"
     ) {
       const stateObj = this.hass.states[this.entityId];
@@ -221,15 +238,12 @@ export class MoreInfoHistory extends LitElement {
       }
     }
 
-    if (!isComponentLoaded(this.hass, "history")) {
+    if (!isComponentLoaded(this.hass.config, "history")) {
       return;
     }
     if (this._subscribed) {
       this._unsubscribeHistory();
     }
-
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass);
 
     this._subscribed = subscribeHistoryStatesTimeWindow(
       this.hass!,
@@ -242,8 +256,7 @@ export class MoreInfoHistory extends LitElement {
           this.hass!,
           combinedHistory,
           [this.entityId],
-          this.hass!.localize,
-          sensorNumericDeviceClasses
+          this.hass!.localize
         );
       },
       24,
@@ -265,6 +278,7 @@ export class MoreInfoHistory extends LitElement {
         justify-content: space-between;
         align-items: center;
         margin-bottom: var(--ha-space-2);
+        padding-inline: var(--ha-space-6);
       }
       .header > a,
       a:visited {
@@ -276,6 +290,12 @@ export class MoreInfoHistory extends LitElement {
       }
       h2 {
         margin: 0;
+      }
+      ha-alert,
+      state-history-charts,
+      statistics-chart {
+        display: block;
+        padding-inline: var(--ha-space-6);
       }
     `,
   ];

@@ -12,7 +12,7 @@ export class HuiFormElementEditor extends HuiElementEditor {
     return this.form;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("form") && this._configElement) {
       // Propagate schema changes directly to the existing form editor element

@@ -17,6 +17,7 @@ import type {
 } from "../../cards/types";
 import type { ButtonHeadingBadgeConfig } from "../../heading-badges/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
+import type { LovelaceStrategyDependency } from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES,
@@ -33,6 +34,13 @@ export interface HomeAreaViewStrategyConfig {
 
 @customElement("home-area-view-strategy")
 export class HomeAreaViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "entities",
+    "devices",
+    "areas",
+    "panels",
+  ];
+
   static async generate(
     config: HomeAreaViewStrategyConfig,
     hass: HomeAssistant
@@ -217,8 +225,8 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     }
 
     const deviceSections: LovelaceSectionRawConfig[] = [];
-
-    const summaryEntities = Object.values(entitiesBySummary).flat();
+    const { maintenance, ...partialEntitiesBySummary } = entitiesBySummary;
+    const summaryEntities = Object.values(partialEntitiesBySummary).flat();
 
     // Scenes section
     const sceneFilter = generateEntityFilter(hass, {
@@ -323,7 +331,7 @@ export class HomeAreaViewStrategy extends ReactiveElement {
 
       const deviceId = deviceEntities.device_id;
       const device = hass.devices[deviceId];
-      let heading = "";
+      let heading: string;
       if (device) {
         heading =
           computeDeviceName(device) ||

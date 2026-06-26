@@ -37,10 +37,6 @@ export class HaFormfield extends FormfieldBase {
         input.checked = !input.checked;
         fireEvent(input, "change");
         break;
-      case "HA-RADIO":
-        input.checked = true;
-        fireEvent(input, "change");
-        break;
       default:
         input.click();
         break;

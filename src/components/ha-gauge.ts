@@ -1,4 +1,4 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { css, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -46,7 +46,19 @@ export class HaGauge extends LitElement {
 
   @state() private _segment_label?: string = "";
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  private _sortedLevels?: LevelDefinition[];
+
+  private _rescaleOnConnect = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._rescaleOnConnect) {
+      this._rescaleSvg();
+      this._rescaleOnConnect = false;
+    }
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     afterNextRender(() => {
       this._updated = true;
@@ -54,7 +66,28 @@ export class HaGauge extends LitElement {
         this._angle = getAngle(this.value, this.min, this.max);
       }
       this._segment_label = this._getSegmentLabel();
+      this._rescaleSvg();
     });
+  }
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has("levels") || changedProperties.has("min")) {
+      if (this.levels) {
+        this._sortedLevels = [...this.levels].sort((a, b) => a.level - b.level);
+
+        if (
+          this._sortedLevels.length > 0 &&
+          this._sortedLevels[0].level !== this.min
+        ) {
+          this._sortedLevels.unshift({
+            level: this.min,
+            stroke: "var(--info-color)",
+          });
+        }
+      } else {
+        this._sortedLevels = undefined;
+      }
+    }
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -70,6 +103,7 @@ export class HaGauge extends LitElement {
     }
     this._angle = getAngle(this.value, this.min, this.max);
     this._segment_label = this._getSegmentLabel();
+    this._rescaleSvg();
   }
 
   protected render() {
@@ -88,87 +122,64 @@ export class HaGauge extends LitElement {
         />
 
 
-  ${
-    this.levels
-      ? [...this.levels]
-          .sort((a, b) => a.level - b.level)
-          .map((level, i, arr) => {
-            const startLevel = i === 0 ? this.min : arr[i].level;
-            const endLevel = i + 1 < arr.length ? arr[i + 1].level : this.max;
+        ${this._sortedLevels?.map((level, i, arr) => {
+          const startLevel = level.level;
+          const endLevel = i + 1 < arr.length ? arr[i + 1].level : this.max;
 
-            const startAngle = getAngle(startLevel, this.min, this.max);
-            const endAngle = getAngle(endLevel, this.min, this.max);
-            const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+          const startAngle = getAngle(startLevel, this.min, this.max);
+          const endAngle = getAngle(endLevel, this.min, this.max);
+          const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
-            const x1 = -arcRadius * Math.cos((startAngle * Math.PI) / 180);
-            const y1 = -arcRadius * Math.sin((startAngle * Math.PI) / 180);
-            const x2 = -arcRadius * Math.cos((endAngle * Math.PI) / 180);
-            const y2 = -arcRadius * Math.sin((endAngle * Math.PI) / 180);
+          const x1 = -arcRadius * Math.cos((startAngle * Math.PI) / 180);
+          const y1 = -arcRadius * Math.sin((startAngle * Math.PI) / 180);
 
-            const firstSegment = i === 0;
-            const lastSegment = i === arr.length - 1;
+          const isFirst = i === 0;
+          const isLast = i === arr.length - 1;
 
-            const paths: TemplateResult[] = [];
-
-            if (firstSegment) {
-              paths.push(svg`
+          if (isFirst) {
+            return svg`
               <path
                 class="level"
                 stroke="${level.stroke}"
-                style="stroke-linecap: round"
-                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
+                style="stroke-linecap: butt"
+                d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0"
               />
-            `);
-            } else if (lastSegment) {
-              const offsetAngle = 0.5;
-              const midAngle = endAngle - offsetAngle;
-              const xm = -arcRadius * Math.cos((midAngle * Math.PI) / 180);
-              const ym = -arcRadius * Math.sin((midAngle * Math.PI) / 180);
+            `;
+          }
 
-              paths.push(svg`
-                <path
-                  class="level"
-                  stroke="${level.stroke}"
-                  style="stroke-linecap: butt"
-                  d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${xm} ${ym}"
-                />
-              `);
+          if (isLast) {
+            const offsetAngle = 0.5;
+            const midAngle = endAngle - offsetAngle;
+            const xm = -arcRadius * Math.cos((midAngle * Math.PI) / 180);
+            const ym = -arcRadius * Math.sin((midAngle * Math.PI) / 180);
 
-              paths.push(svg`
-                <path
-                  class="level"
-                  stroke="${level.stroke}"
-                  style="stroke-linecap: round"
-                  d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 ${x2} ${y2}"
-                />
-              `);
-            } else {
-              paths.push(svg`
-                <path
-                  class="level"
-                  stroke="${level.stroke}"
-                  style="stroke-linecap: butt"
-                  d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2} ${y2}"
-                />
-              `);
-            }
+            return svg`
+                <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
+                      d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0" />
+                <path class="level" stroke="${level.stroke}" style="stroke-linecap: butt"
+                      d="M ${xm} ${ym} A ${arcRadius} ${arcRadius} 0 0 1 40 0" />
+            `;
+          }
 
-            return paths;
-          })
-      : ""
-  }
+          return svg`
+            <path
+              class="level"
+              stroke="${level.stroke}"
+              style="stroke-linecap: butt"
+              d="M ${x1} ${y1} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 40 0"
+            ></path>
+          `;
+        })}
 
         ${
           this.needle
             ? svg`
-                <line
-                  class="needle"
-                  x1="-35.0"
-                  y1="0"
-                  x2="-45.0"
-                  y2="0"
-                  style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
-                />
+                <path
+                class="needle"
+                d="M -34,-3 L -40,-1 A 1,1,0,0,0,-40,1 L -34,3 A 2,2,0,0,0,-34,-3 Z"
+
+                style=${styleMap({ transform: `rotate(${this._angle}deg)` })}
+              />
               `
             : svg`
                 <path
@@ -179,7 +190,8 @@ export class HaGauge extends LitElement {
                 />
               `
         }
-
+      </svg>
+      <svg class="text">
         <text
           class="value-text"
           x="0"
@@ -204,12 +216,30 @@ export class HaGauge extends LitElement {
     `;
   }
 
+  private _rescaleSvg() {
+    // Set the viewbox of the SVG containing the value to perfectly
+    // fit the text
+    // That way it will auto-scale correctly
+
+    if (!this.isConnected) {
+      // Retry this later if we're disconnected, otherwise we get a 0 bbox and missing label
+      this._rescaleOnConnect = true;
+      return;
+    }
+
+    const svgRoot = this.shadowRoot!.querySelector(".text")!;
+    const box = svgRoot.querySelector("text")!.getBBox()!;
+    svgRoot.setAttribute(
+      "viewBox",
+      `${box.x} ${box.y} ${box.width} ${box.height}`
+    );
+  }
+
   private _getSegmentLabel() {
-    if (this.levels) {
-      [...this.levels].sort((a, b) => a.level - b.level);
-      for (let i = this.levels.length - 1; i >= 0; i--) {
-        if (this.value >= this.levels[i].level) {
-          return this.levels[i].label;
+    if (this._sortedLevels) {
+      for (let i = this._sortedLevels.length - 1; i >= 0; i--) {
+        if (this.value >= this._sortedLevels[i].level) {
+          return this._sortedLevels[i].label;
         }
       }
     }
@@ -224,30 +254,41 @@ export class HaGauge extends LitElement {
     .levels-base {
       fill: none;
       stroke: var(--primary-background-color);
-      stroke-width: 8;
-      stroke-linecap: round;
+      stroke-width: 12;
+      stroke-linecap: butt;
     }
 
     .level {
       fill: none;
-      stroke-width: 8;
+      stroke-width: 12;
       stroke-linecap: butt;
     }
 
     .value {
       fill: none;
-      stroke-width: 8;
+      stroke-width: 12;
       stroke: var(--gauge-color);
-      stroke-linecap: round;
+      stroke-linecap: butt;
       transition: stroke-dashoffset 1s ease 0s;
     }
 
     .needle {
-      stroke: var(--primary-text-color);
-      stroke-width: 2;
+      fill: var(--primary-text-color);
+      stroke: var(--card-background-color);
+      color: var(--primary-text-color);
+      stroke-width: 1;
       stroke-linecap: round;
       transform-origin: 0 0;
       transition: all 1s ease 0s;
+    }
+
+    .text {
+      position: absolute;
+      max-height: 40%;
+      max-width: 55%;
+      left: 50%;
+      bottom: 10%;
+      transform: translate(-50%, 0%);
     }
 
     .value-text {

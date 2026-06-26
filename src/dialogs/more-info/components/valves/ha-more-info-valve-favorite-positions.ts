@@ -1,11 +1,16 @@
+import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
+import { apiContext, configContext } from "../../../../data/context";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity/entity_attributes";
 import type {
@@ -13,12 +18,14 @@ import type {
   ValveEntityOptions,
 } from "../../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+} from "../../../../types";
 import type { ValveEntity } from "../../../../data/valve";
-import {
-  DEFAULT_VALVE_FAVORITE_POSITIONS,
-  normalizeValveFavoritePositions,
-} from "../../../../data/valve";
+import { DEFAULT_VALVE_FAVORITE_POSITIONS } from "../../../../data/valve";
+import { normalizeFavoritePositions } from "../../../../data/favorite_positions";
 import {
   showConfirmationDialog,
   showPromptDialog,
@@ -39,7 +46,20 @@ type FavoriteLocalizeKey =
 
 @customElement("ha-more-info-valve-favorite-positions")
 export class HaMoreInfoValveFavoritePositions extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HomeAssistant["user"]>({
+    transformer: ({ user }) => user,
+  })
+  private _user!: HomeAssistant["user"];
 
   @property({ attribute: false }) public stateObj!: ValveEntity;
 
@@ -55,7 +75,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       this.entry &&
       this.stateObj
     ) {
-      this._favoritePositions = normalizeValveFavoritePositions(
+      this._favoritePositions = normalizeFavoritePositions(
         this.entry.options?.valve?.favorite_positions ??
           DEFAULT_VALVE_FAVORITE_POSITIONS
       );
@@ -66,7 +86,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
     key: FavoriteLocalizeKey,
     values?: Record<string, string | number>
   ): string {
-    return this.hass.localize(
+    return this._localize(
       `ui.dialogs.more_info_control.valve.favorite_position.${key}`,
       values
     );
@@ -75,7 +95,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
   private _currentValue(): number | undefined {
     const current = this.stateObj.attributes.current_position;
 
-    return current == null ? undefined : Math.round(current);
+    return current == null ? undefined : current;
   }
 
   private async _save(favorite_positions: number[]): Promise<void> {
@@ -90,7 +110,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
     currentOptions.favorite_positions = this._favoritePositions;
 
     const result = await updateEntityRegistryEntry(
-      this.hass,
+      this._api,
       this.entry.entity_id,
       {
         options_domain: "valve",
@@ -105,7 +125,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
   }
 
   private async _setFavorites(favorites: number[]): Promise<void> {
-    const normalized = normalizeValveFavoritePositions(favorites);
+    const normalized = normalizeFavoritePositions(favorites);
     this._favoritePositions = normalized;
     await this._save(normalized);
   }
@@ -124,7 +144,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       return;
     }
 
-    this.hass.callService("valve", "set_valve_position", {
+    this._api.callService("valve", "set_valve_position", {
       entity_id: this.stateObj.entity_id,
       position: favorite,
     });
@@ -137,7 +157,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       title: this._localizeFavorite(
         value === undefined ? "add_title" : "edit_title"
       ),
-      inputLabel: this.hass.localize("ui.card.valve.position"),
+      inputLabel: this._localize("ui.card.valve.position"),
       inputType: "number",
       inputMin: "0",
       inputMax: "100",
@@ -155,7 +175,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
       return undefined;
     }
 
-    return Math.max(0, Math.min(100, Math.round(number)));
+    return Math.max(0, Math.min(100, number));
   }
 
   private async _addFavorite(): Promise<void> {
@@ -244,7 +264,7 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
 
     const { action, index } = ev.detail;
 
-    if (action === "hold" && this.hass.user?.is_admin) {
+    if (action === "hold" && this._user?.is_admin) {
       fireEvent(this, "toggle-edit-mode", true);
       return;
     }
@@ -298,10 +318,10 @@ export class HaMoreInfoValveFavoritePositions extends LitElement {
           .deleteLabel=${this._deleteLabel}
           .editMode=${this.editMode ?? false}
           .disabled=${this.stateObj.state === UNAVAILABLE}
-          .isAdmin=${Boolean(this.hass.user?.is_admin)}
+          .isAdmin=${Boolean(this._user?.is_admin)}
           .showDone=${true}
           .addLabel=${this._localizeFavorite("add")}
-          .doneLabel=${this.hass.localize(
+          .doneLabel=${this._localize(
             "ui.dialogs.more_info_control.exit_edit_mode"
           )}
           @favorite-item-action=${this._handleFavoriteAction}

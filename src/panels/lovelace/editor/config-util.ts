@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -301,6 +302,19 @@ export const deleteSection = (
     sections,
   });
   return newConfig;
+};
+
+export const duplicateSection = (
+  config: LovelaceConfig,
+  viewIndex: number,
+  sectionIndex: number
+): LovelaceConfig => {
+  const view = findLovelaceContainer(config, [viewIndex]);
+  if (isStrategyView(view)) {
+    throw new Error("Duplicating sections in a strategy is not supported.");
+  }
+  const clone = deepClone(view.sections![sectionIndex]);
+  return insertSection(config, viewIndex, sectionIndex + 1, clone);
 };
 
 export const insertSection = (

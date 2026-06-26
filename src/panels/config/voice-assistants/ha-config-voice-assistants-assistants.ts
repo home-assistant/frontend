@@ -27,8 +27,6 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ type: Boolean }) public narrow = false;
-
   @property({ attribute: false }) public route!: Route;
 
   protected render() {
@@ -39,13 +37,12 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
         .tabs=${voiceAssistantTabs}
       >
         <div class="content">
-          ${isComponentLoaded(this.hass, "assist_pipeline")
+          ${isComponentLoaded(this.hass.config, "assist_pipeline")
             ? html`
                 <assist-pref
                   .hass=${this.hass}

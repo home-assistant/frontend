@@ -13,6 +13,7 @@ import type { HomeAssistant } from "../../types";
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
   addon: () => import("./ha-selector-addon"),
+  automation_behavior: () => import("./ha-selector-automation-behavior"),
   app: () => import("./ha-selector-app"),
   area: () => import("./ha-selector-area"),
   areas_display: () => import("./ha-selector-areas-display"),
@@ -41,9 +42,11 @@ const LOAD_ELEMENTS = {
   number: () => import("./ha-selector-number"),
   numeric_threshold: () => import("./ha-selector-numeric-threshold"),
   object: () => import("./ha-selector-object"),
+  period: () => import("./ha-selector-period"),
   qr_code: () => import("./ha-selector-qr-code"),
   select: () => import("./ha-selector-select"),
   selector: () => import("./ha-selector-selector"),
+  serial_port: () => import("./ha-selector-serial-port"),
   state: () => import("./ha-selector-state"),
   backup_location: () => import("./ha-selector-backup-location"),
   stt: () => import("./ha-selector-stt"),
@@ -64,6 +67,7 @@ const LOAD_ELEMENTS = {
   ui_action: () => import("./ha-selector-ui-action"),
   ui_color: () => import("./ha-selector-ui-color"),
   ui_state_content: () => import("./ha-selector-ui-state-content"),
+  ui_time_format: () => import("./ha-selector-ui-time-format"),
 };
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
@@ -126,7 +130,7 @@ export class HaSelector extends LitElement {
     return type;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.has("selector") && this.selector) {
       LOAD_ELEMENTS[this._type]?.();
     }

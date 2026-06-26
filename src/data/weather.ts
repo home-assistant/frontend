@@ -21,6 +21,7 @@ import {
   mdiWeatherWindyVariant,
 } from "@mdi/js";
 import type {
+  Connection,
   HassConfig,
   HassEntityAttributeBase,
   HassEntityBase,
@@ -28,12 +29,20 @@ import type {
 import type { SVGTemplateResult, TemplateResult } from "lit";
 import { css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
+import {
+  UNIT_HPA,
+  UNIT_IN,
+  UNIT_INHG,
+  UNIT_KM,
+  UNIT_MM,
+} from "../common/const";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { round } from "../common/number/round";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-svg-icon";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantFormatters } from "../types";
 
-export const enum WeatherEntityFeature {
+export enum WeatherEntityFeature {
   FORECAST_DAILY = 1,
   FORECAST_HOURLY = 2,
   FORECAST_TWICE_DAILY = 4,
@@ -55,6 +64,16 @@ export interface ForecastAttribute {
   pressure?: number;
   wind_speed?: string;
 }
+
+export type ForecastPrecipitationType = "amount" | "probability";
+
+export const getForecastPrecipitation = (
+  entry: ForecastAttribute,
+  type: ForecastPrecipitationType
+) =>
+  type === "probability"
+    ? entry.precipitation_probability
+    : entry.precipitation;
 
 interface WeatherEntityAttributes extends HassEntityAttributeBase {
   attribution?: string;
@@ -202,19 +221,20 @@ const getWindBearing = (bearing: number | string): string => {
 };
 
 export const getWind = (
-  hass: HomeAssistant,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
+  localize: LocalizeFunc,
   stateObj: WeatherEntity,
   speed?: number,
   bearing?: number | string
 ): string => {
   const speedText =
     speed !== undefined && speed !== null
-      ? hass.formatEntityAttributeValue(stateObj, "wind_speed", speed)
+      ? formatEntityAttributeValue(stateObj, "wind_speed", speed)
       : "-";
   if (bearing !== undefined && bearing !== null) {
     const cardinalDirection = getWindBearing(bearing);
     return `${speedText} (${
-      hass.localize(
+      localize(
         `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
       ) || cardinalDirection
     })`;
@@ -234,12 +254,12 @@ export const getWeatherUnit = (
     case "precipitation":
       return (
         stateObj.attributes.precipitation_unit ||
-        (lengthUnit === "km" ? "mm" : "in")
+        (lengthUnit === UNIT_KM ? UNIT_MM : UNIT_IN)
       );
     case "pressure":
       return (
         stateObj.attributes.pressure_unit ||
-        (lengthUnit === "km" ? "hPa" : "inHg")
+        (lengthUnit === UNIT_KM ? UNIT_HPA : UNIT_INHG)
       );
     case "apparent_temperature":
     case "dew_point":
@@ -260,13 +280,13 @@ export const getWeatherUnit = (
 };
 
 export const getSecondaryWeatherAttribute = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "formatEntityAttributeValue" | "localize">,
   stateObj: WeatherEntity,
   forecast: ForecastAttribute[],
   temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
   const extrema = getWeatherExtrema(
-    hass,
+    hass.formatEntityAttributeValue,
     stateObj,
     forecast,
     temperatureFractionDigits
@@ -302,13 +322,13 @@ export const getSecondaryWeatherAttribute = (
       ? html`
           <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
         `
-      : hass!.localize(`ui.card.weather.attributes.${attribute}`)}
+      : hass.localize(`ui.card.weather.attributes.${attribute}`)}
     ${hass.formatEntityAttributeValue(stateObj, attribute, roundedValue)}
   `;
 };
 
 const getWeatherExtrema = (
-  hass: HomeAssistant,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   stateObj: WeatherEntity,
   forecast: ForecastAttribute[],
   temperatureFractionDigits?: number
@@ -351,11 +371,11 @@ const getWeatherExtrema = (
 
   return html`
     ${tempHigh
-      ? hass.formatEntityAttributeValue(stateObj, "temperature", tempHigh)
+      ? formatEntityAttributeValue(stateObj, "temperature", tempHigh)
       : ""}
     ${tempLow && tempHigh ? " / " : ""}
     ${tempLow
-      ? hass.formatEntityAttributeValue(stateObj, "temperature", tempLow)
+      ? formatEntityAttributeValue(stateObj, "temperature", tempLow)
       : ""}
   `;
 };
@@ -667,12 +687,12 @@ export const getForecast = (
 };
 
 export const subscribeForecast = (
-  hass: HomeAssistant,
+  connection: Connection,
   entity_id: string,
   forecast_type: ModernForecastType,
   callback: (forecastevent: ForecastEvent) => void
 ) =>
-  hass.connection.subscribeMessage<ForecastEvent>(callback, {
+  connection.subscribeMessage<ForecastEvent>(callback, {
     type: "weather/subscribe_forecast",
     forecast_type,
     entity_id,

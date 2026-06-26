@@ -50,7 +50,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
 
   private _deviceName?: string;
 
-  protected override willUpdate(changedProperties: PropertyValues): void {
+  protected override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has("assistConfiguration")) {
@@ -104,7 +104,11 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.integrations.config_flow.device_name"
               )}
-              .placeholder=${computeDeviceNameDisplay(device, this.hass)}
+              .placeholder=${computeDeviceNameDisplay(
+                device,
+                this.hass.localize,
+                this.hass.states
+              )}
               .value=${this._deviceName ?? computeDeviceName(device)}
               @change=${this._deviceNameChanged}
             ></ha-input>
@@ -127,7 +131,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 ></ha-select>
                 <ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   @click=${this._testWakeWord}
                 >
                   <ha-svg-icon
@@ -162,7 +166,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 </ha-select>
                 <ha-button
                   appearance="plain"
-                  size="small"
+                  size="s"
                   @click=${this._openPipeline}
                 >
                   <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
@@ -182,11 +186,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                   @value-changed=${this._voicePicked}
                   @closed=${stopPropagation}
                 ></ha-tts-voice-picker>
-                <ha-button
-                  appearance="plain"
-                  size="small"
-                  @click=${this._testTts}
-                >
+                <ha-button appearance="plain" size="s" @click=${this._testTts}>
                   <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.satellite_wizard.success.try_tts"
@@ -359,9 +359,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      ha-md-list-item {
-        text-align: initial;
-      }
       ha-tts-voice-picker {
         display: block;
       }

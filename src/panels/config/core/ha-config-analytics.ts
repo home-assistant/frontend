@@ -1,20 +1,23 @@
+import { mdiDownload } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-analytics";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/item/ha-row-item";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
+import { getSignedPath } from "../../../data/auth";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { LabPreviewFeature } from "../../../data/labs";
 import { subscribeLabFeature } from "../../../data/labs";
@@ -26,6 +29,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { fileDownload } from "../../../util/file_download";
 
 @customElement("ha-config-analytics")
 class ConfigAnalytics extends SubscribeMixin(LitElement) {
@@ -46,7 +50,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   protected render(): TemplateResult {
     const error = this._error
       ? this._error
-      : !isComponentLoaded(this.hass, "analytics")
+      : !isComponentLoaded(this.hass.config, "analytics")
         ? "Analytics integration not loaded"
         : undefined;
 
@@ -98,26 +102,36 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                   }
                 )}
               </p>
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">
-                    ${this.hass.localize(
-                      `ui.panel.config.analytics.preferences.snapshots.title`
-                    )}
-                  </span>
-                  <span slot="supporting-text">
-                    ${this.hass.localize(
-                      `ui.panel.config.analytics.preferences.snapshots.description`
-                    )}
-                  </span>
-                  <ha-switch
-                    slot="end"
-                    @change=${this._handleDeviceRowClick}
-                    .checked=${!!this._analyticsDetails?.preferences.snapshots}
-                    .disabled=${this._analyticsDetails === undefined}
-                  ></ha-switch>
-                </ha-md-list-item>
-              </ha-md-list>
+              <ha-row-item>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    `ui.panel.config.analytics.preferences.snapshots.title`
+                  )}
+                </span>
+                <span slot="supporting-text">
+                  ${this.hass.localize(
+                    `ui.panel.config.analytics.preferences.snapshots.description`
+                  )}
+                </span>
+                <ha-switch
+                  slot="end"
+                  @change=${this._handleDeviceRowClick}
+                  .checked=${!!this._analyticsDetails?.preferences.snapshots}
+                  .disabled=${this._analyticsDetails === undefined}
+                ></ha-switch>
+              </ha-row-item>
+            </div>
+            <div class="card-actions">
+              <ha-button
+                size="s"
+                appearance="plain"
+                @click=${this._downloadDeviceInfo}
+              >
+                <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.analytics.download_device_info"
+                )}
+              </ha-button>
             </div>
           </ha-card>`
         : nothing}
@@ -146,29 +160,27 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
                   }
                 )}
               </p>
-              <ha-md-list>
-                <ha-md-list-item>
-                  <span slot="headline">
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
-                    )}
-                  </span>
-                  <span slot="supporting-text">
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
-                    )}
-                  </span>
-                  ${this._zwaveDataCollectionOptIn !== undefined
-                    ? html`
-                        <ha-switch
-                          slot="end"
-                          @change=${this._zwaveDataCollectionToggled}
-                          .checked=${this._zwaveDataCollectionOptIn === true}
-                        ></ha-switch>
-                      `
-                    : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
-                </ha-md-list-item>
-              </ha-md-list>
+              <ha-row-item>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.dashboard.data_collection.toggle_title"
+                  )}
+                </span>
+                <span slot="supporting-text">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.dashboard.data_collection.toggle_description"
+                  )}
+                </span>
+                ${this._zwaveDataCollectionOptIn !== undefined
+                  ? html`
+                      <ha-switch
+                        slot="end"
+                        @change=${this._zwaveDataCollectionToggled}
+                        .checked=${this._zwaveDataCollectionOptIn === true}
+                      ></ha-switch>
+                    `
+                  : html`<ha-spinner slot="end" size="small"></ha-spinner>`}
+              </ha-row-item>
             </div>
           </ha-card>`
         : nothing}
@@ -188,13 +200,13 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const section = extractSearchParam("section");
     if (section) {
       this._highlightedSection = section;
     }
-    if (isComponentLoaded(this.hass, "analytics")) {
+    if (isComponentLoaded(this.hass.config, "analytics")) {
       this._load();
     }
   }
@@ -210,7 +222,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   }
 
   private async _loadZwaveDataCollection() {
-    if (!isComponentLoaded(this.hass, "zwave_js")) {
+    if (!isComponentLoaded(this.hass.config, "zwave_js")) {
       return;
     }
     try {
@@ -238,6 +250,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
   }
 
   private _scrollToSection(section: string): void {
+    // eslint-disable-next-line lit/prefer-query-decorators
     const card = this.shadowRoot?.querySelector(
       `[data-section="${section}"]`
     ) as HTMLElement;
@@ -290,6 +303,11 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
     this._save();
   }
 
+  private async _downloadDeviceInfo(): Promise<void> {
+    const signedPath = await getSignedPath(this.hass, "/api/analytics/devices");
+    fileDownload(signedPath.path);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -304,13 +322,8 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
         ha-card:not(:first-of-type) {
           margin-top: 24px;
         }
-        ha-md-list {
-          background: none;
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-        }
-        ha-md-list-item {
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         ha-card {
           transition: box-shadow 0.3s ease;
@@ -322,7 +335,7 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
           0% {
             box-shadow:
               0 0 0 var(--ha-border-width-md) var(--primary-color),
-              0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+              0 0 12px rgba(var(--rgb-primary-color), 0.4);
           }
           100% {
             box-shadow:

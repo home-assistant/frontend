@@ -1,14 +1,17 @@
+import { consume, type ContextType } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { apiContext, configContext } from "../../../../data/context";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { LightColor, LightEntity } from "../../../../data/light";
 import { computeDefaultFavoriteColors } from "../../../../data/light";
-import type { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
 import "../ha-more-info-favorites";
 import type { HaMoreInfoFavorites } from "../ha-more-info-favorites";
@@ -23,7 +26,17 @@ declare global {
 
 @customElement("ha-more-info-light-favorite-colors")
 export class HaMoreInfoLightFavoriteColors extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property({ attribute: false }) public stateObj!: LightEntity;
 
@@ -33,7 +46,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   @state() private _favoriteColors: LightColor[] = [];
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("entry") && this.entry) {
       if (this.entry.options?.light?.favorite_colors) {
         this._favoriteColors = this.entry.options.light.favorite_colors;
@@ -53,7 +66,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private _apply(index: number): void {
     const favorite = this._favoriteColors[index];
-    this.hass.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this.stateObj.entity_id,
       ...favorite,
     });
@@ -61,7 +74,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
   private async _save(newFavoriteColors: LightColor[]): Promise<void> {
     const result = await updateEntityRegistryEntry(
-      this.hass,
+      this._api,
       this.entry!.entity_id,
       {
         options_domain: "light",
@@ -76,7 +89,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   private _add = async (): Promise<void> => {
     const color = await showLightColorFavoriteDialog(this, {
       entry: this.entry!,
-      title: this.hass.localize(
+      title: this._localize(
         "ui.dialogs.more_info_control.light.favorite_color.add_title"
       ),
     });
@@ -93,7 +106,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     const color = await showLightColorFavoriteDialog(this, {
       entry: this.entry!,
       initialColor: this._favoriteColors[index],
-      title: this.hass.localize(
+      title: this._localize(
         "ui.dialogs.more_info_control.light.favorite_color.edit_title"
       ),
     });
@@ -111,13 +124,13 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
   private _delete = async (index: number): Promise<void> => {
     const confirm = await showConfirmationDialog(this, {
       destructive: true,
-      title: this.hass.localize(
+      title: this._localize(
         "ui.dialogs.more_info_control.light.favorite_color.delete_confirm_title"
       ),
-      text: this.hass.localize(
+      text: this._localize(
         "ui.dialogs.more_info_control.light.favorite_color.delete_confirm_text"
       ),
-      confirmText: this.hass.localize(
+      confirmText: this._localize(
         "ui.dialogs.more_info_control.light.favorite_color.delete_confirm_action"
       ),
     });
@@ -136,7 +149,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     editMode: boolean
   ): TemplateResult =>
     html`<ha-favorite-color-button
-      .label=${this.hass.localize(
+      .label=${this._localize(
         `ui.dialogs.more_info_control.light.favorite_color.${
           editMode ? "edit" : "set"
         }`,
@@ -147,12 +160,9 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
     ></ha-favorite-color-button>`;
 
   private _deleteLabel = (index: number): string =>
-    this.hass.localize(
-      "ui.dialogs.more_info_control.light.favorite_color.delete",
-      {
-        number: index + 1,
-      }
-    );
+    this._localize("ui.dialogs.more_info_control.light.favorite_color.delete", {
+      number: index + 1,
+    });
 
   private _handleFavoriteAction = (
     ev: HASSDomEvent<HASSDomEvents["favorite-item-action"]>
@@ -161,7 +171,7 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
 
     const { action, index } = ev.detail;
 
-    if (action === "hold" && this.hass.user?.is_admin) {
+    if (action === "hold" && this._config.user?.is_admin) {
       fireEvent(this, "toggle-edit-mode", true);
       return;
     }
@@ -210,11 +220,11 @@ export class HaMoreInfoLightFavoriteColors extends LitElement {
         .deleteLabel=${this._deleteLabel as HaMoreInfoFavorites["deleteLabel"]}
         .editMode=${this.editMode}
         .disabled=${this.stateObj.state === UNAVAILABLE}
-        .isAdmin=${Boolean(this.hass.user?.is_admin)}
-        .addLabel=${this.hass.localize(
+        .isAdmin=${Boolean(this._config.user?.is_admin)}
+        .addLabel=${this._localize(
           "ui.dialogs.more_info_control.light.favorite_color.add"
         )}
-        .doneLabel=${this.hass.localize(
+        .doneLabel=${this._localize(
           "ui.dialogs.more_info_control.exit_edit_mode"
         )}
         @favorite-item-action=${this._handleFavoriteAction}

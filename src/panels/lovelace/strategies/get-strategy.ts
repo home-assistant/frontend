@@ -15,17 +15,27 @@ import type {
   LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../data/lovelace/config/view";
+import type { LovelaceDashboardSuggestions } from "../../../data/lovelace/dashboard";
 import type { AsyncReturnType, HomeAssistant } from "../../../types";
 import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import type {
   LovelaceDashboardStrategy,
+  LovelaceDashboardStrategyGetCreateSuggestions,
   LovelaceSectionStrategy,
   LovelaceStrategy,
+  LovelaceStrategyDependency,
   LovelaceViewStrategy,
 } from "./types";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";
+
+const DEFAULT_REGISTRY_DEPENDENCIES: readonly LovelaceStrategyDependency[] = [
+  "entities",
+  "devices",
+  "areas",
+  "floors",
+];
 
 const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   dashboard: {
@@ -59,6 +69,8 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     light: () => import("../../light/strategies/light-view-strategy"),
     security: () => import("../../security/strategies/security-view-strategy"),
     climate: () => import("../../climate/strategies/climate-view-strategy"),
+    maintenance: () =>
+      import("../../maintenance/strategies/maintenance-view-strategy"),
   },
   section: {
     "common-controls": () =>
@@ -78,24 +90,47 @@ type StrategyConfig<T extends LovelaceStrategyConfigType> = AsyncReturnType<
   Strategies[T]["generate"]
 >;
 
+type StrategyTag =
+  | { type: "builtin"; tag: string }
+  | { type: "custom"; tag: string; legacyTag: string };
+
+// Resolves the custom element tag(s) for a strategy. Custom strategies also
+// expose a legacy tag. `undefined` means the type is neither built-in nor a
+// custom strategy.
+const getStrategyTag = (
+  configType: LovelaceStrategyConfigType,
+  strategyType: string
+): StrategyTag | undefined => {
+  if (strategyType in STRATEGIES[configType]) {
+    return { type: "builtin", tag: `${strategyType}-${configType}-strategy` };
+  }
+  if (strategyType.startsWith(CUSTOM_PREFIX)) {
+    const name = strategyType.slice(CUSTOM_PREFIX.length);
+    return {
+      type: "custom",
+      tag: `ll-strategy-${configType}-${name}`,
+      legacyTag: `ll-strategy-${name}`,
+    };
+  }
+  return undefined;
+};
+
 export const getLovelaceStrategy = async <T extends LovelaceStrategyConfigType>(
   configType: T,
   strategyType: string
 ): Promise<LovelaceStrategy> => {
-  if (strategyType in STRATEGIES[configType]) {
-    await STRATEGIES[configType][strategyType]();
-    const tag = `${strategyType}-${configType}-strategy`;
-    return customElements.get(tag) as unknown as Strategies[T];
-  }
+  const tags = getStrategyTag(configType, strategyType);
 
-  if (!strategyType.startsWith(CUSTOM_PREFIX)) {
+  if (!tags) {
     throw new Error("Unknown strategy");
   }
 
-  const legacyTag = `ll-strategy-${strategyType.slice(CUSTOM_PREFIX.length)}`;
-  const tag = `ll-strategy-${configType}-${strategyType.slice(
-    CUSTOM_PREFIX.length
-  )}`;
+  if (tags.type === "builtin") {
+    await STRATEGIES[configType][strategyType]();
+    return customElements.get(tags.tag) as unknown as Strategies[T];
+  }
+
+  const { tag, legacyTag } = tags;
 
   if (
     (await Promise.race([
@@ -238,6 +273,41 @@ export const generateLovelaceSectionStrategy = async (
 };
 
 /**
+ * Synchronously checks whether a strategy needs regeneration.
+ * Strategies can implement `shouldRegenerate` for custom logic or declare
+ * `registryDependencies` to opt in to the default reference-equality check.
+ * The default list (entities, devices, areas, floors) is used when neither is
+ * provided, preserving the previous behavior for third-party strategies.
+ */
+export const checkStrategyShouldRegenerate = (
+  configType: LovelaceStrategyConfigType,
+  strategyConfig: LovelaceStrategyConfig,
+  oldHass: HomeAssistant,
+  newHass: HomeAssistant
+): boolean => {
+  const strategyType = strategyConfig.type;
+  if (!strategyType) {
+    return false;
+  }
+
+  const tags = getStrategyTag(configType, strategyType);
+  const strategy = tags
+    ? ((customElements.get(tags.tag) ??
+        (tags.type === "custom"
+          ? customElements.get(tags.legacyTag)
+          : undefined)) as unknown as LovelaceStrategy | undefined)
+    : undefined;
+
+  if (strategy?.shouldRegenerate) {
+    return strategy.shouldRegenerate(strategyConfig, oldHass, newHass);
+  }
+
+  const dependencies =
+    strategy?.registryDependencies ?? DEFAULT_REGISTRY_DEPENDENCIES;
+  return dependencies.some((key) => oldHass[key] !== newHass[key]);
+};
+
+/**
  * Find all references to strategies and replaces them with the generated output
  */
 export const expandLovelaceConfigStrategies = async (
@@ -271,3 +341,37 @@ export const expandLovelaceConfigStrategies = async (
 
   return newConfig;
 };
+
+interface DashboardStrategyClassWithSuggestions extends LovelaceDashboardStrategy {
+  getCreateSuggestions?: LovelaceDashboardStrategyGetCreateSuggestions;
+}
+
+async function readDashboardCreateSuggestions(
+  hass: HomeAssistant,
+  strategyClass: DashboardStrategyClassWithSuggestions
+): Promise<LovelaceDashboardSuggestions | undefined> {
+  const fn = strategyClass.getCreateSuggestions;
+  if (typeof fn !== "function") {
+    return undefined;
+  }
+  return fn.call(strategyClass, hass);
+}
+
+/** Loads a dashboard strategy and any optional create-dialog field suggestions. */
+export async function loadDashboardStrategyWithCreateSuggestions(
+  hass: HomeAssistant,
+  strategyType: string
+): Promise<{
+  strategyClass: LovelaceDashboardStrategy;
+  fieldSuggestions: LovelaceDashboardSuggestions | undefined;
+}> {
+  const strategyClass = (await getLovelaceStrategy(
+    "dashboard",
+    strategyType
+  )) as LovelaceDashboardStrategy;
+  const fieldSuggestions = await readDashboardCreateSuggestions(
+    hass,
+    strategyClass
+  );
+  return { strategyClass, fieldSuggestions };
+}

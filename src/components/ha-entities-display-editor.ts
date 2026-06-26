@@ -1,10 +1,18 @@
+import { consume, type ContextType } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { consumeEntityStates } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
+import {
+  configContext,
+  connectionContext,
+  entitiesContext,
+} from "../data/context";
 import { entityIcon } from "../data/icons";
-import type { HomeAssistant } from "../types";
 import "./ha-items-display-editor";
 import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 
@@ -15,7 +23,21 @@ export interface EntitiesDisplayValue {
 
 @customElement("ha-entities-display-editor")
 export class HaEntitiesDisplayEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeEntityStates({ entityIdPath: ["entitiesIds"] })
+  private _entityStates?: Record<string, HassEntity>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  @state()
+  private _entitiesReg!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  @state()
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @state()
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property() public label?: string;
 
@@ -32,15 +54,13 @@ export class HaEntitiesDisplayEditor extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   protected render(): TemplateResult {
-    const entities = this.entitiesIds
-      .map((entityId) => this.hass.states[entityId])
-      .filter(Boolean);
-
-    const items: DisplayItem[] = entities.map((entity) => ({
-      value: entity.entity_id,
-      label: computeStateName(entity),
-      icon: entityIcon(this.hass, entity),
-    }));
+    const items = this._items(
+      this.entitiesIds,
+      this._entityStates,
+      this._entitiesReg,
+      this._config,
+      this._connection
+    );
 
     const value: DisplayValue = {
       order: this.value?.order ?? [],
@@ -49,13 +69,37 @@ export class HaEntitiesDisplayEditor extends LitElement {
 
     return html`
       <ha-items-display-editor
-        .hass=${this.hass}
         .items=${items}
         .value=${value}
         @value-changed=${this._itemDisplayChanged}
       ></ha-items-display-editor>
     `;
   }
+
+  private _items = memoizeOne(
+    (
+      entitiesIds: string[],
+      entityStates: Record<string, HassEntity> | undefined,
+      entitiesReg: ContextType<typeof entitiesContext>,
+      config: ContextType<typeof configContext>,
+      connection: ContextType<typeof connectionContext>
+    ): DisplayItem[] => {
+      const entities = entitiesIds
+        .map((entityId) => entityStates?.[entityId])
+        .filter((stateObj): stateObj is HassEntity => Boolean(stateObj));
+
+      return entities.map((entity) => ({
+        value: entity.entity_id,
+        label: computeStateName(entity),
+        icon: entityIcon(
+          entitiesReg,
+          config.config,
+          connection.connection,
+          entity
+        ),
+      }));
+    }
+  );
 
   private _itemDisplayChanged(ev) {
     ev.stopPropagation();

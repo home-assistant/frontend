@@ -1,17 +1,22 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
+import { consume } from "@lit/context";
 import { mdiDelete, mdiFileUpload } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../common/array/ensure-array";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { transform } from "../common/decorators/transform";
 import { fireEvent } from "../common/dom/fire_event";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
+import { internationalizationContext } from "../data/context";
+import type { FrontendLocaleData } from "../data/translation";
+import type { HomeAssistantInternationalization } from "../types";
 import { bytesToString } from "../util/bytes-to-string";
 import "./ha-button";
 import "./ha-icon-button";
+import "./progress/ha-progress-bar";
 
 declare global {
   interface HASSDomEvents {
@@ -22,9 +27,16 @@ declare global {
 
 @customElement("ha-file-upload")
 export class HaFileUpload extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public localize?: LocalizeFunc;
+
+  @state() @consumeLocalize() private _localize?: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
 
   @property() public accept!: string;
 
@@ -57,7 +69,7 @@ export class HaFileUpload extends LitElement {
 
   @query("#input") private _input?: HTMLInputElement;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.autoOpenFileDialog) {
       this._openFilePicker();
@@ -80,7 +92,7 @@ export class HaFileUpload extends LitElement {
   }
 
   public render(): TemplateResult {
-    const localize = this.localize || this.hass!.localize;
+    const localize = this.localize || this._localize!;
     return html`
       ${this.uploading
         ? html`<div class="container">
@@ -95,15 +107,16 @@ export class HaFileUpload extends LitElement {
               >
               ${this.progress
                 ? html`<div class="progress">
-                    ${this.progress}${this.hass &&
-                    blankBeforePercent(this.hass!.locale)}%
+                    ${this.progress}${this._locale &&
+                    blankBeforePercent(this._locale)}%
                   </div>`
                 : nothing}
             </div>
-            <mwc-linear-progress
+            <ha-progress-bar
               .indeterminate=${!this.progress}
-              .progress=${this.progress ? this.progress / 100 : undefined}
-            ></mwc-linear-progress>
+              .value=${this.progress}
+              loading
+            ></ha-progress-bar>
           </div>`
         : html`<label
             for=${this.value ? "" : "input"}
@@ -119,7 +132,7 @@ export class HaFileUpload extends LitElement {
             @dragend=${this._handleDragEnd}
             >${!this.value
               ? html`<ha-button
-                    size="small"
+                    size="s"
                     appearance="filled"
                     @click=${this._openFilePicker}
                   >
@@ -319,7 +332,7 @@ export class HaFileUpload extends LitElement {
       --mdc-button-outline-color: var(--primary-color);
       --ha-icon-button-size: 24px;
     }
-    mwc-linear-progress {
+    ha-progress-bar {
       width: 100%;
       padding: 8px 32px;
       box-sizing: border-box;

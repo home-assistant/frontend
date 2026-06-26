@@ -3,19 +3,22 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
+import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
 import "../../components/ha-alert";
 import "../../components/ha-button";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
+import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-textarea";
-import "../../components/ha-textfield";
 import "../../components/ha-time-input";
-import "../../components/ha-dialog";
+import "../../components/input/ha-input";
+import type { HaInput } from "../../components/input/ha-input";
 import type { TodoItem } from "../../data/todo";
 import {
   TodoItemStatus,
@@ -25,14 +28,23 @@ import {
   updateItem,
 } from "../../data/todo";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
-import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
-import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/format_date_time";
+
+interface TodoItemFormState {
+  summary: string;
+  description?: string;
+  due?: Date;
+  checked: boolean;
+  hasTime: boolean;
+}
 
 @customElement("dialog-todo-item-editor")
-class DialogTodoItemEditor extends LitElement {
+class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -86,6 +98,17 @@ class DialogTodoItemEditor extends LitElement {
       this._checked = false;
       this._due = undefined;
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): TodoItemFormState {
+    return {
+      summary: this._summary,
+      description: this._description,
+      due: this._due,
+      checked: this._checked,
+      hasTime: this._hasTime,
+    };
   }
 
   public closeDialog(): void {
@@ -125,13 +148,12 @@ class DialogTodoItemEditor extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           `ui.components.todo.item.${isCreate ? "add" : "edit"}`
         )}
         header-subtitle=${listName}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
@@ -145,7 +167,7 @@ class DialogTodoItemEditor extends LitElement {
               @change=${this._checkedCanged}
               .disabled=${isCreate || !canUpdate}
             ></ha-checkbox>
-            <ha-textfield
+            <ha-input
               class="summary"
               name="summary"
               .label=${this.hass.localize("ui.components.todo.item.summary")}
@@ -157,7 +179,7 @@ class DialogTodoItemEditor extends LitElement {
                 "ui.common.error_required"
               )}
               .disabled=${!canUpdate}
-            ></ha-textfield>
+            ></ha-input>
           </div>
           ${this._completedTime
             ? html`<div class="italic">
@@ -179,10 +201,10 @@ class DialogTodoItemEditor extends LitElement {
                 .label=${this.hass.localize(
                   "ui.components.todo.item.description"
                 )}
-                .helper=${supportsMarkdownHelper(this.hass.localize)}
+                .hint=${supportsMarkdownHelper(this.hass.localize)}
                 .value=${this._description}
                 @input=${this._handleDescriptionChanged}
-                autogrow
+                resize="auto"
                 .disabled=${!canUpdate}
               ></ha-textarea>`
             : nothing}
@@ -224,7 +246,7 @@ class DialogTodoItemEditor extends LitElement {
                 <ha-button
                   slot="primaryAction"
                   @click=${this._createItem}
-                  .disabled=${this._submitting}
+                  .disabled=${this._submitting || !this.isDirtyState}
                 >
                   ${this.hass.localize("ui.components.todo.item.add")}
                 </ha-button>
@@ -233,7 +255,9 @@ class DialogTodoItemEditor extends LitElement {
                 <ha-button
                   slot="primaryAction"
                   @click=${this._saveItem}
-                  .disabled=${!canUpdate || this._submitting}
+                  .disabled=${!canUpdate ||
+                  this._submitting ||
+                  !this.isDirtyState}
                 >
                   ${this.hass.localize("ui.components.todo.item.save")}
                 </ha-button>
@@ -299,23 +323,28 @@ class DialogTodoItemEditor extends LitElement {
 
   private _checkedCanged(ev) {
     this._checked = ev.target.checked;
+    this._updateDirtyState(this._currentState());
   }
 
-  private _handleSummaryChanged(ev) {
-    this._summary = ev.target.value;
+  private _handleSummaryChanged(ev: InputEvent) {
+    this._summary = (ev.target as HaInput).value ?? "";
+    this._updateDirtyState(this._currentState());
   }
 
   private _handleDescriptionChanged(ev) {
     this._description = ev.target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _dueDateChanged(ev: CustomEvent) {
     if (!ev.detail.value) {
       this._due = undefined;
+      this._updateDirtyState(this._currentState());
       return;
     }
     const time = this._due ? this._formatTime(this._due) : undefined;
     this._due = this._parseDate(`${ev.detail.value}${time ? `T${time}` : ""}`);
+    this._updateDirtyState(this._currentState());
   }
 
   private _dueTimeChanged(ev: CustomEvent) {
@@ -323,6 +352,7 @@ class DialogTodoItemEditor extends LitElement {
     this._due = this._parseDate(
       `${this._formatDate(this._due || new Date())}T${ev.detail.value}`
     );
+    this._updateDirtyState(this._currentState());
   }
 
   private async _createItem() {
@@ -438,13 +468,16 @@ class DialogTodoItemEditor extends LitElement {
           display: block;
           margin-bottom: 16px;
         }
-        ha-textfield,
+        ha-input {
+          width: 100%;
+        }
         ha-textarea {
           display: block;
           width: 100%;
         }
         ha-checkbox {
-          margin-top: 4px;
+          margin-bottom: 28px;
+          justify-content: center;
         }
         ha-textarea {
           margin-bottom: 16px;

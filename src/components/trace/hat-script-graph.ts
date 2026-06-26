@@ -20,7 +20,7 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { Condition, Trigger } from "../../data/automation";
@@ -44,7 +44,6 @@ import type {
   IfActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import type { HomeAssistant } from "../../types";
 import "../ha-icon-button";
 import "../ha-service-icon";
 import "./hat-graph-branch";
@@ -73,7 +72,8 @@ export class HatScriptGraph extends LitElement {
 
   @property({ attribute: false }) public selected?: string;
 
-  public hass!: HomeAssistant;
+  @query("hat-graph-node[active], hat-graph-branch[active]")
+  private _activeNode?: HTMLElement;
 
   public renderedNodes: Record<string, NodeInfo> = {};
 
@@ -87,21 +87,27 @@ export class HatScriptGraph extends LitElement {
 
   private _renderTrigger(config: Trigger, i: number) {
     const path = `trigger/${i}`;
-    const track = this.trace && path in this.trace.trace;
+    const tracked = this.trace && path in this.trace.trace;
+    // A not-triggered trace records the trigger that evaluated a change but
+    // decided not to fire. It is still selectable (to view the reason), but
+    // must not be shown as the path that ran.
+    const notTriggered = !!(tracked && this.trace.not_triggered);
+    const track = tracked && !notTriggered;
     this.renderedNodes[path] = { config, path, type: "trigger" };
-    if (track) {
+    if (tracked) {
       this.trackedNodes[path] = this.renderedNodes[path];
     }
     return html`
       <hat-graph-node
         graph-start
         ?track=${track}
+        ?not-triggered=${notTriggered}
         @focus=${this._selectNode(config, path, "trigger")}
         ?active=${this.selected === path}
         .iconPath=${mdiAsterisk}
         .notEnabled=${"enabled" in config && config.enabled === false}
         .error=${this.trace.trace[path]?.some((tr) => tr.error)}
-        tabindex=${track ? "0" : "-1"}
+        tabindex=${tracked ? "0" : "-1"}
       ></hat-graph-node>
     `;
   }
@@ -448,7 +454,6 @@ export class HatScriptGraph extends LitElement {
         ${node.action
           ? html`<ha-service-icon
               slot="icon"
-              .hass=${this.hass}
               .service=${node.action}
             ></ha-service-icon>`
           : nothing}
@@ -667,12 +672,10 @@ export class HatScriptGraph extends LitElement {
 
     // Scroll to active node when selection changes
     if (changedProps.has("selected")) {
-      const activeNode = this.renderRoot.querySelector(
-        "hat-graph-node[active], hat-graph-branch[active]"
-      ) as HTMLElement;
-      if (activeNode) {
-        activeNode.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
+      this._activeNode?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
     }
 
     if (!changedProps.has("trace")) {

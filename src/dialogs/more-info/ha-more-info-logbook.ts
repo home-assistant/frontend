@@ -6,8 +6,8 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { createSearchParam } from "../../common/url/search-params";
 import "../../panels/logbook/ha-logbook";
-import type { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {
@@ -22,7 +22,7 @@ export class MoreInfoLogbook extends LitElement {
   private _entityIdAsList = memoizeOne((entityId: string) => [entityId]);
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "logbook") || !this.entityId) {
+    if (!isComponentLoaded(this.hass.config, "logbook") || !this.entityId) {
       return nothing;
     }
     const stateObj = this.hass.states[this.entityId];
@@ -42,16 +42,15 @@ export class MoreInfoLogbook extends LitElement {
         .hass=${this.hass}
         .time=${this._time}
         .entityIds=${this._entityIdAsList(this.entityId)}
+        name-detail="none"
         narrow
         no-icon
-        no-name
-        show-indicator
-        relative-time
+        graph-color
       ></ha-logbook>
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (changedProps.has("entityId") && this.entityId) {
@@ -71,6 +70,7 @@ export class MoreInfoLogbook extends LitElement {
       css`
         ha-logbook {
           --logbook-max-height: 250px;
+          --logbook-horizontal-padding: var(--ha-space-6);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-logbook {
@@ -83,6 +83,7 @@ export class MoreInfoLogbook extends LitElement {
           justify-content: space-between;
           align-items: center;
           margin-bottom: var(--ha-space-2);
+          padding-inline: var(--ha-space-6);
         }
         .header > a,
         a:visited {

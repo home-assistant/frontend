@@ -5,14 +5,15 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/item/ha-row-item";
 import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
@@ -23,13 +24,23 @@ import {
   showAlertDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showAdminChangePasswordDialog } from "./show-dialog-admin-change-password";
 import type { UserDetailDialogParams } from "./show-dialog-user-detail";
 
+interface UserDetailFormState {
+  name: string;
+  isAdmin?: boolean;
+  localOnly?: boolean;
+  isActive?: boolean;
+}
+
 @customElement("dialog-user-detail")
-class DialogUserDetail extends LitElement {
+class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _name!: string;
@@ -56,6 +67,15 @@ class DialogUserDetail extends LitElement {
     this._localOnly = params.entry.local_only;
     this._isActive = params.entry.is_active;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      {
+        name: this._name,
+        isAdmin: this._isAdmin,
+        localOnly: this._localOnly,
+        isActive: this._isActive,
+      }
+    );
     await this.updateComplete;
   }
 
@@ -67,179 +87,165 @@ class DialogUserDetail extends LitElement {
     const badges = computeUserBadges(this.hass, user, true);
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${user.name}
         @closed=${this._dialogClosed}
       >
         <div>
-          ${
-            this._error
-              ? html`<div class="error">${this._error}</div>`
-              : nothing
-          }
+          ${this._error
+            ? html`<div class="error">${this._error}</div>`
+            : nothing}
           <div class="secondary">
             ${this.hass.localize("ui.panel.config.users.editor.id")}:
             ${user.id}<br />
           </div>
-          ${
-            badges.length === 0
-              ? nothing
-              : html`
-                  <div class="badge-container">
-                    ${badges.map(
-                      ([icon, label]) => html`
-                        <ha-label>
-                          <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
-                          ${label}
-                        </ha-label>
-                      `
-                    )}
-                  </div>
-                `
-          }
+          ${badges.length === 0
+            ? nothing
+            : html`
+                <div class="badge-container">
+                  ${badges.map(
+                    ([icon, label]) => html`
+                      <ha-label>
+                        <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
+                        ${label}
+                      </ha-label>
+                    `
+                  )}
+                </div>
+              `}
           <div class="form">
-            ${
-              !user.system_generated
-                ? html`
-                    <ha-textfield
-                      autofocus
-                      .value=${this._name}
-                      @input=${this._nameChanged}
-                      .label=${this.hass!.localize(
-                        "ui.panel.config.users.editor.name"
-                      )}
-                    ></ha-textfield>
-                    <ha-md-list-item>
-                      <span slot="headline"
-                        >${this.hass.localize(
-                          "ui.panel.config.users.editor.username"
-                        )}</span
-                      >
-                      <span slot="supporting-text">${user.username}</span>
-                      ${this.hass.user?.is_owner
-                        ? html`
-                            <ha-icon-button
-                              slot="end"
-                              .path=${mdiPencil}
-                              @click=${this._changeUsername}
-                              .label=${this.hass.localize(
-                                "ui.panel.config.users.editor.change_username"
-                              )}
-                            >
-                            </ha-icon-button>
-                          `
-                        : nothing}
-                    </ha-md-list-item>
-                  `
-                : nothing
-            }
-            ${
-              !user.system_generated && this.hass.user?.is_owner
-                ? html`
-                    <ha-md-list-item>
-                      <span slot="headline"
-                        >${this.hass.localize(
-                          "ui.panel.config.users.editor.password"
-                        )}</span
-                      >
-                      <span slot="supporting-text">************</span>
-                      ${this.hass.user?.is_owner
-                        ? html`
-                            <ha-icon-button
-                              slot="end"
-                              .path=${mdiPencil}
-                              @click=${this._changePassword}
-                              .label=${this.hass.localize(
-                                "ui.panel.config.users.editor.change_password"
-                              )}
-                            >
-                            </ha-icon-button>
-                          `
-                        : nothing}
-                    </ha-md-list-item>
-                  `
-                : nothing
-            }
-              <ha-md-list-item>
-                <span slot="headline"
-                  >${this.hass.localize(
-                    "ui.panel.config.users.editor.active"
-                  )}</span
-                >
-                <span slot="supporting-text"
-                  >${this.hass.localize(
-                    "ui.panel.config.users.editor.active_description"
-                  )}</span
-                >
-                <ha-switch
-                  slot="end"
-                  .disabled=${user.system_generated || user.is_owner}
-                  .checked=${this._isActive}
-                  @change=${this._activeChanged}
-                ></ha-switch>
-              </ha-md-list-item>
-              <ha-md-list-item>
-                <span slot="headline"
-                  >${this.hass.localize(
-                    "ui.panel.config.users.editor.local_access_only"
-                  )}</span
-                >
-                <span slot="supporting-text"
-                  >${this.hass.localize(
-                    "ui.panel.config.users.editor.local_access_only_description"
-                  )}</span
-                >
-                <ha-switch
-                  slot="end"
-                  .disabled=${user.system_generated}
-                  .checked=${this._localOnly}
-                  @change=${this._localOnlyChanged}
-                ></ha-switch>
-              </ha-md-list-item>
-              <ha-md-list-item>
-                <span slot="headline"
-                  >${this.hass.localize(
-                    "ui.panel.config.users.editor.admin"
-                  )}</span
-                >
-                <span slot="supporting-text"
-                  >${this.hass.localize(
-                    "ui.panel.config.users.editor.admin_description"
-                  )}</span
-                >
-                <ha-switch
-                  slot="end"
-                  .disabled=${user.system_generated || user.is_owner}
-                  .checked=${this._isAdmin}
-                  @change=${this._adminChanged}
-                ></ha-switch>
-                </ha-switch>
-              </ha-md-list-item>
-            ${
-              !this._isAdmin && !user.system_generated
-                ? html`
-                    <ha-alert alert-type="info">
-                      ${this.hass.localize(
-                        "ui.panel.config.users.users_privileges_note"
-                      )}
-                    </ha-alert>
-                  `
-                : nothing
-            }
-          </div>
-          ${
-            user.system_generated
+            ${!user.system_generated
+              ? html`
+                  <ha-input
+                    autofocus
+                    .value=${this._name}
+                    @input=${this._nameChanged}
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.users.editor.name"
+                    )}
+                  ></ha-input>
+                  <ha-row-item>
+                    <span slot="headline"
+                      >${this.hass.localize(
+                        "ui.panel.config.users.editor.username"
+                      )}</span
+                    >
+                    <span slot="supporting-text">${user.username}</span>
+                    ${this.hass.user?.is_owner
+                      ? html`
+                          <ha-icon-button
+                            slot="end"
+                            .path=${mdiPencil}
+                            @click=${this._changeUsername}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.users.editor.change_username"
+                            )}
+                          >
+                          </ha-icon-button>
+                        `
+                      : nothing}
+                  </ha-row-item>
+                `
+              : nothing}
+            ${!user.system_generated && this.hass.user?.is_owner
+              ? html`
+                  <ha-row-item>
+                    <span slot="headline"
+                      >${this.hass.localize(
+                        "ui.panel.config.users.editor.password"
+                      )}</span
+                    >
+                    <span slot="supporting-text">************</span>
+                    ${this.hass.user?.is_owner
+                      ? html`
+                          <ha-icon-button
+                            slot="end"
+                            .path=${mdiPencil}
+                            @click=${this._changePassword}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.users.editor.change_password"
+                            )}
+                          >
+                          </ha-icon-button>
+                        `
+                      : nothing}
+                  </ha-row-item>
+                `
+              : nothing}
+            <ha-row-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.active"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.active_description"
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .disabled=${user.system_generated || user.is_owner}
+                .checked=${this._isActive}
+                @change=${this._activeChanged}
+              ></ha-switch>
+            </ha-row-item>
+            <ha-row-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.local_access_only"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.local_access_only_description"
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .disabled=${user.system_generated}
+                .checked=${this._localOnly}
+                @change=${this._localOnlyChanged}
+              ></ha-switch>
+            </ha-row-item>
+            <ha-row-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.admin"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.users.editor.admin_description"
+                )}</span
+              >
+              <ha-switch
+                slot="end"
+                .disabled=${user.system_generated || user.is_owner}
+                .checked=${this._isAdmin}
+                @change=${this._adminChanged}
+              ></ha-switch>
+            </ha-row-item>
+            ${!this._isAdmin && !user.system_generated
               ? html`
                   <ha-alert alert-type="info">
                     ${this.hass.localize(
-                      "ui.panel.config.users.editor.system_generated_read_only_users"
+                      "ui.panel.config.users.users_privileges_note"
                     )}
                   </ha-alert>
                 `
-              : nothing
-          }
+              : nothing}
+          </div>
+          ${user.system_generated
+            ? html`
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.config.users.editor.system_generated_read_only_users"
+                  )}
+                </ha-alert>
+              `
+            : nothing}
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -248,18 +254,19 @@ class DialogUserDetail extends LitElement {
             variant="danger"
             appearance="plain"
             @click=${this._deleteEntry}
-              .disabled=${
-                this._submitting || user.system_generated || user.is_owner
-              }
+            .disabled=${this._submitting ||
+            user.system_generated ||
+            user.is_owner}
           >
             ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-              .disabled=${
-                !this._name || this._submitting || user.system_generated
-              }
+            .disabled=${!this._name ||
+            this._submitting ||
+            user.system_generated ||
+            !this.isDirtyState}
           >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>
@@ -268,21 +275,34 @@ class DialogUserDetail extends LitElement {
     `;
   }
 
-  private _nameChanged(ev) {
+  private _nameChanged(ev: InputEvent) {
     this._error = undefined;
-    this._name = ev.target.value;
+    this._name = (ev.target as HaInput).value ?? "";
+    this._publishDirtyState();
   }
 
   private _adminChanged(ev): void {
     this._isAdmin = ev.target.checked;
+    this._publishDirtyState();
   }
 
   private _localOnlyChanged(ev): void {
     this._localOnly = ev.target.checked;
+    this._publishDirtyState();
   }
 
   private _activeChanged(ev): void {
     this._isActive = ev.target.checked;
+    this._publishDirtyState();
+  }
+
+  private _publishDirtyState(): void {
+    this._updateDirtyState({
+      name: this._name,
+      isAdmin: this._isAdmin,
+      localOnly: this._localOnly,
+      isActive: this._isActive,
+    });
   }
 
   private async _updateEntry() {
@@ -296,6 +316,7 @@ class DialogUserDetail extends LitElement {
         ],
         local_only: this._localOnly,
       });
+      this._markDirtyStateClean();
       this._close();
     } catch (err: any) {
       this._error = err?.message || "Unknown error";
@@ -308,6 +329,7 @@ class DialogUserDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeEntry()) {
+        this._markDirtyStateClean();
         this._close();
       }
     } finally {
@@ -398,13 +420,8 @@ class DialogUserDetail extends LitElement {
         .secondary {
           color: var(--secondary-text-color);
         }
-        ha-textfield {
-          display: block;
-        }
-        ha-md-list-item {
-          --md-list-item-leading-space: 0;
-          --md-list-item-trailing-space: 0;
-          --md-item-overflow: visible;
+        ha-row-item {
+          --ha-row-item-padding-inline: 0;
         }
         .badge-container {
           margin-top: 4px;

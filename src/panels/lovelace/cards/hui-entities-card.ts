@@ -1,6 +1,6 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, queryAll, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -49,6 +49,33 @@ export const computeShowHeaderToggle = <
   return !!config.show_header_toggle;
 };
 
+export const migrateEntitiesCardConfig = (
+  config: EntitiesCardConfig
+): EntitiesCardConfig => {
+  let changed = false;
+  const newEntities = config.entities?.map((e) => {
+    if (typeof e !== "object") {
+      return e;
+    }
+    if (!("format" in e)) {
+      return e;
+    }
+    changed = true;
+    const { format, ...rest } = e;
+    return {
+      ...rest,
+      time_format: (rest as EntityConfig).time_format ?? format,
+    };
+  });
+  if (!changed) {
+    return config;
+  }
+  return {
+    ...config,
+    entities: newEntities as (LovelaceRowConfig | string)[],
+  };
+};
+
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -74,6 +101,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   @state() private _config?: EntitiesCardConfig;
+
+  @queryAll("#states > div > *") private _rowElements!: NodeListOf<HTMLElement>;
+
+  @query("hui-entities-toggle") private _entitiesToggle?: HTMLElement;
 
   private _hass?: HomeAssistant;
 
@@ -102,22 +133,17 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot
-      ?.querySelectorAll("#states > div > *")
-      .forEach((element: unknown) => {
-        (element as LovelaceRow).hass = hass;
-      });
+    this._rowElements.forEach((element: unknown) => {
+      (element as LovelaceRow).hass = hass;
+    });
     if (this._headerElement) {
       this._headerElement.hass = hass;
     }
     if (this._footerElement) {
       this._footerElement.hass = hass;
     }
-    const entitiesToggle = this.shadowRoot?.querySelector(
-      "hui-entities-toggle"
-    );
-    if (entitiesToggle) {
-      (entitiesToggle as any).hass = hass;
+    if (this._entitiesToggle) {
+      (this._entitiesToggle as any).hass = hass;
     }
   }
 
@@ -154,11 +180,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       throw new Error("Entities must be specified");
     }
 
-    const entities = processConfigEntities(config.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = config;
+    this._config = migratedConfig;
     this._configEntities = entities;
-    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
+    this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header

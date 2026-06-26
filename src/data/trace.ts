@@ -11,18 +11,24 @@ interface BaseTraceStep {
   path: string;
   timestamp: string;
   error?: string;
+  template_errors?: string[];
   changed_variables?: Record<string, unknown>;
 }
 
 export interface TriggerTraceStep extends BaseTraceStep {
   changed_variables: {
     trigger: {
-      alias?: string;
-      description: string;
+      alias?: string | null;
+      // Absent on not-triggered traces, which have no trigger description.
+      description?: string;
       [key: string]: unknown;
     };
     [key: string]: unknown;
   };
+  // Present on not-triggered traces: a machine-readable reason code explaining
+  // why the trigger evaluated a relevant change but decided not to fire, plus
+  // optional diagnostic context.
+  result?: { reason: string; data?: Record<string, unknown> };
 }
 
 export interface ConditionTraceStep extends BaseTraceStep {
@@ -60,6 +66,7 @@ export interface ChooseChoiceActionTraceStep extends BaseTraceStep {
 
 export type ActionTraceStep =
   | BaseTraceStep
+  | TriggerTraceStep
   | ConditionTraceStep
   | CallServiceActionTraceStep
   | ChooseActionTraceStep
@@ -67,10 +74,14 @@ export type ActionTraceStep =
 
 interface BaseTrace {
   domain: string;
+  error?: string;
   item_id: string;
   last_step: string | null;
   run_id: string;
   state: "running" | "stopped" | "debugged";
+  // True for traces recording that a trigger evaluated a relevant change but
+  // did not fire. These are counted separately from actual runs.
+  not_triggered?: boolean;
   timestamp: {
     start: string;
     finish: string | null;
@@ -91,18 +102,21 @@ interface BaseTrace {
     | "error"
     // The exception is in the trace itself or in the last element of the trace
     // Script execution stopped by async_stop called on the script run because home assistant is shutting down, script mode is SCRIPT_MODE_RESTART etc:
-    | "cancelled";
+    | "cancelled"
+    // No action was executed because a trigger evaluated a relevant change but
+    // decided not to fire; the reason is in the trigger step of the trace
+    | "not_triggered";
 }
 
 interface BaseTraceExtended {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
-  error?: string;
 }
 
 export interface AutomationTrace extends BaseTrace {
   domain: "automation";
-  trigger: string;
+  // `null` for not-triggered traces, which have no trigger description.
+  trigger: string | null;
 }
 
 export interface AutomationTraceExtended
@@ -120,6 +134,7 @@ export interface ScriptTraceExtended extends ScriptTrace, BaseTraceExtended {
   blueprint_inputs?: BlueprintScriptConfig;
 }
 
+export type Trace = AutomationTrace | ScriptTrace;
 export type TraceExtended = AutomationTraceExtended | ScriptTraceExtended;
 
 interface TraceTypes {

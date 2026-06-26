@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-ripple";
 
@@ -27,9 +27,17 @@ export class DashboardCard extends LitElement {
             <p>${this.description}</p>
           </div>
         </div>
-        <div class="preview">
-          <img alt=${this.alt} loading="lazy" src=${this.img} />
-        </div>
+        ${this.img
+          ? html`
+              <div class="preview">
+                <img
+                  alt=${this.alt || this.name}
+                  loading="lazy"
+                  src=${this.img}
+                />
+              </div>
+            `
+          : nothing}
         <ha-ripple></ha-ripple>
       </div>
     `;
@@ -56,16 +64,19 @@ export class DashboardCard extends LitElement {
       border: 1px solid var(--divider-color);
     }
     .card-header {
-      padding: 12px;
+      padding: var(--ha-space-3);
       display: block;
       text-align: var(--float-start);
       gap: var(--ha-space-2);
     }
     .preview {
-      padding: 16px;
+      padding: var(--ha-space-4);
+    }
+    .preview img {
+      max-height: 160px;
     }
     h2 {
-      margin: 0 0 8px 0;
+      margin: 0 0 var(--ha-space-2) 0;
       font-size: 1.2rem;
       color: var(--primary-text-color);
     }

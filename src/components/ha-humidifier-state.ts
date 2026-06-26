@@ -1,26 +1,36 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { isUnavailableState, OFF } from "../data/entity/entity";
+import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { formattersContext } from "../data/context";
+import { OFF, UNAVAILABLE, UNKNOWN } from "../data/entity/entity";
 import type { HumidifierEntity } from "../data/humidifier";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-humidifier-state")
 class HaHumidifierState extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: HumidifierEntity;
 
   protected render(): TemplateResult {
     const currentStatus = this._computeCurrentStatus();
+    const noValue =
+      this.stateObj.state === UNAVAILABLE || this.stateObj.state === UNKNOWN;
 
     return html`<div class="target">
-        ${!isUnavailableState(this.stateObj.state)
+        ${!noValue
           ? html`<span class="state-label">
                 ${this._localizeState()}
                 ${this.stateObj.attributes.mode
                   ? html`-
-                    ${this.hass.formatEntityAttributeValue(
+                    ${this._formatters!.formatEntityAttributeValue(
                       this.stateObj,
                       "mode"
                     )}`
@@ -30,21 +40,21 @@ class HaHumidifierState extends LitElement {
           : this._localizeState()}
       </div>
 
-      ${currentStatus && !isUnavailableState(this.stateObj.state)
+      ${currentStatus && !noValue
         ? html`<div class="current">
-            ${this.hass.localize("ui.card.climate.currently")}:
+            ${this._localize("ui.card.humidifier.currently")}:
             <div class="unit">${currentStatus}</div>
           </div>`
         : ""}`;
   }
 
   private _computeCurrentStatus(): string | undefined {
-    if (!this.hass || !this.stateObj) {
+    if (!this._formatters || !this.stateObj) {
       return undefined;
     }
 
     if (this.stateObj.attributes.current_humidity != null) {
-      return `${this.hass.formatEntityAttributeValue(
+      return `${this._formatters.formatEntityAttributeValue(
         this.stateObj,
         "current_humidity"
       )}`;
@@ -54,12 +64,12 @@ class HaHumidifierState extends LitElement {
   }
 
   private _computeTarget(): string {
-    if (!this.hass || !this.stateObj) {
+    if (!this._formatters || !this.stateObj) {
       return "";
     }
 
     if (this.stateObj.attributes.humidity != null) {
-      return `${this.hass.formatEntityAttributeValue(
+      return `${this._formatters.formatEntityAttributeValue(
         this.stateObj,
         "humidity"
       )}`;
@@ -69,14 +79,17 @@ class HaHumidifierState extends LitElement {
   }
 
   private _localizeState(): string {
-    if (isUnavailableState(this.stateObj.state)) {
-      return this.hass.localize(`state.default.${this.stateObj.state}`);
+    if (
+      this.stateObj.state === UNAVAILABLE ||
+      this.stateObj.state === UNKNOWN
+    ) {
+      return this._localize(`state.default.${this.stateObj.state}`);
     }
 
-    const stateString = this.hass.formatEntityState(this.stateObj);
+    const stateString = this._formatters!.formatEntityState(this.stateObj);
 
     if (this.stateObj.attributes.action && this.stateObj.state !== OFF) {
-      const actionString = this.hass.formatEntityAttributeValue(
+      const actionString = this._formatters!.formatEntityAttributeValue(
         this.stateObj,
         "action"
       );

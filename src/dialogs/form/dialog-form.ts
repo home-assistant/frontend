@@ -1,18 +1,27 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import deepClone from "deep-clone-simple";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import type { HassDialog } from "../make-dialog-manager";
+import type { HassDialog, ShowDialogParams } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
+
+interface StackEntry {
+  params: FormDialogParams;
+  data: FormDialogData;
+  nestedField?: string;
+}
 
 @customElement("dialog-form")
 export class DialogForm
-  extends LitElement
+  extends DirtyStateProviderMixin<FormDialogData>()(LitElement)
   implements HassDialog<FormDialogData>
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -25,10 +34,13 @@ export class DialogForm
 
   @state() private _closeState?: "canceled" | "submitted";
 
+  @state() private _stack: StackEntry[] = [];
+
   public async showDialog(params: FormDialogParams): Promise<void> {
     this._params = params;
     this._data = params.data || {};
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): boolean {
@@ -36,11 +48,43 @@ export class DialogForm
     return true;
   }
 
+  private _handleNestedShowDialog = (
+    ev: HASSDomEvent<ShowDialogParams<unknown>>
+  ) => {
+    if (ev.detail.dialogTag !== "dialog-form") {
+      return;
+    }
+    ev.stopPropagation();
+
+    const origin = ev.composedPath()[0] as HTMLElement & { name?: string };
+    this._stack = [
+      ...this._stack,
+      { params: this._params!, data: this._data, nestedField: origin?.name },
+    ];
+    const nested = ev.detail.dialogParams as FormDialogParams;
+    this._params = nested;
+    this._data = nested?.data || {};
+    this._initDirtyTracking({ type: "deep" }, this._data);
+  };
+
+  private _popStack(): string | undefined {
+    if (!this._stack.length) {
+      return undefined;
+    }
+    const prev = this._stack[this._stack.length - 1];
+    this._stack = this._stack.slice(0, -1);
+    this._params = prev.params;
+    this._data = prev.data;
+    this._initDirtyTracking({ type: "deep" }, this._data);
+    return prev.nestedField;
+  }
+
   private _dialogClosed(): void {
     if (!this._closeState) {
       this._params?.cancel?.();
     }
     this._closeState = undefined;
+    this._stack = [];
     this._params = undefined;
     this._data = {};
     this._open = false;
@@ -49,18 +93,50 @@ export class DialogForm
 
   private _submit(): void {
     this._closeState = "submitted";
-    this._params?.submit?.(this._data);
-    this.closeDialog();
+    const submit = this._params?.submit;
+    const data = this._data;
+    const nestedField = this._popStack();
+
+    submit?.(data);
+
+    if (!nestedField) {
+      this.closeDialog();
+      return;
+    }
+
+    const schemaField = this._params?.schema.find(
+      (f) => "selector" in f && f.name === nestedField
+    );
+    const isMultiple =
+      schemaField &&
+      "selector" in schemaField &&
+      "object" in schemaField.selector &&
+      schemaField.selector.object?.multiple === true;
+
+    const current = this._data[nestedField];
+    const newValue = isMultiple
+      ? [...(Array.isArray(current) ? current : []), data]
+      : data;
+
+    this._data = deepClone({ ...this._data, [nestedField]: newValue });
+    this._updateDirtyState(this._data);
   }
 
   private _cancel(): void {
     this._closeState = "canceled";
-    this._params?.cancel?.();
-    this.closeDialog();
+    const cancel = this._params?.cancel;
+    const nestedField = this._popStack();
+
+    cancel?.();
+
+    if (!nestedField) {
+      this.closeDialog();
+    }
   }
 
   private _valueChanged(ev: CustomEvent): void {
     this._data = ev.detail.value;
+    this._updateDirtyState(this._data);
   }
 
   protected render() {
@@ -70,10 +146,9 @@ export class DialogForm
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-form
@@ -84,6 +159,7 @@ export class DialogForm
           .data=${this._data}
           .schema=${this._params.schema}
           @value-changed=${this._valueChanged}
+          @show-dialog=${this._handleNestedShowDialog}
         >
         </ha-form>
         <ha-dialog-footer slot="footer">

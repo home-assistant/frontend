@@ -6,7 +6,6 @@ import presetEnv from "@babel/preset-env";
 import compilationTargets from "@babel/helper-compilation-targets";
 import coreJSCompat from "core-js-compat";
 import { logPlugin } from "@babel/preset-env/lib/debug.js";
-// eslint-disable-next-line import/no-relative-packages
 import shippedPolyfills from "../node_modules/babel-plugin-polyfill-corejs3/lib/shipped-proposals.js";
 import { babelOptions } from "./bundle.cjs";
 
@@ -49,6 +48,12 @@ for (const buildType of ["Modern", "Legacy"]) {
   const browserslistEnv = buildType.toLowerCase();
   const babelOpts = babelOptions({ latestBuild: browserslistEnv === "modern" });
   const presetEnvOpts = babelOpts.presets[0][1];
+  // Core-JS polyfills are injected by babel-plugin-polyfill-corejs3 (Babel 8
+  // removed preset-env's `useBuiltIns`), so read its options here.
+  const corejsOpts = babelOpts.plugins.find(
+    (plugin) =>
+      Array.isArray(plugin) && plugin[0] === "babel-plugin-polyfill-corejs3"
+  )?.[1];
 
   // Invoking preset-env in debug mode will log the included plugins
   console.log(detailsOpen(`${buildType} Build Babel Plugins`));
@@ -60,16 +65,16 @@ for (const buildType of ["Modern", "Legacy"]) {
   console.log(detailsClose);
 
   // Manually log the Core-JS polyfills using the same technique
-  if (presetEnvOpts.useBuiltIns) {
+  if (corejsOpts) {
     console.log(detailsOpen(`${buildType} Build Core-JS Polyfills`));
     const targets = compilationTargets.default(babelOpts?.targets, {
       browserslistEnv,
     });
     const polyfillList = coreJSCompat({ targets }).list.filter(
       polyfillFilter(
-        `${presetEnvOpts.useBuiltIns}-global`,
-        presetEnvOpts?.corejs?.proposals,
-        presetEnvOpts?.shippedProposals
+        corejsOpts.method,
+        corejsOpts.proposals,
+        corejsOpts.shippedProposals
       )
     );
     console.log(

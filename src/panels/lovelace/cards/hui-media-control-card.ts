@@ -1,5 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
 import {
   mdiDotsVertical,
   mdiPlayBoxMultiple,
@@ -18,10 +16,12 @@ import { extractColors } from "../../../common/image/extract_color";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-slider";
+import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-state-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
@@ -82,7 +82,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @state() private _cardHeight = 0;
 
-  @query("mwc-linear-progress") private _progressBar?: LinearProgress;
+  @query("ha-slider") private _progressBar?: HaSlider;
 
   @state() private _marqueeActive = false;
 
@@ -173,9 +173,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const entityState = stateObj.state;
 
     const isOffState =
-      !stateActive(stateObj) && !isUnavailableState(entityState);
+      !stateActive(stateObj) &&
+      entityState !== UNAVAILABLE &&
+      entityState !== UNKNOWN;
     const isUnavailable =
-      isUnavailableState(entityState) ||
+      entityState === UNAVAILABLE ||
+      entityState === UNKNOWN ||
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
@@ -235,11 +238,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-state-icon
-                class="icon"
-                .stateObj=${stateObj}
-                .hass=${this.hass}
-              ></ha-state-icon>
+              <ha-state-icon class="icon" .stateObj=${stateObj}></ha-state-icon>
               <div>
                 ${this.hass.formatEntityName(
                   this.hass!.states[this._config!.entity],
@@ -342,10 +341,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   ${!this._showProgressBar
                     ? ""
                     : html`
-                        <mwc-linear-progress
-                          determinate
+                        <ha-slider
                           style=${styleMap({
-                            "--mdc-theme-primary":
+                            "--ha-slider-indicator-color":
                               this._foregroundColor || "var(--accent-color)",
                             cursor: supportsFeature(
                               stateObj,
@@ -356,7 +354,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                           })}
                           @click=${this._handleSeek}
                         >
-                        </mwc-linear-progress>
+                        </ha-slider>
                       `}
                 </div>
               `
@@ -366,7 +364,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -561,9 +559,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _updateProgressBar(): void {
     if (this._progressBar && this._stateObj?.attributes.media_duration) {
-      this._progressBar.progress =
-        getCurrentProgress(this._stateObj) /
-        this._stateObj!.attributes.media_duration;
+      this._progressBar.value =
+        (getCurrentProgress(this._stateObj) /
+          this._stateObj!.attributes.media_duration) *
+        100;
     }
   }
 
@@ -571,16 +570,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
   }
 
-  private _handleSeek(e: MouseEvent): void {
+  private _handleSeek(): void {
     const stateObj = this._stateObj!;
 
     if (!supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)) {
       return;
     }
 
-    const progressWidth = (this._progressBar as HTMLElement).offsetWidth;
+    const percentValue = this._progressBar?.value ?? 0;
+    const percent = percentValue ? percentValue / 100 : 0;
 
-    const percent = e.offsetX / progressWidth;
     const position = this._stateObj!.attributes.media_duration! * percent;
 
     this.hass!.callService("media_player", "media_seek", {
@@ -754,9 +753,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ha-icon-button[action="media_play"],
     ha-icon-button[action="media_play_pause"],
     ha-icon-button[action="media_pause"],
-    ha-icon-button[action="media_stop"],
-    ha-icon-button[action="turn_on"],
-    ha-icon-button[action="turn_off"] {
+    ha-icon-button[action="media_stop"] {
       --ha-icon-button-size: 56px;
       --mdc-icon-size: 40px;
     }
@@ -815,10 +812,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       padding-top: 16px;
     }
 
-    mwc-linear-progress {
+    ha-slider {
+      --track-size: 8px;
       width: 100%;
-      margin-top: 4px;
-      --mdc-linear-progress-buffer-color: rgba(200, 200, 200, 0.5);
+      --ha-slider-track-color: rgba(200, 200, 200, 0.5);
+    }
+
+    ha-slider::part(thumb) {
+      display: none;
     }
 
     .no-image .controls {
@@ -841,8 +842,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     .narrow ha-icon-button[action="media_play"],
     .narrow ha-icon-button[action="media_play_pause"],
-    .narrow ha-icon-button[action="media_pause"],
-    .narrow ha-icon-button[action="turn_on"] {
+    .narrow
+      ha-icon-button[action="media_pause"]
+      .narrow
+      ha-icon-button[action="media_stop"] {
       --ha-icon-button-size: 50px;
       --mdc-icon-size: 36px;
     }

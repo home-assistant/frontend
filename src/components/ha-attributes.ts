@@ -36,7 +36,7 @@ class HaAttributes extends LitElement {
     );
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (
       changedProperties.has("extraFilters") ||
       changedProperties.has("stateObj")
@@ -80,7 +80,6 @@ class HaAttributes extends LitElement {
                       </div>
                       <div class="value">
                         <ha-attribute-value
-                          .hass=${this.hass}
                           .attribute=${attribute}
                           .stateObj=${this.stateObj}
                         ></ha-attribute-value>

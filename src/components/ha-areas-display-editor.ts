@@ -1,10 +1,11 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { getAreaContext } from "../common/entity/context/get_area_context";
-import type { HomeAssistant } from "../types";
+import { areasContext, floorsContext } from "../data/context";
 import "./ha-expansion-panel";
 import "./ha-items-display-editor";
 import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
@@ -17,7 +18,13 @@ export interface AreasDisplayValue {
 
 @customElement("ha-areas-display-editor")
 export class HaAreasDisplayEditor extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @consume({ context: areasContext, subscribe: true })
+  @state()
+  private _areas!: ContextType<typeof areasContext>;
+
+  @consume({ context: floorsContext, subscribe: true })
+  @state()
+  private _floors!: ContextType<typeof floorsContext>;
 
   @property() public label?: string;
 
@@ -35,10 +42,10 @@ export class HaAreasDisplayEditor extends LitElement {
   public showNavigationButton = false;
 
   protected render(): TemplateResult {
-    const areas = Object.values(this.hass.areas);
+    const areas = Object.values(this._areas);
 
     const items: DisplayItem[] = areas.map((area) => {
-      const { floor } = getAreaContext(area, this.hass.floors);
+      const { floor } = getAreaContext(area, this._floors);
       return {
         value: area.area_id,
         label: area.name,
@@ -61,7 +68,6 @@ export class HaAreasDisplayEditor extends LitElement {
       >
         <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
         <ha-items-display-editor
-          .hass=${this.hass}
           .items=${items}
           .value=${value}
           @value-changed=${this._areaDisplayChanged}

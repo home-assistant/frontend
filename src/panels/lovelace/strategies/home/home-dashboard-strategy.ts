@@ -4,23 +4,34 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { LovelaceStrategyEditor } from "../types";
+import type {
+  LovelaceStrategyEditor,
+  LovelaceStrategyDependency,
+} from "../types";
 import {
   getSummaryLabel,
   HOME_SUMMARIES_ICONS,
 } from "./helpers/home-summaries";
 import type { HomeAreaViewStrategyConfig } from "./home-area-view-strategy";
 import type { HomeOtherDevicesViewStrategyConfig } from "./home-other-devices-view-strategy";
+import type { ShortcutItem } from "../../../../data/home_shortcuts";
 import type { HomeOverviewViewStrategyConfig } from "./home-overview-view-strategy";
 
 export interface HomeDashboardStrategyConfig {
   type: "home";
   favorite_entities?: string[];
   home_panel?: boolean;
+  hide_welcome_message?: boolean;
+  hide_suggested_entities?: boolean;
+  shortcuts?: ShortcutItem[];
 }
 
 @customElement("home-dashboard-strategy")
 export class HomeDashboardStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [
+    "areas",
+  ];
+
   static async generate(
     config: HomeDashboardStrategyConfig,
     hass: HomeAssistant
@@ -94,6 +105,9 @@ export class HomeDashboardStrategy extends ReactiveElement {
             type: "home-overview",
             favorite_entities: config.favorite_entities,
             home_panel: config.home_panel,
+            hide_welcome_message: config.hide_welcome_message,
+            hide_suggested_entities: config.hide_suggested_entities,
+            shortcuts: config.shortcuts,
           } satisfies HomeOverviewViewStrategyConfig,
         },
         ...areaViews,

@@ -3,9 +3,11 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export const REMOTE_SUPPORT_LEARN_COMMAND = 1;
-export const REMOTE_SUPPORT_DELETE_COMMAND = 2;
-export const REMOTE_SUPPORT_ACTIVITY = 4;
+export enum RemoteEntityFeature {
+  LEARN_COMMAND = 1,
+  DELETE_COMMAND = 2,
+  ACTIVITY = 4,
+}
 
 export type RemoteEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {

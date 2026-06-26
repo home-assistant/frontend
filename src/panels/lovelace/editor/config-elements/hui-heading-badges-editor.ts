@@ -84,7 +84,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
           `
         : nothing}
       <ha-dropdown @wa-select=${this._addBadge}>
-        <ha-button slot="trigger" appearance="filled" size="small">
+        <ha-button slot="trigger" appearance="filled" size="s">
           <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
           ${this.hass.localize(`ui.panel.lovelace.editor.heading-badges.add`)}
         </ha-button>
@@ -177,7 +177,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
       this.hass.floors
     );
 
-    const isRTL = computeRTL(this.hass);
+    const isRTL = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
 
     const primary = entityName || deviceName || entityId;
     const secondary = [entityName ? deviceName : undefined, areaName]

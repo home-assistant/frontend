@@ -1,5 +1,7 @@
+import { getCollection, type Connection } from "home-assistant-js-websocket";
 import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
+import { supervisorApiWsRequest } from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
 import type { CreateSessionResponse } from "./supervisor";
 
@@ -27,6 +29,25 @@ export const createHassioSession = async (
   >("POST", "hassio/ingress/session");
   return setIngressCookie(restResponse.data.session);
 };
+
+export interface IngressPanelInfo {
+  title: string;
+  icon: string;
+}
+
+export type IngressPanelInfoMap = Record<string, IngressPanelInfo>;
+
+export const getIngressPanelInfoCollection = (conn: Connection) =>
+  getCollection<IngressPanelInfoMap>(
+    conn,
+    "_ingressPanelInfo",
+    async (conn2) => {
+      const result = await supervisorApiWsRequest<{
+        panels: IngressPanelInfoMap;
+      }>(conn2, { endpoint: "/ingress/panels" });
+      return result.panels;
+    }
+  );
 
 export const validateHassioSession = async (
   hass: HomeAssistant,

@@ -6,8 +6,8 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { valueFromParts } from "../../../common/entity/value_parts";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { getNumberFormatOptions } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
 import { UNAVAILABLE } from "../../../data/entity/entity";
@@ -106,11 +106,26 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const valueToDisplay = this._config.attribute
+    let parts;
+    if (this._config.attribute) {
+      parts = this.hass.formatEntityAttributeValueToParts(
+        stateObj,
+        this._config.attribute
+      );
+    } else {
+      parts = this.hass.formatEntityStateToParts(stateObj);
+    }
+    const customUnit = this._config.unit;
+    // Custom unit can't keep a locale position, so append it at the end;
+    // otherwise render natively.
+    const valueToDisplay = customUnit
+      ? valueFromParts(parts)
+      : parts.map((part) => part.value).join("");
+    const value = this._config.attribute
       ? stateObj.attributes[this._config.attribute]
       : stateObj.state;
 
-    if (isNaN(valueToDisplay)) {
+    if (isNaN(value)) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -125,8 +140,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
-    // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
-    // for consistent value display across gauge, entity, entity-row, etc.
     return html`
       <ha-card
         class=${classMap({
@@ -146,18 +159,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${valueToDisplay}
-          .formatOptions=${getNumberFormatOptions(
-            stateObj,
-            this.hass.entities[stateObj.entity_id]
-          )}
+          .value=${value}
+          .valueText=${valueToDisplay}
           .locale=${this.hass!.locale}
-          .label=${this._config!.unit ||
-          this.hass?.states[this._config!.entity].attributes
-            .unit_of_measurement ||
-          ""}
+          .label=${customUnit ?? ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(Number(valueToDisplay)),
+            "--gauge-color": this._computeSeverity(Number(value)),
           })}
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
@@ -167,7 +174,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -277,11 +284,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
-    :host {
-      position: relative;
-      display: block;
-      height: 100%;
-    }
     ha-card {
       height: 100%;
       overflow: hidden;
@@ -303,9 +305,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     .title {
       width: 100%;
-      font-size: var(--ha-font-size-l);
+      font-size: var(--ha-font-size-m);
       line-height: var(--ha-line-height-expanded);
-      padding: 0px 0px var(--ha-space-2) 0px;
       margin: 0;
       text-align: center;
       box-sizing: border-box;
@@ -318,6 +319,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     ha-gauge {
       width: 100%;
+      max-width: 250px;
     }
   `;
 }

@@ -2,26 +2,34 @@ import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { documentationUrl } from "../../../util/documentation-url";
+import { withViewTransition } from "../../../common/util/view-transition";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-code-editor";
-import "../../../components/ha-dialog-header";
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-dialog-header";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
-import "../../../components/ha-textfield";
-import "../../../components/ha-dialog";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/input/ha-input";
+import type { HaInput } from "../../../components/input/ha-input";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { withViewTransition } from "../../../common/util/view-transition";
+import { documentationUrl } from "../../../util/documentation-url";
+
+interface BlueprintImportState {
+  value: string;
+  hasResult: boolean;
+}
 
 @customElement("ha-dialog-import-blueprint")
-class DialogImportBlueprint extends LitElement {
+class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
@@ -42,7 +50,7 @@ class DialogImportBlueprint extends LitElement {
 
   @state() private _sourceUrlWarning = false;
 
-  @query("#input") private _input?: HaTextField;
+  @query("#input") private _input?: HaInput;
 
   public showDialog(params): void {
     this._params = params;
@@ -51,6 +59,10 @@ class DialogImportBlueprint extends LitElement {
     this._sourceUrlWarning = !this._isTrustedBlueprintUrl(this._url);
     this.large = false;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { value: this._url ?? "", hasResult: false }
+    );
   }
 
   public closeDialog(): void {
@@ -73,9 +85,9 @@ class DialogImportBlueprint extends LitElement {
     const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width=${this.large ? "full" : "medium"}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-dialog-header slot="header">
@@ -85,7 +97,9 @@ class DialogImportBlueprint extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title" @click=${this._enlarge}> ${heading} </span>
+          <span slot="title" class="title-enlargeable" @click=${this._enlarge}>
+            ${heading}
+          </span>
         </ha-dialog-header>
         <div>
           ${this._error
@@ -131,14 +145,15 @@ class DialogImportBlueprint extends LitElement {
                       </ul>
                     `
                   : html`
-                      <ha-textfield
+                      <ha-input
                         id="input"
                         .value=${this._result.suggested_filename || ""}
                         .label=${this.hass.localize(
                           "ui.panel.config.blueprint.add.file_name"
                         )}
+                        @input=${this._inputChanged}
                         autofocus
-                      ></ha-textfield>
+                      ></ha-input>
                     `}
                 <ha-expansion-panel
                   .header=${this.hass.localize(
@@ -148,7 +163,6 @@ class DialogImportBlueprint extends LitElement {
                   <ha-code-editor
                     mode="yaml"
                     .value=${this._result.raw_data}
-                    .hass=${this.hass}
                     read-only
                     dir="ltr"
                   ></ha-code-editor>
@@ -174,7 +188,7 @@ class DialogImportBlueprint extends LitElement {
                   )}
                 </p>
                 <ha-button
-                  size="small"
+                  size="s"
                   appearance="plain"
                   href=${documentationUrl(this.hass, "/get-blueprints")}
                   target="_blank"
@@ -185,14 +199,15 @@ class DialogImportBlueprint extends LitElement {
                   )}
                   <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                 </ha-button>
-                <ha-textfield
+                <ha-input
                   id="input"
                   .label=${this.hass.localize(
                     "ui.panel.config.blueprint.add.url"
                   )}
                   .value=${this._url || ""}
+                  @input=${this._inputChanged}
                   autofocus
-                ></ha-textfield>
+                ></ha-input>
               `}
         </div>
         <ha-dialog-footer slot="footer">
@@ -250,6 +265,13 @@ class DialogImportBlueprint extends LitElement {
     });
   }
 
+  private _inputChanged(ev: Event) {
+    this._updateDirtyState({
+      value: (ev.target as HaInput).value ?? "",
+      hasResult: !!this._result,
+    });
+  }
+
   private async _import() {
     this._url = undefined;
     this._importing = true;
@@ -269,6 +291,10 @@ class DialogImportBlueprint extends LitElement {
         !this._isTrustedBlueprintUrl(
           this._result.blueprint.metadata.source_url
         );
+      this._updateDirtyState({
+        value: this._result.suggested_filename || "",
+        hasResult: true,
+      });
     } catch (err: any) {
       this._error = err.message;
     } finally {
@@ -313,6 +339,7 @@ class DialogImportBlueprint extends LitElement {
         this._result!.exists
       );
       this._params.importedCallback();
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
@@ -328,8 +355,7 @@ class DialogImportBlueprint extends LitElement {
         margin-top: 0;
         margin-bottom: var(--ha-space-2);
       }
-      ha-textfield {
-        display: block;
+      ha-input {
         margin-top: var(--ha-space-6);
       }
       ha-alert {
@@ -344,6 +370,9 @@ class DialogImportBlueprint extends LitElement {
       }
       ha-expansion-panel {
         --expansion-panel-content-padding: 0px;
+      }
+      .title-enlargeable {
+        display: block;
       }
     `,
   ];

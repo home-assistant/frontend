@@ -13,6 +13,7 @@ import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
+import type { LogbookNameDetail } from "./logbook-entry-model";
 
 interface LogbookTimePeriod {
   now: Date;
@@ -60,13 +61,16 @@ export class HaLogbook extends LitElement {
 
   @property({ type: Boolean, attribute: "no-icon" }) public noIcon = false;
 
-  @property({ type: Boolean, attribute: "no-name" }) public noName = false;
+  @property({ type: Boolean, attribute: "graph-color" }) public graphColor =
+    false;
 
-  @property({ type: Boolean, attribute: "show-indicator" })
-  public showIndicator = false;
+  @property({ type: Boolean, attribute: "show-cause" }) public showCause =
+    false;
 
-  @property({ type: Boolean, attribute: "relative-time" })
-  public relativeTime = false;
+  // How much naming detail an entity row shows; `none` also hides the name when
+  // the surface already implies the subject.
+  @property({ type: String, attribute: "name-detail" })
+  public nameDetail?: LogbookNameDetail;
 
   @property({ attribute: "show-more-link", type: Boolean })
   public showMoreLink = true;
@@ -93,7 +97,7 @@ export class HaLogbook extends LitElement {
   private _logbookSubscriptionId = 0;
 
   protected render() {
-    if (!isComponentLoaded(this.hass, "logbook")) {
+    if (!isComponentLoaded(this.hass.config, "logbook")) {
       return nothing;
     }
 
@@ -125,9 +129,9 @@ export class HaLogbook extends LitElement {
         .narrow=${this.narrow}
         .virtualize=${this.virtualize}
         .noIcon=${this.noIcon}
-        .noName=${this.noName}
-        .showIndicator=${this.showIndicator}
-        .relativeTime=${this.relativeTime}
+        .graphColor=${this.graphColor}
+        .showCause=${this.showCause}
+        .nameDetail=${this.nameDetail}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
@@ -155,7 +159,7 @@ export class HaLogbook extends LitElement {
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }

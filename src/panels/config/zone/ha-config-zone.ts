@@ -11,7 +11,6 @@ import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -44,7 +43,7 @@ import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
@@ -138,7 +137,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             <div class="empty">
               ${hass.localize("ui.panel.config.zone.no_zones_created_yet")}
               <br />
-              <ha-button size="small" @click=${this._createZone}>
+              <ha-button size="s" @click=${this._createZone}>
                 ${hass.localize("ui.panel.config.zone.create_zone")}</ha-button
               >
             </div>
@@ -235,7 +234,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        .narrow=${this.narrow}
         .route=${this.route}
         .backPath=${this._searchParms.has("historyBack")
           ? undefined
@@ -257,7 +255,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           ? html`
               <div class="flex">
                 <ha-locations-editor
-                  .hass=${this.hass}
                   .locations=${this._getZones(
                     this._storageItems,
                     this._stateItems
@@ -270,19 +267,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
-        <ha-fab
-          slot="fab"
-          .label=${hass.localize("ui.panel.config.zone.create_zone")}
-          extended
-          @click=${this._createZone}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._createZone}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${hass.localize("ui.panel.config.zone.create_zone")}
+        </ha-button>
       </hass-tabs-subpage>
     `;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._canEditCore =
       Boolean(this.hass.user?.is_admin) &&
@@ -311,7 +304,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._zoomZone(id);
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
@@ -438,6 +431,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _editZone(id: string) {
     await this.updateComplete;
+    // eslint-disable-next-line lit/prefer-query-decorators
     (this.shadowRoot?.querySelector(`[id="${id}"]`) as HTMLElement)?.click();
   }
 

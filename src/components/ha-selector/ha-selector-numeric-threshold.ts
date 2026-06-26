@@ -70,14 +70,14 @@ export class HaNumericThresholdSelector extends LitElement {
     return this.selector.numeric_threshold?.mode ?? "crossed";
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("value") || changedProperties.has("selector")) {
       const mode = this._getMode();
       this._type = this.value?.type || DEFAULT_TYPE[mode];
     }
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (
       (changedProperties.has("value") || changedProperties.has("selector")) &&
@@ -287,7 +287,9 @@ export class HaNumericThresholdSelector extends LitElement {
     const numberSelector = {
       number: {
         ...this.selector.numeric_threshold?.number,
-        ...(effectiveUnit ? { unit_of_measurement: effectiveUnit } : {}),
+        ...(!showUnit && effectiveUnit
+          ? { unit_of_measurement: effectiveUnit }
+          : {}),
       },
     };
     const entitySelector = {
@@ -305,7 +307,7 @@ export class HaNumericThresholdSelector extends LitElement {
               >`
             : nothing}
           <ha-button-toggle-group
-            size="small"
+            size="s"
             .buttons=${choiceToggleButtons}
             .active=${activeChoice}
             .disabled=${this.disabled}

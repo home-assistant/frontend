@@ -1,64 +1,75 @@
-import { consume } from "@lit/context";
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import { consume, type ContextType } from "@lit/context";
 import {
   mdiAlert,
   mdiAlertOctagon,
   mdiCodeBraces,
   mdiFormatListBulleted,
+  mdiMenuDown,
   mdiShape,
 } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { until } from "lit/directives/until";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { isTemplate } from "../../../../common/string/has-template";
+import "../../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
+import { showTargetDetailsDialog } from "../../../../components/target-picker/dialog/show-dialog-target-details";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
-  areasContext,
+  apiContext,
   configEntriesContext,
-  devicesContext,
-  floorsContext,
+  internationalizationContext,
   labelsContext,
-  localizeContext,
+  registriesContext,
   statesContext,
 } from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
-import type { HomeAssistant } from "../../../../types";
+import {
+  deviceMeetsTargetSelector,
+  entityMeetsTargetSelector,
+  type TargetSelector,
+} from "../../../../data/selector";
+import { extractFromTarget, type TargetType } from "../../../../data/target";
+import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
 @customElement("ha-automation-row-targets")
 export class HaAutomationRowTargets extends LitElement {
   @property({ attribute: false })
-  public hass!: HomeAssistant;
-
-  @property({ attribute: false })
   public target?: HassServiceTarget;
 
   @property({ attribute: false })
   public targetRequired = false;
 
-  @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: HomeAssistant["localize"];
+  @property({ attribute: false })
+  public selector?: TargetSelector;
+
+  @property({ type: Boolean })
+  public interactive = false;
 
   @state()
-  @consume({ context: floorsContext, subscribe: true })
-  private floors!: HomeAssistant["floors"];
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
-  @consume({ context: areasContext, subscribe: true })
-  private areas!: HomeAssistant["areas"];
-
-  @state()
-  @consume({ context: devicesContext, subscribe: true })
-  private devices!: HomeAssistant["devices"];
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private states!: HomeAssistant["states"];
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
@@ -75,6 +86,125 @@ export class HaAutomationRowTargets extends LitElement {
   })
   private _configEntryLookup?: Record<string, ConfigEntry>;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  private _countCache = new Map<
+    string,
+    Promise<number | undefined> | number | undefined
+  >();
+
+  private _rerenderCount = true;
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (
+      changedProps.has("target") ||
+      changedProps.has("selector") ||
+      changedProps.has("_registries")
+    ) {
+      this._rerenderCount = true;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    this._rerenderCount = false;
+  }
+
+  private _countMatchingEntities(referencedEntities: string[]): number {
+    const targetSelector = this.selector;
+    const hasEntityFilter = !!targetSelector?.target?.entity;
+    const hasDeviceFilter = !!targetSelector?.target?.device;
+
+    if (!hasEntityFilter && !hasDeviceFilter) {
+      return referencedEntities.length;
+    }
+
+    const entityRegistry = hasDeviceFilter
+      ? Object.values(this._registries.entities)
+      : [];
+
+    return referencedEntities.filter((entityId) => {
+      if (hasEntityFilter) {
+        const stateObj = this._states[entityId];
+        if (!entityMeetsTargetSelector(stateObj, targetSelector!)) {
+          return false;
+        }
+      }
+      if (hasDeviceFilter) {
+        const deviceId = this._registries.entities[entityId]?.device_id;
+        if (deviceId) {
+          const device = this._registries.devices[deviceId];
+          if (
+            device &&
+            !deviceMeetsTargetSelector(
+              this._states,
+              entityRegistry,
+              device,
+              targetSelector!
+            )
+          ) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }).length;
+  }
+
+  private _renderCount(
+    targetType: "floor" | "area" | "device" | "label",
+    targetId: string
+  ) {
+    const key = `${targetType}:${targetId}`;
+    let fallback = " (-)";
+    if (!this._countCache.has(key) || this._rerenderCount) {
+      if (typeof this._countCache.get(key) === "number") {
+        fallback = ` (${this._countCache.get(key)})`;
+      }
+      this._countCache.set(
+        key,
+        extractFromTarget(
+          this._api.callWS,
+          {
+            [`${targetType}_id`]: [targetId],
+          },
+          false,
+          this.selector?.target?.primary_entities_only
+        )
+          .then((result) =>
+            this._countMatchingEntities(result.referenced_entities)
+          )
+          .catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error("Error counting target entities", err);
+            return undefined;
+          })
+      );
+    }
+
+    if (this._countCache.get(key) instanceof Promise) {
+      return until(
+        (this._countCache.get(key) as Promise<number | undefined>)!.then(
+          (count) => {
+            this._countCache.set(key, count);
+            return count === undefined ? nothing : html` (${count})`;
+          }
+        ),
+        fallback
+      );
+    }
+
+    if (typeof this._countCache.get(key) === "number") {
+      return ` (${this._countCache.get(key)})`;
+    }
+    return nothing;
+  }
+
   protected render() {
     const length = Object.keys(this.target || {}).length;
     if (!length) {
@@ -82,7 +212,7 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
           ? html`<ha-svg-icon .path=${mdiAlertOctagon}></ha-svg-icon>`
           : nothing,
-        this.localize(
+        this._i18n.localize(
           "ui.panel.config.automation.editor.target_summary.no_target"
         ),
         false,
@@ -121,17 +251,68 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    return html`<span class="target">
-      <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
-      <div class="label">
-        ${this.localize(
-          "ui.panel.config.automation.editor.target_summary.targets",
-          {
-            count: totalLength,
-          }
-        )}
-      </div>
-    </span>`;
+    const rows = Object.entries(this.target!)
+      .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
+        (acc, [targetType, targetId]) => {
+          const type = targetType.replace("_id", "") as
+            | "floor"
+            | "area"
+            | "device"
+            | "entity"
+            | "label";
+          return [
+            ...acc,
+            ...ensureArray(targetId).map((id): [typeof type, string] => [
+              type,
+              id,
+            ]),
+          ];
+        },
+        []
+      )
+      .sort(([typeA], [typeB]) => {
+        const order = ["entity", "device", "area", "floor", "label"];
+        return order.indexOf(typeA) - order.indexOf(typeB);
+      });
+
+    let lastTargetType: string | null = null;
+
+    return html`
+      <ha-dropdown
+        @wa-select=${this._handleTargetSelect}
+        @click=${stopPropagation}
+        @keydown=${stopPropagation}
+      >
+        <button slot="trigger" class="target">
+          <ha-svg-icon .path=${mdiFormatListBulleted}></ha-svg-icon>
+          <div class="label">
+            ${this._i18n.localize(
+              "ui.panel.config.automation.editor.target_summary.targets",
+              {
+                count: totalLength,
+              }
+            )}
+          </div>
+          <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
+        </button>
+        ${rows.map(([targetType, targetId]) => {
+          const content = html`${lastTargetType !== null &&
+          lastTargetType !== targetType
+            ? html`<wa-divider></wa-divider>`
+            : nothing}
+          ${!lastTargetType || lastTargetType !== targetType
+            ? html`<h3>
+                ${this._i18n.localize(
+                  `ui.panel.config.automation.editor.target_summary.types.${targetType}`
+                )}
+              </h3>`
+            : nothing}
+          ${this._renderTarget(targetType, targetId, true)}`;
+          lastTargetType = targetType;
+          return content;
+        })}
+      </ha-dropdown>
+    `;
   }
 
   private _getLabel = (id: string) =>
@@ -142,16 +323,16 @@ export class HaAutomationRowTargets extends LitElement {
     targetId: string
   ): boolean {
     if (targetType === "floor") {
-      return !!this.floors[targetId];
+      return !!this._registries.floors[targetId];
     }
     if (targetType === "area") {
-      return !!this.areas[targetId];
+      return !!this._registries.areas[targetId];
     }
     if (targetType === "device") {
-      return !!this.devices[targetId];
+      return !!this._registries.devices[targetId];
     }
     if (targetType === "entity") {
-      return !!this.states[targetId];
+      return !!this._states[targetId];
     }
     if (targetType === "label") {
       return !!this._getLabel(targetId);
@@ -163,56 +344,197 @@ export class HaAutomationRowTargets extends LitElement {
     icon: TemplateResult | typeof nothing,
     label: string,
     warning = false,
-    error = false
+    error = false,
+    targetId?: string,
+    targetType?: string,
+    countTemplate: unknown = nothing
   ) {
-    return html`<div class=${classMap({ target: true, warning, error })}>
+    if (!this.interactive || !targetId || !targetType) {
+      return html`<div
+        class=${classMap({
+          target: true,
+          warning,
+          error,
+        })}
+        .targetId=${targetId}
+        .targetType=${targetType}
+        .label=${label}
+      >
+        ${icon}
+        <div class="label">${label}${countTemplate}</div>
+      </div>`;
+    }
+
+    return html`<button
+      class=${classMap({
+        target: true,
+        warning,
+        error,
+      })}
+      .targetId=${targetId}
+      .targetType=${targetType}
+      .label=${label}
+      @click=${this._handleTargetClick}
+      @keydown=${this._handleTargetKeydown}
+    >
       ${icon}
-      <div class="label">${label}</div>
-    </div>`;
+      <div class="label">${label}${countTemplate}</div>
+    </button>`;
   }
 
   private _renderTarget(
     targetType: "floor" | "area" | "device" | "entity" | "label",
-    targetId: string
+    targetId: string,
+    dropdownOption = false
   ) {
+    let icon: string | undefined;
+    let label: string;
+    let warning = false;
+    let badgeTargetId: string | undefined = targetId;
+    let badgeTargetType: string | undefined = targetType;
+    let countTemplate: unknown = nothing;
+
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
-      return this._renderTargetBadge(
-        html`<ha-svg-icon .path=${mdiShape}></ha-svg-icon>`,
-        this.localize(
-          `ui.panel.config.automation.editor.target_summary.${targetId as "all" | "none"}_entities`
-        )
+      icon = mdiShape;
+      label = this._i18n.localize(
+        `ui.panel.config.automation.editor.target_summary.${targetId as "all" | "none"}_entities`
       );
+      badgeTargetId = undefined;
+      badgeTargetType = undefined;
+    } else if (isTemplate(targetId)) {
+      // Check if the target is a template
+      icon = mdiCodeBraces;
+      label = this._i18n.localize(
+        "ui.panel.config.automation.editor.target_summary.template"
+      );
+      badgeTargetId = undefined;
+      badgeTargetType = undefined;
+    } else {
+      const exists = this._checkTargetExists(targetType, targetId);
+      if (!exists) {
+        icon = mdiAlert;
+        label = getTargetText(
+          this._registries,
+          this._states,
+          this._i18n.localize,
+          targetType,
+          targetId,
+          this._getLabel
+        );
+        warning = true;
+        badgeTargetId = undefined;
+        badgeTargetType = undefined;
+      } else {
+        label = getTargetText(
+          this._registries,
+          this._states,
+          this._i18n.localize,
+          targetType,
+          targetId,
+          this._getLabel
+        );
+        if (targetType !== "entity" && this.interactive) {
+          countTemplate = this._renderCount(targetType, targetId);
+        }
+      }
     }
 
-    // Check if the target is a template
-    if (isTemplate(targetId)) {
-      return this._renderTargetBadge(
-        html`<ha-svg-icon .path=${mdiCodeBraces}></ha-svg-icon>`,
-        this.localize(
-          "ui.panel.config.automation.editor.target_summary.template"
-        )
-      );
-    }
+    const iconTemplate = icon
+      ? html`<ha-svg-icon
+          .slot=${dropdownOption ? "icon" : ""}
+          .path=${icon}
+        ></ha-svg-icon>`
+      : getTargetIcon(
+          this._registries,
+          this._states,
+          targetType,
+          targetId,
+          this._configEntryLookup || {},
+          this._getLabel,
+          dropdownOption ? "icon" : ""
+        );
 
-    const exists = this._checkTargetExists(targetType, targetId);
-    if (!exists) {
-      return this._renderTargetBadge(
-        html`<ha-svg-icon .path=${mdiAlert}></ha-svg-icon>`,
-        getTargetText(this.hass, targetType, targetId, this._getLabel),
-        true
-      );
+    if (dropdownOption) {
+      return html`<ha-dropdown-item
+        .value=${{
+          targetId: badgeTargetId,
+          targetType: badgeTargetType,
+          label,
+        }}
+        class=${classMap({
+          warning,
+        })}
+        >${iconTemplate} ${label}${countTemplate}</ha-dropdown-item
+      >`;
     }
 
     return this._renderTargetBadge(
-      getTargetIcon(
-        this.hass,
-        targetType,
-        targetId,
-        this._configEntryLookup || {},
-        this._getLabel
-      ),
-      getTargetText(this.hass, targetType, targetId, this._getLabel)
+      iconTemplate,
+      label,
+      warning,
+      false,
+      badgeTargetId,
+      badgeTargetType,
+      countTemplate
     );
+  }
+
+  private _handleTargetClick(ev: Event) {
+    const target = ev.currentTarget as HTMLDivElement & {
+      targetId: string;
+      targetType: TargetType;
+      label: string;
+    };
+
+    if (!target.targetId || !target.targetType) {
+      return;
+    }
+
+    this._showTargetInfo(target.targetId, target.targetType, target.label, ev);
+  }
+
+  private _handleTargetKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleTargetClick(ev);
+    }
+  }
+
+  private _handleTargetSelect(
+    ev: HaDropdownSelectEvent<{
+      targetId?: string;
+      targetType?: TargetType;
+      label: string;
+    }>
+  ) {
+    const value = ev.detail.item.value;
+
+    if (!value.targetId || !value.targetType) {
+      return;
+    }
+
+    this._showTargetInfo(value.targetId, value.targetType, value.label);
+  }
+
+  private _showTargetInfo(
+    targetId: string,
+    targetType: TargetType,
+    label: string,
+    ev?: Event
+  ) {
+    ev?.stopPropagation();
+
+    if (targetType === "entity") {
+      showMoreInfoDialog(this, { entityId: targetId });
+      return;
+    }
+
+    showTargetDetailsDialog(this, {
+      title: label,
+      type: targetType,
+      itemId: targetId,
+      selector: this.selector,
+    });
   }
 
   static styles = css`
@@ -224,6 +546,7 @@ export class HaAutomationRowTargets extends LitElement {
       display: inline-flex;
       align-items: flex-end;
       gap: var(--ha-space-1);
+      max-width: 100%;
     }
     .target {
       display: inline-flex;
@@ -264,6 +587,25 @@ export class HaAutomationRowTargets extends LitElement {
       display: flex;
       height: 32px;
       align-items: center;
+    }
+
+    button.target {
+      cursor: pointer;
+    }
+    button.target:hover {
+      background: var(--ha-color-fill-neutral-normal-hover);
+    }
+
+    ha-dropdown-item {
+      padding: 0 var(--ha-space-2);
+    }
+    ha-dropdown-item.warning {
+      background-color: var(--ha-color-fill-warning-quiet-resting);
+      color: var(--ha-color-on-warning-normal);
+    }
+    ha-dropdown-item.warning:hover {
+      background-color: var(--ha-color-fill-warning-quiet-hover);
+      color: var(--ha-color-on-warning-normal);
     }
   `;
 }

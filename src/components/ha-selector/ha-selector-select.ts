@@ -1,13 +1,20 @@
 import { mdiDragHorizontalVariant } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "@lit/context";
 import { ensureArray } from "../../common/array/ensure-array";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { internationalizationContext } from "../../data/context";
 import type { SelectOption, SelectSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { FrontendLocaleData } from "../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+} from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
@@ -15,14 +22,22 @@ import "../ha-dropdown-item";
 import "../ha-formfield";
 import "../ha-generic-picker";
 import "../ha-input-helper-text";
-import "../ha-radio";
 import "../ha-select";
 import "../ha-select-box";
 import "../ha-sortable";
+import "../radio/ha-radio-group";
+import "../radio/ha-radio-option";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
 
   @property({ attribute: false }) public selector!: SelectSelector;
 
@@ -74,11 +89,7 @@ export class HaSelectSelector extends LitElement {
 
     if (this.selector.select?.sort) {
       options.sort((a, b) =>
-        caseInsensitiveStringCompare(
-          a.label,
-          b.label,
-          this.hass.locale.language
-        )
+        caseInsensitiveStringCompare(a.label, b.label, this._locale.language)
       );
     }
 
@@ -95,7 +106,6 @@ export class HaSelectSelector extends LitElement {
           .value=${this.value as string | undefined}
           @value-changed=${this._selectChanged}
           .maxColumns=${this.selector.select?.box_max_columns}
-          .hass=${this.hass}
         ></ha-select-box>
         ${this._renderHelper()}
       `;
@@ -108,24 +118,23 @@ export class HaSelectSelector extends LitElement {
     ) {
       if (!this.selector.select?.multiple) {
         return html`
-          <div>
-            ${this.label}
+          <ha-radio-group
+            .label=${this.label}
+            .disabled=${this.disabled}
+            .value=${this.value}
+            @change=${this._radioChanged}
+          >
             ${options.map(
               (item: SelectOption) => html`
-                <ha-formfield
-                  .label=${item.label}
-                  .disabled=${item.disabled || this.disabled}
+                <ha-radio-option
+                  .value=${item.value}
+                  .disabled=${!!item.disabled}
                 >
-                  <ha-radio
-                    .checked=${item.value === this.value}
-                    .value=${item.value}
-                    .disabled=${item.disabled || this.disabled}
-                    @change=${this._radioChanged}
-                  ></ha-radio>
-                </ha-formfield>
+                  ${item.label}
+                </ha-radio-option>
               `
             )}
-          </div>
+          </ha-radio-group>
           ${this._renderHelper()}
         `;
       }
@@ -136,14 +145,14 @@ export class HaSelectSelector extends LitElement {
           ${this.label}
           ${options.map(
             (item: SelectOption) => html`
-              <ha-formfield .label=${item.label}>
-                <ha-checkbox
-                  .checked=${value.includes(item.value)}
-                  .value=${item.value}
-                  .disabled=${item.disabled || this.disabled}
-                  @change=${this._checkboxChanged}
-                ></ha-checkbox>
-              </ha-formfield>
+              <ha-checkbox
+                .checked=${value.includes(item.value)}
+                .value=${item.value}
+                .disabled=${item.disabled || this.disabled}
+                @change=${this._checkboxChanged}
+              >
+                ${item.label}
+              </ha-checkbox>
             `
           )}
         </div>
@@ -199,6 +208,7 @@ export class HaSelectSelector extends LitElement {
           : nothing}
 
         <ha-generic-picker
+          no-sort
           .hass=${this.hass}
           .helper=${this.helper}
           .disabled=${this.disabled}
@@ -215,6 +225,7 @@ export class HaSelectSelector extends LitElement {
     if (this.selector.select?.custom_value) {
       return html`
         <ha-generic-picker
+          no-sort
           .hass=${this.hass}
           .label=${this.label}
           .helper=${this.helper}
@@ -231,7 +242,9 @@ export class HaSelectSelector extends LitElement {
     return html`
       <ha-select
         .label=${this.label ?? ""}
-        .value=${typeof this.value === "string" ? this.value : ""}
+        .value=${["string", "number"].includes(typeof this.value)
+          ? (this.value as string | number)
+          : ""}
         .helper=${this.helper ?? ""}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -256,7 +269,7 @@ export class HaSelectSelector extends LitElement {
       selector.select?.options?.map((option) =>
         typeof option === "object"
           ? (option as SelectOption)
-          : ({ value: option, label: option } as SelectOption)
+          : ({ value: String(option), label: option } as SelectOption)
       ) || []
   );
 
@@ -300,7 +313,7 @@ export class HaSelectSelector extends LitElement {
   }
 
   private _valueChanged(ev) {
-    const value = ev.detail?.value || ev.target.value;
+    const value = ev.detail?.value ?? ev.target.value;
     if (this.disabled || value === undefined || value === (this.value ?? "")) {
       return;
     }
@@ -382,6 +395,12 @@ export class HaSelectSelector extends LitElement {
     ha-select,
     ha-formfield {
       display: block;
+    }
+
+    ha-checkbox {
+      display: flex;
+      min-height: 40px;
+      justify-content: center;
     }
     ha-dropdown-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);

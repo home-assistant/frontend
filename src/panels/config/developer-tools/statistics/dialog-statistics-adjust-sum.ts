@@ -26,6 +26,7 @@ import type {
   NumberSelector,
 } from "../../../../data/selector";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
@@ -36,8 +37,14 @@ interface CombinedStat {
   fiveMin: StatisticValue[];
 }
 
+interface AdjustState {
+  amount: number | undefined;
+}
+
 @customElement("dialog-statistics-adjust-sum")
-export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
+export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProviderMixin<AdjustState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: DialogStatisticsAdjustSumParams;
@@ -62,10 +69,15 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     datetime: {},
   };
 
+  private _precision = 2;
+
   private _amountSelector = memoizeOne(
-    (unit_of_measurement: string | undefined): NumberSelector => ({
+    (
+      unit_of_measurement: string | undefined,
+      precision: number
+    ): NumberSelector => ({
       number: {
-        step: 0.01,
+        step: 10 ** -precision,
         unit_of_measurement,
         mode: "box",
       },
@@ -81,6 +93,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     now.setMinutes(now.getMinutes() - (now.getMinutes() % 5), 0);
     this._moment = formatISO9075(now);
     this._fetchStats();
+
+    const entry = this.hass.entities[params.statistic.statistic_id];
+    this._precision = Math.max(entry?.display_precision ?? 0, 2);
   }
 
   public closeDialog(): void {
@@ -137,7 +152,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         >
         <ha-button
           slot="primaryAction"
-          .disabled=${this._busy}
+          .disabled=${this._busy || !this.isDirtyState}
           @click=${this._fixIssue}
         >
           ${this.hass.localize(
@@ -149,11 +164,11 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
         )}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${content}
@@ -162,7 +177,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }
@@ -192,7 +207,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       );
       const rows: TemplateResult[] = [];
       for (const stat of data) {
-        const growth = Math.round(stat.change! * 100) / 100;
+        const multiple = 10 ** this._precision;
+        const growth = Math.round(stat.change! * multiple) / multiple;
         rows.push(html`
           <ha-list-item
             twoline
@@ -244,15 +260,18 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   private _clearChosenStatistic() {
     this._chosenStat = undefined;
+    this._initDirtyTracking({ type: "deep" }, { amount: undefined });
   }
 
   private _setChosenStatistic(ev) {
     const stat = ev.currentTarget.stat;
-    const growth = Math.round(stat.change! * 100) / 100;
+    const multiple = 10 ** this._precision;
+    const growth = Math.round(stat.change! * multiple) / multiple;
 
     this._chosenStat = stat;
     this._origAmount = growth;
     this._amount = growth;
+    this._initDirtyTracking({ type: "deep" }, { amount: this._origAmount });
   }
 
   private _dateTimeSelectorChanged(ev) {
@@ -311,7 +330,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
         .hass=${this.hass}
-        .selector=${this._amountSelector(unit || undefined)}
+        .selector=${this._amountSelector(unit || undefined, this._precision)}
         .value=${this._amount}
         .disabled=${this._busy}
         @value-changed=${this._amountChanged}
@@ -321,6 +340,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
 
   private _amountChanged(ev) {
     this._amount = ev.detail.value;
+    this._updateDirtyState({ amount: this._amount });
   }
 
   private async _fetchStats(): Promise<void> {
@@ -449,10 +469,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
       }
     };
 
-    // If an hour has no five minute data, add the hour value
+    // If an hour has incomplete five minute data, add the hour value
     // Otherwise, add the 5 minute values and ignore the hour value
     combinedStatsData.forEach((c) => {
-      if (c.fiveMin.length === 0 && c.hour) {
+      if (c.fiveMin.length !== 12 && c.hour) {
         addOutlier(c.hour);
       } else {
         c.fiveMin.forEach((s) => {
@@ -497,6 +517,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

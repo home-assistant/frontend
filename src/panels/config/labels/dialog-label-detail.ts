@@ -10,20 +10,28 @@ import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import "../../../components/ha-textarea";
-import "../../../components/ha-textfield";
-import { localizeContext } from "../../../data/context";
+import "../../../components/input/ha-input";
+import { internationalizationContext } from "../../../data/context";
 import type { LabelRegistryEntryMutableParams } from "../../../data/label/label_registry";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { LabelDetailDialogParams } from "./show-dialog-label-detail";
 
+interface LabelFormState {
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+}
+
 @customElement("dialog-label-detail")
-class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
-  LitElement
+class DialogLabelDetail extends DirtyStateProviderMixin<LabelFormState>()(
+  DialogMixin<LabelDetailDialogParams>(LitElement)
 ) {
   @state()
-  @consume({ context: localizeContext, subscribe: true })
-  private localize!: ContextType<typeof localizeContext>;
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _name!: string;
 
@@ -50,6 +58,16 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
       this._color = "";
       this._description = "";
     }
+    this._initDirtyTracking({ type: "deep" }, this._currentState());
+  }
+
+  private _currentState(): LabelFormState {
+    return {
+      name: this._name,
+      icon: this._icon,
+      color: this._color,
+      description: this._description,
+    };
   }
 
   protected render() {
@@ -62,42 +80,44 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
         open
         header-title=${this.params.entry
           ? this.params.entry.name || this.params.entry.label_id
-          : this.localize("ui.dialogs.label-detail.new_label")}
-        prevent-scrim-close
+          : this._i18n.localize("ui.dialogs.label-detail.new_label")}
+        .preventScrimClose=${this.isDirtyState}
       >
         <div>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : ""}
           <div class="form">
-            <ha-textfield
+            <ha-input
               autofocus
               .value=${this._name}
               .configValue=${"name"}
               @input=${this._input}
-              .label=${this.localize("ui.dialogs.label-detail.name")}
-              .validationMessage=${this.localize(
+              .label=${this._i18n.localize("ui.dialogs.label-detail.name")}
+              .validationMessage=${this._i18n.localize(
                 "ui.dialogs.label-detail.required_error_msg"
               )}
               required
-            ></ha-textfield>
+            ></ha-input>
             <ha-icon-picker
               .value=${this._icon}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
-              .label=${this.localize("ui.dialogs.label-detail.icon")}
+              .label=${this._i18n.localize("ui.dialogs.label-detail.icon")}
             ></ha-icon-picker>
             <ha-color-picker
               .value=${this._color}
               .configValue=${"color"}
               @value-changed=${this._valueChanged}
-              .label=${this.localize("ui.dialogs.label-detail.color")}
+              .label=${this._i18n.localize("ui.dialogs.label-detail.color")}
             ></ha-color-picker>
             <ha-textarea
               .value=${this._description}
               .configValue=${"description"}
               @input=${this._input}
-              .label=${this.localize("ui.dialogs.label-detail.description")}
+              .label=${this._i18n.localize(
+                "ui.dialogs.label-detail.description"
+              )}
             ></ha-textarea>
           </div>
         </div>
@@ -112,7 +132,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
                   @click=${this._deleteEntry}
                   .disabled=${this._submitting}
                 >
-                  ${this.localize("ui.common.delete")}
+                  ${this._i18n.localize("ui.common.delete")}
                 </ha-button>
               `
             : html`
@@ -121,29 +141,32 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
                   slot="secondaryAction"
                   @click=${this.closeDialog}
                 >
-                  ${this.localize("ui.common.cancel")}
+                  ${this._i18n.localize("ui.common.cancel")}
                 </ha-button>
               `}
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting || !this._name}
+            .disabled=${this._submitting ||
+            !this._name ||
+            (!!this.params.entry && !this.isDirtyState)}
           >
             ${this.params.entry
-              ? this.localize("ui.common.update")
-              : this.localize("ui.common.create")}
+              ? this._i18n.localize("ui.common.update")
+              : this._i18n.localize("ui.common.create")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private _input(ev: Event) {
-    const target = ev.target as any;
-    const configValue = target.configValue;
+  private _input(ev: InputEvent) {
+    const target = ev.target as HTMLInputElement;
+    const configValue = (target as any).configValue;
 
     this._error = undefined;
     this[`_${configValue}`] = target.value;
+    this._updateDirtyState(this._currentState());
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -152,6 +175,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
 
     this._error = undefined;
     this[`_${configValue}`] = ev.detail.value || "";
+    this._updateDirtyState(this._currentState());
   }
 
   private async _updateEntry() {
@@ -168,6 +192,7 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
       } else {
         await this.params!.createEntry!(values);
       }
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
@@ -195,14 +220,13 @@ class DialogLabelDetail extends DialogMixin<LabelDetailDialogParams>(
           color: var(--primary-color);
         }
         ha-textarea,
-        ha-textfield,
         ha-icon-picker,
         ha-color-picker {
           display: block;
+          margin-bottom: var(--ha-space-5);
         }
-        ha-color-picker,
-        ha-textarea {
-          margin-top: 16px;
+        ha-input {
+          --ha-input-padding-bottom: 0;
         }
       `,
     ];

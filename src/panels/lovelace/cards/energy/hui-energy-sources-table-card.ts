@@ -1,8 +1,6 @@
-// @ts-ignore
-import dataTableStyles from "@material/data-table/dist/mdc.data-table.min.css";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, unsafeCSS, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -88,7 +86,7 @@ export class HuiEnergySourcesTableCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -107,7 +105,8 @@ export class HuiEnergySourcesTableCard
     cost: number | null,
     compareCost: number | null,
     showCosts: boolean,
-    compare: boolean
+    compare: boolean,
+    name?: string
   ) {
     return html`<tr
       class="mdc-data-table__row ${classMap({
@@ -140,11 +139,8 @@ export class HuiEnergySourcesTableCard
         ></div>
       </td>
       <th class="mdc-data-table__cell" scope="row">
-        ${getStatisticLabel(
-          this.hass,
-          statId,
-          this._data?.statsMetadata[statId]
-        )}
+        ${name ||
+        getStatisticLabel(this.hass, statId, this._data?.statsMetadata[statId])}
       </th>
       ${compare
         ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
@@ -415,7 +411,8 @@ export class HuiEnergySourcesTableCard
           cost_stat ? cost : null,
           cost_stat ? costCompare : null,
           showCosts,
-          compare
+          compare,
+          source.name
         );
       })}
       ${types[type]
@@ -552,7 +549,13 @@ export class HuiEnergySourcesTableCard
                   null,
                   null,
                   showCosts,
-                  compare
+                  compare,
+                  source.name
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+                        { name: source.name }
+                      )
+                    : ""
                 )}${this._renderRow(
                   computedStyles,
                   "battery_in",
@@ -564,7 +567,13 @@ export class HuiEnergySourcesTableCard
                   null,
                   null,
                   showCosts,
-                  compare
+                  compare,
+                  source.name
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+                        { name: source.name }
+                      )
+                    : ""
                 )}`;
               })}
               ${types.battery
@@ -631,6 +640,15 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
+                  const name = !source.name
+                    ? ""
+                    : source.stat_energy_to
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_imported",
+                          { name: source.name }
+                        )
+                      : source.name;
+
                   return this._renderRow(
                     computedStyles,
                     "grid_consumption",
@@ -642,7 +660,8 @@ export class HuiEnergySourcesTableCard
                     cost,
                     costCompare,
                     showCosts,
-                    compare
+                    compare,
+                    name
                   );
                 })();
 
@@ -671,6 +690,15 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
+                  const name = !source.name
+                    ? ""
+                    : source.stat_energy_from
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+                          { name: source.name }
+                        )
+                      : source.name;
+
                   return this._renderRow(
                     computedStyles,
                     "grid_return",
@@ -682,7 +710,8 @@ export class HuiEnergySourcesTableCard
                     -cost,
                     -costCompare,
                     showCosts,
-                    compare
+                    compare,
+                    name
                   );
                 })();
 
@@ -757,63 +786,120 @@ export class HuiEnergySourcesTableCard
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ${unsafeCSS(dataTableStyles)}
-      .mdc-data-table {
-        width: 100%;
-        border: 0;
-      }
-      .mdc-data-table__header-cell,
-      .mdc-data-table__cell {
-        color: var(--primary-text-color);
-        border-bottom-color: var(--divider-color);
-        text-align: var(--float-start);
-      }
-      .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
-        background-color: rgba(var(--rgb-primary-text-color), 0.04);
-      }
-      .clickable {
-        cursor: pointer;
-      }
-      .total {
-        --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
-      }
-      .total .mdc-data-table__cell {
-        border-top: 1px solid var(--divider-color);
-      }
-      ha-card {
-        max-height: 100%;
-        overflow: auto;
-      }
-      .card-header {
-        padding-bottom: 0;
-      }
-      .content {
-        padding: 16px;
-      }
-      .has-header {
-        padding-top: 0;
-      }
-      .cell-bullet {
-        width: 32px;
-        padding-right: 0;
-        padding-inline-end: 0;
-        padding-inline-start: 16px;
-        direction: var(--direction);
-      }
-      .bullet {
-        border-width: 1px;
-        border-style: solid;
-        border-radius: var(--ha-border-radius-sm);
-        height: 16px;
-        width: 32px;
-      }
-      .mdc-data-table__cell--numeric {
-        direction: ltr;
-      }
-    `;
-  }
+  static styles: CSSResultGroup = css`
+    .mdc-data-table__content,
+    .mdc-data-table__cell {
+      font-family: var(--ha-font-family-body);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-normal);
+      font-weight: var(--ha-font-weight-normal);
+      letter-spacing: 0.0178571429em;
+      text-decoration: inherit;
+      text-transform: inherit;
+    }
+    .mdc-data-table {
+      background-color: var(--card-background-color);
+      border-radius: var(--ha-border-radius-sm);
+      border: 0;
+      box-sizing: border-box;
+      display: inline-flex;
+      flex-direction: column;
+      position: relative;
+      width: 100%;
+    }
+    .mdc-data-table__table-container {
+      -webkit-overflow-scrolling: touch;
+      overflow-x: auto;
+      width: 100%;
+    }
+    .mdc-data-table__table {
+      min-width: 100%;
+      border: 0;
+      border-spacing: 0;
+      table-layout: fixed;
+      white-space: nowrap;
+    }
+    .mdc-data-table__header-row {
+      height: 56px;
+    }
+    .mdc-data-table__row {
+      background-color: inherit;
+      height: 52px;
+    }
+    .mdc-data-table__header-cell,
+    .mdc-data-table__cell {
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+      box-sizing: border-box;
+      color: var(--primary-text-color);
+      border-bottom-color: var(--divider-color);
+      overflow: hidden;
+      padding: 0 16px;
+      text-align: var(--float-start);
+      text-overflow: ellipsis;
+    }
+    .mdc-data-table__header-cell {
+      background-color: var(--card-background-color);
+      font-family: var(--ha-font-family-body);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-normal);
+      font-weight: var(--ha-font-weight-medium);
+      letter-spacing: 0.0071428571em;
+      text-decoration: inherit;
+      text-transform: inherit;
+    }
+    .mdc-data-table__row:last-child .mdc-data-table__cell {
+      border-bottom: none;
+    }
+    .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+      background-color: rgba(var(--rgb-primary-text-color), 0.04);
+    }
+    .clickable {
+      cursor: pointer;
+    }
+    .total .mdc-data-table__cell {
+      border-top: 1px solid var(--divider-color);
+      font-weight: var(--ha-font-weight-medium);
+    }
+    ha-card {
+      max-height: 100%;
+      overflow: auto;
+    }
+    .card-header {
+      padding-bottom: 0;
+    }
+    .content {
+      padding: 16px;
+    }
+    .has-header {
+      padding-top: 0;
+    }
+    .cell-bullet {
+      width: 32px;
+      padding-right: 0;
+      padding-inline-end: 0;
+      padding-inline-start: 16px;
+      direction: var(--direction);
+    }
+    .bullet {
+      border-width: 1px;
+      border-style: solid;
+      border-radius: var(--ha-border-radius-sm);
+      height: 16px;
+      width: 32px;
+    }
+    .mdc-data-table__cell--numeric {
+      text-align: var(--float-end);
+      direction: ltr;
+    }
+    .mdc-data-table__header-cell--numeric {
+      text-align: var(--float-end);
+    }
+  `;
 }
 
 declare global {

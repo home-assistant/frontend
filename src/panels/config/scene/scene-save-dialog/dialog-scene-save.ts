@@ -9,24 +9,22 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-domain-icon";
 
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-labels-picker";
 import "../../../../components/ha-suggest-with-ai-button";
 import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-button";
-import "../../../../components/ha-dialog-footer";
+import "../../../../components/input/ha-input";
 import "../../category/ha-category-picker";
 
 import type { GenDataTaskResult } from "../../../../data/ai_task";
+import type { SceneConfig } from "../../../../data/scene";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  EntityRegistryUpdate,
-  SceneSaveDialogParams,
-} from "./show-dialog-scene-save";
 import {
   type MetadataSuggestionInclude,
   type MetadataSuggestionResult,
@@ -34,7 +32,10 @@ import {
   processMetadataSuggestion,
 } from "../../common/suggest-metadata-ai";
 import { buildEntityMetadataInspirations } from "../../common/suggest-metadata-inspirations";
-import type { SceneConfig } from "../../../../data/scene";
+import type {
+  EntityRegistryUpdate,
+  SceneSaveDialogParams,
+} from "./show-dialog-scene-save";
 
 const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
   name: true,
@@ -42,8 +43,16 @@ const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
   labels: true,
 };
 
+interface SceneSaveState {
+  name?: string;
+  icon?: string;
+  entryUpdates: EntityRegistryUpdate;
+}
+
 @customElement("ha-dialog-scene-save")
-class DialogSceneSave extends LitElement {
+class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -80,6 +89,15 @@ class DialogSceneSave extends LitElement {
       this._entryUpdates.category ? "category" : "",
       this._entryUpdates.labels.length > 0 ? "labels" : "",
     ].filter(Boolean);
+
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        name: this._newName,
+        icon: this._newIcon,
+        entryUpdates: this._entryUpdates,
+      }
+    );
   }
 
   public closeDialog() {
@@ -113,7 +131,7 @@ class DialogSceneSave extends LitElement {
     }
 
     return html`
-      <ha-textfield
+      <ha-input
         dialogInitialFocus
         .value=${this._newName}
         .placeholder=${this.hass.localize(
@@ -121,27 +139,20 @@ class DialogSceneSave extends LitElement {
         )}
         .label=${this.hass.localize("ui.panel.config.scene.editor.name")}
         required
-        type="string"
         @input=${this._valueChanged}
-      ></ha-textfield>
+      ></ha-input>
 
       <ha-icon-picker
-        .hass=${this.hass}
         .label=${this.hass.localize("ui.panel.config.scene.editor.icon")}
         .value=${this._newIcon}
         @value-changed=${this._iconChanged}
       >
-        <ha-domain-icon
-          slot="start"
-          domain=${this._params.domain}
-          .hass=${this.hass}
-        >
+        <ha-domain-icon slot="start" domain=${this._params.domain}>
         </ha-domain-icon>
       </ha-icon-picker>
 
       <ha-area-picker
         id="area"
-        .hass=${this.hass}
         .value=${this._entryUpdates.area}
         @value-changed=${this._registryEntryChanged}
       ></ha-area-picker>
@@ -193,9 +204,9 @@ class DialogSceneSave extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._params.title || title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._params.hideInputs
@@ -238,7 +249,11 @@ class DialogSceneSave extends LitElement {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!!this._params.config.id && !this.isDirtyState}
+          >
             ${this.hass.localize(
               this._params.config.id && !this._params.onDiscard
                 ? "ui.panel.config.scene.editor.rename"
@@ -256,17 +271,27 @@ class DialogSceneSave extends LitElement {
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
+  private _trackDirtyState() {
+    this._updateDirtyState({
+      name: this._newName,
+      icon: this._newIcon,
+      entryUpdates: this._entryUpdates,
+    });
+  }
+
   private _registryEntryChanged(ev) {
     ev.stopPropagation();
     const id: string = ev.target.id;
     const value = ev.detail.value;
 
     this._entryUpdates = { ...this._entryUpdates, [id]: value };
+    this._trackDirtyState();
   }
 
   private _iconChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._newIcon = ev.detail.value || undefined;
+    this._trackDirtyState();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -275,6 +300,7 @@ class DialogSceneSave extends LitElement {
     if (this._error && this._newName.trim()) {
       this._error = false;
     }
+    this._trackDirtyState();
   }
 
   private _handleDiscard() {
@@ -333,6 +359,7 @@ class DialogSceneSave extends LitElement {
         this._visibleOptionals = [...this._visibleOptionals, "labels"];
       }
     }
+    this._trackDirtyState();
   }
 
   private async _save(): Promise<void> {
@@ -357,19 +384,12 @@ class DialogSceneSave extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-textfield,
         ha-icon-picker,
         ha-category-picker,
         ha-labels-picker,
         ha-area-picker {
           display: block;
-        }
-        ha-icon-picker,
-        ha-category-picker,
-        ha-labels-picker,
-        ha-area-picker,
-        ha-chip-set:has(> ha-assist-chip) {
-          margin-top: var(--ha-space-4);
+          margin-bottom: var(--ha-space-5);
         }
         ha-alert {
           display: block;
@@ -378,6 +398,9 @@ class DialogSceneSave extends LitElement {
 
         ha-suggest-with-ai-button {
           margin: var(--ha-space-2) var(--ha-space-4);
+        }
+        ha-input {
+          --ha-input-padding-bottom: 0;
         }
       `,
     ];

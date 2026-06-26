@@ -22,6 +22,7 @@ import {
   SupervisorMountUsage,
   updateSupervisorMount,
 } from "../../../data/supervisor/mounts";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -152,7 +153,9 @@ const mountSchema = memoizeOne(
 );
 
 @customElement("dialog-mount-view")
-class ViewMountDialog extends LitElement {
+class ViewMountDialog extends DirtyStateProviderMixin<
+  Partial<SupervisorMountRequestParams>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _data?: SupervisorMountRequestParams;
@@ -187,6 +190,7 @@ class ViewMountDialog extends LitElement {
     ) {
       this._showCIFSVersion = true;
     }
+    this._initDirtyTracking({ type: "deep" }, this._data ?? {});
   }
 
   public closeDialog(): void {
@@ -211,7 +215,6 @@ class ViewMountDialog extends LitElement {
     }
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this._existing
           ? this.hass.localize(
@@ -220,7 +223,7 @@ class ViewMountDialog extends LitElement {
           : this.hass.localize(
               "ui.panel.config.storage.network_mounts.add_title"
             )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <a
@@ -281,6 +284,7 @@ class ViewMountDialog extends LitElement {
           <ha-progress-button
             slot="primaryAction"
             .progress=${!!this._waiting}
+            .disabled=${!this.isDirtyState}
             @click=${this._connectMount}
           >
             ${this._existing
@@ -341,6 +345,7 @@ class ViewMountDialog extends LitElement {
     ) {
       this._validationWarning.version = "not_recomeded_cifs_version";
     }
+    this._updateDirtyState(this._data ?? {});
   }
 
   private async _connectMount(ev) {
@@ -369,6 +374,7 @@ class ViewMountDialog extends LitElement {
     if (this._reloadMounts) {
       this._reloadMounts();
     }
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

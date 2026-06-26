@@ -28,7 +28,6 @@ class StateCardAlert extends LitElement {
         <div class="state">
           ${stateActive(this.stateObj)
             ? html`<ha-entity-toggle
-                .hass=${this.hass}
                 .stateObj=${this.stateObj}
               ></ha-entity-toggle>`
             : this.hass.formatEntityState(this.stateObj)}

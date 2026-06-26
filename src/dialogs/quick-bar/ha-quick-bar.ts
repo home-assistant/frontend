@@ -1,6 +1,7 @@
 import { mdiDevices } from "@mdi/js";
+import { consume } from "@lit/context";
 import Fuse from "fuse.js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -47,23 +48,34 @@ import {
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
-import type { RelatedResult } from "../../data/search";
+import type { RelatedIdSets } from "../../common/search/related-context";
+import { sortRelatedFirst } from "../../common/search/related-context";
+import { relatedContext } from "../../data/context";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../../resources/fuseMultiTerm";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { isIosApp } from "../../util/is_ios";
 import { isMac } from "../../util/is_mac";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
-import type { QuickBarParams, QuickBarSection } from "./show-dialog-quick-bar";
+import {
+  effectiveQuickBarMode,
+  type QuickBarParams,
+  type QuickBarSection,
+} from "./show-dialog-quick-bar";
 
 const SEPARATOR = "________";
 
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
 
   @state() private _open = false;
 
@@ -74,8 +86,6 @@ export class QuickBar extends LitElement {
   @state() private _selectedSection?: QuickBarSection;
 
   @state() private _opened = false;
-
-  @state() private _relatedResult?: RelatedResult;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
@@ -100,10 +110,8 @@ export class QuickBar extends LitElement {
       this._translationsLoaded = true;
     }
     this._initialize();
-    this._selectedSection = params.mode;
+    this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
     this._showHint = params.showHint ?? false;
-
-    this._relatedResult = params.contextItem ? params.related : undefined;
 
     this._open = true;
   }
@@ -129,7 +137,10 @@ export class QuickBar extends LitElement {
       console.error("Error fetching config entries for quick bar", err);
     }
 
-    if (this.hass.user?.is_admin && isComponentLoaded(this.hass, "hassio")) {
+    if (
+      this.hass.user?.is_admin &&
+      isComponentLoaded(this.hass.config, "hassio")
+    ) {
       try {
         const hassioAddonsInfo = await fetchHassioAddonsInfo(this.hass);
         this._addons = hassioAddonsInfo.addons;
@@ -142,19 +153,26 @@ export class QuickBar extends LitElement {
     this._loading = false;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_loading") && !this._loading && this._opened) {
+      requestAnimationFrame(() => {
+        this._comboBox?.focus();
+      });
+    }
+  }
+
   private _dialogOpened = async () => {
     this._opened = true;
     requestAnimationFrame(() => {
-      // disabled till iOS app fix the "focus_element" implementation
-      // if (this.hass && isIosApp(this.hass.auth.external)) {
-      //   this.hass.auth.external!.fireMessage({
-      //     type: "focus_element",
-      //     payload: {
-      //       element_id: "combo-box",
-      //     },
-      //   });
-      //   return;
-      // }
+      if (this.hass && isIosApp(this.hass.auth.external)) {
+        this.hass.auth.external!.fireMessage({
+          type: "focus_element",
+          payload: {
+            element_id: "combo-box",
+          },
+        });
+        return;
+      }
       this._comboBox?.focus();
     });
   };
@@ -226,9 +244,7 @@ export class QuickBar extends LitElement {
     return html`
       <ha-adaptive-dialog
         without-header
-        allow-mode-change
         flexcontent
-        .hass=${this.hass}
         aria-label=${this.hass.localize("ui.dialogs.quick-bar.title")}
         .open=${this._open}
         hideActions
@@ -239,7 +255,6 @@ export class QuickBar extends LitElement {
         ${!this._loading && this._opened
           ? html`<ha-picker-combo-box
               id="combo-box"
-              .hass=${this.hass}
               @index-selected=${this._handleItemSelected}
               .notFoundLabel=${this.hass.localize(
                 "ui.dialogs.quick-bar.nothing_found"
@@ -255,7 +270,7 @@ export class QuickBar extends LitElement {
             ></ha-picker-combo-box>`
           : nothing}
         ${this._showHint
-          ? html`<ha-tip slot="footer" .hass=${this.hass}
+          ? html`<ha-tip slot="footer"
               >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
                 keyboard_shortcut: html`<button
                   class="link"
@@ -295,7 +310,6 @@ export class QuickBar extends LitElement {
               <state-badge
                 slot="start"
                 .stateObj=${(item as EntityComboBoxItem).stateObj}
-                .hass=${this.hass}
               ></state-badge>
             `
           : "domain" in item && item.domain
@@ -303,7 +317,6 @@ export class QuickBar extends LitElement {
                 <ha-domain-icon
                   slot="start"
                   style="margin: var(--ha-space-1);"
-                  .hass=${this.hass}
                   .domain=${item.domain}
                   brand-fallback
                 ></ha-domain-icon>
@@ -421,7 +434,7 @@ export class QuickBar extends LitElement {
     this._selectedSection = section as QuickBarSection | undefined;
     return this._getItemsMemoized(
       this._configEntryLookup,
-      this._relatedResult,
+      this._relatedIdSets,
       searchString,
       this._selectedSection
     );
@@ -430,12 +443,11 @@ export class QuickBar extends LitElement {
   private _getItemsMemoized = memoizeOne(
     (
       configEntryLookup: Record<string, ConfigEntry>,
-      relatedResult: RelatedResult | undefined,
+      relatedIdSets: RelatedIdSets | undefined,
       filter?: string,
       section?: QuickBarSection
     ) => {
       const items: (string | PickerComboBoxItem)[] = [];
-      const relatedIdSets = this._getRelatedIdSets(relatedResult);
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
@@ -448,8 +460,7 @@ export class QuickBar extends LitElement {
           navigateItems = this._filterGroup(
             "navigate",
             navigateItems,
-            filter,
-            navigateComboBoxKeys
+            filter
           ) as NavigationComboBoxItem[];
         }
 
@@ -470,8 +481,7 @@ export class QuickBar extends LitElement {
           commandItems = this._filterGroup(
             "command",
             commandItems,
-            filter,
-            commandComboBoxKeys
+            filter
           ) as ActionCommandComboBoxItem[];
         }
 
@@ -487,7 +497,7 @@ export class QuickBar extends LitElement {
         let entityItems = this._getEntitiesMemoized(this.hass);
 
         // Mark related items
-        if (relatedIdSets.entities.size > 0) {
+        if (relatedIdSets?.entities.size) {
           entityItems = entityItems.map((item) => ({
             ...item,
             isRelated: relatedIdSets.entities.has(
@@ -497,12 +507,11 @@ export class QuickBar extends LitElement {
         }
 
         if (filter) {
-          entityItems = this._sortRelatedFirst(
+          entityItems = sortRelatedFirst(
             this._filterGroup(
               "entity",
               entityItems,
-              filter,
-              entityComboBoxKeys
+              filter
             ) as EntityComboBoxItem[]
           );
         } else {
@@ -526,7 +535,7 @@ export class QuickBar extends LitElement {
         );
 
         // Mark related items
-        if (relatedIdSets.devices.size > 0) {
+        if (relatedIdSets?.devices.size) {
           deviceItems = deviceItems.map((item) => {
             const deviceId = item.id.split(SEPARATOR)[1];
             return {
@@ -537,8 +546,8 @@ export class QuickBar extends LitElement {
         }
 
         if (filter) {
-          deviceItems = this._sortRelatedFirst(
-            this._filterGroup("device", deviceItems, filter, deviceComboBoxKeys)
+          deviceItems = sortRelatedFirst(
+            this._filterGroup("device", deviceItems, filter)
           );
         } else {
           deviceItems = this._sortRelatedByLabel(deviceItems);
@@ -558,7 +567,7 @@ export class QuickBar extends LitElement {
         let areaItems = this._getAreasMemoized(this.hass);
 
         // Mark related items
-        if (relatedIdSets.areas.size > 0) {
+        if (relatedIdSets?.areas.size) {
           areaItems = areaItems.map((item) => {
             const areaId = item.id.split(SEPARATOR)[1];
             return {
@@ -569,8 +578,8 @@ export class QuickBar extends LitElement {
         }
 
         if (filter) {
-          areaItems = this._sortRelatedFirst(
-            this._filterGroup("area", areaItems, filter, areaComboBoxKeys)
+          areaItems = sortRelatedFirst(
+            this._filterGroup("area", areaItems, filter)
           );
         } else {
           areaItems = this._sortRelatedByLabel(areaItems);
@@ -590,41 +599,13 @@ export class QuickBar extends LitElement {
     }
   );
 
-  private _getRelatedIdSets = memoizeOne((related?: RelatedResult) => ({
-    entities: new Set(related?.entity || []),
-    devices: new Set(related?.device || []),
-    areas: new Set(related?.area || []),
-  }));
-
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
-    getEntities(
-      hass,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `entity${SEPARATOR}`
-    )
+    getEntities(hass, { idPrefix: `entity${SEPARATOR}` })
   );
 
   private _getDevicesMemoized = memoizeOne(
     (hass: HomeAssistant, configEntryLookup: Record<string, ConfigEntry>) =>
-      getDevices(
-        hass,
-        configEntryLookup,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        `device${SEPARATOR}`
-      )
+      getDevices(hass, configEntryLookup, { idPrefix: `device${SEPARATOR}` })
   );
 
   private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>
@@ -634,13 +615,9 @@ export class QuickBar extends LitElement {
       hass.devices,
       hass.entities,
       hass.states,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `area${SEPARATOR}`
+      {
+        idPrefix: `area${SEPARATOR}`,
+      }
     )
   );
 
@@ -654,8 +631,10 @@ export class QuickBar extends LitElement {
 
   private _generateActionCommandsMemoized = memoizeOne(generateActionCommands);
 
-  private _createFuseIndex = (states, keys: FuseWeightedKey[]) =>
-    Fuse.createIndex(keys, states);
+  private _createFuseIndex = (
+    states: PickerComboBoxItem[],
+    keys: FuseWeightedKey[]
+  ) => Fuse.createIndex(keys, states);
 
   private _fuseIndexes = {
     entity: memoizeOne((states: PickerComboBoxItem[]) =>
@@ -678,24 +657,25 @@ export class QuickBar extends LitElement {
   private _filterGroup(
     type: QuickBarSection,
     items: PickerComboBoxItem[],
-    searchTerm: string,
-    weightedKeys: FuseWeightedKey[]
+    searchTerm: string
   ) {
     const fuseIndex = this._fuseIndexes[type](items);
 
     return multiTermSortedSearch(
       items,
       searchTerm,
-      weightedKeys,
       (item: PickerComboBoxItem) => item.id,
       fuseIndex
     );
   }
 
-  private _sortBySortingLabel = (entityA, entityB) =>
+  private _sortBySortingLabel = (
+    entityA: PickerComboBoxItem,
+    entityB: PickerComboBoxItem
+  ) =>
     caseInsensitiveStringCompare(
-      (entityA as PickerComboBoxItem).sorting_label!,
-      (entityB as PickerComboBoxItem).sorting_label!,
+      entityA.sorting_label!,
+      entityB.sorting_label!,
       this.hass.locale.language
     );
 
@@ -704,16 +684,6 @@ export class QuickBar extends LitElement {
       if (a.isRelated && !b.isRelated) return -1;
       if (!a.isRelated && b.isRelated) return 1;
       return this._sortBySortingLabel(a, b);
-    });
-
-  private _sortRelatedFirst = (items: PickerComboBoxItem[]) =>
-    [...items].sort((a, b) => {
-      const aRelated = Boolean(a.isRelated);
-      const bRelated = Boolean(b.isRelated);
-      if (aRelated === bRelated) {
-        return 0;
-      }
-      return aRelated ? -1 : 1;
     });
 
   // #endregion data

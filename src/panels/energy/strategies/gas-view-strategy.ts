@@ -1,20 +1,27 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  DEFAULT_ENERGY_COLLECTION_KEY,
+  getEnergyDataCollection,
+} from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import { DEFAULT_ENERGY_COLLECTION_KEY } from "../constants";
+import type { EnergyViewStrategyConfig } from "./energy-cards";
+import { hasGasSource, isEnergyCardVisible } from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
 @customElement("gas-view-strategy")
 export class GasViewStrategy extends ReactiveElement {
+  static registryDependencies: readonly LovelaceStrategyDependency[] = [];
+
   static async generate(
-    _config: LovelaceStrategyConfig,
+    _config: EnergyViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const collectionKey =
       _config.collection_key || DEFAULT_ENERGY_COLLECTION_KEY;
+    const hidden = _config.hidden_cards;
 
     const view: LovelaceViewConfig = {
       type: "sections",
@@ -38,12 +45,8 @@ export class GasViewStrategy extends ReactiveElement {
     }
     const prefs = energyCollection.prefs;
 
-    const hasGasSources = prefs?.energy_sources.some(
-      (source) => source.type === "gas"
-    );
-
     // No gas sources available
-    if (!prefs || !hasGasSources) {
+    if (!prefs || !hasGasSource(prefs)) {
       return view;
     }
 
@@ -52,26 +55,35 @@ export class GasViewStrategy extends ReactiveElement {
     section.cards!.push({
       type: "energy-compare",
       collection_key: collectionKey,
-    });
-
-    section.cards!.push({
-      title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
-      type: "energy-gas-graph",
-      collection_key: collectionKey,
       grid_options: {
-        columns: 24,
+        columns: 36,
       },
     });
 
-    section.cards!.push({
-      title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
-      type: "energy-sources-table",
-      collection_key: collectionKey,
-      types: ["gas"],
-      grid_options: {
-        columns: 12,
-      },
-    });
+    if (isEnergyCardVisible("gas", "energy-gas-graph", prefs, hidden)) {
+      section.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
+        type: "energy-gas-graph",
+        collection_key: collectionKey,
+        grid_options: {
+          columns: 24,
+        },
+      });
+    }
+
+    if (isEnergyCardVisible("gas", "energy-sources-table", prefs, hidden)) {
+      section.cards!.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_sources_table_title"
+        ),
+        type: "energy-sources-table",
+        collection_key: collectionKey,
+        types: ["gas"],
+        grid_options: {
+          columns: 12,
+        },
+      });
+    }
 
     return view;
   }

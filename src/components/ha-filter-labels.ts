@@ -1,19 +1,19 @@
-import { consume } from "@lit/context";
+import { consume, type ContextType } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../common/color/compute-color";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
-import { labelsContext } from "../data/context";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { internationalizationContext, labelsContext } from "../data/context";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -26,13 +26,19 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public value?: string[];
 
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @consume({ context: labelsContext, subscribe: true })
   @state()
@@ -42,9 +48,16 @@ export class HaFilterLabels extends LitElement {
 
   @state() private _filter?: string;
 
+  @query("ha-list") private _list?: HTMLElement;
+
   private _filteredLabels = memoizeOne(
     // `_value` used to recalculate the memoization when the selection changes
-    (labels: LabelRegistryEntry[], filter: string | undefined, _value) =>
+    (
+      labels: LabelRegistryEntry[],
+      filter: string | undefined,
+      language: string | undefined,
+      _value
+    ) =>
       labels
         .filter(
           (label) =>
@@ -53,11 +66,7 @@ export class HaFilterLabels extends LitElement {
             label.label_id.toLowerCase().includes(filter)
         )
         .sort((a, b) =>
-          stringCompare(
-            a.name || a.label_id,
-            b.name || b.label_id,
-            this.hass.locale.language
-          )
+          stringCompare(a.name || a.label_id, b.name || b.label_id, language)
         )
   );
 
@@ -70,7 +79,7 @@ export class HaFilterLabels extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.labels.caption")}
+          ${this._localize("ui.panel.config.labels.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -95,20 +104,18 @@ export class HaFilterLabels extends LitElement {
                   this._filteredLabels(
                     this._labels || [],
                     this._filter,
+                    this._i18n.locale.language,
                     this.value
                   ),
                   (label) => label.label_id,
-                  (label) => {
-                    const color = label.color
-                      ? computeCssColor(label.color)
-                      : undefined;
-                    return html`<ha-check-list-item
+                  (label) =>
+                    html`<ha-check-list-item
                       .value=${label.label_id}
                       .selected=${(this.value || []).includes(label.label_id)}
                       hasMeta
                     >
                       <ha-label
-                        style=${color ? `--color: ${color}` : ""}
+                        .color=${label.color}
                         .description=${label.description}
                       >
                         ${label.icon
@@ -119,8 +126,7 @@ export class HaFilterLabels extends LitElement {
                           : nothing}
                         ${label.name}
                       </ha-label>
-                    </ha-check-list-item>`;
-                  }
+                    </ha-check-list-item>`
                 )}
               </ha-list> `
           : nothing}
@@ -132,18 +138,17 @@ export class HaFilterLabels extends LitElement {
             class="add"
           >
             <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-            ${this.hass.localize("ui.panel.config.labels.manage_labels")}
+            ${this._localize("ui.panel.config.labels.manage_labels")}
           </ha-list-item>`
         : nothing}
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
+        this._list!.style.height = `${this.clientHeight - (49 + 48 + 32 + 4)}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input
@@ -173,6 +178,7 @@ export class HaFilterLabels extends LitElement {
     const filteredLabels = this._filteredLabels(
       this._labels || [],
       this._filter,
+      this._i18n.locale.language,
       this.value
     );
 
@@ -252,10 +258,6 @@ export class HaFilterLabels extends LitElement {
         }
         .warning {
           color: var(--error-color);
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
         .add {
           position: absolute;

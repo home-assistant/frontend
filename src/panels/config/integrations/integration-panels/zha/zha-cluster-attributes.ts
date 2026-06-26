@@ -3,10 +3,9 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/buttons/ha-progress-button";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import { forwardHaptic } from "../../../../../data/haptics";
 import type {
   Attribute,
@@ -45,7 +44,7 @@ export class ZHAClusterAttributes extends LitElement {
   @state()
   private _setAttributeServiceData?: SetAttributeServiceData;
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("selectedCluster")) {
       this._attributes = undefined;
       this._selectedAttributeId = undefined;
@@ -60,7 +59,7 @@ export class ZHAClusterAttributes extends LitElement {
       return nothing;
     }
     return html`
-      <ha-card class="content">
+      <div class="content">
         <div class="attribute-picker">
           <ha-select
             .label=${this.hass!.localize(
@@ -79,25 +78,24 @@ export class ZHAClusterAttributes extends LitElement {
         ${this._selectedAttributeId !== undefined
           ? this._renderAttributeInteractions()
           : nothing}
-      </ha-card>
+      </div>
     `;
   }
 
   private _renderAttributeInteractions(): TemplateResult {
     return html`
       <div class="input-text">
-        <ha-textfield
+        <ha-input
           .label=${this.hass!.localize("ui.panel.config.zha.common.value")}
-          type="string"
           .value=${this._attributeValue}
           @change=${this._onAttributeValueChanged}
           .placeholder=${this.hass!.localize(
             "ui.panel.config.zha.common.value"
           )}
-        ></ha-textfield>
+        ></ha-input>
       </div>
       <div class="input-text">
-        <ha-textfield
+        <ha-input
           .label=${this.hass!.localize(
             "ui.panel.config.zha.common.manufacturer_code_override"
           )}
@@ -107,11 +105,10 @@ export class ZHAClusterAttributes extends LitElement {
           .placeholder=${this.hass!.localize(
             "ui.panel.config.zha.common.value"
           )}
-        ></ha-textfield>
+        ></ha-input>
       </div>
       <div class="card-actions">
         <ha-call-service-button
-          .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
           .data=${this._setAttributeServiceData}
@@ -186,13 +183,13 @@ export class ZHAClusterAttributes extends LitElement {
     };
   }
 
-  private _onAttributeValueChanged(event): void {
-    this._attributeValue = event.target!.value;
+  private _onAttributeValueChanged(event: InputEvent): void {
+    this._attributeValue = (event.target as HTMLInputElement).value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(event): void {
-    this._manufacturerCodeOverride = event.target!.value;
+  private _onManufacturerCodeOverrideChanged(event: InputEvent): void {
+    this._manufacturerCodeOverride = (event.target as HTMLInputElement).value;
     this._setAttributeServiceData = this._computeSetAttributeServiceData();
   }
 
@@ -223,8 +220,12 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          border: none;
+        :host {
+          display: block;
+        }
+
+        .content {
+          padding-top: var(--ha-space-4);
         }
 
         ha-select {
@@ -232,16 +233,11 @@ export class ZHAClusterAttributes extends LitElement {
         }
 
         .menu,
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
 
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
-        }
-
         .attribute-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;
@@ -257,15 +253,12 @@ export class ZHAClusterAttributes extends LitElement {
           padding-bottom: 10px;
         }
 
-        .header {
-          flex-grow: 1;
-        }
-
         .card-actions {
           display: flex;
-          margin-top: var(--ha-space-2);
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2);
           justify-content: flex-end;
-          gap: var(--ha-space-3);
+          gap: var(--ha-space-2);
         }
       `,
     ];

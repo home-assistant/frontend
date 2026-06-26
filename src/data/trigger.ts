@@ -1,8 +1,8 @@
-import { mdiMapClock, mdiShape } from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
 
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import type { HomeAssistant } from "../types";
 import type {
   AutomationElementGroupCollection,
   Trigger,
@@ -13,30 +13,19 @@ import type { Selector, TargetSelector } from "./selector";
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
-      device: {},
       dynamicGroups: {},
-      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
-      time_location: {
-        icon: mdiMapClock,
+      time: {
+        icon: mdiClockOutline,
         members: {
-          calendar: {},
-          sun: {},
           time: {},
           time_pattern: {},
-          zone: {},
         },
+        domains: ["calendar", "schedule"],
       },
-    },
-  },
-  {
-    titleKey: "ui.panel.config.automation.editor.triggers.groups.helpers.label",
-    groups: {
-      helpers: {},
-    },
-  },
-  {
-    titleKey: "ui.panel.config.automation.editor.triggers.groups.other.label",
-    groups: {
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
+      },
       event: {},
       geo_location: {},
       homeassistant: {},
@@ -45,7 +34,23 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
       template: {},
       webhook: {},
       persistent_notification: {},
+      helpers: {},
       other: {},
+    },
+  },
+  {
+    titleKey: "ui.panel.config.automation.editor.triggers.groups.generic.label",
+    generic: true,
+    groups: {
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+    },
+  },
+  {
+    titleKey:
+      "ui.panel.config.automation.editor.triggers.groups.custom_integrations.label",
+    groups: {
+      customDynamicGroups: {},
     },
   },
 ] as const;
@@ -70,10 +75,10 @@ export interface TriggerDescription {
 export type TriggerDescriptions = Record<string, TriggerDescription>;
 
 export const subscribeTriggers = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (triggers: TriggerDescriptions) => void
 ) =>
-  hass.connection.subscribeMessage<TriggerDescriptions>(callback, {
+  connection.subscribeMessage<TriggerDescriptions>(callback, {
     type: "trigger_platforms/subscribe",
   });
 

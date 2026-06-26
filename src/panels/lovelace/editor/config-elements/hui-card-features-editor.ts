@@ -42,6 +42,8 @@ import { supportsCoverTiltFavoriteCardFeature } from "../../card-features/hui-co
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
 import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsPrecipitationForecastCardFeature } from "../../card-features/hui-precipitation-forecast-card-feature";
+import { supportsTemperatureForecastCardFeature } from "../../card-features/hui-temperature-forecast-card-feature";
 import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
@@ -53,6 +55,8 @@ import { supportsLightColorTempCardFeature } from "../../card-features/hui-light
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-open-door-card-feature";
 import { supportsMediaPlayerPlaybackCardFeature } from "../../card-features/hui-media-player-playback-card-feature";
+import { supportsMediaPlayerSoundModeCardFeature } from "../../card-features/hui-media-player-sound-mode-card-feature";
+import { supportsMediaPlayerSourceCardFeature } from "../../card-features/hui-media-player-source-card-feature";
 import { supportsMediaPlayerVolumeButtonsCardFeature } from "../../card-features/hui-media-player-volume-buttons-card-feature";
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
@@ -112,13 +116,17 @@ const UI_FEATURE_TYPES = [
   "lock-commands",
   "lock-open-door",
   "media-player-playback",
+  "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
   "media-player-volume-slider",
   "numeric-input",
+  "precipitation-forecast",
   "select-options",
   "trend-graph",
   "target-humidity",
   "target-temperature",
+  "temperature-forecast",
   "toggle",
   "update-actions",
   "vacuum-commands",
@@ -145,8 +153,15 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "cover-tilt-favorite",
   "fan-preset-modes",
   "humidifier-modes",
+  "precipitation-forecast",
+  "temperature-forecast",
   "lawn-mower-commands",
+  "media-player-playback",
+  "light-color-favorites",
+  "media-player-sound-mode",
+  "media-player-source",
   "media-player-volume-buttons",
+  "media-player-volume-slider",
   "numeric-input",
   "select-options",
   "trend-graph",
@@ -191,13 +206,17 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "lock-commands": supportsLockCommandsCardFeature,
   "lock-open-door": supportsLockOpenDoorCardFeature,
   "media-player-playback": supportsMediaPlayerPlaybackCardFeature,
+  "media-player-sound-mode": supportsMediaPlayerSoundModeCardFeature,
+  "media-player-source": supportsMediaPlayerSourceCardFeature,
   "media-player-volume-buttons": supportsMediaPlayerVolumeButtonsCardFeature,
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
+  "precipitation-forecast": supportsPrecipitationForecastCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
   "trend-graph": supportsTrendGraphCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  "temperature-forecast": supportsTemperatureForecastCardFeature,
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
@@ -422,7 +441,7 @@ export class HuiCardFeaturesEditor extends LitElement {
       ${supportedFeaturesType.length > 0
         ? html`
             <ha-dropdown @wa-select=${this._addFeature}>
-              <ha-button slot="trigger" appearance="filled" size="small">
+              <ha-button slot="trigger" appearance="filled" size="s">
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
               </ha-button>

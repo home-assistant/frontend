@@ -59,6 +59,7 @@ export class HaExpansionPanel extends LitElement {
               <slot class="secondary" name="secondary">${this.secondary}</slot>
             </div>
           </slot>
+          <slot name="event"></slot>
           ${!this.leftChevron ? chevronIcon : nothing}
           <slot name="icons"></slot>
         </div>
@@ -76,7 +77,7 @@ export class HaExpansionPanel extends LitElement {
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("expanded")) {
       this._showContent = this.expanded;
@@ -106,6 +107,7 @@ export class HaExpansionPanel extends LitElement {
     }
     const newExpanded = !this.expanded;
     fireEvent(this, "expanded-will-change", { expanded: newExpanded });
+
     this._container.style.overflow = "hidden";
 
     if (newExpanded) {

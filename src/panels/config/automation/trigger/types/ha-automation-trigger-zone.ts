@@ -1,13 +1,16 @@
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-formfield";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
+import "../../../../../components/entity/ha-entities-picker";
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../../components/radio/ha-radio-group";
+import "../../../../../components/radio/ha-radio-option";
 import type { ZoneTrigger } from "../../../../../data/automation";
-import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
-import type { HaRadio } from "../../../../../components/ha-radio";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
@@ -26,7 +29,7 @@ export class HaZoneTrigger extends LitElement {
   public static get defaultConfig(): ZoneTrigger {
     return {
       trigger: "zone",
-      entity_id: "",
+      entity_id: [],
       zone: "",
       event: "enter" as ZoneTrigger["event"],
     };
@@ -35,16 +38,15 @@ export class HaZoneTrigger extends LitElement {
   protected render() {
     const { entity_id, zone, event } = this.trigger;
     return html`
-      <ha-entity-picker
+      <ha-entities-picker
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.zone.entity"
         )}
-        .value=${entity_id}
+        .value=${entity_id ? ensureArray(entity_id) : []}
         .disabled=${this.disabled}
         @value-changed=${this._entityPicked}
-        .hass=${this.hass}
         .entityFilter=${zoneAndLocationFilter}
-      ></ha-entity-picker>
+      ></ha-entities-picker>
       <ha-entity-picker
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.zone.zone"
@@ -52,47 +54,34 @@ export class HaZoneTrigger extends LitElement {
         .value=${zone}
         .disabled=${this.disabled}
         @value-changed=${this._zonePicked}
-        .hass=${this.hass}
         .includeDomains=${includeDomains}
       ></ha-entity-picker>
 
-      <label>
-        ${this.hass.localize(
+      <ha-radio-group
+        orientation="horizontal"
+        .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.zone.event"
         )}
-        <ha-formfield
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
+        .value=${event}
+        .disabled=${this.disabled}
+        @change=${this._radioGroupPicked}
+        name="event"
+      >
+        <ha-radio-option value="enter">
+          ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.zone.enter"
           )}
-        >
-          <ha-radio
-            name="event"
-            value="enter"
-            .disabled=${this.disabled}
-            .checked=${event === "enter"}
-            @change=${this._radioGroupPicked}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .disabled=${this.disabled}
-          .label=${this.hass.localize(
+        </ha-radio-option>
+        <ha-radio-option value="leave">
+          ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.type.zone.leave"
           )}
-        >
-          <ha-radio
-            name="event"
-            value="leave"
-            .disabled=${this.disabled}
-            .checked=${event === "leave"}
-            @change=${this._radioGroupPicked}
-          ></ha-radio>
-        </ha-formfield>
-      </label>
+        </ha-radio-option>
+      </ha-radio-group>
     `;
   }
 
-  private _entityPicked(ev: ValueChangedEvent<string>) {
+  private _entityPicked(ev: ValueChangedEvent<string[]>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: { ...this.trigger, entity_id: ev.detail.value },
@@ -106,21 +95,17 @@ export class HaZoneTrigger extends LitElement {
     });
   }
 
-  private _radioGroupPicked(ev: CustomEvent) {
+  private _radioGroupPicked(ev: Event) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
-        event: (ev.target as HaRadio).value,
+        event: (ev.currentTarget as HaRadioGroup).value,
       },
     });
   }
 
   static styles = css`
-    label {
-      display: flex;
-      align-items: center;
-    }
     ha-entity-picker {
       display: block;
       margin-bottom: 24px;

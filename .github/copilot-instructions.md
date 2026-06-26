@@ -2,12 +2,13 @@
 
 You are an assistant helping with development of the Home Assistant frontend. The frontend is built using Lit-based Web Components and TypeScript, providing a responsive and performant interface for home automation control.
 
-**Note**: This file contains high-level guidelines and references to implementation patterns. For detailed component documentation, API references, and usage examples, refer to the `gallery/` directory.
+**Note**: This file contains high-level guidelines and references to implementation patterns. For gallery-specific documentation, demos, page structure, and usage examples, see [`gallery/AGENTS.md`](gallery/AGENTS.md).
 
 ## Table of Contents
 
 - [Quick Reference](#quick-reference)
 - [Core Architecture](#core-architecture)
+- [State Access: Contexts Instead of `hass`](#state-access-contexts-instead-of-hass)
 - [Development Standards](#development-standards)
 - [Component Library](#component-library)
 - [Common Patterns](#common-patterns)
@@ -40,7 +41,7 @@ script/develop     # Development server
 ```typescript
 import type { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import { showAlertDialog } from "../dialogs/generic/show-alert-dialog";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 ```
 
 ## Core Architecture
@@ -52,13 +53,64 @@ The Home Assistant frontend is a modern web application that:
 - Communicates with the backend via WebSocket API
 - Provides comprehensive theming and internationalization
 
+## State Access: Contexts Instead of `hass`
+
+Every component used to take the whole `hass: HomeAssistant` object — a god-object that re-renders on any unrelated `hass` change, forces tests to mock everything, and hides what a component actually reads. We're moving leaf components to **fine-grained [Lit context](https://lit.dev/docs/data/context/)**: consume only the slice you need and re-render only when it changes.
+
+For new code, consume the matching context instead of adding a `hass` property. `hass` stays for container components that own it and feed the providers; the canonical migration is [`hui-button-card.ts`](src/panels/lovelace/cards/hui-button-card.ts). Infrastructure: contexts in [`src/data/context/index.ts`](src/data/context/index.ts), the `consume…` helpers in [`src/common/decorators/consume-context-entry.ts`](src/common/decorators/consume-context-entry.ts), and `@transform` in [`src/common/decorators/transform.ts`](src/common/decorators/transform.ts). Providers are wired automatically by `contextMixin` on `HassBaseEl` — you only consume.
+
+### Contexts
+
+Consume the narrowest context that covers your reads:
+
+| Context                                                                 | Replaces                                                                                  |
+| ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `statesContext`                                                         | `hass.states`                                                                             |
+| `entitiesContext` / `devicesContext` / `areasContext` / `floorsContext` | `hass.entities` / `.devices` / `.areas` / `.floors` (or `registriesContext` for all four) |
+| `servicesContext`                                                       | `hass.services`                                                                           |
+| `internationalizationContext`                                           | `hass.localize`, `hass.locale`, `hass.language`                                           |
+| `formattersContext`                                                     | `hass.formatEntityName`, `hass.formatEntityState`, `hass.formatEntityAttributeName`, …    |
+| `configContext`                                                         | `hass.config`, `hass.user`, `hass.auth`, `hass.userData`                                  |
+| `connectionContext`                                                     | `hass.connection`, `hass.connected`, `hass.hassUrl`                                       |
+| `apiContext`                                                            | `hass.callService`, `hass.callApi`, `hass.callWS`, `hass.sendWS`, `hass.fetchWithAuth`    |
+| `uiContext`                                                             | `hass.themes`, `hass.selectedTheme`, `hass.panels`, `hass.dockedSidebar`, …               |
+| `narrowViewportContext`                                                 | narrow-layout boolean                                                                     |
+
+Lazy contexts (subscribe on first consumer, tear down after the last): `labelsContext`, `fullEntitiesContext`, `configEntriesContext`, `manifestsContext`. The single-field contexts (`localizeContext`, `themesContext`, `userContext`, …) are **deprecated** — use the grouped ones above.
+
+### Consuming
+
+Use the `consume…` helpers for entity-scoped and `localize` reads. `entityIdPath` is resolved against `this`, so these watch `this._config.entity`:
+
+```ts
+@state() @consumeEntityState({ entityIdPath: ["_config", "entity"] })
+private _stateObj?: HassEntity; // consumeEntityStates(...) for a record of several
+
+@state() @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
+private _entity?: EntityRegistryDisplayEntry;
+
+@state() @consumeLocalize()
+private _localize!: LocalizeFunc;
+```
+
+For any other single field, pair `@consume` with `@transform`:
+
+```ts
+@state()
+@consume({ context: uiContext, subscribe: true })
+@transform<HomeAssistantUI, Themes>({ transformer: ({ themes }) => themes })
+private _themes!: Themes;
+```
+
+`@transform`'s `watch` option re-runs the transformer when a host prop changes — needed when an entity id is computed, since `consumeEntityState` only watches the first path segment. To consume a whole group untransformed, drop `@transform` and type it `ContextType<typeof statesContext>`.
+
 ## Development Standards
 
 ### Code Quality Requirements
 
 **Linting and Formatting (Enforced by Tools)**
 
-- ESLint config extends Airbnb, TypeScript strict, Lit, Web Components, Accessibility
+- ESLint config (flat config) extends TypeScript strict, Lit, Web Components, Accessibility (lit-a11y), and import-x
 - Prettier with ES5 trailing commas enforced
 - No console statements (`no-console: "error"`) - use proper logging
 - Import organization: No unused imports, consistent type imports
@@ -136,6 +188,7 @@ export class HaMyComponent extends LitElement {
 ### Data Management
 
 - **Use WebSocket API**: All backend communication via home-assistant-js-websocket
+- **Prefer contexts over `hass`**: For state reads, consume the relevant Lit context instead of taking the whole `hass` object — see [State Access: Contexts Instead of `hass`](#state-access-contexts-instead-of-hass)
 - **Cache appropriately**: Use collections and caching for frequently accessed data
 - **Handle errors gracefully**: All API calls should have error handling
 - **Update real-time**: Subscribe to state changes for live updates
@@ -160,7 +213,7 @@ try {
   - Defined in `src/resources/theme/core.globals.ts`
   - Common values: `--ha-space-2` (8px), `--ha-space-4` (16px), `--ha-space-8` (32px)
 - **Mobile-first responsive**: Design for mobile, enhance for desktop
-- **Follow Material Design**: Use Material Web Components where appropriate
+- **Prefer `ha-*` components**: Build on the Home Assistant component library (many now wrap Web Awesome components); avoid new use of legacy Material Web Components (`mwc-*`), which are being phased out
 - **Support RTL**: Ensure all layouts work in RTL languages
 
 ```typescript
@@ -236,6 +289,7 @@ For browser support, API details, and current specifications, refer to these aut
 - **Test with Vitest**: Use the established test framework
 - **Mock appropriately**: Mock WebSocket connections and API calls
 - **Test accessibility**: Ensure components are accessible
+- **Optimizing chart data processing**: When optimizing chart data transforms (history, statistics, energy, downsampling), follow the playbook in [`test/benchmarks/README.md`](test/benchmarks/README.md) — it has seeded fixtures, characterization (snapshot) tests that pin current output, and `vitest bench` benchmarks (`yarn test:bench`) for before/after comparison. Optimizations must keep output bit-identical.
 
 ## Component Library
 
@@ -267,21 +321,23 @@ fireEvent(this, "show-dialog", {
 
 **Dialog Sizing:**
 
-- Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (560px - default), `"large"` (720px), or `"full"`
+- Use `width` attribute with predefined sizes: `"small"` (320px), `"medium"` (580px - default), `"large"` (1024px), or `"full"`
 - Custom sizing is NOT recommended - use the standard width presets
 
 **Button Appearance Guidelines:**
 
-- **Primary action buttons**: Default appearance (no appearance attribute) or omit for standard styling
-- **Secondary action buttons**: Use `appearance="plain"` for cancel/dismiss actions
-- **Destructive actions**: Use `appearance="filled"` for delete/remove operations (combined with appropriate semantic styling)
-- **Button sizes**: Use `size="small"` (32px height) or default/medium (40px height)
+`ha-button` (wraps the Web Awesome button — see `src/components/ha-button.ts`) has two independent axes plus size:
+
+- **`variant`** (color): `"brand"` (default), `"neutral"`, `"danger"`, `"warning"`, `"success"`
+- **`appearance`** (fill style): `"accent"`, `"filled"`, `"outlined"`, `"plain"`
+- **`size`**: `"xs"` (extra small, 40px), `"s"` (small, 32px), `"m"` (medium, 40px - default), `"l"` (large, 48px), `"xl"` (extra large, 40px)
+
+Common patterns:
+
+- **Primary action**: `appearance="filled"` for emphasis (or the default appearance for a lighter look)
+- **Secondary action**: `appearance="plain"` for cancel/dismiss actions
+- **Destructive actions**: `variant="danger"` for delete/remove operations (the generic confirmation dialog uses `variant="danger"` for its confirm button — see `src/dialogs/generic/dialog-box.ts`)
 - Always place primary action in `slot="primaryAction"` and secondary in `slot="secondaryAction"` within `ha-dialog-footer`
-
-**Gallery Documentation:**
-
-- `gallery/src/pages/components/ha-dialog.markdown`
-- `gallery/src/pages/components/ha-dialogs.markdown`
 
 ### Form Component (ha-form)
 
@@ -301,14 +357,11 @@ fireEvent(this, "show-dialog", {
 ></ha-form>
 ```
 
-**Gallery Documentation:**
-
-- `gallery/src/pages/components/ha-form.markdown`
-
 ### Alert Component (ha-alert)
 
 - Types: `error`, `warning`, `info`, `success`
-- Properties: `title`, `alert-type`, `dismissable`, `icon`, `action`, `rtl`
+- Properties: `title`, `alert-type`, `dismissable`, `narrow`
+- Slots: `icon` (override the leading icon), `action` (custom action content)
 - Content announced by screen readers when dynamically displayed
 
 ```html
@@ -316,10 +369,6 @@ fireEvent(this, "show-dialog", {
 <ha-alert alert-type="warning" title="Warning">Description</ha-alert>
 <ha-alert alert-type="success" dismissable>Success message</ha-alert>
 ```
-
-**Gallery Documentation:**
-
-- `gallery/src/pages/components/ha-alert.markdown`
 
 ### Keyboard Shortcuts (ShortcutManager)
 
@@ -344,7 +393,6 @@ The `ha-tooltip` component wraps Web Awesome tooltip with Home Assistant theming
 
 - **Component definition**: `src/components/ha-tooltip.ts`
 - **Usage example**: `src/components/ha-label.ts`
-- **Gallery documentation**: `gallery/src/pages/components/ha-tooltip.markdown`
 
 ## Common Patterns
 
@@ -374,7 +422,7 @@ export class HaPanelMyFeature extends SubscribeMixin(LitElement) {
 
 #### Creating a Lovelace Card
 
-**Purpose**: Cards allow users to tell different stories about their house (based on gallery)
+**Purpose**: Cards allow users to tell different stories about their house.
 
 ```typescript
 @customElement("hui-my-card")
@@ -447,9 +495,13 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 4. **Test**: `yarn test` - Add and run tests
 5. **Build**: `script/build_frontend` - Test production build
 
+### Gallery
+
+For Gallery-specific structure, page/demo naming, sidebar behavior, content standards, and commands, see [`gallery/AGENTS.md`](gallery/AGENTS.md).
+
 ### Common Pitfalls to Avoid
 
-- Don't use `querySelector` - Use refs or component properties
+- Don't manually query the DOM with `querySelector` - use the `@query`/`@queryAll` decorators or component properties
 - Don't manipulate DOM directly - Let Lit handle rendering
 - Don't use global styles - Scope styles to components
 - Don't block the main thread - Use web workers for heavy computation
@@ -477,7 +529,7 @@ When creating a pull request, you **must** use the PR template located at `.gith
 
 #### Terminology Standards
 
-**Delete vs Remove** (Based on gallery/src/pages/Text/remove-delete-add-create.markdown)
+**Delete vs Remove**
 
 - **Use "Remove"** for actions that can be restored or reapplied:
   - Removing a user's permission
@@ -540,35 +592,24 @@ When creating a pull request, you **must** use the PR template located at `.gith
 
 #### Translation Considerations
 
-- **Add translation keys**: All user-facing text must be translatable
-- **Use placeholders**: Support dynamic content in translations
+All user-facing text must be translatable — see the **Internationalization** section (under Common Patterns) for the `localize` API and placeholder usage. From a copy perspective:
+
 - **Keep context**: Provide enough context for translators
-
-```typescript
-// Good
-this.hass.localize("ui.panel.config.automation.delete_confirm", {
-  name: automation.alias,
-});
-
-// Bad - hardcoded text
-("Are you sure you want to delete this automation?");
-```
+- **Avoid concatenation**: Prefer full localized strings with placeholders over stitching translated fragments together
 
 ### Common Review Issues (From PR Analysis)
+
+Recurring, easy-to-miss problems surfaced in real PR reviews. These complement the standards above rather than repeating them — items already covered earlier (loading states, error handling, mobile layout, theming, import hygiene) are intentionally not duplicated here.
 
 #### User Experience and Accessibility
 
 - **Form validation**: Always provide proper field labels and validation feedback
 - **Form accessibility**: Prevent password managers from incorrectly identifying fields
-- **Loading states**: Show clear progress indicators during async operations
-- **Error handling**: Display meaningful error messages when operations fail
-- **Mobile responsiveness**: Ensure components work well on small screens
 - **Hit targets**: Make clickable areas large enough for touch interaction
-- **Visual feedback**: Provide clear indication of interactive states
+- **Visual feedback**: Provide clear indication of interactive states (hover, active, focus)
 
 #### Dialog and Modal Patterns
 
-- **Dialog width constraints**: Respect minimum and maximum width requirements
 - **Interview progress**: Show clear progress for multi-step operations
 - **State persistence**: Handle dialog state properly during background operations
 - **Cancel behavior**: Ensure cancel/close buttons work consistently
@@ -580,15 +621,12 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 - **Visual hierarchy**: Ensure proper font sizes and spacing ratios
 - **Grid alignment**: Components should align to the design grid system
 - **Badge placement**: Position badges and indicators consistently
-- **Color theming**: Respect theme variables and design system colors
 
 #### Code Quality Issues
 
 - **Null checking**: Always check if entities exist before accessing properties
 - **TypeScript safety**: Handle potentially undefined array/object access
-- **Import organization**: Remove unused imports and use proper type imports
-- **Event handling**: Properly subscribe and unsubscribe from events
-- **Memory leaks**: Clean up subscriptions and event listeners
+- **Event handling and cleanup**: Subscribe/unsubscribe correctly and remove listeners to avoid memory leaks
 
 #### Configuration and Props
 
@@ -599,39 +637,12 @@ this.hass.localize("ui.panel.config.automation.delete_confirm", {
 
 ## Review Guidelines
 
-### Core Requirements Checklist
+Final pre-submission checklist. Linting and formatting are enforced by tooling, so this focuses on what tools can't catch rather than restating every rule above.
 
-- [ ] TypeScript strict mode passes (`yarn lint:types`)
-- [ ] No ESLint errors or warnings (`yarn lint:eslint`)
-- [ ] Prettier formatting applied (`yarn lint:prettier`)
-- [ ] Lit analyzer passes (`yarn lint:lit`)
-- [ ] Component follows Lit best practices
-- [ ] Proper error handling implemented
-- [ ] Loading states handled
-- [ ] Mobile responsive
-- [ ] Theme variables used
-- [ ] Translations added
-- [ ] Accessible to screen readers
-- [ ] Tests added (where applicable)
-- [ ] No console statements (use proper logging)
-- [ ] Unused imports removed
-- [ ] Proper naming conventions
-
-### Text and Copy Checklist
-
-- [ ] Follows terminology guidelines (Delete vs Remove, Create vs Add)
-- [ ] Localization keys added for all user-facing text
-- [ ] Uses "Home Assistant" (never "HA" or "HASS")
-- [ ] Sentence case for ALL text (titles, headings, buttons, labels)
-- [ ] American English spelling
-- [ ] Friendly, informational tone
-- [ ] Avoids abbreviations and jargon
-- [ ] Correct terminology (integration not component)
-
-### Component-Specific Checks
-
-- [ ] ha-alert used correctly for messages
-- [ ] ha-form uses proper schema structure
+- [ ] `yarn lint` passes (TypeScript, ESLint, Prettier, Lit analyzer) and `yarn test` is green
+- [ ] Tests added for new data processing/utilities (where applicable)
+- [ ] All user-facing text is localized and follows the Text and Copy guidelines (sentence case, "Home Assistant" in full, Delete/Remove + Create/Add)
 - [ ] Components handle all states (loading, error, unavailable)
 - [ ] Entity existence checked before property access
-- [ ] Event subscriptions properly cleaned up
+- [ ] Event/subscription listeners cleaned up (no memory leaks)
+- [ ] Accessible to screen readers and keyboard

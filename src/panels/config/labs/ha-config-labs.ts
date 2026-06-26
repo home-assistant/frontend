@@ -47,10 +47,12 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
 
       return featuresToSort.sort((a, b) => {
         // Place frontend.winter_mode at the bottom
-        if (a.domain === "frontend" && a.preview_feature === "winter_mode")
+        if (a.domain === "frontend" && a.preview_feature === "winter_mode") {
           return 1;
-        if (b.domain === "frontend" && b.preview_feature === "winter_mode")
+        }
+        if (b.domain === "frontend" && b.preview_feature === "winter_mode") {
           return -1;
+        }
 
         // Sort everything else alphabetically
         return domainToName(localize, a.domain).localeCompare(
@@ -73,7 +75,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
+  protected firstUpdated(changedProps: PropertyValues<this>): void {
     super.firstUpdated(changedProps);
     // Load preview_features translations
     this.hass.loadBackendTranslation("preview_features");
@@ -275,6 +277,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
   }
 
   private _scrollToPreviewFeature(previewFeatureId: string): void {
+    // eslint-disable-next-line lit/prefer-query-decorators
     const card = this.shadowRoot?.querySelector(
       `[data-feature-id="${previewFeatureId}"]`
     ) as HTMLElement;
@@ -426,7 +429,7 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         0% {
           box-shadow:
             0 0 0 var(--ha-border-width-md) var(--primary-color),
-            0 0 var(--ha-shadow-blur-lg) rgba(var(--rgb-primary-color), 0.4);
+            0 0 12px rgba(var(--rgb-primary-color), 0.4);
         }
         100% {
           box-shadow:

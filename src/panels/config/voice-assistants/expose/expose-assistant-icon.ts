@@ -32,7 +32,6 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
             filter: this.manual ? "grayscale(100%)" : undefined,
           })}
           .voiceAssistantId=${this.assistant}
-          .hass=${this.hass}
         >
         </voice-assistant-brand-icon>
         ${this.unsupported

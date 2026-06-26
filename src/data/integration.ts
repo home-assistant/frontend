@@ -7,6 +7,7 @@ import type { HomeAssistant } from "../types";
 export const integrationsWithPanel = {
   bluetooth: "config/bluetooth",
   dhcp: "config/dhcp",
+  infrared: "config/infrared",
   matter: "config/matter",
   mqtt: "config/mqtt",
   ssdp: "config/ssdp",
@@ -107,6 +108,24 @@ export const fetchIntegrationManifests = (
     params.integrations = integrations;
   }
   return hass.callWS<IntegrationManifest[]>(params);
+};
+
+export const fetchIntegrationManifestsCollection = async (
+  connection: Connection,
+  setValue: (value: DomainManifestLookup) => void
+): Promise<() => void> => {
+  const fetched = await connection.sendMessagePromise<IntegrationManifest[]>({
+    type: "manifest/list",
+  });
+  const manifests: DomainManifestLookup = {};
+  for (const manifest of fetched) {
+    manifests[manifest.domain] = manifest;
+  }
+  setValue(manifests);
+  // One-time fetch — nothing to unsubscribe from
+  return () => {
+    // noop
+  };
 };
 
 export const fetchIntegrationManifest = (

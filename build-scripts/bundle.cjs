@@ -83,12 +83,7 @@ module.exports.swcOptions = () => ({
   },
 });
 
-module.exports.babelOptions = ({
-  latestBuild,
-  isProdBuild,
-  isTestBuild,
-  sw,
-}) => ({
+module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
   babelrc: false,
   compact: false,
   assumptions: {
@@ -101,14 +96,22 @@ module.exports.babelOptions = ({
     [
       "@babel/preset-env",
       {
-        useBuiltIns: "usage",
-        corejs: dependencies["core-js"],
-        bugfixes: true,
         shippedProposals: true,
       },
     ],
   ],
   plugins: [
+    // Inject Core-JS polyfills on demand. Babel 8 removed preset-env's
+    // `useBuiltIns`/`corejs` options, so the equivalent polyfill provider is
+    // configured directly here (`usage-global` matches the old `useBuiltIns: "usage"`).
+    [
+      "babel-plugin-polyfill-corejs3",
+      {
+        method: "usage-global",
+        version: dependencies["core-js"],
+        shippedProposals: true,
+      },
+    ],
     [
       path.join(BABEL_PLUGINS, "inline-constants-plugin.cjs"),
       {
@@ -116,32 +119,14 @@ module.exports.babelOptions = ({
         ignoreModuleNotFound: true,
       },
     ],
-    // Minify template literals for production
-    isProdBuild && [
-      "template-html-minifier",
-      {
-        modules: {
-          ...Object.fromEntries(
-            ["lit", "lit-element", "lit-html"].map((m) => [
-              m,
-              [
-                "html",
-                { name: "svg", encapsulation: "svg" },
-                { name: "css", encapsulation: "style" },
-              ],
-            ])
-          ),
-          "@polymer/polymer/lib/utils/html-tag.js": ["html"],
-        },
-        strictCSS: true,
-        htmlMinifier: module.exports.htmlMinifierOptions,
-        failOnError: false, // we can turn this off in case of false positives
-      },
-    ],
-    // Import helpers and regenerator from runtime package
+    // Import helpers and regenerator from runtime package.
+    // `moduleName` is pinned so helpers resolve from `@babel/runtime`: the
+    // corejs3 polyfill provider above otherwise redirects them to the
+    // (uninstalled) `@babel/runtime-corejs3`, which preset-env used to suppress
+    // internally when it owned the polyfill injection via `useBuiltIns`.
     [
       "@babel/plugin-transform-runtime",
-      { version: dependencies["@babel/runtime"] },
+      { version: dependencies["@babel/runtime"], moduleName: "@babel/runtime" },
     ],
     "@babel/plugin-transform-class-properties",
     "@babel/plugin-transform-private-methods",
@@ -176,11 +161,14 @@ module.exports.babelOptions = ({
     {
       // Use unambiguous for dependencies so that require() is correctly injected into CommonJS files
       // Exclusions are needed in some cases where ES modules have no static imports or exports, such as polyfills
+      // (otherwise babel-plugin-polyfill-corejs3 injects bare require("core-js/modules/...") calls
+      // that rspack does not transform, causing ReferenceError in browsers like Safari 14).
       sourceType: "unambiguous",
       include: /\/node_modules\//,
       exclude: [
         "element-internals-polyfill",
         "@?lit(?:-labs|-element|-html)?",
+        "@formatjs/(?:ecma402-abstract|intl-\\w+)",
       ].map((p) => new RegExp(`/node_modules/${p}/`)),
     },
   ],
@@ -315,6 +303,24 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isLandingPageBuild: true,
+    };
+  },
+
+  e2eTestApp({ isProdBuild, latestBuild, isStatsBuild }) {
+    return {
+      name: "e2e-test-app" + nameSuffix(latestBuild),
+      entry: {
+        main: path.resolve(paths.e2eTestApp_dir, "src/entrypoint.ts"),
+      },
+      outputPath: outputPath(paths.e2eTestApp_output_root, latestBuild),
+      publicPath: publicPath(latestBuild),
+      defineOverlay: {
+        __VERSION__: JSON.stringify(`E2E-TEST-${env.version()}`),
+        __DEMO__: true,
+      },
+      isProdBuild,
+      latestBuild,
+      isStatsBuild,
     };
   },
 };

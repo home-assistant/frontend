@@ -76,12 +76,7 @@ class DialogJoinMediaPlayers extends LitElement {
 
     const entityId = this._entityId;
     return html`
-      <ha-dialog
-        .hass=${this.hass}
-        .open=${this._open}
-        flexcontent
-        @closed=${this._dialogClosed}
-      >
+      <ha-dialog .open=${this._open} flexcontent @closed=${this._dialogClosed}>
         <ha-dialog-header show-border slot="header">
           <ha-icon-button
             .label=${this.hass.localize("ui.common.close")}
@@ -105,7 +100,6 @@ class DialogJoinMediaPlayers extends LitElement {
           : nothing}
         <div class="content">
           <ha-media-player-toggle
-            .hass=${this.hass}
             .entityId=${entityId}
             checked
             disabled
@@ -113,7 +107,6 @@ class DialogJoinMediaPlayers extends LitElement {
           ${this._mediaPlayerEntities(this.hass.entities).map(
             (entity) =>
               html`<ha-media-player-toggle
-                .hass=${this.hass}
                 .entityId=${entity.entity_id}
                 .checked=${this._selectedEntities.includes(entity.entity_id)}
                 @change=${this._handleSelectedChange}

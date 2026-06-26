@@ -14,6 +14,8 @@ export class HaThemeSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
@@ -21,9 +23,9 @@ export class HaThemeSelector extends LitElement {
   protected render() {
     return html`
       <ha-theme-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
+        .helper=${this.helper}
         .includeDefault=${this.selector.theme?.include_default}
         .disabled=${this.disabled}
         .required=${this.required}

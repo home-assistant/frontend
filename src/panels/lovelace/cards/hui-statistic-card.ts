@@ -5,7 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { formatNumber } from "../../../common/number/format_number";
+import {
+  formatNumber,
+  getNumberFormatOptions,
+} from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
@@ -203,15 +206,20 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         : "") ||
       getStatisticLabel(this.hass, this._config.entity, this._metadata);
 
+    const interactive = !isExternalStatistic(this._config.entity);
+
     return html`
-      <ha-card @click=${this._handleClick} tabindex="0">
+      <ha-card
+        @click=${interactive ? this._handleClick : nothing}
+        .tabIndex=${interactive ? 0 : -1}
+        ?interactive=${interactive}
+      >
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
           <div class="icon">
             <ha-state-icon
               .icon=${this._config.icon}
               .stateObj=${stateObj}
-              .hass=${this.hass}
             ></ha-state-icon>
           </div>
         </div>
@@ -221,7 +229,14 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
               ? ""
               : this._value === null
                 ? "?"
-                : formatNumber(this._value, this.hass.locale)}</span
+                : formatNumber(
+                    this._value,
+                    this.hass.locale,
+                    getNumberFormatOptions(
+                      undefined,
+                      this.hass.entities[this._config.entity]
+                    )
+                  )}</span
           >
           <span class="measurement"
             >${this._config.unit ||
@@ -399,8 +414,10 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          cursor: pointer;
           outline: none;
+        }
+        ha-card[interactive] {
+          cursor: pointer;
         }
 
         .header {

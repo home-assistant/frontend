@@ -26,7 +26,7 @@ const chips: {
 export class DemoHaChips extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <ha-card header="ha-chip demo">
+      <ha-card>
         <div class="card-content">
           <p>Action chip</p>
           <ha-chip-set>
@@ -82,7 +82,7 @@ export class DemoHaChips extends LitElement {
                   ${chip.icon
                     ? html`<ha-svg-icon slot="icon" .path=${chip.icon}>
                       </ha-svg-icon>`
-                    : ""}
+                    : nothing}
                   ${chip.content}
                 </ha-input-chip>
               `

@@ -15,7 +15,7 @@ export const hardwareTabs = (hass: HomeAssistant): PageNavigation[] => {
     },
   ];
 
-  if (isComponentLoaded(hass, "hassio")) {
+  if (isComponentLoaded(hass.config, "hassio")) {
     tabs.push({
       path: "/config/hardware/all",
       translationKey: "ui.panel.config.hardware.system_hardware.title",
@@ -48,7 +48,7 @@ class HaConfigHardware extends HassRouterPage {
     beforeRender: (page) => {
       if (
         page === "all" &&
-        (!this.hass || !isComponentLoaded(this.hass, "hassio"))
+        (!this.hass || !isComponentLoaded(this.hass.config, "hassio"))
       ) {
         return "overview";
       }

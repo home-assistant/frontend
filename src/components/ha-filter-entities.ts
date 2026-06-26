@@ -1,18 +1,25 @@
+import { consume, type ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
+import {
+  apiContext,
+  internationalizationContext,
+  statesContext,
+} from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-list";
@@ -22,7 +29,20 @@ import type { HaInputSearch } from "./input/ha-input-search";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  @state()
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -36,7 +56,9 @@ export class HaFilterEntities extends LitElement {
 
   @state() private _filter?: string;
 
-  public willUpdate(properties: PropertyValues) {
+  @query("ha-list") private _list?: HTMLElement;
+
+  public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
     if (!this.hasUpdated) {
@@ -60,7 +82,7 @@ export class HaFilterEntities extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize("ui.panel.config.entities.caption")}
+          ${this._localize("ui.panel.config.entities.caption")}
           ${this.value?.length
             ? html`<div class="badge">${this.value?.length}</div>
                 <ha-icon-button
@@ -80,14 +102,16 @@ export class HaFilterEntities extends LitElement {
               <ha-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
-                    this.hass.states,
+                    this._states,
                     this.type,
                     this._filter || "",
+                    this._i18n.locale.language,
                     this.value
                   )}
                   .keyFunction=${this._keyFunction}
                   .renderItem=${this._renderItem}
                   @click=${this._handleItemClick}
+                  @keydown=${this._handleItemKeydown}
                 >
                 </lit-virtualizer>
               </ha-list>
@@ -97,12 +121,11 @@ export class HaFilterEntities extends LitElement {
     `;
   }
 
-  protected updated(changed) {
+  protected updated(changed: PropertyValues<this>) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("ha-list")!.style.height =
-          `${this.clientHeight - 49 - 4 - 32}px`;
+        this._list!.style.height = `${this.clientHeight - 49 - 4 - 32}px`;
         // 49px - height of a header + 1px
         // 4px - padding-top of the search-input
         // 32px - height of the search input
@@ -116,17 +139,21 @@ export class HaFilterEntities extends LitElement {
     !entity
       ? nothing
       : html`<ha-check-list-item
+          tabindex="0"
           .value=${entity.entity_id}
           .selected=${this.value?.includes(entity.entity_id) ?? false}
           graphic="icon"
         >
-          <ha-state-icon
-            slot="graphic"
-            .hass=${this.hass}
-            .stateObj=${entity}
-          ></ha-state-icon>
+          <ha-state-icon slot="graphic" .stateObj=${entity}></ha-state-icon>
           ${computeStateName(entity)}
         </ha-check-list-item>`;
+
+  private _handleItemKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      this._handleItemClick(ev);
+    }
+  }
 
   private _handleItemClick(ev) {
     const listItem = ev.target.closest("ha-check-list-item");
@@ -157,9 +184,10 @@ export class HaFilterEntities extends LitElement {
 
   private _entities = memoizeOne(
     (
-      states: HomeAssistant["states"],
+      states: ContextType<typeof statesContext>,
       type: this["type"],
       filter: string,
+      language: string | undefined,
       _value
     ) => {
       const values = Object.values(states);
@@ -174,11 +202,7 @@ export class HaFilterEntities extends LitElement {
                 .includes(filter))
         )
         .sort((a, b) =>
-          stringCompare(
-            computeStateName(a),
-            computeStateName(b),
-            this.hass.locale.language
-          )
+          stringCompare(computeStateName(a), computeStateName(b), language)
         );
     }
   );
@@ -197,7 +221,7 @@ export class HaFilterEntities extends LitElement {
 
     for (const entityId of this.value) {
       if (this.type) {
-        relatedPromises.push(findRelated(this.hass, "entity", entityId));
+        relatedPromises.push(findRelated(this._api, "entity", entityId));
       }
     }
 

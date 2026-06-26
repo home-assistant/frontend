@@ -6,7 +6,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireRelatedContext,
+  type RelatedContextItem,
+} from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -22,15 +27,19 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
+  haStyleScrollbar,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
+import { getConfigRelatedContext } from "../../common/get-config-related-context";
 import "../../sections/hui-section";
+import { getCardDefaultConfig } from "../get-card-default-config";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { GUIModeChangedEvent } from "../types";
@@ -51,7 +60,7 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard
-  extends LitElement
+  extends DirtyStateProviderMixin<LovelaceCardConfig>()(LitElement)
   implements HassDialog<EditCardDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -79,8 +88,6 @@ export class HuiDialogEditCard
 
   @state() private _documentationURL?: string;
 
-  @state() private _dirty = false;
-
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -90,16 +97,26 @@ export class HuiDialogEditCard
     this._sectionConfig = this._params.sectionConfig;
 
     this._cardConfig = params.cardConfig;
-    this._dirty = Boolean(this._params.isNew);
 
     this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
+    const effectiveDefaults = this._cardConfig?.type
+      ? await getCardDefaultConfig(this._cardConfig.type)
+      : undefined;
+    const normalize = (config: LovelaceCardConfig) =>
+      stripDefaults(config, effectiveDefaults);
+    if (params.isNew && this._cardConfig) {
+      this._initDirtyTracking({ type: "deep" }, { type: "" }, normalize);
+      this._updateDirtyState(this._cardConfig);
+    } else {
+      this._initDirtyTracking({ type: "deep" }, this._cardConfig, normalize);
+    }
   }
 
   public closeDialog(): boolean {
-    if (this._dirty) {
+    if (this.isEffectiveDirtyState) {
       this._confirmCancel();
       return false;
     }
@@ -113,7 +130,7 @@ export class HuiDialogEditCard
     this._cardConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
-    this._dirty = false;
+    this._updateRelatedContext(undefined);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -130,6 +147,21 @@ export class HuiDialogEditCard
         this._cardConfig!.type
       );
     }
+
+    this._updateRelatedContext(getConfigRelatedContext(this._cardConfig));
+  }
+
+  private _relatedContext?: RelatedContextItem;
+
+  private _updateRelatedContext(context: RelatedContextItem | undefined): void {
+    if (
+      context?.itemType === this._relatedContext?.itemType &&
+      context?.itemId === this._relatedContext?.itemId
+    ) {
+      return;
+    }
+    this._relatedContext = context;
+    fireRelatedContext(this, context);
   }
 
   protected render() {
@@ -166,10 +198,9 @@ export class HuiDialogEditCard
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         .width=${this.large ? "full" : "large"}
-        prevent-scrim-close
+        .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
         @opened=${this._opened}
@@ -180,7 +211,12 @@ export class HuiDialogEditCard
           .label=${this.hass.localize("ui.common.close")}
           .path=${mdiClose}
         ></ha-icon-button>
-        <span slot="headerTitle" @click=${this._enlarge}>${heading}</span>
+        <span
+          slot="headerTitle"
+          class="title-enlargeable"
+          @click=${this._enlarge}
+          >${heading}</span
+        >
         ${this._documentationURL !== undefined
           ? html`
               <ha-icon-button
@@ -195,7 +231,7 @@ export class HuiDialogEditCard
             `
           : nothing}
         <div class="content">
-          <div class="element-editor">
+          <div class="element-editor ha-scrollbar">
             <hui-card-element-editor
               autofocus
               .showVisibilityTab=${this._cardConfig.type !== "conditional"}
@@ -209,7 +245,7 @@ export class HuiDialogEditCard
               @editor-save=${this._save}
             ></hui-card-element-editor>
           </div>
-          <div class="element-preview">
+          <div class="element-preview ha-scrollbar">
             ${this._sectionConfig
               ? html`
                   <hui-section
@@ -257,18 +293,14 @@ export class HuiDialogEditCard
           >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
-          ${this._cardConfig !== undefined && this._dirty
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  ?disabled=${!this._canSave}
-                  @click=${this._save}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize("ui.common.save")}
-                </ha-button>
-              `
-            : ``}
+          <ha-button
+            slot="primaryAction"
+            ?disabled=${!this._canSave || this._saving || !this.isDirtyState}
+            @click=${this._save}
+            .loading=${this._saving}
+          >
+            ${this.hass!.localize("ui.common.save")}
+          </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -284,11 +316,14 @@ export class HuiDialogEditCard
     ev.stopPropagation();
   }
 
-  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    this._cardConfig = deepFreeze(ev.detail.config);
+  private _handleConfigChanged(
+    ev: HASSDomEvent<ConfigChangedEvent<LovelaceCardConfig>>
+  ) {
+    const config = deepFreeze(ev.detail.config);
+    this._cardConfig = config;
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
-    this._dirty = true;
+    this._updateDirtyState(config);
   }
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
@@ -356,7 +391,7 @@ export class HuiDialogEditCard
     if (ev) {
       ev.stopPropagation();
     }
-    this._dirty = false;
+    this._discardDirtyStateChanges();
     this.closeDialog();
   }
 
@@ -364,7 +399,7 @@ export class HuiDialogEditCard
     if (!this._canSave) {
       return;
     }
-    if (!this._dirty) {
+    if (!this.isDirtyState) {
       this.closeDialog();
       return;
     }
@@ -372,7 +407,7 @@ export class HuiDialogEditCard
     try {
       await this._params!.saveCardConfig(this._cardConfig!);
       this._saving = false;
-      this._dirty = false;
+      this._markDirtyStateClean();
       showSaveSuccessToast(this, this.hass);
       this.closeDialog();
     } catch (err: any) {
@@ -387,9 +422,15 @@ export class HuiDialogEditCard
     return [
       haStyleDialog,
       haStyleDialogFixedTop,
+      haStyleScrollbar,
       css`
         :host {
-          --code-mirror-max-height: calc(100vh - 176px);
+          --code-mirror-max-height: calc(100vh - 209px);
+          /* 68px - header
+             69px - footer
+             24px - padding-top for #content
+             40px - margin-top for mdc-dialog__surface
+             8px - spacing under mdc-dialog__surface */
         }
 
         ha-dialog {
@@ -407,6 +448,7 @@ export class HuiDialogEditCard
           .content {
             width: 100%;
             max-width: 100%;
+            gap: var(--ha-space-3);
           }
         }
 
@@ -439,18 +481,26 @@ export class HuiDialogEditCard
           max-width: var(--ha-view-sections-column-max-width, 500px);
         }
         .content .element-editor {
-          margin: 0 10px;
+          padding-inline-end: var(--ha-space-2);
+          margin-inline-start: var(--ha-space-1);
+          margin-bottom: 0;
         }
 
         @media (min-width: 1000px) {
           .content {
             flex-direction: row;
+            max-height: var(--code-mirror-max-height);
           }
-          .content > * {
+          .content > .element-editor {
+            padding-inline-end: var(--ha-space-4);
+          }
+          .content > .element-editor,
+          .content > .element-preview {
             flex-basis: 0;
             flex-grow: 1;
             flex-shrink: 1;
             min-width: 0;
+            height: auto;
           }
           .content hui-card {
             padding: 8px 10px;
@@ -478,8 +528,6 @@ export class HuiDialogEditCard
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: var(--ha-border-radius-sm);
-          position: sticky;
-          top: 0;
         }
         .element-preview ha-spinner {
           top: calc(50% - 24px);
@@ -501,6 +549,9 @@ export class HuiDialogEditCard
         }
         ha-dialog ha-icon-button[slot="headerActionItems"] {
           color: var(--secondary-text-color);
+        }
+        .title-enlargeable {
+          display: block;
         }
       `,
     ];

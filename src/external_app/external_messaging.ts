@@ -187,6 +187,11 @@ interface EMOutgoingMessageFocusElement extends EMMessage {
   };
 }
 
+// These types are handled internally by the Android app via postMessage.
+// They are not sent by the frontend and should not be used directly.
+// They are intentionally listed here to prevent anyone from using them unintentionally.
+type RejectedEMMessageType = "onHomeAssistantSetTheme" | "handleBlob";
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -315,6 +320,18 @@ export interface EMIncomingMessageKioskModeSet {
   };
 }
 
+export interface MatterCommissionFinish {
+  name: string | null;
+  success: boolean;
+}
+
+export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
+  id: number;
+  type: "command";
+  command: "matter/commission/finish";
+  payload: MatterCommissionFinish;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -326,6 +343,7 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageBarCodeScanAborted
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
+  | EMIncomingMessageMatterCommissionFinish
   | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
@@ -341,6 +359,7 @@ export interface ExternalConfig {
   canWriteTag?: boolean;
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
+  hasMatterStatusReport?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
@@ -393,8 +412,16 @@ export class ExternalMessaging {
    * Send message to external app that expects a response.
    * @param msg message to send
    */
-  public sendMessage<T extends keyof EMOutgoingMessageWithAnswer>(
-    msg: EMOutgoingMessageWithAnswer[T]["request"]
+  public sendMessage<
+    T extends keyof EMOutgoingMessageWithAnswer,
+    TType extends string = EMOutgoingMessageWithAnswer[T]["request"]["type"],
+  >(
+    msg: EMOutgoingMessageWithAnswer[T]["request"] & {
+      type: TType &
+        (TType extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
   ): Promise<EMOutgoingMessageWithAnswer[T]["response"]> {
     const msgId = ++this.msgId;
     msg.id = msgId;
@@ -412,7 +439,14 @@ export class ExternalMessaging {
    * Send message to external app without expecting a response.
    * @param msg message to send
    */
-  public fireMessage(msg: EMOutgoingMessageWithoutAnswer) {
+  public fireMessage<T extends string>(
+    msg: EMOutgoingMessageWithoutAnswer & {
+      type: T &
+        (T extends RejectedEMMessageType
+          ? "ERROR: message type is rejected"
+          : {});
+    }
+  ) {
     if (!msg.id) {
       msg.id = ++this.msgId;
     }
@@ -473,7 +507,11 @@ export class ExternalMessaging {
       // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
     }
-    if (window.externalApp) {
+    if (window.externalAppV2) {
+      window.externalAppV2.postMessage(
+        JSON.stringify({ type: "externalBus", payload: msg })
+      );
+    } else if (window.externalApp) {
       window.externalApp.externalBus(JSON.stringify(msg));
     } else {
       window.webkit!.messageHandlers.externalBus.postMessage(msg);

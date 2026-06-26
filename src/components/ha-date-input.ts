@@ -123,6 +123,9 @@ export class HaDateInput extends LitElement {
   }
 
   static styles = css`
+    :host {
+      min-width: 0px;
+    }
     ha-svg-icon {
       color: var(--secondary-text-color);
     }

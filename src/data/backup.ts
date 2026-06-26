@@ -181,13 +181,27 @@ export interface RestoreBackupParams {
   restore_homeassistant?: boolean;
 }
 
-export const fetchBackupConfig = (hass: HomeAssistant) =>
+export const fetchBackupConfig = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
 
 export const updateBackupConfig = (
   hass: HomeAssistant,
   config: BackupMutableConfig
 ) => hass.callWS({ type: "backup/config/update", ...config });
+
+export const saveBackupConfig = (hass: HomeAssistant, config: BackupConfig) =>
+  updateBackupConfig(hass, {
+    create_backup: {
+      agent_ids: config.create_backup.agent_ids,
+      include_folders: config.create_backup.include_folders ?? [],
+      include_database: config.create_backup.include_database,
+      include_addons: config.create_backup.include_addons ?? [],
+      include_all_addons: config.create_backup.include_all_addons,
+      password: config.create_backup.password,
+    },
+    retention: config.retention,
+    schedule: config.schedule,
+  });
 
 export const getBackupDownloadUrl = (
   id: string,
@@ -471,6 +485,12 @@ export const getFormattedBackupTime = memoizeOne(
 );
 
 export const SUPPORTED_UPLOAD_FORMAT = "application/x-tar";
+
+// Browsers report the MIME type of a .tar inconsistently (Firefox on Windows
+// gives an empty or different type), so accept it by extension as well.
+export const isSupportedBackupFile = (file: File): boolean =>
+  file.type === SUPPORTED_UPLOAD_FORMAT ||
+  file.name.toLowerCase().endsWith(".tar");
 
 export interface BackupUploadFileFormData {
   file?: File;

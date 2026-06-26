@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -59,7 +60,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     }
   }
 
-  protected update(changedProperties) {
+  protected update(changedProperties: PropertyValues<this>) {
     super.update(changedProperties);
 
     if (this._cards) {

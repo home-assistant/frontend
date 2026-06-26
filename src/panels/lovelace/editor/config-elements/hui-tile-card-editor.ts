@@ -40,6 +40,8 @@ import { entityNameStruct } from "../structs/entity-name-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
+import { stateContentHasTimestamp } from "../../../../state-display/state-display";
+import { timeFormatConfigStruct } from "../../components/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -60,6 +62,7 @@ const cardConfigStruct = assign(
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
+    time_format: optional(timeFormatConfigStruct),
   })
 );
 
@@ -89,7 +92,8 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean
+      hideState: boolean,
+      showTimeFormat: boolean
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -151,6 +155,16 @@ export class HuiTileCardEditor
                     },
                     context: {
                       filter_entity: "entity",
+                    },
+                  },
+                ] as const satisfies readonly HaFormSchema[])
+              : []),
+            ...(showTimeFormat
+              ? ([
+                  {
+                    name: "time_format",
+                    selector: {
+                      ui_time_format: {},
                     },
                   },
                 ] as const satisfies readonly HaFormSchema[])
@@ -271,10 +285,19 @@ export class HuiTileCardEditor
 
     const entityId = this._config!.entity;
 
+    const showTimeFormat =
+      !this._config.hide_state &&
+      stateContentHasTimestamp(
+        entityId,
+        this.hass.states[entityId],
+        this._config.state_content
+      );
+
     const schema = this._schema(
       this.hass.localize,
       entityId,
-      this._config.hide_state ?? false
+      this._config.hide_state ?? false,
+      showTimeFormat
     );
 
     const vertical = this._config.vertical ?? false;

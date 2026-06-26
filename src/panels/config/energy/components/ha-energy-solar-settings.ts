@@ -101,7 +101,8 @@ export class EnergySolarSettings extends LitElement {
                               .path=${mdiSolarPower}
                             ></ha-svg-icon>`}
                         <span class="content"
-                          >${getStatisticLabel(
+                          >${source.name ||
+                          getStatisticLabel(
                             this.hass,
                             source.stat_energy_from,
                             this.statsMetadata?.[source.stat_energy_from]
@@ -137,7 +138,7 @@ export class EnergySolarSettings extends LitElement {
                   <ha-button
                     @click=${this._addSource}
                     appearance="filled"
-                    size="small"
+                    size="s"
                   >
                     <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
@@ -154,6 +155,7 @@ export class EnergySolarSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsSolarDialog(this, {
+      statsMetadata: this.statsMetadata,
       info: this.info!,
       solar_sources: this.preferences.energy_sources.filter(
         (src) => src.type === "solar"
@@ -171,6 +173,7 @@ export class EnergySolarSettings extends LitElement {
     const origSource: SolarSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsSolarDialog(this, {
+      statsMetadata: this.statsMetadata,
       info: this.info!,
       source: { ...origSource },
       solar_sources: this.preferences.energy_sources.filter(

@@ -6,7 +6,7 @@ import "../../../../../components/ha-card";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import "../../../../../components/ha-switch";
 import type { ZHAConfiguration } from "../../../../../data/zha";
 import {
@@ -35,7 +35,7 @@ class ZHAOptionsPage extends LitElement {
 
   @state() private _customBattery = false;
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchConfiguration();
@@ -139,18 +139,19 @@ class ZHAOptionsPage extends LitElement {
                           "ui.panel.config.zha.configuration_page.default_light_transition_description"
                         )}</span
                       >
-                      <ha-textfield
+                      <ha-input
                         slot="end"
                         type="number"
                         .value=${String(
                           (this._configuration.data.zha_options
                             ?.default_light_transition as number) ?? 0
                         )}
-                        .suffix=${"s"}
                         .min=${0}
                         .step=${0.5}
                         @change=${this._defaultLightTransitionChanged}
-                      ></ha-textfield>
+                      >
+                        <span slot="end">s</span>
+                      </ha-input>
                     </ha-md-list-item>
                     <ha-md-list-item>
                       <span slot="headline"
@@ -231,7 +232,7 @@ class ZHAOptionsPage extends LitElement {
                     ${this._customMains
                       ? html`
                           <ha-md-list-item>
-                            <ha-textfield
+                            <ha-input
                               slot="end"
                               type="number"
                               .value=${String(
@@ -239,11 +240,12 @@ class ZHAOptionsPage extends LitElement {
                                   ?.consider_unavailable_mains as number) ??
                                   7200
                               )}
-                              .suffix=${"s"}
                               .min=${1}
                               .step=${1}
                               @change=${this._customMainsSecondsChanged}
-                            ></ha-textfield>
+                            >
+                              <span slot="end">s</span>
+                            </ha-input>
                           </ha-md-list-item>
                         `
                       : nothing}
@@ -272,7 +274,7 @@ class ZHAOptionsPage extends LitElement {
                     ${this._customBattery
                       ? html`
                           <ha-md-list-item>
-                            <ha-textfield
+                            <ha-input
                               slot="end"
                               type="number"
                               .value=${String(
@@ -280,11 +282,12 @@ class ZHAOptionsPage extends LitElement {
                                   ?.consider_unavailable_battery as number) ??
                                   21600
                               )}
-                              .suffix=${"s"}
                               .min=${1}
                               .step=${1}
                               @change=${this._customBatterySecondsChanged}
-                            ></ha-textfield>
+                            >
+                              <span slot="end">s</span>
+                            </ha-input>
                           </ha-md-list-item>
                         `
                       : nothing}
@@ -440,7 +443,7 @@ class ZHAOptionsPage extends LitElement {
         }
 
         ha-select,
-        ha-textfield {
+        ha-input {
           min-width: 210px;
         }
 
@@ -451,7 +454,7 @@ class ZHAOptionsPage extends LitElement {
 
         @media all and (max-width: 450px) {
           ha-select,
-          ha-textfield {
+          ha-input {
             min-width: 160px;
             width: 160px;
           }

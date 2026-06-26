@@ -18,9 +18,15 @@ export const formatSelectorValue = (
   }
 
   if ("text" in selector) {
-    const { prefix, suffix } = selector.text || {};
+    const { prefix, suffix, type } = selector.text || {};
 
     const texts = ensureArray(value);
+
+    // Never reveal secret values in a read-only preview.
+    if (type === "password") {
+      return texts.map(() => "••••••••").join(", ");
+    }
+
     return texts
       .map((text) => `${prefix || ""}${text}${suffix || ""}`)
       .join(", ");
@@ -98,5 +104,30 @@ export const formatSelectorValue = (
       .join(", ");
   }
 
-  return ensureArray(value).join(", ");
+  if ("object" in selector) {
+    const { fields } = selector.object ?? {};
+    const items = ensureArray(value);
+    return items
+      .map((item) => {
+        if (item == null || typeof item !== "object") {
+          return String(item);
+        }
+        if (fields) {
+          return Object.entries(fields)
+            .filter(([key]) => key in item && item[key] != null)
+            .map(([key, field]) =>
+              formatSelectorValue(hass, item[key], field.selector)
+            )
+            .join(" = ");
+        }
+        return JSON.stringify(item);
+      })
+      .join(", ");
+  }
+
+  return ensureArray(value)
+    .map((v) =>
+      v != null && typeof v === "object" ? JSON.stringify(v) : String(v)
+    )
+    .join(", ");
 };

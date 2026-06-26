@@ -1,8 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-md-list";
-import "../../components/ha-md-list-item";
+import "../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { setWakeWords } from "../../data/assist_satellite";
 import type { HomeAssistant } from "../../types";
@@ -35,28 +36,28 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
           )}
         </p>
       </div>
-      <ha-md-list>
+      <ha-list-base>
         ${this.assistConfiguration!.available_wake_words.map(
           (wakeWord) =>
-            html`<ha-md-list-item
-              interactive
-              type="button"
+            html`<ha-list-item-button
               @click=${this._wakeWordPicked}
               .value=${wakeWord.id}
             >
               ${wakeWord.wake_word}
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>`
+            </ha-list-item-button>`
         )}
-      </ha-md-list>`;
+      </ha-list-base>`;
   }
 
-  private async _wakeWordPicked(ev) {
+  private async _wakeWordPicked(ev: Event) {
     if (!this.assistEntityId) {
       return;
     }
 
-    const wakeWordId = ev.currentTarget.value;
+    const wakeWordId = (
+      ev.currentTarget as HaListItemButton & { value: string }
+    ).value;
 
     await setWakeWords(this.hass, this.assistEntityId, [wakeWordId]);
     this._nextStep();
@@ -75,7 +76,7 @@ export class HaVoiceAssistantSetupStepChangeWakeWord extends LitElement {
       .padding {
         padding: 24px;
       }
-      ha-md-list {
+      ha-list-base {
         width: 100%;
         text-align: initial;
         margin-bottom: 24px;

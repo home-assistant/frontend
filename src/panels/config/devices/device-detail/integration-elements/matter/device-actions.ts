@@ -11,7 +11,6 @@ import {
   NetworkType,
   getMatterNodeDiagnostics,
 } from "../../../../../../data/matter";
-import { getMatterLockInfo } from "../../../../../../data/matter-lock";
 import type { HomeAssistant } from "../../../../../../types";
 import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
 import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
@@ -109,23 +108,14 @@ export const getMatterDeviceActions = async (
   );
 
   if (lockEntity) {
-    try {
-      const lockInfo = await getMatterLockInfo(hass, lockEntity.entity_id);
-      if (lockInfo.supports_user_management) {
-        actions.push({
-          label: hass.localize(
-            "ui.panel.config.matter.device_actions.manage_lock"
-          ),
-          icon: mdiAccountLock,
-          action: () =>
-            showMatterLockManageDialog(el, {
-              entity_id: lockEntity.entity_id,
-            }),
-        });
-      }
-    } catch {
-      // Lock info not available, skip lock management action
-    }
+    actions.push({
+      label: hass.localize("ui.panel.config.matter.device_actions.manage_lock"),
+      icon: mdiAccountLock,
+      action: () =>
+        showMatterLockManageDialog(el, {
+          entity_id: lockEntity.entity_id,
+        }),
+    });
   }
 
   return actions;

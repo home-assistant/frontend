@@ -1,6 +1,13 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
@@ -12,6 +19,7 @@ import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
+import { narrowViewportContext } from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
 
@@ -25,15 +33,16 @@ export interface PageNavigation {
   translationKey?: string;
   component?: string | string[];
   name?: string;
-  not_component?: string | string[];
   core?: boolean;
-  advancedOnly?: boolean;
+  /** Hide from non-admin users in filtered navigation and quick bar. */
+  adminOnly?: boolean;
   iconPath?: string;
   iconSecondaryPath?: string;
   iconViewBox?: string;
   description?: string;
   iconColor?: string;
   info?: any;
+  filter?: (hass: HomeAssistant) => boolean;
 }
 
 @customElement("hass-tabs-subpage")
@@ -52,7 +61,9 @@ export class HassTabsSubpage extends LitElement {
 
   @property({ attribute: false }) public tabs!: PageNavigation[];
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @state()
+  @consume({ context: narrowViewportContext, subscribe: true })
+  private _narrow = false;
 
   @property({ type: Boolean, reflect: true, attribute: "is-wide" })
   public isWide = false;
@@ -74,6 +85,8 @@ export class HassTabsSubpage extends LitElement {
   public showTabs = false;
 
   @state() private _activeTab?: PageNavigation;
+
+  @query(".content") private _content?: HTMLDivElement;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -107,7 +120,7 @@ export class HassTabsSubpage extends LitElement {
           <a href=${page.path} @click=${this._tabClicked}>
             <ha-tab
               .active=${page.path === activeTab?.path}
-              .narrow=${this.narrow}
+              .narrow=${this._narrow}
               .name=${page.translationKey
                 ? localizeFunc(page.translationKey)
                 : page.name}
@@ -125,7 +138,9 @@ export class HassTabsSubpage extends LitElement {
     }
   );
 
-  public willUpdate(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues<this>) {
+    this.toggleAttribute("narrow", this._narrow);
+
     if (changedProperties.has("route")) {
       const currentPath = `${this.route.prefix}${this.route.path}`;
       this._activeTab = this.tabs.find((tab) =>
@@ -142,39 +157,32 @@ export class HassTabsSubpage extends LitElement {
       this.hass.config.components,
       this.hass.language,
       this.hass.userData,
-      this.narrow,
+      this._narrow,
       this.localizeFunc || this.hass.localize
     );
     return html`
-      <div class="toolbar ${classMap({ narrow: this.narrow })}">
+      <div class="toolbar ${classMap({ narrow: this._narrow })}">
         <slot name="toolbar">
           <div class="toolbar-content">
             ${this.mainPage || (!this.backPath && history.state?.root)
-              ? html`
-                  <ha-menu-button
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                  ></ha-menu-button>
-                `
+              ? html`<ha-menu-button></ha-menu-button>`
               : this.backPath
                 ? html`
                     <ha-icon-button-arrow-prev
                       .href=${this.backPath}
-                      .hass=${this.hass}
                     ></ha-icon-button-arrow-prev>
                   `
                 : html`
                     <ha-icon-button-arrow-prev
-                      .hass=${this.hass}
                       @click=${this._backTapped}
                     ></ha-icon-button-arrow-prev>
                   `}
-            ${this.narrow || !this.showTabs
+            ${this._narrow || !this.showTabs
               ? html`<div class="main-title">
                   <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
                 </div>`
               : ""}
-            ${this.showTabs && !this.narrow
+            ${this.showTabs && !this._narrow
               ? html`<div id="tabbar">${tabs}</div>`
               : ""}
             <div id="toolbar-icon">
@@ -182,7 +190,7 @@ export class HassTabsSubpage extends LitElement {
             </div>
           </div>
         </slot>
-        ${this.showTabs && this.narrow
+        ${this.showTabs && this._narrow
           ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
           : ""}
       </div>
@@ -209,6 +217,15 @@ export class HassTabsSubpage extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  public focusContentScroller() {
+    if (!this._content) {
+      return;
+    }
+
+    this._content.style.outline = "none";
+    this._content.focus({ preventScroll: true });
   }
 
   private _backTapped(): void {
@@ -355,6 +372,7 @@ export class HassTabsSubpage extends LitElement {
         }
 
         .main-title {
+          min-width: 0;
           flex: 1;
           max-height: var(--header-height);
           line-height: var(--ha-line-height-normal);
@@ -403,6 +421,7 @@ export class HassTabsSubpage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          --ha-button-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow][show-tabs]) #fab {
           bottom: calc(84px + var(--safe-area-inset-bottom, 0px));

@@ -11,7 +11,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-icon";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import type { User } from "../../../data/user";
 import {
@@ -23,7 +23,7 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
 import { storage } from "../../../common/decorators/storage";
@@ -165,7 +165,7 @@ export class HaConfigUsers extends LitElement {
     }
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchUsers();
   }
@@ -195,14 +195,10 @@ export class HaConfigUsers extends LitElement {
         has-fab
         clickable
       >
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.users.picker.add_user")}
-          extended
-          @click=${this._addUser}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._addUser}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.users.picker.add_user")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

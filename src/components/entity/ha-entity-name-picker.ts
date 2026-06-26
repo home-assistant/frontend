@@ -88,7 +88,7 @@ export class HaEntityNamePicker extends LitElement {
     }
   }
 
-  protected willUpdate(_changedProperties: PropertyValues): void {
+  protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (this._mode === undefined) {
       const items = this._toItems(this.value);
       this._mode =
@@ -117,7 +117,7 @@ export class HaEntityNamePicker extends LitElement {
         <div class="header">
           ${this.label ? html`<label>${this.label}</label>` : nothing}
           <ha-button-toggle-group
-            size="small"
+            size="s"
             .buttons=${modeButtons}
             .active=${this._mode}
             .disabled=${this.disabled}

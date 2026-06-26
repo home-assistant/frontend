@@ -29,7 +29,7 @@ export interface AreaControlPickerItem extends PickerComboBoxItem {
   deviceClass?: string;
 }
 
-const AREA_CONTROL_DOMAINS: readonly AreaControlDomain[] = [
+const AREA_CONTROL_DOMAINS = [
   "light",
   "fan",
   "switch",
@@ -43,7 +43,7 @@ const AREA_CONTROL_DOMAINS: readonly AreaControlDomain[] = [
   "cover-door",
   "cover-window",
   "cover-damper",
-] as const;
+] as const satisfies readonly AreaControlDomain[];
 
 @customElement("ha-area-controls-picker")
 export class HaAreaControlsPicker extends LitElement {
@@ -130,7 +130,7 @@ export class HaAreaControlsPicker extends LitElement {
           (excludeValues !== undefined && excludeValues.includes(id));
 
         const controlEntities = getAreaControlEntities(
-          AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
+          AREA_CONTROL_DOMAINS,
           areaId,
           excludeEntities,
           this.hass
@@ -173,7 +173,6 @@ export class HaAreaControlsPicker extends LitElement {
             domainItems = multiTermSortedSearch(
               domainItems,
               searchString,
-              this._domainSearchKeys,
               (item) => item.id,
               fuseIndex
             );
@@ -184,7 +183,10 @@ export class HaAreaControlsPicker extends LitElement {
           const allEntityIds = Object.values(controlEntities).flat();
           const uniqueEntityIds = Array.from(new Set(allEntityIds));
 
-          const isRTL = computeRTL(this.hass);
+          const isRTL = computeRTL(
+            this.hass.language,
+            this.hass.translationMetadata.translations
+          );
 
           uniqueEntityIds.forEach((entityId) => {
             if (isSelected(entityId)) {
@@ -223,7 +225,6 @@ export class HaAreaControlsPicker extends LitElement {
             entityItems = multiTermSortedSearch(
               entityItems,
               searchString,
-              this._entitySearchKeys,
               (item) => item.id,
               fuseIndex
             );
@@ -261,13 +262,11 @@ export class HaAreaControlsPicker extends LitElement {
       ${item.type === "entity" && item.stateObj
         ? html`<ha-state-icon
             slot="start"
-            .hass=${this.hass}
             .stateObj=${item.stateObj}
           ></ha-state-icon>`
         : item.domain
           ? html`<ha-domain-icon
               slot="start"
-              .hass=${this.hass}
               .domain=${item.domain}
               .deviceClass=${item.deviceClass}
             ></ha-domain-icon>`

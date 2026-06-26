@@ -1,12 +1,18 @@
+import { consume, type ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
-import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
-import "./ha-select";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { internationalizationContext, uiContext } from "../data/context";
+import type { ValueChangedEvent } from "../types";
+import "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 const DEFAULT_THEME = "default";
+
+const SEARCH_KEYS = [{ name: "primary", weight: 1 }];
 
 @customElement("ha-theme-picker")
 export class HaThemePicker extends LitElement {
@@ -14,60 +20,90 @@ export class HaThemePicker extends LitElement {
 
   @property() public label?: string;
 
+  @property() public helper?: string;
+
   @property({ attribute: "include-default", type: Boolean })
   public includeDefault = false;
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui?: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: "no-theme-label" }) public noThemeLabel?: string;
+
+  private _getThemeOptions = memoizeOne(
+    (
+      themes: Record<string, unknown>,
+      locale: string,
+      includeDefault: boolean
+    ): PickerComboBoxItem[] => {
+      const items: PickerComboBoxItem[] = [];
+
+      if (includeDefault) {
+        items.push({ id: DEFAULT_THEME, primary: "Home Assistant" });
+      }
+
+      const themeNames = Object.keys(themes).sort((a, b) =>
+        caseInsensitiveStringCompare(a, b, locale)
+      );
+      for (const theme of themeNames) {
+        items.push({ id: theme, primary: theme });
+      }
+
+      return items;
+    }
+  );
+
+  private _getItems = () =>
+    this._getThemeOptions(
+      this._ui?.themes.themes || {},
+      this._i18n?.locale.language || "en",
+      this.includeDefault
+    );
+
+  private _valueRenderer = (value: string): TemplateResult =>
+    html`<span slot="headline"
+      >${this._getItems().find((i) => i.id === value)?.primary ?? value}</span
+    >`;
+
   protected render(): TemplateResult {
-    const options: HaSelectOption[] = Object.keys(
-      this.hass?.themes.themes || {}
-    ).map((theme) => ({
-      value: theme,
-    }));
-
-    if (this.includeDefault) {
-      options.unshift({
-        value: DEFAULT_THEME,
-        label: "Home Assistant",
-      });
-    }
-
-    if (!this.required) {
-      options.unshift({
-        value: "remove",
-        label: this.hass!.localize("ui.components.theme-picker.no_theme"),
-      });
-    }
-
     return html`
-      <ha-select
-        .label=${this.label ||
-        this.hass!.localize("ui.components.theme-picker.theme")}
+      <ha-generic-picker
+        .label=${this.label ??
+        this._i18n?.localize("ui.components.theme-picker.theme") ??
+        "Theme"}
+        .placeholder=${this.noThemeLabel ??
+        this._i18n?.localize("ui.components.theme-picker.no_theme")}
+        .helper=${this.helper}
         .value=${this.value}
-        .required=${this.required}
+        .valueRenderer=${this._valueRenderer}
+        .getItems=${this._getItems}
+        .searchKeys=${SEARCH_KEYS}
         .disabled=${this.disabled}
-        @selected=${this._changed}
-        .options=${options}
-      ></ha-select>
+        .required=${this.required}
+        @value-changed=${this._changed}
+      ></ha-generic-picker>
     `;
   }
 
   static styles = css`
-    ha-select {
+    ha-generic-picker {
       width: 100%;
+      display: block;
     }
   `;
 
-  private _changed(ev: HaSelectSelectEvent): void {
-    if (!this.hass || ev.detail.value === "") {
-      return;
-    }
-    this.value = ev.detail.value === "remove" ? undefined : ev.detail.value;
+  private _changed(ev: ValueChangedEvent<string | undefined>): void {
+    ev.stopPropagation();
+    this.value = ev.detail.value;
     fireEvent(this, "value-changed", { value: this.value });
   }
 }

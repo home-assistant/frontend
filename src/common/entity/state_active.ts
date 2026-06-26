@@ -1,18 +1,17 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { isUnavailableState, OFF, UNAVAILABLE } from "../../data/entity/entity";
+import { OFF, UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { computeDomain } from "./compute_domain";
+import { TIMESTAMP_STATE_DOMAINS } from "../const";
 
 export function stateActive(stateObj: HassEntity, state?: string): boolean {
   const domain = computeDomain(stateObj.entity_id);
   const compareState = state !== undefined ? state : stateObj?.state;
 
-  if (
-    ["button", "event", "infrared", "input_button", "scene"].includes(domain)
-  ) {
+  if (TIMESTAMP_STATE_DOMAINS.has(domain)) {
     return compareState !== UNAVAILABLE;
   }
 
-  if (isUnavailableState(compareState)) {
+  if (compareState === UNAVAILABLE || compareState === UNKNOWN) {
     return false;
   }
 
@@ -37,7 +36,7 @@ export function stateActive(stateObj: HassEntity, state?: string): boolean {
     case "person":
       return compareState !== "not_home";
     case "lawn_mower":
-      return ["mowing", "error"].includes(compareState);
+      return !["docked", "paused"].includes(compareState);
     case "lock":
       return compareState !== "locked";
     case "media_player":

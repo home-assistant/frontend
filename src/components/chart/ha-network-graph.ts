@@ -1,6 +1,6 @@
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 
@@ -11,7 +11,7 @@ import type {
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
 import type { HomeAssistant } from "../../types";
@@ -65,6 +65,8 @@ export interface NetworkData {
   categories?: { name: string; symbol: string }[];
 }
 
+const PHYSICS_DISABLE_THRESHOLD = 512;
+
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
@@ -76,7 +78,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public tooltipFormatter?: (
     params: TopLevelFormatterParams
-  ) => string;
+  ) => TemplateResult | typeof nothing | null;
 
   /**
    * Optional callback that returns additional searchable strings for a node.
@@ -94,7 +96,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @state() private _reducedMotion = false;
 
-  @state() private _physicsEnabled = true;
+  @state() private _physicsEnabled?: boolean;
 
   @state() private _showLabels = true;
 
@@ -122,6 +124,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     ];
   }
 
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (this._physicsEnabled === undefined && this.data?.nodes?.length > 1) {
+      this._physicsEnabled =
+        this.data.nodes.length <= PHYSICS_DISABLE_THRESHOLD;
+    }
+  }
+
   protected render() {
     if (!GraphChart || !this.data.nodes?.length) {
       return nothing;
@@ -138,7 +148,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       .hass=${this.hass}
       .data=${this._getSeries(
         this.data,
-        this._physicsEnabled,
+        this._physicsEnabled ?? false,
         this._reducedMotion,
         this._showLabels,
         isMobile,
@@ -172,7 +182,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   }
 
   private _createOptions = memoizeOne(
-    (categories?: NetworkData["categories"]): ECOption => ({
+    (categories?: NetworkData["categories"]): HaECOption => ({
       tooltip: {
         trigger: "item",
         confine: true,
@@ -194,7 +204,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
     deepEqual
   );
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("searchFilter")) {
       const filter = this.searchFilter;

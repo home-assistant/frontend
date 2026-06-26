@@ -13,14 +13,12 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import { domainToName } from "../../../data/integration";
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { computeUserInitials } from "../../../data/user";
 import type { HomeAssistant } from "../../../types";
 import { HELPER_DOMAINS } from "../../config/helpers/const";
-import type { EntityBadgeConfig } from "../badges/types";
 import type {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
@@ -220,7 +218,6 @@ export const computeCards = (
       if (
         titlePrefix &&
         stateObj &&
-        // eslint-disable-next-line no-cond-assign
         (name = stripPrefixFromEntityName(
           computeStateName(stateObj),
           titlePrefix
@@ -234,7 +231,6 @@ export const computeCards = (
       const entityConf =
         titlePrefix &&
         stateObj &&
-        // eslint-disable-next-line no-cond-assign
         (name = stripPrefixFromEntityName(
           computeStateName(stateObj),
           titlePrefix
@@ -315,23 +311,6 @@ export const computeCards = (
       cards,
     },
   ];
-};
-
-export const computeBadges = (
-  _states: HassEntities,
-  entityIds: string[]
-): LovelaceBadgeConfig[] => {
-  const badges: LovelaceBadgeConfig[] = [];
-
-  for (const entityId of entityIds) {
-    const config: EntityBadgeConfig = {
-      type: "entity",
-      entity: entityId,
-    };
-
-    badges.push(config);
-  }
-  return badges;
 };
 
 const computeDefaultViewStates = (

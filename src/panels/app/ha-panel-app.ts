@@ -32,7 +32,7 @@ interface AppPanelConfig {
 }
 
 // Time to wait for app to start before we ask the user if we should try again
-const START_WAIT_TIME = 20000; // ms
+const START_WAIT_TIME = 30000; // ms
 const RETRY_START_WAIT_TIME = 5000; // ms
 
 @customElement("ha-panel-app")
@@ -68,7 +68,7 @@ class HaPanelApp extends LitElement {
    */
   private _iframeSubscribeUpdates = false;
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
 
     // Send property updates to iframe when narrow or route changes
@@ -140,10 +140,16 @@ class HaPanelApp extends LitElement {
         ${ref(this._iframeRef)}
       >
       </iframe>
+      ${!this._iframeLoaded
+        ? html`<hass-loading-screen
+            class="loading-overlay"
+            .message=${this._loadingMessage}
+          ></hass-loading-screen>`
+        : nothing}
     `;
   }
 
-  protected willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!changedProps.has("route") && !changedProps.has("panel")) {
@@ -213,7 +219,7 @@ class HaPanelApp extends LitElement {
     let addon: HassioAddonDetails;
 
     try {
-      addon = await fetchHassioAddonInfo(this.hass, addonSlug);
+      addon = await fetchHassioAddonInfo(this.hass.callWS, addonSlug);
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
@@ -253,7 +259,7 @@ class HaPanelApp extends LitElement {
           );
           // Set auto-retry window for after starting the app
           this._autoRetryUntil = Date.now() + START_WAIT_TIME;
-          await startHassioAddon(this.hass, addonSlug);
+          await startHassioAddon(this.hass.callWS, addonSlug);
           this._fetchData(addonSlug);
           return;
         } catch (_err) {
@@ -283,8 +289,6 @@ class HaPanelApp extends LitElement {
     if (addon.state !== "started") {
       return;
     }
-
-    this._loadingMessage = undefined;
 
     if (this._fetchDataTimeout) {
       clearTimeout(this._fetchDataTimeout);
@@ -327,28 +331,32 @@ class HaPanelApp extends LitElement {
 
   private async _checkLoaded(ev: Event): Promise<void> {
     const iframe = ev.target as HTMLIFrameElement;
-    this._iframeLoaded = true;
 
-    if (
-      !this._addon ||
-      iframe.contentDocument?.body.textContent !== "502: Bad Gateway"
-    ) {
-      return;
-    }
+    const is502 =
+      !!this._addon &&
+      iframe.contentDocument?.body.textContent === "502: Bad Gateway";
 
-    // Auto-retry if within the retry window
-    if (this._autoRetryUntil && Date.now() < this._autoRetryUntil) {
+    // While the app is still starting, reload the iframe silently behind the
+    // loading screen instead of revealing the error page and tearing down
+    // the panel.
+    if (is502 && this._autoRetryUntil && Date.now() < this._autoRetryUntil) {
       this._reloadIframe();
       return;
     }
 
-    // Clear auto-retry window and show dialog
+    this._iframeLoaded = true;
+
+    if (!is502) {
+      return;
+    }
+
+    // Retry window elapsed, ask the user whether to keep waiting.
     this._autoRetryUntil = undefined;
 
     await this.updateComplete;
     showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.app.error_app_not_ready"),
-      title: this._addon.name,
+      title: this._addon!.name,
       confirmText: this.hass.localize("ui.panel.app.retry"),
       dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
@@ -362,7 +370,7 @@ class HaPanelApp extends LitElement {
   private async _reloadIframe(): Promise<void> {
     const addonSlug = this._addon!.slug;
     this._iframeLoaded = false;
-    this._addon = undefined;
+    this._loadingMessage = this.hass.localize("ui.panel.app.app_starting");
     await Promise.all([
       this.updateComplete,
       new Promise((resolve) => {
@@ -370,7 +378,15 @@ class HaPanelApp extends LitElement {
       }),
     ]);
     // Guard for user navigating away during the delay
-    if (this._getAddonSlug() === addonSlug) {
+    if (this._getAddonSlug() !== addonSlug) {
+      return;
+    }
+    // Reload the iframe content in place so the loading screen stays up
+    // without rebuilding the panel.
+    const iframeWindow = this._iframeRef.value?.contentWindow;
+    if (iframeWindow) {
+      iframeWindow.location.reload();
+    } else {
       this._fetchData(addonSlug);
     }
   }
@@ -434,6 +450,12 @@ class HaPanelApp extends LitElement {
     :host {
       display: block;
       height: 100%;
+      position: relative;
+    }
+
+    hass-loading-screen.loading-overlay {
+      position: absolute;
+      inset: 0;
     }
 
     iframe {

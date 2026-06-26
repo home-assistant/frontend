@@ -1,4 +1,5 @@
 import type {
+  Connection,
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
@@ -94,6 +95,7 @@ export interface TriggerList {
 
 export interface BaseTrigger {
   alias?: string;
+  note?: string;
   /** @deprecated Use `trigger` instead */
   platform?: string;
   trigger: string;
@@ -178,7 +180,7 @@ export interface PersistentNotificationTrigger extends BaseTrigger {
 
 export interface ZoneTrigger extends BaseTrigger {
   trigger: "zone";
-  entity_id: string;
+  entity_id: string | string[];
   zone: string;
   event: "enter" | "leave";
 }
@@ -239,6 +241,7 @@ export type Trigger = LegacyTrigger | TriggerList | PlatformTrigger;
 interface BaseCondition {
   condition: string;
   alias?: string;
+  note?: string;
   enabled?: boolean;
   options?: Record<string, unknown>;
 }
@@ -322,12 +325,20 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
 
 export interface AutomationElementGroupCollection {
   titleKey?: LocalizeKeys;
+  generic?: boolean;
   groups: AutomationElementGroup;
 }
 
 export type AutomationElementGroup = Record<
   string,
-  { icon?: string; members?: AutomationElementGroup }
+  {
+    icon?: string;
+    members?: AutomationElementGroup;
+    // Backend element domains (e.g. "calendar", "sun") whose triggers/conditions
+    // are bundled into this group instead of appearing as their own dynamic
+    // domain group.
+    domains?: string[];
+  }
 >;
 
 export type LegacyCondition =
@@ -373,7 +384,7 @@ export const expandConditionWithShorthand = (
 };
 
 export const triggerAutomationActions = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entityId: string
 ) => {
   hass.callService("automation", "trigger", {
@@ -481,6 +492,17 @@ export const migrateAutomationTrigger = (
     }
     delete trigger.platform;
   }
+
+  if ("options" in trigger) {
+    if (trigger.options && "behavior" in trigger.options) {
+      if (trigger.options.behavior === "any") {
+        trigger.options.behavior = "each";
+      } else if (trigger.options.behavior === "last") {
+        trigger.options.behavior = "all";
+      }
+    }
+  }
+
   return trigger;
 };
 
@@ -583,6 +605,19 @@ export const testCondition = (
     variables,
   });
 
+export const subscribeCondition = (
+  connection: Connection,
+  onChange: (result: {
+    result?: boolean;
+    error?: string | { code: string; message: string };
+  }) => void,
+  condition: Condition
+) =>
+  connection.subscribeMessage(onChange, {
+    type: "subscribe_condition",
+    condition,
+  });
+
 export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
@@ -592,6 +627,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   delete: () => void;
   close: (focus?: boolean) => void;
+  editNote: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
@@ -607,6 +643,8 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
   description?: TriggerDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
@@ -623,6 +661,8 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
   description?: ConditionDescription;
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
@@ -641,12 +681,15 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   };
   yamlMode: boolean;
   uiSupported: boolean;
+  paste: () => void;
+  pasteAvailable: () => boolean;
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {
   rename: () => void;
   duplicate: () => void;
   defaultOption?: boolean;
+  note?: string;
 }
 
 export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {

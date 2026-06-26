@@ -82,7 +82,6 @@ export class HuiGenericEntityRow extends LitElement {
         )}
       >
         <state-badge
-          .hass=${this.hass}
           .stateObj=${stateObj}
           .overrideIcon=${this.config.icon}
           .overrideImage=${this.config.image}
@@ -115,7 +114,6 @@ export class HuiGenericEntityRow extends LitElement {
                               </ha-tooltip>
                               <ha-relative-time
                                 id="last-changed${this._secondaryInfoElementId}"
-                                .hass=${this.hass}
                                 .datetime=${stateObj.last_changed}
                                 capitalize
                               ></ha-relative-time>
@@ -136,7 +134,6 @@ export class HuiGenericEntityRow extends LitElement {
                                 <ha-relative-time
                                   id="last-updated${this
                                     ._secondaryInfoElementId}"
-                                  .hass=${this.hass}
                                   .datetime=${stateObj.last_updated}
                                   capitalize
                                 ></ha-relative-time>
@@ -160,7 +157,6 @@ export class HuiGenericEntityRow extends LitElement {
                                     <ha-relative-time
                                       id="last-triggered${this
                                         ._secondaryInfoElementId}"
-                                      .hass=${this.hass}
                                       .datetime=${stateObj.attributes
                                         .last_triggered}
                                       capitalize
@@ -221,7 +217,7 @@ export class HuiGenericEntityRow extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
     toggleAttribute(
       this,

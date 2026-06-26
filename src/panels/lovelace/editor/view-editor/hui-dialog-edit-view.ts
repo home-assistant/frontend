@@ -36,6 +36,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -63,7 +64,9 @@ import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-view")
-export class HuiDialogEditView extends LitElement {
+export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _params?: EditViewDialogParams;
@@ -75,8 +78,6 @@ export class HuiDialogEditView extends LitElement {
   @state() private _saving = false;
 
   @state() private _currTab: (typeof TABS)[number] = TABS[0];
-
-  @state() private _dirty = false;
 
   @state() private _valid = true;
 
@@ -109,21 +110,20 @@ export class HuiDialogEditView extends LitElement {
       this._config = {
         type: SECTIONS_VIEW_LAYOUT,
       };
-      this._dirty = false;
-      return;
-    }
+    } else {
+      this._lovelace = this._params.lovelace;
 
-    this._lovelace = this._params.lovelace;
-
-    const view = this._lovelace.config.views[this._params.viewIndex];
-    // Todo : add better support for strategy views
-    if (isStrategyView(view)) {
-      const { strategy, ...viewConfig } = view;
-      this._config = viewConfig;
-      return;
+      const view = this._lovelace.config.views[this._params.viewIndex];
+      // Todo : add better support for strategy views
+      if (isStrategyView(view)) {
+        const { strategy, ...viewConfig } = view;
+        this._config = viewConfig;
+      } else {
+        this._config = view;
+        this._currentType = this._type;
+      }
     }
-    this._config = view;
-    this._currentType = this._type;
+    this._initDirtyTracking({ type: "deep" }, this._config);
   }
 
   public closeDialog(): void {
@@ -134,7 +134,6 @@ export class HuiDialogEditView extends LitElement {
     this._params = undefined;
     this._config = {};
     this._yamlMode = false;
-    this._dirty = false;
     this._currTab = TABS[0];
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -160,7 +159,6 @@ export class HuiDialogEditView extends LitElement {
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          .hass=${this.hass}
           autofocus
           in-dialog
           @value-changed=${this._viewYamlChanged}
@@ -210,10 +208,9 @@ export class HuiDialogEditView extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         width="large"
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
         class=${classMap({
           "yaml-mode": this._yamlMode,
@@ -260,7 +257,7 @@ export class HuiDialogEditView extends LitElement {
                     "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
                   )}
                   <ha-button
-                    size="small"
+                    size="s"
                     slot="action"
                     @click=${this._convertToSection}
                   >
@@ -319,7 +316,7 @@ export class HuiDialogEditView extends LitElement {
             slot="primaryAction"
             ?disabled=${!this._config ||
             this._saving ||
-            !this._dirty ||
+            !this.isDirtyState ||
             !this._valid ||
             convertToSection ||
             convertNotSupported}
@@ -600,8 +597,9 @@ export class HuiDialogEditView extends LitElement {
       if (ev.detail.valid !== undefined) {
         this._valid = ev.detail.valid;
       }
-      this._config = ev.detail.config;
-      this._dirty = true;
+      const config: LovelaceViewConfig = ev.detail.config;
+      this._config = config;
+      this._updateDirtyState(config);
     }
   }
 
@@ -609,12 +607,13 @@ export class HuiDialogEditView extends LitElement {
     ev: HASSDomEvent<ViewVisibilityChangeEvent>
   ): void {
     if (ev.detail.visible && this._config) {
-      this._config = {
+      const config: LovelaceViewConfig = {
         ...this._config,
         visible: ev.detail.visible,
       };
+      this._config = config;
+      this._updateDirtyState(config);
     }
-    this._dirty = true;
   }
 
   private _viewYamlChanged(ev: CustomEvent) {
@@ -622,8 +621,9 @@ export class HuiDialogEditView extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    this._config = ev.detail.value;
-    this._dirty = true;
+    const config: LovelaceViewConfig = ev.detail.value;
+    this._config = config;
+    this._updateDirtyState(config);
   }
 
   private _isConfigChanged(): boolean {

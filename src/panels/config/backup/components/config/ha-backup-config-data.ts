@@ -15,13 +15,13 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../../components/ha-switch";
 import "../../../../../components/ha-tooltip";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
 import type { HostDisksUsage } from "../../../../../data/hassio/host";
 import { fetchHostDisksUsage } from "../../../../../data/hassio/host";
@@ -85,10 +85,10 @@ class HaBackupConfigData extends LitElement {
 
   @state() private _storageInfo?: HostDisksUsage | null;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     this._checkDbOption();
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (isComponentLoaded(this.hass.config, "hassio")) {
       this._fetchAddons();
       this._fetchStorageInfo();
     }
@@ -96,7 +96,7 @@ class HaBackupConfigData extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("value")) {
-      if (isComponentLoaded(this.hass, "hassio")) {
+      if (isComponentLoaded(this.hass.config, "hassio")) {
         if (this.value?.include_addons?.length) {
           this._showAddons = true;
         }
@@ -111,7 +111,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   private async _checkDbOption() {
-    if (isComponentLoaded(this.hass, "recorder")) {
+    if (isComponentLoaded(this.hass.config, "recorder")) {
       const info = await getRecorderInfo(this.hass.connection);
       this._showDbOption = info.db_in_default_location;
       if (!this._showDbOption && this.value?.include_database) {
@@ -234,12 +234,12 @@ class HaBackupConfigData extends LitElement {
   protected render() {
     const data = this._getData(this.value, this._showAddons);
 
-    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const isHassio = isComponentLoaded(this.hass.config, "hassio");
 
     return html`
       ${this._renderSizeEstimate()}
-      <ha-md-list>
-        <ha-md-list-item>
+      <ha-list-base>
+        <ha-list-item-base>
           <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
           <span slot="headline">
             ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
@@ -260,10 +260,10 @@ class HaBackupConfigData extends LitElement {
             .checked=${data.homeassistant}
             .disabled=${this.forceHomeAssistant || data.database}
           ></ha-switch>
-        </ha-md-list-item>
+        </ha-list-item-base>
 
         ${this._showDbOption
-          ? html`<ha-md-list-item>
+          ? html`<ha-list-item-base>
               <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
               <span slot="headline">
                 ${this.hass.localize("ui.panel.config.backup.data.history")}
@@ -279,11 +279,11 @@ class HaBackupConfigData extends LitElement {
                 @change=${this._switchChanged}
                 .checked=${data.database}
               ></ha-switch>
-            </ha-md-list-item>`
+            </ha-list-item-base>`
           : nothing}
         ${isHassio
           ? html`
-              <ha-md-list-item>
+              <ha-list-item-base>
                 <ha-svg-icon
                   slot="start"
                   .path=${mdiPlayBoxMultiple}
@@ -302,9 +302,9 @@ class HaBackupConfigData extends LitElement {
                   @change=${this._switchChanged}
                   .checked=${data.media}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-list-item-base>
 
-              <ha-md-list-item>
+              <ha-list-item-base>
                 <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
                 <span slot="headline">
                   ${this.hass.localize(
@@ -313,7 +313,7 @@ class HaBackupConfigData extends LitElement {
                 </span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.data.share_folder_description"
+                    "ui.panel.config.backup.data.share_folder_desc"
                   )}
                 </span>
                 <ha-switch
@@ -322,11 +322,11 @@ class HaBackupConfigData extends LitElement {
                   @change=${this._switchChanged}
                   .checked=${data.share}
                 ></ha-switch>
-              </ha-md-list-item>
+              </ha-list-item-base>
 
               ${this._hasLocalAddons(this._addons)
                 ? html`
-                    <ha-md-list-item>
+                    <ha-list-item-base>
                       <ha-svg-icon
                         slot="start"
                         .path=${mdiFolder}
@@ -347,12 +347,12 @@ class HaBackupConfigData extends LitElement {
                         @change=${this._switchChanged}
                         .checked=${data.local_addons}
                       ></ha-switch>
-                    </ha-md-list-item>
+                    </ha-list-item-base>
                   `
                 : nothing}
               ${this._addons.length
                 ? html`
-                    <ha-md-list-item>
+                    <ha-list-item-base>
                       <ha-svg-icon
                         slot="start"
                         .path=${mdiPuzzle}
@@ -392,12 +392,12 @@ class HaBackupConfigData extends LitElement {
                           },
                         ]}
                       ></ha-select>
-                    </ha-md-list-item>
+                    </ha-list-item-base>
                   `
                 : nothing}
             `
           : nothing}
-      </ha-md-list>
+      </ha-list-base>
       ${isHassio && this._showAddons && this._addons.length
         ? html`
             <ha-expansion-panel
@@ -455,7 +455,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   private _renderSizeEstimate() {
-    if (!isComponentLoaded(this.hass, "hassio")) {
+    if (!isComponentLoaded(this.hass.config, "hassio")) {
       return nothing;
     }
 
@@ -551,13 +551,15 @@ class HaBackupConfigData extends LitElement {
     ha-spinner {
       --ha-spinner-size: 24px;
     }
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
+    }
+    ha-list-item-base::part(start) {
+      color: var(--ha-color-text-secondary);
     }
     ha-select {
       min-width: 210px;
@@ -567,6 +569,9 @@ class HaBackupConfigData extends LitElement {
         min-width: 140px;
         width: 140px;
       }
+    }
+    ha-expansion-panel {
+      margin-bottom: var(--ha-space-4);
     }
   `;
 }

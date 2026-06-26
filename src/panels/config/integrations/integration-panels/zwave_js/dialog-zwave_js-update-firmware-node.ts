@@ -1,4 +1,3 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -7,12 +6,13 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/progress/ha-progress-bar";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
@@ -36,6 +36,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSUpdateFirmwareNodeDialogParams } from "./show-dialog-zwave_js-update-firmware-node";
@@ -48,8 +49,14 @@ const firmwareTargetSchema: HaFormSchema[] = [
   },
 ];
 
+interface FirmwareFormState {
+  file?: File;
+}
+
 @customElement("dialog-zwave_js-update-firmware-node")
-class DialogZWaveJSUpdateFirmwareNode extends LitElement {
+class DialogZWaveJSUpdateFirmwareNode extends DirtyStateProviderMixin<FirmwareFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private device?: DeviceRegistryEntry;
@@ -83,9 +90,14 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   private _cancelUpload?: () => void;
 
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
-    this._deviceName = computeDeviceNameDisplay(params.device, this.hass!);
+    this._deviceName = computeDeviceNameDisplay(
+      params.device,
+      this.hass!.localize,
+      this.hass!.states
+    );
     this.device = params.device;
     this._open = true;
+    this._initDirtyTracking({ type: "shallow" }, { file: undefined });
     this._fetchData();
     this._subscribeNodeStatus();
   }
@@ -118,7 +130,6 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     }
 
     const beginFirmwareUpdateHTML = html`<ha-file-upload
-        .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFileUpload}
         .label=${this.hass.localize(
@@ -191,11 +202,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.title"
         )}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${!this._updateProgressMessage && !this._updateFinishedMessage
@@ -265,11 +276,12 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                     }
                   )}
                 </p>
-                <mwc-linear-progress
-                  determinate
-                  .progress=${this._updateProgressMessage.sent_fragments /
-                  this._updateProgressMessage.total_fragments}
-                ></mwc-linear-progress>
+                <ha-progress-bar
+                  loading
+                  .value=${(this._updateProgressMessage.sent_fragments /
+                    this._updateProgressMessage.total_fragments) *
+                  100}
+                ></ha-progress-bar>
                 <p>
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.update_firmware.close",
@@ -352,6 +364,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private async _beginFirmwareUpdate(): Promise<void> {
     this._uploading = true;
+    this._markDirtyStateClean();
     this._updateProgressMessage = this._updateFinishedMessage = undefined;
     try {
       this._subscribeNodeFirmwareUpdate();
@@ -418,6 +431,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       this._updateProgressMessage = undefined;
       this._updateInProgress = false;
       this._uploading = false;
+      this._initDirtyTracking({ type: "shallow" }, { file: undefined });
     }
   }
 
@@ -483,6 +497,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
 
   private async _uploadFile(ev) {
     this._firmwareFile = ev.detail.files[0];
+    this._updateDirtyState({ file: this._firmwareFile });
   }
 
   static get styles(): CSSResultGroup {

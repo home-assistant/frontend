@@ -79,33 +79,8 @@ export const datePickerStyles = css`
     flex: 1;
     text-align: center;
     margin-left: 48px;
-  }
-
-  @media only screen and (max-width: 500px) {
-    calendar-month {
-      min-height: calc(34px * 7);
-    }
-    calendar-month::part(day) {
-      font-size: var(--ha-font-size-s);
-    }
-    calendar-month::part(button) {
-      height: 26px;
-      width: 26px;
-    }
-    calendar-month::part(range-inner),
-    calendar-month::part(range-start),
-    calendar-month::part(range-end),
-    calendar-month::part(selected),
-    calendar-month::part(selected):hover {
-      height: 34px;
-      width: 34px;
-    }
-    .heading {
-      font-size: var(--ha-font-size-s);
-    }
-    .month-year {
-      margin-left: 40px;
-    }
+    margin-inline-start: 48px;
+    margin-inline-end: initial;
   }
 `;
 

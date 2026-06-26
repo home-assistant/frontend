@@ -31,7 +31,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     return this._segments;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
     if (changedProps.has("entityId") && this.entityId) {
@@ -108,7 +108,6 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
         <span class="segment-name">${segment.name}</span>
         <ha-svg-icon class="arrow" .path=${mdiArrowRightThin}></ha-svg-icon>
         <ha-area-picker
-          .hass=${this.hass}
           .value=${mappedAreas}
           .label=${this.hass.localize(
             "ui.dialogs.vacuum_segment_mapping.area_label"

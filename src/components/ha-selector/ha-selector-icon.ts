@@ -1,6 +1,8 @@
+import { initialState } from "@lit/task";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { until } from "lit/directives/until";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { AsyncValueTask } from "../../common/controllers/async-value-task";
 import { fireEvent } from "../../common/dom/fire_event";
 import { entityIcon } from "../../data/icons";
 import type { IconSelector } from "../../data/selector";
@@ -28,15 +30,45 @@ export class HaIconSelector extends LitElement {
     icon_entity?: string;
   };
 
-  protected render() {
+  private get _stateObj(): HassEntity | undefined {
     const iconEntity = this.context?.icon_entity;
+    return iconEntity ? this.hass.states[iconEntity] : undefined;
+  }
 
-    const stateObj = iconEntity ? this.hass.states[iconEntity] : undefined;
+  private _placeholderTask = new AsyncValueTask(this, {
+    task: ([
+      placeholder,
+      attributeIcon,
+      entities,
+      config,
+      connection,
+      stateObj,
+    ]) => {
+      if (placeholder || attributeIcon || !stateObj) {
+        return initialState;
+      }
+      return entityIcon(entities, config, connection, stateObj);
+    },
+    args: () => {
+      const stateObj = this._stateObj;
+      return [
+        this.selector.icon?.placeholder,
+        stateObj?.attributes.icon,
+        this.hass.entities,
+        this.hass.config,
+        this.hass.connection,
+        stateObj,
+      ] as const;
+    },
+  });
+
+  protected render() {
+    const stateObj = this._stateObj;
 
     const placeholder =
       this.selector.icon?.placeholder ||
       stateObj?.attributes.icon ||
-      (stateObj && until(entityIcon(this.hass, stateObj)));
+      (stateObj && this._placeholderTask.value);
 
     return html`
       <ha-icon-picker
@@ -51,11 +83,7 @@ export class HaIconSelector extends LitElement {
       >
         ${!placeholder && stateObj
           ? html`
-              <ha-state-icon
-                slot="start"
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-state-icon>
+              <ha-state-icon slot="start" .stateObj=${stateObj}></ha-state-icon>
             `
           : nothing}
       </ha-icon-picker>

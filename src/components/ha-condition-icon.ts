@@ -11,12 +11,16 @@ import {
   mdiStateMachine,
   mdiWeatherSunny,
 } from "@mdi/js";
+import { consume } from "@lit/context";
+import { initialState } from "@lit/task";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { until } from "lit/directives/until";
+import { customElement, property, state } from "lit/decorators";
+import type { HassConfig, Connection } from "home-assistant-js-websocket";
+import { AsyncValueTask } from "../common/controllers/async-value-task";
 import { computeDomain } from "../common/entity/compute_domain";
+import { transform } from "../common/decorators/transform";
+import { configContext, connectionContext } from "../data/context";
 import { conditionIcon, FALLBACK_DOMAIN_ICONS } from "../data/icons";
-import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-svg-icon";
 
@@ -36,11 +40,34 @@ export const CONDITION_ICONS = {
 
 @customElement("ha-condition-icon")
 export class HaConditionIcon extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public condition?: string;
 
   @property() public icon?: string;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<{ config: HassConfig }, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config?: HassConfig;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<{ connection: Connection }, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
+  private _iconTask = new AsyncValueTask(this, {
+    task: ([icon, connection, config, condition]) => {
+      if (icon || !connection || !config || !condition) {
+        return initialState;
+      }
+      return conditionIcon(connection, config, condition);
+    },
+    args: () =>
+      [this.icon, this._connection, this._config, this.condition] as const,
+  });
 
   protected render() {
     if (this.icon) {
@@ -51,18 +78,16 @@ export class HaConditionIcon extends LitElement {
       return nothing;
     }
 
-    if (!this.hass) {
+    if (!this._connection || !this._config) {
       return this._renderFallback();
     }
 
-    const icon = conditionIcon(this.hass, this.condition).then((icn) => {
-      if (icn) {
-        return html`<ha-icon .icon=${icn}></ha-icon>`;
-      }
-      return this._renderFallback();
-    });
-
-    return html`${until(icon)}`;
+    if (!this._iconTask.resolved) {
+      return nothing;
+    }
+    return this._iconTask.value
+      ? html`<ha-icon .icon=${this._iconTask.value}></ha-icon>`
+      : this._renderFallback();
   }
 
   private _renderFallback() {

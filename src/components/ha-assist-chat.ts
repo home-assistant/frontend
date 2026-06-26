@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiChevronDown,
@@ -10,7 +11,9 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { supportsFeature } from "../common/entity/supports-feature";
+import type { LocalizeFunc } from "../common/translations/localize";
 import {
   runAssistPipeline,
   type AssistPipeline,
@@ -18,10 +21,19 @@ import {
   type ConversationChatLogToolResultDelta,
   type PipelineRunEvent,
 } from "../data/assist_pipeline";
+import {
+  configContext,
+  connectionContext,
+  statesContext,
+} from "../data/context";
 import { ConversationEntityFeature } from "../data/conversation";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+} from "../types";
 import { AudioRecorder } from "../util/audio-recorder";
 import { documentationUrl } from "../util/documentation-url";
 import "./ha-alert";
@@ -47,8 +59,6 @@ interface AssistMessage {
 
 @customElement("ha-assist-chat")
 export class HaAssistChat extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public pipeline?: AssistPipeline;
 
   @property({ type: Boolean, attribute: "disable-speech" })
@@ -71,6 +81,22 @@ export class HaAssistChat extends LitElement {
 
   @state() private _processing = false;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HomeAssistant["states"];
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: HomeAssistantConfig;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
+
   private _conversationId: string | null = null;
 
   private _audioRecorder?: AudioRecorder;
@@ -81,12 +107,12 @@ export class HaAssistChat extends LitElement {
 
   private _stt_binary_handler_id?: number | null;
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (!this.hasUpdated || changedProperties.has("pipeline")) {
       this._conversation = [
         {
           who: "hass",
-          text: this.hass.localize("ui.dialogs.voice_command.how_can_i_help"),
+          text: this._localize("ui.dialogs.voice_command.how_can_i_help"),
           thinking: "",
           tool_calls: {},
         },
@@ -94,7 +120,7 @@ export class HaAssistChat extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
     if (
       this.startListening &&
@@ -124,9 +150,9 @@ export class HaAssistChat extends LitElement {
     const controlHA = !this.pipeline
       ? false
       : this.pipeline.prefer_local_intents ||
-        (this.hass.states[this.pipeline.conversation_engine]
+        (this._states[this.pipeline.conversation_engine]
           ? supportsFeature(
-              this.hass.states[this.pipeline.conversation_engine],
+              this._states[this.pipeline.conversation_engine],
               ConversationEntityFeature.CONTROL
             )
           : true);
@@ -139,7 +165,7 @@ export class HaAssistChat extends LitElement {
           ? nothing
           : html`
               <ha-alert>
-                ${this.hass.localize(
+                ${this._localize(
                   "ui.dialogs.voice_command.conversation_no_control"
                 )}
               </ha-alert>
@@ -180,7 +206,7 @@ export class HaAssistChat extends LitElement {
                                   .path=${mdiCommentProcessingOutline}
                                 ></ha-svg-icon>
                                 <span class="thinking-label">
-                                  ${this.hass.localize(
+                                  ${this._localize(
                                     "ui.dialogs.voice_command.show_details"
                                   )}
                                 </span>
@@ -251,7 +277,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
           id="message-input"
           @keyup=${this._handleKeyUp}
           @input=${this._handleInput}
-          .label=${this.hass.localize(`ui.dialogs.voice_command.input_label`)}
+          .label=${this._localize(`ui.dialogs.voice_command.input_label`)}
         >
           <div slot="end">
             ${this._showSendButton || !supportsSTT
@@ -261,7 +287,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
                     .path=${mdiSend}
                     @click=${this._handleSendMessage}
                     .disabled=${this._processing}
-                    .label=${this.hass.localize(
+                    .label=${this._localize(
                       "ui.dialogs.voice_command.send_text"
                     )}
                   >
@@ -282,7 +308,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
                       .path=${mdiMicrophone}
                       @click=${this._handleListeningButton}
                       .disabled=${this._processing}
-                      .label=${this.hass.localize(
+                      .label=${this._localize(
                         "ui.dialogs.voice_command.start_listening"
                       )}
                     >
@@ -374,10 +400,12 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
 
   private _handleToggleThinking(ev: Event) {
     const index = (ev.currentTarget as any).index;
-    this._conversation[index] = {
-      ...this._conversation[index],
-      thinking_expanded: !this._conversation[index].thinking_expanded,
-    };
+    // Mutate the message in place rather than replacing it. The streaming
+    // processor keeps a reference to this same object and mutates it as deltas
+    // arrive; swapping in a new object would detach the in-flight message from
+    // the processor and freeze the chat (see #52501).
+    const message = this._conversation[index];
+    message.thinking_expanded = !message.thinking_expanded;
     this.requestUpdate("_conversation");
   }
 
@@ -391,21 +419,21 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
       text:
         // New lines matter for messages
         // prettier-ignore
-        html`${this.hass.localize(
+        html`${this._localize(
           "ui.dialogs.voice_command.not_supported_microphone_browser"
         )}
 
-        ${this.hass.localize(
+        ${this._localize(
           "ui.dialogs.voice_command.not_supported_microphone_documentation",
           {
             documentation_link: html`<a
                 target="_blank"
                 rel="noopener noreferrer"
                 href=${documentationUrl(
-                  this.hass,
+                  this._config,
                   "/docs/configuration/securing/#remote-access"
                 )}
-              >${this.hass.localize(
+              >${this._localize(
                   "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
                 )}</a>`,
           }
@@ -443,7 +471,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
 
     try {
       const unsub = await runAssistPipeline(
-        this.hass,
+        this._connection,
         (event: PipelineRunEvent) => {
           if (event.type === "run-start") {
             this._stt_binary_handler_id =
@@ -539,7 +567,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
   }
 
   private _sendAudioChunk(chunk: Int16Array) {
-    this.hass.connection.socket!.binaryType = "arraybuffer";
+    this._connection.connection.socket!.binaryType = "arraybuffer";
 
     // eslint-disable-next-line eqeqeq
     if (this._stt_binary_handler_id == undefined) {
@@ -550,7 +578,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
     data[0] = this._stt_binary_handler_id;
     data.set(new Uint8Array(chunk.buffer), 1);
 
-    this.hass.connection.socket!.send(data);
+    this._connection.connection.socket!.send(data);
   }
 
   private _unloadAudio = () => {
@@ -570,7 +598,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
     hassMessageProcesser.addMessage();
     try {
       const unsub = await runAssistPipeline(
-        this.hass,
+        this._connection,
         (event) => {
           if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
@@ -593,7 +621,7 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
       );
     } catch {
       hassMessageProcesser.setError(
-        this.hass.localize("ui.dialogs.voice_command.error")
+        this._localize("ui.dialogs.voice_command.error")
       );
     } finally {
       this._processing = false;

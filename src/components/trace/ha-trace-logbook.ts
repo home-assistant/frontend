@@ -1,6 +1,8 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { LogbookEntry } from "../../data/logbook";
 import type { HomeAssistant } from "../../types";
 import "./hat-logbook-note";
@@ -17,22 +19,23 @@ export class HaTraceLogbook extends LitElement {
 
   @property({ attribute: false }) public logbookEntries!: LogbookEntry[];
 
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   protected render(): TemplateResult {
     return this.logbookEntries.length
       ? html`
           <ha-logbook-renderer
-            relative-time
             .hass=${this.hass}
             .entries=${this.logbookEntries}
             .narrow=${this.narrow}
           ></ha-logbook-renderer>
-          <hat-logbook-note
-            .hass=${this.hass}
-            .domain=${this.trace.domain}
-          ></hat-logbook-note>
+          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
-          No Logbook entries found for this step.
+          ${this._localize(
+            "ui.panel.config.automation.trace.path.no_logbook_entries"
+          )}
         </div>`;
   }
 

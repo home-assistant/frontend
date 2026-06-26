@@ -22,7 +22,6 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -42,8 +41,8 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-entities";
@@ -102,28 +101,28 @@ import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
-import { configSections } from "../ha-panel-config";
-import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAreaTableColumn,
   getCategoryTableColumn,
-  getLabelsTableColumn,
   getEditableTableColumn,
+  getLabelsTableColumn,
   renderRelativeTimeColumn,
 } from "../common/data-table-columns";
+import { configSections } from "../config-sections";
+import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import {
   getAssistantsSortableKey,
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { showSceneSaveDialog } from "./scene-save-dialog/show-dialog-scene-save";
-import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 type SceneItem = SceneEntity & {
   name: string;
   area: string | undefined;
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
+  labels: string[]; // search only
   assistants: string[];
   assistants_sortable_key: string | undefined;
   editable: boolean;
@@ -161,15 +160,19 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   private _filter = "";
 
   @state()
+  private _filters: DataTableFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "scene-table-filters-full",
-    state: true,
+    state: false,
     subscribe: false,
     serializer: serializeFilters,
     deserializer: deserializeFilters,
   })
-  private _filters: DataTableFilters = {};
+  private _storageFilters: DataTableFilters = {};
+
+  private _fromUrl = false;
 
   @state() private _expandedFilter?: string;
 
@@ -241,6 +244,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         );
         const category = entityRegEntry?.categories.scene;
         const labels = labelReg && entityRegEntry?.labels;
+        const label_entries = (labels || [])
+          .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
+          .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
         const assistants = getEntityVoiceAssistantsIds(
           entityReg,
           scene.entity_id
@@ -254,9 +260,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           category: category
             ? categoryReg?.find((cat) => cat.category_id === category)?.name
             : undefined,
-          label_entries: (labels || []).map(
-            (lbl) => labelReg!.find((label) => label.label_id === lbl)!
-          ),
+          label_entries,
+          labels: label_entries.map((lbl) => lbl.name),
           assistants,
           assistants_sortable_key: getAssistantsSortableKey(assistants),
           selectable: entityRegEntry !== undefined,
@@ -279,10 +284,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           showNarrow: true,
           type: "icon",
           template: (scene) => html`
-            <ha-state-icon
-              .hass=${this.hass}
-              .stateObj=${scene}
-            ></ha-state-icon>
+            <ha-state-icon .stateObj=${scene}></ha-state-icon>
           `,
         },
         name: {
@@ -329,7 +331,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           showNarrow: true,
           template: (scene) => html`
             <ha-icon-overflow-menu
-              .hass=${this.hass}
               narrow
               .items=${[
                 {
@@ -405,6 +406,22 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     }
   );
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      if (
+        !this._searchParms.has("area") &&
+        !this._searchParms.has("device") &&
+        !this._searchParms.has("label")
+      ) {
+        this._filters = this._storageFilters;
+      }
+      this._filterArea();
+      this._filterDevice();
+      this._filterLabel();
+    }
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_entityReg")) {
@@ -442,7 +459,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.automations}
         .searchLabel=${this.hass.localize(
@@ -493,7 +512,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         ></ha-icon-button>
 
         <ha-filter-floor-areas
-          .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -503,7 +521,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-floor-areas>
         <ha-filter-devices
-          .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-devices"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -513,7 +530,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
         <ha-filter-entities
-          .hass=${this.hass}
           .type=${"scene"}
           .value=${this._filters["ha-filter-entities"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -523,7 +539,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-entities>
         <ha-filter-labels
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-labels"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -542,7 +557,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-categories>
         <ha-filter-voice-assistants
-          .hass=${this.hass}
           .value=${this._filters["ha-filter-voice-assistants"]?.value}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
@@ -674,23 +688,17 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 href=${documentationUrl(this.hass, "/docs/scene/editor/")}
                 target="_blank"
                 rel="noreferrer"
-                size="small"
+                size="s"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
                 <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}
-        <a href="/config/scene/edit/new" slot="fab">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.scene.picker.add_scene"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button href="/config/scene/edit/new" size="l" slot="fab">
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.scene.picker.add_scene")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -712,12 +720,18 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         items: undefined,
       },
     };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   };
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
     this._filters = { ...this._filters, [type]: ev.detail };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
     this._applyFilters();
   }
 
@@ -767,13 +781,42 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
     this._applyFilters();
   }
 
-  firstUpdated() {
-    if (this._searchParms.has("label")) {
-      this._filterLabel();
+  private _filterArea() {
+    const area = this._searchParms.get("area");
+    if (!area) {
+      return;
     }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-floor-areas": {
+        value: { areas: [area] },
+        items: undefined,
+      },
+    };
+    this._applyFilters();
+  }
+
+  private _filterDevice() {
+    const device = this._searchParms.get("device");
+    if (!device) {
+      return;
+    }
+    this._fromUrl = true;
+    this._filters = {
+      ...this._filters,
+      "ha-filter-devices": {
+        value: [device],
+        items: undefined,
+      },
+    };
+    this._applyFilters();
   }
 
   private _filterLabel() {
@@ -781,6 +824,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     if (!label) {
       return;
     }
+    this._fromUrl = true;
     this._filters = {
       ...this._filters,
       "ha-filter-labels": {
@@ -1116,7 +1160,6 @@ ${rejected
 
   private _renderLabelItems = (slot = "") =>
     html`${this._labels?.map((label) => {
-        const color = label.color ? computeCssColor(label.color) : undefined;
         const selected = this._selected.every((entityId) =>
           this.hass.entities[entityId]?.labels.includes(label.label_id)
         );
@@ -1134,12 +1177,8 @@ ${rejected
             slot="icon"
             .checked=${selected}
             .indeterminate=${partial}
-            reducedTouchTarget
           ></ha-checkbox>
-          <ha-label
-            style=${color ? `--color: ${color}` : ""}
-            .description=${label.description}
-          >
+          <ha-label .color=${label.color} .description=${label.description}>
             ${label.icon
               ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
               : nothing}
@@ -1271,10 +1310,6 @@ ${rejected
         }
         ha-dropdown ha-assist-chip {
           --md-assist-chip-trailing-space: 8px;
-        }
-        ha-label {
-          --ha-label-background-color: var(--color, var(--grey-color));
-          --ha-label-background-opacity: 0.5;
         }
       `,
     ];

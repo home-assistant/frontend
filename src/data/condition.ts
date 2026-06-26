@@ -1,35 +1,43 @@
-import { mdiMapClock, mdiShape } from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import type { HomeAssistant } from "../types";
 import type { AutomationElementGroupCollection } from "./automation";
 import type { Selector, TargetSelector } from "./selector";
 
 export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
-      device: {},
       dynamicGroups: {},
-      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
-      time_location: {
-        icon: mdiMapClock,
-        members: { sun: {}, time: {}, zone: {} },
+      time: {
+        icon: mdiClockOutline,
+        members: { time: {} },
+        domains: ["calendar", "schedule"],
       },
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
+      },
+      helpers: {},
+      template: {},
+      trigger: {},
+      other: {},
     },
   },
   {
     titleKey:
-      "ui.panel.config.automation.editor.conditions.groups.helpers.label",
+      "ui.panel.config.automation.editor.conditions.groups.generic.label",
+    generic: true,
     groups: {
-      helpers: {},
+      device: {},
+      entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
     },
   },
   {
-    titleKey: "ui.panel.config.automation.editor.conditions.groups.other.label",
+    titleKey:
+      "ui.panel.config.automation.editor.conditions.groups.custom_integrations.label",
     groups: {
-      template: {},
-      trigger: {},
-      other: {},
+      customDynamicGroups: {},
     },
   },
 ] as const;
@@ -65,10 +73,10 @@ export interface ConditionDescription {
 export type ConditionDescriptions = Record<string, ConditionDescription>;
 
 export const subscribeConditions = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (conditions: ConditionDescriptions) => void
 ) =>
-  hass.connection.subscribeMessage<ConditionDescriptions>(callback, {
+  connection.subscribeMessage<ConditionDescriptions>(callback, {
     type: "condition_platforms/subscribe",
   });
 

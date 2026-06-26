@@ -1,13 +1,17 @@
+import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-control-button";
 import "../../components/ha-control-switch";
 import "../../components/ha-state-icon";
+import { apiContext } from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import type { LockEntity } from "../../data/lock";
@@ -16,7 +20,7 @@ import {
   stateControlPulseStyle,
   stateControlToggleStyle,
 } from "../../resources/state-control-styles";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantApi } from "../../types";
 
 declare global {
   interface HASSDomEvents {
@@ -26,13 +30,19 @@ declare global {
 
 @customElement("ha-state-control-lock-toggle")
 export class HaStateControlLockToggle extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj!: LockEntity;
 
   @state() private _isOn = false;
 
-  public willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
       this._isOn =
@@ -69,14 +79,18 @@ export class HaStateControlLockToggle extends LitElement {
   }
 
   private async _callService(turnOn: boolean): Promise<void> {
-    if (!this.hass || !this.stateObj) {
+    if (!this.stateObj) {
       return;
     }
     forwardHaptic(this, "light");
     fireEvent(this, "lock-service-called");
     callProtectedLockService(
       this,
-      this.hass,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
       this.stateObj,
       turnOn ? "lock" : "unlock"
     );
@@ -92,21 +106,19 @@ export class HaStateControlLockToggle extends LitElement {
       return html`
         <div class="buttons">
           <ha-control-button
-            .label=${this.hass.localize("ui.card.lock.lock")}
+            .label=${this._localize("ui.card.lock.lock")}
             @click=${this._turnOn}
           >
             <ha-state-icon
-              .hass=${this.hass}
               .stateObj=${this.stateObj}
               .stateValue=${locking ? "locking" : "locked"}
             ></ha-state-icon>
           </ha-control-button>
           <ha-control-button
-            .label=${this.hass.localize("ui.card.lock.unlock")}
+            .label=${this._localize("ui.card.lock.unlock")}
             @click=${this._turnOff}
           >
             <ha-state-icon
-              .hass=${this.hass}
               .stateObj=${this.stateObj}
               .stateValue=${unlocking ? "unlocking" : "unlocked"}
             ></ha-state-icon>
@@ -123,8 +135,8 @@ export class HaStateControlLockToggle extends LitElement {
         .checked=${this._isOn}
         @change=${this._valueChanged}
         .label=${this._isOn
-          ? this.hass.localize("ui.card.lock.unlock")
-          : this.hass.localize("ui.card.lock.lock")}
+          ? this._localize("ui.card.lock.unlock")
+          : this._localize("ui.card.lock.lock")}
         style=${styleMap({
           "--control-switch-on-color": color,
           "--control-switch-off-color": color,
@@ -133,14 +145,12 @@ export class HaStateControlLockToggle extends LitElement {
       >
         <ha-state-icon
           slot="icon-on"
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .stateValue=${locking ? "locking" : "locked"}
           class=${classMap({ pulse: locking })}
         ></ha-state-icon>
         <ha-state-icon
           slot="icon-off"
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .stateValue=${unlocking ? "unlocking" : "unlocked"}
           class=${classMap({ pulse: unlocking })}

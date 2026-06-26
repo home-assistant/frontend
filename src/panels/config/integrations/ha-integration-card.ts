@@ -38,9 +38,6 @@ export class HaIntegrationCard extends LitElement {
   @property({ attribute: false })
   public entityRegistryEntries!: EntityRegistryEntry[];
 
-  @property({ attribute: "supports-diagnostics", type: Boolean })
-  public supportsDiagnostics = false;
-
   @property({ attribute: false }) public logInfo?: IntegrationLogInfo;
 
   @property({ attribute: false }) public domainEntities: string[] = [];
@@ -165,7 +162,12 @@ export class HaIntegrationCard extends LitElement {
                 ></ha-svg-icon>
                 <ha-tooltip
                   for="icon-custom"
-                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .placement=${computeRTL(
+                    this.hass.language,
+                    this.hass.translationMetadata.translations
+                  )
+                    ? "right"
+                    : "left"}
                 >
                   ${this.hass.localize(
                     this.manifest.overwrites_built_in
@@ -180,7 +182,12 @@ export class HaIntegrationCard extends LitElement {
                 <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
                 <ha-tooltip
                   for="icon-cloud"
-                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .placement=${computeRTL(
+                    this.hass.language,
+                    this.hass.translationMetadata.translations
+                  )
+                    ? "right"
+                    : "left"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -198,7 +205,12 @@ export class HaIntegrationCard extends LitElement {
                 ></ha-svg-icon>
                 <ha-tooltip
                   for="icon-yaml"
-                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .placement=${computeRTL(
+                    this.hass.language,
+                    this.hass.translationMetadata.translations
+                  )
+                    ? "right"
+                    : "left"}
                 >
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"
@@ -292,7 +304,6 @@ export class HaIntegrationCard extends LitElement {
           height: 100%;
           overflow: hidden;
           --state-color: var(--divider-color, #e0e0e0);
-          --ha-card-border-color: var(--state-color);
           --state-message-color: var(--state-color);
         }
         .ripple-anchor {
@@ -318,19 +329,23 @@ export class HaIntegrationCard extends LitElement {
         }
         .debug-logging {
           --state-color: var(--warning-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--primary-text-color);
         }
         .state-error {
           --state-color: var(--error-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--text-primary-color);
         }
         .state-failed-unload {
           --state-color: var(--warning-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--primary-text-color);
         }
         .state-not-loaded {
           opacity: 0.8;
           --state-color: var(--warning-color);
+          --ha-card-border-color: var(--state-color);
           --state-message-color: var(--primary-text-color);
         }
         .state-setup {
@@ -339,6 +354,7 @@ export class HaIntegrationCard extends LitElement {
         }
         :host(.highlight) ha-card {
           --state-color: var(--primary-color);
+          --ha-card-border-color: var(--state-color);
           --text-on-state-color: var(--text-primary-color);
         }
         .content {

@@ -268,7 +268,6 @@ export class HuiImage extends LitElement {
           ? html`
               <ha-camera-stream
                 muted
-                .hass=${this.hass}
                 .stateObj=${cameraObj}
                 .fitMode=${this.fitMode}
                 .aspectRatio=${this._ratio
@@ -299,7 +298,9 @@ export class HuiImage extends LitElement {
               id="brokenImage"
               style=${styleMap({
                 height: !useRatio
-                  ? `${this._lastImageHeight}px` || "100%"
+                  ? this._lastImageHeight
+                    ? `${this._lastImageHeight}px`
+                    : "100%"
                   : undefined,
               })}
             ></div>`
@@ -309,7 +310,9 @@ export class HuiImage extends LitElement {
                 class="progress-container"
                 style=${styleMap({
                   height: !useRatio
-                    ? `${this._lastImageHeight}px` || "100%"
+                    ? this._lastImageHeight
+                      ? `${this._lastImageHeight}px`
+                      : "100%"
                     : undefined,
                 })}
               >

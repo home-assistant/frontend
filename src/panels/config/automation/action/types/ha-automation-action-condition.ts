@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -21,10 +22,9 @@ import {
   CONDITION_BUILDING_BLOCKS,
   getConditionDomain,
   getConditionObjectId,
-  subscribeConditions,
 } from "../../../../../data/condition";
+import { conditionDescriptionsContext } from "../../../../../data/context";
 import { domainToName } from "../../../../../data/integration";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
@@ -42,10 +42,7 @@ import "../../condition/types/ha-automation-condition-zone";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
-export class HaConditionAction
-  extends SubscribeMixin(LitElement)
-  implements ActionElement
-{
+export class HaConditionAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -58,28 +55,15 @@ export class HaConditionAction
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
-  @state() private _conditionDescriptions: ConditionDescriptions = {};
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions: ConditionDescriptions = {};
 
   @query("ha-automation-condition-editor")
   private _conditionEditor?: HaAutomationConditionEditor;
 
   public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
     return { condition: "state" };
-  }
-
-  protected hassSubscribe() {
-    return [
-      subscribeConditions(this.hass, (conditions) =>
-        this._addConditions(conditions)
-      ),
-    ];
-  }
-
-  private _addConditions(conditions: ConditionDescriptions) {
-    this._conditionDescriptions = {
-      ...this._conditionDescriptions,
-      ...conditions,
-    };
   }
 
   protected render() {
@@ -138,7 +122,7 @@ export class HaConditionAction
     const isDynamicValue = isDynamic(value);
     const condition = isDynamicValue ? getValueFromDynamic(value) : value;
 
-    let label = condition;
+    let label: string;
 
     if (isDynamicValue) {
       const domain = getConditionDomain(condition);

@@ -12,7 +12,6 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type {
@@ -60,17 +59,6 @@ const statTypeMap: Record<(typeof stat_types)[number], StatisticType> = {
   change: "sum",
 };
 
-const periods = {
-  today: { calendar: { period: "day" } },
-  yesterday: { calendar: { period: "day", offset: -1 } },
-  this_week: { calendar: { period: "week" } },
-  last_week: { calendar: { period: "week", offset: -1 } },
-  this_month: { calendar: { period: "month" } },
-  last_month: { calendar: { period: "month", offset: -1 } },
-  this_year: { calendar: { period: "year" } },
-  last_year: { calendar: { period: "year", offset: -1 } },
-} as const;
-
 @customElement("hui-statistic-card-editor")
 export class HuiStatisticCardEditor
   extends LitElement
@@ -109,21 +97,8 @@ export class HuiStatisticCardEditor
     });
   }
 
-  private _data = memoizeOne((config: StatisticCardConfig) => {
-    if (!config || !config.period) {
-      return config;
-    }
-    for (const [periodKey, period] of Object.entries(periods)) {
-      if (deepEqual(period, config.period)) {
-        return { ...config, period: periodKey };
-      }
-    }
-    return config;
-  });
-
   private _schema = memoizeOne(
     (
-      selectedPeriodKey: string | undefined,
       localize: LocalizeFunc,
       enableDateSelect: boolean,
       metadata?: StatisticsMetaData
@@ -153,21 +128,20 @@ export class HuiStatisticCardEditor
               {
                 name: "period",
                 required: true,
-                selector:
-                  selectedPeriodKey && selectedPeriodKey in periods
-                    ? {
-                        select: {
-                          multiple: false,
-                          options: Object.keys(periods).map((periodKey) => ({
-                            value: periodKey,
-                            label:
-                              localize(
-                                `ui.panel.lovelace.editor.card.statistic.periods.${periodKey}`
-                              ) || periodKey,
-                          })),
-                        },
-                      }
-                    : { object: {} },
+                selector: {
+                  period: {
+                    options: [
+                      "today",
+                      "yesterday",
+                      "this_week",
+                      "last_week",
+                      "this_month",
+                      "last_month",
+                      "this_year",
+                      "last_year",
+                    ],
+                  },
+                },
               },
             ]
           : []),
@@ -221,10 +195,9 @@ export class HuiStatisticCardEditor
       return nothing;
     }
 
-    const data = this._data(this._config);
+    const data = this._config;
 
     const schema = this._schema(
-      typeof data.period === "string" ? data.period : undefined,
       this.hass.localize,
       !!this._config!.energy_date_selection,
       this._metadata
@@ -254,13 +227,6 @@ export class HuiStatisticCardEditor
   private async _valueChanged(ev: CustomEvent) {
     const config = { ...ev.detail.value } as StatisticCardConfig;
     Object.keys(config).forEach((k) => config[k] === "" && delete config[k]);
-
-    if (typeof config.period === "string") {
-      const period = periods[config.period];
-      if (period) {
-        config.period = period;
-      }
-    }
 
     if (
       config.stat_type &&

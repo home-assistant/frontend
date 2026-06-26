@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
 import {
@@ -50,7 +50,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     const forecastType = getDefaultForecastType(stateObj);
     if (forecastType) {
       this._subscribed = subscribeForecast(
-        this.hass!,
+        this.hass!.connection,
         stateObj.entity_id,
         forecastType,
         (event) => {
@@ -80,7 +80,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     return (
       hasConfigOrEntityChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -141,7 +141,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           <ha-state-icon
             class="weather-icon"
             .stateObj=${stateObj}
-            .hass=${this.hass}
           ></ha-state-icon>
         `}
       </div>
@@ -165,7 +164,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                   : this._config.secondary_info === "last-changed"
                     ? html`
                         <ha-relative-time
-                          .hass=${this.hass}
                           .datetime=${stateObj.last_changed}
                           capitalize
                         ></ha-relative-time>
@@ -173,7 +171,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                     : this._config.secondary_info === "last-updated"
                       ? html`
                           <ha-relative-time
-                            .hass=${this.hass}
                             .datetime=${stateObj.last_updated}
                             capitalize
                           ></ha-relative-time>
@@ -194,7 +191,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         <div>
-          ${isUnavailableState(stateObj.state) ||
+          ${stateObj.state === UNAVAILABLE ||
+          stateObj.state === UNKNOWN ||
           stateObj.attributes.temperature === undefined ||
           stateObj.attributes.temperature === null
             ? this.hass.formatEntityState(stateObj)

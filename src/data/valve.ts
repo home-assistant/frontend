@@ -4,10 +4,10 @@ import type {
 } from "home-assistant-js-websocket";
 import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantFormatters } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
 
-export const enum ValveEntityFeature {
+export enum ValveEntityFeature {
   OPEN = 1,
   CLOSE = 2,
   SET_POSITION = 4,
@@ -18,36 +18,6 @@ export const DEFAULT_VALVE_FAVORITE_POSITIONS = [0, 25, 75, 100];
 
 export const valveSupportsPosition = (stateObj: ValveEntity) =>
   supportsFeature(stateObj, ValveEntityFeature.SET_POSITION);
-
-export const normalizeValveFavoritePositions = (
-  positions?: number[]
-): number[] => {
-  if (!positions) {
-    return [];
-  }
-
-  const unique = new Set<number>();
-  const normalized: number[] = [];
-
-  for (const position of positions) {
-    const value = Number(position);
-
-    if (isNaN(value)) {
-      continue;
-    }
-
-    const clamped = Math.max(0, Math.min(100, Math.round(value)));
-
-    if (unique.has(clamped)) {
-      continue;
-    }
-
-    unique.add(clamped);
-    normalized.push(clamped);
-  }
-
-  return normalized;
-};
 
 export function isFullyOpen(stateObj: ValveEntity) {
   if (
@@ -108,7 +78,7 @@ export interface ValveEntity extends HassEntityBase {
 
 export function computeValvePositionStateDisplay(
   stateObj: ValveEntity,
-  hass: HomeAssistant,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
   position?: number
 ) {
   const statePosition = stateActive(stateObj)
@@ -118,7 +88,7 @@ export function computeValvePositionStateDisplay(
   const currentPosition = position ?? statePosition;
 
   return currentPosition && currentPosition !== 100
-    ? hass.formatEntityAttributeValue(
+    ? formatEntityAttributeValue(
         stateObj,
         "current_position",
         Math.round(currentPosition)

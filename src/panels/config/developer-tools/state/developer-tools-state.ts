@@ -1,4 +1,5 @@
 import { mdiContentCopy, mdiRefresh } from "@mdi/js";
+import { consume, type ContextType } from "@lit/context";
 import { addHours } from "date-fns";
 import type {
   HassEntities,
@@ -12,6 +13,8 @@ import memoizeOne from "memoize-one";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { storage } from "../../../../common/decorators/storage";
 import { escapeRegExp } from "../../../../common/string/escape_regexp";
+import { computeAreaName } from "../../../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-alert";
@@ -24,11 +27,20 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/input/ha-input";
+import type { HaInput } from "../../../../components/input/ha-input";
 import "../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../components/input/ha-input-search";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import "./developer-tools-state-renderer";
 
@@ -53,6 +65,10 @@ class HaPanelDevState extends LitElement {
 
   @state() private _attributeFilter = "";
 
+  @state() private _deviceFilter = "";
+
+  @state() private _areaFilter = "";
+
   @state() private _entity?: HassEntity;
 
   @state() private _state = "";
@@ -71,7 +87,39 @@ class HaPanelDevState extends LitElement {
   })
   private _showAttributes = true;
 
+  @storage({
+    key: "devToolsShowDevice",
+    state: true,
+  })
+  private _showDevice = true;
+
+  @storage({
+    key: "devToolsShowArea",
+    state: true,
+  })
+  private _showArea = true;
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -80,13 +128,23 @@ class HaPanelDevState extends LitElement {
       entityFilter: string,
       stateFilter: string,
       attributeFilter: string,
-      states: HassEntities
+      deviceFilter: string,
+      areaFilter: string,
+      states: HassEntities,
+      entities: HomeAssistantRegistries["entities"],
+      devices: HomeAssistantRegistries["devices"],
+      areas: HomeAssistantRegistries["areas"]
     ): HassEntity[] =>
       this._applyFiltersOnEntities(
         entityFilter,
         stateFilter,
         attributeFilter,
-        states
+        deviceFilter,
+        areaFilter,
+        states,
+        entities,
+        devices,
+        areas
       )
   );
 
@@ -95,32 +153,52 @@ class HaPanelDevState extends LitElement {
       this._entityFilter,
       this._stateFilter,
       this._attributeFilter,
-      this.hass.states
+      this._deviceFilter,
+      this._areaFilter,
+      this._states,
+      this._registries.entities,
+      this._registries.devices,
+      this._registries.areas
     );
 
     return html`
       <div class="heading">
         <h1>
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.current_entities"
           )}
         </h1>
         ${!this.narrow
-          ? html` <ha-formfield
-              .label=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.states.attributes"
-              )}
-            >
+          ? html`
+              <div class="filters-toggles">
+                <ha-checkbox
+                  .checked=${this._showDevice}
+                  @change=${this._saveDeviceCheckboxState}
+                >
+                  ${this._i18n.localize(
+                    "ui.panel.config.entities.picker.headers.device"
+                  )}
+                </ha-checkbox>
+                <ha-checkbox
+                  .checked=${this._showArea}
+                  @change=${this._saveAreaCheckboxState}
+                >
+                  ${this._i18n.localize("ui.panel.config.generic.headers.area")}
+                </ha-checkbox>
+              </div>
               <ha-checkbox
                 .checked=${this._showAttributes}
                 @change=${this._saveAttributeCheckboxState}
-                reducedTouchTarget
-              ></ha-checkbox>
-            </ha-formfield>`
+              >
+                ${this._i18n.localize(
+                  "ui.panel.config.developer-tools.tabs.states.attributes"
+                )}
+              </ha-checkbox>
+            `
           : nothing}
       </div>
       <ha-expansion-panel
-        .header=${this.hass.localize(
+        .header=${this._i18n.localize(
           "ui.panel.config.developer-tools.tabs.states.set_state"
         )}
         outlined
@@ -128,10 +206,10 @@ class HaPanelDevState extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <p>
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.description1"
           )}<br />
-          ${this.hass.localize(
+          ${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.description2"
           )}
         </p>
@@ -142,7 +220,6 @@ class HaPanelDevState extends LitElement {
           <div class="inputs">
             <ha-entity-picker
               autofocus
-              .hass=${this.hass}
               .value=${this._entityId}
               @value-changed=${this._entityIdChanged}
               show-entity-id
@@ -154,33 +231,32 @@ class HaPanelDevState extends LitElement {
                     <ha-icon-button
                       .path=${mdiContentCopy}
                       @click=${this._copyStateEntity}
-                      title=${this.hass.localize(
+                      title=${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.copy_id"
                       )}
                     ></ha-icon-button>
                   </div>
                 `
               : nothing}
-            <ha-textfield
-              .label=${this.hass.localize(
+            <ha-input
+              .label=${this._i18n.localize(
                 "ui.panel.config.developer-tools.tabs.states.state"
               )}
               required
               autocapitalize="none"
               autocomplete="off"
               .autocorrect=${false}
-              input-spellcheck="false"
+              .spellcheck=${false}
               .value=${this._state}
               @change=${this._stateChanged}
               class="state-input"
-            ></ha-textfield>
+            ></ha-input>
             <p>
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.config.developer-tools.tabs.states.state_attributes"
               )}
             </p>
             <ha-yaml-editor
-              .hass=${this.hass}
               .value=${this._stateAttributes}
               .error=${!this._validJSON}
               @value-changed=${this._yamlChanged}
@@ -191,13 +267,13 @@ class HaPanelDevState extends LitElement {
                 @click=${this._handleSetState}
                 .disabled=${!this._validJSON}
                 raised
-                >${this.hass.localize(
+                >${this._i18n.localize(
                   "ui.panel.config.developer-tools.tabs.states.set_state"
                 )}</ha-button
               >
               <ha-icon-button
                 @click=${this._updateEntity}
-                .label=${this.hass.localize("ui.common.refresh")}
+                .label=${this._i18n.localize("ui.common.refresh")}
                 .path=${mdiRefresh}
               ></ha-icon-button>
             </div>
@@ -206,7 +282,7 @@ class HaPanelDevState extends LitElement {
             ${this._entity
               ? html`<p>
                     <b
-                      >${this.hass.localize(
+                      >${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.last_changed"
                       )}:</b
                     ><br />
@@ -216,7 +292,7 @@ class HaPanelDevState extends LitElement {
                   </p>
                   <p>
                     <b
-                      >${this.hass.localize(
+                      >${this._i18n.localize(
                         "ui.panel.config.developer-tools.tabs.states.last_updated"
                       )}:</b
                     ><br />
@@ -229,16 +305,17 @@ class HaPanelDevState extends LitElement {
         </div>
       </ha-expansion-panel>
       <developer-tools-state-renderer
-        .hass=${this.hass}
         .narrow=${this.narrow}
         .entities=${entities}
         .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
         .showAttributes=${this._showAttributes}
+        .showDevice=${this._showDevice}
+        .showArea=${this._showArea}
         @states-tool-entity-selected=${this._entitySelected}
       >
         <ha-input-search
           slot="filter-entities"
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_entities"
           )}
           .value=${this._entityFilter}
@@ -246,7 +323,7 @@ class HaPanelDevState extends LitElement {
         ></ha-input-search>
         <ha-input-search
           slot="filter-states"
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_states"
           )}
           type="search"
@@ -254,8 +331,24 @@ class HaPanelDevState extends LitElement {
           @input=${this._stateFilterChanged}
         ></ha-input-search>
         <ha-input-search
+          slot="filter-devices"
+          .label=${this._i18n.localize(
+            "ui.panel.config.entities.picker.headers.device"
+          )}
+          type="search"
+          .value=${this._deviceFilter}
+          @input=${this._deviceFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
+          slot="filter-areas"
+          .label=${this._i18n.localize("ui.panel.config.generic.headers.area")}
+          type="search"
+          .value=${this._areaFilter}
+          @input=${this._areaFilterChanged}
+        ></ha-input-search>
+        <ha-input-search
           slot="filter-attributes"
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.developer-tools.tabs.states.filter_attributes"
           )}
           type="search"
@@ -270,7 +363,7 @@ class HaPanelDevState extends LitElement {
     ev.preventDefault();
     await copyToClipboard(this._entityId);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 
@@ -297,7 +390,7 @@ class HaPanelDevState extends LitElement {
 
   private _updateEntity() {
     const entityState = this._entityId
-      ? this.hass.states[this._entityId]
+      ? this._states[this._entityId]
       : undefined;
     if (!entityState) {
       this._entity = undefined;
@@ -313,8 +406,8 @@ class HaPanelDevState extends LitElement {
     this._expanded = true;
   }
 
-  private _stateChanged(ev) {
-    this._state = ev.target.value;
+  private _stateChanged(ev: InputEvent) {
+    this._state = (ev.target as HaInput).value ?? "";
   }
 
   private _entityFilterChanged(ev: InputEvent) {
@@ -327,6 +420,14 @@ class HaPanelDevState extends LitElement {
 
   private _attributeFilterChanged(ev: InputEvent) {
     this._attributeFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
+  private _deviceFilterChanged(ev: InputEvent) {
+    this._deviceFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
+  private _areaFilterChanged(ev: InputEvent) {
+    this._areaFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
   private _getHistoryURL(entityId, inputDate) {
@@ -359,7 +460,7 @@ class HaPanelDevState extends LitElement {
     this._error = "";
     if (!this._entityId) {
       showAlertDialog(this, {
-        text: this.hass.localize(
+        text: this._i18n.localize(
           "ui.panel.config.developer-tools.tabs.states.alert_entity_field"
         ),
       });
@@ -367,7 +468,7 @@ class HaPanelDevState extends LitElement {
     }
     this._updateEditor();
     try {
-      await this.hass.callApi("POST", "states/" + this._entityId, {
+      await this._api.callApi("POST", "states/" + this._entityId, {
         state: this._state,
         attributes: this._stateAttributes,
       });
@@ -380,7 +481,12 @@ class HaPanelDevState extends LitElement {
     entityFilter: string,
     stateFilter: string,
     attributeFilter: string,
-    states: HassEntities
+    deviceFilter: string,
+    areaFilter: string,
+    states: HassEntities,
+    entities: HomeAssistantRegistries["entities"],
+    devices: HomeAssistantRegistries["devices"],
+    areas: HomeAssistantRegistries["areas"]
   ) {
     const entityFilterRegExp =
       entityFilter &&
@@ -389,6 +495,14 @@ class HaPanelDevState extends LitElement {
     const stateFilterRegExp =
       stateFilter &&
       RegExp(escapeRegExp(stateFilter).replace(/\\\*/g, ".*"), "i");
+
+    const deviceFilterRegExp =
+      deviceFilter &&
+      RegExp(escapeRegExp(deviceFilter).replace(/\\\*/g, ".*"), "i");
+
+    const areaFilterRegExp =
+      areaFilter &&
+      RegExp(escapeRegExp(areaFilter).replace(/\\\*/g, ".*"), "i");
 
     let keyFilterRegExp;
     let valueFilterRegExp;
@@ -427,6 +541,30 @@ class HaPanelDevState extends LitElement {
 
         if (stateFilterRegExp && !stateFilterRegExp.test(value.state)) {
           return false;
+        }
+
+        if (deviceFilterRegExp) {
+          const entry = entities[value.entity_id];
+          const device = entry?.device_id
+            ? devices[entry.device_id]
+            : undefined;
+          const deviceName = device ? computeDeviceName(device) : undefined;
+          if (!deviceName || !deviceFilterRegExp.test(deviceName)) {
+            return false;
+          }
+        }
+
+        if (areaFilterRegExp) {
+          const entry = entities[value.entity_id];
+          const device = entry?.device_id
+            ? devices[entry.device_id]
+            : undefined;
+          const areaId = entry?.area_id || device?.area_id;
+          const area = areaId ? areas[areaId] : undefined;
+          const areaName = area ? computeAreaName(area) : undefined;
+          if (!areaName || !areaFilterRegExp.test(areaName)) {
+            return false;
+          }
         }
 
         if (keyFilterRegExp && valueFilterRegExp) {
@@ -469,21 +607,29 @@ class HaPanelDevState extends LitElement {
   private _lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.locale,
-      this.hass.config
+      this._i18n.locale,
+      this._config.config
     );
   }
 
   private _lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.locale,
-      this.hass.config
+      this._i18n.locale,
+      this._config.config
     );
   }
 
   private _saveAttributeCheckboxState(ev) {
     this._showAttributes = ev.target.checked;
+  }
+
+  private _saveDeviceCheckboxState(ev) {
+    this._showDevice = ev.target.checked;
+  }
+
+  private _saveAreaCheckboxState(ev) {
+    this._showArea = ev.target.checked;
   }
 
   private _yamlChanged(ev) {
@@ -495,11 +641,6 @@ class HaPanelDevState extends LitElement {
     return [
       haStyle,
       css`
-        :host {
-          display: block;
-          height: 100%;
-        }
-
         :host {
           -ms-user-select: initial;
           -webkit-user-select: initial;
@@ -513,19 +654,27 @@ class HaPanelDevState extends LitElement {
           --ha-input-padding-bottom: 0;
         }
 
-        ha-textfield {
-          display: block;
-        }
-
         .heading {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-start;
+          align-items: center;
+          gap: var(--ha-space-4);
         }
 
-        .heading ha-formfield {
-          margin-right: var(--ha-space-2);
-          --mdc-typography-body2-font-size: var(--ha-font-size-m);
-          --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
+        .heading h1 {
+          margin-right: auto;
+        }
+
+        .filters-toggles {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+        }
+
+        .heading .filters-toggles ha-checkbox {
+          margin-right: 0;
+          width: max-content;
+          display: inline-flex;
         }
 
         .entity-id {

@@ -4,6 +4,7 @@ export const baseTriggerStruct = object({
   trigger: string(),
   id: optional(string()),
   enabled: optional(boolean()),
+  note: optional(string()),
 });
 
 export const forDictStruct = object({

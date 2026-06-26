@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { theme2hex } from "../../../common/color/convert-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/chart/state-history-charts";
@@ -17,13 +18,11 @@ import {
   type HistoryResult,
 } from "../../../data/history";
 import { fetchStatistics } from "../../../data/recorder";
-import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { HistoryGraphCardConfig } from "./types";
+import type { GraphEntityConfig, HistoryGraphCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -51,9 +50,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _names: Record<string, string> = {};
 
+  private _colors: Record<string, string | undefined> = {};
+
   private _entityIds: string[] = [];
 
-  private _entities: EntityConfig[] = [];
+  private _entities: GraphEntityConfig[] = [];
 
   private _historyLinkId = `history-${Math.random().toString(36).substring(2, 9)}`;
 
@@ -95,6 +96,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
     this._config = config;
     this._computeNames();
+    this._computeColors();
   }
 
   private _computeNames() {
@@ -110,7 +112,20 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     });
   }
 
-  public willUpdate(changedProps: PropertyValues) {
+  private _computeColors() {
+    if (!this._config) {
+      return;
+    }
+    this._colors = {};
+    this._entities.forEach((entity) => {
+      // if color = undefined, it is automatically defined inside a chart component
+      this._colors[entity.entity] = entity.color
+        ? theme2hex(entity.color)
+        : undefined;
+    });
+  }
+
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("hass")) {
       this._computeNames();
@@ -130,15 +145,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   private async _subscribeHistory() {
-    if (!isComponentLoaded(this.hass!, "history") || this._subscribed) {
+    if (!isComponentLoaded(this.hass!.config, "history") || this._subscribed) {
       return;
-    }
-
-    const { numeric_device_classes: sensorNumericDeviceClasses } =
-      await getSensorNumericDeviceClasses(this.hass!);
-
-    if (!this.isConnected) {
-      return; // Skip subscribe if we already disconnected while awaiting
     }
 
     this._subscribed = subscribeHistoryStatesTimeWindow(
@@ -154,7 +162,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           combinedHistory,
           this._entityIds,
           this.hass!.localize,
-          sensorNumericDeviceClasses,
           this._config?.split_device_classes
         );
 
@@ -168,7 +175,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       return undefined;
     });
 
-    await this._fetchStatistics(sensorNumericDeviceClasses);
+    await this._fetchStatistics();
 
     this._setRedrawTimer();
   }
@@ -183,7 +190,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
+  private async _fetchStatistics() {
     if (this._hoursToShow < 1) {
       // Statistics are hourly aggregates, not useful for sub-hour windows
       return;
@@ -206,7 +213,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       this.hass!,
       statistics,
       this._entityIds,
-      sensorNumericDeviceClasses,
       this._config?.split_device_classes
     );
 
@@ -230,12 +236,27 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _unsubscribeHistory() {
     clearInterval(this._interval);
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub?.());
+      this._subscribed.then((unsub) => unsub?.()).catch(() => undefined);
       this._subscribed = undefined;
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
+  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
+    // Allow update when components list changes so we can retry subscription
+    if (
+      !this._subscribed &&
+      !this._error &&
+      this._config &&
+      changedProps.has("hass")
+    ) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        oldHass &&
+        oldHass.config.components !== this.hass!.config.components
+      ) {
+        return true;
+      }
+    }
     return (
       hasConfigOrEntitiesChanged(this, changedProps) ||
       changedProps.size > 1 ||
@@ -268,6 +289,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         oldConfig?.hours_to_show !== this._config.hours_to_show)
     ) {
       this._unsubscribeHistory();
+      this._subscribeHistory();
+    } else if (
+      this.isConnected &&
+      !this._subscribed &&
+      !this._error &&
+      changedProps.has("hass")
+    ) {
+      // Retry subscription when components become available after backend restart
       this._subscribeHistory();
     }
   }
@@ -336,6 +365,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
+                  .colors=${this._colors}
                   .height=${hasFixedHeight ? "100%" : undefined}
                   .narrow=${narrow}
                   .expandLegend=${this._config.expand_legend}
@@ -365,6 +395,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     .content {
       padding: 0 16px 8px;
       flex: 1;
+      overflow: hidden;
+    }
+    .content:has(state-history-charts) {
+      overflow: visible;
+    }
+    .content.has-height:has(state-history-charts) {
       overflow: hidden;
     }
     .has-header {

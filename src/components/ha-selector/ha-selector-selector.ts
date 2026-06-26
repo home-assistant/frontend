@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
   LocalizeFunc,
@@ -168,9 +169,12 @@ export class HaSelectorSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public required = true;
 
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
+
   private _yamlMode = false;
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues<this>) {
     if (changedProps.size === 1 && changedProps.has("hass")) {
       return false;
     }
@@ -236,7 +240,7 @@ export class HaSelectorSelector extends LitElement {
       };
     }
 
-    const schema = this._schema(type, this.hass.localize);
+    const schema = this._schema(type, this._localize!);
 
     return html`<div>
       <p>${this.label ? this.label : ""}</p>
@@ -290,7 +294,7 @@ export class HaSelectorSelector extends LitElement {
   }
 
   private _computeLabelCallback = (schema: any): string =>
-    this.hass.localize(
+    this._localize!(
       `ui.components.selectors.selector.${schema.name}` as LocalizeKeys
     ) || schema.name;
 

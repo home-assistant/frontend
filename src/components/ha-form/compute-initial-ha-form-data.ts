@@ -79,6 +79,7 @@ export const computeInitialHaFormData = (
         "attribute" in selector ||
         "file" in selector ||
         "icon" in selector ||
+        "serial_port" in selector ||
         "template" in selector ||
         "text" in selector ||
         "theme" in selector ||

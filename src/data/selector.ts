@@ -31,6 +31,7 @@ export type Selector =
   | AreaSelector
   | AreasDisplaySelector
   | AttributeSelector
+  | AutomationBehaviorSelector
   | BooleanSelector
   | ButtonToggleSelector
   | ChooseSelector
@@ -60,6 +61,7 @@ export type Selector =
   | NumberSelector
   | NumericThresholdSelector
   | ObjectSelector
+  | PeriodSelector
   | AssistPipelineSelector
   | QRCodeSelector
   | SelectSelector
@@ -76,9 +78,11 @@ export type Selector =
   | TriggerSelector
   | TTSSelector
   | TTSVoiceSelector
+  | SerialPortSelector
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
+  | UiTimeFormatSelector
   | BackupLocationSelector;
 
 export interface ActionSelector {
@@ -120,6 +124,21 @@ export interface AttributeSelector {
 
 export interface BooleanSelector {
   boolean: {} | null;
+}
+
+export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
+
+export type AutomationBehaviorConditionMode = "all" | "any";
+
+export type AutomationBehavior =
+  | AutomationBehaviorTriggerMode
+  | AutomationBehaviorConditionMode;
+
+export interface AutomationBehaviorSelector {
+  automation_behavior: {
+    mode: "trigger" | "condition";
+    translation_key?: string;
+  } | null;
 }
 
 export interface ButtonToggleSelector {
@@ -250,6 +269,16 @@ interface EntitySelectorFilter {
   model_id?: string;
 }
 
+export interface EntitySelectorExtraOption {
+  id: string;
+  primary: string;
+  secondary?: string;
+  icon?: string;
+  icon_path?: string;
+  entity_id?: string;
+  hide_clear?: boolean;
+}
+
 export interface EntitySelector {
   entity: {
     multiple?: boolean;
@@ -257,6 +286,7 @@ export interface EntitySelector {
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     reorder?: boolean;
+    extra_options?: EntitySelectorExtraOption[];
   } | null;
 }
 
@@ -395,6 +425,27 @@ export interface ObjectSelector {
   } | null;
 }
 
+export type PeriodKey =
+  | "today"
+  | "yesterday"
+  | "tomorrow"
+  | "this_week"
+  | "last_week"
+  | "next_week"
+  | "this_month"
+  | "last_month"
+  | "next_month"
+  | "this_year"
+  | "last_year"
+  | "next_7d"
+  | "next_30d"
+  | "none";
+export interface PeriodSelector {
+  period: {
+    options: readonly PeriodKey[];
+  } | null;
+}
+
 export interface AssistPipelineSelector {
   assist_pipeline: {
     include_last_used?: boolean;
@@ -430,6 +481,12 @@ export interface SelectSelector {
 
 export interface SelectorSelector {
   selector: {} | null;
+}
+
+export interface SerialPortSelector {
+  serial_port: {
+    extra_recommended_domains?: string[];
+  } | null;
 }
 
 export interface StateSelector {
@@ -474,6 +531,7 @@ export interface StringSelector {
       | "color";
     prefix?: string;
     suffix?: string;
+    placeholder?: string;
     autocomplete?: string;
     multiple?: true;
   } | null;
@@ -487,6 +545,7 @@ export interface TargetSelector {
   target: {
     entity?: EntitySelectorFilter | readonly EntitySelectorFilter[];
     device?: DeviceSelectorFilter | readonly DeviceSelectorFilter[];
+    primary_entities_only?: boolean;
   } | null;
 }
 
@@ -546,6 +605,10 @@ export interface UiStateContentSelector {
   } | null;
 }
 
+export interface UiTimeFormatSelector {
+  ui_time_format: {} | null;
+}
+
 export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
@@ -586,7 +649,7 @@ export const expandLabelTarget = (
     if (
       device.labels.includes(labelId) &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -655,7 +718,7 @@ export const expandAreaTarget = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -719,7 +782,7 @@ export const areaMeetsTargetSelector = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -751,7 +814,7 @@ export const areaMeetsTargetSelector = (
 };
 
 export const deviceMeetsTargetSelector = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector,
@@ -775,7 +838,7 @@ export const deviceMeetsTargetSelector = (
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
-      const entityState = hass.states[entity.entity_id];
+      const entityState = states[entity.entity_id];
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,

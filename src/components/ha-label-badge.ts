@@ -114,7 +114,7 @@ class HaLabelBadge extends LitElement {
     ];
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has("image")) {
       this.shadowRoot!.getElementById("badge")!.style.backgroundImage = this

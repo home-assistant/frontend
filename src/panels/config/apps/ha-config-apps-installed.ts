@@ -1,5 +1,8 @@
 import {
+  mdiAlertDecagramOutline,
   mdiArrowUpBoldCircle,
+  mdiArrowUpBoldCircleOutline,
+  mdiFlask,
   mdiPuzzle,
   mdiRefresh,
   mdiStorePlus,
@@ -10,8 +13,8 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
@@ -29,7 +32,9 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
+import { getAppDisplayName } from "./common/app";
 import "./components/supervisor-apps-card-content";
+import type { AppTag } from "./components/supervisor-apps-card-content";
 import { supervisorAppsStyle } from "./resources/supervisor-apps-style";
 
 @customElement("ha-config-apps-installed")
@@ -96,77 +101,65 @@ export class HaConfigAppsInstalled extends LitElement {
           </ha-input-search>
         </div>
         <div class="content">
-          <div class="card-group">
-            ${addons.length === 0
-              ? html`
-                  <ha-card outlined>
+          ${addons.length === 0
+            ? html`
+                <ha-card outlined>
+                  <div class="card-content">
+                    <button class="link" @click=${this._openStore}>
+                      ${this.hass.localize(
+                        "ui.panel.config.apps.installed.no_apps"
+                      )}
+                    </button>
+                  </div>
+                </ha-card>
+              `
+            : addons.map(
+                (addon) => html`
+                  <ha-card
+                    role="button"
+                    tabindex="0"
+                    outlined
+                    .addon=${addon}
+                    @click=${this._addonTapped}
+                    aria-label=${getAppDisplayName(addon.name, addon.stage)}
+                  >
                     <div class="card-content">
-                      <button class="link" @click=${this._openStore}>
-                        ${this.hass.localize(
-                          "ui.panel.config.apps.installed.no_apps"
-                        )}
-                      </button>
+                      <supervisor-apps-card-content
+                        .hass=${this.hass}
+                        .title=${addon.name}
+                        .stage=${addon.stage}
+                        .description=${addon.description}
+                        available
+                        .tags=${this._getAppTags(addon)}
+                        .state=${addon.state}
+                        .icon=${addon.update_available
+                          ? mdiArrowUpBoldCircle
+                          : mdiPuzzle}
+                        .iconTitle=${addon.state !== "started"
+                          ? this.hass.localize(
+                              "ui.panel.config.apps.installed.app_stopped"
+                            )
+                          : addon.update_available
+                            ? this.hass.localize(
+                                "ui.panel.config.apps.installed.app_update_available"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.apps.installed.app_running"
+                              )}
+                        .iconImage=${addon.icon
+                          ? `/api/hassio/addons/${addon.slug}/icon`
+                          : undefined}
+                      ></supervisor-apps-card-content>
                     </div>
                   </ha-card>
                 `
-              : addons.map(
-                  (addon) => html`
-                    <ha-card
-                      outlined
-                      .addon=${addon}
-                      @click=${this._addonTapped}
-                    >
-                      <div class="card-content">
-                        <supervisor-apps-card-content
-                          .hass=${this.hass}
-                          .title=${addon.name}
-                          .stage=${addon.stage}
-                          .description=${addon.description}
-                          available
-                          .showTopbar=${addon.update_available}
-                          topbarClass="update"
-                          .icon=${addon.update_available
-                            ? mdiArrowUpBoldCircle
-                            : mdiPuzzle}
-                          .iconTitle=${addon.state !== "started"
-                            ? this.hass.localize(
-                                "ui.panel.config.apps.installed.app_stopped"
-                              )
-                            : addon.update_available
-                              ? this.hass.localize(
-                                  "ui.panel.config.apps.installed.app_update_available"
-                                )
-                              : this.hass.localize(
-                                  "ui.panel.config.apps.installed.app_running"
-                                )}
-                          .iconClass=${addon.update_available
-                            ? addon.state === "started"
-                              ? "update"
-                              : "update stopped"
-                            : addon.state === "started"
-                              ? "running"
-                              : "stopped"}
-                          .iconImage=${addon.icon
-                            ? `/api/hassio/addons/${addon.slug}/icon`
-                            : undefined}
-                        ></supervisor-apps-card-content>
-                      </div>
-                    </ha-card>
-                  `
-                )}
-          </div>
+              )}
         </div>
 
-        <a href="/config/apps/available">
-          <ha-fab
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.installed.add_app"
-            )}
-            extended
-          >
-            <ha-svg-icon slot="icon" .path=${mdiStorePlus}></ha-svg-icon>
-          </ha-fab>
-        </a>
+        <ha-button size="l" href="/config/apps/available">
+          <ha-svg-icon slot="start" .path=${mdiStorePlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.apps.installed.add_app")}
+        </ha-button>
       </hass-subpage>
     `;
   }
@@ -223,6 +216,32 @@ export class HaConfigAppsInstalled extends LitElement {
     navigate("/config/apps/available");
   }
 
+  private _getAppTags(addon: HassioAddonInfo): AppTag[] {
+    const labels: AppTag[] = [];
+
+    if (addon.update_available) {
+      labels.push({
+        label: this.hass.localize(
+          `ui.panel.config.apps.state.update_available`
+        ),
+        variant: "brand",
+        iconPath: mdiArrowUpBoldCircleOutline,
+      });
+    }
+    if (addon.stage !== "stable") {
+      labels.push({
+        label: this.hass.localize(
+          `ui.panel.config.apps.dashboard.capability.stages.${addon.stage}`
+        ),
+        variant: addon.stage === "experimental" ? "warning" : "danger",
+        iconPath:
+          addon.stage === "experimental" ? mdiFlask : mdiAlertDecagramOutline,
+      });
+    }
+
+    return labels;
+  }
+
   static styles: CSSResultGroup = [
     supervisorAppsStyle,
     css`
@@ -235,28 +254,41 @@ export class HaConfigAppsInstalled extends LitElement {
       ha-card {
         cursor: pointer;
         overflow: hidden;
-        direction: ltr;
+      }
+
+      ha-card:hover {
+        background-color: var(--ha-color-fill-neutral-quiet-resting);
       }
 
       .search {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 56px;
         position: sticky;
         top: 0;
         z-index: 2;
+        background-color: var(--primary-background-color);
+        padding: 0 var(--ha-space-4);
+        box-sizing: border-box;
+        border-bottom: 1px solid var(--divider-color);
       }
 
       ha-input-search {
-        padding: var(--ha-space-3) var(--ha-space-2);
-        background: var(--sidebar-background-color);
-        border-bottom: 1px solid var(--divider-color);
+        flex: 1;
+        min-width: 0;
       }
 
       .content {
         padding: var(--ha-space-4);
         margin-bottom: var(--ha-space-18);
+        gap: var(--ha-space-4);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(336px, 100%), 1fr));
       }
 
       .card-content {
-        padding: var(--ha-space-4);
+        padding: var(--ha-space-4) var(--ha-space-4) var(--ha-space-2);
       }
 
       button.link {
@@ -270,7 +302,7 @@ export class HaConfigAppsInstalled extends LitElement {
         cursor: pointer;
       }
 
-      ha-fab {
+      ha-button[size="l"] {
         position: fixed;
         right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
         bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
@@ -279,6 +311,7 @@ export class HaConfigAppsInstalled extends LitElement {
         );
         inset-inline-start: initial;
         z-index: 1;
+        --ha-button-box-shadow: var(--ha-box-shadow-l);
       }
     `,
   ];

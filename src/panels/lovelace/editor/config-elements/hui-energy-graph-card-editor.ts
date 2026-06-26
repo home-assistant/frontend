@@ -32,6 +32,7 @@ const cardConfigStruct = assign(
       literal("energy-compare"),
       literal("energy-distribution"),
       literal("energy-gas-graph"),
+      literal("energy-grid-balance"),
       literal("energy-grid-neutrality-gauge"),
       literal("energy-self-sufficiency-gauge"),
       literal("energy-solar-consumed-gauge"),
@@ -76,10 +77,11 @@ export class HuiEnergyGraphCardEditor
       ...(type !== "energy-compare"
         ? [{ name: "title", selector: { text: {} } }]
         : []),
-      ...(type === "power-sources-graph"
+      ...(type === "power-sources-graph" || type === "energy-usage-graph"
         ? [
             {
               name: "show_legend",
+              default: true,
               required: false,
               selector: { boolean: {} },
             },

@@ -77,7 +77,10 @@ export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
 
-export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
+export const updateReleaseNotes = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entityId: string
+) =>
   hass.callWS<string | null>({
     type: "update/release_notes",
     entity_id: entityId,
@@ -86,6 +89,19 @@ export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
 const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
 const HOME_ASSISTANT_SUPERVISOR_TITLE = "Home Assistant Supervisor";
 const HOME_ASSISTANT_OS_TITLE = "Home Assistant Operating System";
+
+// The hassio integration sets these as hard-coded `_attr_title` on the Core,
+// Operating System, and Supervisor update entities. They are not translated,
+// so a title comparison is the reliable way to identify them without depending
+// on the (lazily-fetched) entity sources.
+export const isSystemUpdate = (entity: UpdateEntity): boolean => {
+  const title = entity.attributes.title || "";
+  return (
+    title === HOME_ASSISTANT_CORE_TITLE ||
+    title === HOME_ASSISTANT_OS_TITLE ||
+    title === HOME_ASSISTANT_SUPERVISOR_TITLE
+  );
+};
 
 export const filterUpdateEntities = (
   entities: HassEntities,
@@ -132,6 +148,21 @@ export const filterUpdateEntitiesParameterized = (
     }
     return updateCanInstall(entity, showSkipped);
   });
+
+export const installUpdates = (
+  hass: HomeAssistant,
+  entityIds: string[],
+  notifyOnError = true
+) =>
+  hass.callService(
+    "update",
+    "install",
+    {
+      entity_id: entityIds,
+    },
+    undefined,
+    notifyOnError
+  );
 
 export const checkForEntityUpdates = async (
   element: HTMLElement,
@@ -203,6 +234,24 @@ export const computeUpdateStateDisplay = (
   const state = stateObj.state;
   const attributes = stateObj.attributes;
 
+  // An install can be in progress even when the state is "off", e.g. when
+  // downgrading firmware (installed_version is newer than latest_version).
+  // Show the installing status regardless of state in that case.
+  if (updateIsInstalling(stateObj)) {
+    const supportsProgress =
+      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
+      attributes.update_percentage !== null;
+    if (supportsProgress) {
+      return hass.localize("ui.card.update.installing_with_progress", {
+        progress: formatNumber(attributes.update_percentage!, hass.locale, {
+          maximumFractionDigits: attributes.display_precision,
+          minimumFractionDigits: attributes.display_precision,
+        }),
+      });
+    }
+    return hass.localize("ui.card.update.installing");
+  }
+
   if (state === "off") {
     const isSkipped =
       attributes.latest_version &&
@@ -211,23 +260,6 @@ export const computeUpdateStateDisplay = (
       return attributes.latest_version!;
     }
     return hass.formatEntityState(stateObj);
-  }
-
-  if (state === "on") {
-    if (updateIsInstalling(stateObj)) {
-      const supportsProgress =
-        supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
-        attributes.update_percentage !== null;
-      if (supportsProgress) {
-        return hass.localize("ui.card.update.installing_with_progress", {
-          progress: formatNumber(attributes.update_percentage!, hass.locale, {
-            maximumFractionDigits: attributes.display_precision,
-            minimumFractionDigits: attributes.display_precision,
-          }),
-        });
-      }
-      return hass.localize("ui.card.update.installing");
-    }
   }
 
   return hass.formatEntityState(stateObj);

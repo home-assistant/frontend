@@ -26,7 +26,7 @@ title: Button
     filled button
   </ha-button>
 
-  <ha-button size="small">
+  <ha-button size="s">
     small
   </ha-button>
 </div>
@@ -34,7 +34,7 @@ title: Button
 ```html
 <ha-button> simple button </ha-button>
 
-<ha-button size="small"> small </ha-button>
+<ha-button size="s"> small </ha-button>
 ```
 
 ### API
@@ -57,7 +57,7 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/butt
 | ---------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
 | appearance | "accent"/"filled"/"plain"                      | "accent" | Sets the button appearance.                                                       |
 | variants   | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                |
-| size       | "small"/"medium"                               | "medium" | Sets the button size.                                                             |
+| size       | "xs"/"s"/"m"/"l"/"xl"                          | "m"      | Sets the button size.                                                             |
 | loading    | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click. |
 | disabled   | Boolean                                        | false    | Disables the button and prevents user interaction.                                |
 

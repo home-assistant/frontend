@@ -2,11 +2,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
-import "../../../../../components/ha-textfield";
+import "../../../../../components/input/ha-input";
 import type { Cluster, Command, ZHADevice } from "../../../../../data/zha";
 import { fetchCommandsForCluster } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -40,7 +39,7 @@ export class ZHAClusterCommands extends LitElement {
   @state()
   private _commandData: Record<string, any> = {};
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("selectedCluster")) {
       this._commands = undefined;
       this._selectedCommandId = undefined;
@@ -54,7 +53,7 @@ export class ZHAClusterCommands extends LitElement {
       return nothing;
     }
     return html`
-      <ha-card class="content">
+      <div class="content">
         <div class="command-picker">
           <ha-select
             .label=${this.hass!.localize(
@@ -73,7 +72,7 @@ export class ZHAClusterCommands extends LitElement {
         ${this._selectedCommandId !== undefined
           ? html`
               <div class="input-text">
-                <ha-textfield
+                <ha-input
                   .label=${this.hass!.localize(
                     "ui.panel.config.zha.common.manufacturer_code_override"
                   )}
@@ -83,7 +82,7 @@ export class ZHAClusterCommands extends LitElement {
                   .placeholder=${this.hass!.localize(
                     "ui.panel.config.zha.common.value"
                   )}
-                ></ha-textfield>
+                ></ha-input>
               </div>
               <div class="command-form">
                 <ha-form
@@ -97,7 +96,6 @@ export class ZHAClusterCommands extends LitElement {
               </div>
               <div class="card-actions">
                 <ha-call-service-button
-                  .hass=${this.hass}
                   domain="zha"
                   service="issue_zigbee_cluster_command"
                   .data=${this._issueClusterCommandServiceData}
@@ -111,7 +109,7 @@ export class ZHAClusterCommands extends LitElement {
               </div>
             `
           : ""}
-      </ha-card>
+      </div>
     `;
   }
 
@@ -166,8 +164,10 @@ export class ZHAClusterCommands extends LitElement {
       this._computeIssueClusterCommandServiceData();
   }
 
-  private _onManufacturerCodeOverrideChanged(event): void {
-    this._manufacturerCodeOverride = Number(event.target.value);
+  private _onManufacturerCodeOverrideChanged(event: InputEvent): void {
+    this._manufacturerCodeOverride = Number(
+      (event.target as HTMLInputElement).value
+    );
     this._issueClusterCommandServiceData =
       this._computeIssueClusterCommandServiceData();
   }
@@ -182,24 +182,23 @@ export class ZHAClusterCommands extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
-          border: none;
+        :host {
+          display: block;
+        }
+
+        .content {
+          padding-top: var(--ha-space-4);
         }
 
         ha-select {
           margin-top: 16px;
         }
         .menu,
-        ha-textfield {
+        ha-input {
           width: 100%;
         }
 
-        .card-actions.warning ha-call-service-button {
-          color: var(--error-color);
-        }
-
         .command-picker {
-          align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-inline-start: 28px;
@@ -223,24 +222,10 @@ export class ZHAClusterCommands extends LitElement {
           padding-bottom: 10px;
         }
 
-        .header {
-          flex-grow: 1;
-        }
-
-        .toggle-help-icon {
-          float: right;
-          top: -6px;
-          right: 0;
-          inset-inline-end: 0;
-          inset-inline-start: initial;
-          padding-right: 0px;
-          padding-inline-end: 0px;
-          padding-inline-start: initial;
-          color: var(--primary-color);
-        }
-
         .card-actions {
           display: flex;
+          border-top: 1px solid var(--divider-color);
+          padding: var(--ha-space-2);
           justify-content: flex-end;
         }
       `,

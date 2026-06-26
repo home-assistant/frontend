@@ -102,7 +102,12 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
     this._element.preview = this.preview;
 
     const conditionMet =
-      conditionsMet ?? checkConditionsMet(this._config.conditions, this.hass);
+      conditionsMet ??
+      checkConditionsMet(
+        this._config.conditions,
+        this.hass,
+        this._conditionContext
+      );
 
     this.setVisibility(conditionMet);
   }

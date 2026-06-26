@@ -15,7 +15,7 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
@@ -37,7 +37,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
 import "./tag-image";
 
@@ -90,9 +90,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       },
       id: {
         title: localize("ui.panel.config.tag.headers.tag_id"),
-        main: true,
         sortable: true,
         filterable: true,
+        defaultHidden: true,
       },
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
@@ -101,7 +101,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         template: (tag) => html`
           ${tag.last_scanned_datetime
             ? html`<ha-relative-time
-                .hass=${this.hass}
                 .datetime=${tag.last_scanned_datetime}
                 capitalize
               ></ha-relative-time>`
@@ -133,7 +132,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       type: "overflow-menu",
       template: (tag) => html`
         <ha-icon-overflow-menu
-          .hass=${this.hass}
           narrow
           .items=${[
             {
@@ -167,7 +165,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     }))
   );
 
-  protected firstUpdated(changedProperties: PropertyValues) {
+  protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchTags();
   }
@@ -210,14 +208,10 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-fab
-          slot="fab"
-          .label=${this.hass.localize("ui.panel.config.tag.add_tag")}
-          extended
-          @click=${this._addTag}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </ha-fab>
+        <ha-button slot="fab" size="l" @click=${this._addTag}>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.tag.add_tag")}
+        </ha-button>
       </hass-tabs-subpage-data-table>
     `;
   }

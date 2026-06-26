@@ -1,5 +1,5 @@
 import { mdiInformationOutline, mdiPlus } from "@mdi/js";
-import { LitElement, css, html, nothing, type TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -12,15 +12,15 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
+import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
-import { haStyleScrollbar } from "../../../../resources/styles";
 import { getTargetIcon } from "../target/get_target_icon";
 
 type Target = [string, string | undefined, string | undefined];
@@ -39,8 +39,6 @@ export class HaAutomationAddItems extends LitElement {
   @property({ attribute: "select-label" }) public selectLabel!: string;
 
   @property({ attribute: "empty-label" }) public emptyLabel!: string;
-
-  @property({ attribute: false }) public emptyNote?: string | TemplateResult;
 
   @property({ attribute: false }) public target?: Target;
 
@@ -83,9 +81,6 @@ export class HaAutomationAddItems extends LitElement {
             ? html`${this.emptyLabel}
               ${this.target
                 ? html`<div>${this._renderTarget(this.target)}</div>`
-                : nothing}
-              ${this.emptyNote
-                ? html`<div class="empty-note">${this.emptyNote}</div>`
                 : nothing}`
             : repeat(
                 this.items,
@@ -103,17 +98,12 @@ export class HaAutomationAddItems extends LitElement {
 
     return html`
       <div class="items-title">${title}</div>
-      <ha-md-list>
+      <ha-list-base>
         ${repeat(
           items,
           (item) => item.key,
           (item) => html`
-            <ha-md-list-item
-              interactive
-              type="button"
-              .value=${item.key}
-              @click=${this._selected}
-            >
+            <ha-list-item-button .value=${item.key} @click=${this._selected}>
               <div slot="headline" class=${this.target ? "item-headline" : ""}>
                 ${item.name}${this._renderTarget(this.target)}
               </div>
@@ -138,6 +128,7 @@ export class HaAutomationAddItems extends LitElement {
                       @click=${stopPropagation}
                     ></ha-svg-icon>
                     <ha-tooltip
+                      slot="end"
                       .for=${`description-tooltip-${item.key}`}
                       @wa-show=${stopPropagation}
                       @wa-hide=${stopPropagation}
@@ -151,10 +142,10 @@ export class HaAutomationAddItems extends LitElement {
                 class="plus"
                 .path=${mdiPlus}
               ></ha-svg-icon>
-            </ha-md-list-item>
+            </ha-list-item-button>
           `
         )}
-      </ha-md-list>
+      </ha-list-base>
     `;
   }
 
@@ -165,7 +156,13 @@ export class HaAutomationAddItems extends LitElement {
 
     return html`<div class="selected-target">
       ${getTargetIcon(
-        this.hass,
+        {
+          entities: this.hass.entities,
+          devices: this.hass.devices,
+          areas: this.hass.areas,
+          floors: this.hass.floors,
+        },
+        this.hass.states,
         target[0],
         target[1],
         this.configEntryLookup,
@@ -230,39 +227,30 @@ export class HaAutomationAddItems extends LitElement {
         justify-content: center;
       }
 
-      .empty-note {
-        color: var(--ha-color-text-secondary);
-        margin-top: var(--ha-space-2);
-        text-align: center;
-      }
-
-      .empty-note a {
-        color: currentColor;
-        text-decoration: underline;
-      }
-
       .items.error {
         background-color: var(--ha-color-fill-danger-quiet-resting);
         color: var(--ha-color-on-danger-normal);
       }
-      .items ha-md-list {
-        --md-list-item-two-line-container-height: var(--ha-space-12);
-        --md-list-item-leading-space: var(--ha-space-3);
-        --md-list-item-trailing-space: var(--md-list-item-leading-space);
-        --md-list-item-bottom-space: var(--ha-space-2);
-        --md-list-item-top-space: var(--md-list-item-bottom-space);
-        --md-list-item-supporting-text-font: var(--ha-font-family-body);
-        --ha-md-list-item-gap: var(--ha-space-3);
+      .items ha-list-base {
+        --ha-row-item-padding-inline: var(--ha-space-3);
+        --ha-row-item-padding-block: var(--ha-space-2);
+        --ha-list-gap: var(--ha-space-3);
         gap: var(--ha-space-2);
         padding: 0 var(--ha-space-4);
+        padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
       }
-      .items ha-md-list ha-md-list-item {
+      .items ha-list-base ha-list-item-button {
         border-radius: var(--ha-border-radius-lg);
         border: 1px solid var(--ha-color-border-neutral-quiet);
+        overflow: hidden;
       }
 
-      .items ha-md-list {
-        padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+      .items ha-list-base ha-list-item-button::part(start),
+      .items ha-list-base ha-list-item-button::part(end) {
+        color: var(--ha-color-on-neutral-quiet);
+      }
+      .items ha-list-base ha-list-item-button::part(end) {
+        gap: var(--ha-space-3);
       }
 
       .items .item-headline {

@@ -4,14 +4,14 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
-import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-radio";
 import "../../../../components/ha-button";
-import "../../../../components/ha-markdown";
 import "../../../../components/ha-dialog";
-import type { HaRadio } from "../../../../components/ha-radio";
-import "../../../../components/ha-textfield";
+import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-markdown";
+import "../../../../components/radio/ha-radio-group";
+import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
+import "../../../../components/radio/ha-radio-option";
+import "../../../../components/input/ha-input";
 import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   emptyGasEnergyPreference,
@@ -19,14 +19,24 @@ import {
 } from "../../../../data/energy";
 import {
   getDisplayUnit,
+  getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsGasDialogParams } from "./show-dialogs-energy";
+import type { HaInput } from "../../../../components/input/ha-input";
+
+type CostType = "no-costs" | "number" | "entity" | "statistic";
+
+interface GasFormState {
+  source: GasSourceTypeEnergyPreference;
+  costs: CostType;
+}
 
 const gasDeviceClasses = ["gas", "energy"];
 const gasUnitClasses = ["volume", "energy"];
@@ -34,7 +44,7 @@ const flowRateUnitClasses = ["volume_flow_rate"];
 
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
-  extends LitElement
+  extends DirtyStateProviderMixin<GasFormState>()(LitElement)
   implements HassDialog<EnergySettingsGasDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,7 +55,7 @@ export class DialogEnergyGasSettings
 
   @state() private _source?: GasSourceTypeEnergyPreference;
 
-  @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
+  @state() private _costs?: CostType;
 
   @state() private _pickedDisplayUnit?: string | null;
 
@@ -71,7 +81,9 @@ export class DialogEnergyGasSettings
     this._pickedDisplayUnit = getDisplayUnit(
       this.hass,
       params.source?.stat_energy_from,
-      params.metadata
+      params.source?.stat_energy_from
+        ? params.statsMetadata?.[params.source?.stat_energy_from]
+        : undefined
     );
     this._costs = this._source.entity_energy_price
       ? "entity"
@@ -97,6 +109,10 @@ export class DialogEnergyGasSettings
       .filter((id) => id && id !== this._source?.stat_rate) as string[];
 
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      { source: this._source!, costs: this._costs! }
+    );
   }
 
   public closeDialog() {
@@ -145,12 +161,11 @@ export class DialogEnergyGasSettings
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${this.hass.localize(
           "ui.panel.config.energy.gas.dialog.header"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -197,34 +212,49 @@ export class DialogEnergyGasSettings
           )}
         ></ha-statistic-picker>
 
-        <p>
-          ${this.hass.localize("ui.panel.config.energy.gas.dialog.cost_para")}
-        </p>
+        <ha-input
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.display_name"
+          )}
+          type="text"
+          .disabled=${!this._source?.stat_energy_from}
+          .value=${this._source?.name || ""}
+          .placeholder=${this._source?.stat_energy_from
+            ? getStatisticLabel(
+                this.hass,
+                this._source.stat_energy_from,
+                this._params?.statsMetadata?.[this._source.stat_energy_from]
+              )
+            : ""}
+          @input=${this._nameChanged}
+        >
+        </ha-input>
 
-        <ha-formfield
+        <ha-radio-group
           .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.no_cost"
+            "ui.panel.config.energy.gas.dialog.cost_para"
           )}
+          .value=${this._costs}
+          name="costs"
+          @change=${this._handleCostChanged}
         >
-          <ha-radio
-            value="no-costs"
-            name="costs"
-            .checked=${this._costs === "no-costs"}
-            @change=${this._handleCostChanged}
-          ></ha-radio>
-        </ha-formfield>
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.cost_stat"
-          )}
-        >
-          <ha-radio
-            value="statistic"
-            name="costs"
-            .checked=${this._costs === "statistic"}
-            @change=${this._handleCostChanged}
-          ></ha-radio>
-        </ha-formfield>
+          <ha-radio-option value="no-costs">
+            ${this.hass.localize("ui.panel.config.energy.gas.dialog.no_cost")}
+          </ha-radio-option>
+          <ha-radio-option value="statistic">
+            ${this.hass.localize("ui.panel.config.energy.gas.dialog.cost_stat")}
+          </ha-radio-option>
+          <ha-radio-option value="entity" .disabled=${externalSource}>
+            ${this.hass.localize(
+              "ui.panel.config.energy.gas.dialog.cost_entity"
+            )}
+          </ha-radio-option>
+          <ha-radio-option value="number" .disabled=${externalSource}>
+            ${this.hass.localize(
+              "ui.panel.config.energy.gas.dialog.cost_number"
+            )}
+          </ha-radio-option>
+        </ha-radio-group>
         ${this._costs === "statistic"
           ? html`<ha-statistic-picker
               class="price-options"
@@ -236,83 +266,58 @@ export class DialogEnergyGasSettings
               )} (${this.hass.config.currency})`}
               @value-changed=${this._priceStatChanged}
             ></ha-statistic-picker>`
-          : ""}
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.cost_entity"
-          )}
-        >
-          <ha-radio
-            value="entity"
-            name="costs"
-            .checked=${this._costs === "entity"}
-            .disabled=${externalSource}
-            @change=${this._handleCostChanged}
-          ></ha-radio>
-        </ha-formfield>
-        ${this._costs === "entity"
-          ? html`<ha-entity-picker
-              class="price-options"
-              .hass=${this.hass}
-              include-domains='["sensor", "input_number"]'
-              .value=${this._source.entity_energy_price}
-              .label=${this.hass.localize(
-                "ui.panel.config.energy.gas.dialog.cost_entity_input"
-              )}
-              .helper=${pickedUnitClass
-                ? html`<ha-markdown
-                    .content=${this.hass.localize(
-                      "ui.panel.config.energy.gas.dialog.cost_entity_helper",
-                      pickedUnitClass === "energy"
-                        ? {
-                            currency: this.hass.config.currency,
-                            class: this.hass.localize(
-                              "ui.panel.config.energy.gas.dialog.cost_entity_helper_energy"
-                            ),
-                            unit1: "kWh",
-                            unit2: "Wh",
-                          }
-                        : {
-                            currency: this.hass.config.currency,
-                            class: this.hass.localize(
-                              "ui.panel.config.energy.gas.dialog.cost_entity_helper_volume"
-                            ),
-                            unit1: "m³",
-                            unit2: "ft³",
-                          }
-                    )}
-                  ></ha-markdown>`
-                : nothing}
-              @value-changed=${this._priceEntityChanged}
-            ></ha-entity-picker>`
-          : ""}
-        <ha-formfield
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.gas.dialog.cost_number"
-          )}
-        >
-          <ha-radio
-            value="number"
-            name="costs"
-            .checked=${this._costs === "number"}
-            .disabled=${externalSource}
-            @change=${this._handleCostChanged}
-          ></ha-radio>
-        </ha-formfield>
-        ${this._costs === "number"
-          ? html`<ha-textfield
-              .label=${`${this.hass.localize(
-                "ui.panel.config.energy.gas.dialog.cost_number_input"
-              )} ${unitPrice ? ` (${unitPrice})` : ""}`}
-              class="price-options"
-              step="any"
-              type="number"
-              .value=${this._source.number_energy_price}
-              @change=${this._numberPriceChanged}
-              .suffix=${unitPrice || ""}
-            >
-            </ha-textfield>`
-          : ""}
+          : this._costs === "entity"
+            ? html`<ha-entity-picker
+                class="price-options"
+                include-domains='["sensor", "input_number"]'
+                .value=${this._source.entity_energy_price}
+                .label=${this.hass.localize(
+                  "ui.panel.config.energy.gas.dialog.cost_entity_input"
+                )}
+                .helper=${pickedUnitClass
+                  ? html`<ha-markdown
+                      .content=${this.hass.localize(
+                        "ui.panel.config.energy.gas.dialog.cost_entity_helper",
+                        pickedUnitClass === "energy"
+                          ? {
+                              currency: this.hass.config.currency,
+                              class: this.hass.localize(
+                                "ui.panel.config.energy.gas.dialog.cost_entity_helper_energy"
+                              ),
+                              unit1: "kWh",
+                              unit2: "Wh",
+                            }
+                          : {
+                              currency: this.hass.config.currency,
+                              class: this.hass.localize(
+                                "ui.panel.config.energy.gas.dialog.cost_entity_helper_volume"
+                              ),
+                              unit1: "m³",
+                              unit2: "ft³",
+                            }
+                      )}
+                    ></ha-markdown>`
+                  : nothing}
+                @value-changed=${this._priceEntityChanged}
+              ></ha-entity-picker>`
+            : this._costs === "number"
+              ? html`<ha-input
+                  .label=${`${this.hass.localize(
+                    "ui.panel.config.energy.gas.dialog.cost_number_input"
+                  )} ${unitPrice ? ` (${unitPrice})` : ""}`}
+                  class="price-options"
+                  step="any"
+                  type="number"
+                  .value=${this._source.number_energy_price !== null
+                    ? String(this._source.number_energy_price)
+                    : ""}
+                  @change=${this._numberPriceChanged}
+                >
+                  ${unitPrice
+                    ? html`<span slot="end">${unitPrice}</span>`
+                    : nothing}
+                </ha-input>`
+              : nothing}
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -324,7 +329,8 @@ export class DialogEnergyGasSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._source.stat_energy_from}
+            .disabled=${!this._source!.stat_energy_from ||
+            (!!this._params?.source && !this.isDirtyState)}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -334,18 +340,19 @@ export class DialogEnergyGasSettings
     `;
   }
 
-  private _handleCostChanged(ev: CustomEvent) {
-    const input = ev.currentTarget as HaRadio;
-    this._costs = input.value as any;
+  private _handleCostChanged(ev: Event) {
+    this._costs = (ev.currentTarget as HaRadioGroup).value as CostType;
+    this._updateFormDirtyState();
   }
 
-  private _numberPriceChanged(ev) {
+  private _numberPriceChanged(ev: InputEvent) {
     this._source = {
       ...this._source!,
-      number_energy_price: Number(ev.target.value),
+      number_energy_price: Number((ev.target as HTMLInputElement).value),
       entity_energy_price: null,
       stat_cost: null,
     };
+    this._updateFormDirtyState();
   }
 
   private _priceStatChanged(ev: CustomEvent) {
@@ -355,6 +362,7 @@ export class DialogEnergyGasSettings
       number_energy_price: null,
       stat_cost: ev.detail.value,
     };
+    this._updateFormDirtyState();
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
@@ -364,6 +372,7 @@ export class DialogEnergyGasSettings
       number_energy_price: null,
       stat_cost: null,
     };
+    this._updateFormDirtyState();
   }
 
   private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
@@ -371,15 +380,27 @@ export class DialogEnergyGasSettings
       ...this._source!,
       stat_rate: ev.detail.value || undefined,
     };
+    this._updateFormDirtyState();
   }
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
-      const metadata = await getStatisticMetadata(this.hass, [ev.detail.value]);
+      const [metadata] = await getStatisticMetadata(this.hass, [
+        ev.detail.value,
+      ]);
+      if (
+        metadata &&
+        isExternalStatistic(ev.detail.value) &&
+        this._params?.statsMetadata &&
+        !(ev.detail.value in this._params.statsMetadata)
+      ) {
+        this._params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate("_params");
+      }
       this._pickedDisplayUnit = getDisplayUnit(
         this.hass,
         ev.detail.value,
-        metadata[0]
+        metadata
       );
       if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
         this._costs = "no-costs";
@@ -391,6 +412,22 @@ export class DialogEnergyGasSettings
       ...this._source!,
       stat_energy_from: ev.detail.value,
     };
+    this._updateFormDirtyState();
+  }
+
+  private _nameChanged(ev: InputEvent) {
+    this._source = {
+      ...this._source!,
+      name: (ev.target as HaInput).value,
+    };
+    if (!this._source.name) {
+      delete this._source.name;
+    }
+    this._updateFormDirtyState();
+  }
+
+  private _updateFormDirtyState(): void {
+    this._updateDirtyState({ source: this._source!, costs: this._costs! });
   }
 
   private async _save() {
@@ -401,6 +438,7 @@ export class DialogEnergyGasSettings
         this._source!.stat_cost = null;
       }
       await this._params!.saveCallback(this._source!);
+      this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
@@ -416,15 +454,12 @@ export class DialogEnergyGasSettings
           display: block;
           margin-bottom: var(--ha-space-4);
         }
-        ha-formfield {
-          display: block;
+        ha-radio-group {
+          margin-top: var(--ha-space-4);
         }
         .price-options {
           display: block;
-          padding-left: 52px;
-          padding-inline-start: 52px;
-          padding-inline-end: initial;
-          margin-top: -8px;
+          margin-top: var(--ha-space-3);
         }
       `,
     ];
