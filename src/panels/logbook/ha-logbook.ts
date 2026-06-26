@@ -96,6 +96,8 @@ export class HaLogbook extends LitElement {
 
   private _logbookSubscriptionId = 0;
 
+  private _readyListenerAttached = false;
+
   protected render() {
     if (!isComponentLoaded(this.hass.config, "logbook")) {
       return nothing;
@@ -241,6 +243,7 @@ export class HaLogbook extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._attachReadyListener();
     if (this.hasUpdated) {
       // Ensure clean state before subscribing
       this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
@@ -249,8 +252,46 @@ export class HaLogbook extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._detachReadyListener();
     this._unsubscribe(true);
   }
+
+  private _attachReadyListener(): void {
+    if (this._readyListenerAttached || !this.hass) {
+      return;
+    }
+    this.hass.connection.addEventListener("ready", this._handleConnectionReady);
+    this._readyListenerAttached = true;
+  }
+
+  private _detachReadyListener(): void {
+    if (!this._readyListenerAttached) {
+      return;
+    }
+    this.hass?.connection.removeEventListener(
+      "ready",
+      this._handleConnectionReady
+    );
+    this._readyListenerAttached = false;
+  }
+
+  private _handleConnectionReady = () => {
+    // The connection dropped (e.g. the app was backgrounded) and just
+    // reconnected. The previous subscription died with the old connection and
+    // was not restored on the server because auto-resubscribe is disabled in
+    // subscribeLogbook. Drop the stale handle without unsubscribing it (the
+    // connection that owned it is gone) and resubscribe from a clean state.
+    // Without this, the replayed historical chunk would be appended on top of
+    // the existing entries, showing every entry two or three times.
+    if (!this._unsubLogbook) {
+      return;
+    }
+    this._unsubLogbook = undefined;
+    this._logbookEntries = undefined;
+    this._pendingStreamMessages = [];
+    this._liveUpdatesEnabled = true;
+    this._throttleGetLogbookEntries();
+  };
 
   private _calculateLogbookPeriod() {
     const now = new Date();
@@ -284,6 +325,10 @@ export class HaLogbook extends LitElement {
     if (this._unsubLogbook) {
       return;
     }
+
+    // hass is guaranteed here, so attach the reconnect listener if the initial
+    // connectedCallback ran before hass was set.
+    this._attachReadyListener();
 
     try {
       this._logbookSubscriptionId++;
