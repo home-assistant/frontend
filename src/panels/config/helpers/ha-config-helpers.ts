@@ -133,6 +133,23 @@ import {
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
 import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
+
+interface LimitedEntity {
+  entity_id: HassEntity["entity_id"];
+  attributes: {
+    friendly_name?: HassEntity["attributes"]["friendly_name"];
+    editable?: HassEntity["attributes"]["editable"];
+  };
+}
+function equalLimitedEntity(a: LimitedEntity, b: LimitedEntity): boolean {
+  return (
+    a === b ||
+    (a.entity_id === b.entity_id &&
+      a.attributes?.friendly_name === b.attributes?.friendly_name &&
+      a.attributes?.editable === b.attributes?.editable)
+  );
+}
 
 interface HelperItem {
   id: string;
@@ -142,7 +159,7 @@ interface HelperItem {
   editable?: boolean;
   type: string;
   configEntry?: ConfigEntry;
-  entity?: HassEntity;
+  entity?: LimitedEntity;
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
@@ -221,7 +238,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities?: HassEntity[];
+  @state() private _helperEntities?: LimitedEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -338,7 +355,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         moveable: false,
         template: (helper) =>
           helper.entity
-            ? html`<ha-state-icon .stateObj=${helper.entity}></ha-state-icon>`
+            ? html`<ha-state-icon
+                .entityId=${helper.entity_id}
+              ></ha-state-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
                 style="color: var(--error-color)"
@@ -465,7 +484,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _getItems = memoizeOne(
     (
       localize: LocalizeFunc,
-      stateItems: HassEntity[],
+      stateItems: LimitedEntity[],
       disabledEntries: EntityRegistryEntry[],
       entityEntries: Record<string, EntityRegistryEntry>,
       configEntries: Record<string, ConfigEntry>,
@@ -500,7 +519,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           type: configEntry
             ? configEntry.domain
             : this._entitySource![entityState.entity_id] ||
-              computeStateDomain(entityState),
+              computeDomain(entityState.entity_id),
           configEntry,
           entity: entityState,
         };
@@ -1269,7 +1288,9 @@ ${rejected
     if (
       !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
-      !this._helperEntities.every((val, idx) => newHelpers[idx] === val)
+      !this._helperEntities.every((val, idx) =>
+        equalLimitedEntity(newHelpers[idx], val)
+      )
     ) {
       this._helperEntities = newHelpers;
       if (Object.keys(this._filters).length > 0) {
