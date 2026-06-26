@@ -5,7 +5,61 @@
  *   yarn test:e2e:app
  */
 import { test, expect, type Page } from "@playwright/test";
+import type { MoreInfoView } from "../../src/dialogs/more-info/const";
 import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+
+/**
+ * Each More info view renders one root element inside the dialog, plus one or
+ * more characteristic descendants that prove the view actually populated rather
+ * than rendering an empty shell. `text`, when set, asserts the element's text
+ * instead of just its presence.
+ */
+const MORE_INFO_VIEW_ELEMENTS: {
+  view: MoreInfoView;
+  element: string;
+  content: { selector: string; text?: string }[];
+}[] = [
+  {
+    view: "info",
+    element: "ha-more-info-info",
+    content: [
+      { selector: "more-info-light" },
+      { selector: "span.title", text: "Test Light" },
+    ],
+  },
+  {
+    view: "history",
+    element: "ha-more-info-history-and-logbook",
+    // The demo loads the history component but not logbook.
+    content: [{ selector: "ha-more-info-history" }],
+  },
+  {
+    view: "settings",
+    element: "ha-more-info-settings",
+    // The scenario mocks config/entity_registry/get, so the real registry
+    // panel renders instead of the "no unique ID" warning.
+    content: [{ selector: "entity-registry-settings" }],
+  },
+  {
+    view: "related",
+    element: "ha-related-items",
+    // search/related is mocked to return no relations, so the empty list
+    // renders.
+    content: [{ selector: "ha-related-items >> ha-list" }],
+  },
+  {
+    view: "add_to",
+    element: "ha-more-info-add-to",
+    // Admin users get the default add-to action list.
+    content: [{ selector: "ha-add-to-action-list" }],
+  },
+  {
+    view: "details",
+    element: "ha-more-info-details",
+    // The details view renders the state and attributes cards.
+    content: [{ selector: "ha-card" }],
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -156,31 +210,56 @@ test.describe("Lovelace dashboard", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Light more-info dialog", () => {
-  test("opens more-info dialog for a light entity", async ({ page }) => {
-    // The light-more-info scenario seeds light.test_light synchronously.
-    await goToPanel(page, "/?scenario=light-more-info#/lovelace");
+  for (const { view, element, content } of MORE_INFO_VIEW_ELEMENTS) {
+    test(`opens more-info ${view} view for a light entity`, async ({
+      page,
+    }) => {
+      // The light-more-info scenario seeds light.test_light synchronously.
+      await goToPanel(page, "/?scenario=light-more-info#/lovelace");
 
-    // Fire the standard hass-more-info event from the app root. The HA shell
-    // listens for this and opens ha-more-info-dialog via its dialog manager.
-    await page.evaluate(() => {
-      const el = document.querySelector("ha-test");
-      el?.dispatchEvent(
-        new CustomEvent("hass-more-info", {
-          detail: { entityId: "light.test_light" },
-          bubbles: true,
-          composed: true,
-        })
-      );
+      const dialog = page.locator("ha-more-info-dialog");
+
+      // Fire the standard hass-more-info event from the app root with an
+      // explicit view. The HA shell opens ha-more-info-dialog on the requested
+      // view directly, so the test does not depend on the admin/demo-hidden
+      // header controls.
+      //
+      // The event is one-shot: if it lands before the shell's hass-more-info
+      // listener is attached it is silently dropped. Re-dispatching is
+      // idempotent (showDialog just resets the dialog to the requested view),
+      // so poll the dispatch until the requested view actually renders.
+      await expect(async () => {
+        await page.evaluate((v) => {
+          const el = document.querySelector("ha-test");
+          el?.dispatchEvent(
+            new CustomEvent("hass-more-info", {
+              detail: { entityId: "light.test_light", view: v },
+              bubbles: true,
+              composed: true,
+            })
+          );
+        }, view);
+
+        await expect(dialog).toBeAttached({ timeout: QUICK_TIMEOUT });
+        await expect(dialog.locator(element)).toBeAttached({
+          timeout: QUICK_TIMEOUT,
+        });
+      }).toPass({ timeout: SHELL_TIMEOUT });
+
+      // Each view should render its own characteristic content, not just an
+      // empty shell.
+      for (const { selector, text } of content) {
+        const locator = dialog.locator(selector).first();
+        if (text) {
+          // eslint-disable-next-line no-await-in-loop
+          await expect(locator).toContainText(text, { timeout: QUICK_TIMEOUT });
+        } else {
+          // eslint-disable-next-line no-await-in-loop
+          await expect(locator).toBeAttached({ timeout: QUICK_TIMEOUT });
+        }
+      }
     });
-
-    const dialog = page.locator("ha-more-info-dialog");
-    await expect(dialog).toBeAttached({ timeout: SHELL_TIMEOUT });
-
-    // Confirm it actually rendered our entity, not a generic empty dialog.
-    await expect(dialog.locator("span.title")).toContainText("Test Light", {
-      timeout: QUICK_TIMEOUT,
-    });
-  });
+  }
 });
 
 // ---------------------------------------------------------------------------
