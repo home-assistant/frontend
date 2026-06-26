@@ -74,7 +74,7 @@ export interface MediaPlayerItemId {
   media_content_type?: string | undefined;
 }
 
-const MANUAL_ITEM: MediaPlayerItem = {
+const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
   can_expand: true,
   can_play: false,
   can_search: false,
@@ -83,7 +83,6 @@ const MANUAL_ITEM: MediaPlayerItem = {
   media_content_id: MANUAL_MEDIA_SOURCE_PREFIX,
   media_content_type: "",
   iconPath: mdiKeyboard,
-  title: "Manual entry",
 };
 
 @customElement("ha-media-player-browse")
@@ -240,7 +239,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       currentId.media_content_id &&
       isManualMediaSourceContentId(currentId.media_content_id)
     ) {
-      this._currentItem = MANUAL_ITEM;
+      this._currentItem = this._manualItem();
       fireEvent(this, "media-browsed", {
         ids: navigateIds,
         current: this._currentItem,
@@ -801,10 +800,19 @@ export class HaMediaPlayerBrowse extends LitElement {
     return prom.then((item) => {
       if (!mediaContentId && this.action === "pick") {
         item.children = item.children || [];
-        item.children.push(MANUAL_ITEM);
+        item.children.push(this._manualItem());
       }
       return item;
     });
+  }
+
+  private _manualItem(): MediaPlayerItem {
+    return {
+      ...MANUAL_ITEM_BASE,
+      title: this.hass.localize(
+        "ui.components.selectors.selector.types.manual"
+      ),
+    };
   }
 
   private _measureCard(): void {

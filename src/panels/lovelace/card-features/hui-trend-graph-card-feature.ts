@@ -135,7 +135,11 @@ class HuiHistoryChartCardFeature
     if (this._coordinates && !this._coordinates.length) {
       return html`
         <div class="container">
-          <div class="info">No state history found.</div>
+          <div class="info">
+            ${this.hass!.localize(
+              "ui.components.history_charts.no_history_found"
+            )}
+          </div>
         </div>
       `;
     }

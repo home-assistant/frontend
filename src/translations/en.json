@@ -6195,7 +6195,8 @@
             "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "loading": "Loading"
           }
         },
         "scene": {
@@ -6343,6 +6344,8 @@
           },
           "account": {
             "download_support_package": "Download support package",
+            "support_package_generating_preview": "Generating preview",
+            "support_package_privacy_warning": "This file may contain personal data about your home. Avoid sharing them with unverified or untrusted parties.",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
@@ -9218,6 +9221,9 @@
           "delete_section": {
             "title": "Delete section",
             "text": "This section and all its cards will be deleted."
+          },
+          "error_section": {
+            "title": "Error"
           },
           "edit_section": {
             "header": "Edit section",
