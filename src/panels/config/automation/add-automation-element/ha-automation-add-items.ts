@@ -214,6 +214,7 @@ export class HaAutomationAddItems extends LitElement {
         display: flex;
         flex-direction: column;
         flex: 1;
+        min-width: 0;
       }
       .items.blank {
         border-radius: var(--ha-border-radius-xl);
