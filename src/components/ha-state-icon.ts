@@ -17,10 +17,17 @@ import {
 } from "../data/icons";
 import "./ha-icon";
 import "./ha-svg-icon";
+import { consumeEntityState } from "../common/decorators/consume-context-entry";
 
 @customElement("ha-state-icon")
 export class HaStateIcon extends LitElement {
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _consumeStateObj?: HassEntity;
+
+  @property({ attribute: false }) public entityId?: string;
 
   @property({ attribute: false }) public stateValue?: string;
 
@@ -38,11 +45,15 @@ export class HaStateIcon extends LitElement {
   @consume({ context: entitiesContext, subscribe: true })
   protected _entities?: ContextType<typeof entitiesContext>;
 
+  private get _stateObj(): HassEntity | undefined {
+    return this.stateObj ?? this._consumeStateObj;
+  }
+
   private get _overrideIcon(): string | undefined {
     return (
       this.icon ||
-      (this.stateObj && this._entities?.[this.stateObj.entity_id]?.icon) ||
-      this.stateObj?.attributes.icon
+      (this._stateObj && this._entities?.[this._stateObj.entity_id]?.icon) ||
+      this._stateObj?.attributes.icon
     );
   }
 
@@ -72,7 +83,7 @@ export class HaStateIcon extends LitElement {
         this._entities,
         this._config,
         this._connection,
-        this.stateObj,
+        this._stateObj,
         this.stateValue,
       ] as const,
   });
@@ -82,7 +93,7 @@ export class HaStateIcon extends LitElement {
     if (overrideIcon) {
       return html`<ha-icon .icon=${overrideIcon}></ha-icon>`;
     }
-    if (!this.stateObj) {
+    if (!this._stateObj) {
       return nothing;
     }
     if (!this._config || !this._connection || !this._entities) {
@@ -97,7 +108,7 @@ export class HaStateIcon extends LitElement {
   }
 
   private _renderFallback() {
-    const domain = computeStateDomain(this.stateObj!);
+    const domain = computeStateDomain(this._stateObj!);
 
     return html`
       <ha-svg-icon
