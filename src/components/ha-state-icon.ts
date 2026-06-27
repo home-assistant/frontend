@@ -90,7 +90,6 @@ export class HaStateIcon extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues) {
     if (
-      changedProps.has("_consumeStateObj") ||
       changedProps.has("stateObj") ||
       changedProps.has("_formatters") ||
       changedProps.has("stateTitle")
