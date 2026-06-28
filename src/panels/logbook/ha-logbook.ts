@@ -96,6 +96,8 @@ export class HaLogbook extends LitElement {
 
   private _logbookSubscriptionId = 0;
 
+  private _readyListenerAttached = false;
+
   protected render() {
     if (!isComponentLoaded(this.hass.config, "logbook")) {
       return nothing;
@@ -241,6 +243,7 @@ export class HaLogbook extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._attachReadyListener();
     if (this.hasUpdated) {
       // Ensure clean state before subscribing
       this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
@@ -249,8 +252,42 @@ export class HaLogbook extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._detachReadyListener();
     this._unsubscribe(true);
   }
+
+  private _attachReadyListener(): void {
+    if (this._readyListenerAttached || !this.hass) {
+      return;
+    }
+    this.hass.connection.addEventListener("ready", this._handleConnectionReady);
+    this._readyListenerAttached = true;
+  }
+
+  private _detachReadyListener(): void {
+    if (!this._readyListenerAttached) {
+      return;
+    }
+    this.hass?.connection.removeEventListener(
+      "ready",
+      this._handleConnectionReady
+    );
+    this._readyListenerAttached = false;
+  }
+
+  private _handleConnectionReady = () => {
+    // The old subscription died with the dropped connection and isn't restored
+    // server-side. Drop the stale handle and resubscribe from scratch, else the
+    // replayed history would duplicate the entries we already have.
+    if (!this._unsubLogbook) {
+      return;
+    }
+    this._unsubLogbook = undefined;
+    this._logbookEntries = undefined;
+    this._pendingStreamMessages = [];
+    this._liveUpdatesEnabled = true;
+    this._throttleGetLogbookEntries();
+  };
 
   private _calculateLogbookPeriod() {
     const now = new Date();
@@ -284,6 +321,9 @@ export class HaLogbook extends LitElement {
     if (this._unsubLogbook) {
       return;
     }
+
+    // connectedCallback may have run before hass was set; attach now.
+    this._attachReadyListener();
 
     try {
       this._logbookSubscriptionId++;
