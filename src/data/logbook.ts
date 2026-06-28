@@ -145,11 +145,8 @@ export const subscribeLogbook = (
   return hass.connection.subscribeMessage<LogbookStreamMessage>(
     (message) => callbackFunction(message, subscriptionId),
     params,
-    // Disable the library's auto-resubscribe. On reconnect it would replay this
-    // exact call with the now-stale `start_time`, and the consumer (ha-logbook)
-    // appends streamed events without deduplicating, so the replayed historical
-    // chunk would show up as duplicate entries. ha-logbook instead listens for
-    // the connection `ready` event and resubscribes from a clean state.
+    // Don't auto-resubscribe: the replay uses a stale start_time and ha-logbook
+    // appends events without deduping, so it resubscribes on `ready` instead.
     { resubscribe: false }
   );
 };

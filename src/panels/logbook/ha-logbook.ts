@@ -276,13 +276,9 @@ export class HaLogbook extends LitElement {
   }
 
   private _handleConnectionReady = () => {
-    // The connection dropped (e.g. the app was backgrounded) and just
-    // reconnected. The previous subscription died with the old connection and
-    // was not restored on the server because auto-resubscribe is disabled in
-    // subscribeLogbook. Drop the stale handle without unsubscribing it (the
-    // connection that owned it is gone) and resubscribe from a clean state.
-    // Without this, the replayed historical chunk would be appended on top of
-    // the existing entries, showing every entry two or three times.
+    // The old subscription died with the dropped connection and isn't restored
+    // server-side. Drop the stale handle and resubscribe from scratch, else the
+    // replayed history would duplicate the entries we already have.
     if (!this._unsubLogbook) {
       return;
     }
@@ -326,8 +322,7 @@ export class HaLogbook extends LitElement {
       return;
     }
 
-    // hass is guaranteed here, so attach the reconnect listener if the initial
-    // connectedCallback ran before hass was set.
+    // connectedCallback may have run before hass was set; attach now.
     this._attachReadyListener();
 
     try {
