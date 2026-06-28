@@ -30,6 +30,8 @@ class HaLogbookRenderer extends LitElement {
   @property({ attribute: false }) public userIdToName: Record<string, string> =
     {};
 
+  @property({ attribute: false }) public systemUserIds = new Set<string>();
+
   @property({ attribute: false }) public traceContexts: TraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
@@ -134,6 +136,7 @@ class HaLogbookRenderer extends LitElement {
           .hass=${this.hass}
           .item=${item}
           .userIdToName=${this.userIdToName}
+          .systemUserIds=${this.systemUserIds}
           .traceContexts=${this.traceContexts}
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}
