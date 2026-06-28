@@ -144,7 +144,10 @@ export const subscribeLogbook = (
   }
   return hass.connection.subscribeMessage<LogbookStreamMessage>(
     (message) => callbackFunction(message, subscriptionId),
-    params
+    params,
+    // Don't auto-resubscribe: the replay uses a stale start_time and ha-logbook
+    // appends events without deduping, so it resubscribes on `ready` instead.
+    { resubscribe: false }
   );
 };
 
