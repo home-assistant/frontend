@@ -36,7 +36,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Verify version
-        uses: home-assistant/actions/helpers/verify-version@e91ad1948e57189485b9c1ad608af0c303946f89 # master
+        uses: home-assistant/actions/helpers/verify-version@f4ca6f671bd429efb108c0f2fa0ae8af0215986c # master
 
       - name: Setup Node
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
