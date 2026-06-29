@@ -527,6 +527,8 @@ export function validateConditionalConfig(
           return validateLocationCondition(c);
         case "numeric_state":
           return validateNumericStateCondition(c);
+        case "state":
+          return validateStateCondition(c);
         case "and":
           return validateAndCondition(c);
         case "not":
@@ -534,7 +536,9 @@ export function validateConditionalConfig(
         case "or":
           return validateOrCondition(c);
         default:
-          return validateStateCondition(c);
+          // Server-evaluated conditions (template, sun, zone, device, and
+          // integration-provided types) are validated by core, not the client.
+          return true;
       }
     }
     return validateStateCondition(c);

@@ -34,6 +34,27 @@ describe("validateConditionalConfig", () => {
       expect(validateConditionalConfig(conditions)).toBe(true);
     });
   });
+
+  describe("server-evaluated condition validation", () => {
+    it("should accept server-evaluated conditions, leaving them to core", () => {
+      const conditions = [
+        { condition: "template", value_template: "{{ true }}" },
+        { condition: "sun", after: "sunset" },
+        {
+          condition: "zone",
+          entity_id: "device_tracker.me",
+          zone: "zone.home",
+        },
+        {
+          condition: "device",
+          device_id: "abc",
+          domain: "light",
+          type: "is_on",
+        },
+      ] as any;
+      expect(validateConditionalConfig(conditions)).toBe(true);
+    });
+  });
 });
 
 describe("checkConditionsMet", () => {
