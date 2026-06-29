@@ -123,11 +123,6 @@ export const ConditionalListenerMixin = <
       this.setupConditionalListeners();
     }
 
-    public disconnectedCallback() {
-      super.disconnectedCallback();
-      this.clearConditionalListeners();
-    }
-
     protected willUpdate(changedProperties: PropertyValues) {
       super.willUpdate(changedProperties);
       if (changedProperties.has("_maxColumns")) {
@@ -183,22 +178,6 @@ export const ConditionalListenerMixin = <
         this.hass,
         this._conditionContext
       );
-    }
-
-    /**
-     * Retained for API compatibility. The evaluator manages its own
-     * subscriptions and tears them down on host disconnect, so there is nothing
-     * for the host to clear.
-     */
-    protected clearConditionalListeners(): void {
-      // no-op
-    }
-
-    /**
-     * Retained for API compatibility; the evaluator owns its listeners.
-     */
-    protected addConditionalListener(_unsubscribe: () => void): void {
-      // no-op
     }
 
     /**

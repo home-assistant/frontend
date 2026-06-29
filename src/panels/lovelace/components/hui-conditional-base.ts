@@ -83,7 +83,6 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
       changed.has("hass") ||
       changed.has("preview")
     ) {
-      this.clearConditionalListeners();
       this.setupConditionalListeners();
       this._updateVisibility();
     }
