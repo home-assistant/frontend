@@ -64,8 +64,19 @@ export class ConditionEvaluatorController implements ReactiveController {
 
   private _connected = false;
 
-  // The condition tree the current subscriptions/listeners were built for.
-  private _subscribedConditions?: VisibilityCondition[];
+  // Structural signature of the tree the live subscriptions/listeners are for,
+  // and of the tree a pending (debounced) re-subscribe will switch to. Compared
+  // by value (not array reference) so a host re-deriving the array each render
+  // does not starve the debounce or needlessly drop subscriptions.
+  private _subscribedSignature?: string;
+
+  private _pendingSignature?: string;
+
+  // Memoize the signature for a stable array reference to avoid re-stringifying
+  // on every host update.
+  private _lastConditionsRef?: VisibilityCondition[];
+
+  private _lastSignature?: string;
 
   private _split?: SplitConditionTree;
 
@@ -133,17 +144,43 @@ export class ConditionEvaluatorController implements ReactiveController {
   public hostDisconnected(): void {
     this._connected = false;
     this._teardown();
+    // Nothing backs the last result once subscriptions are closed; report
+    // `unknown` (and force the notification through) so a detached/reconnecting
+    // host never renders a stale, no-longer-live visibility.
+    this._notifiedResult = undefined;
+    this._notifiedError = undefined;
+    this._setResult("unknown", undefined);
+  }
+
+  private _signatureOf(
+    conditions: VisibilityCondition[] | undefined
+  ): string | undefined {
+    if (conditions === undefined) {
+      return undefined;
+    }
+    if (conditions === this._lastConditionsRef) {
+      return this._lastSignature;
+    }
+    this._lastConditionsRef = conditions;
+    this._lastSignature = JSON.stringify(conditions);
+    return this._lastSignature;
   }
 
   private _sync(): void {
     if (!this._connected) {
       return;
     }
-    if (this._conditions !== this._subscribedConditions) {
+    const signature = this._signatureOf(this._conditions);
+    // Re-subscribe only when the tree we are (or are about to be) subscribed to
+    // actually differs by value — not merely by array reference.
+    const targetSignature = this._pendingSignature ?? this._subscribedSignature;
+    if (signature !== targetSignature) {
+      this._pendingSignature = signature;
       this._scheduleResubscribe();
-    } else {
-      this._recompute();
     }
+    // Always recompute so client leaves (and the current split) stay live, even
+    // while a re-subscribe is pending.
+    this._recompute();
   }
 
   private _scheduleResubscribe(): void {
@@ -161,7 +198,8 @@ export class ConditionEvaluatorController implements ReactiveController {
 
     const conditions = this._conditions;
     const hass = this._hass;
-    this._subscribedConditions = conditions;
+    this._subscribedSignature = this._signatureOf(conditions);
+    this._pendingSignature = undefined;
 
     if (!conditions || !hass) {
       this._setResult("unknown", undefined);
@@ -210,7 +248,7 @@ export class ConditionEvaluatorController implements ReactiveController {
 
     observeConditionChanges(
       conditions,
-      hass,
+      () => this._hass ?? hass,
       (unsub) => this._listeners.push(unsub),
       () => this._recompute()
     );
@@ -285,6 +323,7 @@ export class ConditionEvaluatorController implements ReactiveController {
     this._split = undefined;
     this._serverResults = {};
     this._subtreeErrors = {};
-    this._subscribedConditions = undefined;
+    this._subscribedSignature = undefined;
+    this._pendingSignature = undefined;
   }
 }

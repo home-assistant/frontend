@@ -25,7 +25,7 @@ const MAX_TIMEOUT_DELAY = 2147483647;
  * clears the pending timeout.
  */
 function scheduleTimeBoundaryListener(
-  hass: HomeAssistant,
+  getHass: () => HomeAssistant,
   timeCondition: Omit<TimeCondition, "condition">,
   addListener: (unsub: () => void) => void,
   onBoundary: () => void
@@ -33,7 +33,8 @@ function scheduleTimeBoundaryListener(
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   const scheduleUpdate = () => {
-    const delay = calculateNextTimeUpdate(hass, timeCondition);
+    // Read hass lazily so timezone changes are picked up on the next boundary.
+    const delay = calculateNextTimeUpdate(getHass(), timeCondition);
 
     if (delay === undefined) return;
 
@@ -107,11 +108,16 @@ export function setupTimeListeners(
   if (timeConditions.length === 0) return;
 
   timeConditions.forEach((timeCondition) => {
-    scheduleTimeBoundaryListener(hass, timeCondition, addListener, () => {
-      const context = getContext?.() ?? {};
-      const conditionsMet = checkConditionsMet(conditions, hass, context);
-      onUpdate(conditionsMet);
-    });
+    scheduleTimeBoundaryListener(
+      () => hass,
+      timeCondition,
+      addListener,
+      () => {
+        const context = getContext?.() ?? {};
+        const conditionsMet = checkConditionsMet(conditions, hass, context);
+        onUpdate(conditionsMet);
+      }
+    );
   });
 }
 
@@ -141,7 +147,7 @@ export function setupConditionListeners(
  */
 export function observeConditionChanges(
   conditions: VisibilityCondition[],
-  hass: HomeAssistant,
+  getHass: () => HomeAssistant,
   addListener: (unsub: () => void) => void,
   onChange: () => void
 ): void {
@@ -150,6 +156,6 @@ export function observeConditionChanges(
   });
 
   extractTimeConditions(conditions).forEach((timeCondition) => {
-    scheduleTimeBoundaryListener(hass, timeCondition, addListener, onChange);
+    scheduleTimeBoundaryListener(getHass, timeCondition, addListener, onChange);
   });
 }

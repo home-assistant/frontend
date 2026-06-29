@@ -244,6 +244,37 @@ describe("ConditionEvaluatorController", () => {
     expect(controller.result).toBe("unknown");
   });
 
+  it("does not re-subscribe when a fresh array of equal content is passed", async () => {
+    // A host re-deriving `config.visibility ?? []` each render passes a NEW
+    // array reference with identical content; that must not churn subscriptions.
+    const make = () => [
+      cond({ condition: "state", entity: "light.a", state: "on" }),
+    ];
+    const { controller } = await setup(make());
+    expect(subs).toHaveLength(1);
+    const firstUnsub = subs[0].unsub;
+
+    controller.observe(make(), createHass());
+    await tick();
+
+    expect(subs).toHaveLength(1);
+    expect(firstUnsub).not.toHaveBeenCalled();
+  });
+
+  it("reports unknown after disconnect rather than a stale result", async () => {
+    const { controller, last } = await setup([
+      cond({ condition: "state", entity: "light.a", state: "on" }),
+    ]);
+    subs[0].push({ result: true });
+    expect(controller.result).toBe("visible");
+
+    controller.hostDisconnected();
+    await tick();
+
+    expect(controller.result).toBe("unknown");
+    expect(last()?.result).toBe("unknown");
+  });
+
   it("notifies onResult only when the result actually changes", async () => {
     const { results } = await setup([
       cond({ condition: "state", entity: "light.a", state: "on" }),
