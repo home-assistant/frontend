@@ -194,7 +194,15 @@ function checkStateCondition(
   hass: HomeAssistant,
   context: ConditionContext
 ) {
-  const entityId = condition.entity || context.entity_id;
+  // A core-format condition carries its own `entity_id`; prefer it over the
+  // lovelace `entity` and the host's context entity so the optimistic seed
+  // targets the same entity the server-side subscription does.
+  const entityId =
+    ("entity_id" in condition
+      ? (condition as { entity_id?: string }).entity_id
+      : undefined) ||
+    condition.entity ||
+    context.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
   const attribute = "attribute" in condition ? condition.attribute : undefined;
   let state: string;
@@ -237,7 +245,14 @@ function checkStateNumericCondition(
   hass: HomeAssistant,
   context: ConditionContext
 ) {
-  const entityId = condition.entity || context.entity_id;
+  // See checkStateCondition: prefer a core-format `entity_id` over the lovelace
+  // `entity` and the host's context entity.
+  const entityId =
+    ("entity_id" in condition
+      ? (condition as { entity_id?: string }).entity_id
+      : undefined) ||
+    condition.entity ||
+    context.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
   const state = condition.attribute
     ? stateObj?.attributes[condition.attribute]
@@ -546,8 +561,12 @@ export function addEntityToCondition(
   }
 
   if (
-    condition.condition === "state" ||
-    condition.condition === "numeric_state"
+    (condition.condition === "state" ||
+      condition.condition === "numeric_state") &&
+    // A core-format condition already targets its own `entity_id`; do not graft
+    // the host's context entity onto it (that would both mis-evaluate and emit a
+    // schema-invalid core condition carrying both `entity` and `entity_id`).
+    !("entity_id" in condition)
   ) {
     return {
       entity: entityId,

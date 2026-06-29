@@ -1,13 +1,19 @@
 import { consume } from "@lit/context";
 import type { PropertyValues, ReactiveElement } from "lit";
 import { state } from "lit/decorators";
-import type { HomeAssistant } from "../types";
-import { setupConditionListeners } from "../common/condition/listeners";
+import type { ConditionEvaluation } from "../common/controllers/condition-evaluator-controller";
+import { ConditionEvaluatorController } from "../common/controllers/condition-evaluator-controller";
 import { maxColumnsContext } from "../panels/lovelace/common/context";
 import type {
   Condition,
   ConditionContext,
+  VisibilityCondition,
 } from "../panels/lovelace/common/validate-condition";
+import {
+  addEntityToCondition,
+  checkConditionsMet,
+} from "../panels/lovelace/common/validate-condition";
+import type { HomeAssistant } from "../types";
 
 type Constructor<T> = abstract new (...args: any[]) => T;
 
@@ -20,22 +26,30 @@ export interface ConditionalConfig {
 }
 
 /**
- * Mixin to handle conditional listeners for visibility control
+ * Mixin to handle conditional visibility control.
  *
- * Provides lifecycle management for listeners that control conditional
- * visibility of components.
+ * Visibility conditions are evaluated by a {@link ConditionEvaluatorController}:
+ * stateful conditions (`state`, `numeric_state`, `template`, `sun`, `zone`,
+ * `device`, integration conditions) are delegated to core via
+ * `subscribe_condition`, while client-only conditions (`screen`, `user`,
+ * `view_columns`, `location`, `time`) are evaluated locally. The host stays
+ * declarative — it never evaluates conditions itself.
  *
  * Usage:
- * 1. Extend your component with ConditionalListenerMixin<YourConfigType>(ReactiveElement)
- * 2. Ensure component has config.visibility or _config.visibility property with conditions
- * 3. Ensure component has _updateVisibility() or _updateElement() method
- * 4. Override setupConditionalListeners() if custom behavior needed (e.g., filter conditions)
+ * 1. Extend with `ConditionalListenerMixin<YourConfigType>(ReactiveElement)`.
+ * 2. Provide conditions via `config.visibility` / `_config.visibility`, or by
+ *    overriding `setupConditionalListeners()` and calling
+ *    `super.setupConditionalListeners(customConditions)`.
+ * 3. Implement `_updateVisibility()` (or `_updateElement()`) and have it derive
+ *    visibility from {@link _conditionsVisible} rather than evaluating
+ *    conditions directly.
  *
  * The mixin automatically:
- * - Sets up listeners when component connects to DOM
- * - Cleans up listeners when component disconnects from DOM
- * - Handles conditional visibility based on defined conditions
- * - Consumes column count from the view via Lit Context
+ * - feeds the evaluator on connect and whenever `hass`, the config, or the
+ *   column count change;
+ * - notifies the host (`_updateVisibility` / `_updateElement`) when the verdict
+ *   changes; and
+ * - tears down subscriptions on disconnect (handled by the controller).
  */
 export const ConditionalListenerMixin = <
   TConfig extends ConditionalConfig = ConditionalConfig,
@@ -43,8 +57,6 @@ export const ConditionalListenerMixin = <
   superClass: Constructor<ReactiveElement>
 ) => {
   abstract class ConditionalListenerClass extends superClass {
-    private __listeners: (() => void)[] = [];
-
     protected _config?: TConfig;
 
     public config?: TConfig;
@@ -56,6 +68,51 @@ export const ConditionalListenerMixin = <
     protected _maxColumns?: number;
 
     protected _conditionContext: ConditionContext = {};
+
+    // The conditions currently being evaluated (a card/badge/section/view
+    // `visibility`, or the conditional card/row `conditions`). Retained so the
+    // optimistic synchronous seed evaluates exactly what the evaluator
+    // subscribed to.
+    private __conditions?: VisibilityCondition[];
+
+    // Latest server-aware verdict from the evaluator. `unknown` until a server
+    // subtree first reports (or immediately for an all-client tree).
+    private __conditionResult: ConditionEvaluation = "unknown";
+
+    // Cache for the entity-folded array fed to the evaluator. Rebuilt only when
+    // the source tree reference or the entity context changes, so the
+    // evaluator's reference-based signature memo keeps hitting on hass-only
+    // updates instead of re-stringifying every tick.
+    private __observedSource?: VisibilityCondition[];
+
+    private __observedEntityId?: string;
+
+    private __observed?: VisibilityCondition[];
+
+    // Value signature of the source tree, used to drop the cached verdict when
+    // the tree changes by value so `_conditionsVisible` re-seeds for it.
+    private __conditionsSignature?: string;
+
+    private __conditionEvaluator = new ConditionEvaluatorController(this, {
+      // The synchronous seed in `_conditionsVisible` covers the initial frame,
+      // so there is no need to delay (re)subscribing.
+      resubscribeDelay: 0,
+      onResult: (result) => {
+        this.__conditionResult = result;
+        // The forced `unknown` on disconnect only matters to hosts that render
+        // the evaluator's result; we drive visibility imperatively, so ignore
+        // notifications once detached.
+        if (!this.isConnected) {
+          return;
+        }
+        const config = this._config || this.config;
+        if (this._updateVisibility) {
+          this._updateVisibility();
+        } else if (this._updateElement && config) {
+          this._updateElement(config);
+        }
+      },
+    });
 
     protected _updateElement?(config: TConfig): void;
 
@@ -83,67 +140,121 @@ export const ConditionalListenerMixin = <
 
     protected updated(changedProperties: PropertyValues) {
       super.updated(changedProperties);
-      if (changedProperties.has("_maxColumns")) {
-        this._updateVisibility?.();
+      // Re-feed the evaluator after the host has settled its inputs (e.g.
+      // `_conditionContext.entity_id`, which consumers set in `willUpdate`).
+      // The evaluator only re-subscribes when the *tree* changes; a
+      // hass/context change merely recomputes.
+      if (
+        changedProperties.has("hass") ||
+        changedProperties.has("config") ||
+        changedProperties.has("_config") ||
+        changedProperties.has("_maxColumns")
+      ) {
+        this.setupConditionalListeners();
       }
     }
 
     /**
-     * Clear conditional listeners
+     * Resolve the observed conditions to a visibility boolean.
      *
-     * This method is called when the component is disconnected from the DOM.
-     * It clears all the listeners that were set up by the setupConditionalListeners() method.
+     * Prefers the evaluator's server-aware verdict; while a server subtree is
+     * still pending (`unknown`) it falls back to an optimistic synchronous
+     * client evaluation. That fallback is exact for the legacy lovelace
+     * condition types (so existing dashboards never flash) and resolves to
+     * hidden for core-only conditions (`template` / `sun` / …) until the server
+     * reports — erring toward hiding rather than leaking content.
+     *
+     * Consumers call this from `_updateVisibility` instead of evaluating
+     * `checkConditionsMet` themselves.
+     */
+    protected _conditionsVisible(): boolean {
+      const conditions = this.__conditions;
+      if (!conditions || conditions.length === 0) {
+        return true;
+      }
+      if (this.__conditionResult !== "unknown") {
+        return this.__conditionResult === "visible";
+      }
+      if (!this.hass) {
+        return true;
+      }
+      return checkConditionsMet(
+        conditions as Condition[],
+        this.hass,
+        this._conditionContext
+      );
+    }
+
+    /**
+     * Retained for API compatibility. The evaluator manages its own
+     * subscriptions and tears them down on host disconnect, so there is nothing
+     * for the host to clear.
      */
     protected clearConditionalListeners(): void {
-      this.__listeners.forEach((unsub) => unsub());
-      this.__listeners = [];
+      // no-op
     }
 
     /**
-     * Add a conditional listener to the list of listeners
-     *
-     * This method is called when a new listener is added.
-     * It adds the listener to the list of listeners.
-     *
-     * @param unsubscribe - The unsubscribe function to call when the listener is no longer needed
-     * @returns void
+     * Retained for API compatibility; the evaluator owns its listeners.
      */
-    protected addConditionalListener(unsubscribe: () => void): void {
-      this.__listeners.push(unsubscribe);
+    protected addConditionalListener(_unsubscribe: () => void): void {
+      // no-op
     }
 
     /**
-     * Setup conditional listeners for visibility control
+     * Feed the current conditions to the evaluator.
      *
-     * Default implementation:
-     * - Checks config.visibility or _config.visibility for conditions (if not provided)
-     * - Sets up appropriate listeners based on condition types
-     * - Calls _updateVisibility() or _updateElement() when conditions change
+     * Override to supply a custom condition set (e.g. the conditional card's
+     * `conditions`) and call `super.setupConditionalListeners(customConditions)`.
      *
-     * Override this method to customize behavior (e.g., filter conditions first)
-     * and call super.setupConditionalListeners(customConditions) to reuse the base implementation
-     *
-     * @param conditions - Optional conditions array. If not provided, will check config.visibility or _config.visibility
+     * @param conditions - Optional conditions. Defaults to
+     * `config.visibility` / `_config.visibility`.
      */
-    protected setupConditionalListeners(conditions?: Condition[]): void {
-      const config = this.config || this._config;
-      const finalConditions = conditions || config?.visibility;
+    protected setupConditionalListeners(
+      conditions?: VisibilityCondition[]
+    ): void {
+      // Prefer the resolved `_config` (e.g. a strategy-generated section config)
+      // over the raw `config`, matching the pre-refactor evaluation source.
+      const config = this._config || this.config;
+      const finalConditions =
+        conditions ?? (config?.visibility as VisibilityCondition[] | undefined);
+      const entityId = this._conditionContext.entity_id;
 
-      if (!finalConditions || !this.hass) {
-        return;
+      this.__conditions = finalConditions;
+
+      // Re-derive the entity-folded array only when the source tree reference or
+      // the entity context actually changes — not on every hass tick — so the
+      // evaluator keeps seeing a stable array reference and its signature memo
+      // keeps hitting. The evaluator translates to core format with no notion of
+      // the host's `entity_id` context, so fold it in here (mirroring
+      // `checkConditionsMet`, which reads `entity_id || entity || context`).
+      if (
+        finalConditions !== this.__observedSource ||
+        entityId !== this.__observedEntityId
+      ) {
+        // When the tree changes by *value*, drop the cached verdict so
+        // `_conditionsVisible` re-seeds for the new tree instead of reusing the
+        // previous tree's result for a frame.
+        const signature = finalConditions
+          ? JSON.stringify(finalConditions)
+          : undefined;
+        if (signature !== this.__conditionsSignature) {
+          this.__conditionsSignature = signature;
+          this.__conditionResult = "unknown";
+        }
+        this.__observedSource = finalConditions;
+        this.__observedEntityId = entityId;
+        this.__observed =
+          finalConditions && entityId
+            ? ((finalConditions as Condition[]).map((c) =>
+                addEntityToCondition(c, entityId)
+              ) as VisibilityCondition[])
+            : finalConditions;
       }
 
-      setupConditionListeners(
-        finalConditions,
+      this.__conditionEvaluator.observe(
+        this.__observed,
         this.hass,
-        (unsub) => this.addConditionalListener(unsub),
-        (conditionsMet) => {
-          if (this._updateVisibility) {
-            this._updateVisibility(conditionsMet);
-          } else if (this._updateElement && config) {
-            this._updateElement(config);
-          }
-        },
         () => this._conditionContext
       );
     }
