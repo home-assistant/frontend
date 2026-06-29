@@ -222,6 +222,31 @@ describe("computeLogbookCause", () => {
     );
     expect(cause?.type).toBe("scheduled");
   });
+
+  it("flags a system user when its id is in the system set", () => {
+    const hass = baseHass({ localize: localizeStub() });
+    const cause = computeLogbookCause(
+      hass,
+      entry({ context_user_id: "cloud_user" }),
+      { cloud_user: "Home Assistant Cloud" },
+      new Set(["cloud_user"])
+    );
+    expect(cause?.type).toBe("user");
+    expect(cause?.name).toBe("Home Assistant Cloud");
+    expect(cause?.systemUser).toBe(true);
+  });
+
+  it("does not flag a regular user as a system user", () => {
+    const hass = baseHass({ localize: localizeStub() });
+    const cause = computeLogbookCause(
+      hass,
+      entry({ context_user_id: "person_1" }),
+      { person_1: "Paul" },
+      new Set(["cloud_user"])
+    );
+    expect(cause?.type).toBe("user");
+    expect(cause?.systemUser).toBe(false);
+  });
 });
 
 describe("computeLogbookGlyph", () => {
