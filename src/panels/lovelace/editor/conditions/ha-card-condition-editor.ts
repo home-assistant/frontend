@@ -229,6 +229,11 @@ export class HaCardConditionEditor extends LitElement {
 
   private __clientInvalid = false;
 
+  // Pins the live-test result for the hidden / client-invalid branches that
+  // bypass the evaluator, so its torn-down `unknown` callback can't clobber
+  // them — mirrors ha-visibility-status.
+  private _override?: LiveTestState;
+
   private get _editor() {
     if (!this._condition) return undefined;
     return customElements.get(
@@ -329,8 +334,9 @@ export class HaCardConditionEditor extends LitElement {
       !this._condition ||
       this._hideLiveTest(this._condition)
     ) {
+      this._override = "unknown";
       this._conditionEvaluator.observe(undefined, this.hass);
-      this._setLiveTestResult("unknown");
+      this._liveTestResult = { state: "unknown" };
       return;
     }
 
@@ -356,6 +362,7 @@ export class HaCardConditionEditor extends LitElement {
     // The server-backed path only reports errors for server-class subtrees, so
     // surface a malformed client-only config as `invalid` here.
     if (this.__clientInvalid) {
+      this._override = "invalid";
       this._conditionEvaluator.observe(undefined, this.hass);
       this._liveTestResult = {
         state: "invalid",
@@ -366,12 +373,19 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
+    this._override = undefined;
     this._conditionEvaluator.observe(this.__observed, this.hass, () =>
       this._liveTestContext()
     );
   }
 
   private _setLiveTestResult(result: ConditionEvaluation, error?: string) {
+    // The hidden / client-invalid branches pin the result; ignore the
+    // evaluator's (torn-down) callback in those cases — mirrors
+    // ha-visibility-status.
+    if (this._override !== undefined) {
+      return;
+    }
     if (error) {
       // Surface the raw server error as the tooltip detail (the localized
       // `invalid` label remains the indicator's aria-label) — matches how the
