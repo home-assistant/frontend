@@ -23,6 +23,7 @@ import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
   getConditionClassName,
+  isServerEditorCondition,
 } from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
@@ -44,10 +45,15 @@ const UI_CONDITION = [
   "screen",
   "time",
   "user",
+  // Server-class types, edited via the automation condition editors.
+  "template",
+  "sun",
+  "zone",
+  "device",
   "and",
   "not",
   "or",
-] as const satisfies readonly Condition["condition"][];
+] as const satisfies readonly string[];
 
 @customElement("ha-card-conditions-editor")
 export class HaCardConditionsEditor extends LitElement {
@@ -164,17 +170,33 @@ export class HaCardConditionsEditor extends LitElement {
   }
 
   private _addCondition(ev: HaDropdownSelectEvent) {
-    const condition = ev.detail.item.value as "paste" | Condition["condition"];
+    const value = ev.detail.item.value as string;
     const conditions = [...this.conditions];
 
-    if (!condition || (condition === "paste" && !this._clipboard)) {
+    if (!value || (value === "paste" && !this._clipboard)) {
       return;
     }
 
-    if (condition === "paste") {
+    if (value === "paste") {
       const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
+    } else if (isServerEditorCondition(value)) {
+      // Server-class types are authored in core format via the automation
+      // condition editors; seed with that editor's default config.
+      const elClass = customElements.get(`ha-automation-condition-${value}`) as
+        | { defaultConfig?: object }
+        | undefined;
+      const defaultConfig = elClass?.defaultConfig;
+      // The conditions array is still typed lovelace-only; core-format entries
+      // coexist at runtime (full type widening is deferred to the write-new
+      // editor work).
+      conditions.push(
+        (defaultConfig
+          ? { ...defaultConfig }
+          : { condition: value }) as Condition
+      );
     } else {
+      const condition = value as Condition["condition"];
       const elClass = customElements.get(
         getConditionClassName(condition, this._noEntity)
       ) as LovelaceConditionEditorConstructor | undefined;

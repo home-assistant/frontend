@@ -33,6 +33,11 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "../../../config/automation/condition/ha-automation-condition-editor";
+import "../../../config/automation/condition/types/ha-automation-condition-device";
+import "../../../config/automation/condition/types/ha-automation-condition-sun";
+import "../../../config/automation/condition/types/ha-automation-condition-template";
+import "../../../config/automation/condition/types/ha-automation-condition-zone";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
@@ -74,6 +79,22 @@ const containsNoEntityCondition = (
   (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
     (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
   ) === true;
+
+// Server-class condition types with no lovelace editor; edited via the
+// automation condition editors (which already speak core format).
+export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
+
+export const isServerEditorCondition = (condition: string): boolean =>
+  SERVER_EDITOR_CONDITIONS.includes(condition);
+
+// True if the condition itself, or any descendant of a logical combinator, is a
+// server-class type the client `checkConditionsMet` can't evaluate.
+const containsServerEditorCondition = (condition: Condition): boolean =>
+  isServerEditorCondition(condition.condition) ||
+  (CONTAINER_CONDITIONS.includes(condition.condition) &&
+    (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
+      containsServerEditorCondition
+    ) === true);
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
@@ -121,6 +142,23 @@ export class HaCardConditionEditor extends LitElement {
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
+  private get _isServerEditorCondition(): boolean {
+    return (
+      !!this._condition && isServerEditorCondition(this._condition.condition)
+    );
+  }
+
+  // The client live-test (`checkConditionsMet`) can't evaluate server-class
+  // conditions or no-entity (filter-mode) conditions, so the indicator is
+  // suppressed for those.
+  private _hideLiveTest(condition: Condition): boolean {
+    return (
+      isNoEntityCondition(condition.condition, this._noEntity) ||
+      containsNoEntityCondition(condition, this._noEntity) ||
+      containsServerEditorCondition(condition)
+    );
+  }
+
   public expand() {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
@@ -141,22 +179,29 @@ export class HaCardConditionEditor extends LitElement {
         condition: "state",
         ...this.condition,
       };
-      const validator = this._editor?.validateUIConfig;
-      if (validator) {
-        try {
-          validator(this._condition, this.hass);
-          this._uiAvailable = true;
-          this._uiWarnings = [];
-        } catch (err) {
-          this._uiWarnings = handleStructError(
-            this.hass,
-            err as Error
-          ).warnings;
-          this._uiAvailable = false;
-        }
-      } else {
-        this._uiAvailable = false;
+      if (this._isServerEditorCondition) {
+        // Rendered by the embedded automation condition editor, which provides
+        // its own UI for these core-format types.
+        this._uiAvailable = true;
         this._uiWarnings = [];
+      } else {
+        const validator = this._editor?.validateUIConfig;
+        if (validator) {
+          try {
+            validator(this._condition, this.hass);
+            this._uiAvailable = true;
+            this._uiWarnings = [];
+          } catch (err) {
+            this._uiWarnings = handleStructError(
+              this.hass,
+              err as Error
+            ).warnings;
+            this._uiAvailable = false;
+          }
+        } else {
+          this._uiAvailable = false;
+          this._uiWarnings = [];
+        }
       }
 
       if (!this._uiAvailable && !this._yamlMode) {
@@ -183,10 +228,7 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    if (
-      isNoEntityCondition(this._condition.condition, this._noEntity) ||
-      containsNoEntityCondition(this._condition, this._noEntity)
-    ) {
+    if (this._hideLiveTest(this._condition)) {
       this._liveTestResult = {
         state: "unknown",
         message: this.hass.localize(
@@ -224,9 +266,7 @@ export class HaCardConditionEditor extends LitElement {
 
     if (!condition) return nothing;
 
-    const hideLiveTest =
-      isNoEntityCondition(condition.condition, this._noEntity) ||
-      containsNoEntityCondition(condition, this._noEntity);
+    const hideLiveTest = this._hideLiveTest(condition);
 
     return html`
       <div class="container">
@@ -294,17 +334,14 @@ export class HaCardConditionEditor extends LitElement {
             >
             </ha-icon-button>
 
-            ${
-              isNoEntityCondition(condition.condition, this._noEntity) ||
-              containsNoEntityCondition(condition, this._noEntity)
-                ? nothing
-                : html`<ha-dropdown-item value="test">
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.editor.condition-editor.test"
-                    )}
-                    <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
-                  </ha-dropdown-item>`
-            }
+            ${hideLiveTest
+              ? nothing
+              : html`<ha-dropdown-item value="test">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.condition-editor.test"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
+                </ha-dropdown-item>`}
 
             <ha-dropdown-item value="duplicate">
               ${this.hass.localize(
@@ -380,6 +417,14 @@ export class HaCardConditionEditor extends LitElement {
                       @value-changed=${this._onYamlChange}
                     ></ha-yaml-editor>
                   `
+                : this._isServerEditorCondition
+                ? html`
+                    <ha-automation-condition-editor
+                      .hass=${this.hass}
+                      .condition=${condition}
+                      .uiSupported=${true}
+                    ></ha-automation-condition-editor>
+                  `
                 : html`
                     ${dynamicElement(
                       getConditionClassName(
@@ -391,7 +436,7 @@ export class HaCardConditionEditor extends LitElement {
                         condition: condition,
                       }
                     )}
-                  `
+                  `}
             }
           </div>
         </ha-expansion-panel>

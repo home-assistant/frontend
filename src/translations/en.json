@@ -9922,6 +9922,18 @@
               },
               "and": {
                 "label": "And"
+              },
+              "template": {
+                "label": "Template"
+              },
+              "sun": {
+                "label": "Sun"
+              },
+              "zone": {
+                "label": "Zone"
+              },
+              "device": {
+                "label": "Device"
               }
             }
           },
