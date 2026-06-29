@@ -268,6 +268,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
   // --- Now (power) ---
   entry(
     "now",
+    "energy-solar-scene-now",
+    "ui.panel.energy.cards.energy_solar_scene_title",
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
+  ),
+  entry(
+    "now",
     "power-sources-graph",
     "ui.panel.energy.cards.power_sources_graph_title",
     (p) => hasPowerSources(p)

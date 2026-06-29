@@ -71,6 +71,18 @@ export class PowerViewStrategy extends ReactiveElement {
       return view;
     }
 
+    // Solar scene (snapshot): a live, present-instant 3D view, pinned to the top of the Now tab.
+    if (isEnergyCardVisible("now", "energy-solar-scene-now", prefs, hidden)) {
+      chartsSection.cards!.push({
+        type: "energy-solar-scene-now",
+        title: hass.localize("ui.panel.energy.cards.energy_solar_scene_title"),
+        collection_key: collectionKey,
+        grid_options: {
+          columns: 36,
+        },
+      });
+    }
+
     if (hasPowerSrc) {
       badges.push({
         type: "power-total",
