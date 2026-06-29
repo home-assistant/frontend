@@ -8,6 +8,15 @@ import {
   type WeekdayShort,
 } from "../../../common/datetime/weekday";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import type {
+  NumericStateCondition as CoreNumericStateCondition,
+  PlatformCondition as CorePlatformCondition,
+  StateCondition as CoreStateCondition,
+  SunCondition,
+  TemplateCondition,
+  ZoneCondition,
+} from "../../../data/automation";
+import type { DeviceCondition } from "../../../data/device/device_automation";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
@@ -97,6 +106,77 @@ export interface AndCondition extends BaseCondition {
 export interface NotCondition extends BaseCondition {
   condition: "not";
   conditions?: Condition[];
+}
+
+/**
+ * Dashboard visibility conditions
+ * ===============================
+ *
+ * Historically, dashboard visibility (`visibility` on cards/badges/sections/
+ * views and `conditions` on the conditional card/row/element) used the
+ * lovelace-only {@link Condition} format above, evaluated synchronously on the
+ * client by {@link checkConditionsMet}.
+ *
+ * We are moving the *evaluation* of stateful conditions to core (see
+ * https://github.com/home-assistant/frontend/issues/52836). The visibility
+ * format therefore becomes the union of:
+ *
+ * - the **client-only** lovelace conditions that have no usable core
+ *   equivalent for dashboards — `screen`, `user`, `view_columns`, `location`,
+ *   and `time` (evaluated against the viewer's local context); and
+ * - any **core** automation condition (`state`, `numeric_state`, `template`,
+ *   `sun`, `zone`, `device`, and integration-provided conditions), which is
+ *   evaluated server-side through `subscribe_condition`.
+ *
+ * The two may be mixed freely, including inside `and` / `or` / `not`.
+ *
+ * Back-compat is **read both / write new**: existing dashboards keep their
+ * lovelace-format `state` / `numeric_state` conditions (`entity`, `state_not`,
+ * …) and are translated to core format on the fly (see
+ * `common/condition/translate.ts`); only conditions the user edits and saves
+ * are persisted in core format.
+ *
+ * Note: lovelace `state` / `numeric_state` use `entity`, while their core
+ * counterparts use `entity_id`. Both shapes coexist in this union and are
+ * disambiguated by that field — centralized in `common/condition/translate.ts`.
+ */
+export type VisibilityCondition =
+  // Client-only lovelace conditions (no core equivalent for dashboards)
+  | ScreenCondition
+  | UserCondition
+  | ViewColumnsCondition
+  | LocationCondition
+  | TimeCondition
+  // Lovelace stateful conditions (read-both back-compat; `entity`-based)
+  | StateCondition
+  | NumericStateCondition
+  | LegacyCondition
+  // Core automation conditions (server-evaluated; `entity_id`-based)
+  | CoreVisibilityCondition
+  // Logical combinators over the mixed union
+  | VisibilityLogicalCondition;
+
+/**
+ * Core automation conditions usable for dashboard visibility, evaluated
+ * server-side. Mirrors `data/automation`'s condition types, minus the ones
+ * kept client-side by decision (`time`) and the ones with no dashboard meaning
+ * (`trigger`). The `PlatformCondition` member covers integration-provided
+ * conditions and, being a `condition: string` catch-all, also subsumes the
+ * already-core `state` / `numeric_state` shapes.
+ */
+export type CoreVisibilityCondition =
+  | CoreStateCondition
+  | CoreNumericStateCondition
+  | SunCondition
+  | ZoneCondition
+  | TemplateCondition
+  | DeviceCondition
+  | CorePlatformCondition;
+
+/** `and` / `or` / `not` combinator whose children are the mixed union. */
+export interface VisibilityLogicalCondition extends BaseCondition {
+  condition: "and" | "or" | "not";
+  conditions?: VisibilityCondition[];
 }
 
 function getValueFromEntityId(
