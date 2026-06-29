@@ -459,7 +459,9 @@ class MoreInfoWeather extends LitElement {
                       </div>
                     `;
                   })
-                : html`<ha-spinner size="medium"></ha-spinner>`}
+                : html`<div class="loading">
+                    <ha-spinner size="medium"></ha-spinner>
+                  </div>`}
             </div>
           `
         : nothing}
@@ -702,7 +704,10 @@ class MoreInfoWeather extends LitElement {
           --mdc-icon-size: 40px;
         }
 
-        .forecast ha-spinner {
+        .forecast .loading {
+          display: flex;
+          justify-content: center;
+          align-items: center;
           height: 120px;
         }
       `,
