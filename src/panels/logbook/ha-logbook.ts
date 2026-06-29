@@ -81,6 +81,8 @@ export class HaLogbook extends LitElement {
 
   @state() private _userIdToName = {};
 
+  @state() private _systemUserIds = new Set<string>();
+
   @state() private _error?: string;
 
   private _unsubLogbook?: Promise<UnsubscribeFunc>;
@@ -137,6 +139,7 @@ export class HaLogbook extends LitElement {
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
+        .systemUserIds=${this._systemUserIds}
         @hass-logbook-live=${this._handleLogbookLive}
       ></ha-logbook-renderer>
     `;
@@ -455,6 +458,7 @@ export class HaLogbook extends LitElement {
 
   private _updateUsers = throttle(async () => {
     const userIdToName = {};
+    const systemUserIds = new Set<string>();
 
     // Start loading users
     const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
@@ -477,10 +481,14 @@ export class HaLogbook extends LitElement {
         if (!(user.id in userIdToName)) {
           userIdToName[user.id] = user.name;
         }
+        if (user.system_generated) {
+          systemUserIds.add(user.id);
+        }
       }
     }
 
     this._userIdToName = userIdToName;
+    this._systemUserIds = systemUserIds;
   }, 60000);
 
   static get styles() {
