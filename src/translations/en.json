@@ -9867,8 +9867,6 @@
                 "supporting": "One or more conditions have an invalid configuration"
               }
             },
-            "invalid_config_title": "Invalid configuration",
-            "invalid_config_text": "The condition cannot be tested because the configuration is not valid.",
             "condition": {
               "view_columns": {
                 "label": "Number of columns",

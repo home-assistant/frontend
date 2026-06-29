@@ -13,7 +13,12 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ConditionListenersController } from "../../../../common/controllers/condition-listeners-controller";
+import {
+  isLogicalCondition,
+  isServerCondition,
+} from "../../../../common/condition/translate";
+import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
+import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -32,7 +37,6 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../config/automation/condition/ha-automation-condition-editor";
 import "../../../config/automation/condition/types/ha-automation-condition-device";
 import "../../../config/automation/condition/types/ha-automation-condition-sun";
@@ -44,12 +48,14 @@ import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
   Condition,
+  ConditionContext,
   LegacyCondition,
   NotCondition,
   OrCondition,
+  VisibilityCondition,
 } from "../../common/validate-condition";
 import {
-  checkConditionsMet,
+  addEntityToCondition,
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { ConditionsEntityContext } from "./context";
@@ -77,8 +83,18 @@ const containsNoEntityCondition = (
   noEntity &&
   CONTAINER_CONDITIONS.includes(condition.condition) &&
   (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
-    (c) => NO_ENTITY_CONDITIONS.includes(c.condition)
+    (c) =>
+      NO_ENTITY_CONDITIONS.includes(c.condition) ||
+      containsNoEntityCondition(c, noEntity)
   ) === true;
+
+// A purely client-side tree (no server-class leaf anywhere) can be validated
+// up front; `validateConditionalConfig` only understands the lovelace client
+// types, so it must not be applied to trees containing server-class conditions.
+const isPureClientCondition = (condition: VisibilityCondition): boolean =>
+  isLogicalCondition(condition)
+    ? (condition.conditions ?? []).every(isPureClientCondition)
+    : !isServerCondition(condition);
 
 // Server-class condition types with no lovelace editor; edited via the
 // automation condition editors (which already speak core format).
@@ -86,15 +102,6 @@ export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
 
 export const isServerEditorCondition = (condition: string): boolean =>
   SERVER_EDITOR_CONDITIONS.includes(condition);
-
-// True if the condition itself, or any descendant of a logical combinator, is a
-// server-class type the client `checkConditionsMet` can't evaluate.
-const containsServerEditorCondition = (condition: Condition): boolean =>
-  isServerEditorCondition(condition.condition) ||
-  (CONTAINER_CONDITIONS.includes(condition.condition) &&
-    (condition as OrCondition | AndCondition | NotCondition).conditions?.some(
-      containsServerEditorCondition
-    ) === true);
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
@@ -133,7 +140,26 @@ export class HaCardConditionEditor extends LitElement {
     message?: string;
   } = { state: "unknown" };
 
-  private _listeners = new ConditionListenersController(this);
+  // Live-test indicator, driven by the same server-backed evaluator the
+  // dashboard uses at runtime: client leaves locally, server-class subtrees via
+  // `subscribe_condition`, combined with three-valued logic.
+  private _conditionEvaluator = new ConditionEvaluatorController(this, {
+    // Debounce so editing (e.g. typing a template) doesn't churn subscriptions.
+    resubscribeDelay: 500,
+    onResult: (result, error) => this._setLiveTestResult(result, error),
+  });
+
+  // Cache of the folded observation (and its client-validity) keyed by the
+  // source condition + entity context, so the evaluator's reference-based
+  // signature memo keeps hitting on hass-only ticks instead of rebuilding the
+  // array — mirrors ConditionalListenerMixin.
+  private __observedSource?: Condition | LegacyCondition;
+
+  private __observedEntityId?: string;
+
+  private __observed?: VisibilityCondition[];
+
+  private __clientInvalid = false;
 
   private get _editor() {
     if (!this._condition) return undefined;
@@ -148,14 +174,12 @@ export class HaCardConditionEditor extends LitElement {
     );
   }
 
-  // The client live-test (`checkConditionsMet`) can't evaluate server-class
-  // conditions or no-entity (filter-mode) conditions, so the indicator is
-  // suppressed for those.
+  // No-entity (filter-mode) conditions have no entity to evaluate against, so
+  // the live-test indicator is suppressed for those.
   private _hideLiveTest(condition: Condition): boolean {
     return (
       isNoEntityCondition(condition.condition, this._noEntity) ||
-      containsNoEntityCondition(condition, this._noEntity) ||
-      containsServerEditorCondition(condition)
+      containsNoEntityCondition(condition, this._noEntity)
     );
   }
 
@@ -163,14 +187,6 @@ export class HaCardConditionEditor extends LitElement {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
-  }
-
-  private _setupConditionListeners() {
-    this._listeners.setup(
-      this.condition ? [this.condition as Condition] : [],
-      this.hass,
-      () => this._evaluateLiveTest()
-    );
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
@@ -207,38 +223,62 @@ export class HaCardConditionEditor extends LitElement {
       if (!this._uiAvailable && !this._yamlMode) {
         this._yamlMode = true;
       }
-
-      this._setupConditionListeners();
     }
 
     if (changedProperties.has("condition") || changedProperties.has("hass")) {
-      this._evaluateLiveTest();
+      this._updateLiveTest();
     }
   }
 
   protected updated(changedProperties: PropertyValues<this>): void {
     if ((changedProperties as Map<string, unknown>).has("_entityContext")) {
-      this._evaluateLiveTest();
+      this._updateLiveTest();
     }
   }
 
-  private _evaluateLiveTest() {
-    if (!this.condition || !this._condition) {
-      this._liveTestResult = { state: "unknown" };
+  private _liveTestContext(): ConditionContext {
+    return this._entityContext?.mode === "current"
+      ? { entity_id: this._entityContext.entityId }
+      : {};
+  }
+
+  // Feed the condition (with the card's entity folded in when in "current"
+  // mode) to the evaluator, which subscribes server subtrees and evaluates
+  // client leaves locally. `onResult` maps its verdict to the indicator.
+  private _updateLiveTest() {
+    if (
+      !this.condition ||
+      !this._condition ||
+      this._hideLiveTest(this._condition)
+    ) {
+      this._conditionEvaluator.observe(undefined, this.hass);
+      this._setLiveTestResult("unknown");
       return;
     }
 
-    if (this._hideLiveTest(this._condition)) {
-      this._liveTestResult = {
-        state: "unknown",
-        message: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.live_test_state.unknown"
-        ),
-      };
-      return;
+    const entityId = this._liveTestContext().entity_id;
+    // Rebuild the folded observation + client-validity only when the source
+    // condition or entity context changes, so a fresh array isn't fed to the
+    // evaluator on every hass tick (which would defeat its signature memo).
+    if (
+      this.condition !== this.__observedSource ||
+      entityId !== this.__observedEntityId
+    ) {
+      this.__observedSource = this.condition;
+      this.__observedEntityId = entityId;
+      this.__clientInvalid =
+        isPureClientCondition(this.condition as VisibilityCondition) &&
+        !validateConditionalConfig([this.condition]);
+      const observed = entityId
+        ? addEntityToCondition(this.condition as Condition, entityId)
+        : this.condition;
+      this.__observed = [observed] as VisibilityCondition[];
     }
 
-    if (!validateConditionalConfig([this.condition])) {
+    // The server-backed path only reports errors for server-class subtrees, so
+    // surface a malformed client-only config as `invalid` here.
+    if (this.__clientInvalid) {
+      this._conditionEvaluator.observe(undefined, this.hass);
       this._liveTestResult = {
         state: "invalid",
         message: this.hass.localize(
@@ -248,15 +288,25 @@ export class HaCardConditionEditor extends LitElement {
       return;
     }
 
-    const testContext =
-      this._entityContext?.mode === "current"
-        ? { entity_id: this._entityContext.entityId }
-        : {};
-    const pass = checkConditionsMet([this.condition], this.hass, testContext);
+    this._conditionEvaluator.observe(this.__observed, this.hass, () =>
+      this._liveTestContext()
+    );
+  }
+
+  private _setLiveTestResult(result: ConditionEvaluation, error?: string) {
+    if (error) {
+      // Surface the raw server error as the tooltip detail (the localized
+      // `invalid` label remains the indicator's aria-label) — matches how the
+      // automation condition editor reports validation/test errors.
+      this._liveTestResult = { state: "invalid", message: error };
+      return;
+    }
+    const liveState: LiveTestState =
+      result === "visible" ? "pass" : result === "hidden" ? "fail" : "unknown";
     this._liveTestResult = {
-      state: pass ? "pass" : "fail",
+      state: liveState,
       message: this.hass.localize(
-        `ui.panel.lovelace.editor.condition-editor.live_test_state.${pass ? "pass" : "fail"}`
+        `ui.panel.lovelace.editor.condition-editor.live_test_state.${liveState}`
       ),
     };
   }
@@ -444,7 +494,7 @@ export class HaCardConditionEditor extends LitElement {
     `;
   }
 
-  private async _handleAction(ev: HaDropdownSelectEvent) {
+  private _handleAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
 
     if (action === undefined) {
@@ -453,7 +503,7 @@ export class HaCardConditionEditor extends LitElement {
 
     switch (action) {
       case "test":
-        await this._testCondition();
+        this._testCondition();
         return;
       case "duplicate":
         this._duplicateCondition();
@@ -474,37 +524,20 @@ export class HaCardConditionEditor extends LitElement {
 
   private _timeout?: number;
 
-  private async _testCondition() {
+  private _testCondition() {
     if (this._timeout) {
       window.clearTimeout(this._timeout);
       this._timeout = undefined;
     }
-    this._testingResult = undefined;
-    const condition = this.condition;
-
-    const validateResult = validateConditionalConfig([this.condition]);
-
-    if (!validateResult) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.invalid_config_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.lovelace.editor.condition-editor.invalid_config_text"
-        ),
-      });
+    // Surface the evaluator's current live verdict as a transient chip. A
+    // not-yet-reported (unknown) server result shows no chip rather than
+    // asserting a false failure.
+    const result = this._conditionEvaluator.result;
+    if (result === "unknown") {
+      this._testingResult = undefined;
       return;
     }
-
-    const testContext =
-      this._entityContext?.mode === "current"
-        ? { entity_id: this._entityContext.entityId }
-        : {};
-    this._testingResult = checkConditionsMet(
-      [condition],
-      this.hass,
-      testContext
-    );
+    this._testingResult = result === "visible";
 
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
