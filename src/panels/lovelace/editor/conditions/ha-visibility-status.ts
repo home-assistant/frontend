@@ -13,7 +13,6 @@ import type { HomeAssistant } from "../../../../types";
 import type {
   Condition,
   ConditionContext,
-  LegacyCondition,
   VisibilityCondition,
 } from "../../common/validate-condition";
 import {
@@ -46,7 +45,7 @@ export class HaVisibilityStatus extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public conditions: (Condition | LegacyCondition)[] = [];
+  public conditions: VisibilityCondition[] = [];
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -67,7 +66,7 @@ export class HaVisibilityStatus extends LitElement {
   // entity id) so the controller's signature memo keeps hitting on hass-only
   // ticks. `_override` pins the state for the empty / client-invalid branches
   // that bypass the controller.
-  private __observedSource?: (Condition | LegacyCondition)[];
+  private __observedSource?: VisibilityCondition[];
 
   private __observedEntityId?: string;
 
@@ -147,9 +146,8 @@ export class HaVisibilityStatus extends LitElement {
       this.__observedSource = conditions;
       this.__observedEntityId = entityId;
       this.__clientInvalid =
-        conditions.every((c) =>
-          isPureClientCondition(c as VisibilityCondition)
-        ) && !validateConditionalConfig(conditions);
+        conditions.every((c) => isPureClientCondition(c)) &&
+        !validateConditionalConfig(conditions as Condition[]);
       this.__observed = (
         entityId
           ? conditions.map((c) =>

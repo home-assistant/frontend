@@ -15,7 +15,7 @@ import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   Condition,
-  LegacyCondition,
+  VisibilityCondition,
 } from "../../common/validate-condition";
 import type { ConditionsEntityContext } from "./context";
 import { conditionsEntityContext } from "./context";
@@ -23,7 +23,7 @@ import "./ha-card-condition-editor";
 import {
   type HaCardConditionEditor,
   getConditionClassName,
-  isServerEditorCondition,
+  usesAutomationConditionEditor,
 } from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
@@ -65,11 +65,9 @@ export class HaCardConditionsEditor extends LitElement {
     subscribe: false,
     storage: "sessionStorage",
   })
-  protected _clipboard?: Condition | LegacyCondition;
+  protected _clipboard?: VisibilityCondition;
 
-  @property({ attribute: false }) public conditions!: (
-    Condition | LegacyCondition
-  )[];
+  @property({ attribute: false }) public conditions!: VisibilityCondition[];
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -180,20 +178,18 @@ export class HaCardConditionsEditor extends LitElement {
     if (value === "paste") {
       const newCondition = deepClone(this._clipboard!);
       conditions.push(newCondition);
-    } else if (isServerEditorCondition(value)) {
-      // Server-class types are authored in core format via the automation
-      // condition editors; seed with that editor's default config.
+    } else if (usesAutomationConditionEditor(value, this._noEntity)) {
+      // Authored in core format via the automation condition editors (server
+      // types, plus state/numeric_state outside entity-filter mode); seed with
+      // that editor's default config.
       const elClass = customElements.get(`ha-automation-condition-${value}`) as
         | { defaultConfig?: object }
         | undefined;
       const defaultConfig = elClass?.defaultConfig;
-      // The conditions array is still typed lovelace-only; core-format entries
-      // coexist at runtime (full type widening is deferred to the write-new
-      // editor work).
       conditions.push(
         (defaultConfig
           ? { ...defaultConfig }
-          : { condition: value }) as Condition
+          : { condition: value }) as VisibilityCondition
       );
     } else {
       const condition = value as Condition["condition"];

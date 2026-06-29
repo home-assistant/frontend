@@ -36,11 +36,17 @@ import "../../../../components/ha-tooltip";
 import "../../../../components/ha-yaml-editor";
 import "../../../config/automation/condition/ha-automation-condition-editor";
 import "../../../config/automation/condition/types/ha-automation-condition-device";
+import "../../../config/automation/condition/types/ha-automation-condition-numeric_state";
+import "../../../config/automation/condition/types/ha-automation-condition-state";
 import "../../../config/automation/condition/types/ha-automation-condition-sun";
 import "../../../config/automation/condition/types/ha-automation-condition-template";
 import "../../../config/automation/condition/types/ha-automation-condition-zone";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import type {
+  NumericStateCondition as CoreNumericStateCondition,
+  StateCondition as CoreStateCondition,
+} from "../../../../data/automation";
 import { ICON_CONDITION } from "../../common/icon-condition";
 import type {
   AndCondition,
@@ -48,7 +54,9 @@ import type {
   ConditionContext,
   LegacyCondition,
   NotCondition,
+  NumericStateCondition,
   OrCondition,
+  StateCondition,
   VisibilityCondition,
 } from "../../common/validate-condition";
 import {
@@ -92,11 +100,82 @@ export const SERVER_EDITOR_CONDITIONS = ["template", "sun", "zone", "device"];
 export const isServerEditorCondition = (condition: string): boolean =>
   SERVER_EDITOR_CONDITIONS.includes(condition);
 
+// Condition types edited via the core automation condition editors. The
+// server-class types always are; `state` / `numeric_state` are too, except in
+// entity-filter mode, where they keep the lovelace no-entity syntax and editor.
+export const usesAutomationConditionEditor = (
+  conditionType: string,
+  noEntity: boolean
+): boolean =>
+  isServerEditorCondition(conditionType) ||
+  (!noEntity &&
+    (conditionType === "state" || conditionType === "numeric_state"));
+
+// Render-only translation: present a lovelace `state` / `numeric_state`
+// condition in the struct-valid core format the automation editor speaks. This
+// is edit-faithful — unlike the eval-oriented `translateToCoreCondition`, it
+// never collapses an incomplete config to always-false. Already-core conditions
+// (carrying `entity_id`) and every other type pass through unchanged.
+const toCoreEditorCondition = (
+  condition: VisibilityCondition
+): VisibilityCondition => {
+  if ("entity_id" in condition) {
+    return condition;
+  }
+  // Legacy `{ entity, state }` has no `condition` key and is treated as `state`.
+  if (!("condition" in condition) || condition.condition === "state") {
+    const lovelace = condition as StateCondition | LegacyCondition;
+    const attribute = "attribute" in lovelace ? lovelace.attribute : undefined;
+    const entity_id = lovelace.entity ?? "";
+    // Core has no `state_not`; represent it as `not(state)`, which routes to
+    // the (lovelace) `not` editor wrapping a core `state` editor.
+    if (lovelace.state === undefined && lovelace.state_not !== undefined) {
+      const inner: CoreStateCondition = {
+        condition: "state",
+        entity_id,
+        state: lovelace.state_not,
+      };
+      if (attribute !== undefined) {
+        inner.attribute = attribute;
+      }
+      return { condition: "not", conditions: [inner] };
+    }
+    // Incomplete configs keep an empty `state` so the editor stays usable.
+    const core: CoreStateCondition = {
+      condition: "state",
+      entity_id,
+      state: lovelace.state ?? [],
+    };
+    if (attribute !== undefined) {
+      core.attribute = attribute;
+    }
+    return core;
+  }
+  if (condition.condition === "numeric_state") {
+    const lovelace = condition as NumericStateCondition;
+    const core: CoreNumericStateCondition = {
+      condition: "numeric_state",
+      entity_id: lovelace.entity ?? "",
+    };
+    if (lovelace.attribute !== undefined) {
+      core.attribute = lovelace.attribute;
+    }
+    if (lovelace.above !== undefined) {
+      core.above = lovelace.above;
+    }
+    if (lovelace.below !== undefined) {
+      core.below = lovelace.below;
+    }
+    return core;
+  }
+  return condition;
+};
+
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) condition!: Condition | LegacyCondition;
+  @property({ attribute: false }) condition!: VisibilityCondition;
 
   @state()
   @consume({ context: conditionsEntityContext, subscribe: true })
@@ -112,7 +191,7 @@ export class HaCardConditionEditor extends LitElement {
     subscribe: false,
     storage: "sessionStorage",
   })
-  protected _clipboard?: Condition | LegacyCondition;
+  protected _clipboard?: VisibilityCondition;
 
   @state() public _yamlMode = false;
 
@@ -142,7 +221,7 @@ export class HaCardConditionEditor extends LitElement {
   // source condition + entity context, so the evaluator's reference-based
   // signature memo keeps hitting on hass-only ticks instead of rebuilding the
   // array — mirrors ConditionalListenerMixin.
-  private __observedSource?: Condition | LegacyCondition;
+  private __observedSource?: VisibilityCondition;
 
   private __observedEntityId?: string;
 
@@ -157,9 +236,10 @@ export class HaCardConditionEditor extends LitElement {
     ) as LovelaceConditionEditorConstructor | undefined;
   }
 
-  private get _isServerEditorCondition(): boolean {
+  private get _usesAutomationEditor(): boolean {
     return (
-      !!this._condition && isServerEditorCondition(this._condition.condition)
+      !!this._condition &&
+      usesAutomationConditionEditor(this._condition.condition, this._noEntity)
     );
   }
 
@@ -180,11 +260,20 @@ export class HaCardConditionEditor extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has("condition")) {
-      this._condition = {
+      const normalized = {
         condition: "state",
         ...this.condition,
-      };
-      if (this._isServerEditorCondition) {
+      } as Condition;
+      // Present lovelace `state` / `numeric_state` in core format for the
+      // automation editor (read-both back-compat); every other type passes
+      // through unchanged. `_condition` always carries a `condition` key (core
+      // entries coexist as the wider runtime shape, narrowed here for display).
+      this._condition = (
+        usesAutomationConditionEditor(normalized.condition, this._noEntity)
+          ? toCoreEditorCondition(normalized)
+          : normalized
+      ) as Condition;
+      if (this._usesAutomationEditor) {
         // Rendered by the embedded automation condition editor, which provides
         // its own UI for these core-format types.
         this._uiAvailable = true;
@@ -256,8 +345,8 @@ export class HaCardConditionEditor extends LitElement {
       this.__observedSource = this.condition;
       this.__observedEntityId = entityId;
       this.__clientInvalid =
-        isPureClientCondition(this.condition as VisibilityCondition) &&
-        !validateConditionalConfig([this.condition]);
+        isPureClientCondition(this.condition) &&
+        !validateConditionalConfig([this.condition] as Condition[]);
       const observed = entityId
         ? addEntityToCondition(this.condition as Condition, entityId)
         : this.condition;
@@ -456,7 +545,7 @@ export class HaCardConditionEditor extends LitElement {
                       @value-changed=${this._onYamlChange}
                     ></ha-yaml-editor>
                   `
-                : this._isServerEditorCondition
+                : this._usesAutomationEditor
                 ? html`
                     <ha-automation-condition-editor
                       .hass=${this.hass}
@@ -608,6 +697,6 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "duplicate-condition": { value: Condition | LegacyCondition };
+    "duplicate-condition": { value: VisibilityCondition };
   }
 }
