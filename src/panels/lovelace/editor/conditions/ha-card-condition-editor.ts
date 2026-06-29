@@ -13,10 +13,7 @@ import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
-  isLogicalCondition,
-  isServerCondition,
-} from "../../../../common/condition/translate";
+import { isPureClientCondition } from "../../../../common/condition/translate";
 import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import { storage } from "../../../../common/decorators/storage";
@@ -87,14 +84,6 @@ const containsNoEntityCondition = (
       NO_ENTITY_CONDITIONS.includes(c.condition) ||
       containsNoEntityCondition(c, noEntity)
   ) === true;
-
-// A purely client-side tree (no server-class leaf anywhere) can be validated
-// up front; `validateConditionalConfig` only understands the lovelace client
-// types, so it must not be applied to trees containing server-class conditions.
-const isPureClientCondition = (condition: VisibilityCondition): boolean =>
-  isLogicalCondition(condition)
-    ? (condition.conditions ?? []).every(isPureClientCondition)
-    : !isServerCondition(condition);
 
 // Server-class condition types with no lovelace editor; edited via the
 // automation condition editors (which already speak core format).

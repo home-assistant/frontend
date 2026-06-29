@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   isClientCondition,
   isLogicalCondition,
+  isPureClientCondition,
   isServerCondition,
   translateToCoreCondition,
 } from "../../../src/common/condition/translate";
@@ -125,6 +126,87 @@ describe("isServerCondition / isClientCondition", () => {
       true
     );
     expect(isServerCondition(cond({ condition: "and" }))).toBe(true);
+  });
+});
+
+describe("isPureClientCondition", () => {
+  it("is true for a client-only leaf, false for a server leaf", () => {
+    expect(
+      isPureClientCondition(cond({ condition: "user", users: ["u1"] }))
+    ).toBe(true);
+    expect(
+      isPureClientCondition(
+        cond({ condition: "state", entity: "light.a", state: "on" })
+      )
+    ).toBe(false);
+  });
+
+  it("treats legacy { entity, state } conditions as not pure-client", () => {
+    expect(
+      isPureClientCondition(cond({ entity: "light.a", state: "on" }))
+    ).toBe(false);
+  });
+
+  it("is true only when every descendant is client", () => {
+    const allClient = cond({
+      condition: "and",
+      conditions: [
+        { condition: "screen", media_query: "(min-width: 600px)" },
+        { condition: "user", users: ["u1"] },
+      ],
+    });
+    expect(isPureClientCondition(allClient)).toBe(true);
+
+    // A mixed tree is neither pure-server nor pure-client.
+    const mixed = cond({
+      condition: "and",
+      conditions: [
+        { condition: "state", entity: "light.a", state: "on" },
+        { condition: "screen", media_query: "(min-width: 600px)" },
+      ],
+    });
+    expect(isPureClientCondition(mixed)).toBe(false);
+    expect(isServerCondition(mixed)).toBe(false);
+    expect(isClientCondition(mixed)).toBe(true);
+  });
+
+  it("handles deep nesting and empty compounds", () => {
+    expect(
+      isPureClientCondition(
+        cond({
+          condition: "or",
+          conditions: [
+            { condition: "time", after: "08:00" },
+            {
+              condition: "not",
+              conditions: [{ condition: "user", users: ["u1"] }],
+            },
+          ],
+        })
+      )
+    ).toBe(true);
+
+    expect(
+      isPureClientCondition(
+        cond({
+          condition: "or",
+          conditions: [
+            { condition: "time", after: "08:00" },
+            {
+              condition: "not",
+              conditions: [
+                { condition: "numeric_state", entity: "sensor.a", above: 1 },
+              ],
+            },
+          ],
+        })
+      )
+    ).toBe(false);
+
+    // every() over an empty list is vacuously true.
+    expect(
+      isPureClientCondition(cond({ condition: "and", conditions: [] }))
+    ).toBe(true);
   });
 });
 

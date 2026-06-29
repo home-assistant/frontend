@@ -60,6 +60,19 @@ export const isClientCondition = (condition: VisibilityCondition): boolean =>
   !isServerCondition(condition);
 
 /**
+ * Whether *every* leaf in the tree is a client-only condition, so the whole
+ * tree can be evaluated and validated client-side without any
+ * `subscribe_condition` round-trip. Distinct from {@link isClientCondition},
+ * which is true when *any* leaf is client-side.
+ */
+export const isPureClientCondition = (
+  condition: VisibilityCondition
+): boolean =>
+  isLogicalCondition(condition)
+    ? (condition.conditions ?? []).every(isPureClientCondition)
+    : isClientCondition(condition);
+
+/**
  * Translate a server-class lovelace condition into its core automation
  * equivalent. Core-format conditions (and condition types with no lovelace
  * counterpart, like `template` / `sun` / `zone` / `device` / integration
