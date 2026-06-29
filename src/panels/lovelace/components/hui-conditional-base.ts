@@ -23,6 +23,13 @@ export class HuiConditionalBase extends ConditionalListenerMixin<
 
   @property({ type: Boolean }) public preview = false;
 
+  // Stay mounted while hidden so the evaluator keeps its subscriptions alive and
+  // can report a server-evaluated condition flipping to visible. Otherwise the
+  // wrapper (hui-card) removes the hidden conditional card from the DOM, tearing
+  // the evaluator down; the synchronous seed can revive a client condition but
+  // not a server one (template/sun/…), so it would never reappear.
+  public connectedWhileHidden = true;
+
   @state() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
   protected _element?: HuiCard | LovelaceRow;
