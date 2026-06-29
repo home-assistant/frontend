@@ -1,5 +1,5 @@
 import type { Schema } from "js-yaml";
-import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
+import { dump, load, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -30,7 +30,7 @@ const isEmpty = (obj: Record<string, unknown>): boolean => {
 export class HaYamlEditor extends LitElement {
   @property() public value?: any;
 
-  @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
+  @property({ attribute: false }) public yamlSchema: Schema = YAML11_SCHEMA;
 
   @property({ attribute: false }) public defaultValue?: any;
 
@@ -70,7 +70,6 @@ export class HaYamlEditor extends LitElement {
       this._yaml = !isEmpty(value)
         ? dump(value, {
             schema: this.yamlSchema,
-            quotingType: '"',
             noRefs: true,
           })
         : "";

@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { load } from "js-yaml";
+import { load, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
@@ -224,7 +224,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
     let loaded: any;
     try {
-      loaded = load(paste);
+      loaded = load(paste, { schema: YAML11_SCHEMA });
     } catch (_err: any) {
       showEditorToast(this, {
         message: this.hass.localize(
