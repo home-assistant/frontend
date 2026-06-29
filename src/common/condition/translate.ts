@@ -10,6 +10,7 @@ import type {
   VisibilityCondition,
   VisibilityLogicalCondition,
 } from "../../panels/lovelace/common/validate-condition";
+import { isValidEntityId } from "../entity/valid_entity_id";
 
 /**
  * Lovelace condition types evaluated on the client; these have no usable core
@@ -94,6 +95,15 @@ export const translateToCoreCondition = (
   }
 };
 
+// A core condition that always evaluates to false — ¬(AND of nothing) = ¬true.
+// Used where checkConditionsMet short-circuits to false (an incomplete config),
+// so we never emit a schema-invalid condition that would break a grouped
+// subscription.
+const alwaysFalseCondition = (): CoreCondition => ({
+  condition: "not",
+  conditions: [{ condition: "and", conditions: [] }],
+});
+
 const translateStateCondition = (
   condition: LovelaceStateCondition | CoreStateCondition | LegacyCondition
 ): CoreCondition => {
@@ -103,9 +113,20 @@ const translateStateCondition = (
   }
 
   const lovelace = condition as LovelaceStateCondition;
+
+  // Incomplete config: no entity, or no comparison value. checkConditionsMet
+  // returns false for these (and a `state` condition with no `entity_id` /
+  // `state` is invalid for core), so resolve to a clean always-false.
+  if (
+    lovelace.entity === undefined ||
+    (lovelace.state === undefined && lovelace.state_not === undefined)
+  ) {
+    return alwaysFalseCondition();
+  }
+
   const base = {
     condition: "state" as const,
-    entity_id: lovelace.entity as string,
+    entity_id: lovelace.entity,
     ...(lovelace.attribute !== undefined
       ? { attribute: lovelace.attribute }
       : {}),
@@ -126,22 +147,11 @@ const translateStateCondition = (
     return { ...base, state: lovelace.state } as CoreStateCondition;
   }
 
-  if (lovelace.state_not !== undefined) {
-    // Core has no `state_not`; wrap a positive `state` in `not`.
-    return {
-      condition: "not",
-      conditions: [
-        { ...base, state: lovelace.state_not } as CoreStateCondition,
-      ],
-    };
-  }
-
-  // Incomplete condition (neither state nor state_not). This is an invalid
-  // config that validateConditionalConfig already rejects; callers should
-  // validate before subscribing (an incomplete condition fails core's schema
-  // and would break the whole grouped subscription). We still emit the entity
-  // so the failure is attributable rather than silent.
-  return base as CoreStateCondition;
+  // Core has no `state_not`; wrap a positive `state` in `not`.
+  return {
+    condition: "not",
+    conditions: [{ ...base, state: lovelace.state_not } as CoreStateCondition],
+  };
 };
 
 const translateNumericStateCondition = (
@@ -172,11 +182,16 @@ const translateNumericStateCondition = (
 /**
  * Reconcile a lovelace numeric bound with core's interpretation. Lovelace
  * resolves a string bound to an entity's state only when that entity exists,
- * otherwise falling back to `Number(...)`. Core instead treats *every* string
- * bound as an entity id and errors when it is not one. So coerce numeric
- * strings (e.g. `"5"`, `"10.5"`) to numbers to match lovelace — note the entity
- * id regex matches `"10.5"`, so test `Number()` first — and pass a genuine
- * (non-numeric) entity-id reference through for core to resolve.
+ * otherwise falling back to `Number(...)` (which yields `NaN` for junk, leaving
+ * the bound effectively ignored). Core instead treats *every* string bound as
+ * an entity id and errors when it is not one. To preserve lovelace behavior:
+ *
+ * - a finite numeric string (`"5"`, `"10.5"`, even `""` → 0) coerces to a
+ *   number (the entity-id regex matches `"10.5"`, so test `Number()` first);
+ * - a genuine entity-id reference passes through for core to resolve;
+ * - anything else (junk like `"foo"`, or non-finite like `"1e400"`) is dropped,
+ *   matching lovelace's "NaN ⇒ ignored" and never emitting a non-finite number
+ *   (which is not JSON-serializable).
  */
 const translateNumericBound = (
   bound: string | number | undefined
@@ -185,10 +200,13 @@ const translateNumericBound = (
     return bound;
   }
   const numeric = Number(bound);
-  if (!isNaN(numeric) && bound.trim() !== "") {
+  if (!isNaN(numeric) && isFinite(numeric)) {
     return numeric;
   }
-  return bound;
+  if (isValidEntityId(bound)) {
+    return bound;
+  }
+  return undefined;
 };
 
 const translateLogicalCondition = (

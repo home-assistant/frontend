@@ -300,6 +300,47 @@ describe("translateToCoreCondition", () => {
       });
     });
 
+    it("drops a non-numeric, non-entity-id bound (lovelace ignores it)", () => {
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "numeric_state",
+            entity: "sensor.a",
+            above: "foo",
+            below: 10,
+          })
+        )
+      ).toEqual({
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        below: 10,
+      });
+    });
+
+    it("coerces an empty-string bound to 0 (matching lovelace Number())", () => {
+      expect(
+        translateToCoreCondition(
+          cond({ condition: "numeric_state", entity: "sensor.a", above: "" })
+        )
+      ).toEqual({
+        condition: "numeric_state",
+        entity_id: "sensor.a",
+        above: 0,
+      });
+    });
+
+    it("drops a non-finite numeric bound rather than emitting Infinity", () => {
+      expect(
+        translateToCoreCondition(
+          cond({
+            condition: "numeric_state",
+            entity: "sensor.a",
+            above: "1e400",
+          })
+        )
+      ).toEqual({ condition: "numeric_state", entity_id: "sensor.a" });
+    });
+
     it("passes an already-core numeric_state condition through", () => {
       const core = {
         condition: "numeric_state",
@@ -482,6 +523,28 @@ describe("translateToCoreCondition", () => {
           conditions: [],
         });
       }
+    });
+  });
+
+  describe("incomplete conditions resolve to always-false", () => {
+    // ¬(AND of nothing) = ¬true = false; matches checkConditionsMet, which
+    // short-circuits incomplete state conditions to false, and avoids emitting
+    // a schema-invalid core condition.
+    const ALWAYS_FALSE = {
+      condition: "not",
+      conditions: [{ condition: "and", conditions: [] }],
+    };
+
+    it.each([
+      [
+        "state with an entity but no value",
+        { condition: "state", entity: "light.a" },
+      ],
+      ["state with a value but no entity", { condition: "state", state: "on" }],
+      ["legacy entity with no state", { entity: "light.a" }],
+      ["empty object", {}],
+    ])("resolves %s to always-false", (_label, input) => {
+      expect(translateToCoreCondition(cond(input))).toEqual(ALWAYS_FALSE);
     });
   });
 
