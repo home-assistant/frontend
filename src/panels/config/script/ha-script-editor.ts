@@ -130,6 +130,32 @@ export class HaScriptEditor extends SubscribeMixin(
     }
   }
 
+  private _renderDeprecatedMigratedAlert(): TemplateResult | typeof nothing {
+    if (!this.deprecatedConfigMigrated || this.readOnly) {
+      return nothing;
+    }
+    return html`<ha-alert
+      alert-type="warning"
+      .title=${this.hass.localize(
+        "ui.panel.config.script.editor.deprecated_migrated.title"
+      )}
+    >
+      ${this.hass.localize(
+        "ui.panel.config.script.editor.deprecated_migrated.description"
+      )}
+      <ha-button
+        appearance="filled"
+        size="s"
+        variant="warning"
+        slot="action"
+        .disabled=${this.saving}
+        @click=${this._handleSaveScript}
+      >
+        ${this.hass.localize("ui.common.save")}
+      </ha-button>
+    </ha-alert>`;
+  }
+
   protected render(): TemplateResult | typeof nothing {
     if (!this.config) {
       return this.renderLoading();
@@ -398,6 +424,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           @save-script=${this._handleSaveScript}
                         >
                           <div class="alert-wrapper" slot="alerts">
+                            ${this._renderDeprecatedMigratedAlert()}
                             ${this.errors || stateObj?.state === UNAVAILABLE
                               ? html`<ha-alert
                                   alert-type="error"
@@ -462,7 +489,8 @@ export class HaScriptEditor extends SubscribeMixin(
                 </div>
               `
             : this.mode === "yaml"
-              ? html`<ha-yaml-editor
+              ? html`${this._renderDeprecatedMigratedAlert()}
+                  <ha-yaml-editor
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this.readOnly}
                     disable-fullscreen
@@ -934,6 +962,7 @@ export class HaScriptEditor extends SubscribeMixin(
       }
 
       this._markDirtyStateClean();
+      this.deprecatedConfigMigrated = false;
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
       showEditorToast(this, {

@@ -12,6 +12,7 @@ import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
+import type { AutomationMigrationReport } from "../../../data/automation";
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
@@ -79,7 +80,7 @@ export const automationScriptEditorStyles: CSSResult = css`
 
 export interface EditorDomainHooks<TConfig> {
   fetchFileConfig(hass: HomeAssistant, id: string): Promise<TConfig>;
-  normalizeConfig(raw: TConfig): TConfig;
+  normalizeConfig(raw: TConfig, report?: AutomationMigrationReport): TConfig;
   checkValidation(): Promise<void>;
   domain: "automation" | "script";
 }
@@ -115,6 +116,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @state() protected readOnly = false;
 
     @state() protected saving = false;
+
+    @state() protected deprecatedConfigMigrated = false;
 
     @state() protected validationErrors?: (string | TemplateResult)[];
 
@@ -257,7 +260,12 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
         this.readOnly = false;
-        this.config = hooks.normalizeConfig(config);
+        const report: AutomationMigrationReport = { deprecated: false };
+        this.config = hooks.normalizeConfig(config, report);
+        // The config is loaded as its migrated (clean) version, so it never
+        // looks dirty. Surface an alert offering to save when deprecated
+        // options were migrated.
+        this.deprecatedConfigMigrated = report.deprecated;
         this._initDirtyTracking({ type: "deep" }, this.config);
         hooks.checkValidation();
       } catch (err: any) {
