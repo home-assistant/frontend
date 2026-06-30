@@ -16,11 +16,9 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
@@ -60,6 +58,7 @@ import "../../../components/ha-check-list-item";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-entity-id-icon";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -141,7 +140,6 @@ export interface StateEntity extends Omit<
 }
 
 export interface EntityRow extends StateEntity {
-  entity?: HassEntity;
   unavailable: boolean;
   restored: boolean;
   status: string | undefined;
@@ -340,21 +338,13 @@ export class HaConfigEntities extends LitElement {
         template: (entry) =>
           entry.icon
             ? html`<ha-icon .icon=${entry.icon}></ha-icon>`
-            : entry.entity
-              ? html`
-                  <ha-state-icon
-                    title=${ifDefined(
-                      entry.entity
-                        ? this.hass.formatEntityState(entry.entity)
-                        : undefined
-                    )}
-                    slot="item-icon"
-                    .stateObj=${entry.entity}
-                  ></ha-state-icon>
-                `
-              : html`<ha-domain-icon
-                  .domain=${computeDomain(entry.entity_id)}
-                ></ha-domain-icon>`,
+            : html`
+                <ha-entity-id-icon
+                  state-title
+                  slot="item-icon"
+                  .entityId=${entry.entity_id}
+                ></ha-entity-id-icon>
+              `,
       },
       name: {
         main: true,
@@ -711,7 +701,6 @@ export class HaConfigEntities extends LitElement {
 
         result.push({
           ...entry,
-          entity,
           name: entityName || deviceName || entry.entity_id,
           device: deviceName,
           area: areaName,
