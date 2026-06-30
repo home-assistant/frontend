@@ -80,6 +80,11 @@ export class HaCardConditionsEditor extends LitElement {
   private _focusLastConditionOnChange = false;
 
   protected firstUpdated() {
+    // The reused automation condition editors (state / numeric_state / template
+    // / sun / zone / device) label their form fields from the `config`
+    // translation fragment, which the dashboard editor does not otherwise load.
+    this.hass.loadFragmentTranslation("config");
+
     // Expand the condition if there is only one
     if (this.conditions.length === 1) {
       const row = this.shadowRoot!.querySelector<HaCardConditionEditor>(
