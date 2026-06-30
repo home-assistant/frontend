@@ -465,23 +465,25 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           @item-moved=${this._itemMoved}
         >
           <ha-list wrapFocus multi>
-            ${!uncheckedItems.length && !itemsWithoutStatus.length
-              ? html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
-                  )}
-                </p>`
-              : this._reordering
-                ? html`<div class="header" role="separator">
-                      <h2>
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.cards.todo-list.reorder_items"
-                        )}
-                      </h2>
-                      ${this._renderMenu(this._config, unavailable)}
-                    </div>
-                    ${this._renderItems(reorderableItems ?? [], unavailable)}`
-                : nothing}
+            ${!this._items
+              ? nothing
+              : !uncheckedItems.length && !itemsWithoutStatus.length
+                ? html`<p class="empty">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
+                    )}
+                  </p>`
+                : this._reordering
+                  ? html`<div class="header" role="separator">
+                        <h2>
+                          ${this.hass!.localize(
+                            "ui.panel.lovelace.cards.todo-list.reorder_items"
+                          )}
+                        </h2>
+                        ${this._renderMenu(this._config, unavailable)}
+                      </div>
+                      ${this._renderItems(reorderableItems ?? [], unavailable)}`
+                  : nothing}
             ${!this._reordering && uncheckedItems.length
               ? html`
                   ${!this._config.hide_section_headers
