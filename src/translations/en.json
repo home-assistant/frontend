@@ -5040,6 +5040,10 @@
             "disabled": "Automation is disabled",
             "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "unavailable": "Automation is unavailable",
+            "deprecated_migrated": {
+              "title": "Deprecated options updated",
+              "description": "This automation used deprecated options that have been automatically updated to their new equivalents. Save the automation to apply the changes."
+            },
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
@@ -6145,6 +6149,10 @@
             "confirm_take_control": "You are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
+            "deprecated_migrated": {
+              "title": "[%key:ui::panel::config::automation::editor::deprecated_migrated::title%]",
+              "description": "This script used deprecated options that have been automatically updated to their new equivalents. Save the script to apply the changes."
+            },
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {
