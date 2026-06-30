@@ -29,11 +29,13 @@ class SupervisorAppConfigDashboard extends LitElement {
     const hasConfiguration =
       (this.addon.options && Object.keys(this.addon.options).length) ||
       (this.addon.schema && Object.keys(this.addon.schema).length);
+    const hasNetwork =
+      this.addon.network || this.addon.network_isolation_available;
 
     return html`
       <div class="content">
         ${this.addon.system_managed &&
-        (hasConfiguration || this.addon.network || this.addon.audio)
+        (hasConfiguration || hasNetwork || this.addon.audio)
           ? html`
               <supervisor-app-system-managed
                 .hass=${this.hass}
@@ -42,7 +44,7 @@ class SupervisorAppConfigDashboard extends LitElement {
               ></supervisor-app-system-managed>
             `
           : nothing}
-        ${hasConfiguration || this.addon.network || this.addon.audio
+        ${hasConfiguration || hasNetwork || this.addon.audio
           ? html`
               ${hasConfiguration
                 ? html`
@@ -54,7 +56,7 @@ class SupervisorAppConfigDashboard extends LitElement {
                     ></supervisor-app-config>
                   `
                 : nothing}
-              ${this.addon.network
+              ${hasNetwork
                 ? html`
                     <supervisor-app-network
                       .hass=${this.hass}

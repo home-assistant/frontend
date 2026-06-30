@@ -19,6 +19,7 @@ export interface NetworkInterface {
   ipv6?: Partial<IpConfiguration>;
   type: "ethernet" | "wireless" | "vlan";
   wifi?: Partial<WifiConfiguration> | null;
+  network_isolation_capable?: boolean;
 }
 
 export interface DockerNetwork {
