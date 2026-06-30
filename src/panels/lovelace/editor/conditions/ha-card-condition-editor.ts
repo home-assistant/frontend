@@ -115,9 +115,13 @@ export const usesAutomationConditionEditor = (
 // condition in the struct-valid core format the automation editor speaks. This
 // is edit-faithful — unlike the eval-oriented `translateToCoreCondition`, it
 // never collapses an incomplete config to always-false. Already-core conditions
-// (carrying `entity_id`) and every other type pass through unchanged.
+// (carrying `entity_id`) and every other type pass through unchanged. When the
+// lovelace condition is entity-less (it implicitly targets the host card's
+// entity), `contextEntityId` is folded in as the `entity_id` so the automation
+// editor shows the effective entity instead of an empty, invalid field.
 const toCoreEditorCondition = (
-  condition: VisibilityCondition
+  condition: VisibilityCondition,
+  contextEntityId?: string
 ): VisibilityCondition => {
   if ("entity_id" in condition) {
     return condition;
@@ -126,7 +130,7 @@ const toCoreEditorCondition = (
   if (!("condition" in condition) || condition.condition === "state") {
     const lovelace = condition as StateCondition | LegacyCondition;
     const attribute = "attribute" in lovelace ? lovelace.attribute : undefined;
-    const entity_id = lovelace.entity ?? "";
+    const entity_id = lovelace.entity ?? contextEntityId ?? "";
     // Core has no `state_not`; represent it as `not(state)`, which routes to
     // the (lovelace) `not` editor wrapping a core `state` editor.
     if (lovelace.state === undefined && lovelace.state_not !== undefined) {
@@ -155,7 +159,7 @@ const toCoreEditorCondition = (
     const lovelace = condition as NumericStateCondition;
     const core: CoreNumericStateCondition = {
       condition: "numeric_state",
-      entity_id: lovelace.entity ?? "",
+      entity_id: lovelace.entity ?? contextEntityId ?? "",
     };
     if (lovelace.attribute !== undefined) {
       core.attribute = lovelace.attribute;
@@ -264,18 +268,30 @@ export class HaCardConditionEditor extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has("condition")) {
+    // Recompute on entity-context change too: an entity-less condition folds in
+    // the host card's entity, which arrives via context (possibly after the
+    // condition is first set).
+    if (
+      changedProperties.has("condition") ||
+      (changedProperties as Map<string, unknown>).has("_entityContext")
+    ) {
       const normalized = {
         condition: "state",
         ...this.condition,
       } as Condition;
+      // In "current" mode the card supplies the entity for entity-less
+      // conditions; fold it into the displayed core condition.
+      const contextEntityId =
+        this._entityContext?.mode === "current"
+          ? this._entityContext.entityId
+          : undefined;
       // Present lovelace `state` / `numeric_state` in core format for the
       // automation editor (read-both back-compat); every other type passes
       // through unchanged. `_condition` always carries a `condition` key (core
       // entries coexist as the wider runtime shape, narrowed here for display).
       this._condition = (
         usesAutomationConditionEditor(normalized.condition, this._noEntity)
-          ? toCoreEditorCondition(normalized)
+          ? toCoreEditorCondition(normalized, contextEntityId)
           : normalized
       ) as Condition;
       if (this._usesAutomationEditor) {
