@@ -28,8 +28,6 @@ export class HaStateIcon extends LitElement {
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: ContextType<typeof formattersContext>;
 
-  @property({ attribute: false }) public entityId?: string;
-
   @property({ attribute: false }) public stateValue?: string;
 
   @property({ attribute: "state-title", type: Boolean }) public stateTitle =
