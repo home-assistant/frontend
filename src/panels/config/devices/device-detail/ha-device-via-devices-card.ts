@@ -25,7 +25,7 @@ export class HaDeviceViaDevicesCard extends LitElement {
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
+  _entityReg: EntityRegistryEntry[] = [];
 
   private _entityCounts = memoizeOne(
     (entities: EntityRegistryEntry[]): Record<string, number> => {
@@ -62,7 +62,7 @@ export class HaDeviceViaDevicesCard extends LitElement {
       return nothing;
     }
 
-    const entityCounts = this._entityCounts(this._entityReg ?? []);
+    const entityCounts = this._entityCounts(this._entityReg);
 
     return html`
       <ha-card>
