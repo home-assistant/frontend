@@ -127,6 +127,8 @@ export class HaInput extends WaInputMixin(LitElement) {
   @query("wa-input")
   private _input?: WaInput;
 
+  private _startSlotResizeObserver?: ResizeObserver;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   protected i18n?: ContextType<typeof internationalizationContext>;
@@ -167,7 +169,20 @@ export class HaInput extends WaInputMixin(LitElement) {
       // Wait for wa-input to finish its first render
       await this._input?.updateComplete;
       this._syncStartSlotWidth();
+      this._observeStartSlot();
     }
+  }
+
+  public override connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hasUpdated && !this.insetLabel) {
+      this._observeStartSlot();
+    }
+  }
+
+  public override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._startSlotResizeObserver?.disconnect();
   }
 
   protected render() {
@@ -280,6 +295,25 @@ export class HaInput extends WaInputMixin(LitElement) {
 
   protected renderEndDefault(): TemplateResult | typeof nothing {
     return nothing;
+  }
+
+  // Safari can report the start-slot width as 0 during the first render, which
+  // leaves the floating label overlapping the start icon (e.g. the magnify icon
+  // in ha-input-search). Re-sync whenever the wrapper's size changes
+  // (0 -> icon width, or hidden -> shown) so the label padding stays correct.
+  private _observeStartSlot() {
+    if (typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const startEl = this._input?.shadowRoot?.querySelector('[part~="start"]');
+    if (!startEl) {
+      return;
+    }
+    this._startSlotResizeObserver?.disconnect();
+    this._startSlotResizeObserver = new ResizeObserver(() =>
+      this._syncStartSlotWidth()
+    );
+    this._startSlotResizeObserver.observe(startEl);
   }
 
   private _syncStartSlotWidth = () => {
