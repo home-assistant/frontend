@@ -1,8 +1,12 @@
+import { consume } from "@lit/context";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { UNIT_F } from "../../../common/const";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -13,10 +17,23 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
+import {
+  apiContext,
+  configContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { FrontendLocaleData } from "../../../data/translation";
 import type { WaterHeaterEntity } from "../../../data/water_heater";
 import { WaterHeaterEntityFeature } from "../../../data/water_heater";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -26,14 +43,9 @@ import type {
 
 type Target = "value" | "low" | "high";
 
-export const supportsTargetTemperatureCardFeature = (
-  hass: HomeAssistant,
-  context: LovelaceCardFeatureContext
+const supportsTargetTemperatureCardFeatureFromState = (
+  stateObj: HassEntity
 ) => {
-  const stateObj = context.entity_id
-    ? hass.states[context.entity_id]
-    : undefined;
-  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     (domain === "climate" &&
@@ -47,26 +59,53 @@ export const supportsTargetTemperatureCardFeature = (
   );
 };
 
+export const supportsTargetTemperatureCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
+  return supportsTargetTemperatureCardFeatureFromState(stateObj);
+};
+
 @customElement("hui-target-temperature-card-feature")
 class HuiTargetTemperatureCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: WaterHeaterEntity | ClimateEntity;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
 
   @state() private _config?: TargetTemperatureCardFeatureConfig;
 
   @state() private _targetTemperature: Partial<Record<Target, number>> = {};
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      WaterHeaterEntity | ClimateEntity | undefined;
-  }
 
   static getStubConfig(): TargetTemperatureCardFeatureConfig {
     return {
@@ -81,34 +120,27 @@ class HuiTargetTemperatureCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProp: PropertyValues<this>): void {
+  protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (
-      (changedProp.has("hass") || changedProp.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._targetTemperature = {
-          value: this._stateObj!.attributes.temperature,
-          low:
-            "target_temp_low" in this._stateObj!.attributes
-              ? this._stateObj!.attributes.target_temp_low
-              : undefined,
-          high:
-            "target_temp_high" in this._stateObj!.attributes
-              ? this._stateObj!.attributes.target_temp_high
-              : undefined,
-        };
-      }
+    if (changedProp.has("_stateObj") && this._stateObj) {
+      this._targetTemperature = {
+        value: this._stateObj.attributes.temperature,
+        low:
+          "target_temp_low" in this._stateObj.attributes
+            ? this._stateObj.attributes.target_temp_low
+            : undefined,
+        high:
+          "target_temp_high" in this._stateObj.attributes
+            ? this._stateObj.attributes.target_temp_high
+            : undefined,
+      };
     }
   }
 
   private get _step() {
     return (
       this._stateObj!.attributes.target_temp_step ||
-      (this.hass!.config.unit_system.temperature === UNIT_F ? 1 : 0.5)
+      (this._hassConfig?.unit_system.temperature === UNIT_F ? 1 : 0.5)
     );
   }
 
@@ -143,14 +175,14 @@ class HuiTargetTemperatureCardFeature
   private _callService(type: string) {
     const domain = computeStateDomain(this._stateObj!);
     if (type === "high" || type === "low") {
-      this.hass!.callService(domain, "set_temperature", {
+      this._api.callService(domain, "set_temperature", {
         entity_id: this._stateObj!.entity_id,
         target_temp_low: this._targetTemperature.low,
         target_temp_high: this._targetTemperature.high,
       });
       return;
     }
-    this.hass!.callService(domain, "set_temperature", {
+    this._api.callService(domain, "set_temperature", {
       entity_id: this._stateObj!.entity_id,
       temperature: this._targetTemperature.value,
     });
@@ -186,10 +218,9 @@ class HuiTargetTemperatureCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsTargetTemperatureCardFeature(this.hass, this.context)
+      !supportsTargetTemperatureCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -213,12 +244,12 @@ class HuiTargetTemperatureCardFeature
             .formatOptions=${options}
             .target=${"value"}
             .value=${this._stateObj.attributes.temperature}
-            .unit=${this.hass.config.unit_system.temperature}
+            .unit=${this._hassConfig?.unit_system.temperature}
             .min=${this._min}
             .max=${this._max}
             .step=${this._step}
             @value-changed=${this._valueChanged}
-            .label=${this.hass.formatEntityAttributeName(
+            .label=${this._formatters.formatEntityAttributeName(
               this._stateObj,
               "temperature"
             )}
@@ -226,7 +257,7 @@ class HuiTargetTemperatureCardFeature
               "--control-number-buttons-focus-color": stateColor,
             })}
             .disabled=${this._stateObj!.state === UNAVAILABLE}
-            .locale=${this.hass.locale}
+            .locale=${this._locale}
           >
           </ha-control-number-buttons>
         </ha-control-button-group>
@@ -245,7 +276,7 @@ class HuiTargetTemperatureCardFeature
             .formatOptions=${options}
             .target=${"low"}
             .value=${this._targetTemperature.low}
-            .unit=${this.hass.config.unit_system.temperature}
+            .unit=${this._hassConfig?.unit_system.temperature}
             .min=${this._min}
             .max=${Math.min(
               this._max,
@@ -253,7 +284,7 @@ class HuiTargetTemperatureCardFeature
             )}
             .step=${this._step}
             @value-changed=${this._valueChanged}
-            .label=${this.hass.formatEntityAttributeName(
+            .label=${this._formatters.formatEntityAttributeName(
               this._stateObj,
               "target_temp_low"
             )}
@@ -261,14 +292,14 @@ class HuiTargetTemperatureCardFeature
               "--control-number-buttons-focus-color": stateColor,
             })}
             .disabled=${this._stateObj!.state === UNAVAILABLE}
-            .locale=${this.hass.locale}
+            .locale=${this._locale}
           >
           </ha-control-number-buttons>
           <ha-control-number-buttons
             .formatOptions=${options}
             .target=${"high"}
             .value=${this._targetTemperature.high}
-            .unit=${this.hass.config.unit_system.temperature}
+            .unit=${this._hassConfig?.unit_system.temperature}
             .min=${Math.max(
               this._min,
               this._targetTemperature.low ?? this._min
@@ -276,7 +307,7 @@ class HuiTargetTemperatureCardFeature
             .max=${this._max}
             .step=${this._step}
             @value-changed=${this._valueChanged}
-            .label=${this.hass.formatEntityAttributeName(
+            .label=${this._formatters.formatEntityAttributeName(
               this._stateObj,
               "target_temp_high"
             )}
@@ -284,7 +315,7 @@ class HuiTargetTemperatureCardFeature
               "--control-number-buttons-focus-color": stateColor,
             })}
             .disabled=${this._stateObj!.state === UNAVAILABLE}
-            .locale=${this.hass.locale}
+            .locale=${this._locale}
           >
           </ha-control-number-buttons>
         </ha-control-button-group>
@@ -295,15 +326,15 @@ class HuiTargetTemperatureCardFeature
       <ha-control-button-group>
         <ha-control-number-buttons
           .disabled=${this._stateObj!.state === UNAVAILABLE}
-          .unit=${this.hass.config.unit_system.temperature}
-          .label=${this.hass.formatEntityAttributeName(
+          .unit=${this._hassConfig?.unit_system.temperature}
+          .label=${this._formatters.formatEntityAttributeName(
             this._stateObj,
             "temperature"
           )}
           style=${styleMap({
             "--control-number-buttons-focus-color": stateColor,
           })}
-          .locale=${this.hass.locale}
+          .locale=${this._locale}
         >
         </ha-control-number-buttons>
       </ha-control-button-group>

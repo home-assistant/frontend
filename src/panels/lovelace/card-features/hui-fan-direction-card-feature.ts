@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -16,6 +17,13 @@ import type {
 
 const FAN_DIRECTIONS: FanDirection[] = ["forward", "reverse"];
 
+const supportsFanDirectionCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "fan" && supportsFeature(stateObj, FanEntityFeature.DIRECTION)
+  );
+};
+
 export const supportsFanDirectionCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -24,10 +32,7 @@ export const supportsFanDirectionCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "fan" && supportsFeature(stateObj, FanEntityFeature.DIRECTION)
-  );
+  return supportsFanDirectionCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-fan-direction-card-feature")
@@ -52,21 +57,19 @@ class HuiFanDirectionCardFeature
   }
 
   protected _getOptions(): HuiModeSelectOption[] {
-    if (!this.hass) {
+    if (!this._stateObj) {
       return [];
     }
 
     return FAN_DIRECTIONS.map((direction) => ({
       value: direction,
-      label: this.hass!.localize(`ui.card.fan.${direction}`),
+      label: this._localize(`ui.card.fan.${direction}`),
     }));
   }
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsFanDirectionCardFeature(this.hass, this.context)
+      this._stateObj && supportsFanDirectionCardFeatureFromState(this._stateObj)
     );
   }
 }

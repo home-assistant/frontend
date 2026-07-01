@@ -1,4 +1,5 @@
 import { mdiThermostat } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { html } from "lit";
 import { customElement } from "lit/decorators";
@@ -25,6 +26,11 @@ interface HvacModeOption extends HuiModeSelectOption {
   iconPath: string;
 }
 
+const supportsClimateHvacModesCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "climate";
+};
+
 export const supportsClimateHvacModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -33,8 +39,7 @@ export const supportsClimateHvacModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "climate";
+  return supportsClimateHvacModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-climate-hvac-modes-card-feature")
@@ -60,7 +65,7 @@ class HuiClimateHvacModesCardFeature
   protected readonly _serviceAction = "set_hvac_mode";
 
   protected get _label(): string {
-    return this.hass!.localize("ui.card.climate.mode");
+    return this._localize("ui.card.climate.mode");
   }
 
   protected readonly _showDropdownOptionIcons = false;
@@ -94,7 +99,7 @@ class HuiClimateHvacModesCardFeature
   }
 
   protected _getOptions(): HvacModeOption[] {
-    if (!this._stateObj || !this.hass) {
+    if (!this._stateObj) {
       return [];
     }
 
@@ -106,7 +111,7 @@ class HuiClimateHvacModesCardFeature
     return filterModes(orderedHvacModes, this._config?.hvac_modes).map(
       (mode) => ({
         value: mode,
-        label: this.hass!.formatEntityState(this._stateObj!, mode),
+        label: this._formatters.formatEntityState(this._stateObj!, mode),
         iconPath: climateHvacModeIcon(mode),
       })
     );
@@ -121,9 +126,8 @@ class HuiClimateHvacModesCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsClimateHvacModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsClimateHvacModesCardFeatureFromState(this._stateObj)
     );
   }
 }

@@ -1,14 +1,21 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-svg-icon";
+import { apiContext, formattersContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi, HomeAssistantFormatters } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
@@ -38,9 +45,23 @@ export abstract class HuiModeSelectCardFeatureBase<
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  protected _stateObj?: TEntity;
+
+  @state()
+  @consumeLocalize()
+  protected _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  protected _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  protected _formatters!: HomeAssistantFormatters;
 
   @state() protected _config?: TConfig;
 
@@ -63,7 +84,7 @@ export abstract class HuiModeSelectCardFeatureBase<
   protected abstract _isSupported(): boolean;
 
   protected get _label(): string {
-    return this.hass!.formatEntityAttributeName(
+    return this._formatters.formatEntityAttributeName(
       this._stateObj!,
       this._attribute
     );
@@ -90,14 +111,6 @@ export abstract class HuiModeSelectCardFeatureBase<
     return true;
   }
 
-  protected get _stateObj(): TEntity | undefined {
-    if (!this.hass || !this.context?.entity_id) {
-      return undefined;
-    }
-
-    return this.hass.states[this.context.entity_id] as TEntity | undefined;
-  }
-
   public setConfig(config: TConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -106,28 +119,17 @@ export abstract class HuiModeSelectCardFeatureBase<
     this._config = config;
   }
 
-  protected willUpdate(changedProps: PropertyValues<this>): void {
+  protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if (
-      (changedProps.has("hass") || changedProps.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = this.context?.entity_id
-        ? (oldHass?.states[this.context.entity_id] as TEntity | undefined)
-        : undefined;
-
-      if (oldStateObj !== this._stateObj) {
-        this._currentValue = this._getValue(this._stateObj);
-      }
+    if (changedProps.has("_stateObj") && this._stateObj) {
+      this._currentValue = this._getValue(this._stateObj);
     }
   }
 
   protected render(): TemplateResult | null {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
       !this._isSupported()
@@ -191,7 +193,7 @@ export abstract class HuiModeSelectCardFeatureBase<
   }
 
   protected _getOptions(): HuiModeSelectOption[] {
-    if (!this._stateObj || !this.hass) {
+    if (!this._stateObj) {
       return [];
     }
 
@@ -200,7 +202,7 @@ export abstract class HuiModeSelectCardFeatureBase<
       this._configuredModes
     ).map((mode) => ({
       value: mode,
-      label: this.hass!.formatEntityAttributeValue(
+      label: this._formatters.formatEntityAttributeValue(
         this._stateObj!,
         this._attribute,
         mode
@@ -225,7 +227,7 @@ export abstract class HuiModeSelectCardFeatureBase<
     ></ha-attribute-icon>`;
 
   private async _valueChanged(ev: AttributeModeChangeEvent) {
-    if (!this.hass || !this._stateObj) {
+    if (!this._stateObj) {
       return;
     }
 
@@ -243,7 +245,7 @@ export abstract class HuiModeSelectCardFeatureBase<
     this._currentValue = value;
 
     try {
-      await this.hass.callService(
+      await this._api.callService(
         this._getServiceDomain(this._stateObj),
         this._serviceAction,
         {

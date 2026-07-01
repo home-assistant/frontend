@@ -1,16 +1,24 @@
+import { consume } from "@lit/context";
 import { mdiCancel, mdiCellphoneArrowDown } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import { apiContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { UpdateEntity } from "../../../data/update";
 import { UpdateEntityFeature, updateIsInstalling } from "../../../data/update";
 import { showUpdateBackupDialogParams } from "../../../dialogs/update_backup/show-update-backup-dialog";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -20,6 +28,14 @@ import type {
 
 export const DEFAULT_UPDATE_BACKUP_OPTION = "no";
 
+const supportsUpdateActionsCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "update" &&
+    supportsFeature(stateObj, UpdateEntityFeature.INSTALL)
+  );
+};
+
 export const supportsUpdateActionsCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -28,11 +44,7 @@ export const supportsUpdateActionsCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "update" &&
-    supportsFeature(stateObj, UpdateEntityFeature.INSTALL)
-  );
+  return supportsUpdateActionsCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-update-actions-card-feature")
@@ -40,19 +52,21 @@ class HuiUpdateActionsCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: UpdateActionsCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: UpdateEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      UpdateEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state() private _config?: UpdateActionsCardFeatureConfig;
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import("../editor/config-elements/hui-update-actions-card-feature-editor");
@@ -115,14 +129,14 @@ class HuiUpdateActionsCardFeature
       backup = response;
     }
 
-    this.hass!.callService("update", "install", {
+    this._api.callService("update", "install", {
       entity_id: this._stateObj!.entity_id,
       backup: backup,
     });
   }
 
   private async _skip(): Promise<void> {
-    this.hass!.callService("update", "skip", {
+    this._api.callService("update", "skip", {
       entity_id: this._stateObj!.entity_id,
     });
   }
@@ -130,10 +144,9 @@ class HuiUpdateActionsCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsUpdateActionsCardFeature(this.hass, this.context)
+      !supportsUpdateActionsCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -141,16 +154,14 @@ class HuiUpdateActionsCardFeature
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .label=${this.hass.localize(
-            "ui.dialogs.more_info_control.update.skip"
-          )}
+          .label=${this._localize("ui.dialogs.more_info_control.update.skip")}
           @click=${this._skip}
           .disabled=${this._skipDisabled}
         >
           <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
         </ha-control-button>
         <ha-control-button
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.dialogs.more_info_control.update.install"
           )}
           @click=${this._install}
