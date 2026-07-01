@@ -211,7 +211,7 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
-      path: "/config/developer-tools",
+      path: "/config/tools",
       translationKey: "developer_tools",
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
@@ -328,9 +328,9 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
   ],
-  developer_tools: [
+  tools: [
     {
-      path: "/config/developer-tools",
+      path: "/config/tools",
       translationKey: "ui.panel.config.dashboard.developer_tools.main",
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
