@@ -149,6 +149,13 @@ export const getMyRedirects = (): Redirects => ({
     component: "energy",
     redirect: "/config/energy",
   },
+  config_infrared: {
+    redirect: "/config/infrared",
+  },
+  config_radiofrequency: {
+    component: "radio_frequency",
+    redirect: "/config/radio-frequency",
+  },
   config_ssdp: {
     component: "ssdp",
     redirect: "/config/ssdp",
