@@ -166,12 +166,14 @@ export default class HaAutomationConditionRow extends LitElement {
     return html`
       <div class="overflow-label">
         ${label}
-        ${this.optionsInSidebar && !this.narrow
-          ? shortcut ||
-            html`<span
-              class="shortcut-placeholder ${isMac ? "mac" : ""}"
-            ></span>`
-          : nothing}
+        ${
+          this.optionsInSidebar && !this.narrow
+            ? shortcut ||
+              html`<span
+                class="shortcut-placeholder ${isMac ? "mac" : ""}"
+              ></span>`
+            : nothing
+        }
       </div>
     `;
   }
@@ -196,54 +198,62 @@ export default class HaAutomationConditionRow extends LitElement {
     );
 
     return html`
-      ${this.optionsInSidebar && this.condition.condition !== "trigger"
-        ? html`<ha-automation-condition-live-test
-            id="condition-icon"
-            slot="leading-icon"
-            .hass=${this.hass}
-            .condition=${this.condition}
-          >
-            <ha-condition-icon
+      ${
+        this.optionsInSidebar && this.condition.condition !== "trigger"
+          ? html`<ha-automation-condition-live-test
+              id="condition-icon"
+              slot="leading-icon"
               .hass=${this.hass}
-              .condition=${this.condition.condition}
-            ></ha-condition-icon>
-          </ha-automation-condition-live-test>`
-        : html`<div
-            id="condition-icon"
-            class="icon-badge-wrapper"
-            slot="leading-icon"
-          >
-            <ha-condition-icon
-              .hass=${this.hass}
-              .condition=${this.condition.condition}
-            ></ha-condition-icon>
-          </div>`}
+              .condition=${this.condition}
+            >
+              <ha-condition-icon
+                .hass=${this.hass}
+                .condition=${this.condition.condition}
+              ></ha-condition-icon>
+            </ha-automation-condition-live-test>`
+          : html`<div
+              id="condition-icon"
+              class="icon-badge-wrapper"
+              slot="leading-icon"
+            >
+              <ha-condition-icon
+                .hass=${this.hass}
+                .condition=${this.condition.condition}
+              ></ha-condition-icon>
+            </div>`
+      }
       <h3 slot="header">
         ${capitalizeFirstLetter(
           describeCondition(this.condition, this.hass, this._entityReg)
         )}
-        ${target !== undefined || (descriptionHasTarget && !this._isNew)
-          ? this._renderTargets(
-              target,
-              descriptionHasTarget && !this._isNew,
-              conditionTargetSpec,
-              this.condition.condition !== "device"
-            )
-          : nothing}
-        ${this.condition.note?.trim()
-          ? html`
-              <ha-svg-icon
-                id="note-icon"
-                tabindex="0"
-                .path=${mdiCommentTextOutline}
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.editor.note.label"
-                )}
-                class="note-indicator"
-              ></ha-svg-icon>
-              <ha-tooltip for="note-icon"><p>${noteTooltipText}</p></ha-tooltip>
-            `
-          : nothing}
+        ${
+          target !== undefined || (descriptionHasTarget && !this._isNew)
+            ? this._renderTargets(
+                target,
+                descriptionHasTarget && !this._isNew,
+                conditionTargetSpec,
+                this.condition.condition !== "device"
+              )
+            : nothing
+        }
+        ${
+          this.condition.note?.trim()
+            ? html`
+                <ha-svg-icon
+                  id="note-icon"
+                  tabindex="0"
+                  .path=${mdiCommentTextOutline}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.note.label"
+                  )}
+                  class="note-indicator"
+                ></ha-svg-icon>
+                <ha-tooltip for="note-icon"
+                  ><p>${noteTooltipText}</p></ha-tooltip
+                >
+              `
+            : nothing
+        }
       </h3>
       <ha-automation-row-event-chip
         .show=${this._testing}
@@ -322,13 +332,15 @@ export default class HaAutomationConditionRow extends LitElement {
             ),
             html`<span class="shortcut">
               <span
-                >${isMac
-                  ? html`<ha-svg-icon
-                      .path=${mdiAppleKeyboardCommand}
-                    ></ha-svg-icon>`
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.ctrl"
-                    )}</span
+                >${
+                  isMac
+                    ? html`<ha-svg-icon
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )
+                }</span
               >
               <span>+</span>
               <span>C</span>
@@ -344,13 +356,15 @@ export default class HaAutomationConditionRow extends LitElement {
             ),
             html`<span class="shortcut">
               <span
-                >${isMac
-                  ? html`<ha-svg-icon
-                      .path=${mdiAppleKeyboardCommand}
-                    ></ha-svg-icon>`
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.ctrl"
-                    )}</span
+                >${
+                  isMac
+                    ? html`<ha-svg-icon
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )
+                }</span
               >
               <span>+</span>
               <span>X</span>
@@ -358,53 +372,62 @@ export default class HaAutomationConditionRow extends LitElement {
           )}
         </ha-dropdown-item>
 
-        ${this._pasteAvailable()
-          ? html`
-              <ha-dropdown-item value="paste">
-                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
-                ${this._renderOverflowLabel(
-                  this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.paste"
-                  ),
-                  html`<span class="shortcut">
-                    <span
-                      >${isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )}</span
-                    >
-                    <span>+</span>
-                    <span>V</span>
-                  </span>`
-                )}
-              </ha-dropdown-item>
-            `
-          : nothing}
-        ${!this.optionsInSidebar
-          ? html`
-              <ha-dropdown-item
-                value="move_up"
-                .disabled=${this.disabled || !!this.first}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.move_up"
-                )}
-                <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
-              ></ha-dropdown-item>
-              <ha-dropdown-item
-                value="move_down"
-                .disabled=${this.disabled || !!this.last}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.move_down"
-                )}
-                <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
-              ></ha-dropdown-item>
-            `
-          : nothing}
+        ${
+          this._pasteAvailable()
+            ? html`
+                <ha-dropdown-item value="paste">
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiContentPaste}
+                  ></ha-svg-icon>
+                  ${this._renderOverflowLabel(
+                    this.hass.localize(
+                      "ui.panel.config.automation.editor.actions.paste"
+                    ),
+                    html`<span class="shortcut">
+                      <span
+                        >${
+                          isMac
+                            ? html`<ha-svg-icon
+                                .path=${mdiAppleKeyboardCommand}
+                              ></ha-svg-icon>`
+                            : this.hass.localize(
+                                "ui.panel.config.automation.editor.ctrl"
+                              )
+                        }</span
+                      >
+                      <span>+</span>
+                      <span>V</span>
+                    </span>`
+                  )}
+                </ha-dropdown-item>
+              `
+            : nothing
+        }
+        ${
+          !this.optionsInSidebar
+            ? html`
+                <ha-dropdown-item
+                  value="move_up"
+                  .disabled=${this.disabled || !!this.first}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.move_up"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiArrowUp}></ha-svg-icon
+                ></ha-dropdown-item>
+                <ha-dropdown-item
+                  value="move_down"
+                  .disabled=${this.disabled || !!this.last}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.move_down"
+                  )}
+                  <ha-svg-icon slot="icon" .path=${mdiArrowDown}></ha-svg-icon
+                ></ha-dropdown-item>
+              `
+            : nothing
+        }
 
         <ha-dropdown-item value="toggle_yaml_mode">
           <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
@@ -420,9 +443,11 @@ export default class HaAutomationConditionRow extends LitElement {
         <ha-dropdown-item value="disable" .disabled=${this.disabled}>
           <ha-svg-icon
             slot="icon"
-            .path=${this.condition.enabled === false
-              ? mdiPlayCircleOutline
-              : mdiStopCircleOutline}
+            .path=${
+              this.condition.enabled === false
+                ? mdiPlayCircleOutline
+                : mdiStopCircleOutline
+            }
           ></ha-svg-icon>
 
           ${this._renderOverflowLabel(
@@ -447,13 +472,15 @@ export default class HaAutomationConditionRow extends LitElement {
             ),
             html`<span class="shortcut">
               <span
-                >${isMac
-                  ? html`<ha-svg-icon
-                      .path=${mdiAppleKeyboardCommand}
-                    ></ha-svg-icon>`
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.ctrl"
-                    )}</span
+                >${
+                  isMac
+                    ? html`<ha-svg-icon
+                        .path=${mdiAppleKeyboardCommand}
+                      ></ha-svg-icon>`
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.ctrl"
+                      )
+                }</span
               >
               <span>+</span>
               <span
@@ -465,29 +492,33 @@ export default class HaAutomationConditionRow extends LitElement {
           )}
         </ha-dropdown-item>
       </ha-dropdown>
-      ${!this.optionsInSidebar
-        ? html`${this._warnings
-              ? html`<ha-automation-editor-warning
-                  .localize=${this.hass.localize}
-                  .warnings=${this._warnings}
-                >
-                </ha-automation-editor-warning>`
-              : nothing}
-            <ha-automation-condition-editor
-              .hass=${this.hass}
-              .condition=${this.condition}
-              .description=${this.conditionDescriptions[
-                this.condition.condition
-              ]}
-              .disabled=${this.disabled}
-              .yamlMode=${this._yamlMode}
-              .uiSupported=${this._uiSupported(
-                this._getType(this.condition, this.conditionDescriptions)
-              )}
-              .narrow=${this.narrow}
-              @ui-mode-not-available=${this._handleUiModeNotAvailable}
-            ></ha-automation-condition-editor>`
-        : nothing}
+      ${
+        !this.optionsInSidebar
+          ? html`${
+                this._warnings
+                  ? html`<ha-automation-editor-warning
+                      .localize=${this.hass.localize}
+                      .warnings=${this._warnings}
+                    >
+                    </ha-automation-editor-warning>`
+                  : nothing
+              }
+              <ha-automation-condition-editor
+                .hass=${this.hass}
+                .condition=${this.condition}
+                .description=${
+                  this.conditionDescriptions[this.condition.condition]
+                }
+                .disabled=${this.disabled}
+                .yamlMode=${this._yamlMode}
+                .uiSupported=${this._uiSupported(
+                  this._getType(this.condition, this.conditionDescriptions)
+                )}
+                .narrow=${this.narrow}
+                @ui-mode-not-available=${this._handleUiModeNotAvailable}
+              ></ha-automation-condition-editor>`
+          : nothing
+      }
     `;
   }
 
@@ -507,59 +538,65 @@ export default class HaAutomationConditionRow extends LitElement {
             !this._collapsed,
         })}
       >
-        ${this.condition.enabled === false
-          ? html`
-              <div class="disabled-bar">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.disabled"
+        ${
+          this.condition.enabled === false
+            ? html`
+                <div class="disabled-bar">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.disabled"
+                  )}
+                </div>
+              `
+            : nothing
+        }
+        ${
+          this.optionsInSidebar
+            ? html`<ha-automation-row
+                .disabled=${this.condition.enabled === false}
+                .leftChevron=${CONDITION_BUILDING_BLOCKS.includes(
+                  this.condition.condition
                 )}
-              </div>
-            `
-          : nothing}
-        ${this.optionsInSidebar
-          ? html`<ha-automation-row
-              .disabled=${this.condition.enabled === false}
-              .leftChevron=${CONDITION_BUILDING_BLOCKS.includes(
-                this.condition.condition
-              )}
-              .collapsed=${this._collapsed}
-              .selected=${this._selected}
-              .highlight=${this.highlight}
-              .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
-                this.condition.condition
-              )}
-              .sortSelected=${this.sortSelected}
-              .dim=${this._testing}
-              @click=${this._toggleSidebar}
-              @toggle-collapsed=${this._toggleCollapse}
-              >${this._renderRow()}
-            </ha-automation-row>`
-          : html`
-              <ha-expansion-panel
-                left-chevron
-                @expanded-changed=${this._expansionPanelChanged}
-              >
-                ${this._renderRow()}
-              </ha-expansion-panel>
-            `}
+                .collapsed=${this._collapsed}
+                .selected=${this._selected}
+                .highlight=${this.highlight}
+                .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
+                  this.condition.condition
+                )}
+                .sortSelected=${this.sortSelected}
+                .dim=${this._testing}
+                @click=${this._toggleSidebar}
+                @toggle-collapsed=${this._toggleCollapse}
+                >${this._renderRow()}
+              </ha-automation-row>`
+            : html`
+                <ha-expansion-panel
+                  left-chevron
+                  @expanded-changed=${this._expansionPanelChanged}
+                >
+                  ${this._renderRow()}
+                </ha-expansion-panel>
+              `
+        }
       </ha-card>
 
-      ${this.optionsInSidebar &&
-      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
-        ? html`<ha-automation-condition-editor
-            class=${this._collapsed ? "hidden" : ""}
-            .hass=${this.hass}
-            .condition=${this.condition}
-            .disabled=${this.disabled}
-            .uiSupported=${this._uiSupported(
-              this._getType(this.condition, this.conditionDescriptions)
-            )}
-            indent
-            .selected=${this._selected}
-            .narrow=${this.narrow}
-            @value-changed=${this._onValueChange}
-          ></ha-automation-condition-editor>`
-        : nothing}
+      ${
+        this.optionsInSidebar &&
+        CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
+          ? html`<ha-automation-condition-editor
+              class=${this._collapsed ? "hidden" : ""}
+              .hass=${this.hass}
+              .condition=${this.condition}
+              .disabled=${this.disabled}
+              .uiSupported=${this._uiSupported(
+                this._getType(this.condition, this.conditionDescriptions)
+              )}
+              indent
+              .selected=${this._selected}
+              .narrow=${this.narrow}
+              @value-changed=${this._onValueChange}
+            ></ha-automation-condition-editor>`
+          : nothing
+      }
     `;
   }
 

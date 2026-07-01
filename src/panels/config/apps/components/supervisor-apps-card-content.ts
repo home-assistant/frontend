@@ -47,22 +47,24 @@ class SupervisorAppsCardContent extends LitElement {
     return html`
       <div class="app">
         <div class="icon-wrapper">
-          ${this.iconImage
-            ? html`
-                <img
-                  class="icon-image"
-                  src=${this.iconImage}
-                  .title=${this.iconTitle}
-                  alt=${this.iconTitle ?? ""}
-                />
-              `
-            : html`
-                <ha-svg-icon
-                  class="app-icon"
-                  .path=${this.icon}
-                  .title=${this.iconTitle}
-                ></ha-svg-icon>
-              `}
+          ${
+            this.iconImage
+              ? html`
+                  <img
+                    class="icon-image"
+                    src=${this.iconImage}
+                    .title=${this.iconTitle}
+                    alt=${this.iconTitle ?? ""}
+                  />
+                `
+              : html`
+                  <ha-svg-icon
+                    class="app-icon"
+                    .path=${this.icon}
+                    .title=${this.iconTitle}
+                  ></ha-svg-icon>
+                `
+          }
         </div>
         <div>
           <div class="title-row">
@@ -79,38 +81,44 @@ class SupervisorAppsCardContent extends LitElement {
           </div>
         </div>
       </div>
-      ${this.tags?.length || this.state !== undefined || this.installed
-        ? html`
-            <div class="footer">
-              ${this.state !== undefined
-                ? html`<supervisor-apps-state
-                    .state=${this.state || "unknown"}
-                  ></supervisor-apps-state>`
-                : this.installed
-                  ? html`<div class="installed">
-                      <ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>
-                      <span
-                        >${this.hass.localize(
-                          "ui.panel.config.apps.state.installed"
-                        )}</span
-                      >
-                    </div>`
-                  : html`<span></span>`}
-              ${this.tags?.length
-                ? html`<div class="tags">
-                    ${this.tags.map(
-                      (tag) =>
-                        html`<supervisor-apps-tag
-                          .variant=${tag.variant}
-                          .iconPath=${tag.iconPath}
-                          .label=${tag.label}
-                        ></supervisor-apps-tag>`
-                    )}
-                  </div>`
-                : nothing}
-            </div>
-          `
-        : nothing}
+      ${
+        this.tags?.length || this.state !== undefined || this.installed
+          ? html`
+              <div class="footer">
+                ${
+                  this.state !== undefined
+                    ? html`<supervisor-apps-state
+                        .state=${this.state || "unknown"}
+                      ></supervisor-apps-state>`
+                    : this.installed
+                      ? html`<div class="installed">
+                          <ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.apps.state.installed"
+                            )}</span
+                          >
+                        </div>`
+                      : html`<span></span>`
+                }
+                ${
+                  this.tags?.length
+                    ? html`<div class="tags">
+                        ${this.tags.map(
+                          (tag) =>
+                            html`<supervisor-apps-tag
+                              .variant=${tag.variant}
+                              .iconPath=${tag.iconPath}
+                              .label=${tag.label}
+                            ></supervisor-apps-tag>`
+                        )}
+                      </div>`
+                    : nothing
+                }
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 

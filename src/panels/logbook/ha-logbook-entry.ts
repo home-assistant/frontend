@@ -140,17 +140,19 @@ class HaLogbookEntry extends LitElement {
           "time-am-pm": useAmPm(this.hass.locale),
         })}"
       >
-        ${layout === "timeline"
-          ? html`<div
-              class="time"
-              role="button"
-              tabindex="0"
-              @click=${this._toggleTime}
-              @keydown=${this._timeKeydown}
-            >
-              <span class="time-content">${renderedTime}</span>
-            </div>`
-          : nothing}
+        ${
+          layout === "timeline"
+            ? html`<div
+                class="time"
+                role="button"
+                tabindex="0"
+                @click=${this._toggleTime}
+                @keydown=${this._timeKeydown}
+              >
+                <span class="time-content">${renderedTime}</span>
+              </div>`
+            : nothing
+        }
         <div
           class="node ${classMap({
             "rail-trim-top": this.firstOfDay,
@@ -160,11 +162,13 @@ class HaLogbookEntry extends LitElement {
           ${this._renderNode(ctx, layout)}
         </div>
         <div class="content">
-          ${layout === "timeline"
-            ? this._renderTimeline(ctx)
-            : layout === "list"
-              ? this._renderList(ctx)
-              : this._renderInline(ctx)}
+          ${
+            layout === "timeline"
+              ? this._renderTimeline(ctx)
+              : layout === "list"
+                ? this._renderList(ctx)
+                : this._renderInline(ctx)
+          }
         </div>
       </div>
     `;
@@ -217,12 +221,14 @@ class HaLogbookEntry extends LitElement {
     renderedTime: TemplateResult | string
   ) {
     return html`<span class="trailing">
-      ${cause
-        ? html`<ha-tooltip for="cause-badge">${cause.name}</ha-tooltip>
-            <span class="cause-badge" id="cause-badge"
-              >${this._renderCauseIcon(cause)}</span
-            >`
-        : nothing}
+      ${
+        cause
+          ? html`<ha-tooltip for="cause-badge">${cause.name}</ha-tooltip>
+              <span class="cause-badge" id="cause-badge"
+                >${this._renderCauseIcon(cause)}</span
+              >`
+          : nothing
+      }
       ${traceLink ? this._renderTraceLink(traceLink) : nothing}
       ${this._renderTimeChip(renderedTime)}
     </span>`;
@@ -250,31 +256,41 @@ class HaLogbookEntry extends LitElement {
     return html`
       <div class="primary">
         <span class="primary-text"
-          >${!hideName
-            ? html`<span class="subject"
-                  >${this._renderEntity(ctx.entityId, ctx.name)}</span
-                >${ctx.renderedValue
-                  ? valueIsState
-                    ? html`<span class="arrow">${rtl ? "←" : "→"}</span>`
-                    : " "
-                  : nothing}`
-            : nothing}${ctx.renderedValue}</span
+          >${
+            !hideName
+              ? html`<span class="subject"
+                    >${this._renderEntity(ctx.entityId, ctx.name)}</span
+                  >${
+                    ctx.renderedValue
+                      ? valueIsState
+                        ? html`<span class="arrow">${rtl ? "←" : "→"}</span>`
+                        : " "
+                      : nothing
+                  }`
+              : nothing
+          }${ctx.renderedValue}</span
         >
       </div>
-      ${ctx.context
-        ? html`<div class="secondary">
-            <span class="secondary-text">${ctx.context}</span>
-          </div>`
-        : nothing}
-      ${causePhrase || ctx.traceLink
-        ? html`<div class="secondary">
-            ${causePhrase
-              ? html`<span class="cause-phrase">${causePhrase}</span>`
-              : nothing}
-            ${causePhrase && ctx.traceLink ? html`·` : nothing}
-            ${ctx.traceLink ? this._renderTraceLink(ctx.traceLink) : nothing}
-          </div>`
-        : nothing}
+      ${
+        ctx.context
+          ? html`<div class="secondary">
+              <span class="secondary-text">${ctx.context}</span>
+            </div>`
+          : nothing
+      }
+      ${
+        causePhrase || ctx.traceLink
+          ? html`<div class="secondary">
+              ${
+                causePhrase
+                  ? html`<span class="cause-phrase">${causePhrase}</span>`
+                  : nothing
+              }
+              ${causePhrase && ctx.traceLink ? html`·` : nothing}
+              ${ctx.traceLink ? this._renderTraceLink(ctx.traceLink) : nothing}
+            </div>`
+          : nothing
+      }
     `;
   }
 
@@ -301,11 +317,13 @@ class HaLogbookEntry extends LitElement {
           ctx.renderedTime
         )}
       </div>
-      ${showThirdLine
-        ? html`<div class="secondary">
-            ${this._renderListCauseLine(cause, thirdLineTrace)}
-          </div>`
-        : nothing}
+      ${
+        showThirdLine
+          ? html`<div class="secondary">
+              ${this._renderListCauseLine(cause, thirdLineTrace)}
+            </div>`
+          : nothing
+      }
     `;
   }
 

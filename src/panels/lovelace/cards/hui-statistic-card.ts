@@ -225,26 +225,26 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
         </div>
         <div class="info">
           <span class="value"
-            >${this._value === undefined
-              ? ""
-              : this._value === null
-                ? "?"
-                : formatNumber(
-                    this._value,
-                    this.hass.locale,
-                    getNumberFormatOptions(
-                      undefined,
-                      this.hass.entities[this._config.entity]
+            >${
+              this._value === undefined
+                ? ""
+                : this._value === null
+                  ? "?"
+                  : formatNumber(
+                      this._value,
+                      this.hass.locale,
+                      getNumberFormatOptions(
+                        undefined,
+                        this.hass.entities[this._config.entity]
+                      )
                     )
-                  )}</span
+            }</span
           >
           <span class="measurement"
-            >${this._config.unit ||
-            getDisplayUnit(
-              this.hass,
-              this._config.entity,
-              this._metadata
-            )}</span
+            >${
+              this._config.unit ||
+              getDisplayUnit(this.hass, this._config.entity, this._metadata)
+            }</span
           >
         </div>
         ${this._footerElement}
@@ -278,8 +278,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldConfig = changedProps.get("_config") as
-      | StatisticCardConfig
-      | undefined;
+      StatisticCardConfig | undefined;
 
     if (this.hass) {
       const useDateSelect = this._useEnergyDateSelect();
@@ -326,8 +325,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntityCardConfig
-      | undefined;
+      EntityCardConfig | undefined;
 
     if (
       !oldHass ||

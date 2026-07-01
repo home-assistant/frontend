@@ -509,11 +509,8 @@ const describeLegacyTrigger = (
     let secondsChoice: "every" | "every_interval" | "on_the_xth" | "other" =
       "other";
     let minutesChoice:
-      | "every"
-      | "every_interval"
-      | "on_the_xth"
-      | "other"
-      | "has_seconds" = "other";
+      "every" | "every_interval" | "on_the_xth" | "other" | "has_seconds" =
+      "other";
     let hoursChoice:
       | "every"
       | "every_interval"
@@ -827,8 +824,7 @@ const describeLegacyTrigger = (
       return localized;
     }
     const stateObj = hass.states[config.entity_id as string] as
-      | HassEntity
-      | undefined;
+      HassEntity | undefined;
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;
@@ -1349,8 +1345,7 @@ const describeLegacyCondition = (
       return localized;
     }
     const stateObj = hass.states[config.entity_id as string] as
-      | HassEntity
-      | undefined;
+      HassEntity | undefined;
     return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
       config.type
     }`;

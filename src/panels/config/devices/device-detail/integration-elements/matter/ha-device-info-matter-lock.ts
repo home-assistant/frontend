@@ -154,33 +154,35 @@ export class HaDeviceInfoMatterLock extends LitElement {
           "ui.panel.config.matter.lock.events.title"
         )}
       >
-        ${this._events.length === 0
-          ? html`<p class="empty">
-              ${this.hass.localize(
-                "ui.panel.config.matter.lock.events.no_events"
-              )}
-            </p>`
-          : html`
-              <div class="events-list">
-                ${this._events.map(
-                  (event) => html`
-                    <div class="event-row">
-                      <ha-svg-icon
-                        .path=${EVENT_ICONS[event.event_type] || mdiLock}
-                      ></ha-svg-icon>
-                      <div class="event-details">
-                        <span class="event-description"
-                          >${event.description}</span
-                        >
-                        <span class="event-time">
-                          ${this._formatTime(event.timestamp)}
-                        </span>
-                      </div>
-                    </div>
-                  `
+        ${
+          this._events.length === 0
+            ? html`<p class="empty">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.lock.events.no_events"
                 )}
-              </div>
-            `}
+              </p>`
+            : html`
+                <div class="events-list">
+                  ${this._events.map(
+                    (event) => html`
+                      <div class="event-row">
+                        <ha-svg-icon
+                          .path=${EVENT_ICONS[event.event_type] || mdiLock}
+                        ></ha-svg-icon>
+                        <div class="event-details">
+                          <span class="event-description"
+                            >${event.description}</span
+                          >
+                          <span class="event-time">
+                            ${this._formatTime(event.timestamp)}
+                          </span>
+                        </div>
+                      </div>
+                    `
+                  )}
+                </div>
+              `
+        }
       </ha-expansion-panel>
     `;
   }

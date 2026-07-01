@@ -129,11 +129,13 @@ class DialogZWaveJSRemoveNode extends LitElement {
           .label=${this.hass.localize("ui.common.close")}
         ></ha-icon-button>
         <div class="content">${this._renderStepContent()}</div>
-        ${this._step === "start"
-          ? nothing
-          : html`<ha-dialog-footer slot="footer">
-              ${this._renderAction()}
-            </ha-dialog-footer>`}
+        ${
+          this._step === "start"
+            ? nothing
+            : html`<ha-dialog-footer slot="footer">
+                ${this._renderAction()}
+              </ha-dialog-footer>`
+        }
       </ha-dialog>
     `;
   }
@@ -203,13 +205,15 @@ class DialogZWaveJSRemoveNode extends LitElement {
               "ui.panel.config.zwave_js.remove_node.trigger_device_exclusion"
             )}
           </p>
-          ${exclusion
-            ? html`<ha-markdown breaks .content=${exclusion}></ha-markdown>`
-            : html`<p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.remove_node.follow_device_instructions"
-                )}
-              </p>`}
+          ${
+            exclusion
+              ? html`<ha-markdown breaks .content=${exclusion}></ha-markdown>`
+              : html`<p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.remove_node.follow_device_instructions"
+                  )}
+                </p>`
+          }
         </div>
       `;
     }
@@ -243,9 +247,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
           "ui.panel.config.zwave_js.remove_node.exclusion_failed"
         )}
       </p>
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
     `;
   }
 

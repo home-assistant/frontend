@@ -105,21 +105,25 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
       .dialogAnchor=${this.dialogAnchor}
       open
       width="small"
-      .headerTitle=${this._value?.title ||
-      this._i18n.localize("ui.dialogs.date-picker.title")}
+      .headerTitle=${
+        this._value?.title ||
+        this._i18n.localize("ui.dialogs.date-picker.title")
+      }
       .headerSubtitle=${this._value?.year}
       header-subtitle-position="above"
     >
-      ${this.params.canClear
-        ? html`
-            <ha-icon-button
-              .path=${mdiBackspace}
-              .label=${this._i18n.localize("ui.dialogs.date-picker.clear")}
-              slot="headerActionItems"
-              @click=${this._clear}
-            ></ha-icon-button>
-          `
-        : nothing}
+      ${
+        this.params.canClear
+          ? html`
+              <ha-icon-button
+                .path=${mdiBackspace}
+                .label=${this._i18n.localize("ui.dialogs.date-picker.clear")}
+                slot="headerActionItems"
+                @click=${this._clear}
+              ></ha-icon-button>
+            `
+          : nothing
+      }
       <wa-divider></wa-divider>
       <calendar-date
         .value=${this._value?.dateString}

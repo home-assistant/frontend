@@ -644,13 +644,15 @@ class ActionRenderer {
   ) {
     this.entries.push(html`
       <ha-timeline .icon=${icon} data-path=${path} .notEnabled=${disabled}>
-        ${description}${disabled
-          ? html`<span class="disabled">
-              ${this.hass.localize(
-                "ui.panel.config.automation.trace.messages.disabled"
-              )}</span
-            >`
-          : ""}
+        ${description}${
+          disabled
+            ? html`<span class="disabled">
+                ${this.hass.localize(
+                  "ui.panel.config.automation.trace.messages.disabled"
+                )}</span
+              >`
+            : ""
+        }
       </ha-timeline>
     `);
   }

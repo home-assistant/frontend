@@ -75,35 +75,41 @@ export class HaNumberSelector extends LitElement {
     }
 
     return html`
-      ${this.label && !isBox
-        ? html`${this.label}${this.required ? "*" : ""}`
-        : nothing}
+      ${
+        this.label && !isBox
+          ? html`${this.label}${this.required ? "*" : ""}`
+          : nothing
+      }
       <div class="input">
-        ${!isBox
-          ? html`
-              <ha-slider
-                labeled
-                .min=${this.selector.number!.min}
-                .max=${this.selector.number!.max}
-                .value=${this.value}
-                .step=${sliderStep}
-                .disabled=${this.disabled}
-                .required=${this.required}
-                @change=${this._handleSliderChange}
-                .withMarkers=${this.selector.number?.slider_ticks || false}
-              >
-              </ha-slider>
-            `
-          : nothing}
+        ${
+          !isBox
+            ? html`
+                <ha-slider
+                  labeled
+                  .min=${this.selector.number!.min}
+                  .max=${this.selector.number!.max}
+                  .value=${this.value}
+                  .step=${sliderStep}
+                  .disabled=${this.disabled}
+                  .required=${this.required}
+                  @change=${this._handleSliderChange}
+                  .withMarkers=${this.selector.number?.slider_ticks || false}
+                >
+                </ha-slider>
+              `
+            : nothing
+        }
         <ha-input
-          .inputMode=${this.selector.number?.step === "any" ||
-          (this.selector.number?.step ?? 1) % 1 !== 0
-            ? "decimal"
-            : "numeric"}
+          .inputMode=${
+            this.selector.number?.step === "any" ||
+            (this.selector.number?.step ?? 1) % 1 !== 0
+              ? "decimal"
+              : "numeric"
+          }
           .label=${!isBox ? undefined : this.label}
-          .placeholder=${this.placeholder !== undefined
-            ? this.placeholder.toString()
-            : ""}
+          .placeholder=${
+            this.placeholder !== undefined ? this.placeholder.toString() : ""
+          }
           class=${isBox ? "single" : ""}
           .min=${this.selector.number?.min}
           .max=${this.selector.number?.max}
@@ -120,11 +126,13 @@ export class HaNumberSelector extends LitElement {
           ${unit ? html`<span slot="end">${unit}</span>` : nothing}
         </ha-input>
       </div>
-      ${!isBox && this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        !isBox && this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 

@@ -34,9 +34,11 @@ class DemoCard extends LitElement {
     return html`
       <h2>
         ${this.config.heading}
-        ${this._size !== undefined
-          ? html`<small>(size ${this._size})</small>`
-          : ""}
+        ${
+          this._size !== undefined
+            ? html`<small>(size ${this._size})</small>`
+            : ""
+        }
       </h2>
       <div class="root">
         <hui-card
@@ -44,9 +46,11 @@ class DemoCard extends LitElement {
           .hass=${this.hass}
           @card-updated=${this._cardUpdated}
         ></hui-card>
-        ${this.showConfig
-          ? html`<pre>${this.config.config.trim()}</pre>`
-          : nothing}
+        ${
+          this.showConfig
+            ? html`<pre>${this.config.config.trim()}</pre>`
+            : nothing
+        }
       </div>
     `;
   }

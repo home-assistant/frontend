@@ -156,8 +156,7 @@ class HuiVacuumCommandCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id!] as
-      | VacuumEntity
-      | undefined;
+      VacuumEntity | undefined;
   }
 
   static getStubConfig(): VacuumCommandsCardFeatureConfig {

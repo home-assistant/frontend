@@ -57,30 +57,36 @@ class DialogMatterManageFabrics extends LitElement {
         <p>
           ${this.hass.localize("ui.panel.config.matter.manage_fabrics.fabrics")}
         </p>
-        ${this._nodeDiagnostics
-          ? html`<ha-list>
-              ${this._nodeDiagnostics.active_fabrics.map(
-                (fabric) =>
-                  html`<ha-list-item
-                    noninteractive
-                    .hasMeta=${this._nodeDiagnostics!.available &&
-                    fabric.fabric_index !==
-                      this._nodeDiagnostics!.active_fabric_index}
-                    >${fabric.vendor_name ||
-                    fabric.fabric_label ||
-                    fabric.vendor_id}
-                    <ha-icon-button
-                      @click=${this._removeFabric}
-                      slot="meta"
-                      .fabric=${fabric}
-                      .path=${mdiDelete}
-                    ></ha-icon-button>
-                  </ha-list-item>`
-              )}
-            </ha-list>`
-          : html`<div class="center">
-              <ha-spinner></ha-spinner>
-            </div>`}
+        ${
+          this._nodeDiagnostics
+            ? html`<ha-list>
+                ${this._nodeDiagnostics.active_fabrics.map(
+                  (fabric) =>
+                    html`<ha-list-item
+                      noninteractive
+                      .hasMeta=${
+                        this._nodeDiagnostics!.available &&
+                        fabric.fabric_index !==
+                          this._nodeDiagnostics!.active_fabric_index
+                      }
+                      >${
+                        fabric.vendor_name ||
+                        fabric.fabric_label ||
+                        fabric.vendor_id
+                      }
+                      <ha-icon-button
+                        @click=${this._removeFabric}
+                        slot="meta"
+                        .fabric=${fabric}
+                        .path=${mdiDelete}
+                      ></ha-icon-button>
+                    </ha-list-item>`
+                )}
+              </ha-list>`
+            : html`<div class="center">
+                <ha-spinner></ha-spinner>
+              </div>`
+        }
       </ha-dialog>
     `;
   }

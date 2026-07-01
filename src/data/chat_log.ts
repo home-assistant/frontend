@@ -161,9 +161,7 @@ type ChatLogSubscriptionEvent =
   | ChatLogContentAddedEvent;
 
 type ChatLogIndexSubscriptionEvent =
-  | ChatLogIndexInitialStateEvent
-  | ChatLogCreatedEvent
-  | ChatLogDeletedEvent;
+  ChatLogIndexInitialStateEvent | ChatLogCreatedEvent | ChatLogDeletedEvent;
 
 export const subscribeChatLog = (
   hass: HomeAssistant,

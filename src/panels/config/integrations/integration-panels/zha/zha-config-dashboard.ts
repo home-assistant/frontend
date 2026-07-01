@@ -146,9 +146,11 @@ class ZHAConfigDashboard extends LitElement {
   private _renderNetworkStatus(deviceOnline: boolean, totalDevices: number) {
     return html`
       <ha-card class="content network-status">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <div class="card-content">
           <div class="heading">
             <div class="icon ${deviceOnline ? "success" : "error"}">
@@ -167,12 +169,14 @@ class ZHAConfigDashboard extends LitElement {
                 )}
               </small>
               <small class="offline">
-                ${this._asyncDataLoaded && this._offlineDevices > 0
-                  ? html`(${this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.devices_offline",
-                      { count: this._offlineDevices }
-                    )})`
-                  : nothing}
+                ${
+                  this._asyncDataLoaded && this._offlineDevices > 0
+                    ? html`(${this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.devices_offline",
+                        { count: this._offlineDevices }
+                      )})`
+                    : nothing
+                }
               </small>
             </div>
             <img
@@ -244,18 +248,22 @@ class ZHAConfigDashboard extends LitElement {
               ></ha-svg-icon>
               <div
                 slot="headline"
-                class=${this._asyncDataLoaded && this._totalGroups !== undefined
-                  ? "fade-in"
-                  : ""}
+                class=${
+                  this._asyncDataLoaded && this._totalGroups !== undefined
+                    ? "fade-in"
+                    : ""
+                }
               >
-                ${this._asyncDataLoaded && this._totalGroups !== undefined
-                  ? this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.group_count",
-                      { count: this._totalGroups }
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.zha.groups.groups.caption"
-                    )}
+                ${
+                  this._asyncDataLoaded && this._totalGroups !== undefined
+                    ? this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.group_count",
+                        { count: this._totalGroups }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.zha.groups.groups.caption"
+                      )
+                }
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-md-list-item>
@@ -315,9 +323,11 @@ class ZHAConfigDashboard extends LitElement {
                 >
                   <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
                   <div slot="headline">
-                    ${this.hass.localize(
-                      `component.zha.config_panel.${section}.title`
-                    ) || section}
+                    ${
+                      this.hass.localize(
+                        `component.zha.config_panel.${section}.title`
+                      ) || section
+                    }
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
                 </ha-md-list-item>

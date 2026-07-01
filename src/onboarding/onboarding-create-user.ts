@@ -62,9 +62,11 @@ class OnboardingCreateUser extends LitElement {
       <h1>${this.localize("ui.panel.page-onboarding.user.header")}</h1>
       <p>${this.localize("ui.panel.page-onboarding.user.intro")}</p>
 
-      ${this._errorMsg
-        ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
-        : ""}
+      ${
+        this._errorMsg
+          ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
+          : ""
+      }
 
       <ha-form
         .computeLabel=${this._computeLabel(this.localize)}
@@ -78,12 +80,14 @@ class OnboardingCreateUser extends LitElement {
       <div class="footer">
         <ha-button
           @click=${this._submitForm}
-          .disabled=${this._loading ||
-          !this._newUser.name ||
-          !this._newUser.username ||
-          !this._newUser.password ||
-          !this._newUser.password_confirm ||
-          this._newUser.password !== this._newUser.password_confirm}
+          .disabled=${
+            this._loading ||
+            !this._newUser.name ||
+            !this._newUser.username ||
+            !this._newUser.password ||
+            !this._newUser.password_confirm ||
+            this._newUser.password !== this._newUser.password_confirm
+          }
         >
           ${this.localize("ui.panel.page-onboarding.user.create_account")}
         </ha-button>

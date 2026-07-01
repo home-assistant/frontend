@@ -35,11 +35,13 @@ export class HaSettingsRow extends LitElement {
           ?three-line=${this.threeLine}
         >
           <slot name="heading"></slot>
-          ${hasDescription
-            ? html`<span class="secondary"
-                ><slot name="description"></slot
-              ></span>`
-            : nothing}
+          ${
+            hasDescription
+              ? html`<span class="secondary"
+                  ><slot name="description"></slot
+                ></span>`
+              : nothing
+          }
         </div>
       </div>
       <div class="content">

@@ -81,16 +81,21 @@ class DialogRestartWait extends LitElement {
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error"
-                >${this.hass.localize("ui.dialogs.restart.error_backup_state", {
-                  error: this._error,
-                })}</ha-alert
-              > `
-            : html`
-                <ha-spinner></ha-spinner>
-                ${waitMessage}
-              `}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error"
+                  >${this.hass.localize(
+                    "ui.dialogs.restart.error_backup_state",
+                    {
+                      error: this._error,
+                    }
+                  )}</ha-alert
+                > `
+              : html`
+                  <ha-spinner></ha-spinner>
+                  ${waitMessage}
+                `
+          }
         </div>
       </ha-dialog>
     `;

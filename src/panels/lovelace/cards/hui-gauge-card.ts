@@ -186,8 +186,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | GaugeCardConfig
-      | undefined;
+      GaugeCardConfig | undefined;
 
     if (
       !oldHass ||

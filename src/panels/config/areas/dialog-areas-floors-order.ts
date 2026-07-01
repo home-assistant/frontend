@@ -176,13 +176,15 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
           .floor=${floor.id}
         >
           <ha-md-list>
-            ${floor.areas.length > 0
-              ? floor.areas.map((areaId) => this._renderArea(areaId))
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.config.areas.dialog.empty_floor"
-                  )}
-                </p>`}
+            ${
+              floor.areas.length > 0
+                ? floor.areas.map((areaId) => this._renderArea(areaId))
+                : html`<p class="empty">
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.dialog.empty_floor"
+                    )}
+                  </p>`
+            }
           </ha-md-list>
         </ha-sortable>
       </div>
@@ -194,15 +196,17 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
 
     return html`
       <div class="floor unassigned">
-        ${hasFloors
-          ? html`<div class="floor-header">
-              <span class="floor-name">
-                ${this.hass.localize(
-                  "ui.panel.config.areas.dialog.other_areas"
-                )}
-              </span>
-            </div>`
-          : nothing}
+        ${
+          hasFloors
+            ? html`<div class="floor-header">
+                <span class="floor-name">
+                  ${this.hass.localize(
+                    "ui.panel.config.areas.dialog.other_areas"
+                  )}
+                </span>
+              </div>`
+            : nothing
+        }
         <ha-sortable
           handle-selector=".area-handle"
           draggable-selector="ha-md-list-item"
@@ -212,13 +216,17 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
           .floor=${UNASSIGNED_FLOOR}
         >
           <ha-md-list>
-            ${this._hierarchy!.areas.length > 0
-              ? this._hierarchy!.areas.map((areaId) => this._renderArea(areaId))
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.config.areas.dialog.empty_unassigned"
-                  )}
-                </p>`}
+            ${
+              this._hierarchy!.areas.length > 0
+                ? this._hierarchy!.areas.map((areaId) =>
+                    this._renderArea(areaId)
+                  )
+                : html`<p class="empty">
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.dialog.empty_unassigned"
+                    )}
+                  </p>`
+            }
           </ha-md-list>
         </ha-sortable>
       </div>
@@ -233,12 +241,14 @@ class DialogAreasFloorsOrder extends DirtyStateProviderMixin<OrderState>()(
 
     return html`
       <ha-md-list-item .sortableData=${area}>
-        ${area.icon
-          ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
-          : html`<ha-svg-icon
-              slot="start"
-              .path=${mdiTextureBox}
-            ></ha-svg-icon>`}
+        ${
+          area.icon
+            ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
+            : html`<ha-svg-icon
+                slot="start"
+                .path=${mdiTextureBox}
+              ></ha-svg-icon>`
+        }
         <span slot="headline">${area.name}</span>
         <ha-svg-icon
           class="area-handle"

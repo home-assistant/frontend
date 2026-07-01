@@ -37,9 +37,11 @@ class HassLoadingScreen extends LitElement {
     return html`
       <div class="content">
         <ha-spinner></ha-spinner>
-        ${this.message
-          ? html`<div id="loading-text">${this.message}</div>`
-          : nothing}
+        ${
+          this.message
+            ? html`<div id="loading-text">${this.message}</div>`
+            : nothing
+        }
       </div>
     `;
   }

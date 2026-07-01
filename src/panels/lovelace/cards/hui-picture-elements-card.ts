@@ -111,8 +111,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PictureElementsCardConfig
-      | undefined;
+      PictureElementsCardConfig | undefined;
 
     if (
       !oldHass ||

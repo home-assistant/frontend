@@ -99,10 +99,13 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="gen_data_entity_id"
-              .disabled=${this._prefs === undefined &&
-              isComponentLoaded(this.hass.config, "ai_task")}
-              .value=${this._gen_data_entity_id ||
-              this._prefs?.gen_data_entity_id}
+              .disabled=${
+                this._prefs === undefined &&
+                isComponentLoaded(this.hass.config, "ai_task")
+              }
+              .value=${
+                this._gen_data_entity_id || this._prefs?.gen_data_entity_id
+              }
               .entityFilter=${filterGenData}
               @value-changed=${this._handlePrefChange}
             ></ha-entity-picker>
@@ -118,10 +121,13 @@ export class AITaskPref extends LitElement {
             </span>
             <ha-entity-picker
               data-name="gen_image_entity_id"
-              .disabled=${this._prefs === undefined &&
-              isComponentLoaded(this.hass.config, "ai_task")}
-              .value=${this._gen_image_entity_id ||
-              this._prefs?.gen_image_entity_id}
+              .disabled=${
+                this._prefs === undefined &&
+                isComponentLoaded(this.hass.config, "ai_task")
+              }
+              .value=${
+                this._gen_image_entity_id || this._prefs?.gen_image_entity_id
+              }
               .entityFilter=${filterGenImage}
               @value-changed=${this._handlePrefChange}
             ></ha-entity-picker>

@@ -9,8 +9,7 @@ export interface DemoConfig {
   authorName: string;
   authorUrl: string;
   description?:
-    | string
-    | ((localize: LocalizeFunc) => string | TemplateResult<1>);
+    string | ((localize: LocalizeFunc) => string | TemplateResult<1>);
   lovelace: (localize: LocalizeFunc) => LovelaceConfig;
   entities: (localize: LocalizeFunc) => EntityInput[];
   theme: () => Record<string, string> | null;

@@ -35,8 +35,7 @@ export class HuiCreateDialogCard
   @state() private _open = false;
 
   @state() private _containerConfig!:
-    | LovelaceViewConfig
-    | LovelaceSectionConfig;
+    LovelaceViewConfig | LovelaceSectionConfig;
 
   @state() private _currTab: "card" | "entity" = "entity";
 
@@ -103,30 +102,32 @@ export class HuiCreateDialogCard
           ></ha-icon-button>
           <span slot="title">${title}</span>
 
-          ${!this._params.saveCard
-            ? html`
-                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                  <ha-tab-group-tab
-                    slot="nav"
-                    .active=${this._currTab === "entity"}
-                    panel="entity"
-                    ?autofocus=${this._narrow}
-                    >${this.hass.localize(
-                      "ui.panel.lovelace.editor.cardpicker.by_entity"
-                    )}</ha-tab-group-tab
-                  >
-                  <ha-tab-group-tab
-                    slot="nav"
-                    .active=${this._currTab === "card"}
-                    panel="card"
-                  >
-                    ${this.hass!.localize(
-                      "ui.panel.lovelace.editor.cardpicker.by_card"
-                    )}
-                  </ha-tab-group-tab>
-                </ha-tab-group>
-              `
-            : nothing}
+          ${
+            !this._params.saveCard
+              ? html`
+                  <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                    <ha-tab-group-tab
+                      slot="nav"
+                      .active=${this._currTab === "entity"}
+                      panel="entity"
+                      ?autofocus=${this._narrow}
+                      >${this.hass.localize(
+                        "ui.panel.lovelace.editor.cardpicker.by_entity"
+                      )}</ha-tab-group-tab
+                    >
+                    <ha-tab-group-tab
+                      slot="nav"
+                      .active=${this._currTab === "card"}
+                      panel="card"
+                    >
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.cardpicker.by_card"
+                      )}
+                    </ha-tab-group-tab>
+                  </ha-tab-group>
+                `
+              : nothing
+          }
         </ha-dialog-header>
         <div class="body">
           ${cache(

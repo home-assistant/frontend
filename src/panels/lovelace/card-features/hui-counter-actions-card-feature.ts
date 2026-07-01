@@ -123,8 +123,9 @@ class HuiCounterActionsCardFeature
                   `ui.card.counter.actions.${button.translationKey}`
                 )}
                 @click=${this._onActionTap}
-                .disabled=${button.disabled ||
-                this._stateObj?.state === UNAVAILABLE}
+                .disabled=${
+                  button.disabled || this._stateObj?.state === UNAVAILABLE
+                }
               >
                 <ha-svg-icon .path=${button.icon}></ha-svg-icon>
               </ha-control-button>

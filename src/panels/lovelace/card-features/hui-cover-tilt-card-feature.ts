@@ -102,39 +102,45 @@ class HuiCoverTiltCardFeature
 
     return html`
       <ha-control-button-group>
-        ${supportsFeature(this._stateObj, CoverEntityFeature.OPEN_TILT)
-          ? html`
-              <ha-control-button
-                .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
-                @click=${this._onOpenTap}
-                .disabled=${!canOpenTilt(this._stateObj)}
-              >
-                <ha-svg-icon .path=${mdiArrowTopRight}></ha-svg-icon>
-              </ha-control-button>
-            `
-          : nothing}
-        ${supportsFeature(this._stateObj, CoverEntityFeature.STOP_TILT)
-          ? html`
-              <ha-control-button
-                .label=${this.hass.localize("ui.card.cover.stop_cover")}
-                @click=${this._onStopTap}
-                .disabled=${!canStopTilt(this._stateObj)}
-              >
-                <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              </ha-control-button>
-            `
-          : nothing}
-        ${supportsFeature(this._stateObj, CoverEntityFeature.CLOSE_TILT)
-          ? html`
-              <ha-control-button
-                .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
-                @click=${this._onCloseTap}
-                .disabled=${!canCloseTilt(this._stateObj)}
-              >
-                <ha-svg-icon .path=${mdiArrowBottomLeft}></ha-svg-icon>
-              </ha-control-button>
-            `
-          : nothing}
+        ${
+          supportsFeature(this._stateObj, CoverEntityFeature.OPEN_TILT)
+            ? html`
+                <ha-control-button
+                  .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
+                  @click=${this._onOpenTap}
+                  .disabled=${!canOpenTilt(this._stateObj)}
+                >
+                  <ha-svg-icon .path=${mdiArrowTopRight}></ha-svg-icon>
+                </ha-control-button>
+              `
+            : nothing
+        }
+        ${
+          supportsFeature(this._stateObj, CoverEntityFeature.STOP_TILT)
+            ? html`
+                <ha-control-button
+                  .label=${this.hass.localize("ui.card.cover.stop_cover")}
+                  @click=${this._onStopTap}
+                  .disabled=${!canStopTilt(this._stateObj)}
+                >
+                  <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+                </ha-control-button>
+              `
+            : nothing
+        }
+        ${
+          supportsFeature(this._stateObj, CoverEntityFeature.CLOSE_TILT)
+            ? html`
+                <ha-control-button
+                  .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
+                  @click=${this._onCloseTap}
+                  .disabled=${!canCloseTilt(this._stateObj)}
+                >
+                  <ha-svg-icon .path=${mdiArrowBottomLeft}></ha-svg-icon>
+                </ha-control-button>
+              `
+            : nothing
+        }
       </ha-control-button-group>
     `;
   }

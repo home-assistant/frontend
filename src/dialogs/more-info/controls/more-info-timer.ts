@@ -49,64 +49,74 @@ class MoreInfoTimer extends LitElement {
         @value-changed=${this._durationChanged}
       ></ha-duration-input>
       <div class="actions">
-        ${timerState === "idle"
-          ? html`
-              <ha-button appearance="plain" size="s" @click=${this._start}>
-                ${this._localize("ui.card.timer.actions.start")}
-              </ha-button>
-            `
-          : nothing}
-        ${timerState === "active" || timerState === "paused"
-          ? html`
-              <ha-button appearance="plain" size="s" @click=${this._start}>
-                ${this._localize("ui.card.timer.actions.set")}
-              </ha-button>
-            `
-          : nothing}
-        ${timerState === "active"
-          ? html`
-              <ha-button
-                appearance="plain"
-                size="s"
-                .action=${"pause"}
-                @click=${this._handleActionClick}
-              >
-                ${this._localize("ui.card.timer.actions.pause")}
-              </ha-button>
-            `
-          : nothing}
-        ${timerState === "paused"
-          ? html`
-              <ha-button
-                appearance="plain"
-                size="s"
-                .action=${"start"}
-                @click=${this._handleActionClick}
-              >
-                ${this._localize("ui.card.timer.actions.start")}
-              </ha-button>
-            `
-          : nothing}
-        ${timerState === "active" || timerState === "paused"
-          ? html`
-              <ha-button
-                appearance="plain"
-                size="s"
-                .action=${"cancel"}
-                @click=${this._handleActionClick}
-              >
-                ${this._localize("ui.card.timer.actions.cancel")}
-              </ha-button>
-              <ha-button
-                appearance="plain"
-                size="s"
-                .action=${"finish"}
-                @click=${this._handleActionClick}
-              >
-                ${this._localize("ui.card.timer.actions.finish")}
-              </ha-button>
-            `
-          : nothing}
+        ${
+          timerState === "idle"
+            ? html`
+                <ha-button appearance="plain" size="s" @click=${this._start}>
+                  ${this._localize("ui.card.timer.actions.start")}
+                </ha-button>
+              `
+            : nothing
+        }
+        ${
+          timerState === "active" || timerState === "paused"
+            ? html`
+                <ha-button appearance="plain" size="s" @click=${this._start}>
+                  ${this._localize("ui.card.timer.actions.set")}
+                </ha-button>
+              `
+            : nothing
+        }
+        ${
+          timerState === "active"
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  .action=${"pause"}
+                  @click=${this._handleActionClick}
+                >
+                  ${this._localize("ui.card.timer.actions.pause")}
+                </ha-button>
+              `
+            : nothing
+        }
+        ${
+          timerState === "paused"
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  .action=${"start"}
+                  @click=${this._handleActionClick}
+                >
+                  ${this._localize("ui.card.timer.actions.start")}
+                </ha-button>
+              `
+            : nothing
+        }
+        ${
+          timerState === "active" || timerState === "paused"
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  .action=${"cancel"}
+                  @click=${this._handleActionClick}
+                >
+                  ${this._localize("ui.card.timer.actions.cancel")}
+                </ha-button>
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  .action=${"finish"}
+                  @click=${this._handleActionClick}
+                >
+                  ${this._localize("ui.card.timer.actions.finish")}
+                </ha-button>
+              `
+            : nothing
+        }
       </div>
     `;
   }

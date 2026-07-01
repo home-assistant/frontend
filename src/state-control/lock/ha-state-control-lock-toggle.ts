@@ -134,9 +134,11 @@ export class HaStateControlLockToggle extends LitElement {
         reversed
         .checked=${this._isOn}
         @change=${this._valueChanged}
-        .label=${this._isOn
-          ? this._localize("ui.card.lock.unlock")
-          : this._localize("ui.card.lock.lock")}
+        .label=${
+          this._isOn
+            ? this._localize("ui.card.lock.unlock")
+            : this._localize("ui.card.lock.lock")
+        }
         style=${styleMap({
           "--control-switch-on-color": color,
           "--control-switch-off-color": color,

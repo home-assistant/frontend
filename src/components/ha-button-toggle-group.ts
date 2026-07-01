@@ -35,18 +35,10 @@ export class HaButtonToggleGroup extends LitElement {
   public fullWidth = false;
 
   @property() public variant:
-    | "brand"
-    | "neutral"
-    | "success"
-    | "warning"
-    | "danger" = "brand";
+    "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
 
   @property({ attribute: "active-variant" }) public activeVariant?:
-    | "brand"
-    | "neutral"
-    | "success"
-    | "warning"
-    | "danger";
+    "brand" | "neutral" | "success" | "warning" | "danger";
 
   protected render(): TemplateResult {
     return html`
@@ -56,21 +48,25 @@ export class HaButtonToggleGroup extends LitElement {
             html`<ha-button
               iconTag="ha-svg-icon"
               class="icon"
-              .variant=${this.active !== button.value || !this.activeVariant
-                ? this.variant
-                : this.activeVariant}
+              .variant=${
+                this.active !== button.value || !this.activeVariant
+                  ? this.variant
+                  : this.activeVariant
+              }
               .size=${this.size}
               .value=${button.value}
               @click=${this._handleClick}
               .title=${button.label}
               .appearance=${this.active === button.value ? "accent" : "filled"}
             >
-              ${button.iconPath
-                ? html`<ha-svg-icon
-                    aria-label=${button.label}
-                    .path=${button.iconPath}
-                  ></ha-svg-icon>`
-                : button.label}
+              ${
+                button.iconPath
+                  ? html`<ha-svg-icon
+                      aria-label=${button.label}
+                      .path=${button.iconPath}
+                    ></ha-svg-icon>`
+                  : button.label
+              }
             </ha-button>`
         )}
       </wa-button-group>

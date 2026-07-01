@@ -144,85 +144,100 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const assumedState = this.stateObj.attributes.assumed_state === true;
 
-    return html`${(supportsFeature(
-      this.stateObj!,
-      MediaPlayerEntityFeature.VOLUME_SET
-    ) ||
-      supportsFeature(this.stateObj!, MediaPlayerEntityFeature.VOLUME_STEP)) &&
-    (stateActive(this.stateObj!) || assumedState)
-      ? html`
-          <div class="volume">
-            ${supportsMute
-              ? html`
-                  <ha-icon-button
-                    .path=${this.stateObj.attributes.is_volume_muted
-                      ? mdiVolumeOff
-                      : mdiVolumeHigh}
-                    .label=${this._localize(
-                      `ui.card.media_player.${
-                        this.stateObj.attributes.is_volume_muted
-                          ? "media_volume_unmute"
-                          : "media_volume_mute"
-                      }`
-                    )}
-                    @click=${this._toggleMute}
-                  ></ha-icon-button>
-                `
-              : ""}
-            ${supportsFeature(
-              this.stateObj,
-              MediaPlayerEntityFeature.VOLUME_STEP
-            ) && !supportsSliding
-              ? html`
-                  <ha-icon-button
-                    action="volume_down"
-                    .path=${mdiVolumeMinus}
-                    .label=${this._localize(
-                      "ui.card.media_player.media_volume_down"
-                    )}
-                    @click=${this._handleClick}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    action="volume_up"
-                    .path=${mdiVolumePlus}
-                    .label=${this._localize(
-                      "ui.card.media_player.media_volume_up"
-                    )}
-                    @click=${this._handleClick}
-                  ></ha-icon-button>
-                `
-              : nothing}
-            ${supportsSliding
-              ? html`
-                  ${!supportsMute
-                    ? html`<ha-svg-icon .path=${mdiVolumeHigh}></ha-svg-icon>`
-                    : nothing}
-                  <div
-                    class="volume-slider-container"
-                    @touchstart=${this._handleVolumePointerDown}
-                    @touchmove=${this._volumeController.handleTouchMove}
-                    @touchend=${this._handleVolumePointerUp}
-                    @touchcancel=${this._handleVolumePointerUp}
-                    @pointerdown=${this._handleVolumePointerDown}
-                    @pointerup=${this._handleVolumePointerUp}
-                    @wheel=${this._volumeController.handleWheel}
-                  >
-                    <ha-slider
-                      class="volume-slider"
-                      labeled
-                      id="input"
-                      .value=${Number(this.stateObj.attributes.volume_level) *
-                      100}
-                      .step=${this._volumeStep}
-                      @input=${this._handleVolumeInput}
-                      @change=${this._handleVolumeChange}
-                    ></ha-slider>
-                  </div>
-                `
-              : nothing}
-          </div>
-        `
-      : nothing}`;
+    return html`${
+      (supportsFeature(this.stateObj!, MediaPlayerEntityFeature.VOLUME_SET) ||
+        supportsFeature(
+          this.stateObj!,
+          MediaPlayerEntityFeature.VOLUME_STEP
+        )) &&
+      (stateActive(this.stateObj!) || assumedState)
+        ? html`
+            <div class="volume">
+              ${
+                supportsMute
+                  ? html`
+                      <ha-icon-button
+                        .path=${
+                          this.stateObj.attributes.is_volume_muted
+                            ? mdiVolumeOff
+                            : mdiVolumeHigh
+                        }
+                        .label=${this._localize(
+                          `ui.card.media_player.${
+                            this.stateObj.attributes.is_volume_muted
+                              ? "media_volume_unmute"
+                              : "media_volume_mute"
+                          }`
+                        )}
+                        @click=${this._toggleMute}
+                      ></ha-icon-button>
+                    `
+                  : ""
+              }
+              ${
+                supportsFeature(
+                  this.stateObj,
+                  MediaPlayerEntityFeature.VOLUME_STEP
+                ) && !supportsSliding
+                  ? html`
+                      <ha-icon-button
+                        action="volume_down"
+                        .path=${mdiVolumeMinus}
+                        .label=${this._localize(
+                          "ui.card.media_player.media_volume_down"
+                        )}
+                        @click=${this._handleClick}
+                      ></ha-icon-button>
+                      <ha-icon-button
+                        action="volume_up"
+                        .path=${mdiVolumePlus}
+                        .label=${this._localize(
+                          "ui.card.media_player.media_volume_up"
+                        )}
+                        @click=${this._handleClick}
+                      ></ha-icon-button>
+                    `
+                  : nothing
+              }
+              ${
+                supportsSliding
+                  ? html`
+                      ${
+                        !supportsMute
+                          ? html`<ha-svg-icon
+                              .path=${mdiVolumeHigh}
+                            ></ha-svg-icon>`
+                          : nothing
+                      }
+                      <div
+                        class="volume-slider-container"
+                        @touchstart=${this._handleVolumePointerDown}
+                        @touchmove=${this._volumeController.handleTouchMove}
+                        @touchend=${this._handleVolumePointerUp}
+                        @touchcancel=${this._handleVolumePointerUp}
+                        @pointerdown=${this._handleVolumePointerDown}
+                        @pointerup=${this._handleVolumePointerUp}
+                        @wheel=${this._volumeController.handleWheel}
+                      >
+                        <ha-slider
+                          class="volume-slider"
+                          labeled
+                          id="input"
+                          .value=${
+                            Number(this.stateObj.attributes.volume_level) * 100
+                          }
+                          .step=${this._volumeStep}
+                          @input=${this._handleVolumeInput}
+                          @change=${this._handleVolumeChange}
+                        ></ha-slider>
+                      </div>
+                    `
+                  : nothing
+              }
+            </div>
+          `
+        : nothing
+    }`;
   }
 
   protected _renderSourceControl() {
@@ -320,9 +335,11 @@ class MoreInfoMediaPlayer extends LitElement {
       >
         <div class="grouping">
           <ha-svg-icon .path=${mdiSpeakerMultiple}></ha-svg-icon>
-          ${hasMultipleMembers
-            ? html`<span class="badge">${groupMembers?.length || 4}</span>`
-            : nothing}
+          ${
+            hasMultipleMembers
+              ? html`<span class="badge">${groupMembers?.length || 4}</span>`
+              : nothing
+          }
         </div>
       </ha-icon-button>
       <ha-tooltip for="grouping-button">
@@ -370,158 +387,178 @@ class MoreInfoMediaPlayer extends LitElement {
     const turnOff = controls?.find((c) => c.action === "turn_off");
 
     return html`
-      ${coverUrl
-        ? html`<div class="cover-container">
-            <img
-              class=${classMap({
-                "cover-image": true,
-                "cover-image--playing": stateObj.state === "playing",
-              })}
-              src=${coverUrl}
-              alt=${ifDefined(primaryTitle)}
-            />
-          </div>`
-        : this._renderEmptyCover(
-            this._formatters.formatEntityState(this.stateObj),
-            mdiMusicNote
-          )}
-      ${primaryTitle || secondaryTitle
-        ? html`<div class="media-info-row">
-            ${primaryTitle
-              ? html`<ha-marquee-text
-                  class="media-title"
-                  speed="30"
-                  pause-on-hover
+      ${
+        coverUrl
+          ? html`<div class="cover-container">
+              <img
+                class=${classMap({
+                  "cover-image": true,
+                  "cover-image--playing": stateObj.state === "playing",
+                })}
+                src=${coverUrl}
+                alt=${ifDefined(primaryTitle)}
+              />
+            </div>`
+          : this._renderEmptyCover(
+              this._formatters.formatEntityState(this.stateObj),
+              mdiMusicNote
+            )
+      }
+      ${
+        primaryTitle || secondaryTitle
+          ? html`<div class="media-info-row">
+              ${
+                primaryTitle
+                  ? html`<ha-marquee-text
+                      class="media-title"
+                      speed="30"
+                      pause-on-hover
+                    >
+                      ${primaryTitle}
+                    </ha-marquee-text>`
+                  : nothing
+              }
+              ${
+                secondaryTitle
+                  ? html`<ha-marquee-text
+                      class="media-artist"
+                      speed="30"
+                      pause-on-hover
+                    >
+                      ${secondaryTitle}
+                    </ha-marquee-text>`
+                  : nothing
+              }
+            </div>`
+          : nothing
+      }
+      ${
+        duration && duration > 0
+          ? html`
+              <div class="position-bar">
+                <ha-slider
+                  id="position-slider"
+                  min="0"
+                  max=${duration}
+                  step="1"
+                  .value=${position}
+                  aria-label=${this._localize(
+                    "ui.card.media_player.track_position"
+                  )}
+                  @change=${this._handleMediaSeekChanged}
+                  ?disabled=${
+                    !stateActive(stateObj) ||
+                    !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)
+                  }
                 >
-                  ${primaryTitle}
-                </ha-marquee-text>`
-              : nothing}
-            ${secondaryTitle
-              ? html`<ha-marquee-text
-                  class="media-artist"
-                  speed="30"
-                  pause-on-hover
-                >
-                  ${secondaryTitle}
-                </ha-marquee-text>`
-              : nothing}
-          </div>`
-        : nothing}
-      ${duration && duration > 0
-        ? html`
-            <div class="position-bar">
-              <ha-slider
-                id="position-slider"
-                min="0"
-                max=${duration}
-                step="1"
-                .value=${position}
-                aria-label=${this._localize(
-                  "ui.card.media_player.track_position"
-                )}
-                @change=${this._handleMediaSeekChanged}
-                ?disabled=${!stateActive(stateObj) ||
-                !supportsFeature(stateObj, MediaPlayerEntityFeature.SEEK)}
-              >
-                <span class="position-time" slot="reference"
-                  >${positionFormatted}</span
-                >
-                <span class="position-time" slot="reference"
-                  >${durationFormatted}</span
-                >
-              </ha-slider>
-            </div>
-          `
-        : nothing}
+                  <span class="position-time" slot="reference"
+                    >${positionFormatted}</span
+                  >
+                  <span class="position-time" slot="reference"
+                    >${durationFormatted}</span
+                  >
+                </ha-slider>
+              </div>
+            `
+          : nothing
+      }
       <div class="bottom-controls">
-        ${controls && controls.length > 0
-          ? html`<div class="main-controls">
-              ${["repeat_set", "media_previous_track"].map((action) => {
-                const control = controls?.find((c) => c.action === action);
-                return control
-                  ? html`<ha-icon-button
-                      action=${action}
-                      @click=${this._handleClick}
-                      .path=${control.icon}
-                      .label=${this._localize(
-                        `ui.card.media_player.${control.action}`
-                      )}
-                    >
-                    </ha-icon-button>`
-                  : html`<span class="spacer"></span>`;
-              })}
-              ${[
-                "media_play_pause",
-                "media_pause",
-                "media_play",
-                "media_stop",
-              ].map((action) => {
-                const control = controls?.find((c) => c.action === action);
-                return control
-                  ? html`<ha-button
-                      variant="brand"
-                      appearance="filled"
-                      size="m"
-                      action=${action}
-                      @click=${this._handleClick}
-                      class="center-control"
-                    >
-                      <ha-svg-icon
+        ${
+          controls && controls.length > 0
+            ? html`<div class="main-controls">
+                ${["repeat_set", "media_previous_track"].map((action) => {
+                  const control = controls?.find((c) => c.action === action);
+                  return control
+                    ? html`<ha-icon-button
+                        action=${action}
+                        @click=${this._handleClick}
                         .path=${control.icon}
-                        aria-label=${this._localize(
+                        .label=${this._localize(
                           `ui.card.media_player.${control.action}`
                         )}
-                      ></ha-svg-icon>
-                    </ha-button>`
-                  : nothing;
-              })}
-              ${["media_next_track", "shuffle_set"].map((action) => {
-                const control = controls?.find((c) => c.action === action);
-                return control
-                  ? html`<ha-icon-button
-                      action=${action}
-                      @click=${this._handleClick}
-                      .path=${control.icon}
-                      .label=${this._localize(
-                        `ui.card.media_player.${control.action}`
-                      )}
-                    >
-                    </ha-icon-button>`
-                  : html`<span class="spacer"></span>`;
-              })}
-            </div>`
-          : nothing}
+                      >
+                      </ha-icon-button>`
+                    : html`<span class="spacer"></span>`;
+                })}
+                ${[
+                  "media_play_pause",
+                  "media_pause",
+                  "media_play",
+                  "media_stop",
+                ].map((action) => {
+                  const control = controls?.find((c) => c.action === action);
+                  return control
+                    ? html`<ha-button
+                        variant="brand"
+                        appearance="filled"
+                        size="m"
+                        action=${action}
+                        @click=${this._handleClick}
+                        class="center-control"
+                      >
+                        <ha-svg-icon
+                          .path=${control.icon}
+                          aria-label=${this._localize(
+                            `ui.card.media_player.${control.action}`
+                          )}
+                        ></ha-svg-icon>
+                      </ha-button>`
+                    : nothing;
+                })}
+                ${["media_next_track", "shuffle_set"].map((action) => {
+                  const control = controls?.find((c) => c.action === action);
+                  return control
+                    ? html`<ha-icon-button
+                        action=${action}
+                        @click=${this._handleClick}
+                        .path=${control.icon}
+                        .label=${this._localize(
+                          `ui.card.media_player.${control.action}`
+                        )}
+                      >
+                      </ha-icon-button>`
+                    : html`<span class="spacer"></span>`;
+                })}
+              </div>`
+            : nothing
+        }
         ${this._renderVolumeControl()}
         <div class="controls-row">
-          ${stateObj.state !== UNAVAILABLE &&
-          supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
-            ? this._renderControlButton(
-                "browse_media",
-                this._localize("ui.card.media_player.browse_media"),
-                mdiPlayBoxMultiple,
-                this._showBrowseMedia
-              )
-            : nothing}
+          ${
+            stateObj.state !== UNAVAILABLE &&
+            supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
+              ? this._renderControlButton(
+                  "browse_media",
+                  this._localize("ui.card.media_player.browse_media"),
+                  mdiPlayBoxMultiple,
+                  this._showBrowseMedia
+                )
+              : nothing
+          }
           ${this._renderGrouping()} ${this._renderSourceControl()}
           ${this._renderSoundMode()}
-          ${turnOn
-            ? this._renderControlButton(
-                "turn_on",
-                this._localize(`ui.card.media_player.${turnOn.action}`),
-                turnOn.icon,
-                this._handleClick,
-                turnOn.action
-              )
-            : nothing}
-          ${turnOff
-            ? this._renderControlButton(
-                "turn_off",
-                this._localize(`ui.card.media_player.${turnOff.action}`),
-                turnOff.icon,
-                this._handleClick,
-                turnOff.action
-              )
-            : nothing}
+          ${
+            turnOn
+              ? this._renderControlButton(
+                  "turn_on",
+                  this._localize(`ui.card.media_player.${turnOn.action}`),
+                  turnOn.icon,
+                  this._handleClick,
+                  turnOn.action
+                )
+              : nothing
+          }
+          ${
+            turnOff
+              ? this._renderControlButton(
+                  "turn_off",
+                  this._localize(`ui.card.media_player.${turnOff.action}`),
+                  turnOff.icon,
+                  this._handleClick,
+                  turnOff.action
+                )
+              : nothing
+          }
         </div>
       </div>
     `;

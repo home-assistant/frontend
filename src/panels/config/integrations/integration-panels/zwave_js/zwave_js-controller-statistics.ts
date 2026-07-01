@@ -54,8 +54,9 @@ class ZWaveJSControllerStatistics extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.navigation.statistics"
         )}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
         <div class="container">
           <ha-card>

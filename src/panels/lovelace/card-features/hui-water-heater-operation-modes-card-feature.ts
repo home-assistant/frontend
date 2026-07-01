@@ -54,8 +54,7 @@ class HuiWaterHeaterOperationModeCardFeature
   protected readonly _defaultStyle = "icons";
 
   protected get _controlSelectStyle():
-    | Record<string, string | undefined>
-    | undefined {
+    Record<string, string | undefined> | undefined {
     if (!this._stateObj) {
       return undefined;
     }

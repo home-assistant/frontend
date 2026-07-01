@@ -22,9 +22,11 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item type="button">
     <span slot="headline">${item.primary}</span>
     <span slot="supporting-text">${item.secondary}</span>
-    ${item.icon
-      ? html` <img alt="" slot="start" .src=${item.icon} /> `
-      : nothing}
+    ${
+      item.icon
+        ? html` <img alt="" slot="start" .src=${item.icon} /> `
+        : nothing
+    }
   </ha-combo-box-item>
 `;
 
@@ -148,13 +150,15 @@ class HaAddonPicker extends LitElement {
 
   private _valueRenderer = (itemId: string) => {
     const item = this._addons!.find((addon) => addon.id === itemId);
-    return html`${item?.icon
-        ? html`<img
-            slot="start"
-            alt=${item.primary ?? "Unknown"}
-            .src=${item.icon}
-          />`
-        : nothing}<span slot="headline">${item?.primary || "Unknown"}</span>`;
+    return html`${
+        item?.icon
+          ? html`<img
+              slot="start"
+              alt=${item.primary ?? "Unknown"}
+              .src=${item.icon}
+            />`
+          : nothing
+      }<span slot="headline">${item?.primary || "Unknown"}</span>`;
   };
 }
 

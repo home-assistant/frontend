@@ -99,29 +99,37 @@ class HaInputMulti extends LitElement {
                     @change=${this._editItem}
                     @keydown=${this._keyDown}
                   >
-                    ${this.inputPrefix
-                      ? html`<span slot="start">${this.inputPrefix}</span>`
-                      : nothing}
-                    ${this.inputSuffix
-                      ? html`<span slot="end">${this.inputSuffix}</span>`
-                      : nothing}
+                    ${
+                      this.inputPrefix
+                        ? html`<span slot="start">${this.inputPrefix}</span>`
+                        : nothing
+                    }
+                    ${
+                      this.inputSuffix
+                        ? html`<span slot="end">${this.inputSuffix}</span>`
+                        : nothing
+                    }
                   </ha-input>
                   <ha-icon-button
                     .disabled=${this.disabled}
                     .index=${index}
                     slot="navigationIcon"
-                    .label=${this.removeLabel ??
-                    this._i18n?.localize("ui.common.remove") ??
-                    "Remove"}
+                    .label=${
+                      this.removeLabel ??
+                      this._i18n?.localize("ui.common.remove") ??
+                      "Remove"
+                    }
                     @click=${this._removeItem}
                     .path=${mdiDeleteOutline}
                   ></ha-icon-button>
-                  ${this.sortable
-                    ? html`<ha-svg-icon
-                        class="handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>`
-                    : nothing}
+                  ${
+                    this.sortable
+                      ? html`<ha-svg-icon
+                          class="handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>`
+                      : nothing
+                  }
                 </div>
               `;
             }
@@ -133,24 +141,30 @@ class HaInputMulti extends LitElement {
           size="s"
           appearance="filled"
           @click=${this._addItem}
-          .disabled=${this.disabled ||
-          (this.max != null && this._items.length >= this.max)}
+          .disabled=${
+            this.disabled ||
+            (this.max != null && this._items.length >= this.max)
+          }
         >
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-          ${this.addLabel ??
-          (this.label
-            ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
-                item: this.label,
-              })
-            : this._i18n?.localize("ui.common.add")) ??
-          "Add"}
+          ${
+            this.addLabel ??
+            (this.label
+              ? this._i18n?.localize("ui.components.multi-textfield.add_item", {
+                  item: this.label,
+                })
+              : this._i18n?.localize("ui.common.add")) ??
+            "Add"
+          }
         </ha-button>
       </div>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 

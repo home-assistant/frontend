@@ -34,32 +34,36 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
-      ${this.stateObj?.state === "off"
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.disabled"
-              )}
-              <ha-button
-                appearance="plain"
-                size="s"
-                slot="action"
-                @click=${this._enable}
-              >
+      ${
+        this.stateObj?.state === "off"
+          ? html`
+              <ha-alert alert-type="info">
                 ${this.hass.localize(
-                  "ui.panel.config.automation.editor.enable"
+                  "ui.panel.config.automation.editor.disabled"
                 )}
-              </ha-button>
-            </ha-alert>
-          `
-        : ""}
-      ${this.config.description
-        ? html`<ha-markdown
-            class="description"
-            breaks
-            .content=${this.config.description}
-          ></ha-markdown>`
-        : nothing}
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  slot="action"
+                  @click=${this._enable}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.enable"
+                  )}
+                </ha-button>
+              </ha-alert>
+            `
+          : ""
+      }
+      ${
+        this.config.description
+          ? html`<ha-markdown
+              class="description"
+              breaks
+              .content=${this.config.description}
+            ></ha-markdown>`
+          : nothing
+      }
       ${this.renderCard()}
 
       <ha-button

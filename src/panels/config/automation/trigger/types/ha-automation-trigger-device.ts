@@ -109,25 +109,27 @@ export class HaDeviceTrigger extends LitElement {
           "ui.panel.config.automation.editor.triggers.type.device.trigger"
         )}
       ></ha-device-trigger-picker>
-      ${this._capabilities?.extra_fields
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.trigger, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass.localize,
-                this.trigger
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass.localize,
-                this.trigger
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.trigger, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.trigger
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.trigger
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
   }
 

@@ -152,39 +152,43 @@ export class HaBaseTimeInput extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.label
-        ? html`<label id="label"
-            >${this.label}${this.required ? " *" : ""}</label
-          >`
-        : nothing}
+      ${
+        this.label
+          ? html`<label id="label"
+              >${this.label}${this.required ? " *" : ""}</label
+            >`
+          : nothing
+      }
       <div class="time-input-wrap-wrap">
         <div
           class="time-input-wrap"
           role="group"
           aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
         >
-          ${this.enableDay
-            ? html`
-                <ha-input
-                  id="day"
-                  type="number"
-                  inputmode="numeric"
-                  .value=${this.days.toFixed()}
-                  .label=${!this.placeholderLabels ? this.dayLabel : ""}
-                  .placeholder=${this.placeholderLabels ? this.dayLabel : ""}
-                  name="days"
-                  @change=${this._valueChanged}
-                  @focusin=${this._onFocus}
-                  without-spin-buttons
-                  .required=${this.required}
-                  .autoValidate=${this.autoValidate}
-                  min="0"
-                  .disabled=${this.disabled}
-                >
-                </ha-input>
-                <div class="time-separator">:</div>
-              `
-            : nothing}
+          ${
+            this.enableDay
+              ? html`
+                  <ha-input
+                    id="day"
+                    type="number"
+                    inputmode="numeric"
+                    .value=${this.days.toFixed()}
+                    .label=${!this.placeholderLabels ? this.dayLabel : ""}
+                    .placeholder=${this.placeholderLabels ? this.dayLabel : ""}
+                    name="days"
+                    @change=${this._valueChanged}
+                    @focusin=${this._onFocus}
+                    without-spin-buttons
+                    .required=${this.required}
+                    .autoValidate=${this.autoValidate}
+                    min="0"
+                    .disabled=${this.disabled}
+                  >
+                  </ha-input>
+                  <div class="time-separator">:</div>
+                `
+              : nothing
+          }
 
           <ha-input
             id="hour"
@@ -225,80 +229,94 @@ export class HaBaseTimeInput extends LitElement {
             .disabled=${this.disabled}
           >
           </ha-input>
-          ${this.enableSecond
-            ? html`<div class="time-separator">:</div>`
-            : nothing}
-          ${this.enableSecond
-            ? html`<ha-input
-                  id="sec"
+          ${
+            this.enableSecond
+              ? html`<div class="time-separator">:</div>`
+              : nothing
+          }
+          ${
+            this.enableSecond
+              ? html`<ha-input
+                    id="sec"
+                    type="number"
+                    inputmode="decimal"
+                    step="any"
+                    .value=${this._formatValue(this.seconds)}
+                    .label=${!this.placeholderLabels ? this.secLabel : ""}
+                    .placeholder=${this.placeholderLabels ? this.secLabel : ""}
+                    @change=${this._valueChanged}
+                    @focusin=${this._onFocus}
+                    name="seconds"
+                    without-spin-buttons
+                    .required=${this.required}
+                    .autoValidate=${this.autoValidate}
+                    max="59"
+                    min="0"
+                    .disabled=${this.disabled}
+                  >
+                  </ha-input>
+                  ${
+                    this.enableMillisecond
+                      ? html`<div class="time-separator">:</div>`
+                      : nothing
+                  }`
+              : nothing
+          }
+          ${
+            this.enableMillisecond
+              ? html`<ha-input
+                  id="millisec"
                   type="number"
-                  inputmode="decimal"
-                  step="any"
-                  .value=${this._formatValue(this.seconds)}
-                  .label=${!this.placeholderLabels ? this.secLabel : ""}
-                  .placeholder=${this.placeholderLabels ? this.secLabel : ""}
+                  .value=${this._formatValue(this.milliseconds, 3)}
+                  .label=${!this.placeholderLabels ? this.millisecLabel : ""}
+                  .placeholder=${this.placeholderLabels ? this.millisecLabel : ""}
                   @change=${this._valueChanged}
                   @focusin=${this._onFocus}
-                  name="seconds"
+                  name="milliseconds"
                   without-spin-buttons
                   .required=${this.required}
                   .autoValidate=${this.autoValidate}
-                  max="59"
+                  maxlength="3"
+                  max="999"
                   min="0"
                   .disabled=${this.disabled}
                 >
-                </ha-input>
-                ${this.enableMillisecond
-                  ? html`<div class="time-separator">:</div>`
-                  : nothing}`
-            : nothing}
-          ${this.enableMillisecond
-            ? html`<ha-input
-                id="millisec"
-                type="number"
-                .value=${this._formatValue(this.milliseconds, 3)}
-                .label=${!this.placeholderLabels ? this.millisecLabel : ""}
-                .placeholder=${this.placeholderLabels ? this.millisecLabel : ""}
-                @change=${this._valueChanged}
-                @focusin=${this._onFocus}
-                name="milliseconds"
-                without-spin-buttons
-                .required=${this.required}
-                .autoValidate=${this.autoValidate}
-                maxlength="3"
-                max="999"
-                min="0"
-                .disabled=${this.disabled}
-              >
-              </ha-input>`
-            : nothing}
-          ${this.format === 24
-            ? nothing
-            : html`<ha-select
-                .required=${this.required}
-                .value=${this.amPm}
-                .disabled=${this.disabled}
-                .name=${"amPm"}
-                @selected=${this._valueChanged}
-                @wa-after-hide=${stopPropagation}
-                @wa-hide=${stopPropagation}
-                .options=${["AM", "PM"]}
-              >
-              </ha-select>`}
-          ${this.clearable && !this.required && !this.disabled
-            ? html`<ha-icon-button
-                label="clear"
-                @click=${this._clearValue}
-                .path=${mdiClose}
-              ></ha-icon-button>`
-            : nothing}
+                </ha-input>`
+              : nothing
+          }
+          ${
+            this.format === 24
+              ? nothing
+              : html`<ha-select
+                  .required=${this.required}
+                  .value=${this.amPm}
+                  .disabled=${this.disabled}
+                  .name=${"amPm"}
+                  @selected=${this._valueChanged}
+                  @wa-after-hide=${stopPropagation}
+                  @wa-hide=${stopPropagation}
+                  .options=${["AM", "PM"]}
+                >
+                </ha-select>`
+          }
+          ${
+            this.clearable && !this.required && !this.disabled
+              ? html`<ha-icon-button
+                  label="clear"
+                  @click=${this._clearValue}
+                  .path=${mdiClose}
+                ></ha-icon-button>`
+              : nothing
+          }
         </div>
       </div>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 

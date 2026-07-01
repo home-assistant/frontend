@@ -15,10 +15,7 @@ export const subscribePreviewGeneric = (
   domain: string,
   flow_id: string,
   flow_type:
-    | "config_flow"
-    | "options_flow"
-    | "config_subentries_flow"
-    | "repair_flow",
+    "config_flow" | "options_flow" | "config_subentries_flow" | "repair_flow",
   user_input: Record<string, any>,
   callback: (preview: GenericPreview) => void
 ): Promise<UnsubscribeFunc> =>

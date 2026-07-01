@@ -54,16 +54,18 @@ export class DemoAutomationTrace extends LitElement {
                 @value-changed=${this._handleTimelineValueChanged}
                 .sampleIdx=${idx}
               ></hat-trace-timeline>
-              ${selectedNode && graph
-                ? html`<ha-trace-path-details
-                    .hass=${this.hass}
-                    .trace=${trace.trace}
-                    .selected=${selectedNode}
-                    .logbookEntries=${trace.logbookEntries}
-                    .trackedNodes=${graph.trackedNodes}
-                    .renderedNodes=${graph.renderedNodes}
-                  ></ha-trace-path-details>`
-                : nothing}
+              ${
+                selectedNode && graph
+                  ? html`<ha-trace-path-details
+                      .hass=${this.hass}
+                      .trace=${trace.trace}
+                      .selected=${selectedNode}
+                      .logbookEntries=${trace.logbookEntries}
+                      .trackedNodes=${graph.trackedNodes}
+                      .renderedNodes=${graph.renderedNodes}
+                    ></ha-trace-path-details>`
+                  : nothing
+              }
               <button @click=${() => console.log(trace)}>Log trace</button>
             </div>
           </ha-card>

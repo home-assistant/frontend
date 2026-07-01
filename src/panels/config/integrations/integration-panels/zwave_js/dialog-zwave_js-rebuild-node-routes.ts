@@ -61,157 +61,171 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
-        ${!this._status
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiStethoscope}
-                  class="introduction"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
-                      {
-                        device: html`<em>
-                          ${computeDeviceNameDisplay(
-                            this.device,
-                            this.hass!.localize,
-                            this.hass!.states
-                          )}
-                        </em>`,
-                      }
-                    )}
-                  </p>
+        ${
+          !this._status
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiStethoscope}
+                    class="introduction"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
+                        {
+                          device: html`<em>
+                            ${computeDeviceNameDisplay(
+                              this.device,
+                              this.hass!.localize,
+                              this.hass!.states
+                            )}
+                          </em>`,
+                        }
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p>
-                <em>
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.rebuild_node_routes.traffic_warning"
-                  )}
-                </em>
-              </p>
-            `
-          : ``}
-        ${this._status === "started"
-          ? html`
-              <div class="flex-container">
-                <ha-spinner></ha-spinner>
-                <div class="status">
-                  <p>
+                <p>
+                  <em>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
-                      {
-                        device: html`<em>
-                          ${computeDeviceNameDisplay(
-                            this.device,
-                            this.hass!.localize,
-                            this.hass!.states
-                          )}
-                        </em>`,
-                      }
+                      "ui.panel.config.zwave_js.rebuild_node_routes.traffic_warning"
                     )}
-                  </p>
+                  </em>
+                </p>
+              `
+            : ``
+        }
+        ${
+          this._status === "started"
+            ? html`
+                <div class="flex-container">
+                  <ha-spinner></ha-spinner>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
+                        {
+                          device: html`<em>
+                            ${computeDeviceNameDisplay(
+                              this.device,
+                              this.hass!.localize,
+                              this.hass!.states
+                            )}
+                          </em>`,
+                        }
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed",
-                      {
-                        device: html`<em
-                          >${computeDeviceNameDisplay(
-                            this.device,
-                            this.hass!.localize,
-                            this.hass!.states
-                          )}</em
-                        >`,
-                      }
-                    )}
-                  </p>
-                  <p>
-                    ${this._error
-                      ? html` <em>${this._error}</em> `
-                      : `
+              `
+            : ``
+        }
+        ${
+          this._status === "failed"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCloseCircle}
+                    class="failed"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed",
+                        {
+                          device: html`<em
+                            >${computeDeviceNameDisplay(
+                              this.device,
+                              this.hass!.localize,
+                              this.hass!.states
+                            )}</em
+                          >`,
+                        }
+                      )}
+                    </p>
+                    <p>
+                      ${
+                        this._error
+                          ? html` <em>${this._error}</em> `
+                          : `
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed_check_logs"
                   )}
-                  `}
-                  </p>
-                </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "finished"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
-                      {
-                        device: html`<em>
-                          ${computeDeviceNameDisplay(
-                            this.device,
-                            this.hass!.localize,
-                            this.hass!.states
-                          )}
-                        </em>`,
+                  `
                       }
-                    )}
-                  </p>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "rebuilding-routes"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.rebuild_node_routes.routes_rebuild_in_progress"
-                    )}
-                  </p>
-                </div>
-              </div>
-            `
-          : ``}
-        <ha-dialog-footer slot="footer">
-          ${!this._status
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._startRebuildingRoutes}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.rebuild_node_routes.start_rebuilding_routes"
-                  )}
-                </ha-button>
               `
-            : html`
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-              `}
+            : ``
+        }
+        ${
+          this._status === "finished"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCheckCircle}
+                    class="success"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
+                        {
+                          device: html`<em>
+                            ${computeDeviceNameDisplay(
+                              this.device,
+                              this.hass!.localize,
+                              this.hass!.states
+                            )}
+                          </em>`,
+                        }
+                      )}
+                    </p>
+                  </div>
+                </div>
+              `
+            : ``
+        }
+        ${
+          this._status === "rebuilding-routes"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCloseCircle}
+                    class="failed"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.rebuild_node_routes.routes_rebuild_in_progress"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              `
+            : ``
+        }
+        <ha-dialog-footer slot="footer">
+          ${
+            !this._status
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._startRebuildingRoutes}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.rebuild_node_routes.start_rebuilding_routes"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

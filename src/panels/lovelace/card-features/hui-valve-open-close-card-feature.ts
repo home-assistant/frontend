@@ -142,51 +142,57 @@ class HuiValveOpenCloseCardFeature
     ) {
       return html`
         <ha-control-button-group>
-          ${supportsFeature(this._stateObj, ValveEntityFeature.CLOSE)
-            ? html`
-                <ha-control-button
-                  .label=${this.hass.localize("ui.card.valve.close_valve")}
-                  @click=${this._onCloseTap}
-                  .disabled=${!canClose(this._stateObj)}
-                  class=${classMap({
-                    active: isClosed,
-                  })}
-                  style=${styleMap({
-                    "--color": closedColor,
-                  })}
-                >
-                  <ha-svg-icon .path=${mdiValveClosed}></ha-svg-icon>
-                </ha-control-button>
-              `
-            : nothing}
-          ${supportsFeature(this._stateObj, ValveEntityFeature.STOP)
-            ? html`
-                <ha-control-button
-                  .label=${this.hass.localize("ui.card.valve.stop_valve")}
-                  @click=${this._onStopTap}
-                  .disabled=${!canStop(this._stateObj)}
-                >
-                  <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-                </ha-control-button>
-              `
-            : nothing}
-          ${supportsFeature(this._stateObj, ValveEntityFeature.OPEN)
-            ? html`
-                <ha-control-button
-                  .label=${this.hass.localize("ui.card.valve.open_valve")}
-                  @click=${this._onOpenTap}
-                  .disabled=${!canOpen(this._stateObj)}
-                  class=${classMap({
-                    active: isOpen,
-                  })}
-                  style=${styleMap({
-                    "--color": openColor,
-                  })}
-                >
-                  <ha-svg-icon .path=${mdiValveOpen}></ha-svg-icon>
-                </ha-control-button>
-              `
-            : nothing}
+          ${
+            supportsFeature(this._stateObj, ValveEntityFeature.CLOSE)
+              ? html`
+                  <ha-control-button
+                    .label=${this.hass.localize("ui.card.valve.close_valve")}
+                    @click=${this._onCloseTap}
+                    .disabled=${!canClose(this._stateObj)}
+                    class=${classMap({
+                      active: isClosed,
+                    })}
+                    style=${styleMap({
+                      "--color": closedColor,
+                    })}
+                  >
+                    <ha-svg-icon .path=${mdiValveClosed}></ha-svg-icon>
+                  </ha-control-button>
+                `
+              : nothing
+          }
+          ${
+            supportsFeature(this._stateObj, ValveEntityFeature.STOP)
+              ? html`
+                  <ha-control-button
+                    .label=${this.hass.localize("ui.card.valve.stop_valve")}
+                    @click=${this._onStopTap}
+                    .disabled=${!canStop(this._stateObj)}
+                  >
+                    <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+                  </ha-control-button>
+                `
+              : nothing
+          }
+          ${
+            supportsFeature(this._stateObj, ValveEntityFeature.OPEN)
+              ? html`
+                  <ha-control-button
+                    .label=${this.hass.localize("ui.card.valve.open_valve")}
+                    @click=${this._onOpenTap}
+                    .disabled=${!canOpen(this._stateObj)}
+                    class=${classMap({
+                      active: isOpen,
+                    })}
+                    style=${styleMap({
+                      "--color": openColor,
+                    })}
+                  >
+                    <ha-svg-icon .path=${mdiValveOpen}></ha-svg-icon>
+                  </ha-control-button>
+                `
+              : nothing
+          }
         </ha-control-button-group>
       `;
     }

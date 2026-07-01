@@ -77,44 +77,48 @@ export class HaConditionAction extends LitElement implements ActionElement {
         : this.action.condition;
 
     return html`
-      ${this.inSidebar || (!this.inSidebar && !this.indent)
-        ? html`
-            <ha-generic-picker
-              .hass=${this.hass}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.type_select"
-              )}
-              .disabled=${this.disabled}
-              .value=${value}
-              .getItems=${this._processedTypes(
-                this._conditionDescriptions,
-                this.hass.localize
-              )}
-              .rowRenderer=${this._rowRenderer}
-              .valueRenderer=${this._valueRenderer}
-              @value-changed=${this._typeChanged}
-            ></ha-generic-picker>
-          `
-        : nothing}
-      ${(this.indent && buildingBlock) ||
-      (this.inSidebar && !buildingBlock) ||
-      (!this.indent && !this.inSidebar)
-        ? html`
-            <ha-automation-condition-editor
-              .condition=${this.action}
-              .description=${this._conditionDescriptions[this.action.condition]}
-              .disabled=${this.disabled}
-              .hass=${this.hass}
-              @value-changed=${this._conditionChanged}
-              .narrow=${this.narrow}
-              .uiSupported=${this._uiSupported(
-                this._getType(this.action, this._conditionDescriptions)
-              )}
-              .indent=${this.indent}
-              action
-            ></ha-automation-condition-editor>
-          `
-        : nothing}
+      ${
+        this.inSidebar || (!this.inSidebar && !this.indent)
+          ? html`
+              <ha-generic-picker
+                .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type_select"
+                )}
+                .disabled=${this.disabled}
+                .value=${value}
+                .getItems=${this._processedTypes(
+                  this._conditionDescriptions,
+                  this.hass.localize
+                )}
+                .rowRenderer=${this._rowRenderer}
+                .valueRenderer=${this._valueRenderer}
+                @value-changed=${this._typeChanged}
+              ></ha-generic-picker>
+            `
+          : nothing
+      }
+      ${
+        (this.indent && buildingBlock) ||
+        (this.inSidebar && !buildingBlock) ||
+        (!this.indent && !this.inSidebar)
+          ? html`
+              <ha-automation-condition-editor
+                .condition=${this.action}
+                .description=${this._conditionDescriptions[this.action.condition]}
+                .disabled=${this.disabled}
+                .hass=${this.hass}
+                @value-changed=${this._conditionChanged}
+                .narrow=${this.narrow}
+                .uiSupported=${this._uiSupported(
+                  this._getType(this.action, this._conditionDescriptions)
+                )}
+                .indent=${this.indent}
+                action
+              ></ha-automation-condition-editor>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -154,9 +158,11 @@ export class HaConditionAction extends LitElement implements ActionElement {
         .condition=${item.search_labels!.condition || undefined}
       ></ha-condition-icon>
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 

@@ -8,12 +8,7 @@ import type { LawnMowerEntity } from "../../data/lawn_mower";
 import { isMowing } from "../../data/lawn_mower";
 
 type LawnMowerVisualState =
-  | "mowing"
-  | "docked"
-  | "returning"
-  | "paused"
-  | "error"
-  | "idle";
+  "mowing" | "docked" | "returning" | "paused" | "error" | "idle";
 
 const computeVisualState = (
   stateObj: LawnMowerEntity

@@ -107,26 +107,30 @@ class HuiLockOpenDoorCardFeature
     }
 
     return html`
-      ${this._buttonState === "done"
-        ? html`
-            <p class="open-done">
-              <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-              ${this.hass.localize("ui.card.lock.open_door_done")}
-            </p>
-          `
-        : html`
-            <ha-control-button-group>
-              <ha-control-button
-                .disabled=${!canOpen(this._stateObj)}
-                class="open-button ${this._buttonState}"
-                @click=${this._open}
-              >
-                ${this._buttonState === "confirm"
-                  ? this.hass.localize("ui.card.lock.open_door_confirm")
-                  : this.hass.localize("ui.card.lock.open_door")}
-              </ha-control-button>
-            </ha-control-button-group>
-          `}
+      ${
+        this._buttonState === "done"
+          ? html`
+              <p class="open-done">
+                <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
+                ${this.hass.localize("ui.card.lock.open_door_done")}
+              </p>
+            `
+          : html`
+              <ha-control-button-group>
+                <ha-control-button
+                  .disabled=${!canOpen(this._stateObj)}
+                  class="open-button ${this._buttonState}"
+                  @click=${this._open}
+                >
+                  ${
+                    this._buttonState === "confirm"
+                      ? this.hass.localize("ui.card.lock.open_door_confirm")
+                      : this.hass.localize("ui.card.lock.open_door")
+                  }
+                </ha-control-button>
+              </ha-control-button-group>
+            `
+      }
     `;
   }
 

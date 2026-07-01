@@ -235,19 +235,21 @@ export class HuiDialogEditBadge
           @click=${this._enlarge}
           >${heading}</span
         >
-        ${this._documentationURL !== undefined
-          ? html`
-              <ha-icon-button
-                .path=${mdiHelpCircleOutline}
-                slot="headerActionItems"
-                .href=${this._documentationURL}
-                title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                target="_blank"
-                rel="noreferrer"
-                dir=${computeRTLDirection(this.hass)}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this._documentationURL !== undefined
+            ? html`
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  slot="headerActionItems"
+                  .href=${this._documentationURL}
+                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  target="_blank"
+                  rel="noreferrer"
+                  dir=${computeRTLDirection(this.hass)}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
         <div class="content">
           <div class="element-editor">
             <hui-badge-element-editor
@@ -268,34 +270,38 @@ export class HuiDialogEditBadge
               preview
               class=${this._error ? "blur" : ""}
             ></hui-badge>
-            ${this._error
-              ? html`
-                  <ha-spinner
-                    size="small"
-                    aria-label="Can't update badge"
-                  ></ha-spinner>
-                `
-              : ``}
+            ${
+              this._error
+                ? html`
+                    <ha-spinner
+                      size="small"
+                      aria-label="Can't update badge"
+                    ></ha-spinner>
+                  `
+                : ``
+            }
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._badgeConfig !== undefined
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  slot="secondaryAction"
-                  @click=${this._toggleMode}
-                  .disabled=${!this._guiModeAvailable}
-                  class="gui-mode-button"
-                >
-                  ${this.hass!.localize(
-                    !this._badgeEditorEl || this._GUImode
-                      ? "ui.panel.lovelace.editor.edit_badge.show_code_editor"
-                      : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
-                  )}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._badgeConfig !== undefined
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    slot="secondaryAction"
+                    @click=${this._toggleMode}
+                    .disabled=${!this._guiModeAvailable}
+                    class="gui-mode-button"
+                  >
+                    ${this.hass!.localize(
+                      !this._badgeEditorEl || this._GUImode
+                        ? "ui.panel.lovelace.editor.edit_badge.show_code_editor"
+                        : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
+                    )}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button
             appearance="plain"
             slot="secondaryAction"

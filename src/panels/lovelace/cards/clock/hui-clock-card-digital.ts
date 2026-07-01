@@ -106,12 +106,16 @@ export class HuiClockCardDigital extends LitElement {
       <div class="time-parts ${sizeClass}">
         <div class="time-part hour">${this._timeHour}</div>
         <div class="time-part minute">${this._timeMinute}</div>
-        ${this._timeSecond !== undefined
-          ? html`<div class="time-part second">${this._timeSecond}</div>`
-          : nothing}
-        ${this._timeAmPm !== undefined
-          ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
-          : nothing}
+        ${
+          this._timeSecond !== undefined
+            ? html`<div class="time-part second">${this._timeSecond}</div>`
+            : nothing
+        }
+        ${
+          this._timeAmPm !== undefined
+            ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
+            : nothing
+        }
       </div>
     `;
   }

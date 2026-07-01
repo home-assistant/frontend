@@ -54,8 +54,10 @@ class HaBluePrintPicker extends LitElement {
     }
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass.localize("ui.components.blueprint-picker.select_blueprint")}
+        .label=${
+          this.label ||
+          this.hass.localize("ui.components.blueprint-picker.select_blueprint")
+        }
         .value=${this.value}
         .disabled=${this.disabled}
         @selected=${this._blueprintChanged}

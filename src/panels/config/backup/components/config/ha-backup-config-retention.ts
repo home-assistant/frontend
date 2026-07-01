@@ -107,8 +107,10 @@ class HaBackupConfigRetention extends LitElement {
     return html`
       <ha-list-item-base>
         <span slot="headline">
-          ${this.headline ??
-          this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
+          ${
+            this.headline ??
+            this.hass.localize(`ui.panel.config.backup.schedule.retention`)
+          }
         </span>
         <span slot="supporting-text">
           ${this.hass.localize(
@@ -128,53 +130,55 @@ class HaBackupConfigRetention extends LitElement {
         ></ha-select>
       </ha-list-item-base>
 
-      ${this._preset === RetentionPreset.CUSTOM
-        ? html`<ha-expansion-panel
-            expanded
-            .header=${this.hass.localize(
-              "ui.panel.config.backup.schedule.custom_retention"
-            )}
-            outlined
-          >
-            <ha-row-item>
-              <span slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.schedule.custom_retention_label"
-                )}
-              </span>
-              <ha-input
-                slot="end"
-                @change=${this._retentionValueChanged}
-                .value=${this._value.toString()}
-                id="value"
-                type="number"
-                .min=${MIN_VALUE.toString()}
-                .max=${MAX_VALUE.toString()}
-                step="1"
-              >
-              </ha-input>
-              <ha-select
-                slot="end"
-                @selected=${this._retentionTypeChanged}
-                .value=${this._type}
-                id="type"
-                .options=${[
-                  {
-                    value: "days",
-                    label: this.hass.localize(
-                      "ui.panel.config.backup.schedule.retention_units.days"
-                    ),
-                  },
-                  {
-                    value: "copies",
-                    label: this.hass.localize(
-                      "ui.panel.config.backup.schedule.retention_units.copies"
-                    ),
-                  },
-                ]}
-              ></ha-select></ha-row-item
-          ></ha-expansion-panel> `
-        : nothing}
+      ${
+        this._preset === RetentionPreset.CUSTOM
+          ? html`<ha-expansion-panel
+              expanded
+              .header=${this.hass.localize(
+                "ui.panel.config.backup.schedule.custom_retention"
+              )}
+              outlined
+            >
+              <ha-row-item>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.schedule.custom_retention_label"
+                  )}
+                </span>
+                <ha-input
+                  slot="end"
+                  @change=${this._retentionValueChanged}
+                  .value=${this._value.toString()}
+                  id="value"
+                  type="number"
+                  .min=${MIN_VALUE.toString()}
+                  .max=${MAX_VALUE.toString()}
+                  step="1"
+                >
+                </ha-input>
+                <ha-select
+                  slot="end"
+                  @selected=${this._retentionTypeChanged}
+                  .value=${this._type}
+                  id="type"
+                  .options=${[
+                    {
+                      value: "days",
+                      label: this.hass.localize(
+                        "ui.panel.config.backup.schedule.retention_units.days"
+                      ),
+                    },
+                    {
+                      value: "copies",
+                      label: this.hass.localize(
+                        "ui.panel.config.backup.schedule.retention_units.copies"
+                      ),
+                    },
+                  ]}
+                ></ha-select></ha-row-item
+            ></ha-expansion-panel> `
+          : nothing
+      }
     `;
   }
 

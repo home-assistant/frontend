@@ -65,24 +65,26 @@ class MoreInfoHumidifier extends LitElement {
 
     return html`
       <div class="current">
-        ${this.stateObj.attributes.current_humidity != null
-          ? html`
-              <div>
-                <p class="label">
-                  ${this._formatters.formatEntityAttributeName(
-                    this.stateObj,
-                    "current_humidity"
-                  )}
-                </p>
-                <p class="value">
-                  ${this._formatters.formatEntityAttributeValue(
-                    this.stateObj,
-                    "current_humidity"
-                  )}
-                </p>
-              </div>
-            `
-          : nothing}
+        ${
+          this.stateObj.attributes.current_humidity != null
+            ? html`
+                <div>
+                  <p class="label">
+                    ${this._formatters.formatEntityAttributeName(
+                      this.stateObj,
+                      "current_humidity"
+                    )}
+                  </p>
+                  <p class="value">
+                    ${this._formatters.formatEntityAttributeValue(
+                      this.stateObj,
+                      "current_humidity"
+                    )}
+                  </p>
+                </div>
+              `
+            : nothing
+        }
       </div>
 
       <div class="controls">
@@ -107,29 +109,36 @@ class MoreInfoHumidifier extends LitElement {
           <ha-svg-icon slot="icon" .path=${mdiPower}></ha-svg-icon>
         </ha-control-select-menu>
 
-        ${supportModes
-          ? html`
-              <ha-control-select-menu
-                .label=${this._localize("ui.card.humidifier.mode")}
-                .value=${stateObj.attributes.mode}
-                .disabled=${this.stateObj.state === UNAVAILABLE}
-                @wa-select=${this._handleModeChanged}
-                .options=${stateObj.attributes.available_modes?.map((mode) => ({
-                  value: mode,
-                  label: stateObj
-                    ? this._formatters.formatEntityAttributeValue(
-                        stateObj,
-                        "mode",
-                        mode
-                      )
-                    : mode,
-                })) || []}
-                .renderIcon=${this._renderModeIcon}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
-              </ha-control-select-menu>
-            `
-          : nothing}
+        ${
+          supportModes
+            ? html`
+                <ha-control-select-menu
+                  .label=${this._localize("ui.card.humidifier.mode")}
+                  .value=${stateObj.attributes.mode}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  @wa-select=${this._handleModeChanged}
+                  .options=${
+                    stateObj.attributes.available_modes?.map((mode) => ({
+                      value: mode,
+                      label: stateObj
+                        ? this._formatters.formatEntityAttributeValue(
+                            stateObj,
+                            "mode",
+                            mode
+                          )
+                        : mode,
+                    })) || []
+                  }
+                  .renderIcon=${this._renderModeIcon}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiTuneVariant}
+                  ></ha-svg-icon>
+                </ha-control-select-menu>
+              `
+            : nothing
+        }
       </ha-more-info-control-select-container>
     `;
   }

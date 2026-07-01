@@ -78,8 +78,7 @@ export abstract class HuiModeSelectCardFeatureBase<
   protected readonly _defaultStyle: "dropdown" | "icons" = "dropdown";
 
   protected get _controlSelectStyle():
-    | Record<string, string | undefined>
-    | undefined {
+    Record<string, string | undefined> | undefined {
     return undefined;
   }
 
@@ -171,16 +170,18 @@ export abstract class HuiModeSelectCardFeatureBase<
         .disabled=${stateObj.state === UNAVAILABLE}
         @wa-select=${this._valueChanged}
         .options=${options}
-        .renderIcon=${this._showDropdownOptionIcons
-          ? this._renderMenuIcon
-          : undefined}
+        .renderIcon=${
+          this._showDropdownOptionIcons ? this._renderMenuIcon : undefined
+        }
       >
-        ${this._dropdownIconPath
-          ? html`<ha-svg-icon
-              slot="icon"
-              .path=${this._dropdownIconPath}
-            ></ha-svg-icon>`
-          : nothing}
+        ${
+          this._dropdownIconPath
+            ? html`<ha-svg-icon
+                slot="icon"
+                .path=${this._dropdownIconPath}
+              ></ha-svg-icon>`
+            : nothing
+        }
       </ha-control-select-menu>
     `;
   }

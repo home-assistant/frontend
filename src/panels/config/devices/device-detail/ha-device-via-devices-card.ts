@@ -96,24 +96,28 @@ export class HaDeviceViaDevicesCard extends LitElement {
                   this.hass.localize,
                   this.hass.states
                 )}
-                ${secondary
-                  ? html`<span slot="secondary">${secondary}</span>`
-                  : nothing}
+                ${
+                  secondary
+                    ? html`<span slot="secondary">${secondary}</span>`
+                    : nothing
+                }
                 <ha-icon-next slot="meta"></ha-icon-next>
               </ha-list-item>
             </a>
           `;
         })}
-        ${!this._showAll && viaDevices.length > MAX_VISIBLE_VIA_DEVICES
-          ? html`
-              <button class="show-more" @click=${this._toggleShowAll}>
-                ${this.hass.localize(
-                  "ui.panel.config.devices.connected_devices.show_more",
-                  { count: viaDevices.length - MAX_VISIBLE_VIA_DEVICES }
-                )}
-              </button>
-            `
-          : ""}
+        ${
+          !this._showAll && viaDevices.length > MAX_VISIBLE_VIA_DEVICES
+            ? html`
+                <button class="show-more" @click=${this._toggleShowAll}>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.connected_devices.show_more",
+                    { count: viaDevices.length - MAX_VISIBLE_VIA_DEVICES }
+                  )}
+                </button>
+              `
+            : ""
+        }
       </ha-card>
     `;
   }

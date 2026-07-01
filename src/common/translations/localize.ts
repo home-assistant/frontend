@@ -114,8 +114,7 @@ export const computeLocalize = async <Keys extends string = LocalizeKeys>(
 
     const messageKey = key + translatedValue;
     let translatedMessage = cache._localizationCache![messageKey] as
-      | IntlMessageFormat
-      | undefined;
+      IntlMessageFormat | undefined;
 
     if (!translatedMessage) {
       try {

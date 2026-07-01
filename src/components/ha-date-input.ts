@@ -68,16 +68,18 @@ export class HaDateInput extends LitElement {
       readonly
       @click=${this._openDialog}
       @keydown=${this._keyDown}
-      .value=${this.value
-        ? formatDateNumeric(
-            new Date(`${this.value.split("T")[0]}T00:00:00`),
-            {
-              ...this.locale,
-              time_zone: TimeZone.local,
-            },
-            {} as HassConfig
-          )
-        : ""}
+      .value=${
+        this.value
+          ? formatDateNumeric(
+              new Date(`${this.value.split("T")[0]}T00:00:00`),
+              {
+                ...this.locale,
+                time_zone: TimeZone.local,
+              },
+              {} as HassConfig
+            )
+          : ""
+      }
       .required=${this.required}
     >
       <ha-svg-icon slot="end" .path=${mdiCalendar}></ha-svg-icon>

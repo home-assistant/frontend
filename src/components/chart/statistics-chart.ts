@@ -79,10 +79,7 @@ export class StatisticsChart extends LitElement {
   public statTypes: StatisticType[] = ["sum", "min", "mean", "max"];
 
   @property({ attribute: false }) public chartType:
-    | "line"
-    | "line-stack"
-    | "bar"
-    | "bar-stack" = "line";
+    "line" | "line-stack" | "bar" | "bar-stack" = "line";
 
   @property({ attribute: false }) public minYAxis?: number;
 
@@ -197,8 +194,10 @@ export class StatisticsChart extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
-        .clickLabelForMoreInfo=${this.clickForMoreInfo &&
-        !this._statisticIds.every(isExternalStatistic)}
+        .clickLabelForMoreInfo=${
+          this.clickForMoreInfo &&
+          !this._statisticIds.every(isExternalStatistic)
+        }
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
@@ -330,9 +329,9 @@ export class StatisticsChart extends LitElement {
 
     return html`${rows.map(
       (row, i) =>
-        html`${row.time
-            ? html`${row.time}<br />`
-            : nothing}<ha-chart-tooltip-marker
+        html`${
+            row.time ? html`${row.time}<br />` : nothing
+          }<ha-chart-tooltip-marker
             .color=${row.color}
           ></ha-chart-tooltip-marker>
           ${row.seriesName}:
