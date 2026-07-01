@@ -1025,8 +1025,9 @@ export class HuiEnergySolarSceneNowCard
     const W = HOME_HALF_W; // half-width (east)
     const D = HOME_HALF_D; // half-depth (north)
     const ridge = HOME_RIDGE_M * grow;
-    // Front gable faces the equator: south (−north) in the N hemisphere, north (+north) in the S.
-    const yf = this._lat < 0 ? D : -D; // front gable (carries the mark)
+    // Front gable (carries the mark) faces the default camera; the sign follows the hemisphere so the
+    // logo greets the viewer instead of the back of the house.
+    const yf = this._lat < 0 ? -D : D; // front gable (carries the mark)
     const yb = -yf; // back gable
 
     // House palette: only the front gable is light (so the blue HA circuit reads on it); the back, the
@@ -1040,7 +1041,7 @@ export class HuiEnergySolarSceneNowCard
       1
     );
     const tHex = this._palette?.text ?? "#dddddd"; // primary text colour
-    const edge = `rgba(${hexByte(tHex, 1)},${hexByte(tHex, 3)},${hexByte(tHex, 5)},0.5)`;
+    const edge = `rgba(${hexByte(tHex, 1)},${hexByte(tHex, 3)},${hexByte(tHex, 5)},0.25)`;
 
     type V = [number, number, number]; // east, north, up (m)
     // Outline = the (rounded) logo silhouette in the east-up plane; the house is that outline extruded
@@ -1122,7 +1123,7 @@ export class HuiEnergySolarSceneNowCard
     drawn.sort((a, b) => a.depth - b.depth);
     const project = (p: V): Point => this._project(p[0], p[1], p[2]);
     const edgePoly = (pts: V[]): string =>
-      `<polygon points="${pointsAttr(pts.map(project))}" fill="none" stroke="${edge}" stroke-width="1.5" stroke-linejoin="round"/>`;
+      `<polygon points="${pointsAttr(pts.map(project))}" fill="none" stroke="${edge}" stroke-width="0.8" stroke-linejoin="round"/>`;
 
     let svg = drawn.map((d) => d.svg).join("");
     if (grow > 0.15 && frontVisible) {
@@ -1133,7 +1134,7 @@ export class HuiEnergySolarSceneNowCard
     // gable is fully occluded, so it is not drawn — no x-ray look.
     svg += edgePoly(frontVisible ? frontGable : backGable);
     const hull = convexHull([...frontGable, ...backGable].map(project));
-    svg += `<polygon points="${pointsAttr(hull)}" fill="none" stroke="${edge}" stroke-width="1.5" stroke-linejoin="round"/>`;
+    svg += `<polygon points="${pointsAttr(hull)}" fill="none" stroke="${edge}" stroke-width="0.8" stroke-linejoin="round"/>`;
     return svg;
   }
 
