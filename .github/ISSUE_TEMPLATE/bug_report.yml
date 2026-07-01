@@ -95,7 +95,7 @@ body:
       description: >
         If your issue is about how an entity is shown in the UI, please add the
         state and attributes for all situations. You can find this
-        information in the Details view of the more info dialog.
+        information in the Details view of the More info dialog.
       render: txt
   - type: textarea
     attributes:
