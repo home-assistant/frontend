@@ -5,6 +5,11 @@ import type { ForecastPrecipitationType } from "../../../data/weather";
 
 export type ButtonCardData = Record<string, any>;
 
+export interface NumericInputConfig {
+  type: string;
+  style?: "buttons" | "slider";
+}
+
 export interface ButtonCardFeatureConfig {
   type: "button";
   action_name?: string;
@@ -173,16 +178,15 @@ export interface SelectOptionsCardFeatureConfig {
   options?: string[];
 }
 
-export interface NumericInputCardFeatureConfig {
+export interface NumericInputCardFeatureConfig extends NumericInputConfig {
   type: "numeric-input";
-  style?: "buttons" | "slider";
 }
 
-export interface TargetHumidityCardFeatureConfig {
+export interface TargetHumidityCardFeatureConfig extends NumericInputConfig {
   type: "target-humidity";
 }
 
-export interface TargetTemperatureCardFeatureConfig {
+export interface TargetTemperatureCardFeatureConfig extends NumericInputConfig {
   type: "target-temperature";
 }
 

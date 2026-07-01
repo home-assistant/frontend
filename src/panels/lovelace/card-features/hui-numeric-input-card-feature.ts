@@ -3,8 +3,6 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
@@ -65,7 +63,11 @@ class HuiNumericInputCardFeature
     if (!config) {
       throw new Error("Invalid configuration");
     }
-    this._config = config;
+
+    this._config = {
+      ...this._config,
+      ...config,
+    } as NumericInputCardFeatureConfig;
   }
 
   protected willUpdate(changedProp: PropertyValues<this>): void {
