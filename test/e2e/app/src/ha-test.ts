@@ -54,7 +54,7 @@ export class HaTest extends HomeAssistantAppEl {
       : scenarios.default;
 
     const initial: Partial<MockHomeAssistant> = {
-      // Use the full panel map (history + config + developer-tools enabled)
+      // Use the full panel map (history + config enabled)
       panels: e2eTestPanels,
       panelUrl: (() => {
         const path = window.location.pathname;

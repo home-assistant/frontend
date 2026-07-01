@@ -167,11 +167,11 @@ test.describe("Panel navigation", () => {
     });
   });
 
-  test("navigates to developer-tools panel", async ({ page }) => {
-    // Since 2026.2 developer-tools is part of the config panel
-    await goToPanel(page, "/config/developer-tools");
+  test("navigates to tools panel", async ({ page }) => {
+    // Developer tools was renamed to "Tools" and lives under the config panel
+    await goToPanel(page, "/config/tools");
     await expect(
-      page.locator("ha-panel-config, developer-tools-main").first()
+      page.locator("ha-panel-config, ha-panel-tools").first()
     ).toBeAttached({ timeout: PANEL_TIMEOUT });
   });
 
