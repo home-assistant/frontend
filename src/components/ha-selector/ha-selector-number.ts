@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { NumberSelector } from "../../data/selector";
+import { isSafari } from "../../util/is_safari";
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../input/ha-input";
@@ -66,6 +67,16 @@ export class HaNumberSelector extends LitElement {
       }
     }
 
+    // On iOS/iPadOS the numeric and decimal on-screen keypads have no minus key,
+    // so negatives can only be typed with the full "text" keyboard. Other
+    // platforms include a minus on their number keypads, so restrict this
+    // workaround to Safari/WebKit and only when the selector allows negatives
+    // (e.g. numeric_state triggers/conditions).
+    const useTextInputMode =
+      isSafari &&
+      this.selector.number?.min !== undefined &&
+      this.selector.number.min < 0;
+
     const translationKey = this.selector.number?.translation_key;
     let unit = this.selector.number?.unit_of_measurement;
     if (isBox && unit && this.localizeValue && translationKey) {
@@ -100,11 +111,13 @@ export class HaNumberSelector extends LitElement {
             : nothing
         }
         <ha-input
-          .inputMode=${
-            this.selector.number?.step === "any" ||
-            (this.selector.number?.step ?? 1) % 1 !== 0
-              ? "decimal"
-              : "numeric"
+          .inputmode=${
+            useTextInputMode
+              ? "text"
+              : this.selector.number?.step === "any" ||
+                  (this.selector.number?.step ?? 1) % 1 !== 0
+                ? "decimal"
+                : "numeric"
           }
           .label=${!isBox ? undefined : this.label}
           .placeholder=${
