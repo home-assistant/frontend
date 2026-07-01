@@ -33,9 +33,14 @@ declare global {
   }
 }
 
+// Gesture timings, exported so features that resolve a tap to a target the
+// pointer is not directly over (e.g. the picture-elements card) match them.
+export const ACTION_HANDLER_HOLD_TIME = 500;
+export const ACTION_HANDLER_DOUBLE_CLICK_TIME = 250;
+
 @customElement("action-handler")
 class ActionHandler extends HTMLElement implements ActionHandlerType {
-  public holdTime = 500;
+  public holdTime = ACTION_HANDLER_HOLD_TIME;
 
   protected timer?: number;
 
@@ -180,7 +185,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
             if (options.hasTap !== false) {
               fireEvent(target, "action", { action: "tap" });
             }
-          }, 250);
+          }, ACTION_HANDLER_DOUBLE_CLICK_TIME);
         } else {
           clearTimeout(this.dblClickTimeout);
           this.dblClickTimeout = undefined;

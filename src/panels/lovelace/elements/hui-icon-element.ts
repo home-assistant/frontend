@@ -67,6 +67,11 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     :host {
       cursor: pointer;
     }
+    ha-icon {
+      /* Size the box to the glyph (not the taller inline line box that leaves
+         the icon edges unclickable) while staying inline-level. */
+      display: inline-flex;
+    }
     ha-icon:focus {
       outline: none;
       background: var(--divider-color);

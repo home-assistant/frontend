@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -48,6 +48,8 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: StateLabelElementConfig;
+
+  @query("div") private _content?: HTMLDivElement;
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
@@ -115,6 +117,17 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  // The visible text's bounds (excluding the padded host box), used by the
+  // picture-elements card to seed nearest-tap routing on the text itself.
+  public getTextRect(): DOMRect | undefined {
+    if (!this._content) {
+      return undefined;
+    }
+    const range = document.createRange();
+    range.selectNodeContents(this._content);
+    return range.getBoundingClientRect();
   }
 
   static styles = css`
