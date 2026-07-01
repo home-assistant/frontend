@@ -59,13 +59,17 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
               <ha-svg-icon .path=${ERROR_ICONS[this.severity]}></ha-svg-icon>
             </slot>
           </div>
-          ${showTitle
-            ? html`<div class="title"><slot>${error}</slot></div>`
-            : nothing}
+          ${
+            showTitle
+              ? html`<div class="title"><slot>${error}</slot></div>`
+              : nothing
+          }
         </div>
-        ${showMessage && this._config?.message
-          ? html`<div class="message">${this._config.message}</div>`
-          : nothing}
+        ${
+          showMessage && this._config?.message
+            ? html`<div class="message">${this._config.message}</div>`
+            : nothing
+        }
       </ha-card>
     `;
   }

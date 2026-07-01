@@ -88,8 +88,8 @@ interface BaseTrace {
   };
   script_execution:
     | // The script was not executed because the automation's condition failed
-    "failed_conditions"
-    // The script was not executed because the run mode is single
+      "failed_conditions"
+      // The script was not executed because the run mode is single
     | "failed_single"
     // The script was not executed because max parallel runs would be exceeded
     | "failed_max_runs"

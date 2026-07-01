@@ -14,10 +14,7 @@ import { popoverSupported } from "../common/feature-detect/support-popover";
 import { nextRender } from "../common/util/render-status";
 
 export type ToastCloseReason =
-  | "dismiss"
-  | "action"
-  | "timeout"
-  | "programmatic";
+  "dismiss" | "action" | "timeout" | "programmatic";
 
 export interface ToastClosedEventDetail {
   reason: ToastCloseReason;

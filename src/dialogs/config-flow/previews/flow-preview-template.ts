@@ -58,66 +58,70 @@ class FlowPreviewTemplate extends LitElement {
         .hass=${this.hass}
         .stateObj=${this._preview}
       ></entity-preview-row>
-      ${this._listeners?.time
-        ? html`
-            <p>
-              ${this.hass.localize("ui.dialogs.helper_settings.template.time")}
-            </p>
-          `
-        : nothing}
-      ${!this._listeners
-        ? nothing
-        : this._listeners.all
+      ${
+        this._listeners?.time
           ? html`
-              <p class="all_listeners">
-                ${this.hass.localize(
-                  "ui.dialogs.helper_settings.template.all_listeners"
-                )}
+              <p>
+                ${this.hass.localize("ui.dialogs.helper_settings.template.time")}
               </p>
             `
-          : this._listeners.domains.length || this._listeners.entities.length
+          : nothing
+      }
+      ${
+        !this._listeners
+          ? nothing
+          : this._listeners.all
             ? html`
-                <p>
+                <p class="all_listeners">
                   ${this.hass.localize(
-                    "ui.dialogs.helper_settings.template.listeners"
+                    "ui.dialogs.helper_settings.template.all_listeners"
                   )}
                 </p>
-                <ul>
-                  ${this._listeners.domains
-                    .sort()
-                    .map(
-                      (domain) => html`
-                        <li>
-                          <b
-                            >${this.hass.localize(
-                              "ui.dialogs.helper_settings.template.domain"
-                            )}</b
-                          >: ${domain}
-                        </li>
-                      `
-                    )}
-                  ${this._listeners.entities
-                    .sort()
-                    .map(
-                      (entity_id) => html`
-                        <li>
-                          <b
-                            >${this.hass.localize(
-                              "ui.dialogs.helper_settings.template.entity"
-                            )}</b
-                          >: ${entity_id}
-                        </li>
-                      `
-                    )}
-                </ul>
               `
-            : !this._listeners.time
-              ? html`<p class="all_listeners">
-                  ${this.hass.localize(
-                    "ui.dialogs.helper_settings.template.no_listeners"
-                  )}
-                </p>`
-              : nothing} `;
+            : this._listeners.domains.length || this._listeners.entities.length
+              ? html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.dialogs.helper_settings.template.listeners"
+                    )}
+                  </p>
+                  <ul>
+                    ${this._listeners.domains
+                      .sort()
+                      .map(
+                        (domain) => html`
+                          <li>
+                            <b
+                              >${this.hass.localize(
+                                "ui.dialogs.helper_settings.template.domain"
+                              )}</b
+                            >: ${domain}
+                          </li>
+                        `
+                      )}
+                    ${this._listeners.entities
+                      .sort()
+                      .map(
+                        (entity_id) => html`
+                          <li>
+                            <b
+                              >${this.hass.localize(
+                                "ui.dialogs.helper_settings.template.entity"
+                              )}</b
+                            >: ${entity_id}
+                          </li>
+                        `
+                      )}
+                  </ul>
+                `
+              : !this._listeners.time
+                ? html`<p class="all_listeners">
+                    ${this.hass.localize(
+                      "ui.dialogs.helper_settings.template.no_listeners"
+                    )}
+                  </p>`
+                : nothing
+      } `;
   }
 
   private _setPreview = (preview: TemplatePreview) => {

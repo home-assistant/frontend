@@ -98,16 +98,20 @@ class DialogTagDetail
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._params.entry
-          ? this.hass!.localize("ui.panel.config.tag.detail.tag_details")
-          : this.hass!.localize("ui.panel.config.tag.detail.new_tag")}
+        header-title=${
+          this._params.entry
+            ? this.hass!.localize("ui.panel.config.tag.detail.tag_details")
+            : this.hass!.localize("ui.panel.config.tag.detail.new_tag")
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="form">
             <ha-input
               autofocus
@@ -120,115 +124,132 @@ class DialogTagDetail
               )}
               required
             ></ha-input>
-            ${this._params.entry
-              ? nothing
-              : html`
-                  <ha-expansion-panel
-                    outlined
-                    .header=${this.hass!.localize(
-                      "ui.panel.config.tag.detail.use_custom_id"
-                    )}
-                    .expanded=${this._useCustomId}
-                    @expanded-changed=${this._useCustomIdChanged}
-                  >
-                    <ha-input
-                      .value=${this._id || ""}
-                      .configValue=${"id"}
-                      @input=${this._valueChanged}
-                      .label=${this.hass!.localize(
-                        "ui.panel.config.tag.detail.tag_id"
+            ${
+              this._params.entry
+                ? nothing
+                : html`
+                    <ha-expansion-panel
+                      outlined
+                      .header=${this.hass!.localize(
+                        "ui.panel.config.tag.detail.use_custom_id"
                       )}
-                      .placeholder=${this.hass!.localize(
-                        "ui.panel.config.tag.detail.tag_id_placeholder"
-                      )}
-                    ></ha-input>
-                    <ha-alert alert-type="info">
-                      ${this.hass!.localize(
-                        "ui.panel.config.tag.detail.custom_id_warning"
-                      )}
-                    </ha-alert>
-                  </ha-expansion-panel>
-                `}
+                      .expanded=${this._useCustomId}
+                      @expanded-changed=${this._useCustomIdChanged}
+                    >
+                      <ha-input
+                        .value=${this._id || ""}
+                        .configValue=${"id"}
+                        @input=${this._valueChanged}
+                        .label=${this.hass!.localize(
+                          "ui.panel.config.tag.detail.tag_id"
+                        )}
+                        .placeholder=${this.hass!.localize(
+                          "ui.panel.config.tag.detail.tag_id_placeholder"
+                        )}
+                      ></ha-input>
+                      <ha-alert alert-type="info">
+                        ${this.hass!.localize(
+                          "ui.panel.config.tag.detail.custom_id_warning"
+                        )}
+                      </ha-alert>
+                    </ha-expansion-panel>
+                  `
+            }
           </div>
-          ${this._params.entry
-            ? html`
-                <div>
-                  <p>
-                    ${this.hass!.localize("ui.panel.config.tag.detail.usage", {
-                      companion_link: html`<a
-                        href="https://companion.home-assistant.io/"
-                        target="_blank"
-                        rel="noreferrer"
-                        >${this.hass!.localize(
-                          "ui.panel.config.tag.detail.companion_apps"
-                        )}</a
-                      >`,
-                    })}
-                  </p>
-                </div>
-                <div id="qr">
-                  ${this._qrReady
-                    ? html`
-                        <ha-qr-code
-                          .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
-                          center-image="/static/icons/favicon-192x192.png"
-                          error-correction-level="quartile"
-                          scale="5"
-                        >
-                        </ha-qr-code>
-                      `
-                    : nothing}
-                </div>
-                <div class="tag-id">
-                  <span class="tag-id-label">
-                    ${this.hass!.localize("ui.panel.config.tag.detail.tag_id")}:
-                  </span>
-                  <span class="tag-id-value">${this._params.entry.id}</span>
-                  <ha-icon-button
-                    .path=${mdiContentCopy}
-                    .label=${this.hass!.localize("ui.common.copy")}
-                    @click=${this._copyId}
-                  ></ha-icon-button>
-                </div>
-              `
-            : ``}
+          ${
+            this._params.entry
+              ? html`
+                  <div>
+                    <p>
+                      ${this.hass!.localize(
+                        "ui.panel.config.tag.detail.usage",
+                        {
+                          companion_link: html`<a
+                            href="https://companion.home-assistant.io/"
+                            target="_blank"
+                            rel="noreferrer"
+                            >${this.hass!.localize(
+                              "ui.panel.config.tag.detail.companion_apps"
+                            )}</a
+                          >`,
+                        }
+                      )}
+                    </p>
+                  </div>
+                  <div id="qr">
+                    ${
+                      this._qrReady
+                        ? html`
+                            <ha-qr-code
+                              .data=${`${documentationUrl(this.hass, "/tag/")}${this._params!.entry!.id}`}
+                              center-image="/static/icons/favicon-192x192.png"
+                              error-correction-level="quartile"
+                              scale="5"
+                            >
+                            </ha-qr-code>
+                          `
+                        : nothing
+                    }
+                  </div>
+                  <div class="tag-id">
+                    <span class="tag-id-label">
+                      ${this.hass!.localize("ui.panel.config.tag.detail.tag_id")}:
+                    </span>
+                    <span class="tag-id-value">${this._params.entry.id}</span>
+                    <ha-icon-button
+                      .path=${mdiContentCopy}
+                      .label=${this.hass!.localize("ui.common.copy")}
+                      @click=${this._copyId}
+                    ></ha-icon-button>
+                  </div>
+                `
+              : ``
+          }
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._params.entry
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._deleteEntry}
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._params.entry
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEntry}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting ||
-            !this._name ||
-            (!!this._params.entry && !this.isDirtyState)}
+            .disabled=${
+              this._submitting ||
+              !this._name ||
+              (!!this._params.entry && !this.isDirtyState)
+            }
           >
-            ${this._params.entry
-              ? this.hass!.localize("ui.panel.config.tag.detail.update")
-              : this.hass!.localize("ui.panel.config.tag.detail.create")}
+            ${
+              this._params.entry
+                ? this.hass!.localize("ui.panel.config.tag.detail.update")
+                : this.hass!.localize("ui.panel.config.tag.detail.create")
+            }
           </ha-button>
-          ${this._params.openWrite && !this._params.entry
-            ? html`<ha-button
-                slot="primaryAction"
-                @click=${this._updateWriteEntry}
-                .disabled=${this._submitting || !this._name}
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.tag.detail.create_and_write"
-                )}
-              </ha-button>`
-            : ""}
+          ${
+            this._params.openWrite && !this._params.entry
+              ? html`<ha-button
+                  slot="primaryAction"
+                  @click=${this._updateWriteEntry}
+                  .disabled=${this._submitting || !this._name}
+                >
+                  ${this.hass!.localize(
+                    "ui.panel.config.tag.detail.create_and_write"
+                  )}
+                </ha-button>`
+              : ""
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

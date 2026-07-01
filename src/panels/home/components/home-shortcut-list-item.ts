@@ -57,17 +57,19 @@ export class HomeShortcutListItem extends LitElement {
 
     return html`
       <ha-settings-row slim>
-        ${icon
-          ? html`<ha-icon
-              slot="prefix"
-              .icon=${icon}
-              style=${styleMap(iconStyle)}
-            ></ha-icon>`
-          : html`<ha-svg-icon
-              slot="prefix"
-              .path=${iconPath}
-              style=${styleMap(iconStyle)}
-            ></ha-svg-icon>`}
+        ${
+          icon
+            ? html`<ha-icon
+                slot="prefix"
+                .icon=${icon}
+                style=${styleMap(iconStyle)}
+              ></ha-icon>`
+            : html`<ha-svg-icon
+                slot="prefix"
+                .path=${iconPath}
+                style=${styleMap(iconStyle)}
+              ></ha-svg-icon>`
+        }
         <span slot="heading">${label}</span>
         <ha-icon-button
           .path=${mdiPencil}

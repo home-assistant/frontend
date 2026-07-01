@@ -139,9 +139,7 @@ const getAreasAndFloorsItems = (
   excludeFloors?: string[],
   nested = false
 ): (
-  | FloorComboBoxItem
-  | FloorNestedComboBoxItem
-  | UnassignedAreasFloorComboBoxItem
+  FloorComboBoxItem | FloorNestedComboBoxItem | UnassignedAreasFloorComboBoxItem
 )[] => {
   const floors = Object.values(haFloors);
   const areas = Object.values(haAreas);

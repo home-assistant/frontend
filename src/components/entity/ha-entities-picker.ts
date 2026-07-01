@@ -111,14 +111,16 @@ class HaEntitiesPicker extends LitElement {
                   .createDomains=${this.createDomains}
                   @value-changed=${this._entityChanged}
                 ></ha-entity-picker>
-                ${this.reorder
-                  ? html`
-                      <ha-svg-icon
-                        class="entity-handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    `
-                  : nothing}
+                ${
+                  this.reorder
+                    ? html`
+                        <ha-svg-icon
+                          class="entity-handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
+                      `
+                    : nothing
+                }
               </div>
             `
           )}

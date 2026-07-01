@@ -181,44 +181,50 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
               )}
             </p>
           </div>
-          ${this._yamlMode
-            ? html`<div
-                class="card-content"
-                style=${styleMap(this._matchMinHeightStyle)}
-              >
-                <ha-service-picker
-                  .hass=${this.hass}
-                  .value=${this._serviceData?.action}
-                  @value-changed=${this._serviceChanged}
-                  show-service-id
-                ></ha-service-picker>
-                <ha-yaml-editor
-                  id="yaml-editor"
-                  .defaultValue=${this._serviceData}
-                  @value-changed=${this._yamlChanged}
-                ></ha-yaml-editor>
-              </div>`
-            : html`
-                <ha-service-control
-                  .hass=${this.hass}
-                  .value=${this._serviceData}
-                  .narrow=${this.narrow}
-                  show-service-id
-                  @value-changed=${this._serviceDataChanged}
-                  class="card-content ui-mode-content"
-                ></ha-service-control>
-              `}
-          ${this._error !== undefined
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._yamlMode
+              ? html`<div
+                  class="card-content"
+                  style=${styleMap(this._matchMinHeightStyle)}
+                >
+                  <ha-service-picker
+                    .hass=${this.hass}
+                    .value=${this._serviceData?.action}
+                    @value-changed=${this._serviceChanged}
+                    show-service-id
+                  ></ha-service-picker>
+                  <ha-yaml-editor
+                    id="yaml-editor"
+                    .defaultValue=${this._serviceData}
+                    @value-changed=${this._yamlChanged}
+                  ></ha-yaml-editor>
+                </div>`
+              : html`
+                  <ha-service-control
+                    .hass=${this.hass}
+                    .value=${this._serviceData}
+                    .narrow=${this.narrow}
+                    show-service-id
+                    @value-changed=${this._serviceDataChanged}
+                    class="card-content ui-mode-content"
+                  ></ha-service-control>
+                `
+          }
+          ${
+            this._error !== undefined
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
           <div class="card-actions">
-            ${!this._uiAvailable
-              ? html`<span class="error"
-                  >${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.no_template_ui_support"
-                  )}</span
-                >`
-              : nothing}
+            ${
+              !this._uiAvailable
+                ? html`<span class="error"
+                    >${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.actions.no_template_ui_support"
+                    )}</span
+                  >`
+                : nothing
+            }
             <ha-progress-button raised @click=${this._callService}>
               ${this.hass.localize(
                 "ui.panel.config.developer-tools.tabs.actions.call_service"
@@ -227,135 +233,153 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
           </div>
         </ha-card>
       </div>
-      ${this._response?.result
-        ? html`<div class="content response">
-            <ha-card
-              .header=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.actions.response"
-              )}
-            >
-              <div class="card-content">
-                <ha-yaml-editor
-                  read-only
-                  auto-update
-                  has-extra-actions
-                  .value=${this._response.result}
-                >
-                  <ha-button
-                    appearance="plain"
-                    slot="extra-actions"
-                    @click=${this._copyTemplate}
-                    >${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.actions.copy_clipboard_template"
-                    )}</ha-button
-                  >
-                </ha-yaml-editor>
-                ${until(this._response.media)}
-              </div>
-            </ha-card>
-          </div>`
-        : nothing}
-      ${(this._yamlMode ? fields : this._filterSelectorFields(fields)).length
-        ? html`<div class="content">
-            <ha-expansion-panel
-              .header=${this._yamlMode
-                ? this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.all_parameters"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.actions.yaml_parameters"
-                  )}
-              outlined
-              .expanded=${this._yamlMode}
-            >
-              ${this._yamlMode
-                ? html`<div class="description">
-                    <h3>
-                      ${target
-                        ? html`
-                            ${this.hass.localize(
-                              "ui.panel.config.developer-tools.tabs.actions.accepts_target"
-                            )}
-                          `
-                        : ""}
-                    </h3>
-                    ${this._serviceData?.action
-                      ? html` <a
-                          href=${documentationUrl(
-                            this.hass,
-                            "/integrations/" +
-                              computeDomain(this._serviceData?.action)
-                          )}
-                          title=${this.hass.localize(
-                            "ui.components.service-control.integration_doc"
-                          )}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <ha-icon-button
-                            class="help-icon"
-                            .path=${mdiHelpCircleOutline}
-                            .label=${this.hass!.localize("ui.common.help")}
-                          ></ha-icon-button>
-                        </a>`
-                      : ""}
-                  </div>`
-                : ""}
-              <table class="attributes">
-                <tr>
-                  <th>
-                    ${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.actions.column_parameter"
-                    )}
-                  </th>
-                  <th>
-                    ${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.actions.column_description"
-                    )}
-                  </th>
-                  <th>
-                    ${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.actions.column_example"
-                    )}
-                  </th>
-                </tr>
-                ${(this._yamlMode
-                  ? fields
-                  : this._filterSelectorFields(fields)
-                ).map(
-                  (field) =>
-                    html` <tr>
-                      <td><pre>${field.key}</pre></td>
-                      <td>
-                        ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.description`,
-                          descriptionPlaceholders
-                        ) || field.description}
-                      </td>
-                      <td>
-                        ${this.hass.localize(
-                          `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
-                          descriptionPlaceholders
-                        ) ||
-                        (typeof field.example === "object"
-                          ? html`<pre>${dump(field.example)}</pre>`
-                          : field.example)}
-                      </td>
-                    </tr>`
+      ${
+        this._response?.result
+          ? html`<div class="content response">
+              <ha-card
+                .header=${this.hass.localize(
+                  "ui.panel.config.developer-tools.tabs.actions.response"
                 )}
-              </table>
-              ${this._yamlMode
-                ? html`<ha-button
-                    appearance="plain"
-                    @click=${this._fillExampleData}
-                    >${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.actions.fill_example_data"
-                    )}</ha-button
-                  >`
-                : ""}
-            </ha-expansion-panel>
-          </div>`
-        : ""}
+              >
+                <div class="card-content">
+                  <ha-yaml-editor
+                    read-only
+                    auto-update
+                    has-extra-actions
+                    .value=${this._response.result}
+                  >
+                    <ha-button
+                      appearance="plain"
+                      slot="extra-actions"
+                      @click=${this._copyTemplate}
+                      >${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.actions.copy_clipboard_template"
+                      )}</ha-button
+                    >
+                  </ha-yaml-editor>
+                  ${until(this._response.media)}
+                </div>
+              </ha-card>
+            </div>`
+          : nothing
+      }
+      ${
+        (this._yamlMode ? fields : this._filterSelectorFields(fields)).length
+          ? html`<div class="content">
+              <ha-expansion-panel
+                .header=${
+                  this._yamlMode
+                    ? this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.actions.all_parameters"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.actions.yaml_parameters"
+                      )
+                }
+                outlined
+                .expanded=${this._yamlMode}
+              >
+                ${
+                  this._yamlMode
+                    ? html`<div class="description">
+                        <h3>
+                          ${
+                            target
+                              ? html`
+                                  ${this.hass.localize(
+                                    "ui.panel.config.developer-tools.tabs.actions.accepts_target"
+                                  )}
+                                `
+                              : ""
+                          }
+                        </h3>
+                        ${
+                          this._serviceData?.action
+                            ? html` <a
+                                href=${documentationUrl(
+                                  this.hass,
+                                  "/integrations/" +
+                                    computeDomain(this._serviceData?.action)
+                                )}
+                                title=${this.hass.localize(
+                                  "ui.components.service-control.integration_doc"
+                                )}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <ha-icon-button
+                                  class="help-icon"
+                                  .path=${mdiHelpCircleOutline}
+                                  .label=${this.hass!.localize("ui.common.help")}
+                                ></ha-icon-button>
+                              </a>`
+                            : ""
+                        }
+                      </div>`
+                    : ""
+                }
+                <table class="attributes">
+                  <tr>
+                    <th>
+                      ${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.actions.column_parameter"
+                      )}
+                    </th>
+                    <th>
+                      ${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.actions.column_description"
+                      )}
+                    </th>
+                    <th>
+                      ${this.hass.localize(
+                        "ui.panel.config.developer-tools.tabs.actions.column_example"
+                      )}
+                    </th>
+                  </tr>
+                  ${(this._yamlMode
+                    ? fields
+                    : this._filterSelectorFields(fields)
+                  ).map(
+                    (field) =>
+                      html` <tr>
+                        <td><pre>${field.key}</pre></td>
+                        <td>
+                          ${
+                            this.hass.localize(
+                              `component.${domain}.services.${serviceName}.fields.${field.key}.description`,
+                              descriptionPlaceholders
+                            ) || field.description
+                          }
+                        </td>
+                        <td>
+                          ${
+                            this.hass.localize(
+                              `component.${domain}.services.${serviceName}.fields.${field.key}.example`,
+                              descriptionPlaceholders
+                            ) ||
+                            (typeof field.example === "object"
+                              ? html`<pre>${dump(field.example)}</pre>`
+                              : field.example)
+                          }
+                        </td>
+                      </tr>`
+                  )}
+                </table>
+                ${
+                  this._yamlMode
+                    ? html`<ha-button
+                        appearance="plain"
+                        @click=${this._fillExampleData}
+                        >${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.actions.fill_example_data"
+                        )}</ha-button
+                      >`
+                    : ""
+                }
+              </ha-expansion-panel>
+            </div>`
+          : ""
+      }
     `;
   }
 

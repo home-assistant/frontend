@@ -44,8 +44,7 @@ class HuiTargetHumidityCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id!] as
-      | HumidifierEntity
-      | undefined;
+      HumidifierEntity | undefined;
   }
 
   static getStubConfig(): TargetHumidityCardFeatureConfig {

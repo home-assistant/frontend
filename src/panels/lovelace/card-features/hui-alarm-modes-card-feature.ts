@@ -79,8 +79,7 @@ class HuiAlarmModeCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id] as
-      | AlarmControlPanelEntity
-      | undefined;
+      AlarmControlPanelEntity | undefined;
   }
 
   protected willUpdate(changedProp: PropertyValues<this>): void {

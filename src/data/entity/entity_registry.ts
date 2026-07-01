@@ -97,9 +97,7 @@ export interface ValveEntityOptions {
 }
 
 export type FavoriteOption =
-  | "favorite_colors"
-  | "favorite_positions"
-  | "favorite_tilt_positions";
+  "favorite_colors" | "favorite_positions" | "favorite_tilt_positions";
 
 export type FavoritesDomain = "light" | "cover" | "valve";
 

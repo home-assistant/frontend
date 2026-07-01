@@ -126,9 +126,7 @@ export class HaAutomationAddSearch extends LitElement {
   ) => AddAutomationElementListItem;
 
   @property({ attribute: "add-element-type" }) public addElementType!:
-    | "trigger"
-    | "condition"
-    | "action";
+    "trigger" | "condition" | "action";
 
   @state()
   @consume({ context: relatedContext, subscribe: true })
@@ -222,36 +220,40 @@ export class HaAutomationAddSearch extends LitElement {
 
     return html`
       ${this._renderSections()}
-      ${emptySearchTranslation
-        ? html`<div class="empty-search">
-            ${this.hass.localize(emptySearchTranslation as LocalizeKeys, {
-              term: html`<b>‘${this.filter}’</b>`,
-            })}
-          </div>`
-        : html`
-            <div class="search-results">
-              <div class="section-title-wrapper">
-                ${!this._selectedSearchSection && this._searchSectionTitle
-                  ? html`<ha-section-title>
-                      ${this._searchSectionTitle}
-                    </ha-section-title>`
-                  : nothing}
+      ${
+        emptySearchTranslation
+          ? html`<div class="empty-search">
+              ${this.hass.localize(emptySearchTranslation as LocalizeKeys, {
+                term: html`<b>‘${this.filter}’</b>`,
+              })}
+            </div>`
+          : html`
+              <div class="search-results">
+                <div class="section-title-wrapper">
+                  ${
+                    !this._selectedSearchSection && this._searchSectionTitle
+                      ? html`<ha-section-title>
+                          ${this._searchSectionTitle}
+                        </ha-section-title>`
+                      : nothing
+                  }
+                </div>
+                <lit-virtualizer
+                  .keyFunction=${this._keyFunction}
+                  tabindex="0"
+                  scroller
+                  .items=${items}
+                  .renderItem=${this._renderSearchResultRow}
+                  style="min-height: 36px;"
+                  class=${this._searchListScrolled ? "scrolled" : ""}
+                  @scroll=${this._onScrollSearchList}
+                  @focus=${this._focusSearchList}
+                  @visibilityChanged=${this._visibilityChanged}
+                >
+                </lit-virtualizer>
               </div>
-              <lit-virtualizer
-                .keyFunction=${this._keyFunction}
-                tabindex="0"
-                scroller
-                .items=${items}
-                .renderItem=${this._renderSearchResultRow}
-                style="min-height: 36px;"
-                class=${this._searchListScrolled ? "scrolled" : ""}
-                @scroll=${this._onScrollSearchList}
-                @focus=${this._focusSearchList}
-                @visibilityChanged=${this._visibilityChanged}
-              >
-              </lit-virtualizer>
-            </div>
-          `}
+            `
+      }
     `;
   }
 
@@ -325,90 +327,105 @@ export class HaAutomationAddSearch extends LitElement {
         tabindex="-1"
         .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
-        style=${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? "--md-list-item-leading-space: var(--ha-space-12);"
-          : ""}
+        style=${
+          (item as FloorComboBoxItem).type === "area" && hasFloor
+            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            : ""
+        }
         .value=${item}
         @click=${this._selectSearchResult}
       >
-        ${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? html`
-              <ha-tree-indicator
-                style=${styleMap({
-                  width: "var(--ha-space-12)",
-                  position: "absolute",
-                  top: "0",
-                  left: rtl ? undefined : "var(--ha-space-1)",
-                  right: rtl ? "var(--ha-space-1)" : undefined,
-                  transform: rtl ? "scaleX(-1)" : "",
-                })}
-                .end=${(
-                  item as FloorComboBoxItem & { last?: boolean | undefined }
-                ).last}
-                slot="start"
-              ></ha-tree-indicator>
-            `
-          : nothing}
-        ${(item as AutomationItemComboBoxItem).renderedIcon
-          ? html`<div slot="start">
-              ${(item as AutomationItemComboBoxItem).renderedIcon}
-            </div>`
-          : item.icon
-            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-            : item.icon_path || type === "area"
-              ? html`<ha-svg-icon
+        ${
+          (item as FloorComboBoxItem).type === "area" && hasFloor
+            ? html`
+                <ha-tree-indicator
+                  style=${styleMap({
+                    width: "var(--ha-space-12)",
+                    position: "absolute",
+                    top: "0",
+                    left: rtl ? undefined : "var(--ha-space-1)",
+                    right: rtl ? "var(--ha-space-1)" : undefined,
+                    transform: rtl ? "scaleX(-1)" : "",
+                  })}
+                  .end=${
+                    (item as FloorComboBoxItem & { last?: boolean | undefined })
+                      .last
+                  }
                   slot="start"
-                  .path=${item.icon_path || mdiTextureBox}
-                ></ha-svg-icon>`
-              : type === "entity" && (item as EntityComboBoxItem).stateObj
-                ? html`
-                    <state-badge
-                      slot="start"
-                      .stateObj=${(item as EntityComboBoxItem).stateObj}
-                    ></state-badge>
-                  `
-                : type === "device" && (item as DevicePickerItem).domain
+                ></ha-tree-indicator>
+              `
+            : nothing
+        }
+        ${
+          (item as AutomationItemComboBoxItem).renderedIcon
+            ? html`<div slot="start">
+                ${(item as AutomationItemComboBoxItem).renderedIcon}
+              </div>`
+            : item.icon
+              ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+              : item.icon_path || type === "area"
+                ? html`<ha-svg-icon
+                    slot="start"
+                    .path=${item.icon_path || mdiTextureBox}
+                  ></ha-svg-icon>`
+                : type === "entity" && (item as EntityComboBoxItem).stateObj
                   ? html`
-                      <ha-domain-icon
+                      <state-badge
                         slot="start"
-                        .domain=${(item as DevicePickerItem).domain!}
-                        brand-fallback
-                      ></ha-domain-icon>
+                        .stateObj=${(item as EntityComboBoxItem).stateObj}
+                      ></state-badge>
                     `
-                  : type === "floor"
-                    ? html`<ha-floor-icon
-                        slot="start"
-                        .floor=${(item as FloorComboBoxItem).floor!}
-                      ></ha-floor-icon>`
-                    : nothing}
+                  : type === "device" && (item as DevicePickerItem).domain
+                    ? html`
+                        <ha-domain-icon
+                          slot="start"
+                          .domain=${(item as DevicePickerItem).domain!}
+                          brand-fallback
+                        ></ha-domain-icon>
+                      `
+                    : type === "floor"
+                      ? html`<ha-floor-icon
+                          slot="start"
+                          .floor=${(item as FloorComboBoxItem).floor!}
+                        ></ha-floor-icon>`
+                      : nothing
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${(item as EntityComboBoxItem).stateObj && showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${(item as EntityComboBoxItem).stateObj?.entity_id}
-              </span>
-            `
-          : nothing}
-        ${(item as EntityComboBoxItem).domain_name &&
-        (type !== "entity" || !showEntityId)
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${(item as EntityComboBoxItem).domain_name}
-              </div>
-            `
-          : nothing}
-        ${type === "item"
-          ? html`<ha-svg-icon
-              class="plus"
-              slot="end"
-              .path=${mdiPlus}
-            ></ha-svg-icon>`
-          : this.narrow
-            ? html`<ha-icon-next slot="end"></ha-icon-next>`
-            : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          (item as EntityComboBoxItem).stateObj && showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${(item as EntityComboBoxItem).stateObj?.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          (item as EntityComboBoxItem).domain_name &&
+          (type !== "entity" || !showEntityId)
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${(item as EntityComboBoxItem).domain_name}
+                </div>
+              `
+            : nothing
+        }
+        ${
+          type === "item"
+            ? html`<ha-svg-icon
+                class="plus"
+                slot="end"
+                .path=${mdiPlus}
+              ></ha-svg-icon>`
+            : this.narrow
+              ? html`<ha-icon-next slot="end"></ha-icon-next>`
+              : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -496,10 +513,7 @@ export class HaAutomationAddSearch extends LitElement {
       relatedIdSets?: RelatedIdSets
     ) => {
       const resultItems: (
-        | string
-        | FloorComboBoxItem
-        | EntityComboBoxItem
-        | PickerComboBoxItem
+        string | FloorComboBoxItem | EntityComboBoxItem | PickerComboBoxItem
       )[] = [];
 
       if (!selectedSection || selectedSection === "item") {
@@ -1117,8 +1131,6 @@ declare global {
 
   interface HASSDomEvents {
     "search-element-picked":
-      | PickerComboBoxItem
-      | FloorComboBoxItem
-      | EntityComboBoxItem;
+      PickerComboBoxItem | FloorComboBoxItem | EntityComboBoxItem;
   }
 }

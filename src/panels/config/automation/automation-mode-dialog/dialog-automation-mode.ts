@@ -111,23 +111,25 @@ class DialogAutomationMode
           .maxColumns=${1}
         ></ha-select-box>
 
-        ${isMaxMode(this._newMode)
-          ? html`
-              <div class="max-value">
-                <wa-divider></wa-divider>
-                <ha-input
-                  .label=${this.hass.localize(
-                    `ui.panel.config.automation.editor.max.${this._newMode}`
-                  )}
-                  type="number"
-                  name="max"
-                  .value=${this._newMax?.toString() ?? ""}
-                  @input=${this._valueChanged}
-                >
-                </ha-input>
-              </div>
-            `
-          : nothing}
+        ${
+          isMaxMode(this._newMode)
+            ? html`
+                <div class="max-value">
+                  <wa-divider></wa-divider>
+                  <ha-input
+                    .label=${this.hass.localize(
+                      `ui.panel.config.automation.editor.max.${this._newMode}`
+                    )}
+                    type="number"
+                    name="max"
+                    .value=${this._newMax?.toString() ?? ""}
+                    @input=${this._valueChanged}
+                  >
+                  </ha-input>
+                </div>
+              `
+            : nothing
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button

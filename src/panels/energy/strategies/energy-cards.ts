@@ -12,11 +12,7 @@ export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
 }
 
 export type EnergyViewPath =
-  | "overview"
-  | "electricity"
-  | "gas"
-  | "water"
-  | "now";
+  "overview" | "electricity" | "gas" | "water" | "now";
 
 // --- Applicability helpers -------------------------------------------------
 // Source-shape predicates shared by the catalog entries below, the view

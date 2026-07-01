@@ -144,11 +144,8 @@ const copyFavoriteOptionsToEntities = async (
         }),
         text: html`<pre>
 ${rejected
-            .map(
-              (item) => item.reason.message || item.reason.code || item.reason
-            )
-            .join("\r\n")}</pre
-        >`,
+  .map((item) => item.reason.message || item.reason.code || item.reason)
+  .join("\r\n")}</pre>`,
       });
     }
   }

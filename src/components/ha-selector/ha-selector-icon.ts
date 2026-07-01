@@ -81,11 +81,16 @@ export class HaIconSelector extends LitElement {
         .placeholder=${this.selector.icon?.placeholder ?? placeholder}
         @value-changed=${this._valueChanged}
       >
-        ${!placeholder && stateObj
-          ? html`
-              <ha-state-icon slot="start" .stateObj=${stateObj}></ha-state-icon>
-            `
-          : nothing}
+        ${
+          !placeholder && stateObj
+            ? html`
+                <ha-state-icon
+                  slot="start"
+                  .stateObj=${stateObj}
+                ></ha-state-icon>
+              `
+            : nothing
+        }
       </ha-icon-picker>
     `;
   }

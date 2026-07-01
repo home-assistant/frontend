@@ -71,8 +71,10 @@ class HaUsersPicker extends LitElement {
       )}
       <div>
         <ha-user-picker
-          .placeholder=${this.pickUserLabel ||
-          this.hass!.localize("ui.components.user-picker.add_user")}
+          .placeholder=${
+            this.pickUserLabel ||
+            this.hass!.localize("ui.components.user-picker.add_user")
+          }
           .hass=${this.hass}
           .users=${notSelectedUsers}
           .disabled=${this.disabled || !notSelectedUsers?.length}

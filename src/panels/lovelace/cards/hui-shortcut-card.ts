@@ -146,9 +146,11 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
           ></ha-tile-icon>
           <ha-tile-info slot="info">
             <span slot="primary">${label}</span>
-            ${description
-              ? html`<span slot="secondary">${description}</span>`
-              : nothing}
+            ${
+              description
+                ? html`<span slot="secondary">${description}</span>`
+                : nothing
+            }
           </ha-tile-info>
         </ha-tile-container>
       </ha-card>

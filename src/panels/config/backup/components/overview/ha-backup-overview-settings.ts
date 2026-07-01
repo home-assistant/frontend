@@ -229,14 +229,16 @@ class HaBackupBackupsSummary extends LitElement {
             <ha-list-item-button href="/config/backup/settings#data">
               <ha-svg-icon slot="start" .path=${mdiDatabase}></ha-svg-icon>
               <div slot="headline">
-                ${this._showDbOption &&
-                this.config.create_backup.include_database
-                  ? this.hass.localize(
-                      "ui.panel.config.backup.overview.settings.data_settings_history"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.backup.overview.settings.data_settings_only"
-                    )}
+                ${
+                  this._showDbOption &&
+                  this.config.create_backup.include_database
+                    ? this.hass.localize(
+                        "ui.panel.config.backup.overview.settings.data_settings_history"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.backup.overview.settings.data_settings_only"
+                      )
+                }
               </div>
               <div slot="supporting-text">
                 ${this.hass.localize(
@@ -245,22 +247,27 @@ class HaBackupBackupsSummary extends LitElement {
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
-            ${isHassio
-              ? html`
-                  <ha-list-item-button href="/config/backup/settings#data">
-                    <ha-svg-icon slot="start" .path=${mdiPuzzle}></ha-svg-icon>
-                    <div slot="headline">
-                      ${this._addonsDescription(this.config)}
-                    </div>
-                    <div slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.overview.settings.apps"
-                      )}
-                    </div>
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-list-item-button>
-                `
-              : nothing}
+            ${
+              isHassio
+                ? html`
+                    <ha-list-item-button href="/config/backup/settings#data">
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiPuzzle}
+                      ></ha-svg-icon>
+                      <div slot="headline">
+                        ${this._addonsDescription(this.config)}
+                      </div>
+                      <div slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.backup.overview.settings.apps"
+                        )}
+                      </div>
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
+                  `
+                : nothing
+            }
             <ha-list-item-button href="/config/backup/settings#locations">
               <ha-svg-icon slot="start" .path=${mdiUpload}></ha-svg-icon>
               <div slot="headline">

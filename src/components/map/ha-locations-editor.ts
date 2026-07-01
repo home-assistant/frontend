@@ -133,9 +133,11 @@ export class HaLocationsEditor extends LitElement {
         .clickable=${this.pinOnClick}
         @map-clicked=${this._mapClicked}
       ></ha-map>
-      ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-        : ""}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          : ""
+      }
     `;
   }
 

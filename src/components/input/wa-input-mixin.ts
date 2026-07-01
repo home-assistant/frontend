@@ -35,13 +35,7 @@ export interface WaInputMixinInterface {
   minlength?: number;
   maxlength?: number;
   autocapitalize:
-    | "off"
-    | "none"
-    | "on"
-    | "sentences"
-    | "words"
-    | "characters"
-    | "";
+    "off" | "none" | "on" | "sentences" | "words" | "characters" | "";
   autocomplete?: string;
   autofocus: boolean;
   spellcheck: boolean;
@@ -56,14 +50,7 @@ export interface WaInputMixinInterface {
     | "url"
     | "";
   enterkeyhint:
-    | "enter"
-    | "done"
-    | "go"
-    | "next"
-    | "previous"
-    | "search"
-    | "send"
-    | "";
+    "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | "";
   name?: string;
   disabled: boolean;
   validationMessage?: string;
@@ -116,13 +103,7 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
     @property()
     // eslint-disable-next-line lit/no-native-attributes
     public autocapitalize:
-      | "off"
-      | "none"
-      | "on"
-      | "sentences"
-      | "words"
-      | "characters"
-      | "" = "";
+      "off" | "none" | "on" | "sentences" | "words" | "characters" | "" = "";
 
     @property()
     public autocomplete?: string;
@@ -151,14 +132,8 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
     @property()
     // eslint-disable-next-line lit/no-native-attributes
     public enterkeyhint:
-      | "enter"
-      | "done"
-      | "go"
-      | "next"
-      | "previous"
-      | "search"
-      | "send"
-      | "" = "";
+      "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | "" =
+      "";
 
     @property()
     public name?: string;

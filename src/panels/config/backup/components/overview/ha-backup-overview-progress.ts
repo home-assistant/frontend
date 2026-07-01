@@ -328,9 +328,9 @@ export class HaBackupOverviewProgress extends LitElement {
     return html`
       <div
         class="agent-list-wrapper ${this._collapsingAgents ? "collapsing" : ""}"
-        @animationend=${this._collapsingAgents
-          ? this._handleAgentCollapseEnd
-          : undefined}
+        @animationend=${
+          this._collapsingAgents ? this._handleAgentCollapseEnd : undefined
+        }
       >
         <ha-list-base class="agent-list">
           ${this.agents.map((agent) => {
@@ -408,13 +408,15 @@ export class HaBackupOverviewProgress extends LitElement {
         .description=${this._description}
         status="none"
       >
-        ${hasProgressContent
-          ? html`
-              <div class="progress-content">
-                ${segmentedProgress} ${agentProgress}
-              </div>
-            `
-          : nothing}
+        ${
+          hasProgressContent
+            ? html`
+                <div class="progress-content">
+                  ${segmentedProgress} ${agentProgress}
+                </div>
+              `
+            : nothing
+        }
       </ha-backup-summary-card>
     `;
   }

@@ -32,48 +32,52 @@ class HaConfigSectionNetwork extends LitElement {
         .header=${this.hass.localize("ui.panel.config.network.caption")}
       >
         <div class="content">
-          ${isComponentLoaded(this.hass.config, "hassio")
-            ? html`<supervisor-hostname
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                ></supervisor-hostname>
-                <supervisor-network .hass=${this.hass}></supervisor-network>`
-            : ""}
+          ${
+            isComponentLoaded(this.hass.config, "hassio")
+              ? html`<supervisor-hostname
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></supervisor-hostname>
+                  <supervisor-network .hass=${this.hass}></supervisor-network>`
+              : ""
+          }
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
-          ${NETWORK_BROWSERS.some((component) =>
-            isComponentLoaded(this.hass.config, component)
-          )
-            ? html`
-                <ha-card
-                  outlined
-                  class="discovery-card"
-                  header=${this.hass.localize(
-                    "ui.panel.config.network.discovery.title"
-                  )}
-                >
-                  <ha-md-list>
-                    ${NETWORK_BROWSERS.map(
-                      (domain) => html`
-                        <ha-md-list-item type="link" href="/config/${domain}">
-                          <div slot="headline">
-                            ${this.hass.localize(
-                              `ui.panel.config.network.discovery.${domain}`
-                            )}
-                          </div>
-                          <div slot="supporting-text">
-                            ${this.hass.localize(
-                              `ui.panel.config.network.discovery.${domain}_info`
-                            )}
-                          </div>
-                          <ha-icon-next slot="end"></ha-icon-next>
-                        </ha-md-list-item>
-                      `
+          ${
+            NETWORK_BROWSERS.some((component) =>
+              isComponentLoaded(this.hass.config, component)
+            )
+              ? html`
+                  <ha-card
+                    outlined
+                    class="discovery-card"
+                    header=${this.hass.localize(
+                      "ui.panel.config.network.discovery.title"
                     )}
-                  </ha-md-list>
-                </ha-card>
-              `
-            : ""}
+                  >
+                    <ha-md-list>
+                      ${NETWORK_BROWSERS.map(
+                        (domain) => html`
+                          <ha-md-list-item type="link" href="/config/${domain}">
+                            <div slot="headline">
+                              ${this.hass.localize(
+                                `ui.panel.config.network.discovery.${domain}`
+                              )}
+                            </div>
+                            <div slot="supporting-text">
+                              ${this.hass.localize(
+                                `ui.panel.config.network.discovery.${domain}_info`
+                              )}
+                            </div>
+                            <ha-icon-next slot="end"></ha-icon-next>
+                          </ha-md-list-item>
+                        `
+                      )}
+                    </ha-md-list>
+                  </ha-card>
+                `
+              : ""
+          }
         </div>
       </hass-subpage>
     `;

@@ -399,13 +399,15 @@ class DialogMatterAddDevice extends LitElement {
     if (this._step === "device_added") {
       return html`
         <ha-button slot="primaryAction" @click=${this._finishDeviceAdded}>
-          ${this._deviceAddedState.hasPendingUpdates
-            ? this.hass.localize(
-                "ui.dialogs.matter-add-device.device_added.finish"
-              )
-            : this.hass.localize(
-                "ui.dialogs.matter-add-device.device_added.skip"
-              )}
+          ${
+            this._deviceAddedState.hasPendingUpdates
+              ? this.hass.localize(
+                  "ui.dialogs.matter-add-device.device_added.finish"
+                )
+              : this.hass.localize(
+                  "ui.dialogs.matter-add-device.device_added.skip"
+                )
+          }
         </ha-button>
       `;
     }
@@ -432,20 +434,24 @@ class DialogMatterAddDevice extends LitElement {
         prevent-scrim-close
         @closed=${this._dialogClosed}
       >
-        ${hasBackStep
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="headerNavigationIcon"
-                @click=${this._back}
-              ></ha-icon-button-arrow-prev>
-            `
-          : nothing}
+        ${
+          hasBackStep
+            ? html`
+                <ha-icon-button-arrow-prev
+                  slot="headerNavigationIcon"
+                  @click=${this._back}
+                ></ha-icon-button-arrow-prev>
+              `
+            : nothing
+        }
         ${this._renderStep()}
-        ${actions === nothing
-          ? nothing
-          : html`<ha-dialog-footer slot="footer">
-              ${actions}
-            </ha-dialog-footer>`}
+        ${
+          actions === nothing
+            ? nothing
+            : html`<ha-dialog-footer slot="footer">
+                ${actions}
+              </ha-dialog-footer>`
+        }
       </ha-dialog>
     `;
   }

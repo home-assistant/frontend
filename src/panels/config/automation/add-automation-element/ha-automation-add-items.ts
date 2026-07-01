@@ -72,22 +72,26 @@ export class HaAutomationAddItems extends LitElement {
       })}
       @scroll=${this._onItemsScroll}
     >
-      ${!this.items && !this.error
-        ? this.selectLabel
-        : this.error
-          ? html`${this.error}
-              <div>${this._renderTarget(this.target)}</div>`
-          : this.items && !this.items.length
-            ? html`${this.emptyLabel}
-              ${this.target
-                ? html`<div>${this._renderTarget(this.target)}</div>`
-                : nothing}`
-            : repeat(
-                this.items,
-                (_, index) => `item-group-${index}`,
-                (itemGroup) =>
-                  this._renderItemList(itemGroup.title, itemGroup.items)
-              )}
+      ${
+        !this.items && !this.error
+          ? this.selectLabel
+          : this.error
+            ? html`${this.error}
+                <div>${this._renderTarget(this.target)}</div>`
+            : this.items && !this.items.length
+              ? html`${this.emptyLabel}
+                ${
+                  this.target
+                    ? html`<div>${this._renderTarget(this.target)}</div>`
+                    : nothing
+                }`
+              : repeat(
+                  this.items,
+                  (_, index) => `item-group-${index}`,
+                  (itemGroup) =>
+                    this._renderItemList(itemGroup.title, itemGroup.items)
+                )
+      }
     </div>`;
   }
 
@@ -108,35 +112,41 @@ export class HaAutomationAddItems extends LitElement {
                 ${item.name}${this._renderTarget(this.target)}
               </div>
 
-              ${!this.tooltipDescription && item.description
-                ? html`<div slot="supporting-text">${item.description}</div>`
-                : nothing}
-              ${item.icon
-                ? html`<span slot="start">${item.icon}</span>`
-                : item.iconPath
+              ${
+                !this.tooltipDescription && item.description
+                  ? html`<div slot="supporting-text">${item.description}</div>`
+                  : nothing
+              }
+              ${
+                item.icon
+                  ? html`<span slot="start">${item.icon}</span>`
+                  : item.iconPath
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${item.iconPath}
+                      ></ha-svg-icon>`
+                    : nothing
+              }
+              ${
+                this.tooltipDescription && item.description
                   ? html`<ha-svg-icon
-                      slot="start"
-                      .path=${item.iconPath}
-                    ></ha-svg-icon>`
-                  : nothing}
-              ${this.tooltipDescription && item.description
-                ? html`<ha-svg-icon
-                      tabindex="0"
-                      id=${`description-tooltip-${item.key}`}
-                      slot="end"
-                      .path=${mdiInformationOutline}
-                      @click=${stopPropagation}
-                    ></ha-svg-icon>
-                    <ha-tooltip
-                      slot="end"
-                      .for=${`description-tooltip-${item.key}`}
-                      @wa-show=${stopPropagation}
-                      @wa-hide=${stopPropagation}
-                      @wa-after-hide=${stopPropagation}
-                      @wa-after-show=${stopPropagation}
-                      >${item.description}</ha-tooltip
-                    > `
-                : nothing}
+                        tabindex="0"
+                        id=${`description-tooltip-${item.key}`}
+                        slot="end"
+                        .path=${mdiInformationOutline}
+                        @click=${stopPropagation}
+                      ></ha-svg-icon>
+                      <ha-tooltip
+                        slot="end"
+                        .for=${`description-tooltip-${item.key}`}
+                        @wa-show=${stopPropagation}
+                        @wa-hide=${stopPropagation}
+                        @wa-after-hide=${stopPropagation}
+                        @wa-after-show=${stopPropagation}
+                        >${item.description}</ha-tooltip
+                      > `
+                  : nothing
+              }
               <ha-svg-icon
                 slot="end"
                 class="plus"

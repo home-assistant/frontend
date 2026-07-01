@@ -166,14 +166,16 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
               .darkOptimizedIcon=${this.hass.themes?.darkMode}
             ></integration-badge>`
         )}
-        ${foundIntegrations > domains.length
-          ? html`<div class="more">
-              ${this.onboardingLocalize(
-                "ui.panel.page-onboarding.integration.more_integrations",
-                { count: foundIntegrations - domains.length }
-              )}
-            </div>`
-          : nothing}
+        ${
+          foundIntegrations > domains.length
+            ? html`<div class="more">
+                ${this.onboardingLocalize(
+                  "ui.panel.page-onboarding.integration.more_integrations",
+                  { count: foundIntegrations - domains.length }
+                )}
+              </div>`
+            : nothing
+        }
       </div>
       <div class="footer">
         <ha-button @click=${this._finish}>

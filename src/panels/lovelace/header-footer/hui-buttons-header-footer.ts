@@ -51,9 +51,11 @@ export class HuiButtonsHeaderFooter
 
   protected render(): TemplateResult | undefined {
     return html`
-      ${this.type === "footer"
-        ? html`<li class="divider footer" role="separator"></li>`
-        : ""}
+      ${
+        this.type === "footer"
+          ? html`<li class="divider footer" role="separator"></li>`
+          : ""
+      }
       <hui-buttons-base
         .hass=${this.hass}
         .configEntities=${this._configEntities}
@@ -62,9 +64,11 @@ export class HuiButtonsHeaderFooter
           header: this.type === "header",
         })}
       ></hui-buttons-base>
-      ${this.type === "header"
-        ? html`<li class="divider header" role="separator"></li>`
-        : ""}
+      ${
+        this.type === "header"
+          ? html`<li class="divider header" role="separator"></li>`
+          : ""
+      }
     `;
   }
 

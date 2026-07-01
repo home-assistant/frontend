@@ -93,9 +93,11 @@ class OnboardingLocation extends LitElement {
           "ui.panel.page-onboarding.core-config.location_header"
         )}
       </h1>
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
 
       <p>
         ${this.onboardingLocalize(
@@ -112,67 +114,73 @@ class OnboardingLocation extends LitElement {
           @keyup=${this._addressSearch}
         >
           <ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>
-          ${this._working
-            ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
-            : html`
-                <ha-icon-button
-                  @click=${this._handleButtonClick}
-                  slot="end"
-                  .disabled=${this._working}
-                  .label=${this.onboardingLocalize(
-                    this._search
-                      ? "ui.common.search"
-                      : "ui.panel.page-onboarding.core-config.button_detect"
-                  )}
-                  .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
-                ></ha-icon-button>
-              `}
+          ${
+            this._working
+              ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
+              : html`
+                  <ha-icon-button
+                    @click=${this._handleButtonClick}
+                    slot="end"
+                    .disabled=${this._working}
+                    .label=${this.onboardingLocalize(
+                      this._search
+                        ? "ui.common.search"
+                        : "ui.panel.page-onboarding.core-config.button_detect"
+                    )}
+                    .path=${this._search ? mdiMapSearchOutline : mdiCrosshairsGps}
+                  ></ha-icon-button>
+                `
+          }
         </ha-input>
-        ${this._places !== undefined
-          ? html`
-              <ha-list activatable>
-                ${this._places?.length
-                  ? this._places.map((place) => {
-                      const primary = [
-                        place.name || place.address[place.category],
-                        place.address.house_number,
-                        place.address.road || place.address.waterway,
-                        place.address.village || place.address.town,
-                        place.address.suburb || place.address.subdivision,
-                        place.address.city || place.address.municipality,
-                      ]
-                        .filter(Boolean)
-                        .join(", ");
-                      const secondary = [
-                        place.address.county ||
-                          place.address.state_district ||
-                          place.address.region,
-                        place.address.state,
-                        place.address.country,
-                      ]
-                        .filter(Boolean)
-                        .join(", ");
-                      return html`<ha-list-item
-                        @click=${this._itemClicked}
-                        .placeId=${place.place_id}
-                        .selected=${this._highlightedMarker === place.place_id}
-                        .activated=${this._highlightedMarker === place.place_id}
-                        .twoline=${primary && secondary}
-                      >
-                        ${primary || secondary}
-                        <span slot="secondary"
-                          >${primary ? secondary : ""}</span
-                        >
-                      </ha-list-item>`;
-                    })
-                  : html`<ha-list-item noninteractive
-                      >${this._places === null
-                        ? ""
-                        : "No results"}</ha-list-item
-                    >`}
-              </ha-list>
-            `
-          : nothing}
+        ${
+          this._places !== undefined
+            ? html`
+                <ha-list activatable>
+                  ${
+                    this._places?.length
+                      ? this._places.map((place) => {
+                          const primary = [
+                            place.name || place.address[place.category],
+                            place.address.house_number,
+                            place.address.road || place.address.waterway,
+                            place.address.village || place.address.town,
+                            place.address.suburb || place.address.subdivision,
+                            place.address.city || place.address.municipality,
+                          ]
+                            .filter(Boolean)
+                            .join(", ");
+                          const secondary = [
+                            place.address.county ||
+                              place.address.state_district ||
+                              place.address.region,
+                            place.address.state,
+                            place.address.country,
+                          ]
+                            .filter(Boolean)
+                            .join(", ");
+                          return html`<ha-list-item
+                            @click=${this._itemClicked}
+                            .placeId=${place.place_id}
+                            .selected=${this._highlightedMarker === place.place_id}
+                            .activated=${this._highlightedMarker === place.place_id}
+                            .twoline=${primary && secondary}
+                          >
+                            ${primary || secondary}
+                            <span slot="secondary"
+                              >${primary ? secondary : ""}</span
+                            >
+                          </ha-list-item>`;
+                        })
+                      : html`<ha-list-item noninteractive
+                          >${
+                            this._places === null ? "" : "No results"
+                          }</ha-list-item
+                        >`
+                  }
+                </ha-list>
+              `
+            : nothing
+        }
       </div>
       <ha-locations-editor
         class="flex"

@@ -128,16 +128,18 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                 "ui.panel.config.developer-tools.tabs.assist.description"
               )}
             </p>
-            ${this.supportedLanguages
-              ? html`
-                  <ha-language-picker
-                    .languages=${this.supportedLanguages}
-                    .hass=${this.hass}
-                    .value=${this._language}
-                    @value-changed=${this._languageChanged}
-                  ></ha-language-picker>
-                `
-              : nothing}
+            ${
+              this.supportedLanguages
+                ? html`
+                    <ha-language-picker
+                      .languages=${this.supportedLanguages}
+                      .hass=${this.hass}
+                      .value=${this._language}
+                      @value-changed=${this._languageChanged}
+                    ></ha-language-picker>
+                  `
+                : nothing
+            }
             <ha-textarea
               resize="auto"
               .label=${this.hass.localize(
@@ -161,26 +163,34 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           </div>
         </ha-card>
 
-        ${this._results.length
-          ? html`
-              <div class="result-toolbar">
-                <ha-button
-                  appearance="filled"
-                  @click=${this._clear}
-                  variant="danger"
-                >
-                  <ha-svg-icon slot="start" .path=${mdiTrashCan}></ha-svg-icon>
-                  ${this.hass.localize("ui.common.clear")}
-                </ha-button>
-                <ha-button appearance="filled" @click=${this._download}>
-                  <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.assist.download_results"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : ""}
+        ${
+          this._results.length
+            ? html`
+                <div class="result-toolbar">
+                  <ha-button
+                    appearance="filled"
+                    @click=${this._clear}
+                    variant="danger"
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiTrashCan}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("ui.common.clear")}
+                  </ha-button>
+                  <ha-button appearance="filled" @click=${this._download}>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiDownload}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.developer-tools.tabs.assist.download_results"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : ""
+        }
         ${this._results.map((r) => {
           const { sentence, result, language } = r;
           const matched = result != null;
@@ -199,20 +209,22 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                   ${formatLanguageCode(language, this.hass.locale)}
                   (${language})
                 </div>
-                ${result
-                  ? html`
-                      <ha-code-editor
-                        mode="yaml"
-                        .value=${dump(result).trimRight()}
-                        read-only
-                        dir="ltr"
-                      ></ha-code-editor>
-                    `
-                  : html`<ha-alert alert-type="error">
-                      ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.assist.no_match"
-                      )}
-                    </ha-alert>`}
+                ${
+                  result
+                    ? html`
+                        <ha-code-editor
+                          mode="yaml"
+                          .value=${dump(result).trimRight()}
+                          read-only
+                          dir="ltr"
+                        ></ha-code-editor>
+                      `
+                    : html`<ha-alert alert-type="error">
+                        ${this.hass.localize(
+                          "ui.panel.config.developer-tools.tabs.assist.no_match"
+                        )}
+                      </ha-alert>`
+                }
               </div>
             </ha-card>
           `;

@@ -74,48 +74,54 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.attributes.mode === "slider" ||
-        (stateObj.attributes.mode === "auto" &&
-          (Number(stateObj.attributes.max) - Number(stateObj.attributes.min)) /
-            Number(stateObj.attributes.step) <=
-            256)
-          ? html`
-              <div class="flex">
-                <ha-slider
-                  labeled
-                  .disabled=${stateObj.state === UNAVAILABLE}
-                  .step=${Number(stateObj.attributes.step)}
-                  .min=${Number(stateObj.attributes.min)}
-                  .max=${Number(stateObj.attributes.max)}
-                  .value=${Number(stateObj.state)}
-                  @change=${this._selectedValueChanged}
-                ></ha-slider>
-                <span class="state">
-                  ${stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
-                    ? "—"
-                    : this.hass.formatEntityState(stateObj)}
-                </span>
-              </div>
-            `
-          : html`
-              <div class="flex state">
-                <ha-input
-                  auto-validate
-                  .disabled=${stateObj.state === UNAVAILABLE}
-                  pattern="[0-9]+([\\.][0-9]+)?"
-                  .step=${Number(stateObj.attributes.step)}
-                  .min=${Number(stateObj.attributes.min)}
-                  .max=${Number(stateObj.attributes.max)}
-                  .value=${stateObj.state}
-                  type="number"
-                  @change=${this._selectedValueChanged}
-                >
-                  <span slot="end"
-                    >${stateObj.attributes.unit_of_measurement}</span
+        ${
+          stateObj.attributes.mode === "slider" ||
+          (stateObj.attributes.mode === "auto" &&
+            (Number(stateObj.attributes.max) -
+              Number(stateObj.attributes.min)) /
+              Number(stateObj.attributes.step) <=
+              256)
+            ? html`
+                <div class="flex">
+                  <ha-slider
+                    labeled
+                    .disabled=${stateObj.state === UNAVAILABLE}
+                    .step=${Number(stateObj.attributes.step)}
+                    .min=${Number(stateObj.attributes.min)}
+                    .max=${Number(stateObj.attributes.max)}
+                    .value=${Number(stateObj.state)}
+                    @change=${this._selectedValueChanged}
+                  ></ha-slider>
+                  <span class="state">
+                    ${
+                      stateObj.state === UNAVAILABLE ||
+                      stateObj.state === UNKNOWN
+                        ? "—"
+                        : this.hass.formatEntityState(stateObj)
+                    }
+                  </span>
+                </div>
+              `
+            : html`
+                <div class="flex state">
+                  <ha-input
+                    auto-validate
+                    .disabled=${stateObj.state === UNAVAILABLE}
+                    pattern="[0-9]+([\\.][0-9]+)?"
+                    .step=${Number(stateObj.attributes.step)}
+                    .min=${Number(stateObj.attributes.min)}
+                    .max=${Number(stateObj.attributes.max)}
+                    .value=${stateObj.state}
+                    type="number"
+                    @change=${this._selectedValueChanged}
                   >
-                </ha-input>
-              </div>
-            `}
+                    <span slot="end"
+                      >${stateObj.attributes.unit_of_measurement}</span
+                    >
+                  </ha-input>
+                </div>
+              `
+        }
       </hui-generic-entity-row>
     `;
   }

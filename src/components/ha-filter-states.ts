@@ -45,40 +45,46 @@ export class HaFilterStates extends LitElement {
       >
         <div slot="header" class="header">
           ${this.label}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`
-              <ha-list
-                @selected=${this._statesSelected}
-                multi
-                class="ha-scrollbar"
-              >
-                ${this.states.map(
-                  (item) =>
-                    html`<ha-check-list-item
-                      .value=${item.value}
-                      .selected=${this.value?.includes(item.value) ?? false}
-                      .graphic=${hasIcon ? "icon" : null}
-                    >
-                      ${item.icon
-                        ? html`<ha-icon
-                            slot="graphic"
-                            .icon=${item.icon}
-                          ></ha-icon>`
-                        : nothing}
-                      ${item.label}
-                    </ha-check-list-item>`
-                )}
-              </ha-list>
-            `
-          : nothing}
+        ${
+          this._shouldRender
+            ? html`
+                <ha-list
+                  @selected=${this._statesSelected}
+                  multi
+                  class="ha-scrollbar"
+                >
+                  ${this.states.map(
+                    (item) =>
+                      html`<ha-check-list-item
+                        .value=${item.value}
+                        .selected=${this.value?.includes(item.value) ?? false}
+                        .graphic=${hasIcon ? "icon" : null}
+                      >
+                        ${
+                          item.icon
+                            ? html`<ha-icon
+                                slot="graphic"
+                                .icon=${item.icon}
+                              ></ha-icon>`
+                            : nothing
+                        }
+                        ${item.label}
+                      </ha-check-list-item>`
+                  )}
+                </ha-list>
+              `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

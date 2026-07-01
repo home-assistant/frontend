@@ -174,9 +174,11 @@ export class HaConfigLabels extends LitElement {
           ? undefined
           : (label) => html`
               <div>${label.name}</div>
-              ${label.description
-                ? html`<div class="secondary">${label.description}</div>`
-                : nothing}
+              ${
+                label.description
+                  ? html`<div class="secondary">${label.description}</div>`
+                  : nothing
+              }
             `,
       },
       description: {

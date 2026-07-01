@@ -87,132 +87,154 @@ export class HuiGenericEntityRow extends LitElement {
           .overrideImage=${this.config.image}
           .stateColor=${this.config.state_color}
         ></state-badge>
-        ${!this.hideName
-          ? html`<div
-              class="info ${classMap({ "text-content": !hasSecondary })}"
-              .title=${name}
-            >
-              ${name}
-              ${hasSecondary
-                ? html`
-                    <div class="secondary">
-                      ${this.secondaryText ||
-                      (this.config.secondary_info === "entity-id"
-                        ? stateObj.entity_id
-                        : this.config.secondary_info === "last-changed"
-                          ? html`
-                              <ha-tooltip
-                                for="last-changed${this
-                                  ._secondaryInfoElementId}"
-                                placement="right"
-                              >
-                                ${formatDateTimeWithSeconds(
-                                  new Date(stateObj.last_changed),
-                                  this.hass.locale,
-                                  this.hass.config
-                                )}
-                              </ha-tooltip>
-                              <ha-relative-time
-                                id="last-changed${this._secondaryInfoElementId}"
-                                .datetime=${stateObj.last_changed}
-                                capitalize
-                              ></ha-relative-time>
-                            `
-                          : this.config.secondary_info === "last-updated"
-                            ? html`
-                                <ha-tooltip
-                                  for="last-updated${this
-                                    ._secondaryInfoElementId}"
-                                  placement="right"
-                                >
-                                  ${formatDateTimeWithSeconds(
-                                    new Date(stateObj.last_updated),
-                                    this.hass.locale,
-                                    this.hass.config
-                                  )}
-                                </ha-tooltip>
-                                <ha-relative-time
-                                  id="last-updated${this
-                                    ._secondaryInfoElementId}"
-                                  .datetime=${stateObj.last_updated}
-                                  capitalize
-                                ></ha-relative-time>
-                              `
-                            : this.config.secondary_info === "last-triggered"
-                              ? stateObj.attributes.last_triggered
+        ${
+          !this.hideName
+            ? html`<div
+                class="info ${classMap({ "text-content": !hasSecondary })}"
+                .title=${name}
+              >
+                ${name}
+                ${
+                  hasSecondary
+                    ? html`
+                        <div class="secondary">
+                          ${
+                            this.secondaryText ||
+                            (this.config.secondary_info === "entity-id"
+                              ? stateObj.entity_id
+                              : this.config.secondary_info === "last-changed"
                                 ? html`
                                     <ha-tooltip
-                                      for="last-triggered${this
-                                        ._secondaryInfoElementId}"
+                                      for="last-changed${
+                                        this._secondaryInfoElementId
+                                      }"
                                       placement="right"
                                     >
                                       ${formatDateTimeWithSeconds(
-                                        new Date(
-                                          stateObj.attributes.last_triggered
-                                        ),
+                                        new Date(stateObj.last_changed),
                                         this.hass.locale,
                                         this.hass.config
                                       )}
                                     </ha-tooltip>
                                     <ha-relative-time
-                                      id="last-triggered${this
-                                        ._secondaryInfoElementId}"
-                                      .datetime=${stateObj.attributes
-                                        .last_triggered}
+                                      id="last-changed${this._secondaryInfoElementId}"
+                                      .datetime=${stateObj.last_changed}
                                       capitalize
                                     ></ha-relative-time>
                                   `
-                                : this.hass.localize(
-                                    "ui.panel.lovelace.cards.entities.never_triggered"
-                                  )
-                              : this.config.secondary_info === "position" &&
-                                  stateObj.attributes.current_position !==
-                                    undefined
-                                ? `${this.hass.localize(
-                                    "ui.card.cover.position"
-                                  )}: ${stateObj.attributes.current_position}`
-                                : this.config.secondary_info ===
-                                      "tilt-position" &&
-                                    stateObj.attributes
-                                      .current_tilt_position !== undefined
-                                  ? `${this.hass.localize(
-                                      "ui.card.cover.tilt_position"
-                                    )}: ${
-                                      stateObj.attributes.current_tilt_position
-                                    }`
+                                : this.config.secondary_info === "last-updated"
+                                  ? html`
+                                      <ha-tooltip
+                                        for="last-updated${
+                                          this._secondaryInfoElementId
+                                        }"
+                                        placement="right"
+                                      >
+                                        ${formatDateTimeWithSeconds(
+                                          new Date(stateObj.last_updated),
+                                          this.hass.locale,
+                                          this.hass.config
+                                        )}
+                                      </ha-tooltip>
+                                      <ha-relative-time
+                                        id="last-updated${
+                                          this._secondaryInfoElementId
+                                        }"
+                                        .datetime=${stateObj.last_updated}
+                                        capitalize
+                                      ></ha-relative-time>
+                                    `
                                   : this.config.secondary_info ===
-                                        "brightness" &&
-                                      stateObj.attributes.brightness
-                                    ? html`${Math.round(
-                                        (stateObj.attributes.brightness / 255) *
-                                          100
-                                      )}
-                                      %`
-                                    : this.config.secondary_info === "state"
-                                      ? html`${this.hass.formatEntityState(
-                                          stateObj
-                                        )}`
-                                      : this.config.secondary_info === "area"
-                                        ? (this._getArea(stateObj) ?? nothing)
-                                        : nothing)}
-                    </div>
-                  `
-                : nothing}
-            </div>`
-          : nothing}
-        ${(this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain))
-          ? html`
-              <div class="text-content value">
-                <div class="state"><slot></slot></div>
-              </div>
-            `
-          : html`<slot
-              @touchcancel=${stopPropagation}
-              @touchend=${stopPropagation}
-              @keydown=${stopPropagation}
-              @click=${stopPropagation}
-              @action=${stopPropagation}
-            ></slot>`}
+                                      "last-triggered"
+                                    ? stateObj.attributes.last_triggered
+                                      ? html`
+                                          <ha-tooltip
+                                            for="last-triggered${
+                                              this._secondaryInfoElementId
+                                            }"
+                                            placement="right"
+                                          >
+                                            ${formatDateTimeWithSeconds(
+                                              new Date(
+                                                stateObj.attributes
+                                                  .last_triggered
+                                              ),
+                                              this.hass.locale,
+                                              this.hass.config
+                                            )}
+                                          </ha-tooltip>
+                                          <ha-relative-time
+                                            id="last-triggered${
+                                              this._secondaryInfoElementId
+                                            }"
+                                            .datetime=${
+                                              stateObj.attributes.last_triggered
+                                            }
+                                            capitalize
+                                          ></ha-relative-time>
+                                        `
+                                      : this.hass.localize(
+                                          "ui.panel.lovelace.cards.entities.never_triggered"
+                                        )
+                                    : this.config.secondary_info ===
+                                          "position" &&
+                                        stateObj.attributes.current_position !==
+                                          undefined
+                                      ? `${this.hass.localize(
+                                          "ui.card.cover.position"
+                                        )}: ${stateObj.attributes.current_position}`
+                                      : this.config.secondary_info ===
+                                            "tilt-position" &&
+                                          stateObj.attributes
+                                            .current_tilt_position !== undefined
+                                        ? `${this.hass.localize(
+                                            "ui.card.cover.tilt_position"
+                                          )}: ${
+                                            stateObj.attributes
+                                              .current_tilt_position
+                                          }`
+                                        : this.config.secondary_info ===
+                                              "brightness" &&
+                                            stateObj.attributes.brightness
+                                          ? html`${Math.round(
+                                              (stateObj.attributes.brightness /
+                                                255) *
+                                                100
+                                            )}
+                                            %`
+                                          : this.config.secondary_info ===
+                                              "state"
+                                            ? html`${this.hass.formatEntityState(
+                                                stateObj
+                                              )}`
+                                            : this.config.secondary_info ===
+                                                "area"
+                                              ? (this._getArea(stateObj) ??
+                                                nothing)
+                                              : nothing)
+                          }
+                        </div>
+                      `
+                    : nothing
+                }
+              </div>`
+            : nothing
+        }
+        ${
+          (this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain))
+            ? html`
+                <div class="text-content value">
+                  <div class="state"><slot></slot></div>
+                </div>
+              `
+            : html`<slot
+                @touchcancel=${stopPropagation}
+                @touchend=${stopPropagation}
+                @keydown=${stopPropagation}
+                @click=${stopPropagation}
+                @action=${stopPropagation}
+              ></slot>`
+        }
       </div>
     `;
   }

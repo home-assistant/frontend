@@ -75,52 +75,51 @@ class ZHADeviceNeighbors extends LitElement {
     }
   );
 
-  private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
-      narrow
-        ? {
-            name: {
-              title: this.hass.localize("ui.panel.config.zha.neighbors.name"),
-              sortable: true,
-              filterable: true,
-              direction: "asc",
-              flex: 2,
-            },
-            lqi: {
-              title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
-              sortable: true,
-              filterable: true,
-              type: "numeric",
-            },
-          }
-        : {
-            name: {
-              title: this.hass.localize("ui.panel.config.zha.neighbors.name"),
-              sortable: true,
-              filterable: true,
-              direction: "asc",
-              flex: 2,
-            },
-            lqi: {
-              title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
-              sortable: true,
-              filterable: true,
-              type: "numeric",
-            },
-            relationship: {
-              title: this.hass.localize(
-                "ui.panel.config.zha.neighbors.relationship"
-              ),
-              sortable: true,
-              filterable: true,
-            },
-            depth: {
-              title: this.hass.localize("ui.panel.config.zha.neighbors.depth"),
-              sortable: true,
-              filterable: true,
-              type: "numeric",
-            },
-          }
+  private _columns = memoizeOne((narrow: boolean): DataTableColumnContainer =>
+    narrow
+      ? {
+          name: {
+            title: this.hass.localize("ui.panel.config.zha.neighbors.name"),
+            sortable: true,
+            filterable: true,
+            direction: "asc",
+            flex: 2,
+          },
+          lqi: {
+            title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
+            sortable: true,
+            filterable: true,
+            type: "numeric",
+          },
+        }
+      : {
+          name: {
+            title: this.hass.localize("ui.panel.config.zha.neighbors.name"),
+            sortable: true,
+            filterable: true,
+            direction: "asc",
+            flex: 2,
+          },
+          lqi: {
+            title: this.hass.localize("ui.panel.config.zha.neighbors.lqi"),
+            sortable: true,
+            filterable: true,
+            type: "numeric",
+          },
+          relationship: {
+            title: this.hass.localize(
+              "ui.panel.config.zha.neighbors.relationship"
+            ),
+            sortable: true,
+            filterable: true,
+          },
+          depth: {
+            title: this.hass.localize("ui.panel.config.zha.neighbors.depth"),
+            sortable: true,
+            filterable: true,
+            type: "numeric",
+          },
+        }
   );
 
   protected render(): TemplateResult | typeof nothing {

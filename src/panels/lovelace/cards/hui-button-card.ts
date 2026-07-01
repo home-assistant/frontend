@@ -192,33 +192,41 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         })}
       >
         <ha-ripple></ha-ripple>
-        ${this._config.show_icon
-          ? html`
-              <ha-state-icon
-                tabindex="-1"
-                data-domain=${ifDefined(
-                  stateObj ? computeStateDomain(stateObj) : undefined
-                )}
-                data-state=${ifDefined(stateObj?.state)}
-                .icon=${this._config.icon}
-                .stateObj=${stateObj}
-                style=${styleMap({
-                  filter: stateObj ? stateColorBrightness(stateObj) : undefined,
-                  height: this._config.icon_height
-                    ? this._config.icon_height
-                    : undefined,
-                })}
-              ></ha-state-icon>
-            `
-          : nothing}
-        ${this._config.show_name
-          ? html`<span tabindex="-1" .title=${name}>${name}</span>`
-          : nothing}
-        ${this._config.show_state && stateObj
-          ? html`<span class="state">
-              ${this.hass.formatEntityState(stateObj)}
-            </span>`
-          : nothing}
+        ${
+          this._config.show_icon
+            ? html`
+                <ha-state-icon
+                  tabindex="-1"
+                  data-domain=${ifDefined(
+                    stateObj ? computeStateDomain(stateObj) : undefined
+                  )}
+                  data-state=${ifDefined(stateObj?.state)}
+                  .icon=${this._config.icon}
+                  .stateObj=${stateObj}
+                  style=${styleMap({
+                    filter: stateObj
+                      ? stateColorBrightness(stateObj)
+                      : undefined,
+                    height: this._config.icon_height
+                      ? this._config.icon_height
+                      : undefined,
+                  })}
+                ></ha-state-icon>
+              `
+            : nothing
+        }
+        ${
+          this._config.show_name
+            ? html`<span tabindex="-1" .title=${name}>${name}</span>`
+            : nothing
+        }
+        ${
+          this._config.show_state && stateObj
+            ? html`<span class="state">
+                ${this.hass.formatEntityState(stateObj)}
+              </span>`
+            : nothing
+        }
       </ha-card>
     `;
   }
@@ -232,11 +240,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldThemes = changedProps.get("_themes") as
-      | HomeAssistant["themes"]
-      | undefined;
+      HomeAssistant["themes"] | undefined;
     const oldConfig = changedProps.get("_config") as
-      | ButtonCardConfig
-      | undefined;
+      ButtonCardConfig | undefined;
 
     if (
       (changedProps.has("_themes") &&

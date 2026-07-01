@@ -65,9 +65,7 @@ class HuiTargetTemperatureCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id!] as
-      | WaterHeaterEntity
-      | ClimateEntity
-      | undefined;
+      WaterHeaterEntity | ClimateEntity | undefined;
   }
 
   static getStubConfig(): TargetTemperatureCardFeatureConfig {

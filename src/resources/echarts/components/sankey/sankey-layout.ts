@@ -679,18 +679,16 @@ export function sortNodesInSections(
 }
 
 export function createSectionNodes(nodes: Node[]): SectionNode[] {
-  return nodes.map(
-    (node: Node): SectionNode => ({
-      node,
-      id: node.id,
-      value: isPassThroughNode(node) ? node.value : node.getLayout().value,
-      x: 0,
-      y: 0,
-      dx: 0,
-      dy: 0,
-      size: 0,
-    })
-  );
+  return nodes.map((node: Node): SectionNode => ({
+    node,
+    id: node.id,
+    value: isPassThroughNode(node) ? node.value : node.getLayout().value,
+    x: 0,
+    y: 0,
+    dx: 0,
+    dy: 0,
+    size: 0,
+  }));
 }
 
 export function calculateSectionDimensions(

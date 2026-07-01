@@ -89,9 +89,10 @@ export class HaTimeZonePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass?.localize(
-          "ui.components.timezone-picker.no_timezones"
-        ) || "No time zones available"}
+        .emptyLabel=${
+          this.hass?.localize("ui.components.timezone-picker.no_timezones") ||
+          "No time zones available"
+        }
         .label=${label}
         .helper=${this.helper}
         .placeholder=${this.placeholder}

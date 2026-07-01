@@ -100,8 +100,9 @@ class HaConfigUpdates extends LitElement {
             >
               <div slot="start">
                 <state-badge
-                  .title=${entity.attributes.title ||
-                  entity.attributes.friendly_name}
+                  .title=${
+                    entity.attributes.title || entity.attributes.friendly_name
+                  }
                   .stateObj=${entity}
                   class=${ifDefined(
                     this.narrow && entity.attributes.in_progress
@@ -109,33 +110,41 @@ class HaConfigUpdates extends LitElement {
                       : undefined
                   )}
                 ></state-badge>
-                ${this.narrow && entity.attributes.in_progress
-                  ? html`<div class="absolute">
-                      ${this._renderUpdateProgress(entity)}
-                    </div>`
-                  : nothing}
+                ${
+                  this.narrow && entity.attributes.in_progress
+                    ? html`<div class="absolute">
+                        ${this._renderUpdateProgress(entity)}
+                      </div>`
+                    : nothing
+                }
               </div>
               <span slot="headline"
-                >${deviceEntry
-                  ? computeDeviceNameDisplay(
-                      deviceEntry,
-                      this._localize,
-                      this._states
-                    )
-                  : entity.attributes.friendly_name}</span
+                >${
+                  deviceEntry
+                    ? computeDeviceNameDisplay(
+                        deviceEntry,
+                        this._localize,
+                        this._states
+                      )
+                    : entity.attributes.friendly_name
+                }</span
               >
               <span slot="supporting-text">
                 ${areaName ? html`${areaName} ⸱ ` : nothing}
                 ${entity.attributes.title} ${entity.attributes.latest_version}
-                ${entity.attributes.skipped_version
-                  ? `(${this._localize("ui.panel.config.updates.skipped")})`
-                  : nothing}
+                ${
+                  entity.attributes.skipped_version
+                    ? `(${this._localize("ui.panel.config.updates.skipped")})`
+                    : nothing
+                }
               </span>
-              ${!this.narrow
-                ? html`<div slot="end">
-                    ${this._renderUpdateProgress(entity)}
-                  </div>`
-                : nothing}
+              ${
+                !this.narrow
+                  ? html`<div slot="end">
+                      ${this._renderUpdateProgress(entity)}
+                    </div>`
+                  : nothing
+              }
             </ha-list-item-button>
           `;
         })}

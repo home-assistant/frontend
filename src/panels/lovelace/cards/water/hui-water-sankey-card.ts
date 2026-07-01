@@ -401,17 +401,19 @@ class HuiWaterSankeyCard
         })}
       >
         <div class="card-content">
-          ${hasData
-            ? html`<ha-sankey-chart
-                .hass=${this.hass}
-                .data=${{ nodes, links }}
-                .vertical=${vertical}
-                .valueFormatter=${this._valueFormatter}
-                @node-click=${this._handleNodeClick}
-              ></ha-sankey-chart>`
-            : html`${this.hass.localize(
-                "ui.panel.lovelace.cards.energy.no_data_period"
-              )}`}
+          ${
+            hasData
+              ? html`<ha-sankey-chart
+                  .hass=${this.hass}
+                  .data=${{ nodes, links }}
+                  .vertical=${vertical}
+                  .valueFormatter=${this._valueFormatter}
+                  @node-click=${this._handleNodeClick}
+                ></ha-sankey-chart>`
+              : html`${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.no_data_period"
+                )}`
+          }
         </div>
       </ha-card>
     `;

@@ -107,68 +107,82 @@ class HaQrScanner extends LitElement {
       return nothing;
     }
 
-    return html`${this._error || this._warning
-      ? html`<ha-alert
-          .alertType=${this._error ? "error" : "warning"}
-          class=${this._error ? "" : "warning"}
-        >
-          ${this._error || this._warning}
-          ${this._error
-            ? html`<ha-button @click=${this._retry} slot="action">
-                ${this._localize("ui.components.qr-scanner.retry")}
-              </ha-button>`
-            : nothing}
-        </ha-alert>`
-      : nothing}
-    ${navigator.mediaDevices
-      ? html`<video></video>
-          <div id="canvas-container">
-            ${this._loading
-              ? html`<div class="loading">
-                  <ha-spinner active></ha-spinner>
-                </div>`
-              : nothing}
-            ${!this._loading &&
-            !this._error &&
-            this._cameras &&
-            this._cameras.length > 1
-              ? html`<ha-dropdown @wa-select=${this._handleDropdownSelect}>
-                  <ha-icon-button
-                    slot="trigger"
-                    .label=${this._localize(
-                      "ui.components.qr-scanner.select_camera"
-                    )}
-                    .path=${mdiCamera}
-                  ></ha-icon-button>
-                  ${this._cameras!.map(
-                    (camera) => html`
-                      <ha-dropdown-item
-                        .value=${camera.id}
-                        .selected=${this._selectedCamera === camera.id}
-                      >
-                        ${camera.label}
-                      </ha-dropdown-item>
-                    `
-                  )}
-                </ha-dropdown>`
-              : nothing}
-          </div>`
-      : html`<ha-alert alert-type="warning">
-            ${!window.isSecureContext
-              ? this._localize("ui.components.qr-scanner.only_https_supported")
-              : this._localize("ui.components.qr-scanner.not_supported")}
-          </ha-alert>
-          <p>${this._localize("ui.components.qr-scanner.manual_input")}</p>
-          <div class="row">
-            <ha-input
-              .label=${this._localize("ui.components.qr-scanner.enter_qr_code")}
-              @keyup=${this._manualKeyup}
-              @paste=${this._manualPaste}
-            ></ha-input>
-            <ha-button @click=${this._manualSubmit}>
-              ${this._localize("ui.common.submit")}
-            </ha-button>
-          </div>`}`;
+    return html`${
+      this._error || this._warning
+        ? html`<ha-alert
+            .alertType=${this._error ? "error" : "warning"}
+            class=${this._error ? "" : "warning"}
+          >
+            ${this._error || this._warning}
+            ${
+              this._error
+                ? html`<ha-button @click=${this._retry} slot="action">
+                    ${this._localize("ui.components.qr-scanner.retry")}
+                  </ha-button>`
+                : nothing
+            }
+          </ha-alert>`
+        : nothing
+    }
+    ${
+      navigator.mediaDevices
+        ? html`<video></video>
+            <div id="canvas-container">
+              ${
+                this._loading
+                  ? html`<div class="loading">
+                      <ha-spinner active></ha-spinner>
+                    </div>`
+                  : nothing
+              }
+              ${
+                !this._loading &&
+                !this._error &&
+                this._cameras &&
+                this._cameras.length > 1
+                  ? html`<ha-dropdown @wa-select=${this._handleDropdownSelect}>
+                      <ha-icon-button
+                        slot="trigger"
+                        .label=${this._localize(
+                          "ui.components.qr-scanner.select_camera"
+                        )}
+                        .path=${mdiCamera}
+                      ></ha-icon-button>
+                      ${this._cameras!.map(
+                        (camera) => html`
+                          <ha-dropdown-item
+                            .value=${camera.id}
+                            .selected=${this._selectedCamera === camera.id}
+                          >
+                            ${camera.label}
+                          </ha-dropdown-item>
+                        `
+                      )}
+                    </ha-dropdown>`
+                  : nothing
+              }
+            </div>`
+        : html`<ha-alert alert-type="warning">
+              ${
+                !window.isSecureContext
+                  ? this._localize(
+                      "ui.components.qr-scanner.only_https_supported"
+                    )
+                  : this._localize("ui.components.qr-scanner.not_supported")
+              }
+            </ha-alert>
+            <p>${this._localize("ui.components.qr-scanner.manual_input")}</p>
+            <div class="row">
+              <ha-input
+                .label=${this._localize("ui.components.qr-scanner.enter_qr_code")}
+                @keyup=${this._manualKeyup}
+                @paste=${this._manualPaste}
+              ></ha-input>
+              <ha-button @click=${this._manualSubmit}>
+                ${this._localize("ui.common.submit")}
+              </ha-button>
+            </div>`
+    }`;
   }
 
   private get _nativeBarcodeScanner(): boolean {

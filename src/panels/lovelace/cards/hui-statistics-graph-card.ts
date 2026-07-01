@@ -238,8 +238,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
 
     const oldConfig = changedProps.get("_config") as
-      | StatisticsGraphCardConfig
-      | undefined;
+      StatisticsGraphCardConfig | undefined;
 
     if (this.hass) {
       if (this._config.energy_date_selection && !this._energySub) {
@@ -338,23 +337,25 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`
-              <h1 class="card-header">
-                ${this._config.title}
-                <a
-                  id=${this._historyLinkId}
-                  href=${configUrl}
-                  aria-label=${this.hass.localize("panel.history")}
-                >
-                  <ha-icon-next></ha-icon-next>
-                </a>
-                <ha-tooltip for=${this._historyLinkId} placement="left">
-                  ${this.hass.localize("panel.history")}
-                </ha-tooltip>
-              </h1>
-            `
-          : nothing}
+        ${
+          this._config.title
+            ? html`
+                <h1 class="card-header">
+                  ${this._config.title}
+                  <a
+                    id=${this._historyLinkId}
+                    href=${configUrl}
+                    aria-label=${this.hass.localize("panel.history")}
+                  >
+                    <ha-icon-next></ha-icon-next>
+                  </a>
+                  <ha-tooltip for=${this._historyLinkId} placement="left">
+                    ${this.hass.localize("panel.history")}
+                  </ha-tooltip>
+                </h1>
+              `
+            : nothing
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -375,13 +376,15 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .maxYAxis=${this._config.max_y_axis}
             .colors=${this._colors}
             .startTime=${this._energyStart}
-            .endTime=${this._energyEnd && this._energyStart
-              ? getSuggestedMax(
-                  this._period!,
-                  this._energyEnd,
-                  (this._config.chart_type ?? "line").startsWith("line")
-                )
-              : undefined}
+            .endTime=${
+              this._energyEnd && this._energyStart
+                ? getSuggestedMax(
+                    this._period!,
+                    this._energyEnd,
+                    (this._config.chart_type ?? "line").startsWith("line")
+                  )
+                : undefined
+            }
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}

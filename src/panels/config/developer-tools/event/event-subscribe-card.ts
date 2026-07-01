@@ -81,13 +81,15 @@ class EventSubscribeCard extends LitElement {
       >
         <div class="card-content">
           <ha-input
-            .label=${this._subscribed
-              ? this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.listening_to"
-                )
-              : this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.subscribe_to"
-                )}
+            .label=${
+              this._subscribed
+                ? this.hass!.localize(
+                    "ui.panel.config.developer-tools.tabs.events.listening_to"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.config.developer-tools.tabs.events.subscribe_to"
+                  )
+            }
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
             @input=${this._valueChanged}
@@ -101,9 +103,11 @@ class EventSubscribeCard extends LitElement {
             .hint=${`${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
             @input=${this._filterChanged}
           ></ha-input>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
         </div>
         <div class="card-actions">
           <ha-button
@@ -111,13 +115,15 @@ class EventSubscribeCard extends LitElement {
             .disabled=${this._eventType === ""}
             @click=${this._startOrStopListening}
           >
-            ${this._subscribed
-              ? this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.stop_listening"
-                )
-              : this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.start_listening"
-                )}
+            ${
+              this._subscribed
+                ? this.hass!.localize(
+                    "ui.panel.config.developer-tools.tabs.events.stop_listening"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.config.developer-tools.tabs.events.start_listening"
+                  )
+            }
           </ha-button>
           <ha-button
             appearance="plain"
@@ -191,23 +197,25 @@ class EventSubscribeCard extends LitElement {
               }
             )}
             <span class="counter">(${bufferPosition} / ${bufferTotal})</span>
-            ${hasRolledOver
-              ? html`
-                  <ha-svg-icon
-                    id="buffer-info"
-                    class="buffer-info"
-                    .path=${mdiInformationOutline}
-                  ></ha-svg-icon>
-                  <ha-tooltip for="buffer-info" placement="bottom">
-                    <span class="buffer-tooltip">
-                      ${this.hass!.localize(
-                        "ui.panel.config.developer-tools.tabs.events.buffer_disclaimer",
-                        { count: MAX_BUFFERED_EVENTS }
-                      )}
-                    </span>
-                  </ha-tooltip>
-                `
-              : nothing}
+            ${
+              hasRolledOver
+                ? html`
+                    <ha-svg-icon
+                      id="buffer-info"
+                      class="buffer-info"
+                      .path=${mdiInformationOutline}
+                    ></ha-svg-icon>
+                    <ha-tooltip for="buffer-info" placement="bottom">
+                      <span class="buffer-tooltip">
+                        ${this.hass!.localize(
+                          "ui.panel.config.developer-tools.tabs.events.buffer_disclaimer",
+                          { count: MAX_BUFFERED_EVENTS }
+                        )}
+                      </span>
+                    </ha-tooltip>
+                  `
+                : nothing
+            }
           </div>
           <ha-icon-button
             .path=${mdiChevronRight}

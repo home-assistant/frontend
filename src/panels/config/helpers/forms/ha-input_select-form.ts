@@ -109,34 +109,36 @@ class HaInputSelectForm extends LitElement {
           .disabled=${this.disabled}
         >
           <ha-list class="options">
-            ${this._options.length
-              ? repeat(
-                  this._options,
-                  (option) => option,
-                  (option, index) => html`
-                    <ha-list-item class="option" hasMeta>
-                      <div class="optioncontent">
-                        <div class="handle">
-                          <ha-svg-icon
-                            .path=${mdiDragHorizontalVariant}
-                          ></ha-svg-icon>
+            ${
+              this._options.length
+                ? repeat(
+                    this._options,
+                    (option) => option,
+                    (option, index) => html`
+                      <ha-list-item class="option" hasMeta>
+                        <div class="optioncontent">
+                          <div class="handle">
+                            <ha-svg-icon
+                              .path=${mdiDragHorizontalVariant}
+                            ></ha-svg-icon>
+                          </div>
+                          ${option}
                         </div>
-                        ${option}
-                      </div>
-                      <ha-icon-button
-                        slot="meta"
-                        .index=${index}
-                        .label=${this.hass.localize(
-                          "ui.dialogs.helper_settings.input_select.remove_option"
-                        )}
-                        @click=${this._removeOption}
-                        .disabled=${this.disabled}
-                        .path=${mdiDelete}
-                      ></ha-icon-button>
-                    </ha-list-item>
-                  `
-                )
-              : nothing}
+                        <ha-icon-button
+                          slot="meta"
+                          .index=${index}
+                          .label=${this.hass.localize(
+                            "ui.dialogs.helper_settings.input_select.remove_option"
+                          )}
+                          @click=${this._removeOption}
+                          .disabled=${this.disabled}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </ha-list-item>
+                    `
+                  )
+                : nothing
+            }
           </ha-list>
         </ha-sortable>
         <div class="layout horizontal center">

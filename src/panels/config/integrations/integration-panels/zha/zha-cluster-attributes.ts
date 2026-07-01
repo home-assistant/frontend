@@ -75,9 +75,11 @@ export class ZHAClusterAttributes extends LitElement {
           >
           </ha-select>
         </div>
-        ${this._selectedAttributeId !== undefined
-          ? this._renderAttributeInteractions()
-          : nothing}
+        ${
+          this._selectedAttributeId !== undefined
+            ? this._renderAttributeInteractions()
+            : nothing
+        }
       </div>
     `;
   }
@@ -147,8 +149,7 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private _computeReadAttributeServiceData():
-    | ReadAttributeServiceData
-    | undefined {
+    ReadAttributeServiceData | undefined {
     if (!this.selectedCluster || !this.device) {
       return undefined;
     }
@@ -165,8 +166,7 @@ export class ZHAClusterAttributes extends LitElement {
   }
 
   private _computeSetAttributeServiceData():
-    | SetAttributeServiceData
-    | undefined {
+    SetAttributeServiceData | undefined {
     if (!this.selectedCluster || !this.device) {
       return undefined;
     }

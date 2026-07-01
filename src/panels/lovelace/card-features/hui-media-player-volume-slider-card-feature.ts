@@ -52,8 +52,7 @@ class HuiMediaPlayerVolumeSliderCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id!] as
-      | MediaPlayerEntity
-      | undefined;
+      MediaPlayerEntity | undefined;
   }
 
   static getStubConfig(): MediaPlayerVolumeSliderCardFeatureConfig {

@@ -133,13 +133,15 @@ class MoreInfoLawnMower extends LitElement {
 
       return html`
         <span class="battery" slot="after-time">
-          ${batteryDomain === "binary_sensor"
-            ? nothing
-            : html`<span
-                >${Number(battery.state).toFixed()}${blankBeforePercent(
-                  this._i18n.locale
-                )}%</span
-              >`}
+          ${
+            batteryDomain === "binary_sensor"
+              ? nothing
+              : html`<span
+                  >${Number(battery.state).toFixed()}${blankBeforePercent(
+                    this._i18n.locale
+                  )}%</span
+                >`
+          }
           <ha-battery-icon
             .batteryStateObj=${battery}
             .batteryChargingStateObj=${batteryCharging}
@@ -194,42 +196,48 @@ class MoreInfoLawnMower extends LitElement {
           .stateObj=${this.stateObj}
         ></ha-state-control-lawn_mower-status>
 
-        ${hasAnyCommand
-          ? html`
-              <div class="buttons">
-                <ha-control-button-group>
-                  ${this._supportsStartPause
-                    ? html`
-                        <ha-control-button
-                          .label=${this._startPauseLabel}
-                          @click=${this._handleStartPause}
-                          .disabled=${this._startPauseDisabled}
-                        >
-                          <ha-svg-icon
-                            .path=${this._startPauseIcon}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                  ${supportsDock
-                    ? html`
-                        <ha-control-button
-                          .label=${this._i18n.localize(
-                            "ui.dialogs.more_info_control.lawn_mower.dock"
-                          )}
-                          @click=${this._handleDock}
-                          .disabled=${isUnavailable || !canDock(stateObj)}
-                        >
-                          <ha-svg-icon
-                            .path=${mdiHomeImportOutline}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                </ha-control-button-group>
-              </div>
-            `
-          : nothing}
+        ${
+          hasAnyCommand
+            ? html`
+                <div class="buttons">
+                  <ha-control-button-group>
+                    ${
+                      this._supportsStartPause
+                        ? html`
+                            <ha-control-button
+                              .label=${this._startPauseLabel}
+                              @click=${this._handleStartPause}
+                              .disabled=${this._startPauseDisabled}
+                            >
+                              <ha-svg-icon
+                                .path=${this._startPauseIcon}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsDock
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.lawn_mower.dock"
+                              )}
+                              @click=${this._handleDock}
+                              .disabled=${isUnavailable || !canDock(stateObj)}
+                            >
+                              <ha-svg-icon
+                                .path=${mdiHomeImportOutline}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                  </ha-control-button-group>
+                </div>
+              `
+            : nothing
+        }
       </div>
     `;
   }

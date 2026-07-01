@@ -53,8 +53,7 @@ class HuiMediaPlayerPlaybackCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id] as
-      | MediaPlayerEntity
-      | undefined;
+      MediaPlayerEntity | undefined;
   }
 
   static getStubConfig(): MediaPlayerPlaybackCardFeatureConfig {
@@ -133,8 +132,7 @@ class HuiMediaPlayerPlaybackCardFeature
       return;
     }
     const host = (this.getRootNode() as ShadowRoot).host as
-      | HTMLElement
-      | undefined;
+      HTMLElement | undefined;
     const width = host?.clientWidth ?? this.clientWidth ?? 0;
     this._narrow = width < 200;
   }

@@ -216,17 +216,19 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
         style=${styleMap(style)}
         class=${classMap({ active })}
       >
-        ${showIcon
-          ? imageUrl
-            ? html`<img slot="icon" src=${imageUrl} aria-hidden />`
-            : html`
-                <ha-state-icon
-                  slot="icon"
-                  .stateObj=${stateObj}
-                  .icon=${this._config.icon}
-                ></ha-state-icon>
-              `
-          : nothing}
+        ${
+          showIcon
+            ? imageUrl
+              ? html`<img slot="icon" src=${imageUrl} aria-hidden />`
+              : html`
+                  <ha-state-icon
+                    slot="icon"
+                    .stateObj=${stateObj}
+                    .icon=${this._config.icon}
+                  ></ha-state-icon>
+                `
+            : nothing
+        }
         ${content}
       </ha-badge>
     `;

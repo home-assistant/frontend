@@ -40,8 +40,7 @@ export interface AutomationEntity extends HassEntityBase {
 }
 
 export type AutomationConfig =
-  | ManualAutomationConfig
-  | BlueprintAutomationConfig;
+  ManualAutomationConfig | BlueprintAutomationConfig;
 
 export interface ManualAutomationConfig {
   id?: string;

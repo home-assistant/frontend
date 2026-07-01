@@ -120,8 +120,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   private _handleActionChanged(ev: Event): void {
     this._action = (ev.currentTarget as HaRadioGroup).value as
-      | "update"
-      | "clear";
+      "update" | "clear";
   }
 
   private _cancel(): void {

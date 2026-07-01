@@ -61,28 +61,30 @@ export class DialogYamlIntegration extends LitElement {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          ${docLink
-            ? html`<ha-button
-                slot="primaryAction"
-                appearance="plain"
-                href=${docLink}
-                target="_blank"
-                rel="noreferrer noopener"
-                @click=${this.closeDialog}
-                autofocus
-              >
-                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.open_documentation"
-                )}
-              </ha-button>`
-            : html`<ha-button
-                slot="primaryAction"
-                @click=${this.closeDialog}
-                autofocus
-              >
-                ${this.hass.localize("ui.common.ok")}
-              </ha-button>`}
+          ${
+            docLink
+              ? html`<ha-button
+                  slot="primaryAction"
+                  appearance="plain"
+                  href=${docLink}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  @click=${this.closeDialog}
+                  autofocus
+                >
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.open_documentation"
+                  )}
+                </ha-button>`
+              : html`<ha-button
+                  slot="primaryAction"
+                  @click=${this.closeDialog}
+                  autofocus
+                >
+                  ${this.hass.localize("ui.common.ok")}
+                </ha-button>`
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

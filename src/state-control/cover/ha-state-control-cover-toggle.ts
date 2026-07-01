@@ -121,9 +121,11 @@ export class HaStateControlCoverToggle extends LitElement {
         reversed
         .checked=${isOn}
         @change=${this._valueChanged}
-        .label=${isOn
-          ? this._localize("ui.card.cover.close_cover")
-          : this._localize("ui.card.cover.open_cover")}
+        .label=${
+          isOn
+            ? this._localize("ui.card.cover.close_cover")
+            : this._localize("ui.card.cover.open_cover")
+        }
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,
