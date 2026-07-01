@@ -443,6 +443,7 @@ export class HuiEnergySolarSceneNowCard
   @state() private _config!: EnergySolarSceneNowCardConfig;
   @state() private _energyData?: EnergyData;
   @state() private _power?: LivePower; // live instantaneous power for the chips
+  @state() private _showAttribution = false; // CARTO/OSM credit, only when their tiles are shown
 
   // ---- DOM queries (ground holder + the depth-split SVG layers, filled imperatively in _paint) ----
   @query(".wrap") private _wrap?: HTMLElement;
@@ -688,6 +689,8 @@ export class HuiEnergySolarSceneNowCard
       // Every tile failed (offline / blocked): fall back to the flat plane, not a blank canvas.
       if (loaded > 0) el = canvas;
     }
+    // CARTO/OSM require visible attribution whenever their tiles are shown (not on the flat fallback).
+    this._showAttribution = !!el;
     if (!el) el = this._buildFlatGround(size);
 
     // Edge fade: same size + transform as the ground, dissolving its borders into the card background.
@@ -1666,6 +1669,23 @@ export class HuiEnergySolarSceneNowCard
             @pointerup=${this._onPointerUp}
             @pointercancel=${this._onPointerUp}
           ></div>
+          ${this._showAttribution
+            ? html`<div class="attribution">
+                &copy;
+                <a
+                  href="https://www.openstreetmap.org/copyright"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >OpenStreetMap</a
+                >, &copy;
+                <a
+                  href="https://carto.com/attributions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >CARTO</a
+                >
+              </div>`
+            : nothing}
         </div>
       </ha-card>
     `;
@@ -1760,6 +1780,25 @@ export class HuiEnergySolarSceneNowCard
     }
     .drag:active {
       cursor: grabbing;
+    }
+    /* CARTO/OSM basemap attribution (required). Bottom-right, above the drag layer so links stay
+       clickable, with a faint plate so it reads over any tile. */
+    .attribution {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      z-index: 13;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.4);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 10px;
+      line-height: 1.5;
+      pointer-events: auto;
+    }
+    .attribution a {
+      color: inherit;
+      text-decoration: underline;
     }
     /* Depth-split layers: arc/disc pass behind the house on the far side, in front on the near side.
        z: house 1, arc back 4 / far 5 / near 11, leaders 5, ray 7, chips 8 (home 9), sun 5|12. */
