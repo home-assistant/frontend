@@ -57,8 +57,7 @@ export class HaBackupDataPicker extends LitElement {
   public requiredItems: string[] = [];
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
-    | "page-onboarding.restore"
-    | "config.backup" = "config.backup";
+    "page-onboarding.restore" | "config.backup" = "config.backup";
 
   @property({ attribute: false }) public addonsDisabled = false;
 
@@ -239,76 +238,87 @@ export class HaBackupDataPicker extends LitElement {
     const selectedItems = this._parseValue(this.value);
 
     return html`
-      ${homeAssistantItems.length
-        ? html`
-            <div class="section">
-              <ha-checkbox
-                .id=${"homeassistant"}
-                .checked=${selectedItems.homeassistant.length ===
-                homeAssistantItems.length}
-                .indeterminate=${selectedItems.homeassistant.length > 0 &&
-                selectedItems.homeassistant.length < homeAssistantItems.length}
-                @change=${this._sectionChanged}
-                ?disabled=${this.requiredItems.length > 0}
-              >
-                <ha-backup-formfield-label
-                  label="Home Assistant"
-                  .iconPath=${mdiHomeAssistant}
+      ${
+        homeAssistantItems.length
+          ? html`
+              <div class="section">
+                <ha-checkbox
+                  .id=${"homeassistant"}
+                  .checked=${
+                    selectedItems.homeassistant.length ===
+                    homeAssistantItems.length
+                  }
+                  .indeterminate=${
+                    selectedItems.homeassistant.length > 0 &&
+                    selectedItems.homeassistant.length <
+                      homeAssistantItems.length
+                  }
+                  @change=${this._sectionChanged}
+                  ?disabled=${this.requiredItems.length > 0}
                 >
-                </ha-backup-formfield-label>
-              </ha-checkbox>
-              <div class="items">
-                ${homeAssistantItems.map(
-                  (item) => html`
-                    <ha-checkbox
-                      .id=${item.id}
-                      .checked=${selectedItems.homeassistant.includes(item.id)}
-                      @change=${this._homeassistantChanged}
-                      .disabled=${this.requiredItems.includes(item.id)}
-                    >
-                      <ha-backup-formfield-label
-                        .label=${item.label}
-                        .version=${item.version}
-                        .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
+                  <ha-backup-formfield-label
+                    label="Home Assistant"
+                    .iconPath=${mdiHomeAssistant}
+                  >
+                  </ha-backup-formfield-label>
+                </ha-checkbox>
+                <div class="items">
+                  ${homeAssistantItems.map(
+                    (item) => html`
+                      <ha-checkbox
+                        .id=${item.id}
+                        .checked=${selectedItems.homeassistant.includes(item.id)}
+                        @change=${this._homeassistantChanged}
+                        .disabled=${this.requiredItems.includes(item.id)}
                       >
-                      </ha-backup-formfield-label>
-                    </ha-checkbox>
-                  `
-                )}
-              </div>
-            </div>
-          `
-        : nothing}
-      ${addonsItems.length
-        ? html`
-            <div class="section">
-              <ha-checkbox
-                .id=${"addons"}
-                .checked=${selectedItems.addons.length === addonsItems.length}
-                .indeterminate=${selectedItems.addons.length > 0 &&
-                selectedItems.addons.length < addonsItems.length}
-                @change=${this._sectionChanged}
-                .disabled=${this.addonsDisabled}
-              >
-                <ha-backup-formfield-label
-                  .label=${localize(
-                    `ui.panel.${this.translationKeyPanel}.data_picker.apps`
+                        <ha-backup-formfield-label
+                          .label=${item.label}
+                          .version=${item.version}
+                          .iconPath=${ITEM_ICONS[item.id] || mdiFolder}
+                        >
+                        </ha-backup-formfield-label>
+                      </ha-checkbox>
+                    `
                   )}
-                  .iconPath=${mdiPuzzle}
+                </div>
+              </div>
+            `
+          : nothing
+      }
+      ${
+        addonsItems.length
+          ? html`
+              <div class="section">
+                <ha-checkbox
+                  .id=${"addons"}
+                  .checked=${selectedItems.addons.length === addonsItems.length}
+                  .indeterminate=${
+                    selectedItems.addons.length > 0 &&
+                    selectedItems.addons.length < addonsItems.length
+                  }
+                  @change=${this._sectionChanged}
+                  .disabled=${this.addonsDisabled}
                 >
-                </ha-backup-formfield-label>
-              </ha-checkbox>
-              <ha-backup-addons-picker
-                .hass=${this.hass}
-                .value=${selectedItems.addons}
-                @value-changed=${this._addonsChanged}
-                .addons=${addonsItems}
-                .disabled=${this.addonsDisabled}
-              >
-              </ha-backup-addons-picker>
-            </div>
-          `
-        : nothing}
+                  <ha-backup-formfield-label
+                    .label=${localize(
+                      `ui.panel.${this.translationKeyPanel}.data_picker.apps`
+                    )}
+                    .iconPath=${mdiPuzzle}
+                  >
+                  </ha-backup-formfield-label>
+                </ha-checkbox>
+                <ha-backup-addons-picker
+                  .hass=${this.hass}
+                  .value=${selectedItems.addons}
+                  @value-changed=${this._addonsChanged}
+                  .addons=${addonsItems}
+                  .disabled=${this.addonsDisabled}
+                >
+                </ha-backup-addons-picker>
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 

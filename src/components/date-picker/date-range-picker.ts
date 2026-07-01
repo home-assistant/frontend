@@ -143,9 +143,11 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
 
   render() {
     return html`<div class="picker">
-        ${this.ranges !== false && this.ranges
-          ? html`<div class="date-range-ranges">${this._renderRanges()}</div>`
-          : nothing}
+        ${
+          this.ranges !== false && this.ranges
+            ? html`<div class="date-range-ranges">${this._renderRanges()}</div>`
+            : nothing
+        }
         <div class="range">
           <calendar-range
             .value=${this._dateValue}
@@ -176,34 +178,36 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
             ></ha-icon-button-next>
             <calendar-month></calendar-month>
           </calendar-range>
-          ${this.timePicker
-            ? html`
-                <div class="times">
-                  <ha-time-input
-                    .value=${`${this._timeValue.from.hours}:${this._timeValue.from.minutes}`}
-                    .locale=${this._i18n.locale}
-                    @value-changed=${this._handleChangeTime}
-                    .label=${this._i18n.localize(
-                      "ui.components.date-range-picker.time_from"
-                    )}
-                    id="from"
-                    placeholder-labels
-                    auto-validate
-                  ></ha-time-input>
-                  <ha-time-input
-                    .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
-                    .locale=${this._i18n.locale}
-                    @value-changed=${this._handleChangeTime}
-                    .label=${this._i18n.localize(
-                      "ui.components.date-range-picker.time_to"
-                    )}
-                    id="to"
-                    placeholder-labels
-                    auto-validate
-                  ></ha-time-input>
-                </div>
-              `
-            : nothing}
+          ${
+            this.timePicker
+              ? html`
+                  <div class="times">
+                    <ha-time-input
+                      .value=${`${this._timeValue.from.hours}:${this._timeValue.from.minutes}`}
+                      .locale=${this._i18n.locale}
+                      @value-changed=${this._handleChangeTime}
+                      .label=${this._i18n.localize(
+                        "ui.components.date-range-picker.time_from"
+                      )}
+                      id="from"
+                      placeholder-labels
+                      auto-validate
+                    ></ha-time-input>
+                    <ha-time-input
+                      .value=${`${this._timeValue.to.hours}:${this._timeValue.to.minutes}`}
+                      .locale=${this._i18n.locale}
+                      @value-changed=${this._handleChangeTime}
+                      .label=${this._i18n.localize(
+                        "ui.components.date-range-picker.time_to"
+                      )}
+                      id="to"
+                      placeholder-labels
+                      auto-validate
+                    ></ha-time-input>
+                  </div>
+                `
+              : nothing
+          }
         </div>
       </div>
       <div class="footer">

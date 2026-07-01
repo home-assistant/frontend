@@ -53,8 +53,7 @@ export interface ExternalEntityAddToAction extends BaseEntityAddToAction {
 }
 
 export type EntityAddToAction =
-  | DefaultEntityAddToAction
-  | ExternalEntityAddToAction;
+  DefaultEntityAddToAction | ExternalEntityAddToAction;
 
 export type EntityAddToActions = EntityAddToAction[];
 
@@ -83,15 +82,13 @@ const DEFAULT_ACTION_DEFS: ActionDefinition[] = [
 ];
 
 export const getDefaultAddToActions = (): EntityAddToActions =>
-  DEFAULT_ACTION_DEFS.map(
-    (def: ActionDefinition): EntityAddToAction => ({
-      type: "default",
-      key: def.translation_key,
-      enabled: true,
-      nameKey: `ui.dialogs.more_info_control.add_to.action_options.${def.translation_key}`,
-      icon: def.icon,
-    })
-  );
+  DEFAULT_ACTION_DEFS.map((def: ActionDefinition): EntityAddToAction => ({
+    type: "default",
+    key: def.translation_key,
+    enabled: true,
+    nameKey: `ui.dialogs.more_info_control.add_to.action_options.${def.translation_key}`,
+    icon: def.icon,
+  }));
 
 export const createAddToSceneEntities = (
   entityIds: string[]

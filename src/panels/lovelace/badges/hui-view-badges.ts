@@ -127,70 +127,81 @@ export class HuiViewBadges extends LitElement {
     const badges = this.badges;
 
     return html`
-      ${badges?.length > 0 || editMode
-        ? html`
-            <ha-sortable
-              .disabled=${!editMode}
-              @item-moved=${this._badgeMoved}
-              @item-added=${this._badgeAdded}
-              @item-removed=${this._badgeRemoved}
-              @drag-start=${this._dragStart}
-              @drag-end=${this._dragEnd}
-              group="badge"
-              draggable-selector="[data-sortable]"
-              .rollback=${false}
-              .options=${BADGE_SORTABLE_OPTIONS}
-              invert-swap
-            >
-              <div class="badges ${classMap({ "edit-mode": editMode })}">
-                ${repeat(
-                  badges,
-                  (badge) => this._getBadgeKey(badge),
-                  (badge, idx) => {
-                    const badgePath = [this.viewIndex, idx] as LovelaceCardPath;
-                    return html`
-                      ${editMode
-                        ? html`
-                            <hui-badge-edit-mode
-                              data-sortable
-                              .lovelace=${this.lovelace}
-                              .path=${badgePath}
-                              .hiddenOverlay=${this._dragging}
-                              .sortableData=${badgePath}
-                            >
-                              ${badge}
-                            </hui-badge-edit-mode>
-                          `
-                        : badge}
-                    `;
-                  }
-                )}
-                ${editMode
-                  ? html`
-                      <button
-                        class="add"
-                        @click=${this._addBadge}
-                        aria-label=${this._localize(
-                          "ui.panel.lovelace.editor.section.add_badge"
-                        )}
-                        .title=${this._localize(
-                          "ui.panel.lovelace.editor.section.add_badge"
-                        )}
-                      >
-                        <ha-ripple></ha-ripple>
-                        <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                        ${this.showAddLabel
-                          ? this._localize(
+      ${
+        badges?.length > 0 || editMode
+          ? html`
+              <ha-sortable
+                .disabled=${!editMode}
+                @item-moved=${this._badgeMoved}
+                @item-added=${this._badgeAdded}
+                @item-removed=${this._badgeRemoved}
+                @drag-start=${this._dragStart}
+                @drag-end=${this._dragEnd}
+                group="badge"
+                draggable-selector="[data-sortable]"
+                .rollback=${false}
+                .options=${BADGE_SORTABLE_OPTIONS}
+                invert-swap
+              >
+                <div class="badges ${classMap({ "edit-mode": editMode })}">
+                  ${repeat(
+                    badges,
+                    (badge) => this._getBadgeKey(badge),
+                    (badge, idx) => {
+                      const badgePath = [
+                        this.viewIndex,
+                        idx,
+                      ] as LovelaceCardPath;
+                      return html`
+                        ${
+                          editMode
+                            ? html`
+                                <hui-badge-edit-mode
+                                  data-sortable
+                                  .lovelace=${this.lovelace}
+                                  .path=${badgePath}
+                                  .hiddenOverlay=${this._dragging}
+                                  .sortableData=${badgePath}
+                                >
+                                  ${badge}
+                                </hui-badge-edit-mode>
+                              `
+                            : badge
+                        }
+                      `;
+                    }
+                  )}
+                  ${
+                    editMode
+                      ? html`
+                          <button
+                            class="add"
+                            @click=${this._addBadge}
+                            aria-label=${this._localize(
                               "ui.panel.lovelace.editor.section.add_badge"
-                            )
-                          : nothing}
-                      </button>
-                    `
-                  : nothing}
-              </div>
-            </ha-sortable>
-          `
-        : nothing}
+                            )}
+                            .title=${this._localize(
+                              "ui.panel.lovelace.editor.section.add_badge"
+                            )}
+                          >
+                            <ha-ripple></ha-ripple>
+                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                            ${
+                              this.showAddLabel
+                                ? this._localize(
+                                    "ui.panel.lovelace.editor.section.add_badge"
+                                  )
+                                : nothing
+                            }
+                          </button>
+                        `
+                      : nothing
+                  }
+                </div>
+              </ha-sortable>
+            `
+          : nothing
+      }
     `;
   }
 

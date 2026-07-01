@@ -46,18 +46,20 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${TIMESTAMP_STATE_DOMAINS.has(computeDomain(this._config.entity)) &&
-        stateObj.state !== UNAVAILABLE &&
-        stateObj.state !== UNKNOWN
-          ? html`
-              <hui-timestamp-display
-                .hass=${this.hass}
-                .ts=${new Date(stateObj.state)}
-                .format=${this._config.time_format}
-                capitalize
-              ></hui-timestamp-display>
-            `
-          : this.hass.formatEntityState(stateObj)}
+        ${
+          TIMESTAMP_STATE_DOMAINS.has(computeDomain(this._config.entity)) &&
+          stateObj.state !== UNAVAILABLE &&
+          stateObj.state !== UNKNOWN
+            ? html`
+                <hui-timestamp-display
+                  .hass=${this.hass}
+                  .ts=${new Date(stateObj.state)}
+                  .format=${this._config.time_format}
+                  capitalize
+                ></hui-timestamp-display>
+              `
+            : this.hass.formatEntityState(stateObj)
+        }
       </hui-generic-entity-row>
     `;
   }

@@ -300,11 +300,11 @@ function formatTooltip(
     return nothing;
   }
   return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
-    ${rows.map(
-      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
-    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
-      : nothing}`;
+    ${rows.map((row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`)}${
+      sumPositive !== 0 && countPositive > 1 && formatTotal
+        ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+        : nothing
+    }`;
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {

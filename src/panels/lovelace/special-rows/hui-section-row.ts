@@ -24,13 +24,15 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
 
     return html`
       <div class="divider"></div>
-      ${this._config.label
-        ? html`
-            <div class="label" .title=${this._config.label}>
-              ${this._config.label}
-            </div>
-          `
-        : nothing}
+      ${
+        this._config.label
+          ? html`
+              <div class="label" .title=${this._config.label}>
+                ${this._config.label}
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -57,8 +57,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
   @property({ type: Boolean }) public required = false;
 
   @property({ attribute: false }) public actionsRenderer?: () =>
-    | TemplateResult<1>
-    | typeof nothing;
+    TemplateResult<1> | typeof nothing;
 
   @property({ type: Boolean, attribute: "show-navigation-button" })
   public showNavigationButton = false;
@@ -112,15 +111,17 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                   slot="leading-icon"
                   .floor=${floor}
                 ></ha-floor-icon>
-                ${floor.floor_id === UNASSIGNED_FLOOR || !canReorderFloors
-                  ? nothing
-                  : html`
-                      <ha-svg-icon
-                        class="handle"
-                        slot="icons"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    `}
+                ${
+                  floor.floor_id === UNASSIGNED_FLOOR || !canReorderFloors
+                    ? nothing
+                    : html`
+                        <ha-svg-icon
+                          class="handle"
+                          slot="icons"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
+                      `
+                }
                 <ha-items-display-editor
                   .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}

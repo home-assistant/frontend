@@ -131,98 +131,106 @@ export class HaDateRangePicker extends LitElement {
     return html`
       <div class="container">
         <div class="date-range-inputs">
-          ${!this.minimal
-            ? html`<ha-textarea
-                  id="field"
-                  rows="1"
-                  resize="auto"
+          ${
+            !this.minimal
+              ? html`<ha-textarea
+                    id="field"
+                    rows="1"
+                    resize="auto"
+                    @click=${this._openPicker}
+                    @keydown=${this._handleKeydown}
+                    .value=${
+                      (isThisYear(this.startDate)
+                        ? formatShortDateTime(
+                            this.startDate,
+                            this._i18n.locale,
+                            this._hassConfig
+                          )
+                        : formatShortDateTimeWithYear(
+                            this.startDate,
+                            this._i18n.locale,
+                            this._hassConfig
+                          )) +
+                      (window.innerWidth >= 459 ? " - " : " - \n") +
+                      (isThisYear(this.endDate)
+                        ? formatShortDateTime(
+                            this.endDate,
+                            this._i18n.locale,
+                            this._hassConfig
+                          )
+                        : formatShortDateTimeWithYear(
+                            this.endDate,
+                            this._i18n.locale,
+                            this._hassConfig
+                          ))
+                    }
+                    .label=${
+                      this._i18n.localize(
+                        "ui.components.date-range-picker.start_date"
+                      ) +
+                      " - " +
+                      this._i18n.localize(
+                        "ui.components.date-range-picker.end_date"
+                      )
+                    }
+                    .disabled=${this.disabled}
+                    readonly
+                  ></ha-textarea>
+                  <ha-icon-button-prev
+                    .label=${this._i18n.localize("ui.common.previous")}
+                    @click=${this._handlePrev}
+                  >
+                  </ha-icon-button-prev>
+                  <ha-icon-button-next
+                    .label=${this._i18n.localize("ui.common.next")}
+                    @click=${this._handleNext}
+                  >
+                  </ha-icon-button-next>`
+              : html`<ha-icon-button
                   @click=${this._openPicker}
-                  @keydown=${this._handleKeydown}
-                  .value=${(isThisYear(this.startDate)
-                    ? formatShortDateTime(
-                        this.startDate,
-                        this._i18n.locale,
-                        this._hassConfig
-                      )
-                    : formatShortDateTimeWithYear(
-                        this.startDate,
-                        this._i18n.locale,
-                        this._hassConfig
-                      )) +
-                  (window.innerWidth >= 459 ? " - " : " - \n") +
-                  (isThisYear(this.endDate)
-                    ? formatShortDateTime(
-                        this.endDate,
-                        this._i18n.locale,
-                        this._hassConfig
-                      )
-                    : formatShortDateTimeWithYear(
-                        this.endDate,
-                        this._i18n.locale,
-                        this._hassConfig
-                      ))}
-                  .label=${this._i18n.localize(
-                    "ui.components.date-range-picker.start_date"
-                  ) +
-                  " - " +
-                  this._i18n.localize(
-                    "ui.components.date-range-picker.end_date"
-                  )}
                   .disabled=${this.disabled}
-                  readonly
-                ></ha-textarea>
-                <ha-icon-button-prev
-                  .label=${this._i18n.localize("ui.common.previous")}
-                  @click=${this._handlePrev}
-                >
-                </ha-icon-button-prev>
-                <ha-icon-button-next
-                  .label=${this._i18n.localize("ui.common.next")}
-                  @click=${this._handleNext}
-                >
-                </ha-icon-button-next>`
-            : html`<ha-icon-button
-                @click=${this._openPicker}
-                .disabled=${this.disabled}
-                id="field"
-                .label=${this._i18n.localize(
-                  "ui.components.date-range-picker.select_date_range"
-                )}
-                .path=${mdiCalendar}
-              ></ha-icon-button>`}
+                  id="field"
+                  .label=${this._i18n.localize(
+                    "ui.components.date-range-picker.select_date_range"
+                  )}
+                  .path=${mdiCalendar}
+                ></ha-icon-button>`
+          }
         </div>
-        ${this._pickerWrapperOpen || this._opened
-          ? this._openedNarrow
-            ? html`
-                <ha-bottom-sheet
-                  flexcontent
-                  .open=${this._pickerWrapperOpen}
-                  @wa-after-show=${this._dialogOpened}
-                  @closed=${this._hidePicker}
-                >
-                  ${this._renderPicker()}
-                </ha-bottom-sheet>
-              `
-            : html`
-                <wa-popover
-                  .open=${this._pickerWrapperOpen}
-                  style="--body-width: ${this._popoverWidth}px;"
-                  class=${this._opened ? "open" : ""}
-                  without-arrow
-                  distance="0"
-                  .placement=${this.popoverPlacement}
-                  for="field"
-                  auto-size="vertical"
-                  auto-size-padding="16"
-                  @wa-after-show=${this._dialogOpened}
-                  @wa-hide=${this._handlePopoverHide}
-                  @wa-after-hide=${this._hidePicker}
-                  trap-focus
-                >
-                  ${this._renderPicker()}
-                </wa-popover>
-              `
-          : nothing}
+        ${
+          this._pickerWrapperOpen || this._opened
+            ? this._openedNarrow
+              ? html`
+                  <ha-bottom-sheet
+                    flexcontent
+                    .open=${this._pickerWrapperOpen}
+                    @wa-after-show=${this._dialogOpened}
+                    @closed=${this._hidePicker}
+                  >
+                    ${this._renderPicker()}
+                  </ha-bottom-sheet>
+                `
+              : html`
+                  <wa-popover
+                    .open=${this._pickerWrapperOpen}
+                    style="--body-width: ${this._popoverWidth}px;"
+                    class=${this._opened ? "open" : ""}
+                    without-arrow
+                    distance="0"
+                    .placement=${this.popoverPlacement}
+                    for="field"
+                    auto-size="vertical"
+                    auto-size-padding="16"
+                    @wa-after-show=${this._dialogOpened}
+                    @wa-hide=${this._handlePopoverHide}
+                    @wa-after-hide=${this._hidePicker}
+                    trap-focus
+                  >
+                    ${this._renderPicker()}
+                  </wa-popover>
+                `
+            : nothing
+        }
       </div>
     `;
   }

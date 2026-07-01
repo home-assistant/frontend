@@ -23,9 +23,9 @@ export class HomeFavoritesEditor extends LitElement {
   protected render() {
     return html`
       ${this.label ? html`<p class="field-label">${this.label}</p>` : nothing}
-      ${this.helper
-        ? html`<p class="field-helper">${this.helper}</p>`
-        : nothing}
+      ${
+        this.helper ? html`<p class="field-helper">${this.helper}</p>` : nothing
+      }
       <ha-sortable handle-selector=".handle" @item-moved=${this._moved}>
         <div class="home-list">
           ${repeat(

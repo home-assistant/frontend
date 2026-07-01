@@ -10,9 +10,7 @@ export class HaTimeDuration extends LitElement {
   @property({ attribute: false }) public selector!: DurationSelector;
 
   @property({ attribute: false }) public value?:
-    | HaDurationData
-    | string
-    | number;
+    HaDurationData | string | number;
 
   @property() public label?: string;
 

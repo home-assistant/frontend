@@ -226,9 +226,11 @@ export class HaEntityPicker extends LitElement {
       return html`
         ${this._renderExtraOptionStart(extraOption)}
         <span slot="headline">${extraOption.primary}</span>
-        ${extraOption.secondary
-          ? html`<span slot="supporting-text">${extraOption.secondary}</span>`
-          : nothing}
+        ${
+          extraOption.secondary
+            ? html`<span slot="supporting-text">${extraOption.secondary}</span>`
+            : nothing
+        }
       `;
     }
 
@@ -273,38 +275,46 @@ export class HaEntityPicker extends LitElement {
 
     return html`
       <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
-        ${item.icon_path
-          ? html`
-              <ha-svg-icon
-                slot="start"
-                style="margin: 0 4px"
-                .path=${item.icon_path}
-              ></ha-svg-icon>
-            `
-          : html`
-              <state-badge
-                slot="start"
-                .stateObj=${item.stateObj}
-              ></state-badge>
-            `}
+        ${
+          item.icon_path
+            ? html`
+                <ha-svg-icon
+                  slot="start"
+                  style="margin: 0 4px"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>
+              `
+            : html`
+                <state-badge
+                  slot="start"
+                  .stateObj=${item.stateObj}
+                ></state-badge>
+              `
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${item.stateObj && showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${item.stateObj.entity_id}
-              </span>
-            `
-          : nothing}
-        ${item.domain_name && !showEntityId
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${item.domain_name}
-              </div>
-            `
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          item.stateObj && showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${item.stateObj.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          item.domain_name && !showEntityId
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${item.domain_name}
+                </div>
+              `
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -452,10 +462,12 @@ export class HaEntityPicker extends LitElement {
         .searchKeys=${entityComboBoxKeys}
         .noSort=${this._hasRelatedContext}
         use-top-label
-        .addButtonLabel=${this.addButton
-          ? (this.addButtonLabel ??
-            this._i18n.localize("ui.components.entity.entity-picker.add"))
-          : undefined}
+        .addButtonLabel=${
+          this.addButton
+            ? (this.addButtonLabel ??
+              this._i18n.localize("ui.components.entity.entity-picker.add"))
+            : undefined
+        }
         .unknownItemText=${this._i18n.localize(
           "ui.components.entity.entity-picker.unknown"
         )}

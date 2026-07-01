@@ -461,18 +461,20 @@ export class HuiAreaCardEditor
           )}
         </h3>
         <div class="content">
-          ${hasCompatibleFeatures
-            ? html`
-                <ha-form
-                  class="features-form"
-                  .hass=${this.hass}
-                  .data=${data}
-                  .schema=${featuresSchema}
-                  .computeLabel=${this._computeLabelCallback}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `
-            : nothing}
+          ${
+            hasCompatibleFeatures
+              ? html`
+                  <ha-form
+                    class="features-form"
+                    .hass=${this.hass}
+                    .data=${data}
+                    .schema=${featuresSchema}
+                    .computeLabel=${this._computeLabelCallback}
+                    @value-changed=${this._valueChanged}
+                  ></ha-form>
+                `
+              : nothing
+          }
           <hui-card-features-editor
             .hass=${this.hass}
             .context=${this._featureContext}

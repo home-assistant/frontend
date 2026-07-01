@@ -92,20 +92,24 @@ class PanelMediaBrowser extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-top-app-bar-fixed .narrow=${this.narrow}>
-        ${this._navigateIds.length > 1
-          ? html`
-              <ha-icon-button-arrow-prev
-                slot="navigationIcon"
-                @click=${this._goBack}
-              ></ha-icon-button-arrow-prev>
-            `
-          : nothing}
+        ${
+          this._navigateIds.length > 1
+            ? html`
+                <ha-icon-button-arrow-prev
+                  slot="navigationIcon"
+                  @click=${this._goBack}
+                ></ha-icon-button-arrow-prev>
+              `
+            : nothing
+        }
         <h1 class="page-title" slot="title">
-          ${!this._currentItem
-            ? this.hass.localize(
-                "ui.components.media-browser.media-player-browser"
-              )
-            : this._currentItem.title}
+          ${
+            !this._currentItem
+              ? this.hass.localize(
+                  "ui.components.media-browser.media-player-browser"
+                )
+              : this._currentItem.title
+          }
         </h1>
         <ha-media-manage-button
           slot="actionItems"
@@ -120,27 +124,27 @@ class PanelMediaBrowser extends LitElement {
           ></ha-icon-button>
           <ha-dropdown-item
             value="auto"
-            class=${this._preferredLayout === "auto"
-              ? "selected_menu_item"
-              : ""}
+            class=${
+              this._preferredLayout === "auto" ? "selected_menu_item" : ""
+            }
           >
             ${this.hass.localize("ui.components.media-browser.auto")}
             <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
           </ha-dropdown-item>
           <ha-dropdown-item
             value="grid"
-            class=${this._preferredLayout === "grid"
-              ? "selected_menu_item"
-              : ""}
+            class=${
+              this._preferredLayout === "grid" ? "selected_menu_item" : ""
+            }
           >
             ${this.hass.localize("ui.components.media-browser.grid")}
             <ha-svg-icon slot="icon" .path=${mdiGrid}></ha-svg-icon>
           </ha-dropdown-item>
           <ha-dropdown-item
             value="list"
-            class=${this._preferredLayout === "list"
-              ? "selected_menu_item"
-              : ""}
+            class=${
+              this._preferredLayout === "list" ? "selected_menu_item" : ""
+            }
           >
             ${this.hass.localize("ui.components.media-browser.list")}
             <ha-svg-icon slot="icon" .path=${mdiListBoxOutline}></ha-svg-icon>

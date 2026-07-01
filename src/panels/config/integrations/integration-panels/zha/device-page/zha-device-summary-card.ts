@@ -62,9 +62,11 @@ export class ZHADeviceSummaryCard extends LitElement {
       <ha-card>
         <div class="device-heading">
           <div class="device-name">${name}</div>
-          ${this.device.user_given_name
-            ? html`<div class="device-subtitle">${this.device.name}</div>`
-            : nothing}
+          ${
+            this.device.user_given_name
+              ? html`<div class="device-subtitle">${this.device.name}</div>`
+              : nothing
+          }
         </div>
         <div class="section-header">
           ${this._i18n.localize("ui.panel.config.zha.device_page.information")}
@@ -92,29 +94,34 @@ export class ZHADeviceSummaryCard extends LitElement {
           ${this._renderLastSeenSummaryItem()}
         </div>
         <div class="card-actions">
-          ${!this.device.active_coordinator
-            ? html`
-                <ha-button appearance="plain" @click=${this._reconfigureDevice}>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiCogRefresh}
-                  ></ha-svg-icon>
-                  ${this._i18n.localize(
-                    "ui.dialogs.zha_device_info.buttons.reconfigure"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button appearance="plain" @click=${this._viewNetwork}>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiFamilyTree}
-                  ></ha-svg-icon>
-                  ${this._i18n.localize(
-                    "ui.dialogs.zha_device_info.buttons.view_network"
-                  )}
-                </ha-button>
-              `}
+          ${
+            !this.device.active_coordinator
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._reconfigureDevice}
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiCogRefresh}
+                    ></ha-svg-icon>
+                    ${this._i18n.localize(
+                      "ui.dialogs.zha_device_info.buttons.reconfigure"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button appearance="plain" @click=${this._viewNetwork}>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiFamilyTree}
+                    ></ha-svg-icon>
+                    ${this._i18n.localize(
+                      "ui.dialogs.zha_device_info.buttons.view_network"
+                    )}
+                  </ha-button>
+                `
+          }
           ${this._renderDeviceActionMenu()}
         </div>
       </ha-card>
@@ -142,34 +149,38 @@ export class ZHADeviceSummaryCard extends LitElement {
           .label=${this._i18n.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-        ${canAddViaDevice
-          ? html`
-              <ha-dropdown-item value="add-via">
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                ${this._i18n.localize("ui.dialogs.zha_device_info.buttons.add")}
-              </ha-dropdown-item>
-            `
-          : nothing}
-        ${canManageDevice
-          ? html`
-              <ha-dropdown-item value="view-network">
-                <ha-svg-icon slot="icon" .path=${mdiFamilyTree}></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.dialogs.zha_device_info.buttons.view_network"
-                )}
-              </ha-dropdown-item>
-              <ha-dropdown-item
-                value="remove"
-                variant="danger"
-                .disabled=${this._processingRemove}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
-                ${this._i18n.localize(
-                  "ui.dialogs.zha_device_info.buttons.remove"
-                )}
-              </ha-dropdown-item>
-            `
-          : nothing}
+        ${
+          canAddViaDevice
+            ? html`
+                <ha-dropdown-item value="add-via">
+                  <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                  ${this._i18n.localize("ui.dialogs.zha_device_info.buttons.add")}
+                </ha-dropdown-item>
+              `
+            : nothing
+        }
+        ${
+          canManageDevice
+            ? html`
+                <ha-dropdown-item value="view-network">
+                  <ha-svg-icon slot="icon" .path=${mdiFamilyTree}></ha-svg-icon>
+                  ${this._i18n.localize(
+                    "ui.dialogs.zha_device_info.buttons.view_network"
+                  )}
+                </ha-dropdown-item>
+                <ha-dropdown-item
+                  value="remove"
+                  variant="danger"
+                  .disabled=${this._processingRemove}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                  ${this._i18n.localize(
+                    "ui.dialogs.zha_device_info.buttons.remove"
+                  )}
+                </ha-dropdown-item>
+              `
+            : nothing
+        }
       </ha-dropdown>
     `;
   }

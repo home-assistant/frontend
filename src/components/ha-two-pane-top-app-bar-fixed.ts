@@ -33,19 +33,23 @@ export class HaTwoPaneTopAppBarFixed extends HaTopAppBarFixed {
           "top-app-bar-fixed-adjust--pane": this.pane,
         })}
       >
-        ${this.pane
-          ? html`<div class="pane">
-              <div class="shadow-container"></div>
-              <div class="ha-scrollbar">
-                <slot name="pane"></slot>
-              </div>
-              ${this.footer
-                ? html`<div class="footer">
-                    <slot name="pane-footer"></slot>
-                  </div>`
-                : nothing}
-            </div>`
-          : nothing}
+        ${
+          this.pane
+            ? html`<div class="pane">
+                <div class="shadow-container"></div>
+                <div class="ha-scrollbar">
+                  <slot name="pane"></slot>
+                </div>
+                ${
+                  this.footer
+                    ? html`<div class="footer">
+                        <slot name="pane-footer"></slot>
+                      </div>`
+                    : nothing
+                }
+              </div>`
+            : nothing
+        }
         <div class="main">
           ${this.pane ? html`<div class="shadow-container"></div>` : nothing}
           <div class="content">

@@ -244,8 +244,7 @@ export class DemoHaList extends LitElement {
           )}
         </ha-list-selectable>
         <pre>
-selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
-        >
+selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre>
       </ha-card>
 
       <ha-card
@@ -272,8 +271,7 @@ selected: ${JSON.stringify(this._toJson(this._multiCheckStart))}</pre
           )}
         </ha-list-selectable>
         <pre>
-selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre
-        >
+selected: ${JSON.stringify(this._toJson(this._multiCheckEnd))}</pre>
       </ha-card>
 
       <ha-card header="Option: all combinations">

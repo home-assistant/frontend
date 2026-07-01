@@ -25,9 +25,11 @@ export class HaDialogHeader extends LitElement {
             <slot name="navigationIcon"></slot>
           </section>
           <section class="header-content">
-            ${this.subtitlePosition === "above"
-              ? html`${subtitleSlot}${titleSlot}`
-              : html`${titleSlot}${subtitleSlot}`}
+            ${
+              this.subtitlePosition === "above"
+                ? html`${subtitleSlot}${titleSlot}`
+                : html`${titleSlot}${subtitleSlot}`
+            }
           </section>
           <section class="header-action-items">
             <slot name="actionItems"></slot>

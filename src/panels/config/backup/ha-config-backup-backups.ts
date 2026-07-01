@@ -257,15 +257,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   />
                 `;
               })}
-              ${agentsMore
-                ? html`
-                    <span
-                      style="display: flex; align-items: center; font-size: var(--ha-font-size-m);"
-                    >
-                      +${agentsMore}
-                    </span>
-                  `
-                : nothing}
+              ${
+                agentsMore
+                  ? html`
+                      <span
+                        style="display: flex; align-items: center; font-size: var(--ha-font-size-m);"
+                      >
+                        +${agentsMore}
+                      </span>
+                    `
+                  : nothing
+              }
             </div>
           `;
         },
@@ -433,14 +435,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         clickable
         id="backup_id"
         has-filters
-        .filters=${Object.values(this._filters).filter((filter) =>
-          Array.isArray(filter)
-            ? filter.length
-            : filter &&
-              Object.values(filter).some((val) =>
-                Array.isArray(val) ? val.length : val
-              )
-        ).length}
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
@@ -483,28 +487,30 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         </div>
 
         <div slot="selection-bar">
-          ${!this.narrow
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._deleteSelected}
-                  variant="danger"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                  .path=${mdiDelete}
-                  class="warning"
-                  @click=${this._deleteSelected}
-                ></ha-icon-button>
-              `}
+          ${
+            !this.narrow
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._deleteSelected}
+                    variant="danger"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.backups.delete_selected"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.backup.backups.delete_selected"
+                    )}
+                    .path=${mdiDelete}
+                    class="warning"
+                    @click=${this._deleteSelected}
+                  ></ha-icon-button>
+                `
+          }
         </div>
 
         <ha-filter-states
@@ -527,28 +533,32 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           slot="filter-pane"
           .narrow=${this.narrow}
         ></ha-filter-states>
-        ${!this._needsOnboarding
-          ? html`
-              <ha-button
-                slot="fab"
-                size="l"
-                ?disabled=${backupInProgress}
-                @click=${this._newBackup}
-              >
-                ${backupInProgress
-                  ? html`<div slot="start" class="loading">
-                      <ha-spinner .size=${"small"}></ha-spinner>
-                    </div>`
-                  : html`<ha-svg-icon
-                      slot="start"
-                      .path=${mdiPlus}
-                    ></ha-svg-icon>`}
-                ${this.hass.localize(
-                  "ui.panel.config.backup.backups.new_backup"
-                )}
-              </ha-button>
-            `
-          : nothing}
+        ${
+          !this._needsOnboarding
+            ? html`
+                <ha-button
+                  slot="fab"
+                  size="l"
+                  ?disabled=${backupInProgress}
+                  @click=${this._newBackup}
+                >
+                  ${
+                    backupInProgress
+                      ? html`<div slot="start" class="loading">
+                          <ha-spinner .size=${"small"}></ha-spinner>
+                        </div>`
+                      : html`<ha-svg-icon
+                          slot="start"
+                          .path=${mdiPlus}
+                        ></ha-svg-icon>`
+                  }
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.backups.new_backup"
+                  )}
+                </ha-button>
+              `
+            : nothing
+        }
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="overflow-menu"

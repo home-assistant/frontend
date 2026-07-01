@@ -108,8 +108,10 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
           class="press-button"
           @click=${this._pressButton}
         >
-          ${this._config.action_name ??
-          this.hass.localize("ui.card.button.press")}
+          ${
+            this._config.action_name ??
+            this.hass.localize("ui.card.button.press")
+          }
         </ha-control-button>
       </ha-control-button-group>
     `;

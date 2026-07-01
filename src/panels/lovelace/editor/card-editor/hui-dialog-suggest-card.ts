@@ -126,16 +126,18 @@ export class HuiDialogSuggestCard extends LitElement {
       >
         <div>
           ${this._renderPreview()}
-          ${this._params.yaml && this._cardConfig
-            ? html`
-                <div class="editor">
-                  <ha-yaml-editor
-                    .defaultValue=${this._cardConfig}
-                    in-dialog
-                  ></ha-yaml-editor>
-                </div>
-              `
-            : nothing}
+          ${
+            this._params.yaml && this._cardConfig
+              ? html`
+                  <div class="editor">
+                    <ha-yaml-editor
+                      .defaultValue=${this._cardConfig}
+                      in-dialog
+                    ></ha-yaml-editor>
+                  </div>
+                `
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -144,37 +146,43 @@ export class HuiDialogSuggestCard extends LitElement {
             appearance="plain"
             autofocus
           >
-            ${this._params.yaml
-              ? this.hass!.localize("ui.common.close")
-              : this.hass!.localize("ui.common.cancel")}
+            ${
+              this._params.yaml
+                ? this.hass!.localize("ui.common.close")
+                : this.hass!.localize("ui.common.cancel")
+            }
           </ha-button>
-          ${!this._params.yaml
-            ? html`
-                ${!(this._sectionConfig && this._viewSupportsSection)
-                  ? html`
-                      <ha-button
-                        appearance="plain"
-                        slot="secondaryAction"
-                        @click=${this._pickCard}
-                      >
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.editor.suggest_card.create_own"
-                        )}
-                      </ha-button>
-                    `
-                  : nothing}
-                <ha-button
-                  slot="primaryAction"
-                  .disabled=${this._saving}
-                  @click=${this._save}
-                  .loading=${this._saving}
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.suggest_card.add"
-                  )}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            !this._params.yaml
+              ? html`
+                  ${
+                    !(this._sectionConfig && this._viewSupportsSection)
+                      ? html`
+                          <ha-button
+                            appearance="plain"
+                            slot="secondaryAction"
+                            @click=${this._pickCard}
+                          >
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.editor.suggest_card.create_own"
+                            )}
+                          </ha-button>
+                        `
+                      : nothing
+                  }
+                  <ha-button
+                    slot="primaryAction"
+                    .disabled=${this._saving}
+                    @click=${this._save}
+                    .loading=${this._saving}
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.suggest_card.add"
+                    )}
+                  </ha-button>
+                `
+              : nothing
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

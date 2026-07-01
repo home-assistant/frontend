@@ -40,22 +40,26 @@ class StateCardDisplay extends LitElement {
               "unit_of_measurement" in this.stateObj.attributes,
           })}"
         >
-          ${computeDomain(this.stateObj.entity_id) === "sensor" &&
-          SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
-            this.stateObj.attributes.device_class
-          ) &&
-          this.stateObj.state !== UNAVAILABLE &&
-          this.stateObj.state !== UNKNOWN
-            ? html`<hui-timestamp-display
-                .hass=${this.hass}
-                .ts=${new Date(this.stateObj.state)}
-                .format=${this.stateObj.attributes.device_class ===
-                SENSOR_DEVICE_CLASS_UPTIME
-                  ? "total"
-                  : "datetime"}
-                capitalize
-              ></hui-timestamp-display>`
-            : this.hass.formatEntityState(this.stateObj)}
+          ${
+            computeDomain(this.stateObj.entity_id) === "sensor" &&
+            SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+              this.stateObj.attributes.device_class
+            ) &&
+            this.stateObj.state !== UNAVAILABLE &&
+            this.stateObj.state !== UNKNOWN
+              ? html`<hui-timestamp-display
+                  .hass=${this.hass}
+                  .ts=${new Date(this.stateObj.state)}
+                  .format=${
+                    this.stateObj.attributes.device_class ===
+                    SENSOR_DEVICE_CLASS_UPTIME
+                      ? "total"
+                      : "datetime"
+                  }
+                  capitalize
+                ></hui-timestamp-display>`
+              : this.hass.formatEntityState(this.stateObj)
+          }
         </div>
       </div>
     `;

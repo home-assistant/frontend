@@ -257,10 +257,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         direction: "asc",
         flex: 2,
         template: (statistic) =>
-          html`${statistic.issues_string ??
-          localize(
-            "ui.panel.config.developer-tools.tabs.statistics.no_issue"
-          )}`,
+          html`${
+            statistic.issues_string ??
+            localize("ui.panel.config.developer-tools.tabs.statistics.no_issue")
+          }`,
       },
       fix: {
         title: "",
@@ -269,22 +269,24 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         ),
         type: "icon",
         template: (statistic) =>
-          html`${statistic.issues
-            ? html`<ha-button
-                @click=${this._fixIssue}
-                .data=${statistic.issues}
-                appearance="plain"
-                size="s"
-              >
-                ${localize(
-                  statistic.issues.some((issue) =>
-                    FIXABLE_ISSUES.includes(issue.type)
-                  )
-                    ? "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
-                    : "ui.panel.config.developer-tools.tabs.statistics.fix_issue.info"
-                )}
-              </ha-button>`
-            : "—"}`,
+          html`${
+            statistic.issues
+              ? html`<ha-button
+                  @click=${this._fixIssue}
+                  .data=${statistic.issues}
+                  appearance="plain"
+                  size="s"
+                >
+                  ${localize(
+                    statistic.issues.some((issue) =>
+                      FIXABLE_ISSUES.includes(issue.type)
+                    )
+                      ? "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
+                      : "ui.panel.config.developer-tools.tabs.statistics.fix_issue.info"
+                  )}
+                </ha-button>`
+              : "—"
+          }`,
         minWidth: "113px",
         maxWidth: "113px",
         showNarrow: true,
@@ -362,16 +364,20 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                       .value=${id}
                       .selected=${id === this._sortColumn}
                     >
-                      ${this._sortColumn === id
-                        ? html`
-                            <ha-svg-icon
-                              slot="details"
-                              .path=${this._sortDirection === "desc"
-                                ? mdiArrowDown
-                                : mdiArrowUp}
-                            ></ha-svg-icon>
-                          `
-                        : nothing}
+                      ${
+                        this._sortColumn === id
+                          ? html`
+                              <ha-svg-icon
+                                slot="details"
+                                .path=${
+                                  this._sortDirection === "desc"
+                                    ? mdiArrowDown
+                                    : mdiArrowUp
+                                }
+                              ></ha-svg-icon>
+                            `
+                          : nothing
+                      }
                       ${column.title || column.label}
                     </ha-dropdown-item>
                   `
@@ -460,88 +466,92 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
     return html`
       <div class="table-with-toolbars">
-        ${this._selectMode
-          ? html`<div class="selection-bar">
-              <div class="selection-controls">
-                <ha-icon-button
-                  .path=${mdiClose}
-                  @click=${this._disableSelectMode}
-                  .label=${this._i18n.localize(
-                    "ui.components.subpage-data-table.exit_selection_mode"
-                  )}
-                ></ha-icon-button>
-                <ha-dropdown>
-                  <ha-assist-chip
+        ${
+          this._selectMode
+            ? html`<div class="selection-bar">
+                <div class="selection-controls">
+                  <ha-icon-button
+                    .path=${mdiClose}
+                    @click=${this._disableSelectMode}
                     .label=${this._i18n.localize(
-                      "ui.components.subpage-data-table.select"
-                    )}
-                    slot="trigger"
-                  >
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiFormatListChecks}
-                    ></ha-svg-icon>
-                    <ha-svg-icon
-                      slot="trailing-icon"
-                      .path=${mdiMenuDown}
-                    ></ha-svg-icon
-                  ></ha-assist-chip>
-                  <ha-dropdown-item @click=${this._selectAll}>
-                    ${this._i18n.localize(
-                      "ui.components.subpage-data-table.select_all"
-                    )}
-                  </ha-dropdown-item>
-                  <ha-dropdown-item @click=${this._selectAllIssues}>
-                    ${this._i18n.localize(
-                      "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
-                    )}
-                  </ha-dropdown-item>
-                  <ha-dropdown-item @click=${this._selectNone}>
-                    ${this._i18n.localize(
-                      "ui.components.subpage-data-table.select_none"
-                    )}
-                  </ha-dropdown-item>
-                  <wa-divider></wa-divider>
-                  <ha-dropdown-item @click=${this._disableSelectMode}>
-                    ${this._i18n.localize(
                       "ui.components.subpage-data-table.exit_selection_mode"
                     )}
-                  </ha-dropdown-item>
-                </ha-dropdown>
-                <p>
-                  ${this._i18n.localize(
-                    "ui.components.subpage-data-table.selected",
-                    {
-                      selected: this._selected.length,
-                    }
+                  ></ha-icon-button>
+                  <ha-dropdown>
+                    <ha-assist-chip
+                      .label=${this._i18n.localize(
+                        "ui.components.subpage-data-table.select"
+                      )}
+                      slot="trigger"
+                    >
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiFormatListChecks}
+                      ></ha-svg-icon>
+                      <ha-svg-icon
+                        slot="trailing-icon"
+                        .path=${mdiMenuDown}
+                      ></ha-svg-icon
+                    ></ha-assist-chip>
+                    <ha-dropdown-item @click=${this._selectAll}>
+                      ${this._i18n.localize(
+                        "ui.components.subpage-data-table.select_all"
+                      )}
+                    </ha-dropdown-item>
+                    <ha-dropdown-item @click=${this._selectAllIssues}>
+                      ${this._i18n.localize(
+                        "ui.panel.config.developer-tools.tabs.statistics.data_table.select_all_issues"
+                      )}
+                    </ha-dropdown-item>
+                    <ha-dropdown-item @click=${this._selectNone}>
+                      ${this._i18n.localize(
+                        "ui.components.subpage-data-table.select_none"
+                      )}
+                    </ha-dropdown-item>
+                    <wa-divider></wa-divider>
+                    <ha-dropdown-item @click=${this._disableSelectMode}>
+                      ${this._i18n.localize(
+                        "ui.components.subpage-data-table.exit_selection_mode"
+                      )}
+                    </ha-dropdown-item>
+                  </ha-dropdown>
+                  <p>
+                    ${this._i18n.localize(
+                      "ui.components.subpage-data-table.selected",
+                      {
+                        selected: this._selected.length,
+                      }
+                    )}
+                  </p>
+                </div>
+                <div class="center-vertical">
+                  <slot name="selection-bar"></slot>
+                </div>
+                <ha-assist-chip
+                  .label=${this._i18n.localize(
+                    "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
                   )}
-                </p>
-              </div>
-              <div class="center-vertical">
-                <slot name="selection-bar"></slot>
-              </div>
-              <ha-assist-chip
-                .label=${this._i18n.localize(
-                  "ui.panel.config.developer-tools.tabs.statistics.delete_selected"
-                )}
-                .disabled=${!this._selected.length}
-                @click=${this._clearSelected}
-              >
-              </ha-assist-chip>
-            </div>`
-          : nothing}
+                  .disabled=${!this._selected.length}
+                  @click=${this._clearSelected}
+                >
+                </ha-assist-chip>
+              </div>`
+            : nothing
+        }
         <div slot="toolbar-icon">
           <slot name="toolbar-icon"></slot>
         </div>
-        ${this.narrow
-          ? html`
-              <div slot="header">
-                <slot name="header">
-                  <div class="search-toolbar">${searchBar}</div>
-                </slot>
-              </div>
-            `
-          : nothing}
+        ${
+          this.narrow
+            ? html`
+                <div slot="header">
+                  <slot name="header">
+                    <div class="search-toolbar">${searchBar}</div>
+                  </slot>
+                </div>
+              `
+            : nothing
+        }
         <ha-data-table
           .narrow=${this.narrow}
           .columns=${columns}
@@ -569,20 +579,22 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           @selection-changed=${this._handleSelectionChanged}
           @sorting-changed=${this._handleTableSortingChanged}
         >
-          ${!this.narrow
-            ? html`
-                <div slot="header">
-                  <slot name="header">
-                    <div class="table-header">
-                      ${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
-                    </div>
-                  </slot>
-                </div>
-              `
-            : html`<div slot="header"></div>
-                <div slot="header-row" class="narrow-header-row">
-                  ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
-                </div>`}
+          ${
+            !this.narrow
+              ? html`
+                  <div slot="header">
+                    <slot name="header">
+                      <div class="table-header">
+                        ${selectModeBtn}${searchBar}${groupByMenu}${sortByMenu}${settingsButton}
+                      </div>
+                    </slot>
+                  </div>
+                `
+              : html`<div slot="header"></div>
+                  <div slot="header-row" class="narrow-header-row">
+                    ${selectModeBtn}${groupByMenu}${sortByMenu}${settingsButton}
+                  </div>`
+          }
         </ha-data-table>
       </div>
     `;

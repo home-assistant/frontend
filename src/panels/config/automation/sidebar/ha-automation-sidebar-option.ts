@@ -58,98 +58,112 @@ export default class HaAutomationSidebarOption extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
-      ${this.config.defaultOption
-        ? html`<span slot="overflow-menu"></span>`
-        : html`
-            <ha-dropdown-item
-              slot="menu-items"
-              value="rename"
-              .disabled=${!!disabled}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
-              <div class="overflow-label">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.rename"
-                )}
-                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
-              </div>
-            </ha-dropdown-item>
-            <ha-dropdown-item
-              slot="menu-items"
-              value="edit_note"
-              .disabled=${!!disabled}
-            >
-              <ha-svg-icon
-                slot="icon"
-                .path=${mdiCommentEditOutline}
-              ></ha-svg-icon>
-              <div class="overflow-label">
-                ${this.hass.localize(
-                  `ui.panel.config.automation.editor.note.${this.config.note ? "edit" : "add"}`
-                )}
-                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
-              </div>
-            </ha-dropdown-item>
+      ${
+        this.config.defaultOption
+          ? html`<span slot="overflow-menu"></span>`
+          : html`
+              <ha-dropdown-item
+                slot="menu-items"
+                value="rename"
+                .disabled=${!!disabled}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.rename"
+                  )}
+                  <span
+                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                  ></span>
+                </div>
+              </ha-dropdown-item>
+              <ha-dropdown-item
+                slot="menu-items"
+                value="edit_note"
+                .disabled=${!!disabled}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiCommentEditOutline}
+                ></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.note.${this.config.note ? "edit" : "add"}`
+                  )}
+                  <span
+                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                  ></span>
+                </div>
+              </ha-dropdown-item>
 
-            <ha-dropdown-item
-              slot="menu-items"
-              value="duplicate"
-              .disabled=${this.disabled}
-            >
-              <ha-svg-icon
-                slot="icon"
-                .path=${mdiPlusCircleMultipleOutline}
-              ></ha-svg-icon>
-              <div class="overflow-label">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.duplicate"
-                )}
-                <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
-              </div>
-            </ha-dropdown-item>
-            <wa-divider slot="menu-items"></wa-divider>
-            <ha-dropdown-item
-              slot="menu-items"
-              value="delete"
-              .disabled=${this.disabled}
-              variant="danger"
-            >
-              <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
-              <div class="overflow-label">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-                )}
-                ${!this.narrow
-                  ? html`<span class="shortcut">
-                      <span
-                        >${isMac
-                          ? html`<ha-svg-icon
-                              slot="start"
-                              .path=${mdiAppleKeyboardCommand}
-                            ></ha-svg-icon>`
-                          : this.hass.localize(
-                              "ui.panel.config.automation.editor.ctrl"
+              <ha-dropdown-item
+                slot="menu-items"
+                value="duplicate"
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiPlusCircleMultipleOutline}
+                ></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.duplicate"
+                  )}
+                  <span
+                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                  ></span>
+                </div>
+              </ha-dropdown-item>
+              <wa-divider slot="menu-items"></wa-divider>
+              <ha-dropdown-item
+                slot="menu-items"
+                value="delete"
+                .disabled=${this.disabled}
+                variant="danger"
+              >
+                <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+                  )}
+                  ${
+                    !this.narrow
+                      ? html`<span class="shortcut">
+                          <span
+                            >${
+                              isMac
+                                ? html`<ha-svg-icon
+                                    slot="start"
+                                    .path=${mdiAppleKeyboardCommand}
+                                  ></ha-svg-icon>`
+                                : this.hass.localize(
+                                    "ui.panel.config.automation.editor.ctrl"
+                                  )
+                            }</span
+                          >
+                          <span>+</span>
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.automation.editor.del"
                             )}</span
-                      >
-                      <span>+</span>
-                      <span
-                        >${this.hass.localize(
-                          "ui.panel.config.automation.editor.del"
-                        )}</span
-                      >
-                    </span>`
-                  : nothing}
-              </div>
-            </ha-dropdown-item>
-          `}
+                          >
+                        </span>`
+                      : nothing
+                  }
+                </div>
+              </ha-dropdown-item>
+            `
+      }
 
       <div class="description">${description}</div>
-      ${!this.config.defaultOption && this.config.note?.trim()
-        ? html`<ha-automation-note
-            @edit-note=${this.config.editNote}
-            .note=${this.config.note}
-          ></ha-automation-note>`
-        : nothing}
+      ${
+        !this.config.defaultOption && this.config.note?.trim()
+          ? html`<ha-automation-note
+              @edit-note=${this.config.editNote}
+              .note=${this.config.note}
+            ></ha-automation-note>`
+          : nothing
+      }
     </ha-automation-sidebar-card>`;
   }
 

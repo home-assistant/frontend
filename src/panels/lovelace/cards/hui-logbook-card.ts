@@ -287,23 +287,25 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card class=${classMap({ "no-header": !this._config!.title })}>
-        ${this._config!.title
-          ? html`<h1 class="card-header">
-              ${this._config!.title}
-              <a
-                id=${this._showMoreLinkId}
-                href=${this._showMoreUrl()}
-                aria-label=${this.hass.localize(
-                  "ui.dialogs.more_info_control.show_more"
-                )}
-              >
-                <ha-icon-next></ha-icon-next>
-              </a>
-              <ha-tooltip for=${this._showMoreLinkId} placement="left">
-                ${this.hass.localize("ui.dialogs.more_info_control.show_more")}
-              </ha-tooltip>
-            </h1>`
-          : nothing}
+        ${
+          this._config!.title
+            ? html`<h1 class="card-header">
+                ${this._config!.title}
+                <a
+                  id=${this._showMoreLinkId}
+                  href=${this._showMoreUrl()}
+                  aria-label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._showMoreLinkId} placement="left">
+                  ${this.hass.localize("ui.dialogs.more_info_control.show_more")}
+                </ha-tooltip>
+              </h1>`
+            : nothing
+        }
         <div class="content">
           <ha-logbook
             class=${classMap({

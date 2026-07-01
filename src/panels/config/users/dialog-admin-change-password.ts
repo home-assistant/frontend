@@ -129,50 +129,52 @@ class DialogAdminChangePassword extends DirtyStateProviderMixin<FormData>()(
         )}
         @closed=${this._dialogClosed}
       >
-        ${this._success
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.users.change_password.password_changed"
-                )}
-              </p>
-              <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.ok")}
-                </ha-button>
-              </ha-dialog-footer>
-            `
-          : html`
-              <ha-form
-                autofocus
-                .hass=${this.hass}
-                .data=${this._data}
-                .error=${this._error}
-                .schema=${SCHEMA}
-                .computeLabel=${this._computeLabel}
-                .computeError=${this._computeError}
-                @value-changed=${this._valueChanged}
-                .disabled=${this._submitting}
-              ></ha-form>
-              <ha-dialog-footer slot="footer">
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this.closeDialog}
-                >
-                  ${this.hass.localize("ui.common.cancel")}
-                </ha-button>
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._changePassword}
-                  .disabled=${this._submitting || !canSubmit}
-                >
+        ${
+          this._success
+            ? html`
+                <p>
                   ${this.hass.localize(
-                    "ui.panel.config.users.change_password.change"
+                    "ui.panel.config.users.change_password.password_changed"
                   )}
-                </ha-button>
-              </ha-dialog-footer>
-            `}
+                </p>
+                <ha-dialog-footer slot="footer">
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.ok")}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+            : html`
+                <ha-form
+                  autofocus
+                  .hass=${this.hass}
+                  .data=${this._data}
+                  .error=${this._error}
+                  .schema=${SCHEMA}
+                  .computeLabel=${this._computeLabel}
+                  .computeError=${this._computeError}
+                  @value-changed=${this._valueChanged}
+                  .disabled=${this._submitting}
+                ></ha-form>
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass.localize("ui.common.cancel")}
+                  </ha-button>
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._changePassword}
+                    .disabled=${this._submitting || !canSubmit}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.users.change_password.change"
+                    )}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+        }
       </ha-dialog>
     `;
   }

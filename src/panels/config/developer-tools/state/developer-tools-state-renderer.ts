@@ -128,26 +128,30 @@ class HaPanelDevStateRenderer extends LitElement {
             <slot name="filter-attributes"></slot>
           </div>
         </div>
-        ${this.entities.length === 0
-          ? html` <div class="row" role="row" aria-rowindex="3">
-              <div class="cell" role="cell" aria-colspan="5">
-                <span class="padded">
-                  ${this._i18n.localize(
-                    "ui.panel.config.developer-tools.tabs.states.no_entities"
-                  )}
-                </span>
-              </div>
-            </div>`
-          : nothing}
-        ${this.virtualize
-          ? html`<lit-virtualizer
-              .items=${this.entities}
-              .renderItem=${this._renderStateItem}
-            >
-            </lit-virtualizer>`
-          : this.entities.map((item, index) =>
-              this._renderStateItem(item, index)
-            )}
+        ${
+          this.entities.length === 0
+            ? html` <div class="row" role="row" aria-rowindex="3">
+                <div class="cell" role="cell" aria-colspan="5">
+                  <span class="padded">
+                    ${this._i18n.localize(
+                      "ui.panel.config.developer-tools.tabs.states.no_entities"
+                    )}
+                  </span>
+                </div>
+              </div>`
+            : nothing
+        }
+        ${
+          this.virtualize
+            ? html`<lit-virtualizer
+                .items=${this.entities}
+                .renderItem=${this._renderStateItem}
+              >
+              </lit-virtualizer>`
+            : this.entities.map((item, index) =>
+                this._renderStateItem(item, index)
+              )
+        }
       </div>
     `;
   }

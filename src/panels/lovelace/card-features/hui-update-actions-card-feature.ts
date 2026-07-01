@@ -51,8 +51,7 @@ class HuiUpdateActionsCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id!] as
-      | UpdateEntity
-      | undefined;
+      UpdateEntity | undefined;
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {

@@ -417,19 +417,23 @@ class AddIntegrationDialog extends LitElement {
       header-title=${headerTitle}
       @closed=${this._dialogClosed}
     >
-      ${showingBrandView
-        ? html`
-            ${!this._openedDirectly
-              ? html`
-                  <ha-icon-button-prev
-                    slot="headerNavigationIcon"
-                    @click=${this._prevClicked}
-                  ></ha-icon-button-prev>
-                `
-              : nothing}
-            ${this._renderBrandView(pickedIntegration, flowsInProgress)}
-          `
-        : this._renderAll(integrations)}
+      ${
+        showingBrandView
+          ? html`
+              ${
+                !this._openedDirectly
+                  ? html`
+                      <ha-icon-button-prev
+                        slot="headerNavigationIcon"
+                        @click=${this._prevClicked}
+                      ></ha-icon-button-prev>
+                    `
+                  : nothing
+              }
+              ${this._renderBrandView(pickedIntegration, flowsInProgress)}
+            `
+          : this._renderAll(integrations)
+      }
     </ha-dialog>`;
   }
 
@@ -569,21 +573,23 @@ class AddIntegrationDialog extends LitElement {
         )}
         @keydown=${this._maybeSubmit}
       ></ha-input-search>
-      ${integrations
-        ? html`<ha-list-virtualized
-            .rows=${integrations}
-            .rowRenderer=${this._renderRow}
-            style=${styleMap({
-              width: `${this._width}px`,
-              height: this._narrow
-                ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
-                : "500px",
-            })}
-          >
-          </ha-list-virtualized>`
-        : html`<div class="flex center">
-            <ha-spinner></ha-spinner>
-          </div>`}`;
+      ${
+        integrations
+          ? html`<ha-list-virtualized
+              .rows=${integrations}
+              .rowRenderer=${this._renderRow}
+              style=${styleMap({
+                width: `${this._width}px`,
+                height: this._narrow
+                  ? "calc(100vh - 184px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))"
+                  : "500px",
+              })}
+            >
+            </ha-list-virtualized>`
+          : html`<div class="flex center">
+              <ha-spinner></ha-spinner>
+            </div>`
+      }`;
   }
 
   private _renderRow = (integration: IntegrationListItem) => {

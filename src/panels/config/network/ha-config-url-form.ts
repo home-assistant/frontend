@@ -103,45 +103,51 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize("ui.panel.config.url.caption")}
       >
         <div class="card-content">
-          ${!canEdit
-            ? html`
-                <ha-alert>
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.edit_requires_storage"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            !canEdit
+              ? html`
+                  <ha-alert>
+                    ${this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.edit_requires_storage"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
 
           <div class="description">
             ${this.hass.localize("ui.panel.config.url.description")}
           </div>
 
-          ${hasCloud
-            ? html`
-                <h4>
-                  ${this.hass.localize(
-                    "ui.panel.config.url.external_url_label"
-                  )}
-                </h4>
-                <ha-md-list-item>
-                  <span slot="headline"
-                    >${this.hass.localize(
-                      "ui.panel.config.url.external_use_ha_cloud"
-                    )}</span
-                  >
-                  <ha-switch
-                    slot="end"
-                    .disabled=${disabled}
-                    .checked=${this._cloudChecked}
-                    @change=${this._toggleCloud}
-                  ></ha-switch>
-                </ha-md-list-item>
-              `
-            : nothing}
+          ${
+            hasCloud
+              ? html`
+                  <h4>
+                    ${this.hass.localize(
+                      "ui.panel.config.url.external_url_label"
+                    )}
+                  </h4>
+                  <ha-md-list-item>
+                    <span slot="headline"
+                      >${this.hass.localize(
+                        "ui.panel.config.url.external_use_ha_cloud"
+                      )}</span
+                    >
+                    <ha-switch
+                      slot="end"
+                      .disabled=${disabled}
+                      .checked=${this._cloudChecked}
+                      @change=${this._toggleCloud}
+                    ></ha-switch>
+                  </ha-md-list-item>
+                `
+              : nothing
+          }
           <div class="url-container">
             <ha-input-copy
               auto-validate
@@ -153,67 +159,75 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               .maskedToggle=${!(this._showCustomExternalUrl && canEdit)}
               placeholder="https://example.duckdns.org:8123"
               .value=${externalUrl}
-              .maskedValue=${this._showCustomExternalUrl && canEdit
-                ? undefined
-                : obfuscateUrl(externalUrl)}
+              .maskedValue=${
+                this._showCustomExternalUrl && canEdit
+                  ? undefined
+                  : obfuscateUrl(externalUrl)
+              }
               @change=${this._handleChange}
               .readonly=${!this._showCustomExternalUrl}
               .disabled=${disabled}
             >
             </ha-input-copy>
           </div>
-          ${hasCloud || !isComponentLoaded(this.hass.config, "cloud")
-            ? nothing
-            : html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.url.external_get_ha_cloud"
-                  )}
-                  <ha-button
-                    size="s"
-                    href="/config/cloud/register"
-                    slot="action"
-                  >
-                    <span class="no-wrap"
-                      >${this.hass.localize(
-                        "ui.panel.config.cloud.register.start_trial"
-                      )}</span
+          ${
+            hasCloud || !isComponentLoaded(this.hass.config, "cloud")
+              ? nothing
+              : html`
+                  <ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.url.external_get_ha_cloud"
+                    )}
+                    <ha-button
+                      size="s"
+                      href="/config/cloud/register"
+                      slot="action"
                     >
-                  </ha-button>
-                </ha-alert>
-              `}
-          ${!this._showCustomExternalUrl && hasCloud
-            ? html`
-                ${remoteEnabled
-                  ? html`
-                      <div class="row">
-                        <div class="flex"></div>
-                        <a href="/config/cloud"
-                          >${this.hass.localize(
-                            "ui.panel.config.url.manage_ha_cloud"
-                          )}</a
-                        >
-                      </div>
-                    `
-                  : html`
-                      <ha-alert alert-type="error">
-                        ${this.hass.localize(
-                          "ui.panel.config.url.ha_cloud_remote_not_enabled"
-                        )}
-                        <ha-button
-                          size="s"
-                          appearance="plain"
-                          href="/config/cloud"
-                          slot="action"
-                        >
-                          ${this.hass.localize(
-                            "ui.panel.config.url.enable_remote"
-                          )}
-                        </ha-button>
-                      </ha-alert>
-                    `}
-              `
-            : nothing}
+                      <span class="no-wrap"
+                        >${this.hass.localize(
+                          "ui.panel.config.cloud.register.start_trial"
+                        )}</span
+                      >
+                    </ha-button>
+                  </ha-alert>
+                `
+          }
+          ${
+            !this._showCustomExternalUrl && hasCloud
+              ? html`
+                  ${
+                    remoteEnabled
+                      ? html`
+                          <div class="row">
+                            <div class="flex"></div>
+                            <a href="/config/cloud"
+                              >${this.hass.localize(
+                                "ui.panel.config.url.manage_ha_cloud"
+                              )}</a
+                            >
+                          </div>
+                        `
+                      : html`
+                          <ha-alert alert-type="error">
+                            ${this.hass.localize(
+                              "ui.panel.config.url.ha_cloud_remote_not_enabled"
+                            )}
+                            <ha-button
+                              size="s"
+                              appearance="plain"
+                              href="/config/cloud"
+                              slot="action"
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.url.enable_remote"
+                              )}
+                            </ha-button>
+                          </ha-alert>
+                        `
+                  }
+                `
+              : nothing
+          }
 
           <h4>
             ${this.hass.localize("ui.panel.config.url.internal_url_label")}
@@ -250,9 +264,11 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
                 "ui.panel.config.url.internal_url_placeholder"
               )}
               .value=${internalUrl}
-              .maskedValue=${this._showCustomInternalUrl && canEdit
-                ? undefined
-                : obfuscateUrl(internalUrl)}
+              .maskedValue=${
+                this._showCustomInternalUrl && canEdit
+                  ? undefined
+                  : obfuscateUrl(internalUrl)
+              }
               @change=${this._handleChange}
               .readonly=${!this._showCustomInternalUrl}
               .disabled=${disabled}
@@ -269,9 +285,9 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               isIPAddress(new URL(internalUrl).hostname))
               ? html`
                   <ha-alert
-                    .alertType=${this._showCustomInternalUrl
-                      ? "info"
-                      : "warning"}
+                    .alertType=${
+                      this._showCustomInternalUrl ? "info" : "warning"
+                    }
                     .title=${this.hass.localize(
                       "ui.panel.config.url.internal_url_https_error_title"
                     )}

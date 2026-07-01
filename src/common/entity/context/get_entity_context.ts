@@ -24,8 +24,7 @@ export const getEntityContext = (
   floors: HomeAssistant["floors"]
 ): EntityContext => {
   const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
 
   if (!entry) {
     return {
@@ -52,9 +51,7 @@ export const getEntityAreaId = (
 
 export const getEntityEntryContext = (
   entry:
-    | EntityRegistryDisplayEntry
-    | EntityRegistryEntry
-    | ExtEntityRegistryEntry,
+    EntityRegistryDisplayEntry | EntityRegistryEntry | ExtEntityRegistryEntry,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],

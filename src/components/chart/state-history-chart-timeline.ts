@@ -145,9 +145,11 @@ export class StateHistoryChartTimeline extends LitElement {
       this.hass.language,
       this.hass.translationMetadata.translations
     );
-    return html`${seriesName
-        ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
-        : nothing}<ha-chart-tooltip-marker
+    return html`${
+        seriesName
+          ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
+          : nothing
+      }<ha-chart-tooltip-marker
         .color=${String(color ?? "")}
         .rtl=${rtl}
       ></ha-chart-tooltip-marker

@@ -106,8 +106,7 @@ class HuiLawnMowerCommandCardFeature
       return undefined;
     }
     return this.hass.states[this.context.entity_id!] as
-      | LawnMowerEntity
-      | undefined;
+      LawnMowerEntity | undefined;
   }
 
   static getStubConfig(): LawnMowerCommandsCardFeatureConfig {

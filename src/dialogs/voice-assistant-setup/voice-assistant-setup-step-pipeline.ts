@@ -75,10 +75,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           this._languageScores[lang] || EMPTY_SCORE,
           this.hass.localize
         ).supportedOptions[0]?.value as
-          | "cloud"
-          | "focused_local"
-          | "full_local"
-          | undefined;
+          "cloud" | "focused_local" | "full_local" | undefined;
       }
     }
   }
@@ -185,11 +182,13 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
               "ui.panel.config.voice_assistants.satellite_wizard.pipeline.performance.header"
             )}</span
           ><span
-            >${!performance
-              ? ""
-              : this.hass.localize(
-                  `ui.panel.config.voice_assistants.satellite_wizard.pipeline.performance.${performance}`
-                )}</span
+            >${
+              !performance
+                ? ""
+                : this.hass.localize(
+                    `ui.panel.config.voice_assistants.satellite_wizard.pipeline.performance.${performance}`
+                  )
+            }</span
           >
         </div>
         <div class="perf-bar ${performance}">
@@ -203,11 +202,13 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
               "ui.panel.config.voice_assistants.satellite_wizard.pipeline.commands.header"
             )}</span
           ><span
-            >${!commands
-              ? ""
-              : this.hass.localize(
-                  `ui.panel.config.voice_assistants.satellite_wizard.pipeline.commands.${commands}`
-                )}</span
+            >${
+              !commands
+                ? ""
+                : this.hass.localize(
+                    `ui.panel.config.voice_assistants.satellite_wizard.pipeline.commands.${commands}`
+                  )
+            }</span
           >
         </div>
         <div class="perf-bar ${commands}">
@@ -221,18 +222,20 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           .value=${this._value}
           @value-changed=${this._valueChanged}
         ></ha-select-box>
-        ${options.unsupportedOptions.length
-          ? html`<h3>
-                ${this.hass.localize(
-                  "ui.panel.config.voice_assistants.satellite_wizard.pipeline.unsupported"
-                )}
-              </h3>
-              <ha-select-box
-                max_columns="1"
-                .options=${options.unsupportedOptions}
-                disabled
-              ></ha-select-box>`
-          : nothing}
+        ${
+          options.unsupportedOptions.length
+            ? html`<h3>
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.pipeline.unsupported"
+                  )}
+                </h3>
+                <ha-select-box
+                  max_columns="1"
+                  .options=${options.unsupportedOptions}
+                  disabled
+                ></ha-select-box>`
+            : nothing
+        }
       </div>
       <div class="footer">
         <ha-button @click=${this._createPipeline} .disabled=${!this._value}

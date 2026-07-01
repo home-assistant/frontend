@@ -155,49 +155,57 @@ export class HuiBadgePicker extends LitElement {
         })}
       >
         <div class="badges-container">
-          ${this._filter
-            ? this._filterBadges(this._badges, this._filter).map(
-                (badgeElement: BadgeElement) => badgeElement.element
-              )
-            : html`
-                ${suggestedBadges.length > 0
-                  ? html`
-                      <div class="badges-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.badge.generic.suggested_badges`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${this._renderClipboardBadge()}
-                ${suggestedBadges.map(
+          ${
+            this._filter
+              ? this._filterBadges(this._badges, this._filter).map(
                   (badgeElement: BadgeElement) => badgeElement.element
-                )}
-                ${suggestedBadges.length > 0
-                  ? html`
-                      <div class="badges-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.badge.generic.other_badges`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${otherBadges.map(
-                  (badgeElement: BadgeElement) => badgeElement.element
-                )}
-                ${customBadgesItems.length > 0
-                  ? html`
-                      <div class="badges-container-header">
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.badge.generic.custom_badges`
-                        )}
-                      </div>
-                    `
-                  : nothing}
-                ${customBadgesItems.map(
-                  (badgeElement: BadgeElement) => badgeElement.element
-                )}
-              `}
+                )
+              : html`
+                  ${
+                    suggestedBadges.length > 0
+                      ? html`
+                          <div class="badges-container-header">
+                            ${this.hass!.localize(
+                              `ui.panel.lovelace.editor.badge.generic.suggested_badges`
+                            )}
+                          </div>
+                        `
+                      : nothing
+                  }
+                  ${this._renderClipboardBadge()}
+                  ${suggestedBadges.map(
+                    (badgeElement: BadgeElement) => badgeElement.element
+                  )}
+                  ${
+                    suggestedBadges.length > 0
+                      ? html`
+                          <div class="badges-container-header">
+                            ${this.hass!.localize(
+                              `ui.panel.lovelace.editor.badge.generic.other_badges`
+                            )}
+                          </div>
+                        `
+                      : nothing
+                  }
+                  ${otherBadges.map(
+                    (badgeElement: BadgeElement) => badgeElement.element
+                  )}
+                  ${
+                    customBadgesItems.length > 0
+                      ? html`
+                          <div class="badges-container-header">
+                            ${this.hass!.localize(
+                              `ui.panel.lovelace.editor.badge.generic.custom_badges`
+                            )}
+                          </div>
+                        `
+                      : nothing
+                  }
+                  ${customBadgesItems.map(
+                    (badgeElement: BadgeElement) => badgeElement.element
+                  )}
+                `
+          }
         </div>
         <div class="badges-container">
           <div
@@ -461,14 +469,16 @@ export class HuiBadgePicker extends LitElement {
             description: !element || element.tagName === "HUI-ERROR-BADGE",
           })}"
         >
-          ${element && element.tagName !== "HUI-ERROR-BADGE"
-            ? element
-            : customBadge
-              ? customBadge.description ||
-                this.hass!.localize(
-                  `ui.panel.lovelace.editor.badge_picker.no_description`
-                )
-              : description}
+          ${
+            element && element.tagName !== "HUI-ERROR-BADGE"
+              ? element
+              : customBadge
+                ? customBadge.description ||
+                  this.hass!.localize(
+                    `ui.panel.lovelace.editor.badge_picker.no_description`
+                  )
+                : description
+          }
         </div>
       </div>
     `;

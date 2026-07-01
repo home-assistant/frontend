@@ -106,43 +106,49 @@ class HuiCoverOpenCloseCardFeature
 
     return html`
       <ha-control-button-group>
-        ${supportsFeature(this._stateObj, CoverEntityFeature.OPEN)
-          ? html`
-              <ha-control-button
-                .label=${this.hass.localize("ui.card.cover.open_cover")}
-                @click=${this._onOpenTap}
-                .disabled=${!canOpen(this._stateObj)}
-              >
-                <ha-svg-icon
-                  .path=${computeOpenIcon(this._stateObj)}
-                ></ha-svg-icon>
-              </ha-control-button>
-            `
-          : nothing}
-        ${supportsFeature(this._stateObj, CoverEntityFeature.STOP)
-          ? html`
-              <ha-control-button
-                .label=${this.hass.localize("ui.card.cover.stop_cover")}
-                @click=${this._onStopTap}
-                .disabled=${!canStop(this._stateObj)}
-              >
-                <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-              </ha-control-button>
-            `
-          : nothing}
-        ${supportsFeature(this._stateObj, CoverEntityFeature.CLOSE)
-          ? html`
-              <ha-control-button
-                .label=${this.hass.localize("ui.card.cover.close_cover")}
-                @click=${this._onCloseTap}
-                .disabled=${!canClose(this._stateObj)}
-              >
-                <ha-svg-icon
-                  .path=${computeCloseIcon(this._stateObj)}
-                ></ha-svg-icon>
-              </ha-control-button>
-            `
-          : nothing}
+        ${
+          supportsFeature(this._stateObj, CoverEntityFeature.OPEN)
+            ? html`
+                <ha-control-button
+                  .label=${this.hass.localize("ui.card.cover.open_cover")}
+                  @click=${this._onOpenTap}
+                  .disabled=${!canOpen(this._stateObj)}
+                >
+                  <ha-svg-icon
+                    .path=${computeOpenIcon(this._stateObj)}
+                  ></ha-svg-icon>
+                </ha-control-button>
+              `
+            : nothing
+        }
+        ${
+          supportsFeature(this._stateObj, CoverEntityFeature.STOP)
+            ? html`
+                <ha-control-button
+                  .label=${this.hass.localize("ui.card.cover.stop_cover")}
+                  @click=${this._onStopTap}
+                  .disabled=${!canStop(this._stateObj)}
+                >
+                  <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+                </ha-control-button>
+              `
+            : nothing
+        }
+        ${
+          supportsFeature(this._stateObj, CoverEntityFeature.CLOSE)
+            ? html`
+                <ha-control-button
+                  .label=${this.hass.localize("ui.card.cover.close_cover")}
+                  @click=${this._onCloseTap}
+                  .disabled=${!canClose(this._stateObj)}
+                >
+                  <ha-svg-icon
+                    .path=${computeCloseIcon(this._stateObj)}
+                  ></ha-svg-icon>
+                </ha-control-button>
+              `
+            : nothing
+        }
       </ha-control-button-group>
     `;
   }

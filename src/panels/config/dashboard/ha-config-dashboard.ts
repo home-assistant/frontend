@@ -273,61 +273,67 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           .isWide=${this.isWide}
           full-width
         >
-          ${repairsIssues.length || canInstallUpdates.length
-            ? html`<div class="dashboard-alerts">
-                ${repairsIssues.length
-                  ? html`
-                      <ha-card outlined class="dashboard-alert-card">
-                        <div
-                          class="dashboard-alert-title"
-                          role="heading"
-                          aria-level="2"
-                        >
-                          <a href="/config/repairs?historyBack=1">
-                            ${this.hass.localize(
-                              "ui.panel.config.repairs.title",
-                              {
-                                count: totalRepairIssues,
-                              }
-                            )}
-                            <ha-icon-next></ha-icon-next>
-                          </a>
-                        </div>
-                        <ha-config-repairs
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .repairsIssues=${repairsIssues}
-                        ></ha-config-repairs>
-                      </ha-card>
-                    `
-                  : ""}
-                ${canInstallUpdates.length
-                  ? html`
-                      <ha-card outlined class="dashboard-alert-card">
-                        <div
-                          class="dashboard-alert-title"
-                          role="heading"
-                          aria-level="2"
-                        >
-                          <a href="/config/updates?historyBack=1">
-                            ${this.hass.localize(
-                              "ui.panel.config.updates.title",
-                              {
-                                count: totalUpdates,
-                              }
-                            )}
-                            <ha-icon-next></ha-icon-next>
-                          </a>
-                        </div>
-                        <ha-config-updates
-                          .narrow=${this.narrow}
-                          .updateEntities=${canInstallUpdates}
-                        ></ha-config-updates>
-                      </ha-card>
-                    `
-                  : ""}
-              </div>`
-            : ""}
+          ${
+            repairsIssues.length || canInstallUpdates.length
+              ? html`<div class="dashboard-alerts">
+                  ${
+                    repairsIssues.length
+                      ? html`
+                          <ha-card outlined class="dashboard-alert-card">
+                            <div
+                              class="dashboard-alert-title"
+                              role="heading"
+                              aria-level="2"
+                            >
+                              <a href="/config/repairs?historyBack=1">
+                                ${this.hass.localize(
+                                  "ui.panel.config.repairs.title",
+                                  {
+                                    count: totalRepairIssues,
+                                  }
+                                )}
+                                <ha-icon-next></ha-icon-next>
+                              </a>
+                            </div>
+                            <ha-config-repairs
+                              .hass=${this.hass}
+                              .narrow=${this.narrow}
+                              .repairsIssues=${repairsIssues}
+                            ></ha-config-repairs>
+                          </ha-card>
+                        `
+                      : ""
+                  }
+                  ${
+                    canInstallUpdates.length
+                      ? html`
+                          <ha-card outlined class="dashboard-alert-card">
+                            <div
+                              class="dashboard-alert-title"
+                              role="heading"
+                              aria-level="2"
+                            >
+                              <a href="/config/updates?historyBack=1">
+                                ${this.hass.localize(
+                                  "ui.panel.config.updates.title",
+                                  {
+                                    count: totalUpdates,
+                                  }
+                                )}
+                                <ha-icon-next></ha-icon-next>
+                              </a>
+                            </div>
+                            <ha-config-updates
+                              .narrow=${this.narrow}
+                              .updateEntities=${canInstallUpdates}
+                            ></ha-config-updates>
+                          </ha-card>
+                        `
+                      : ""
+                  }
+                </div>`
+              : ""
+          }
           ${this._pages(
             this.cloudStatus,
             isComponentLoaded(this.hass.config, "cloud"),

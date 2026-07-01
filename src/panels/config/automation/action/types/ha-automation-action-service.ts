@@ -88,49 +88,59 @@ export class HaServiceAction extends LitElement implements ActionElement {
         .hidePicker=${!!this._action.metadata}
         @value-changed=${this._actionChanged}
       ></ha-service-control>
-      ${domain && service && this.hass.services[domain]?.[service]?.response
-        ? html`<ha-settings-row .narrow=${this.narrow}>
-            ${optionalResponse
-              ? html`<ha-checkbox
-                  .checked=${!!this._action.response_variable ||
-                  this._responseChecked}
-                  .disabled=${this.disabled}
-                  @change=${this._responseCheckboxChanged}
-                  slot="prefix"
-                ></ha-checkbox>`
-              : html`<div slot="prefix" class="checkbox-spacer"></div>`}
-            <span
-              slot="heading"
-              class=${optionalResponse ? "clickable" : ""}
-              @click=${optionalResponse ? this._toggleCheckbox : undefined}
-              >${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.service.response_variable"
-              )}</span
-            >
-            <span
-              slot="description"
-              class=${optionalResponse ? "clickable" : ""}
-              @click=${optionalResponse ? this._toggleCheckbox : undefined}
-            >
-              ${optionalResponse
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.type.service.has_optional_response"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.type.service.has_response"
-                  )}
-            </span>
-            <ha-input
-              .value=${this._action.response_variable || ""}
-              .required=${!optionalResponse}
-              .disabled=${this.disabled ||
-              (optionalResponse &&
-                !this._action.response_variable &&
-                !this._responseChecked)}
-              @change=${this._responseVariableChanged}
-            ></ha-input>
-          </ha-settings-row>`
-        : nothing}
+      ${
+        domain && service && this.hass.services[domain]?.[service]?.response
+          ? html`<ha-settings-row .narrow=${this.narrow}>
+              ${
+                optionalResponse
+                  ? html`<ha-checkbox
+                      .checked=${
+                        !!this._action.response_variable ||
+                        this._responseChecked
+                      }
+                      .disabled=${this.disabled}
+                      @change=${this._responseCheckboxChanged}
+                      slot="prefix"
+                    ></ha-checkbox>`
+                  : html`<div slot="prefix" class="checkbox-spacer"></div>`
+              }
+              <span
+                slot="heading"
+                class=${optionalResponse ? "clickable" : ""}
+                @click=${optionalResponse ? this._toggleCheckbox : undefined}
+                >${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.type.service.response_variable"
+                )}</span
+              >
+              <span
+                slot="description"
+                class=${optionalResponse ? "clickable" : ""}
+                @click=${optionalResponse ? this._toggleCheckbox : undefined}
+              >
+                ${
+                  optionalResponse
+                    ? this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.type.service.has_optional_response"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.type.service.has_response"
+                      )
+                }
+              </span>
+              <ha-input
+                .value=${this._action.response_variable || ""}
+                .required=${!optionalResponse}
+                .disabled=${
+                  this.disabled ||
+                  (optionalResponse &&
+                    !this._action.response_variable &&
+                    !this._responseChecked)
+                }
+                @change=${this._responseVariableChanged}
+              ></ha-input>
+            </ha-settings-row>`
+          : nothing
+      }
     `;
   }
 

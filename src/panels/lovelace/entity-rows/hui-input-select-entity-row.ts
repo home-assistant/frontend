@@ -38,8 +38,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity] as
-      | InputSelectEntity
-      | undefined;
+      InputSelectEntity | undefined;
 
     if (!stateObj) {
       return html`

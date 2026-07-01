@@ -44,8 +44,7 @@ export type DeviceEntityDisplayLookup = Record<
 
 export type DeviceEntityLookup<
   T extends EntityRegistryEntry | EntityRegistryDisplayEntry =
-    | EntityRegistryEntry
-    | EntityRegistryDisplayEntry,
+    EntityRegistryEntry | EntityRegistryDisplayEntry,
 > = Record<string, T[]>;
 
 export interface DeviceRegistryEntryMutableParams {

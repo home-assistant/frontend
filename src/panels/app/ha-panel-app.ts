@@ -116,19 +116,21 @@ class HaPanelApp extends LitElement {
 
     // Make sure this all is 1 template so hiding toolbar doesn't reload iframe
     return html`
-      ${!this._kioskMode &&
-      (this.narrow || this.hass.dockedSidebar === "always_hidden")
-        ? html`
-            <div class="header">
-              <ha-icon-button
-                .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-                .path=${mdiMenu}
-                @click=${this._toggleMenu}
-              ></ha-icon-button>
-              <div class="main-title">${this._addon.name}</div>
-            </div>
-          `
-        : nothing}
+      ${
+        !this._kioskMode &&
+        (this.narrow || this.hass.dockedSidebar === "always_hidden")
+          ? html`
+              <div class="header">
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+                  .path=${mdiMenu}
+                  @click=${this._toggleMenu}
+                ></ha-icon-button>
+                <div class="main-title">${this._addon.name}</div>
+              </div>
+            `
+          : nothing
+      }
       <iframe
         class=${classMap({
           loaded: this._iframeLoaded,
@@ -140,12 +142,14 @@ class HaPanelApp extends LitElement {
         ${ref(this._iframeRef)}
       >
       </iframe>
-      ${!this._iframeLoaded
-        ? html`<hass-loading-screen
-            class="loading-overlay"
-            .message=${this._loadingMessage}
-          ></hass-loading-screen>`
-        : nothing}
+      ${
+        !this._iframeLoaded
+          ? html`<hass-loading-screen
+              class="loading-overlay"
+              .message=${this._loadingMessage}
+            ></hass-loading-screen>`
+          : nothing
+      }
     `;
   }
 

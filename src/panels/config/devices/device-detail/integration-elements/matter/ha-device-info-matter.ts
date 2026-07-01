@@ -87,30 +87,38 @@ export class HaDeviceInfoMatter extends SubscribeMixin(LitElement) {
             )}</span
           >
         </div>
-        ${this._nodeDiagnostics.network_name
-          ? html`
-              <div class="row">
-                <span class="name"
-                  >${this.hass.localize(
-                    "ui.panel.config.matter.device_info.network_name"
-                  )}:</span
-                >
-                <span class="value">${this._nodeDiagnostics.network_name}</span>
-              </div>
-            `
-          : nothing}
-        ${this._nodeDiagnostics.mac_address
-          ? html`
-              <div class="row">
-                <span class="name"
-                  >${this.hass.localize(
-                    "ui.panel.config.matter.device_info.mac_address"
-                  )}:</span
-                >
-                <span class="value">${this._nodeDiagnostics.mac_address}</span>
-              </div>
-            `
-          : nothing}
+        ${
+          this._nodeDiagnostics.network_name
+            ? html`
+                <div class="row">
+                  <span class="name"
+                    >${this.hass.localize(
+                      "ui.panel.config.matter.device_info.network_name"
+                    )}:</span
+                  >
+                  <span class="value"
+                    >${this._nodeDiagnostics.network_name}</span
+                  >
+                </div>
+              `
+            : nothing
+        }
+        ${
+          this._nodeDiagnostics.mac_address
+            ? html`
+                <div class="row">
+                  <span class="name"
+                    >${this.hass.localize(
+                      "ui.panel.config.matter.device_info.mac_address"
+                    )}:</span
+                  >
+                  <span class="value"
+                    >${this._nodeDiagnostics.mac_address}</span
+                  >
+                </div>
+              `
+            : nothing
+        }
 
         <div class="row">
           <span class="name"

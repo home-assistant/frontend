@@ -26,33 +26,37 @@ class HaInitPage extends LitElement {
           <ha-button size="s" appearance="plain" @click=${this._retry}
             >Retry now</ha-button
           >
-          ${location.host.includes("ui.nabu.casa")
-            ? html`
-                <p>
-                  It is possible that you are seeing this screen because your
-                  Home Assistant is not currently connected. You can ask it to
-                  come online from your
-                  <a href="https://account.nabucasa.com/"
-                    >Nabu Casa account page</a
-                  >.
-                </p>
-              `
-            : ""}
+          ${
+            location.host.includes("ui.nabu.casa")
+              ? html`
+                  <p>
+                    It is possible that you are seeing this screen because your
+                    Home Assistant is not currently connected. You can ask it to
+                    come online from your
+                    <a href="https://account.nabucasa.com/"
+                      >Nabu Casa account page</a
+                    >.
+                  </p>
+                `
+              : ""
+          }
         `
       : html`
           <div id="progress-indicator-wrapper">
             <ha-spinner></ha-spinner>
           </div>
           <div id="loading-text">
-            ${this.migration
-              ? html`
-                  Database upgrade is in progress, Home Assistant will not start
-                  until the upgrade is completed.
-                  <br /><br />
-                  The upgrade may need a long time to complete, please be
-                  patient.
-                `
-              : "Loading data"}
+            ${
+              this.migration
+                ? html`
+                    Database upgrade is in progress, Home Assistant will not
+                    start until the upgrade is completed.
+                    <br /><br />
+                    The upgrade may need a long time to complete, please be
+                    patient.
+                  `
+                : "Loading data"
+            }
           </div>
         `;
   }

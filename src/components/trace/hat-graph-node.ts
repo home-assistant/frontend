@@ -48,13 +48,16 @@ export class HatGraphNode extends LitElement {
         class=${isSafari ? "safari" : ""}
         width="${width}px"
         height="${height}px"
-        viewBox="-${Math.ceil(width / 2)} -${this.graphStart
-          ? Math.ceil(height / 2)
-          : Math.ceil((NODE_SIZE + SPACING * 2) / 2)} ${width} ${height}"
+        viewBox="-${Math.ceil(width / 2)} -${
+          this.graphStart
+            ? Math.ceil(height / 2)
+            : Math.ceil((NODE_SIZE + SPACING * 2) / 2)
+        } ${width} ${height}"
       >
-        ${this.graphStart
-          ? nothing
-          : svg`
+        ${
+          this.graphStart
+            ? nothing
+            : svg`
           <path
             class="connector"
             d="
@@ -63,11 +66,13 @@ export class HatGraphNode extends LitElement {
             "
             line-caps="round"
           />
-          `}
+          `
+        }
         <g class="node">
           <circle cx="0" cy="0" r=${NODE_SIZE / 2} />
-          ${this.error
-            ? svg`
+          ${
+            this.error
+              ? svg`
         <g class="error">
           <circle
             cx="-12"
@@ -77,9 +82,11 @@ export class HatGraphNode extends LitElement {
           <path transform="translate(-18 -21) scale(.5)" class="exclamation" d=${mdiExclamationThick}/>
         </g>
       `
-            : nothing}
-          ${this.badge
-            ? svg`
+              : nothing
+          }
+          ${
+            this.badge
+              ? svg`
         <g class="number">
           <circle
             cx="12"
@@ -94,11 +101,14 @@ export class HatGraphNode extends LitElement {
           >${this.badge > 9 ? "9+" : this.badge}</text>
         </g>
       `
-            : nothing}
+              : nothing
+          }
           <g style="pointer-events: none" transform="translate(-12 -12)">
-            ${this.iconPath
-              ? svg`<path class="icon" d=${this.iconPath}/>`
-              : svg`<foreignObject><span class="icon"><slot name="icon"></slot></span></foreignObject>`}
+            ${
+              this.iconPath
+                ? svg`<path class="icon" d=${this.iconPath}/>`
+                : svg`<foreignObject><span class="icon"><slot name="icon"></slot></span></foreignObject>`
+            }
           </g>
         </g>
       </svg>

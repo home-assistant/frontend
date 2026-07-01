@@ -157,26 +157,30 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
         @value-changed=${this._registryEntryChanged}
       ></ha-area-picker>
 
-      ${this._visibleOptionals.includes("category")
-        ? html` <ha-category-picker
-            id="category"
-            .hass=${this.hass}
-            .scope=${this._params.domain}
-            .label=${this.hass.localize(
-              "ui.components.category-picker.category"
-            )}
-            .value=${this._entryUpdates.category}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-category-picker>`
-        : nothing}
-      ${this._visibleOptionals.includes("labels")
-        ? html` <ha-labels-picker
-            id="labels"
-            .hass=${this.hass}
-            .value=${this._entryUpdates.labels}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-labels-picker>`
-        : nothing}
+      ${
+        this._visibleOptionals.includes("category")
+          ? html` <ha-category-picker
+              id="category"
+              .hass=${this.hass}
+              .scope=${this._params.domain}
+              .label=${this.hass.localize(
+                "ui.components.category-picker.category"
+              )}
+              .value=${this._entryUpdates.category}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-category-picker>`
+          : nothing
+      }
+      ${
+        this._visibleOptionals.includes("labels")
+          ? html` <ha-labels-picker
+              id="labels"
+              .hass=${this.hass}
+              .value=${this._entryUpdates.labels}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-labels-picker>`
+          : nothing
+      }
 
       <ha-chip-set>
         ${this._renderOptionalChip(
@@ -209,39 +213,47 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${this._params.hideInputs
-          ? nothing
-          : html` <ha-suggest-with-ai-button
-              slot="headerActionItems"
-              .hass=${this.hass}
-              .generateTask=${this._generateTask}
-              @suggestion=${this._handleSuggestion}
-            ></ha-suggest-with-ai-button>`}
-        ${this._error
-          ? html`<ha-alert alert-type="error"
-              >${this.hass.localize(
-                "ui.panel.config.scene.editor.missing_name"
-              )}</ha-alert
-            >`
-          : ""}
-        ${this._params.description
-          ? html`<p>${this._params.description}</p>`
-          : nothing}
+        ${
+          this._params.hideInputs
+            ? nothing
+            : html` <ha-suggest-with-ai-button
+                slot="headerActionItems"
+                .hass=${this.hass}
+                .generateTask=${this._generateTask}
+                @suggestion=${this._handleSuggestion}
+              ></ha-suggest-with-ai-button>`
+        }
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error"
+                >${this.hass.localize(
+                  "ui.panel.config.scene.editor.missing_name"
+                )}</ha-alert
+              >`
+            : ""
+        }
+        ${
+          this._params.description
+            ? html`<p>${this._params.description}</p>`
+            : nothing
+        }
         ${this._renderInputs()}
 
         <ha-dialog-footer slot="footer">
-          ${this._params.onDiscard
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._handleDiscard}
-                >
-                  ${this.hass.localize("ui.common.dont_save")}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._params.onDiscard
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._handleDiscard}
+                  >
+                    ${this.hass.localize("ui.common.dont_save")}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button
             slot="secondaryAction"
             appearance="plain"

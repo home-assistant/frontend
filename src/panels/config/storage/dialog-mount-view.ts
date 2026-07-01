@@ -216,13 +216,15 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._existing
-          ? this.hass.localize(
-              "ui.panel.config.storage.network_mounts.update_title"
-            )
-          : this.hass.localize(
-              "ui.panel.config.storage.network_mounts.add_title"
-            )}
+        header-title=${
+          this._existing
+            ? this.hass.localize(
+                "ui.panel.config.storage.network_mounts.update_title"
+              )
+            : this.hass.localize(
+                "ui.panel.config.storage.network_mounts.add_title"
+              )
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
@@ -242,9 +244,11 @@ class ViewMountDialog extends DirtyStateProviderMixin<
         >
           <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
         </a>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-form
           autofocus
           .data=${this._data}
@@ -264,16 +268,18 @@ class ViewMountDialog extends DirtyStateProviderMixin<
         ></ha-form>
 
         <ha-dialog-footer slot="footer">
-          ${this._existing
-            ? html`<ha-button
-                @click=${this._deleteMount}
-                variant="danger"
-                slot="secondaryAction"
-                appearance="plain"
-              >
-                ${this.hass.localize("ui.common.delete")}
-              </ha-button>`
-            : nothing}
+          ${
+            this._existing
+              ? html`<ha-button
+                  @click=${this._deleteMount}
+                  variant="danger"
+                  slot="secondaryAction"
+                  appearance="plain"
+                >
+                  ${this.hass.localize("ui.common.delete")}
+                </ha-button>`
+              : nothing
+          }
           <ha-button
             slot="secondaryAction"
             appearance="plain"
@@ -287,13 +293,15 @@ class ViewMountDialog extends DirtyStateProviderMixin<
             .disabled=${!this.isDirtyState}
             @click=${this._connectMount}
           >
-            ${this._existing
-              ? this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.update"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.connect"
-                )}
+            ${
+              this._existing
+                ? this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.update"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.connect"
+                  )
+            }
           </ha-progress-button>
         </ha-dialog-footer>
       </ha-dialog>

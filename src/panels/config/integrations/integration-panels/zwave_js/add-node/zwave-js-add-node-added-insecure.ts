@@ -21,11 +21,13 @@ export class ZWaveJsAddNodeFinished extends LitElement {
         <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
       </wa-animation>
       <ha-alert alert-type="warning">
-        ${this.reason
-          ? this.hass.localize(
-              `ui.panel.config.zwave_js.add_node.added_insecure.low_security_reason.${this.reason}`
-            )
-          : ""}
+        ${
+          this.reason
+            ? this.hass.localize(
+                `ui.panel.config.zwave_js.add_node.added_insecure.low_security_reason.${this.reason}`
+              )
+            : ""
+        }
         ${this.hass.localize(
           "ui.panel.config.zwave_js.add_node.added_insecure.added_insecurely_text",
           {

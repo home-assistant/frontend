@@ -29,11 +29,7 @@ import {
 } from "./ha-picker-combo-box";
 
 type NavigationGroup =
-  | "related"
-  | "dashboards"
-  | "views"
-  | "apps"
-  | "other_routes";
+  "related" | "dashboards" | "views" | "apps" | "other_routes";
 
 const RELATED_SORT_PREFIX = {
   area_view: "0_area_view",
@@ -158,51 +154,59 @@ export class HaNavigationPicker extends LitElement {
   private _valueRenderer = (itemId: string) => {
     const item = this._navigationItems.find((navItem) => navItem.id === itemId);
     return html`
-      ${item?.domain
-        ? html`
-            <ha-domain-icon
-              slot="start"
-              .domain=${item.domain}
-              brand-fallback
-            ></ha-domain-icon>
-          `
-        : item?.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item?.icon_path
-            ? html`<ha-svg-icon
+      ${
+        item?.domain
+          ? html`
+              <ha-domain-icon
                 slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : nothing}
+                .domain=${item.domain}
+                brand-fallback
+              ></ha-domain-icon>
+            `
+          : item?.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item?.icon_path
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>`
+              : nothing
+      }
       <span slot="headline">${item?.primary || itemId}</span>
-      ${item?.primary
-        ? html`<span slot="supporting-text">${itemId}</span>`
-        : nothing}
+      ${
+        item?.primary
+          ? html`<span slot="supporting-text">${itemId}</span>`
+          : nothing
+      }
     `;
   };
 
   private _rowRenderer = (item: NavigationItem) => html`
     <ha-combo-box-item type="button" compact>
-      ${item.domain
-        ? html`
-            <ha-domain-icon
-              slot="start"
-              .domain=${item.domain}
-              brand-fallback
-            ></ha-domain-icon>
-          `
-        : item.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item.icon_path
-            ? html`<ha-svg-icon
+      ${
+        item.domain
+          ? html`
+              <ha-domain-icon
                 slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : nothing}
+                .domain=${item.domain}
+                brand-fallback
+              ></ha-domain-icon>
+            `
+          : item.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item.icon_path
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>`
+              : nothing
+      }
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 

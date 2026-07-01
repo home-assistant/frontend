@@ -24,8 +24,7 @@ class HaBackupDetailsRestore extends LitElement {
   public haRequired = false;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
-    | "page-onboarding.restore"
-    | "config.backup" = "config.backup";
+    "page-onboarding.restore" | "config.backup" = "config.backup";
 
   @state() private _selectedData?: BackupData;
 

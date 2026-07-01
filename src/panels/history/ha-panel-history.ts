@@ -124,17 +124,19 @@ class HaPanelHistory extends LitElement {
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
-        ${entitiesSelected
-          ? html`
-              <ha-icon-button
-                slot="actionItems"
-                @click=${this._removeAll}
-                .disabled=${this._isLoading}
-                .path=${mdiFilterRemove}
-                .label=${this.hass.localize("ui.panel.history.remove_all")}
-              ></ha-icon-button>
-            `
-          : ""}
+        ${
+          entitiesSelected
+            ? html`
+                <ha-icon-button
+                  slot="actionItems"
+                  @click=${this._removeAll}
+                  .disabled=${this._isLoading}
+                  .path=${mdiFilterRemove}
+                  .label=${this.hass.localize("ui.panel.history.remove_all")}
+                ></ha-icon-button>
+              `
+            : ""
+        }
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -172,25 +174,27 @@ class HaPanelHistory extends LitElement {
               compact
             ></ha-target-picker>
           </div>
-          ${this._isLoading
-            ? html`<div class="progress-wrapper">
-                <ha-spinner></ha-spinner>
-              </div>`
-            : !entitiesSelected
-              ? html`<div class="start-search">
-                  ${this.hass.localize("ui.panel.history.start_search")}
+          ${
+            this._isLoading
+              ? html`<div class="progress-wrapper">
+                  <ha-spinner></ha-spinner>
                 </div>`
-              : html`
-                  <state-history-charts
-                    .hass=${this.hass}
-                    .historyData=${this._mungedStateHistory}
-                    .startTime=${this._startDate}
-                    .endTime=${this._endDate}
-                    .narrow=${this.narrow}
-                    sync-charts
-                  >
-                  </state-history-charts>
-                `}
+              : !entitiesSelected
+                ? html`<div class="start-search">
+                    ${this.hass.localize("ui.panel.history.start_search")}
+                  </div>`
+                : html`
+                    <state-history-charts
+                      .hass=${this.hass}
+                      .historyData=${this._mungedStateHistory}
+                      .startTime=${this._startDate}
+                      .endTime=${this._endDate}
+                      .narrow=${this.narrow}
+                      sync-charts
+                    >
+                    </state-history-charts>
+                  `
+          }
         </div>
       </ha-top-app-bar-fixed>
     `;

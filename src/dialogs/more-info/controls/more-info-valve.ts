@@ -115,32 +115,36 @@ class MoreInfoValve extends LitElement {
           ${
             this._mode === "position"
               ? html`
-                  ${supportsPosition
-                    ? html`
-                        <ha-state-control-valve-position
-                          .stateObj=${this.stateObj}
-                        ></ha-state-control-valve-position>
-                      `
-                    : nothing}
+                  ${
+                    supportsPosition
+                      ? html`
+                          <ha-state-control-valve-position
+                            .stateObj=${this.stateObj}
+                          ></ha-state-control-valve-position>
+                        `
+                      : nothing
+                  }
                 `
               : nothing
           }
           ${
             this._mode === "button"
               ? html`
-                  ${supportsOpenCloseOnly
-                    ? html`
-                        <ha-state-control-valve-toggle
-                          .stateObj=${this.stateObj}
-                        ></ha-state-control-valve-toggle>
-                      `
-                    : supportsOpenClose
+                  ${
+                    supportsOpenCloseOnly
                       ? html`
-                          <ha-state-control-valve-buttons
+                          <ha-state-control-valve-toggle
                             .stateObj=${this.stateObj}
-                          ></ha-state-control-valve-buttons>
+                          ></ha-state-control-valve-toggle>
                         `
-                      : nothing}
+                      : supportsOpenClose
+                        ? html`
+                            <ha-state-control-valve-buttons
+                              .stateObj=${this.stateObj}
+                            ></ha-state-control-valve-buttons>
+                          `
+                        : nothing
+                  }
                 `
               : nothing
           }

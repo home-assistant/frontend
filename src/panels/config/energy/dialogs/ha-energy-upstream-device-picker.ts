@@ -157,27 +157,31 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     );
 
   private _renderItem = (item: UpstreamDeviceComboBoxItem) => html`
-    ${item.stateObj
-      ? html`
-          <state-badge
-            slot="start"
-            .stateObj=${item.stateObj}
-            .hass=${this.hass}
-          ></state-badge>
-        `
-      : item.icon_path
+    ${
+      item.stateObj
         ? html`
-            <ha-svg-icon
-              style="margin: 0 4px"
+            <state-badge
               slot="start"
-              .path=${item.icon_path}
-            ></ha-svg-icon>
+              .stateObj=${item.stateObj}
+              .hass=${this.hass}
+            ></state-badge>
           `
-        : nothing}
+        : item.icon_path
+          ? html`
+              <ha-svg-icon
+                style="margin: 0 4px"
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
+            `
+          : nothing
+    }
     <span slot="headline">${item.primary}</span>
-    ${item.secondary
-      ? html`<span slot="supporting-text">${item.secondary}</span>`
-      : nothing}
+    ${
+      item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing
+    }
   `;
 
   private _rowRenderer: RenderItemFunction<UpstreamDeviceComboBoxItem> = (

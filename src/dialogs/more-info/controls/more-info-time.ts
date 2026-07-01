@@ -37,9 +37,9 @@ class MoreInfoTime extends LitElement {
 
     return html`
       <ha-time-input
-        .value=${this.stateObj.state === UNKNOWN
-          ? undefined
-          : this.stateObj.state}
+        .value=${
+          this.stateObj.state === UNKNOWN ? undefined : this.stateObj.state
+        }
         .locale=${this._locale}
         @value-changed=${this._timeChanged}
         @click=${this._stopEventPropagation}
