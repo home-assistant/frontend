@@ -28,7 +28,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
-const supportsFanOscilatteCardFeatureFromState = (stateObj: HassEntity) => {
+const supportsFanOscillateCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "fan" && supportsFeature(stateObj, FanEntityFeature.OSCILLATE)
@@ -43,7 +43,7 @@ export const supportsFanOscilatteCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  return supportsFanOscilatteCardFeatureFromState(stateObj);
+  return supportsFanOscillateCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-fan-oscillate-card-feature")
@@ -117,7 +117,7 @@ class HuiFanOscillateCardFeature
       !this._config ||
       !this.context ||
       !this._stateObj ||
-      !supportsFanOscilatteCardFeatureFromState(this._stateObj)
+      !supportsFanOscillateCardFeatureFromState(this._stateObj)
     ) {
       return null;
     }
