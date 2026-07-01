@@ -25,7 +25,7 @@ interface SentenceParsingResult {
   result: AssistDebugResult | null;
 }
 
-@customElement("developer-tools-assist")
+@customElement("tools-assist")
 class HaPanelDevAssist extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -304,6 +304,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-assist": HaPanelDevAssist;
+    "tools-assist": HaPanelDevAssist;
   }
 }

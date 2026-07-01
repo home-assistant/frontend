@@ -48,7 +48,7 @@ import { resolveMediaSource } from "../../../../data/media_source";
 import { MatchMinHeightMixin } from "../../../../mixins/match-min-height-mixin";
 import { withViewTransition } from "../../../../common/util/view-transition";
 
-@customElement("developer-tools-action")
+@customElement("tools-action")
 class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -829,6 +829,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-action": HaPanelDevAction;
+    "tools-action": HaPanelDevAction;
   }
 }

@@ -20,7 +20,7 @@ import "./ha-debug-connection-row";
 import "./ha-debug-disable-view-transition-row";
 import "./ha-debug-viewport-environment-card";
 
-@customElement("developer-tools-debug")
+@customElement("tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -136,6 +136,6 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-debug": HaPanelDevDebug;
+    "tools-debug": HaPanelDevDebug;
   }
 }

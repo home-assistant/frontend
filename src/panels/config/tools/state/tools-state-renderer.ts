@@ -24,7 +24,7 @@ import { haStyle } from "../../../../resources/styles";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
 import { showToast } from "../../../../util/toast";
 
-@customElement("developer-tools-state-renderer")
+@customElement("tools-state-renderer")
 class HaPanelDevStateRenderer extends LitElement {
   @property({ attribute: false }) public entities: HassEntity[] = [];
 
@@ -438,7 +438,7 @@ class HaPanelDevStateRenderer extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-state-renderer": HaPanelDevStateRenderer;
+    "tools-state-renderer": HaPanelDevStateRenderer;
   }
 
   interface HASSDomEvents {

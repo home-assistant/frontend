@@ -42,7 +42,7 @@ import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import "./developer-tools-state-renderer";
+import "./tools-state-renderer";
 
 // Use virtualizer after threshold to avoid performance issues
 // NOTE: If virtualizer is used when filtered entiity state
@@ -51,7 +51,7 @@ import "./developer-tools-state-renderer";
 // virtualized list, an undesirable effect.
 const VIRTUALIZE_THRESHOLD = 100;
 
-@customElement("developer-tools-state")
+@customElement("tools-state")
 class HaPanelDevState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -312,7 +312,7 @@ class HaPanelDevState extends LitElement {
           </div>
         </div>
       </ha-expansion-panel>
-      <developer-tools-state-renderer
+      <tools-state-renderer
         .narrow=${this.narrow}
         .entities=${entities}
         .virtualize=${entities.length > VIRTUALIZE_THRESHOLD}
@@ -363,7 +363,7 @@ class HaPanelDevState extends LitElement {
           .value=${this._attributeFilter}
           @input=${this._attributeFilterChanged}
         ></ha-input-search>
-      </developer-tools-state-renderer>
+      </tools-state-renderer>
     `;
   }
 
@@ -758,6 +758,6 @@ class HaPanelDevState extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-state": HaPanelDevState;
+    "tools-state": HaPanelDevState;
   }
 }

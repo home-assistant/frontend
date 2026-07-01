@@ -14,7 +14,7 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
 
-@customElement("developer-tools-event")
+@customElement("tools-event")
 class HaPanelDevEvent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -221,6 +221,6 @@ class HaPanelDevEvent extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-event": HaPanelDevEvent;
+    "tools-event": HaPanelDevEvent;
   }
 }

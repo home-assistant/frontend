@@ -12,10 +12,10 @@ import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
 import "../../../components/ha-top-app-bar-fixed";
 import type { HomeAssistant, Route } from "../../../types";
-import "./developer-tools-router";
+import "./tools-router";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
-const DEVELOPER_TOOLS_TABS = [
+const TOOLS_TABS = [
   {
     panel: "yaml",
     translationKey: "ui.panel.config.developer-tools.tabs.yaml.title",
@@ -46,8 +46,8 @@ const DEVELOPER_TOOLS_TABS = [
   },
 ] as const;
 
-@customElement("ha-panel-developer-tools")
-class PanelDeveloperTools extends LitElement {
+@customElement("ha-panel-tools")
+class PanelTools extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -85,7 +85,7 @@ class PanelDeveloperTools extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected} slot="subRow">
-          ${DEVELOPER_TOOLS_TABS.map(
+          ${TOOLS_TABS.map(
             (tab) => html`
               <ha-tab-group-tab
                 slot="nav"
@@ -93,7 +93,7 @@ class PanelDeveloperTools extends LitElement {
                 .active=${page === tab.panel}
               >
                 <a
-                  href="/config/developer-tools/${tab.panel}"
+                  href="/config/tools/${tab.panel}"
                   @click=${this._handleTabAnchorClick}
                   >${this.hass.localize(tab.translationKey)}</a
                 >
@@ -101,11 +101,11 @@ class PanelDeveloperTools extends LitElement {
             `
           )}
         </ha-tab-group>
-        <developer-tools-router
+        <tools-router
           .route=${this.route}
           .narrow=${this.narrow}
           .hass=${this.hass}
-        ></developer-tools-router>
+        ></tools-router>
       </ha-top-app-bar-fixed>
     `;
   }
@@ -124,7 +124,7 @@ class PanelDeveloperTools extends LitElement {
       return;
     }
     if (newPage !== this._page) {
-      navigate(`/config/developer-tools/${newPage}`);
+      navigate(`/config/tools/${newPage}`);
     } else {
       scrollTo({ behavior: "smooth", top: 0 });
     }
@@ -133,7 +133,7 @@ class PanelDeveloperTools extends LitElement {
   private async _handleMenuAction(ev: HaDropdownSelectEvent) {
     const action = ev.detail.item.value;
     if (action === "debug") {
-      navigate(`/config/developer-tools/debug`);
+      navigate(`/config/tools/debug`);
     }
   }
 
@@ -146,7 +146,7 @@ class PanelDeveloperTools extends LitElement {
   }
 
   static readonly styles: CSSResultGroup = css`
-    developer-tools-router {
+    tools-router {
       display: block;
       height: 100%;
     }
@@ -170,6 +170,6 @@ class PanelDeveloperTools extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-panel-developer-tools": PanelDeveloperTools;
+    "ha-panel-tools": PanelTools;
   }
 }

@@ -98,7 +98,7 @@ type DisplayedStatisticData = StatisticData & {
   issues_string?: string;
 };
 
-@customElement("developer-tools-statistics")
+@customElement("tools-statistics")
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -925,6 +925,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-statistics": HaPanelDevStatistics;
+    "tools-statistics": HaPanelDevStatistics;
   }
 }

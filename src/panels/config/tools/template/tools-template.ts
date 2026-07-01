@@ -50,7 +50,7 @@ const TEMPLATE_DOCS_LINKS: { key: string; path: string }[] = [
   { key: "docs_functions", path: "/template-functions/" },
 ];
 
-@customElement("developer-tools-template")
+@customElement("tools-template")
 class HaPanelDevTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -658,6 +658,6 @@ ${
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-template": HaPanelDevTemplate;
+    "tools-template": HaPanelDevTemplate;
   }
 }

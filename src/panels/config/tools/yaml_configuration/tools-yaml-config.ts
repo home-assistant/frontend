@@ -25,8 +25,8 @@ interface TranslatedReloadableDomain {
   name: string;
 }
 
-@customElement("developer-yaml-config")
-export class DeveloperYamlConfig extends LitElement {
+@customElement("tools-yaml-config")
+export class ToolsYamlConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -269,6 +269,6 @@ export class DeveloperYamlConfig extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-yaml-config": DeveloperYamlConfig;
+    "tools-yaml-config": ToolsYamlConfig;
   }
 }
