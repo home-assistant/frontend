@@ -25,35 +25,65 @@ export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
   },
+  tools_assist: {
+    redirect: "/config/tools/assist",
+  },
+  tools_debug: {
+    redirect: "/config/tools/debug",
+  },
+  tools_states: {
+    redirect: "/config/tools/state",
+  },
+  tools_actions: {
+    redirect: "/config/tools/action",
+  },
+  tools_perform_action: {
+    redirect: "/config/tools/action",
+    params: {
+      service: "string",
+    },
+  },
+  tools_template: {
+    redirect: "/config/tools/template",
+  },
+  tools_events: {
+    redirect: "/config/tools/event",
+  },
+  tools_statistics: {
+    redirect: "/config/tools/statistics",
+  },
+  tools_yaml: {
+    redirect: "/config/tools/yaml",
+  },
   developer_assist: {
-    redirect: "/config/developer-tools/assist",
+    redirect: "/config/tools/assist",
   },
   developer_debug: {
-    redirect: "/config/developer-tools/debug",
+    redirect: "/config/tools/debug",
   },
   developer_states: {
-    redirect: "/config/developer-tools/state",
+    redirect: "/config/tools/state",
   },
   developer_services: {
-    redirect: "/config/developer-tools/action",
+    redirect: "/config/tools/action",
   },
   developer_call_service: {
-    redirect: "/config/developer-tools/action",
+    redirect: "/config/tools/action",
     params: {
       service: "string",
     },
   },
   developer_template: {
-    redirect: "/config/developer-tools/template",
+    redirect: "/config/tools/template",
   },
   developer_events: {
-    redirect: "/config/developer-tools/event",
+    redirect: "/config/tools/event",
   },
   developer_statistics: {
-    redirect: "/config/developer-tools/statistics",
+    redirect: "/config/tools/statistics",
   },
   server_controls: {
-    redirect: "/config/developer-tools/yaml",
+    redirect: "/config/tools/yaml",
   },
   calendar: {
     component: "calendar",
