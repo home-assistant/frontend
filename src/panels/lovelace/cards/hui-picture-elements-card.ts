@@ -128,6 +128,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   private _dblTimer?: number;
 
+  private _dblSeed?: NearestSeed;
+
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
@@ -249,6 +251,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._resetGesture();
     clearTimeout(this._dblTimer);
     this._dblTimer = undefined;
+    this._dblSeed = undefined;
     if (this._root) {
       NEAREST_ROUTED_EVENTS.forEach((type) =>
         this._root!.removeEventListener(type, this._onRoutedEvent, {
@@ -498,8 +501,9 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       cancelled: this._cancelled,
       eventType: ev.type,
       clickDetail: (ev as MouseEvent).detail,
-      // Card-global — one double-tap window across the card.
-      doubleTapPending: this._dblTimer !== undefined,
+      // A pending tap only counts as "pending" for its own element, so a quick
+      // tap on a different element doesn't turn into a double_tap.
+      doubleTapPending: this._dblTimer !== undefined && this._dblSeed === seed,
     });
     clearTimeout(this._holdTimer);
     this._holdTimer = undefined;
@@ -511,8 +515,10 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       ev.preventDefault();
     }
     if (outcome === "arm-tap") {
+      this._dblSeed = seed;
       this._dblTimer = window.setTimeout(() => {
         this._dblTimer = undefined;
+        this._dblSeed = undefined;
         handleAction(seed.element, this.hass!, config, "tap");
       }, ACTION_HANDLER_DOUBLE_CLICK_TIME);
       return;
@@ -520,6 +526,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     if (outcome === "double_tap") {
       clearTimeout(this._dblTimer);
       this._dblTimer = undefined;
+      this._dblSeed = undefined;
     }
     handleAction(seed.element, this.hass!, config, outcome);
   }
