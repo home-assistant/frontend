@@ -212,7 +212,7 @@ export const configSections: Record<string, PageNavigation[]> = {
     },
     {
       path: "/config/tools",
-      translationKey: "developer_tools",
+      translationKey: "tools",
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
       core: true,
@@ -331,7 +331,7 @@ export const configSections: Record<string, PageNavigation[]> = {
   tools: [
     {
       path: "/config/tools",
-      translationKey: "ui.panel.config.dashboard.developer_tools.main",
+      translationKey: "ui.panel.config.dashboard.tools.main",
       iconPath: mdiHammer,
       iconColor: "#7A5AA6",
       core: true,

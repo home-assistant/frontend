@@ -20,12 +20,12 @@ class HaDebugDisableViewTransitionRow extends LitElement {
       <ha-list-item-base>
         <span slot="headline"
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.disable_view_transition.title"
+            "ui.panel.config.tools.tabs.debug.disable_view_transition.title"
           )}</span
         >
         <span slot="supporting-text"
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.disable_view_transition.description"
+            "ui.panel.config.tools.tabs.debug.disable_view_transition.description"
           )}</span
         >
         <ha-switch

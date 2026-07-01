@@ -130,14 +130,12 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
 
     const modeButtons: ToggleButton[] = [
       {
-        label: this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.actions.ui_mode"
-        ),
+        label: this.hass.localize("ui.panel.config.tools.tabs.actions.ui_mode"),
         value: "ui",
       },
       {
         label: this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.actions.yaml_mode"
+          "ui.panel.config.tools.tabs.actions.yaml_mode"
         ),
         value: "yaml",
       },
@@ -163,7 +161,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
             <div class="header-row">
               <div class="header-title">
                 ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.actions.title"
+                  "ui.panel.config.tools.tabs.actions.title"
                 )}
               </div>
               <ha-button-toggle-group
@@ -177,7 +175,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
             </div>
             <p class="secondary">
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.actions.description"
+                "ui.panel.config.tools.tabs.actions.description"
               )}
             </p>
           </div>
@@ -220,14 +218,14 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
               !this._uiAvailable
                 ? html`<span class="error"
                     >${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.actions.no_template_ui_support"
+                      "ui.panel.config.tools.tabs.actions.no_template_ui_support"
                     )}</span
                   >`
                 : nothing
             }
             <ha-progress-button raised @click=${this._callService}>
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.actions.call_service"
+                "ui.panel.config.tools.tabs.actions.call_service"
               )}
             </ha-progress-button>
           </div>
@@ -238,7 +236,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
           ? html`<div class="content response">
               <ha-card
                 .header=${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.actions.response"
+                  "ui.panel.config.tools.tabs.actions.response"
                 )}
               >
                 <div class="card-content">
@@ -253,7 +251,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                       slot="extra-actions"
                       @click=${this._copyTemplate}
                       >${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.actions.copy_clipboard_template"
+                        "ui.panel.config.tools.tabs.actions.copy_clipboard_template"
                       )}</ha-button
                     >
                   </ha-yaml-editor>
@@ -270,10 +268,10 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                 .header=${
                   this._yamlMode
                     ? this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.actions.all_parameters"
+                        "ui.panel.config.tools.tabs.actions.all_parameters"
                       )
                     : this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.actions.yaml_parameters"
+                        "ui.panel.config.tools.tabs.actions.yaml_parameters"
                       )
                 }
                 outlined
@@ -287,7 +285,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                             target
                               ? html`
                                   ${this.hass.localize(
-                                    "ui.panel.config.developer-tools.tabs.actions.accepts_target"
+                                    "ui.panel.config.tools.tabs.actions.accepts_target"
                                   )}
                                 `
                               : ""
@@ -322,17 +320,17 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                   <tr>
                     <th>
                       ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.actions.column_parameter"
+                        "ui.panel.config.tools.tabs.actions.column_parameter"
                       )}
                     </th>
                     <th>
                       ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.actions.column_description"
+                        "ui.panel.config.tools.tabs.actions.column_description"
                       )}
                     </th>
                     <th>
                       ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.actions.column_example"
+                        "ui.panel.config.tools.tabs.actions.column_example"
                       )}
                     </th>
                   </tr>
@@ -371,7 +369,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                         appearance="plain"
                         @click=${this._fillExampleData}
                         >${this.hass.localize(
-                          "ui.panel.config.developer-tools.tabs.actions.fill_example_data"
+                          "ui.panel.config.tools.tabs.actions.fill_example_data"
                         )}</ha-button
                       >`
                     : ""
@@ -406,14 +404,14 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
     const errorCategory = yamlMode ? "yaml" : "ui";
     if (!serviceData?.action) {
       return localize(
-        `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.no_action`
+        `ui.panel.config.tools.tabs.actions.errors.${errorCategory}.no_action`
       );
     }
     const domain = computeDomain(serviceData.action);
     const service = computeObjectId(serviceData.action);
     if (!domain || !service) {
       return localize(
-        `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.invalid_action`
+        `ui.panel.config.tools.tabs.actions.errors.${errorCategory}.invalid_action`
       );
     }
     const dataIsTemplate =
@@ -427,7 +425,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
       !serviceData.data?.area_id
     ) {
       return localize(
-        `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.no_target`
+        `ui.panel.config.tools.tabs.actions.errors.${errorCategory}.no_target`
       );
     }
     for (const field of fields) {
@@ -437,7 +435,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
         return localize(
-          `ui.panel.config.developer-tools.tabs.actions.errors.${errorCategory}.missing_required_field`,
+          `ui.panel.config.tools.tabs.actions.errors.${errorCategory}.missing_required_field`,
           { key: field.key }
         );
       }
@@ -496,7 +494,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
       forwardHaptic(this, "failure");
       button.actionError();
       this._error = this.hass.localize(
-        "ui.panel.config.developer-tools.tabs.actions.errors.yaml.invalid_yaml"
+        "ui.panel.config.tools.tabs.actions.errors.yaml.invalid_yaml"
       );
       return;
     }
@@ -569,7 +567,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                               rel="noreferrer"
                               ><ha-button>
                                 ${this.hass.localize(
-                                  "ui.panel.config.developer-tools.tabs.actions.open_media"
+                                  "ui.panel.config.tools.tabs.actions.open_media"
                                 )}
                               </ha-button></a
                             >

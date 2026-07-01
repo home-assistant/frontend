@@ -118,14 +118,14 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       <div class="content">
         <ha-card
           .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.assist.title"
+            "ui.panel.config.tools.tabs.assist.title"
           )}
           class="form"
         >
           <div class="card-content">
             <p class="description">
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.description"
+                "ui.panel.config.tools.tabs.assist.description"
               )}
             </p>
             ${
@@ -143,7 +143,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
             <ha-textarea
               resize="auto"
               .label=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.sentences"
+                "ui.panel.config.tools.tabs.assist.sentences"
               )}
               id="sentences-input"
               @input=${this._textAreaInput}
@@ -157,7 +157,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
               .disabled=${!this._language || !this._validInput}
             >
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.parse_sentences"
+                "ui.panel.config.tools.tabs.assist.parse_sentences"
               )}
             </ha-button>
           </div>
@@ -184,7 +184,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                       .path=${mdiDownload}
                     ></ha-svg-icon>
                     ${this.hass.localize(
-                      "ui.panel.config.developer-tools.tabs.assist.download_results"
+                      "ui.panel.config.tools.tabs.assist.download_results"
                     )}
                   </ha-button>
                 </div>
@@ -204,7 +204,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                 </div>
                 <div class="info">
                   ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.assist.language"
+                    "ui.panel.config.tools.tabs.assist.language"
                   )}:
                   ${formatLanguageCode(language, this.hass.locale)}
                   (${language})
@@ -221,7 +221,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                       `
                     : html`<ha-alert alert-type="error">
                         ${this.hass.localize(
-                          "ui.panel.config.developer-tools.tabs.assist.no_match"
+                          "ui.panel.config.tools.tabs.assist.no_match"
                         )}
                       </ha-alert>`
                 }

@@ -230,13 +230,13 @@ export class HaDebugViewportEnvironmentCard extends LitElement {
     return html`
       <ha-card
         .header=${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.debug.viewport_environment.title"
+          "ui.panel.config.tools.tabs.debug.viewport_environment.title"
         )}
       >
         <div class="card-content">
           <p class="explanation">
             ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.debug.viewport_environment.description"
+              "ui.panel.config.tools.tabs.debug.viewport_environment.description"
             )}
           </p>
           <ha-code-editor

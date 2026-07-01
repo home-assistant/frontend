@@ -18,31 +18,31 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 const TOOLS_TABS = [
   {
     panel: "yaml",
-    translationKey: "ui.panel.config.developer-tools.tabs.yaml.title",
+    translationKey: "ui.panel.config.tools.tabs.yaml.title",
   },
   {
     panel: "state",
-    translationKey: "ui.panel.config.developer-tools.tabs.states.title",
+    translationKey: "ui.panel.config.tools.tabs.states.title",
   },
   {
     panel: "action",
-    translationKey: "ui.panel.config.developer-tools.tabs.actions.title",
+    translationKey: "ui.panel.config.tools.tabs.actions.title",
   },
   {
     panel: "template",
-    translationKey: "ui.panel.config.developer-tools.tabs.templates.title",
+    translationKey: "ui.panel.config.tools.tabs.templates.title",
   },
   {
     panel: "event",
-    translationKey: "ui.panel.config.developer-tools.tabs.events.title",
+    translationKey: "ui.panel.config.tools.tabs.events.title",
   },
   {
     panel: "statistics",
-    translationKey: "ui.panel.config.developer-tools.tabs.statistics.title",
+    translationKey: "ui.panel.config.tools.tabs.statistics.title",
   },
   {
     panel: "assist",
-    translationKey: "ui.panel.config.developer-tools.tabs.assist.tab",
+    translationKey: "ui.panel.config.tools.tabs.assist.tab",
   },
 ] as const;
 
@@ -68,9 +68,7 @@ class PanelTools extends LitElement {
           @click=${this._handleBack}
         ></ha-icon-button-arrow-prev>
         <div slot="title">
-          ${this.hass.localize(
-            "ui.panel.config.dashboard.developer_tools.main"
-          )}
+          ${this.hass.localize("ui.panel.config.dashboard.tools.main")}
         </div>
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
@@ -79,9 +77,7 @@ class PanelTools extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           <ha-dropdown-item value="debug">
-            ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.debug.title"
-            )}
+            ${this.hass.localize("ui.panel.config.tools.tabs.debug.title")}
           </ha-dropdown-item>
         </ha-dropdown>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected} slot="subRow">

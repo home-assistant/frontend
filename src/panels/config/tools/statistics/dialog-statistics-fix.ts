@@ -50,13 +50,13 @@ export class DialogStatisticsFix extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${this.hass.localize(
-          `ui.panel.config.developer-tools.tabs.statistics.fix_issue.${issue.type}.title`
+          `ui.panel.config.tools.tabs.statistics.fix_issue.${issue.type}.title`
         )}
         @closed=${this._dialogClosed}
       >
         <p>
           ${this.hass.localize(
-            `ui.panel.config.developer-tools.tabs.statistics.fix_issue.${issue.type}.info_text_1`,
+            `ui.panel.config.tools.tabs.statistics.fix_issue.${issue.type}.info_text_1`,
             {
               name: getStatisticLabel(
                 this.hass,
@@ -67,24 +67,24 @@ export class DialogStatisticsFix extends LitElement {
               ...(issue.type === "mean_type_changed"
                 ? {
                     metadata_mean_type: this.hass.localize(
-                      `ui.panel.config.developer-tools.tabs.statistics.mean_type.${issue.data.metadata_mean_type}`
+                      `ui.panel.config.tools.tabs.statistics.mean_type.${issue.data.metadata_mean_type}`
                     ),
                     state_mean_type: this.hass.localize(
-                      `ui.panel.config.developer-tools.tabs.statistics.mean_type.${issue.data.state_mean_type}`
+                      `ui.panel.config.tools.tabs.statistics.mean_type.${issue.data.state_mean_type}`
                     ),
                   }
                 : {}),
             }
           )}<br /><br />
           ${this.hass.localize(
-            `ui.panel.config.developer-tools.tabs.statistics.fix_issue.${issue.type}.info_text_2`,
+            `ui.panel.config.tools.tabs.statistics.fix_issue.${issue.type}.info_text_2`,
             { statistic_id: issue.data.statistic_id }
           )}
           ${
             issue.type === "mean_type_changed"
               ? html`<br /><br />
                   ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.statistics.fix_issue.mean_type_changed.info_text_3",
+                    "ui.panel.config.tools.tabs.statistics.fix_issue.mean_type_changed.info_text_3",
                     { statistic_id: issue.data.statistic_id }
                   )}`
               : issue.type === "entity_not_recorded"
@@ -98,7 +98,7 @@ export class DialogStatisticsFix extends LitElement {
                       rel="noreferrer noopener"
                     >
                       ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_3_link"
+                        "ui.panel.config.tools.tabs.statistics.fix_issue.entity_not_recorded.info_text_3_link"
                       )}</a
                     >`
                 : issue.type === "entity_no_longer_recorded"
@@ -111,22 +111,22 @@ export class DialogStatisticsFix extends LitElement {
                         rel="noreferrer noopener"
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_3_link"
+                          "ui.panel.config.tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_3_link"
                         )}</a
                       ><br /><br />
                       ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_4"
+                        "ui.panel.config.tools.tabs.statistics.fix_issue.entity_no_longer_recorded.info_text_4"
                       )}`
                   : issue.type === "state_class_removed"
                     ? html`<ul>
                           <li>
                             ${this.hass.localize(
-                              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_3"
+                              "ui.panel.config.tools.tabs.statistics.fix_issue.state_class_removed.info_text_3"
                             )}
                           </li>
                           <li>
                             ${this.hass.localize(
-                              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4"
+                              "ui.panel.config.tools.tabs.statistics.fix_issue.state_class_removed.info_text_4"
                             )}
                             <a
                               href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
@@ -134,18 +134,18 @@ export class DialogStatisticsFix extends LitElement {
                               rel="noreferrer noopener"
                             >
                               ${this.hass.localize(
-                                "ui.panel.config.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_4_link"
+                                "ui.panel.config.tools.tabs.statistics.fix_issue.state_class_removed.info_text_4_link"
                               )}</a
                             >
                           </li>
                           <li>
                             ${this.hass.localize(
-                              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_5"
+                              "ui.panel.config.tools.tabs.statistics.fix_issue.state_class_removed.info_text_5"
                             )}
                           </li>
                         </ul>
                         ${this.hass.localize(
-                          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.state_class_removed.info_text_6",
+                          "ui.panel.config.tools.tabs.statistics.fix_issue.state_class_removed.info_text_6",
                           { statistic_id: issue.data.statistic_id }
                         )}`
                     : nothing
@@ -195,15 +195,15 @@ export class DialogStatisticsFix extends LitElement {
         title:
           err.code === "timeout"
             ? this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.statistics.fix_issue.clearing_timeout_title"
+                "ui.panel.config.tools.tabs.statistics.fix_issue.clearing_timeout_title"
               )
             : this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.statistics.fix_issue.clearing_failed"
+                "ui.panel.config.tools.tabs.statistics.fix_issue.clearing_failed"
               ),
         text:
           err.code === "timeout"
             ? this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.statistics.fix_issue.clearing_timeout_text"
+                "ui.panel.config.tools.tabs.statistics.fix_issue.clearing_timeout_text"
               )
             : err.message,
       });

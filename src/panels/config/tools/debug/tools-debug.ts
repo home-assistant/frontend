@@ -31,7 +31,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
       <div class="content">
         <ha-card
           .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.title"
+            "ui.panel.config.tools.tabs.debug.title"
           )}
         >
           <ha-list-base>
@@ -45,13 +45,13 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
         </ha-card>
         <ha-card
           .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.title"
+            "ui.panel.config.tools.tabs.debug.entity_diagnostic.title"
           )}
         >
           <div class="card-content">
             <ha-entity-picker
               .helper=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.description"
+                "ui.panel.config.tools.tabs.debug.entity_diagnostic.description"
               )}
               @value-changed=${this._entityPicked}
             ></ha-entity-picker>
@@ -62,7 +62,7 @@ class HaPanelDevDebug extends SubscribeMixin(LitElement) {
               appearance="filled"
               .disabled=${!this._entityId}
               >${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
+                "ui.panel.config.tools.tabs.debug.entity_diagnostic.copy_to_clipboard"
               )}</ha-button
             >
           </div>
