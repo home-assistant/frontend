@@ -254,7 +254,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     // Side Effect used to update footer hass while keeping optimizations
-    if (this._footerElement) {
+    if (this._footerElement && "hass" in this._footerElement) {
       this._footerElement.hass = this.hass;
     }
     if (
