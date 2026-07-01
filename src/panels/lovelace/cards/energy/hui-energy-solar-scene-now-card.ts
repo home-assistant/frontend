@@ -20,7 +20,6 @@ import {
   getEnergyDataCollection,
   getPowerFromState,
 } from "../../../../data/energy";
-import type { StatisticValue } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { formatNumber } from "../../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../../common/translations/blank_before_unit";
@@ -41,11 +40,6 @@ const EARTH_CIRCUMFERENCE_M = 40075016.686;
 const TILE_PX = 256;
 const GROUND_RADIUS = 3;
 const GROUND_ZOOM = 19;
-
-// Default home when hass.config has none — HA's official Map fallback (Amsterdam, the HA HQ; ha-map.ts
-// uses these exact values). Guarantees a defined position so the scene never lands on a meaningless (0,0).
-const DEFAULT_LATITUDE = 52.3731339;
-const DEFAULT_LONGITUDE = 4.8903147;
 
 // Camera. DEFAULT_BEARING faces the sun's side (south in the N hemisphere, flipped to north in the S
 // from latitude in _buildScene). NEAR_PLANE = near-plane margin (fraction of PERSPECTIVE): points within
@@ -290,13 +284,8 @@ const arcColor = (altitude: number, amber: string): string =>
 
 interface Resolved {
   solarRate: string[];
-  solarEnergy: string[];
   gridRate: string[];
-  gridImport: string[];
-  gridExport: string[];
   batteryRate: string[];
-  batteryCharge: string[];
-  batteryDischarge: string[];
   soc: string[];
 }
 
@@ -304,44 +293,21 @@ function resolve(data: EnergyData): Resolved {
   const types = energySourcesByType(data.prefs);
   const r: Resolved = {
     solarRate: [],
-    solarEnergy: [],
     gridRate: [],
-    gridImport: [],
-    gridExport: [],
     batteryRate: [],
-    batteryCharge: [],
-    batteryDischarge: [],
     soc: [],
   };
   for (const s of types.solar ?? []) {
     if (s.stat_rate) r.solarRate.push(s.stat_rate);
-    if (s.stat_energy_from) r.solarEnergy.push(s.stat_energy_from);
   }
   for (const s of types.grid ?? []) {
     if (s.stat_rate) r.gridRate.push(s.stat_rate);
-    if (s.stat_energy_from) r.gridImport.push(s.stat_energy_from);
-    if (s.stat_energy_to) r.gridExport.push(s.stat_energy_to);
   }
   for (const s of types.battery ?? []) {
     if (s.stat_rate) r.batteryRate.push(s.stat_rate);
-    if (s.stat_energy_to) r.batteryCharge.push(s.stat_energy_to);
-    if (s.stat_energy_from) r.batteryDischarge.push(s.stat_energy_from);
     if (s.stat_soc) r.soc.push(s.stat_soc);
   }
   return r;
-}
-
-// Average watts over the latest completed change bucket of a cumulative meter.
-function latestWatts(buckets?: StatisticValue[]): number | null {
-  if (!buckets?.length) return null;
-  for (let i = buckets.length - 1; i >= 0; i--) {
-    const b = buckets[i];
-    if (b.change != null) {
-      const hours = (b.end - b.start) / 3600000;
-      return hours > 0 ? (b.change / hours) * 1000 : null;
-    }
-  }
-  return null;
 }
 
 // Sum a metric over its source ids, skipping ids with no value; null when none has one.
@@ -382,30 +348,20 @@ function resolveCached(data: EnergyData): Resolved {
   return r;
 }
 
-// One value per metric at "now": the live rate sensor, else the latest energy bucket as average watts.
-// null only when the source is NOT configured (a chip's presence follows the prefs, not the live flow).
+// One value per metric at "now", taken only from the configured live rate sensor (stat_rate). We never
+// derive power from the latest energy bucket: that is a guess that is wrong often enough to draw bug
+// reports, so we show only the live data that is actually configured. null when a source has no rate
+// sensor configured or that sensor currently has no value.
 function livePower(data: EnergyData, states: HassEntities): LivePower {
   const r = resolveCached(data);
-  const stats = data.stats;
-  const metricW = (
-    rateIds: string[],
-    plusIds: string[],
-    minusIds: string[],
-    rateSign = 1
-  ): number | null => {
-    if (!rateIds.length && !plusIds.length && !minusIds.length) return null;
-    const rate = sumDefined(rateIds, (id) => getPowerFromState(states[id]));
-    if (rate !== null) return rate * rateSign;
-    const plus = sumDefined(plusIds, (id) => latestWatts(stats[id]));
-    const minus = sumDefined(minusIds, (id) => latestWatts(stats[id]));
-    return (plus ?? 0) - (minus ?? 0);
-  };
+  const metricW = (rateIds: string[]): number | null =>
+    sumDefined(rateIds, (id) => getPowerFromState(states[id]));
 
-  const pv = metricW(r.solarRate, r.solarEnergy, []);
-  const grid = metricW(r.gridRate, r.gridImport, r.gridExport);
-  // HA's standard battery stat_rate is + when discharging (into the home); that matches the energy
-  // fallback path (discharge − charge) and the core power-total badge, so no sign flip.
-  const battery = metricW(r.batteryRate, r.batteryDischarge, r.batteryCharge);
+  const pv = metricW(r.solarRate);
+  const grid = metricW(r.gridRate);
+  // HA's standard battery stat_rate is + when discharging (into the home), matching the core power-total
+  // badge, so the summed rate needs no sign flip.
+  const battery = metricW(r.batteryRate);
 
   let socSum = 0;
   let socCount = 0;
@@ -431,6 +387,29 @@ function livePower(data: EnergyData, states: HassEntities): LivePower {
   }
 
   return { pv, grid, battery, soc, home, lowCarbon };
+}
+
+// True when two live snapshots carry the same values, so an unchanged frame skips its canvas redraw.
+function livePowerEqual(a: LivePower, b?: LivePower): boolean {
+  return (
+    !!b &&
+    a.pv === b.pv &&
+    a.grid === b.grid &&
+    a.battery === b.battery &&
+    a.soc === b.soc &&
+    a.home === b.home &&
+    a.lowCarbon === b.lowCarbon
+  );
+}
+
+// A home location is configured when both coordinates are finite and not the meaningless (0, 0) origin.
+// Without one the card renders nothing rather than falling back to a guessed default position.
+function hasLocation(latitude: number, longitude: number): boolean {
+  return (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    !(latitude === 0 && longitude === 0)
+  );
 }
 
 @customElement("hui-energy-solar-scene-now-card")
@@ -463,9 +442,10 @@ export class HuiEnergySolarSceneNowCard
   private _pxPerMetre = 4;
   private _centreX = 0;
   private _centreY = 0;
-  // Home location (always defined: real home, else HA's Map default) + whether the live basemap is usable.
-  private _lat = DEFAULT_LATITUDE;
-  private _lon = DEFAULT_LONGITUDE;
+  // Home location, set from hass.config in _buildScene (which only runs once a location is configured, so
+  // these placeholders are never drawn) + whether the live basemap is usable.
+  private _lat = 0;
+  private _lon = 0;
   private _liveMap = navigator.onLine;
   private _drag?: { x: number; y: number };
   // Hold-to-rotate (touch): a pending press becomes a drag only after ROTATE_HOLD_MS without scrolling.
@@ -584,9 +564,13 @@ export class HuiEnergySolarSceneNowCard
   }
 
   protected willUpdate(_changed: PropertyValues): void {
-    // Resolve the live chip values before every render (everything is "now").
+    // Resolve the live chip values before every render (everything is "now"), and redraw the moment they
+    // change so a chip and its connection appear or disappear together instead of waiting for the next
+    // minute tick in updated().
     if (this.hass && this._energyData) {
-      this._power = livePower(this._energyData, this.hass.states);
+      const power = livePower(this._energyData, this.hass.states);
+      if (!livePowerEqual(power, this._power)) this._scheduleDraw();
+      this._power = power;
     }
   }
 
@@ -614,14 +598,13 @@ export class HuiEnergySolarSceneNowCard
   // Build once both setConfig and hass are available; fetch the basemap and place the house.
   private _buildScene(): void {
     if (this._built || !this.hass || !this._config) return;
+    // No card without a configured home location (see hasLocation): render() returns nothing and we skip
+    // the build, so nothing is ever placed at a guessed default position. Left unbuilt so a location set
+    // later still builds.
+    const { latitude, longitude } = this.hass.config;
+    if (!hasLocation(latitude, longitude)) return;
     this._built = true;
-    // The home position is ALWAYS defined: real home, else HA's official Map default (Amsterdam, the HA
-    // HQ — see DEFAULT_LATITUDE) when the config is NaN/unset. Never the meaningless (0,0); isFinite
-    // also guards a NaN that `??` would let through.
-    const { latitude: cfgLat, longitude: cfgLon } = this.hass.config;
-    const latitude = Number.isFinite(cfgLat) ? cfgLat : DEFAULT_LATITUDE;
-    const longitude = Number.isFinite(cfgLon) ? cfgLon : DEFAULT_LONGITUDE;
-    // Live basemap whenever the browser is online (the position always exists).
+    // Live basemap whenever the browser is online.
     this._liveMap = navigator.onLine;
     this._lat = latitude;
     this._lon = longitude;
@@ -629,7 +612,7 @@ export class HuiEnergySolarSceneNowCard
     this._bearing = latitude < 0 ? 0 : DEFAULT_BEARING;
     const zoom = GROUND_ZOOM;
     this._pxPerMetre =
-      (256 * 2 ** zoom) / (EARTH_CIRCUMFERENCE_M * Math.cos(latitude * DEG));
+      (TILE_PX * 2 ** zoom) / (EARTH_CIRCUMFERENCE_M * Math.cos(latitude * DEG));
     this._buildGround(latitude, longitude, zoom);
     this._buildHome();
   }
@@ -1638,7 +1621,13 @@ export class HuiEnergySolarSceneNowCard
   }
 
   protected render() {
-    if (!this._config || !this.hass) return nothing;
+    if (
+      !this._config ||
+      !this.hass ||
+      !hasLocation(this.hass.config.latitude, this.hass.config.longitude)
+    ) {
+      return nothing;
+    }
     return html`
       <ha-card>
         <div class="wrap" role="img" aria-label=${this._ariaLabel()}>

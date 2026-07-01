@@ -40,6 +40,12 @@ export const hasReturn = (prefs: EnergyPreferences): boolean =>
 export const hasSolar = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "solar");
 
+/** Solar source with a live power sensor (`stat_rate`); the "now" scene card shows live power only. */
+export const hasSolarPower = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some(
+    (source) => source.type === "solar" && !!source.stat_rate
+  );
+
 export const hasBattery = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "battery");
 
@@ -270,7 +276,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "now",
     "energy-solar-scene-now",
     "ui.panel.energy.cards.energy_solar_scene_title",
-    (p) => hasSolar(p)
+    (p) => hasSolarPower(p)
   ),
   entry(
     "now",
