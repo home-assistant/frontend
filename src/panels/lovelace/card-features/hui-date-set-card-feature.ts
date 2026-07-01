@@ -143,6 +143,7 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
       !this._config ||
       !this.context ||
       !this._stateObj ||
+      !this._locale ||
       !supportsDateSetCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
