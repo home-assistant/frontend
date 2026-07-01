@@ -67,52 +67,56 @@ export class ZHADeviceBindingsPane extends LitElement {
     }
 
     return html`
-      ${this._bindableDevices.length
-        ? html`
-            <ha-card class="binding-card">
-              <div class="binding-section-header">
-                <div class="binding-section-title">
-                  ${this.hass.localize(
-                    "ui.panel.config.zha.device_binding.header"
-                  )}
+      ${
+        this._bindableDevices.length
+          ? html`
+              <ha-card class="binding-card">
+                <div class="binding-section-header">
+                  <div class="binding-section-title">
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.device_binding.header"
+                    )}
+                  </div>
+                  <div class="binding-section-description">
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.device_binding.introduction"
+                    )}
+                  </div>
                 </div>
-                <div class="binding-section-description">
-                  ${this.hass.localize(
-                    "ui.panel.config.zha.device_binding.introduction"
-                  )}
+                <zha-device-binding-control
+                  .hass=${this.hass}
+                  .device=${this.device}
+                  .bindableDevices=${this._bindableDevices}
+                ></zha-device-binding-control>
+              </ha-card>
+            `
+          : nothing
+      }
+      ${
+        this._groups.length
+          ? html`
+              <ha-card class="binding-card">
+                <div class="binding-section-header">
+                  <div class="binding-section-title">
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.group_binding.header"
+                    )}
+                  </div>
+                  <div class="binding-section-description">
+                    ${this.hass.localize(
+                      "ui.panel.config.zha.group_binding.introduction"
+                    )}
+                  </div>
                 </div>
-              </div>
-              <zha-device-binding-control
-                .hass=${this.hass}
-                .device=${this.device}
-                .bindableDevices=${this._bindableDevices}
-              ></zha-device-binding-control>
-            </ha-card>
-          `
-        : nothing}
-      ${this._groups.length
-        ? html`
-            <ha-card class="binding-card">
-              <div class="binding-section-header">
-                <div class="binding-section-title">
-                  ${this.hass.localize(
-                    "ui.panel.config.zha.group_binding.header"
-                  )}
-                </div>
-                <div class="binding-section-description">
-                  ${this.hass.localize(
-                    "ui.panel.config.zha.group_binding.introduction"
-                  )}
-                </div>
-              </div>
-              <zha-group-binding-control
-                .hass=${this.hass}
-                .device=${this.device}
-                .groups=${this._groups}
-              ></zha-group-binding-control>
-            </ha-card>
-          `
-        : nothing}
+                <zha-group-binding-control
+                  .hass=${this.hass}
+                  .device=${this.device}
+                  .groups=${this._groups}
+                ></zha-group-binding-control>
+              </ha-card>
+            `
+          : nothing
+      }
     `;
   }
 

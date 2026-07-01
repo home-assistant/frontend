@@ -160,9 +160,11 @@ class DialogPersonDetail
       <ha-dialog
         .open=${this._open}
         .preventScrimClose=${this.isDirtyState}
-        header-title=${this._params.entry
-          ? this._params.entry.name
-          : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        header-title=${
+          this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.person.detail.new_person")
+        }
         @closed=${this._dialogClosed}
       >
         <div>
@@ -202,95 +204,107 @@ class DialogPersonDetail
               <ha-switch
                 slot="end"
                 @change=${this._allowLoginChanged}
-                ?disabled=${this._user &&
-                (this._user.id === this.hass.user?.id ||
-                  this._user.system_generated ||
-                  this._user.is_owner)}
+                ?disabled=${
+                  this._user &&
+                  (this._user.id === this.hass.user?.id ||
+                    this._user.system_generated ||
+                    this._user.is_owner)
+                }
                 .checked=${this._userId}
               ></ha-switch>
             </ha-row-item>
 
             ${this._renderUserFields()}
-            ${this._deviceTrackersAvailable(this.hass)
-              ? html`
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.person.detail.device_tracker_intro"
-                    )}
-                  </p>
-                  <ha-entities-picker
-                    .value=${this._deviceTrackers}
-                    .includeDomains=${includeDomains}
-                    .pickedEntityLabel=${this.hass.localize(
-                      "ui.panel.config.person.detail.device_tracker_picked"
-                    )}
-                    .pickEntityLabel=${this.hass.localize(
-                      "ui.panel.config.person.detail.device_tracker_pick"
-                    )}
-                    @value-changed=${this._deviceTrackersChanged}
-                  >
-                  </ha-entities-picker>
-                `
-              : html`
-                  <p>
-                    ${this.hass!.localize(
-                      "ui.panel.config.person.detail.no_device_tracker_available_intro"
-                    )}
-                  </p>
-                  <ul>
-                    <li>
-                      <a
-                        href=${documentationUrl(
-                          this.hass,
-                          "/integrations/#presence-detection"
-                        )}
-                        target="_blank"
-                        rel="noreferrer"
-                        >${this.hass!.localize(
-                          "ui.panel.config.person.detail.link_presence_detection_integrations"
-                        )}</a
-                      >
-                    </li>
-                    <li>
-                      <a @click=${this.closeDialog} href="/config/integrations">
-                        ${this.hass!.localize(
-                          "ui.panel.config.person.detail.link_integrations_page"
-                        )}</a
-                      >
-                    </li>
-                  </ul>
-                `}
+            ${
+              this._deviceTrackersAvailable(this.hass)
+                ? html`
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.person.detail.device_tracker_intro"
+                      )}
+                    </p>
+                    <ha-entities-picker
+                      .value=${this._deviceTrackers}
+                      .includeDomains=${includeDomains}
+                      .pickedEntityLabel=${this.hass.localize(
+                        "ui.panel.config.person.detail.device_tracker_picked"
+                      )}
+                      .pickEntityLabel=${this.hass.localize(
+                        "ui.panel.config.person.detail.device_tracker_pick"
+                      )}
+                      @value-changed=${this._deviceTrackersChanged}
+                    >
+                    </ha-entities-picker>
+                  `
+                : html`
+                    <p>
+                      ${this.hass!.localize(
+                        "ui.panel.config.person.detail.no_device_tracker_available_intro"
+                      )}
+                    </p>
+                    <ul>
+                      <li>
+                        <a
+                          href=${documentationUrl(
+                            this.hass,
+                            "/integrations/#presence-detection"
+                          )}
+                          target="_blank"
+                          rel="noreferrer"
+                          >${this.hass!.localize(
+                            "ui.panel.config.person.detail.link_presence_detection_integrations"
+                          )}</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          @click=${this.closeDialog}
+                          href="/config/integrations"
+                        >
+                          ${this.hass!.localize(
+                            "ui.panel.config.person.detail.link_integrations_page"
+                          )}</a
+                        >
+                      </li>
+                    </ul>
+                  `
+            }
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._params.entry
-            ? html`
-                <ha-button
+          ${
+            this._params.entry
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEntry}
+                    .disabled=${
+                      (this._user && this._user.is_owner) || this._submitting
+                    }
+                  >
+                    ${this.hass!.localize("ui.panel.config.person.detail.delete")}
+                  </ha-button>
+                `
+              : html`<ha-button
                   slot="secondaryAction"
-                  variant="danger"
                   appearance="plain"
-                  @click=${this._deleteEntry}
-                  .disabled=${(this._user && this._user.is_owner) ||
-                  this._submitting}
+                  @click=${this.closeDialog}
                 >
-                  ${this.hass!.localize("ui.panel.config.person.detail.delete")}
-                </ha-button>
-              `
-            : html`<ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this.closeDialog}
-              >
-                ${this.hass!.localize("ui.common.cancel")}
-              </ha-button>`}
+                  ${this.hass!.localize("ui.common.cancel")}
+                </ha-button>`
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
             .disabled=${nameInvalid || this._submitting || !this.isDirtyState}
           >
-            ${this._params.entry
-              ? this.hass!.localize("ui.common.save")
-              : this.hass!.localize("ui.common.add")}
+            ${
+              this._params.entry
+                ? this.hass!.localize("ui.common.save")
+                : this.hass!.localize("ui.common.add")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -301,56 +315,64 @@ class DialogPersonDetail
     const user = this._user;
     if (!user) return nothing;
     return html`
-      ${!user.system_generated
-        ? html`
-            <ha-row-item>
-              <span slot="headline"
-                >${this.hass.localize(
-                  "ui.panel.config.person.detail.username"
-                )}</span
-              >
-              <span slot="supporting-text">${user.username}</span>
-              ${this.hass.user?.is_owner
-                ? html`
-                    <ha-icon-button
-                      slot="end"
-                      .path=${mdiPencil}
-                      @click=${this._changeUsername}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.person.detail.change_username"
-                      )}
-                    >
-                    </ha-icon-button>
-                  `
-                : nothing}
-            </ha-row-item>
-          `
-        : nothing}
-      ${!user.system_generated && this.hass.user?.is_owner
-        ? html`
-            <ha-row-item>
-              <span slot="headline"
-                >${this.hass.localize(
-                  "ui.panel.config.person.detail.password"
-                )}</span
-              >
-              <span slot="supporting-text">************</span>
-              ${this.hass.user?.is_owner
-                ? html`
-                    <ha-icon-button
-                      slot="end"
-                      .path=${mdiPencil}
-                      @click=${this._changePassword}
-                      .label=${this.hass.localize(
-                        "ui.panel.config.person.detail.change_password"
-                      )}
-                    >
-                    </ha-icon-button>
-                  `
-                : nothing}
-            </ha-row-item>
-          `
-        : nothing}
+      ${
+        !user.system_generated
+          ? html`
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.panel.config.person.detail.username"
+                  )}</span
+                >
+                <span slot="supporting-text">${user.username}</span>
+                ${
+                  this.hass.user?.is_owner
+                    ? html`
+                        <ha-icon-button
+                          slot="end"
+                          .path=${mdiPencil}
+                          @click=${this._changeUsername}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.person.detail.change_username"
+                          )}
+                        >
+                        </ha-icon-button>
+                      `
+                    : nothing
+                }
+              </ha-row-item>
+            `
+          : nothing
+      }
+      ${
+        !user.system_generated && this.hass.user?.is_owner
+          ? html`
+              <ha-row-item>
+                <span slot="headline"
+                  >${this.hass.localize(
+                    "ui.panel.config.person.detail.password"
+                  )}</span
+                >
+                <span slot="supporting-text">************</span>
+                ${
+                  this.hass.user?.is_owner
+                    ? html`
+                        <ha-icon-button
+                          slot="end"
+                          .path=${mdiPencil}
+                          @click=${this._changePassword}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.person.detail.change_password"
+                          )}
+                        >
+                        </ha-icon-button>
+                      `
+                    : nothing
+                }
+              </ha-row-item>
+            `
+          : nothing
+      }
       <ha-row-item>
         <span slot="headline"
           >${this.hass.localize(

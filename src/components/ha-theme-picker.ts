@@ -77,11 +77,15 @@ export class HaThemePicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
-        .label=${this.label ??
-        this._i18n?.localize("ui.components.theme-picker.theme") ??
-        "Theme"}
-        .placeholder=${this.noThemeLabel ??
-        this._i18n?.localize("ui.components.theme-picker.no_theme")}
+        .label=${
+          this.label ??
+          this._i18n?.localize("ui.components.theme-picker.theme") ??
+          "Theme"
+        }
+        .placeholder=${
+          this.noThemeLabel ??
+          this._i18n?.localize("ui.components.theme-picker.no_theme")
+        }
         .helper=${this.helper}
         .value=${this.value}
         .valueRenderer=${this._valueRenderer}

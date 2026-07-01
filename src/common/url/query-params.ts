@@ -2,9 +2,7 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../array/ensure-array";
 
 export type SearchParamsSource =
-  | URLSearchParams
-  | Record<string, string>
-  | string;
+  URLSearchParams | Record<string, string> | string;
 
 export interface QueryParamConfig {
   list?: readonly string[];

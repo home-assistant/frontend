@@ -122,18 +122,20 @@ class DialogBluetoothDeviceInfo extends LitElement {
           </tbody>
         </table>
 
-        ${this._params.entry.raw
-          ? html`
-              <h4>
-                ${this.hass.localize(
-                  "ui.panel.config.bluetooth.raw_advertisement"
-                )}
-              </h4>
-              <div class="raw">
-                ${this.showDataAsHex(this._params.entry.raw)}
-              </div>
-            `
-          : nothing}
+        ${
+          this._params.entry.raw
+            ? html`
+                <h4>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.raw_advertisement"
+                  )}
+                </h4>
+                <div class="raw">
+                  ${this.showDataAsHex(this._params.entry.raw)}
+                </div>
+              `
+            : nothing
+        }
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"

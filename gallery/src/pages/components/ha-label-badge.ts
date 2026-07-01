@@ -60,9 +60,9 @@ export class DemoHaLabelBadge extends LitElement {
           ${badges.map(
             (badge) => html`
               <ha-label-badge
-                style="--ha-label-badge-color: ${colors[
-                  Math.floor(Math.random() * colors.length)
-                ]}"
+                style="--ha-label-badge-color: ${
+                  colors[Math.floor(Math.random() * colors.length)]
+                }"
                 .label=${badge.label}
                 .description=${badge.description}
                 .image=${badge.image}
@@ -78,9 +78,9 @@ export class DemoHaLabelBadge extends LitElement {
             (badge) => html`
               <div class="badge">
                 <ha-label-badge
-                  style="--ha-label-badge-color: ${colors[
-                    Math.floor(Math.random() * colors.length)
-                  ]}"
+                  style="--ha-label-badge-color: ${
+                    colors[Math.floor(Math.random() * colors.length)]
+                  }"
                   .label=${badge.label}
                   .description=${badge.description}
                   .image=${badge.image}

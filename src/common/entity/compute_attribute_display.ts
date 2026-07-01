@@ -82,8 +82,7 @@ export const computeAttributeValueToParts = (
       : formatNumber(attributeValue, locale);
 
     let unit = DOMAIN_ATTRIBUTES_UNITS[domain]?.[attribute] as
-      | string
-      | undefined;
+      string | undefined;
 
     if (domain === "weather") {
       unit = getWeatherUnit(config, stateObj as WeatherEntity, attribute);
@@ -156,8 +155,7 @@ export const computeAttributeValueToParts = (
   const domain = computeDomain(entityId);
   const deviceClass = stateObj.attributes.device_class;
   const registryEntry = entities[entityId] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   const translationKey = registryEntry?.translation_key;
 
   const formattedValue =

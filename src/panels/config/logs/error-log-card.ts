@@ -142,67 +142,82 @@ class ErrorLogCard extends LitElement {
 
     return html`
       <div class="error-log-intro">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-card outlined>
           <div class="header">
             <h1 class="card-header">
               ${this.header || localize("ui.panel.config.logs.show_full_logs")}
             </h1>
             <div class="action-buttons">
-              ${hasBoots && this._showBootsSelect
-                ? html`
-                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
-                      <ha-assist-chip
-                        slot="trigger"
-                        .title=${localize(
-                          "ui.panel.config.logs.haos_boots_title"
-                        )}
-                        .label=${this._boot === 0
-                          ? localize("ui.panel.config.logs.current")
-                          : this._boot === -1
-                            ? localize("ui.panel.config.logs.previous")
-                            : localize("ui.panel.config.logs.startups_ago", {
-                                boot: this._boot * -1,
-                              })}
-                      >
-                        <ha-svg-icon
-                          slot="trailing-icon"
-                          .path=${mdiMenuDown}
-                        ></ha-svg-icon
-                      ></ha-assist-chip>
-
-                      ${this._boots!.map(
-                        (boot) => html`
-                          <ha-dropdown-item
-                            .value=${`boot_${boot}`}
-                            .selected=${boot === this._boot}
-                          >
-                            ${boot === 0
+              ${
+                hasBoots && this._showBootsSelect
+                  ? html`
+                      <ha-dropdown @wa-select=${this._handleOverflowAction}>
+                        <ha-assist-chip
+                          slot="trigger"
+                          .title=${localize(
+                            "ui.panel.config.logs.haos_boots_title"
+                          )}
+                          .label=${
+                            this._boot === 0
                               ? localize("ui.panel.config.logs.current")
-                              : boot === -1
+                              : this._boot === -1
                                 ? localize("ui.panel.config.logs.previous")
                                 : localize(
                                     "ui.panel.config.logs.startups_ago",
-                                    { boot: boot * -1 }
-                                  )}
-                          </ha-dropdown-item>
-                          ${boot === 0
-                            ? html`<wa-divider></wa-divider>`
-                            : nothing}
-                        `
-                      )}
-                    </ha-dropdown>
-                  `
-                : nothing}
-              ${logFileDownloadUnavailableReason
-                ? nothing
-                : html`<ha-icon-button
-                    .path=${mdiDownload}
-                    @click=${this._downloadLogs}
-                    .label=${localize("ui.panel.config.logs.download_logs")}
-                  ></ha-icon-button>`}
+                                    {
+                                      boot: this._boot * -1,
+                                    }
+                                  )
+                          }
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon
+                        ></ha-assist-chip>
+
+                        ${this._boots!.map(
+                          (boot) => html`
+                            <ha-dropdown-item
+                              .value=${`boot_${boot}`}
+                              .selected=${boot === this._boot}
+                            >
+                              ${
+                                boot === 0
+                                  ? localize("ui.panel.config.logs.current")
+                                  : boot === -1
+                                    ? localize("ui.panel.config.logs.previous")
+                                    : localize(
+                                        "ui.panel.config.logs.startups_ago",
+                                        { boot: boot * -1 }
+                                      )
+                              }
+                            </ha-dropdown-item>
+                            ${
+                              boot === 0
+                                ? html`<wa-divider></wa-divider>`
+                                : nothing
+                            }
+                          `
+                        )}
+                      </ha-dropdown>
+                    `
+                  : nothing
+              }
+              ${
+                logFileDownloadUnavailableReason
+                  ? nothing
+                  : html`<ha-icon-button
+                      .path=${mdiDownload}
+                      @click=${this._downloadLogs}
+                      .label=${localize("ui.panel.config.logs.download_logs")}
+                    ></ha-icon-button>`
+              }
               <ha-icon-button
                 .path=${this._wrapLines ? mdiWrapDisabled : mdiWrap}
                 @click=${this._toggleLineWrap}
@@ -210,79 +225,93 @@ class ErrorLogCard extends LitElement {
                   `ui.panel.config.logs.${this._wrapLines ? "full_width" : "wrap_lines"}`
                 )}
               ></ha-icon-button>
-              ${!streaming || this._error
-                ? html`<ha-icon-button
-                    .path=${mdiRefresh}
-                    @click=${this._handleRefresh}
-                    .label=${localize("ui.common.refresh")}
-                  ></ha-icon-button>`
-                : nothing}
-              ${(this.allowSwitch && this.provider === "core") || hasBoots
-                ? html`
-                    <ha-dropdown @wa-select=${this._handleOverflowAction}>
-                      <ha-icon-button
-                        slot="trigger"
-                        .path=${mdiDotsVertical}
-                        .label=${localize("ui.common.menu")}
-                      ></ha-icon-button>
-                      ${this.allowSwitch && this.provider === "core"
-                        ? html`<ha-dropdown-item value="switch-log-view">
-                            <ha-svg-icon
-                              slot="icon"
-                              .path=${mdiFolderTextOutline}
-                            ></ha-svg-icon>
-                            ${this.hass.localize(
-                              "ui.panel.config.logs.show_condensed_logs"
-                            )}
-                          </ha-dropdown-item>`
-                        : nothing}
-                      ${hasBoots
-                        ? html`<ha-dropdown-item value="toggle-boots">
-                            <ha-svg-icon
-                              slot="icon"
-                              .path=${mdiFormatListNumbered}
-                            ></ha-svg-icon>
-                            ${localize(
-                              `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
-                            )}
-                          </ha-dropdown-item>`
-                        : nothing}
-                    </ha-dropdown>
-                  `
-                : nothing}
+              ${
+                !streaming || this._error
+                  ? html`<ha-icon-button
+                      .path=${mdiRefresh}
+                      @click=${this._handleRefresh}
+                      .label=${localize("ui.common.refresh")}
+                    ></ha-icon-button>`
+                  : nothing
+              }
+              ${
+                (this.allowSwitch && this.provider === "core") || hasBoots
+                  ? html`
+                      <ha-dropdown @wa-select=${this._handleOverflowAction}>
+                        <ha-icon-button
+                          slot="trigger"
+                          .path=${mdiDotsVertical}
+                          .label=${localize("ui.common.menu")}
+                        ></ha-icon-button>
+                        ${
+                          this.allowSwitch && this.provider === "core"
+                            ? html`<ha-dropdown-item value="switch-log-view">
+                                <ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiFolderTextOutline}
+                                ></ha-svg-icon>
+                                ${this.hass.localize(
+                                  "ui.panel.config.logs.show_condensed_logs"
+                                )}
+                              </ha-dropdown-item>`
+                            : nothing
+                        }
+                        ${
+                          hasBoots
+                            ? html`<ha-dropdown-item value="toggle-boots">
+                                <ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiFormatListNumbered}
+                                ></ha-svg-icon>
+                                ${localize(
+                                  `ui.panel.config.logs.${this._showBootsSelect ? "hide" : "show"}_haos_boots`
+                                )}
+                              </ha-dropdown-item>`
+                            : nothing
+                        }
+                      </ha-dropdown>
+                    `
+                  : nothing
+              }
             </div>
           </div>
           <div class="card-content error-log">
             <div id="scroll-top-marker"></div>
-            ${this._loadingPrevState === "loading"
-              ? html`<div class="loading-old">
-                  <ha-spinner></ha-spinner>
-                </div>`
-              : nothing}
-            ${logFileDownloadUnavailableReason
-              ? html`<ha-alert alert-type="warning">
-                  ${localize(
-                    `ui.panel.config.logs.log_file_disabled.${logFileDownloadUnavailableReason}`
-                  )}
-                </ha-alert>`
-              : this._loadingState === "loading"
-                ? html`<div>
-                    ${localize("ui.panel.config.logs.loading_log")}
+            ${
+              this._loadingPrevState === "loading"
+                ? html`<div class="loading-old">
+                    <ha-spinner></ha-spinner>
                   </div>`
-                : this._loadingState === "empty"
+                : nothing
+            }
+            ${
+              logFileDownloadUnavailableReason
+                ? html`<ha-alert alert-type="warning">
+                    ${localize(
+                      `ui.panel.config.logs.log_file_disabled.${logFileDownloadUnavailableReason}`
+                    )}
+                  </ha-alert>`
+                : this._loadingState === "loading"
                   ? html`<div>
-                      ${localize("ui.panel.config.logs.no_errors")}
+                      ${localize("ui.panel.config.logs.loading_log")}
                     </div>`
-                  : nothing}
-            ${this._loadingState === "loaded" &&
-            this.filter &&
-            this._noSearchResults
-              ? html`<div>
-                  ${localize("ui.panel.config.logs.no_issues_search", {
-                    term: this.filter,
-                  })}
-                </div>`
-              : nothing}
+                  : this._loadingState === "empty"
+                    ? html`<div>
+                        ${localize("ui.panel.config.logs.no_errors")}
+                      </div>`
+                    : nothing
+            }
+            ${
+              this._loadingState === "loaded" &&
+              this.filter &&
+              this._noSearchResults
+                ? html`<div>
+                    ${localize("ui.panel.config.logs.no_issues_search", {
+                      term: this.filter,
+                    })}
+                  </div>`
+                : nothing
+            }
             <ha-ansi-to-html
               ?wrap-disabled=${!this._wrapLines}
             ></ha-ansi-to-html>
@@ -306,12 +335,14 @@ class ErrorLogCard extends LitElement {
             ${localize("ui.panel.config.logs.scroll_down_button")}
             <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
           </ha-button>
-          ${streaming && this._boot === 0 && !this._error
-            ? html`<div class="live-indicator">
-                <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
-                Live
-              </div>`
-            : nothing}
+          ${
+            streaming && this._boot === 0 && !this._error
+              ? html`<div class="live-indicator">
+                  <ha-svg-icon path=${mdiCircle}></ha-svg-icon>
+                  Live
+                </div>`
+              : nothing
+          }
         </ha-card>
       </div>
     `;

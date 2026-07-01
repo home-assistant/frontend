@@ -211,38 +211,46 @@ class HaGallery extends LitElement {
         </ha-sidebar>
         <div slot="appContent" class="app-content">
           <ha-top-app-bar-fixed .narrow=${this._narrow}>
-            ${this._narrow || !this._drawerOpen
-              ? html`<ha-icon-button
-                  slot="navigationIcon"
-                  @click=${this._toggleDrawer}
-                  .path=${mdiMenu}
-                ></ha-icon-button>`
-              : nothing}
+            ${
+              this._narrow || !this._drawerOpen
+                ? html`<ha-icon-button
+                    slot="navigationIcon"
+                    @click=${this._toggleDrawer}
+                    .path=${mdiMenu}
+                  ></ha-icon-button>`
+                : nothing
+            }
 
             <div slot="title">
-              ${isSettingsPage
-                ? "Settings"
-                : page?.metadata.title || this._page.split("/")[1]}
+              ${
+                isSettingsPage
+                  ? "Settings"
+                  : page?.metadata.title || this._page.split("/")[1]
+              }
             </div>
             <div class="content">
-              ${isSettingsPage
-                ? html`<gallery-settings
-                    .hass=${this._galleryHass}
-                    .themeSettings=${this._themeSettings}
-                    .narrow=${this._narrow}
-                    .rtl=${this._rtl}
-                    @theme-settings-changed=${this._themeSettingsChanged}
-                    @gallery-rtl-changed=${this._rtlChanged}
-                  ></gallery-settings>`
-                : html`
-                    ${page?.description
-                      ? html`
-                          <page-description .page=${this._page}>
-                          </page-description>
-                        `
-                      : nothing}
-                    ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
-                  `}
+              ${
+                isSettingsPage
+                  ? html`<gallery-settings
+                      .hass=${this._galleryHass}
+                      .themeSettings=${this._themeSettings}
+                      .narrow=${this._narrow}
+                      .rtl=${this._rtl}
+                      @theme-settings-changed=${this._themeSettingsChanged}
+                      @gallery-rtl-changed=${this._rtlChanged}
+                    ></gallery-settings>`
+                  : html`
+                      ${
+                        page?.description
+                          ? html`
+                              <page-description .page=${this._page}>
+                              </page-description>
+                            `
+                          : nothing
+                      }
+                      ${dynamicElement(`demo-${this._page.replace("/", "-")}`)}
+                    `
+              }
             </div>
             ${isSettingsPage || !page ? nothing : this._renderPageFooter(page)}
           </ha-top-app-bar-fixed>
@@ -390,13 +398,15 @@ class HaGallery extends LitElement {
                 .header=${group.header}
                 ?expanded=${expanded}
               >
-                ${group.icon
-                  ? html`<ha-svg-icon
-                      slot="leading-icon"
-                      class="gallery-sidebar-icon"
-                      .path=${group.icon}
-                    ></ha-svg-icon>`
-                  : nothing}
+                ${
+                  group.icon
+                    ? html`<ha-svg-icon
+                        slot="leading-icon"
+                        class="gallery-sidebar-icon"
+                        .path=${group.icon}
+                      ></ha-svg-icon>`
+                    : nothing
+                }
                 ${content}
               </ha-expansion-panel>
             `
@@ -454,9 +464,11 @@ class HaGallery extends LitElement {
         ?selected=${this._page === page}
         href=${`#${page}`}
       >
-        ${iconPath
-          ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
-          : nothing}
+        ${
+          iconPath
+            ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+            : nothing
+        }
         <span slot="headline">${title}</span>
       </ha-list-item-button>
     `;
@@ -487,23 +499,30 @@ class HaGallery extends LitElement {
           Suggest an edit to this page, or provide/view feedback for this page.
         </div>
         <div>
-          ${page.description || Object.keys(page.metadata).length > 0
-            ? html`
-                <a
-                  href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
-                  target="_blank"
-                >
-                  Edit text
-                </a>
-              `
-            : nothing}
-          ${page.demo
-            ? html`
-                <a href=${`${GITHUB_DEMO_URL}${this._page}.ts`} target="_blank">
-                  Edit demo
-                </a>
-              `
-            : nothing}
+          ${
+            page.description || Object.keys(page.metadata).length > 0
+              ? html`
+                  <a
+                    href=${`${GITHUB_DEMO_URL}${this._page}.markdown`}
+                    target="_blank"
+                  >
+                    Edit text
+                  </a>
+                `
+              : nothing
+          }
+          ${
+            page.demo
+              ? html`
+                  <a
+                    href=${`${GITHUB_DEMO_URL}${this._page}.ts`}
+                    target="_blank"
+                  >
+                    Edit demo
+                  </a>
+                `
+              : nothing
+          }
         </div>
       </div>
     </div>`;

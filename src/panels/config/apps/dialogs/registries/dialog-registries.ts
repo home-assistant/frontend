@@ -101,9 +101,11 @@ class AppsRegistriesDialog extends DirtyStateProviderMixin<RegistryInput>()(
           </ha-button>
           <ha-button
             slot="primaryAction"
-            ?disabled=${!this._input.registry ||
-            !this._input.username ||
-            !this._input.password}
+            ?disabled=${
+              !this._input.registry ||
+              !this._input.username ||
+              !this._input.password
+            }
             .loading=${this._submitting}
             @click=${this._addRegistry}
           >

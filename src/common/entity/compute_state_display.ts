@@ -49,8 +49,7 @@ export const computeStateDisplay = (
   state?: string
 ): string => {
   const entity = entities?.[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   return computeStateDisplayFromEntityAttributes(
     localize,
     locale,
@@ -302,8 +301,7 @@ export const computeStateToParts = (
   state?: string
 ): ValuePart[] => {
   const entity = entities?.[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   return computeStateToPartsFromEntityAttributes(
     localize,
     locale,

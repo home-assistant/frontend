@@ -108,9 +108,7 @@ export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
   Schema = SchemaArray[number],
 > = Schema extends
-  | HaFormGridSchema
-  | HaFormExpandableSchema
-  | HaFormOptionalActionsSchema
+  HaFormGridSchema | HaFormExpandableSchema | HaFormOptionalActionsSchema
   ? SchemaUnion<Schema["schema"]> | Schema
   : Schema;
 

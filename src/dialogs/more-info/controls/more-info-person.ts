@@ -46,29 +46,33 @@ class MoreInfoPerson extends LitElement {
       typeof this.stateObj.attributes.longitude === "number";
 
     return html`
-      ${location
-        ? html`
-            <ha-map
-              .entities=${this._entityArray(this.stateObj.entity_id)}
-              auto-fit
-            ></ha-map>
-          `
-        : ""}
-      ${!__DEMO__ && this._user?.is_admin && hasOwnCoordinates
-        ? html`
-            <div class="actions">
-              <ha-button
-                appearance="plain"
-                size="s"
-                @click=${this._handleAction}
-              >
-                ${this._localize(
-                  "ui.dialogs.more_info_control.person.create_zone"
-                )}
-              </ha-button>
-            </div>
-          `
-        : ""}
+      ${
+        location
+          ? html`
+              <ha-map
+                .entities=${this._entityArray(this.stateObj.entity_id)}
+                auto-fit
+              ></ha-map>
+            `
+          : ""
+      }
+      ${
+        !__DEMO__ && this._user?.is_admin && hasOwnCoordinates
+          ? html`
+              <div class="actions">
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  @click=${this._handleAction}
+                >
+                  ${this._localize(
+                    "ui.dialogs.more_info_control.person.create_zone"
+                  )}
+                </ha-button>
+              </div>
+            `
+          : ""
+      }
     `;
   }
 

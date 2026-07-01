@@ -125,16 +125,18 @@ export class HuiSuggestionPicker extends LitElement {
         )}
       </ha-section-title>
       ${this._renderSuggestionsGrid(core)}
-      ${custom.length
-        ? html`
-            <ha-section-title>
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.cardpicker.community_title"
-              )}
-            </ha-section-title>
-            ${this._renderSuggestionsGrid(custom)}
-          `
-        : nothing}
+      ${
+        custom.length
+          ? html`
+              <ha-section-title>
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.cardpicker.community_title"
+                )}
+              </ha-section-title>
+              ${this._renderSuggestionsGrid(custom)}
+            `
+          : nothing
+      }
       ${this._renderBrowseCard()}
     `;
   }
@@ -167,13 +169,20 @@ export class HuiSuggestionPicker extends LitElement {
         )}
       </ha-section-title>
       <ha-combo-box-item compact class="selected-entity">
-        ${stateObj
-          ? html`<state-badge slot="start" .stateObj=${stateObj}></state-badge>`
-          : nothing}
+        ${
+          stateObj
+            ? html`<state-badge
+                slot="start"
+                .stateObj=${stateObj}
+              ></state-badge>`
+            : nothing
+        }
         <span slot="headline">${primary}</span>
-        ${secondary
-          ? html`<span slot="supporting-text">${secondary}</span>`
-          : nothing}
+        ${
+          secondary
+            ? html`<span slot="supporting-text">${secondary}</span>`
+            : nothing
+        }
         <ha-icon-button
           slot="end"
           .label=${this.hass.localize("ui.common.clear")}

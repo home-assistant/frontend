@@ -86,8 +86,7 @@ export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {
 }
 
 export type LovelaceViewRawConfig =
-  | LovelaceViewConfig
-  | LovelaceStrategyViewConfig;
+  LovelaceViewConfig | LovelaceStrategyViewConfig;
 
 export function isStrategyView(
   view: LovelaceViewRawConfig

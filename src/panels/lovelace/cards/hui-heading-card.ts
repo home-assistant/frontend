@@ -166,39 +166,45 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
             role=${ifDefined(actionable ? "button" : undefined)}
             tabindex=${ifDefined(actionable ? "0" : undefined)}
           >
-            ${this._config.icon
-              ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
-              : nothing}
-            ${this._config.heading
-              ? html`<p>${this._config.heading}</p>`
-              : nothing}
+            ${
+              this._config.icon
+                ? html`<ha-icon .icon=${this._config.icon}></ha-icon>`
+                : nothing
+            }
+            ${
+              this._config.heading
+                ? html`<p>${this._config.heading}</p>`
+                : nothing
+            }
             ${actionable ? html`<ha-icon-next></ha-icon-next>` : nothing}
           </div>
-          ${badges?.length
-            ? html`
-                <div
-                  class=${classMap({
-                    badges: true,
-                    draggable: !this.preview,
-                    overflowing: this._badgesOverflowing,
-                    dragging: badgeDragging,
-                  })}
-                >
-                  <div class="badges-row">
-                    ${badges.map(
-                      (config) => html`
-                        <hui-heading-badge
-                          .config=${config}
-                          .hass=${this.hass}
-                          .preview=${this.preview}
-                        >
-                        </hui-heading-badge>
-                      `
-                    )}
+          ${
+            badges?.length
+              ? html`
+                  <div
+                    class=${classMap({
+                      badges: true,
+                      draggable: !this.preview,
+                      overflowing: this._badgesOverflowing,
+                      dragging: badgeDragging,
+                    })}
+                  >
+                    <div class="badges-row">
+                      ${badges.map(
+                        (config) => html`
+                          <hui-heading-badge
+                            .config=${config}
+                            .hass=${this.hass}
+                            .preview=${this.preview}
+                          >
+                          </hui-heading-badge>
+                        `
+                      )}
+                    </div>
                   </div>
-                </div>
-              `
-            : nothing}
+                `
+              : nothing
+          }
         </div>
       </ha-card>
     `;

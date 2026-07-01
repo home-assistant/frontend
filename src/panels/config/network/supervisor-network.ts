@@ -99,23 +99,25 @@ export class HassioNetwork extends LitElement {
       <ha-card outlined>
         <div class="card-header">
           ${this.hass.localize("ui.panel.config.network.supervisor.title")}
-          ${this._interfaces.length > 1
-            ? html`
-                <ha-tab-group @wa-tab-show=${this._handleTabActivated}
-                  >${this._interfaces.map(
-                    (device, i) =>
-                      html`<ha-tab-group-tab
-                        slot="nav"
-                        .active=${this._curTabIndex === i}
-                        .panel=${i.toString()}
-                        .id=${device.interface}
-                      >
-                        ${device.interface}
-                      </ha-tab-group-tab>`
-                  )}
-                </ha-tab-group>
-              `
-            : nothing}
+          ${
+            this._interfaces.length > 1
+              ? html`
+                  <ha-tab-group @wa-tab-show=${this._handleTabActivated}
+                    >${this._interfaces.map(
+                      (device, i) =>
+                        html`<ha-tab-group-tab
+                          slot="nav"
+                          .active=${this._curTabIndex === i}
+                          .panel=${i.toString()}
+                          .id=${device.interface}
+                        >
+                          ${device.interface}
+                        </ha-tab-group-tab>`
+                    )}
+                  </ha-tab-group>
+                `
+              : nothing
+          }
         </div>
         ${cache(this._renderTab())}
       </ha-card>
@@ -124,119 +126,135 @@ export class HassioNetwork extends LitElement {
 
   private _renderTab() {
     return html`<div class="card-content">
-        ${this._interface?.type === "wireless"
-          ? html`
-              <ha-expansion-panel
-                .header=${this.hass.localize(
-                  "ui.panel.config.network.supervisor.wifi"
-                )}
-                outlined
-                .expanded=${!this._interface?.wifi?.ssid}
-              >
-                ${this._interface?.wifi?.ssid
-                  ? html`<p>
-                      <ha-svg-icon slot="icon" .path=${mdiWifi}></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.config.network.supervisor.connected_to",
-                        { ssid: this._interface?.wifi?.ssid }
-                      )}
-                    </p>`
-                  : nothing}
-                <ha-button
-                  appearance="plain"
-                  class="scan"
-                  @click=${this._scanForAP}
-                  .disabled=${this._scanning}
-                  .loading=${this._scanning}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.network.supervisor.scan_ap"
+        ${
+          this._interface?.type === "wireless"
+            ? html`
+                <ha-expansion-panel
+                  .header=${this.hass.localize(
+                    "ui.panel.config.network.supervisor.wifi"
                   )}
-                  <ha-svg-icon slot="start" .path=${mdiWifi}></ha-svg-icon>
-                </ha-button>
-                ${this._accessPoints.length
-                  ? html`
-                      <ha-list>
-                        ${this._accessPoints.map(
-                          (ap) => html`
-                            <ha-list-item
-                              twoline
-                              @click=${this._selectAP}
-                              .activated=${ap.ssid ===
-                              this._wifiConfiguration?.ssid}
-                              .ap=${ap}
-                            >
-                              <span>${ap.ssid}</span>
-                              <span slot="secondary">
-                                ${ap.mac} -
-                                ${this.hass.localize(
-                                  "ui.panel.config.network.supervisor.signal_strength"
-                                )}:
-                                ${ap.signal}
-                              </span>
-                            </ha-list-item>
-                          `
-                        )}
-                      </ha-list>
-                    `
-                  : nothing}
-                ${this._wifiConfiguration
-                  ? html`
-                      <ha-radio-group
-                        orientation="horizontal"
-                        .value=${this._wifiConfiguration.auth || "open"}
-                        name="auth"
-                        @change=${this._handleRadioValueChangedAp}
-                      >
-                        <ha-radio-option value="open">
+                  outlined
+                  .expanded=${!this._interface?.wifi?.ssid}
+                >
+                  ${
+                    this._interface?.wifi?.ssid
+                      ? html`<p>
+                          <ha-svg-icon
+                            slot="icon"
+                            .path=${mdiWifi}
+                          ></ha-svg-icon>
                           ${this.hass.localize(
-                            "ui.panel.config.network.supervisor.open"
+                            "ui.panel.config.network.supervisor.connected_to",
+                            { ssid: this._interface?.wifi?.ssid }
                           )}
-                        </ha-radio-option>
-                        <ha-radio-option value="wep">
-                          ${this.hass.localize(
-                            "ui.panel.config.network.supervisor.wep"
-                          )}
-                        </ha-radio-option>
-                        <ha-radio-option value="wpa-psk">
-                          ${this.hass.localize(
-                            "ui.panel.config.network.supervisor.wpa"
-                          )}
-                        </ha-radio-option>
-                      </ha-radio-group>
-                      ${this._wifiConfiguration.auth === "wpa-psk" ||
-                      this._wifiConfiguration.auth === "wep"
-                        ? html`
-                            <ha-input
-                              type="password"
-                              password-toggle
-                              id="psk"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.network.supervisor.wifi_password"
+                        </p>`
+                      : nothing
+                  }
+                  <ha-button
+                    appearance="plain"
+                    class="scan"
+                    @click=${this._scanForAP}
+                    .disabled=${this._scanning}
+                    .loading=${this._scanning}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.network.supervisor.scan_ap"
+                    )}
+                    <ha-svg-icon slot="start" .path=${mdiWifi}></ha-svg-icon>
+                  </ha-button>
+                  ${
+                    this._accessPoints.length
+                      ? html`
+                          <ha-list>
+                            ${this._accessPoints.map(
+                              (ap) => html`
+                                <ha-list-item
+                                  twoline
+                                  @click=${this._selectAP}
+                                  .activated=${
+                                    ap.ssid === this._wifiConfiguration?.ssid
+                                  }
+                                  .ap=${ap}
+                                >
+                                  <span>${ap.ssid}</span>
+                                  <span slot="secondary">
+                                    ${ap.mac} -
+                                    ${this.hass.localize(
+                                      "ui.panel.config.network.supervisor.signal_strength"
+                                    )}:
+                                    ${ap.signal}
+                                  </span>
+                                </ha-list-item>
+                              `
+                            )}
+                          </ha-list>
+                        `
+                      : nothing
+                  }
+                  ${
+                    this._wifiConfiguration
+                      ? html`
+                          <ha-radio-group
+                            orientation="horizontal"
+                            .value=${this._wifiConfiguration.auth || "open"}
+                            name="auth"
+                            @change=${this._handleRadioValueChangedAp}
+                          >
+                            <ha-radio-option value="open">
+                              ${this.hass.localize(
+                                "ui.panel.config.network.supervisor.open"
                               )}
-                              .version=${"wifi"}
-                              @change=${this._handleInputValueChangedWifi}
-                            >
-                            </ha-input>
-                          `
-                        : nothing}
-                    `
-                  : nothing}
-              </ha-expansion-panel>
-            `
-          : nothing}
+                            </ha-radio-option>
+                            <ha-radio-option value="wep">
+                              ${this.hass.localize(
+                                "ui.panel.config.network.supervisor.wep"
+                              )}
+                            </ha-radio-option>
+                            <ha-radio-option value="wpa-psk">
+                              ${this.hass.localize(
+                                "ui.panel.config.network.supervisor.wpa"
+                              )}
+                            </ha-radio-option>
+                          </ha-radio-group>
+                          ${
+                            this._wifiConfiguration.auth === "wpa-psk" ||
+                            this._wifiConfiguration.auth === "wep"
+                              ? html`
+                                  <ha-input
+                                    type="password"
+                                    password-toggle
+                                    id="psk"
+                                    .label=${this.hass.localize(
+                                      "ui.panel.config.network.supervisor.wifi_password"
+                                    )}
+                                    .version=${"wifi"}
+                                    @change=${this._handleInputValueChangedWifi}
+                                  >
+                                  </ha-input>
+                                `
+                              : nothing
+                          }
+                        `
+                      : nothing
+                  }
+                </ha-expansion-panel>
+              `
+            : nothing
+        }
         ${IP_VERSIONS.map((version) =>
           this._interface![version]
             ? this._renderIPConfiguration(version)
             : nothing
         )}
-        ${this._dirty
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.network.supervisor.warning"
-              )}
-            </ha-alert>`
-          : nothing}
+        ${
+          this._dirty
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.panel.config.network.supervisor.warning"
+                )}
+              </ha-alert>`
+            : nothing
+        }
       </div>
       <div class="card-actions">
         <ha-button
@@ -329,163 +347,176 @@ export class HassioNetwork extends LitElement {
             ${this.hass.localize("ui.panel.config.network.supervisor.disabled")}
           </ha-radio-option>
         </ha-radio-group>
-        ${["static", "auto"].includes(this._interface![version].method)
-          ? html`
-              ${this._interface![version].address.map(
-                (address: string, index: number) => {
-                  const { ip, mask, prefix } = parseAddress(address);
-                  return html`
-                    <div class="address-row">
-                      <ha-input
-                        id="address"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.network.supervisor.ip"
-                        )}
-                        .version=${version}
-                        .value=${ip}
-                        .index=${index}
-                        @change=${this._handleInputValueChanged}
-                        .disabled=${disableInputs}
-                      >
-                      </ha-input>
-                      ${version === "ipv6"
-                        ? html`
-                            <ha-input
-                              id="prefix"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.network.supervisor.prefix"
-                              )}
-                              .version=${version}
-                              .value=${prefix || ""}
-                              .index=${index}
-                              @change=${this._handleInputValueChanged}
-                              .disabled=${disableInputs}
-                            >
-                            </ha-input>
-                          `
-                        : html`
-                            <ha-input
-                              id="netmask"
-                              .label=${this.hass.localize(
-                                "ui.panel.config.network.supervisor.netmask"
-                              )}
-                              .version=${version}
-                              .value=${mask || ""}
-                              .index=${index}
-                              @change=${this._handleInputValueChanged}
-                              .disabled=${disableInputs}
-                            >
-                            </ha-input>
-                          `}
-                      ${this._interface![version].address.length > 1 &&
-                      !disableInputs
-                        ? html`
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.delete")}
-                              .path=${mdiDeleteOutline}
-                              .version=${version}
-                              .index=${index}
-                              @click=${this._removeAddress}
-                            ></ha-icon-button>
-                          `
-                        : nothing}
-                    </div>
-                  `;
+        ${
+          ["static", "auto"].includes(this._interface![version].method)
+            ? html`
+                ${this._interface![version].address.map(
+                  (address: string, index: number) => {
+                    const { ip, mask, prefix } = parseAddress(address);
+                    return html`
+                      <div class="address-row">
+                        <ha-input
+                          id="address"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.network.supervisor.ip"
+                          )}
+                          .version=${version}
+                          .value=${ip}
+                          .index=${index}
+                          @change=${this._handleInputValueChanged}
+                          .disabled=${disableInputs}
+                        >
+                        </ha-input>
+                        ${
+                          version === "ipv6"
+                            ? html`
+                                <ha-input
+                                  id="prefix"
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.network.supervisor.prefix"
+                                  )}
+                                  .version=${version}
+                                  .value=${prefix || ""}
+                                  .index=${index}
+                                  @change=${this._handleInputValueChanged}
+                                  .disabled=${disableInputs}
+                                >
+                                </ha-input>
+                              `
+                            : html`
+                                <ha-input
+                                  id="netmask"
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.network.supervisor.netmask"
+                                  )}
+                                  .version=${version}
+                                  .value=${mask || ""}
+                                  .index=${index}
+                                  @change=${this._handleInputValueChanged}
+                                  .disabled=${disableInputs}
+                                >
+                                </ha-input>
+                              `
+                        }
+                        ${
+                          this._interface![version].address.length > 1 &&
+                          !disableInputs
+                            ? html`
+                                <ha-icon-button
+                                  .label=${this.hass.localize("ui.common.delete")}
+                                  .path=${mdiDeleteOutline}
+                                  .version=${version}
+                                  .index=${index}
+                                  @click=${this._removeAddress}
+                                ></ha-icon-button>
+                              `
+                            : nothing
+                        }
+                      </div>
+                    `;
+                  }
+                )}
+                ${
+                  !disableInputs
+                    ? html`
+                        <ha-button
+                          @click=${this._addAddress}
+                          .version=${version}
+                          class="add-address"
+                          appearance="filled"
+                          size="s"
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.network.supervisor.add_address"
+                          )}
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiPlus}
+                          ></ha-svg-icon>
+                        </ha-button>
+                      `
+                    : nothing
                 }
-              )}
-              ${!disableInputs
-                ? html`
-                    <ha-button
-                      @click=${this._addAddress}
-                      .version=${version}
-                      class="add-address"
-                      appearance="filled"
-                      size="s"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.network.supervisor.add_address"
-                      )}
-                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                    </ha-button>
-                  `
-                : nothing}
-              <ha-input
-                id="gateway"
-                .label=${this.hass.localize(
-                  "ui.panel.config.network.supervisor.gateway"
-                )}
-                .version=${version}
-                .value=${this._interface![version].gateway || ""}
-                @change=${this._handleInputValueChanged}
-                .disabled=${disableInputs}
-              >
-              </ha-input>
-              <div class="nameservers">
-                ${nameservers.map(
-                  (nameserver: string, index: number) => html`
-                    <div class="address-row">
-                      <ha-input
-                        id="nameserver"
-                        .label=${`${this.hass.localize(
-                          "ui.panel.config.network.supervisor.dns_server"
-                        )}${this._getPredefinedDnsName(nameserver, version)}`}
+                <ha-input
+                  id="gateway"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.network.supervisor.gateway"
+                  )}
+                  .version=${version}
+                  .value=${this._interface![version].gateway || ""}
+                  @change=${this._handleInputValueChanged}
+                  .disabled=${disableInputs}
+                >
+                </ha-input>
+                <div class="nameservers">
+                  ${nameservers.map(
+                    (nameserver: string, index: number) => html`
+                      <div class="address-row">
+                        <ha-input
+                          id="nameserver"
+                          .label=${`${this.hass.localize(
+                            "ui.panel.config.network.supervisor.dns_server"
+                          )}${this._getPredefinedDnsName(nameserver, version)}`}
+                          .version=${version}
+                          .value=${nameserver}
+                          .index=${index}
+                          @change=${this._handleInputValueChanged}
+                        >
+                        </ha-input>
+                        ${
+                          this._interface![version].nameservers?.length > 1
+                            ? html`
+                                <ha-icon-button
+                                  slot="end"
+                                  .label=${this.hass.localize("ui.common.delete")}
+                                  .path=${mdiDeleteOutline}
+                                  .version=${version}
+                                  .index=${index}
+                                  @click=${this._removeNameserver}
+                                ></ha-icon-button>
+                              `
+                            : nothing
+                        }
+                      </div>
+                    `
+                  )}
+                </div>
+                <ha-dropdown
+                  @wa-show=${this._handleDNSMenuOpened}
+                  @wa-hide=${this._handleDNSMenuClosed}
+                  .version=${version}
+                  @wa-select=${this._handleDropdownSelect}
+                  class="add-nameserver"
+                >
+                  <ha-button appearance="filled" size="s" slot="trigger">
+                    ${this.hass.localize(
+                      "ui.panel.config.network.supervisor.add_dns_server"
+                    )}
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${this._dnsMenuOpen ? mdiMenuDown : mdiPlus}
+                    ></ha-svg-icon>
+                  </ha-button>
+                  ${Object.entries(PREDEFINED_DNS[version]).map(
+                    ([name, addresses]) => html`
+                      <ha-dropdown-item
+                        value="add_predefined"
                         .version=${version}
-                        .value=${nameserver}
-                        .index=${index}
-                        @change=${this._handleInputValueChanged}
+                        .addresses=${addresses}
                       >
-                      </ha-input>
-                      ${this._interface![version].nameservers?.length > 1
-                        ? html`
-                            <ha-icon-button
-                              slot="end"
-                              .label=${this.hass.localize("ui.common.delete")}
-                              .path=${mdiDeleteOutline}
-                              .version=${version}
-                              .index=${index}
-                              @click=${this._removeNameserver}
-                            ></ha-icon-button>
-                          `
-                        : nothing}
-                    </div>
-                  `
-                )}
-              </div>
-              <ha-dropdown
-                @wa-show=${this._handleDNSMenuOpened}
-                @wa-hide=${this._handleDNSMenuClosed}
-                .version=${version}
-                @wa-select=${this._handleDropdownSelect}
-                class="add-nameserver"
-              >
-                <ha-button appearance="filled" size="s" slot="trigger">
-                  ${this.hass.localize(
-                    "ui.panel.config.network.supervisor.add_dns_server"
+                        ${name}
+                      </ha-dropdown-item>
+                    `
                   )}
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${this._dnsMenuOpen ? mdiMenuDown : mdiPlus}
-                  ></ha-svg-icon>
-                </ha-button>
-                ${Object.entries(PREDEFINED_DNS[version]).map(
-                  ([name, addresses]) => html`
-                    <ha-dropdown-item
-                      value="add_predefined"
-                      .version=${version}
-                      .addresses=${addresses}
-                    >
-                      ${name}
-                    </ha-dropdown-item>
-                  `
-                )}
-                <ha-dropdown-item value="add_custom" .version=${version}>
-                  ${this.hass.localize(
-                    "ui.panel.config.network.supervisor.custom_dns"
-                  )}
-                </ha-dropdown-item>
-              </ha-dropdown>
-            `
-          : nothing}
+                  <ha-dropdown-item value="add_custom" .version=${version}>
+                    ${this.hass.localize(
+                      "ui.panel.config.network.supervisor.custom_dns"
+                    )}
+                  </ha-dropdown-item>
+                </ha-dropdown>
+              `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

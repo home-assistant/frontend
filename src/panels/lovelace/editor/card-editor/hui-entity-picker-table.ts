@@ -159,16 +159,20 @@ export class HuiEntityPickerTable extends LitElement {
             return html`
               <div @click=${this._handleEntityClicked} style="cursor: pointer;">
                 ${primary}
-                ${secondary
-                  ? html`<div class="secondary">${secondary}</div>`
-                  : nothing}
-                ${narrow && showEntityId
-                  ? html`
-                      <div class="secondary" style=${ENTITY_ID_STYLE}>
-                        ${entity.entity_id}
-                      </div>
-                    `
-                  : nothing}
+                ${
+                  secondary
+                    ? html`<div class="secondary">${secondary}</div>`
+                    : nothing
+                }
+                ${
+                  narrow && showEntityId
+                    ? html`
+                        <div class="secondary" style=${ENTITY_ID_STYLE}>
+                          ${entity.entity_id}
+                        </div>
+                      `
+                    : nothing
+                }
               </div>
             `;
           },

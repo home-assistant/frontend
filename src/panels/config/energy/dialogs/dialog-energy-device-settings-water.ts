@@ -172,13 +172,15 @@ export class DialogEnergyDeviceSettingsWater
           type="text"
           .disabled=${!this._device}
           .value=${this._device?.name || ""}
-          .placeholder=${this._device
-            ? getStatisticLabel(
-                this.hass,
-                this._device.stat_consumption,
-                this._params?.statsMetadata?.[this._device.stat_consumption]
-              )
-            : ""}
+          .placeholder=${
+            this._device
+              ? getStatisticLabel(
+                  this.hass,
+                  this._device.stat_consumption,
+                  this._params?.statsMetadata?.[this._device.stat_consumption]
+                )
+              : ""
+          }
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -211,8 +213,9 @@ export class DialogEnergyDeviceSettingsWater
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._device ||
-            (!!this._params?.device && !this.isDirtyState)}
+            .disabled=${
+              !this._device || (!!this._params?.device && !this.isDirtyState)
+            }
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}

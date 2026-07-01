@@ -66,15 +66,19 @@ class DialogAssignCategory extends DirtyStateProviderMixin<AssignCategoryFormSta
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${entry
-          ? this.hass.localize("ui.panel.config.category.assign.edit")
-          : this.hass.localize("ui.panel.config.category.assign.assign")}
+        header-title=${
+          entry
+            ? this.hass.localize("ui.panel.config.category.assign.edit")
+            : this.hass.localize("ui.panel.config.category.assign.assign")
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
         <div class="form">
           <ha-category-picker
             .hass=${this.hass}

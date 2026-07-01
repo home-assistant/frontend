@@ -82,9 +82,11 @@ class LocalBackupLocationDialog extends DirtyStateProviderMixin<LocalBackupLocat
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
 
         <p>
           ${this.hass.localize(

@@ -172,71 +172,77 @@ export class HaEnergyPowerConfig extends LitElement {
         </ha-radio-option>
       </ha-radio-group>
 
-      ${this.powerType === "standard"
-        ? html`
-            <ha-statistic-picker
-              .hass=${this.hass}
-              .includeUnitClass=${powerUnitClasses}
-              .value=${this.powerConfig.stat_rate}
-              .label=${this.hass.localize(
-                `${this.localizeBaseKey}.power` as LocalizeKeys
-              )}
-              .excludeStatistics=${this.excludeList}
-              @value-changed=${this._standardPowerChanged}
-              .helper=${this.hass.localize(
-                `${this.localizeBaseKey}.power_helper` as LocalizeKeys,
-                { unit: this._powerUnits?.join(", ") || "" }
-              )}
-            ></ha-statistic-picker>
-          `
-        : nothing}
-      ${this.powerType === "inverted"
-        ? html`
-            <ha-statistic-picker
-              .hass=${this.hass}
-              .includeUnitClass=${powerUnitClasses}
-              .value=${this.powerConfig.stat_rate_inverted}
-              .label=${this.hass.localize(
-                `${this.localizeBaseKey}.power` as LocalizeKeys
-              )}
-              .excludeStatistics=${this.excludeList}
-              @value-changed=${this._invertedPowerChanged}
-              .helper=${this.hass.localize(
-                `${this.localizeBaseKey}.type_inverted_description` as LocalizeKeys
-              )}
-            ></ha-statistic-picker>
-          `
-        : nothing}
-      ${this.powerType === "two_sensors"
-        ? html`
-            <ha-statistic-picker
-              .hass=${this.hass}
-              .includeUnitClass=${powerUnitClasses}
-              .value=${this.powerConfig.stat_rate_from}
-              .label=${this.hass.localize(
-                `${this.localizeBaseKey}.power_from` as LocalizeKeys
-              )}
-              .excludeStatistics=${[
-                ...(this.excludeList || []),
-                this.powerConfig.stat_rate_to,
-              ].filter((id): id is string => Boolean(id))}
-              @value-changed=${this._fromPowerChanged}
-            ></ha-statistic-picker>
-            <ha-statistic-picker
-              .hass=${this.hass}
-              .includeUnitClass=${powerUnitClasses}
-              .value=${this.powerConfig.stat_rate_to}
-              .label=${this.hass.localize(
-                `${this.localizeBaseKey}.power_to` as LocalizeKeys
-              )}
-              .excludeStatistics=${[
-                ...(this.excludeList || []),
-                this.powerConfig.stat_rate_from,
-              ].filter((id): id is string => Boolean(id))}
-              @value-changed=${this._toPowerChanged}
-            ></ha-statistic-picker>
-          `
-        : nothing}
+      ${
+        this.powerType === "standard"
+          ? html`
+              <ha-statistic-picker
+                .hass=${this.hass}
+                .includeUnitClass=${powerUnitClasses}
+                .value=${this.powerConfig.stat_rate}
+                .label=${this.hass.localize(
+                  `${this.localizeBaseKey}.power` as LocalizeKeys
+                )}
+                .excludeStatistics=${this.excludeList}
+                @value-changed=${this._standardPowerChanged}
+                .helper=${this.hass.localize(
+                  `${this.localizeBaseKey}.power_helper` as LocalizeKeys,
+                  { unit: this._powerUnits?.join(", ") || "" }
+                )}
+              ></ha-statistic-picker>
+            `
+          : nothing
+      }
+      ${
+        this.powerType === "inverted"
+          ? html`
+              <ha-statistic-picker
+                .hass=${this.hass}
+                .includeUnitClass=${powerUnitClasses}
+                .value=${this.powerConfig.stat_rate_inverted}
+                .label=${this.hass.localize(
+                  `${this.localizeBaseKey}.power` as LocalizeKeys
+                )}
+                .excludeStatistics=${this.excludeList}
+                @value-changed=${this._invertedPowerChanged}
+                .helper=${this.hass.localize(
+                  `${this.localizeBaseKey}.type_inverted_description` as LocalizeKeys
+                )}
+              ></ha-statistic-picker>
+            `
+          : nothing
+      }
+      ${
+        this.powerType === "two_sensors"
+          ? html`
+              <ha-statistic-picker
+                .hass=${this.hass}
+                .includeUnitClass=${powerUnitClasses}
+                .value=${this.powerConfig.stat_rate_from}
+                .label=${this.hass.localize(
+                  `${this.localizeBaseKey}.power_from` as LocalizeKeys
+                )}
+                .excludeStatistics=${[
+                  ...(this.excludeList || []),
+                  this.powerConfig.stat_rate_to,
+                ].filter((id): id is string => Boolean(id))}
+                @value-changed=${this._fromPowerChanged}
+              ></ha-statistic-picker>
+              <ha-statistic-picker
+                .hass=${this.hass}
+                .includeUnitClass=${powerUnitClasses}
+                .value=${this.powerConfig.stat_rate_to}
+                .label=${this.hass.localize(
+                  `${this.localizeBaseKey}.power_to` as LocalizeKeys
+                )}
+                .excludeStatistics=${[
+                  ...(this.excludeList || []),
+                  this.powerConfig.stat_rate_from,
+                ].filter((id): id is string => Boolean(id))}
+                @value-changed=${this._toPowerChanged}
+              ></ha-statistic-picker>
+            `
+          : nothing
+      }
     `;
   }
 

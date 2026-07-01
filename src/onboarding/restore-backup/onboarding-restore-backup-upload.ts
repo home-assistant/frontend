@@ -47,9 +47,11 @@ class OnboardingRestoreBackupUpload extends LitElement {
           "ui.panel.page-onboarding.restore.upload_backup_subtitle"
         )}
       </p>
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
       <ha-file-upload
         .uploading=${this._uploading}
         .icon=${mdiFolderUpload}

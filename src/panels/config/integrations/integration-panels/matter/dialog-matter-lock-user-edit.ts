@@ -100,9 +100,11 @@ class DialogMatterLockUserEdit extends DirtyStateProviderMixin<MatterLockFormSta
         @closed=${this._dialogClosed}
       >
         <div class="form">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
 
           <ha-input
             .label=${this.hass.localize(
@@ -113,34 +115,38 @@ class DialogMatterLockUserEdit extends DirtyStateProviderMixin<MatterLockFormSta
             maxlength="10"
           ></ha-input>
 
-          ${isNew && supportsPinCredential
-            ? html`
-                <ha-input
-                  .label=${this.hass.localize(
-                    "ui.panel.config.matter.lock.credentials.data"
+          ${
+            isNew && supportsPinCredential
+              ? html`
+                  <ha-input
+                    .label=${this.hass.localize(
+                      "ui.panel.config.matter.lock.credentials.data"
+                    )}
+                    .value=${this._pinCode}
+                    @input=${this._handlePinChange}
+                    type="password"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    placeholder=${this.hass.localize(
+                      "ui.panel.config.matter.lock.errors.pin_placeholder",
+                      { min: minPin, max: maxPin }
+                    )}
+                    minlength=${minPin}
+                    maxlength=${maxPin}
+                    required
+                  ></ha-input>
+                `
+              : nothing
+          }
+          ${
+            isNew && !supportsPinCredential
+              ? html`<ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.lock.errors.no_credential_types_supported"
                   )}
-                  .value=${this._pinCode}
-                  @input=${this._handlePinChange}
-                  type="password"
-                  inputmode="numeric"
-                  pattern="[0-9]*"
-                  placeholder=${this.hass.localize(
-                    "ui.panel.config.matter.lock.errors.pin_placeholder",
-                    { min: minPin, max: maxPin }
-                  )}
-                  minlength=${minPin}
-                  maxlength=${maxPin}
-                  required
-                ></ha-input>
-              `
-            : nothing}
-          ${isNew && !supportsPinCredential
-            ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.matter.lock.errors.no_credential_types_supported"
-                )}
-              </ha-alert>`
-            : nothing}
+                </ha-alert>`
+              : nothing
+          }
 
           <div class="user-type-section">
             <label
@@ -168,15 +174,19 @@ class DialogMatterLockUserEdit extends DirtyStateProviderMixin<MatterLockFormSta
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._saving ||
-            (isNew && !supportsPinCredential) ||
-            (!isNew && !this.isDirtyState)}
+            .disabled=${
+              this._saving ||
+              (isNew && !supportsPinCredential) ||
+              (!isNew && !this.isDirtyState)
+            }
           >
-            ${this._saving
-              ? html`<ha-spinner size="small"></ha-spinner>`
-              : isNew
-                ? this.hass.localize("ui.panel.config.matter.lock.users.add")
-                : this.hass.localize("ui.common.save")}
+            ${
+              this._saving
+                ? html`<ha-spinner size="small"></ha-spinner>`
+                : isNew
+                  ? this.hass.localize("ui.panel.config.matter.lock.users.add")
+                  : this.hass.localize("ui.common.save")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

@@ -76,103 +76,115 @@ export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._token
-          ? this.hass.localize(
-              "ui.panel.profile.long_lived_access_tokens.created_title",
-              { name: this._name }
-            )
-          : this.hass.localize(
-              "ui.panel.profile.long_lived_access_tokens.create"
-            )}
+        header-title=${
+          this._token
+            ? this.hass.localize(
+                "ui.panel.profile.long_lived_access_tokens.created_title",
+                { name: this._name }
+              )
+            : this.hass.localize(
+                "ui.panel.profile.long_lived_access_tokens.create"
+              )
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._errorMessage
-            ? html`<ha-alert alert-type="error"
-                >${this._errorMessage}</ha-alert
-              >`
-            : nothing}
-          ${this._token
-            ? html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
-                  )}
-                </p>
-                <div class="token-row">
+          ${
+            this._errorMessage
+              ? html`<ha-alert alert-type="error"
+                  >${this._errorMessage}</ha-alert
+                >`
+              : nothing
+          }
+          ${
+            this._token
+              ? html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
+                    )}
+                  </p>
+                  <div class="token-row">
+                    <ha-input
+                      autofocus
+                      .value=${this._token}
+                      type="text"
+                      readonly
+                    ></ha-input>
+                    <ha-button appearance="plain" @click=${this._copyToken}>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiContentCopy}
+                      ></ha-svg-icon>
+                      ${this.hass.localize("ui.common.copy")}
+                    </ha-button>
+                  </div>
+                  <div id="qr">
+                    ${
+                      this._qrCode
+                        ? this._qrCode
+                        : html`
+                            <ha-button
+                              appearance="plain"
+                              @click=${this._generateQR}
+                            >
+                              <ha-svg-icon
+                                slot="start"
+                                .path=${mdiQrcode}
+                              ></ha-svg-icon>
+                              ${this.hass.localize(
+                                "ui.panel.profile.long_lived_access_tokens.generate_qr_code"
+                              )}
+                            </ha-button>
+                          `
+                    }
+                  </div>
+                `
+              : html`
                   <ha-input
                     autofocus
-                    .value=${this._token}
-                    type="text"
-                    readonly
+                    .value=${this._name}
+                    .label=${this.hass.localize(
+                      "ui.panel.profile.long_lived_access_tokens.name"
+                    )}
+                    .invalid=${this._hasDuplicateName()}
+                    .validationMessage=${this.hass.localize(
+                      "ui.panel.profile.long_lived_access_tokens.name_exists"
+                    )}
+                    required
+                    @input=${this._nameChanged}
                   ></ha-input>
-                  <ha-button appearance="plain" @click=${this._copyToken}>
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiContentCopy}
-                    ></ha-svg-icon>
-                    ${this.hass.localize("ui.common.copy")}
-                  </ha-button>
-                </div>
-                <div id="qr">
-                  ${this._qrCode
-                    ? this._qrCode
-                    : html`
-                        <ha-button
-                          appearance="plain"
-                          @click=${this._generateQR}
-                        >
-                          <ha-svg-icon
-                            slot="start"
-                            .path=${mdiQrcode}
-                          ></ha-svg-icon>
-                          ${this.hass.localize(
-                            "ui.panel.profile.long_lived_access_tokens.generate_qr_code"
-                          )}
-                        </ha-button>
-                      `}
-                </div>
-              `
-            : html`
-                <ha-input
-                  autofocus
-                  .value=${this._name}
-                  .label=${this.hass.localize(
-                    "ui.panel.profile.long_lived_access_tokens.name"
-                  )}
-                  .invalid=${this._hasDuplicateName()}
-                  .validationMessage=${this.hass.localize(
-                    "ui.panel.profile.long_lived_access_tokens.name_exists"
-                  )}
-                  required
-                  @input=${this._nameChanged}
-                ></ha-input>
-              `}
+                `
+          }
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._token
-            ? nothing
-            : html`<ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this.closeDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>`}
-          ${!this._token
-            ? html`<ha-button
-                slot="primaryAction"
-                .disabled=${this._isCreateDisabled()}
-                @click=${this._createToken}
-              >
-                ${this.hass.localize(
-                  "ui.panel.profile.long_lived_access_tokens.create"
-                )}
-              </ha-button>`
-            : html`<ha-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </ha-button>`}
+          ${
+            this._token
+              ? nothing
+              : html`<ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this.closeDialog}
+                >
+                  ${this.hass.localize("ui.common.cancel")}
+                </ha-button>`
+          }
+          ${
+            !this._token
+              ? html`<ha-button
+                  slot="primaryAction"
+                  .disabled=${this._isCreateDisabled()}
+                  @click=${this._createToken}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.profile.long_lived_access_tokens.create"
+                  )}
+                </ha-button>`
+              : html`<ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>`
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

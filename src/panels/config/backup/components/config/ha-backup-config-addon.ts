@@ -35,8 +35,10 @@ class HaBackupConfigAddon extends LitElement {
           <ha-select
             slot="end"
             @selected=${this._updatePreferenceChanged}
-            .value=${this.supervisorUpdateConfig?.add_on_backup_before_update?.toString() ||
-            "false"}
+            .value=${
+              this.supervisorUpdateConfig?.add_on_backup_before_update?.toString() ||
+              "false"
+            }
             .options=${[
               {
                 value: "false",
@@ -65,8 +67,10 @@ class HaBackupConfigAddon extends LitElement {
           <ha-input
             slot="end"
             @change=${this._backupRetentionChanged}
-            .value=${this.supervisorUpdateConfig?.add_on_backup_retain_copies?.toString() ||
-            "1"}
+            .value=${
+              this.supervisorUpdateConfig?.add_on_backup_retain_copies?.toString() ||
+              "1"
+            }
             type="number"
             min=${MIN_RETENTION_VALUE.toString()}
             step="1"

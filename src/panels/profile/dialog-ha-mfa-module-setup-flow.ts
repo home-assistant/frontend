@@ -91,60 +91,66 @@ class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._errorMessage
-            ? html`<div class="error">${this._errorMessage}</div>`
-            : ""}
-          ${!this._step
-            ? html`<div class="init-spinner">
-                <ha-spinner></ha-spinner>
-              </div>`
-            : html`${this._step.type === "abort"
-                ? html` <ha-markdown
-                    allow-svg
-                    breaks
-                    .content=${this.hass.localize(
-                      `component.auth.mfa_setup.${this._step.handler}.abort.${this._step.reason}`
-                    )}
-                  ></ha-markdown>`
-                : this._step.type === "create_entry"
-                  ? html`<p>
-                      ${this.hass.localize(
-                        "ui.panel.profile.mfa_setup.step_done",
-                        { step: this._step.title || this._step.handler }
-                      )}
-                    </p>`
-                  : this._step.type === "form"
-                    ? html`<ha-markdown
-                          allow-svg
-                          breaks
-                          .content=${this.hass.localize(
-                            `component.auth.mfa_setup.${
-                              this._step!.handler
-                            }.step.${
-                              (this._step! as DataEntryFlowStepForm).step_id
-                            }.description`,
-                            this._step!.description_placeholders
+          ${
+            this._errorMessage
+              ? html`<div class="error">${this._errorMessage}</div>`
+              : ""
+          }
+          ${
+            !this._step
+              ? html`<div class="init-spinner">
+                  <ha-spinner></ha-spinner>
+                </div>`
+              : html`${
+                  this._step.type === "abort"
+                    ? html` <ha-markdown
+                        allow-svg
+                        breaks
+                        .content=${this.hass.localize(
+                          `component.auth.mfa_setup.${this._step.handler}.abort.${this._step.reason}`
+                        )}
+                      ></ha-markdown>`
+                    : this._step.type === "create_entry"
+                      ? html`<p>
+                          ${this.hass.localize(
+                            "ui.panel.profile.mfa_setup.step_done",
+                            { step: this._step.title || this._step.handler }
                           )}
-                        ></ha-markdown>
-                        <ha-form
-                          autofocus
-                          .hass=${this.hass}
-                          .data=${this._stepData}
-                          .schema=${autocompleteLoginFields(
-                            this._step.data_schema
-                          )}
-                          .error=${this._step.errors}
-                          .computeLabel=${this._computeLabel}
-                          .computeError=${this._computeError}
-                          @value-changed=${this._stepDataChanged}
-                        ></ha-form>`
-                    : ""}`}
+                        </p>`
+                      : this._step.type === "form"
+                        ? html`<ha-markdown
+                              allow-svg
+                              breaks
+                              .content=${this.hass.localize(
+                                `component.auth.mfa_setup.${
+                                  this._step!.handler
+                                }.step.${
+                                  (this._step! as DataEntryFlowStepForm).step_id
+                                }.description`,
+                                this._step!.description_placeholders
+                              )}
+                            ></ha-markdown>
+                            <ha-form
+                              autofocus
+                              .hass=${this.hass}
+                              .data=${this._stepData}
+                              .schema=${autocompleteLoginFields(
+                                this._step.data_schema
+                              )}
+                              .error=${this._step.errors}
+                              .computeLabel=${this._computeLabel}
+                              .computeError=${this._computeError}
+                              @value-changed=${this._stepDataChanged}
+                            ></ha-form>`
+                        : ""
+                }`
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
-            slot=${this._step?.type === "form"
-              ? "secondaryAction"
-              : "primaryAction"}
+            slot=${
+              this._step?.type === "form" ? "secondaryAction" : "primaryAction"
+            }
             appearance=${ifDefined(
               this._step?.type === "form" ? "plain" : undefined
             )}
@@ -155,16 +161,18 @@ class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
                 : "ui.common.cancel"
             )}</ha-button
           >
-          ${this._step?.type === "form"
-            ? html`<ha-button
-                slot="primaryAction"
-                .disabled=${this._isSubmitDisabled()}
-                @click=${this._submitStep}
-                >${this.hass.localize(
-                  "ui.panel.profile.mfa_setup.submit"
-                )}</ha-button
-              >`
-            : nothing}
+          ${
+            this._step?.type === "form"
+              ? html`<ha-button
+                  slot="primaryAction"
+                  .disabled=${this._isSubmitDisabled()}
+                  @click=${this._submitStep}
+                  >${this.hass.localize(
+                    "ui.panel.profile.mfa_setup.submit"
+                  )}</ha-button
+                >`
+              : nothing
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

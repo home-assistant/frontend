@@ -108,45 +108,47 @@ class HuiEnergySolarGaugeCard
 
     return html`
       <ha-card>
-        ${value !== undefined
-          ? html`
-              <ha-gauge
-                min="0"
-                max="100"
-                .value=${value}
-                label="%"
-                .formatOptions=${FORMAT_OPTIONS}
-                .locale=${this.hass.locale}
-                style=${styleMap({
-                  "--gauge-color": this._computeSeverity(value),
-                })}
-              ></ha-gauge>
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
-              <ha-tooltip for="info" placement="left">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
-                )}
-                <br /><br />
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
-                )}
-              </ha-tooltip>
-              <div class="name">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
-                )}
-              </div>
-            `
-          : productionReturnedToGrid !== null
-            ? this.hass.localize(
-                "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
-              )
-            : this.hass.localize(
-                "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
-              )}
+        ${
+          value !== undefined
+            ? html`
+                <ha-gauge
+                  min="0"
+                  max="100"
+                  .value=${value}
+                  label="%"
+                  .formatOptions=${FORMAT_OPTIONS}
+                  .locale=${this.hass.locale}
+                  style=${styleMap({
+                    "--gauge-color": this._computeSeverity(value),
+                  })}
+                ></ha-gauge>
+                <ha-svg-icon
+                  id="info"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <ha-tooltip for="info" placement="left">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.card_indicates_solar_energy_used_charge_home_bat"
+                  )}
+                </ha-tooltip>
+                <div class="name">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_energy"
+                  )}
+                </div>
+              `
+            : productionReturnedToGrid !== null
+              ? this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
+                )
+              : this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.solar_consumed_gauge.self_consumed_solar_could_not_calc"
+                )
+        }
       </ha-card>
     `;
   }

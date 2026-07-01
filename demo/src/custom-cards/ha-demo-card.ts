@@ -43,28 +43,30 @@ export class HADemoCard extends LitElement implements LovelaceCard {
       <ha-card>
         <div class="picker">
           <div class="label">
-            ${this._switching
-              ? html`<ha-spinner></ha-spinner>`
-              : until(
-                  selectedDemoConfig.then(
-                    (conf) => html`
-                      ${conf.name}
-                      <small>
-                        ${this.hass.localize(
-                          "ui.panel.page-demo.cards.demo.demo_by",
-                          {
-                            name: html`
-                              <a target="_blank" href=${conf.authorUrl}>
-                                ${conf.authorName}
-                              </a>
-                            `,
-                          }
-                        )}
-                      </small>
-                    `
-                  ),
-                  ""
-                )}
+            ${
+              this._switching
+                ? html`<ha-spinner></ha-spinner>`
+                : until(
+                    selectedDemoConfig.then(
+                      (conf) => html`
+                        ${conf.name}
+                        <small>
+                          ${this.hass.localize(
+                            "ui.panel.page-demo.cards.demo.demo_by",
+                            {
+                              name: html`
+                                <a target="_blank" href=${conf.authorUrl}>
+                                  ${conf.authorName}
+                                </a>
+                              `,
+                            }
+                          )}
+                        </small>
+                      `
+                    ),
+                    ""
+                  )
+            }
           </div>
 
           <ha-button @click=${this._nextConfig} .disabled=${this._switching}>

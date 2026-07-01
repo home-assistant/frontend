@@ -35,17 +35,19 @@ class OnboardingWelcomeLinks extends LitElement {
         .label=${this.localize("ui.panel.page-onboarding.welcome.community")}
       >
       </onboarding-welcome-link>
-      ${this.mobileApp
-        ? nothing
-        : html`<onboarding-welcome-link
-            class="app"
-            @click=${this._openApp}
-            .iconPath=${mdiTabletCellphone}
-            .label=${this.localize(
-              "ui.panel.page-onboarding.welcome.download_app"
-            )}
-          >
-          </onboarding-welcome-link>`}`;
+      ${
+        this.mobileApp
+          ? nothing
+          : html`<onboarding-welcome-link
+              class="app"
+              @click=${this._openApp}
+              .iconPath=${mdiTabletCellphone}
+              .label=${this.localize(
+                "ui.panel.page-onboarding.welcome.download_app"
+              )}
+            >
+            </onboarding-welcome-link>`
+      }`;
   }
 
   private _openCommunity(): void {

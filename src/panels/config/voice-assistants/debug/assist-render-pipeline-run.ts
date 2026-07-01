@@ -211,312 +211,361 @@ export class AssistPipelineDebug extends LitElement {
           </div>
 
           ${renderData(this.hass, this.pipelineRun.run, RUN_DATA)}
-          ${messages.length > 0
-            ? html`
-                <div class="messages">
-                  ${messages.map((content) =>
-                    content.role === "system"
-                      ? content.content
-                        ? html`
-                            <ha-expansion-panel
-                              class="content-expansion ${content.role}"
-                            >
-                              <div slot="header">System</div>
-                              <pre>${content.content}</pre>
-                            </ha-expansion-panel>
-                          `
-                        : nothing
-                      : content.role === "tool_result"
-                        ? html`
-                            <ha-expansion-panel
-                              class="content-expansion ${content.role}"
-                            >
-                              <div slot="header">
-                                Result for ${content.tool_name}
-                              </div>
-                              <ha-yaml-editor
-                                read-only
-                                auto-update
-                                .value=${content}
-                              ></ha-yaml-editor>
-                            </ha-expansion-panel>
-                          `
-                        : html`
-                            ${content.content
-                              ? html`
-                                  <div class=${`message ${content.role}`}>
-                                    ${content.content}
-                                  </div>
-                                `
-                              : nothing}
-                            ${content.role === "assistant" &&
-                            content.tool_calls?.length
-                              ? html`
-                                  <ha-expansion-panel
-                                    class="content-expansion assistant"
-                                  >
-                                    <span slot="header">
-                                      Call
-                                      ${content.tool_calls.length === 1
-                                        ? content.tool_calls[0].tool_name
-                                        : `${content.tool_calls.length} tools`}
-                                    </span>
+          ${
+            messages.length > 0
+              ? html`
+                  <div class="messages">
+                    ${messages.map((content) =>
+                      content.role === "system"
+                        ? content.content
+                          ? html`
+                              <ha-expansion-panel
+                                class="content-expansion ${content.role}"
+                              >
+                                <div slot="header">System</div>
+                                <pre>${content.content}</pre>
+                              </ha-expansion-panel>
+                            `
+                          : nothing
+                        : content.role === "tool_result"
+                          ? html`
+                              <ha-expansion-panel
+                                class="content-expansion ${content.role}"
+                              >
+                                <div slot="header">
+                                  Result for ${content.tool_name}
+                                </div>
+                                <ha-yaml-editor
+                                  read-only
+                                  auto-update
+                                  .value=${content}
+                                ></ha-yaml-editor>
+                              </ha-expansion-panel>
+                            `
+                          : html`
+                              ${
+                                content.content
+                                  ? html`
+                                      <div class=${`message ${content.role}`}>
+                                        ${content.content}
+                                      </div>
+                                    `
+                                  : nothing
+                              }
+                              ${
+                                content.role === "assistant" &&
+                                content.tool_calls?.length
+                                  ? html`
+                                      <ha-expansion-panel
+                                        class="content-expansion assistant"
+                                      >
+                                        <span slot="header">
+                                          Call
+                                          ${
+                                            content.tool_calls.length === 1
+                                              ? content.tool_calls[0].tool_name
+                                              : `${content.tool_calls.length} tools`
+                                          }
+                                        </span>
 
-                                    <ha-yaml-editor
-                                      read-only
-                                      auto-update
-                                      .value=${content.tool_calls}
-                                    ></ha-yaml-editor>
-                                  </ha-expansion-panel>
-                                `
-                              : nothing}
-                          `
-                  )}
-                </div>
-                <div style="clear:both"></div>
-              `
-            : ""}
+                                        <ha-yaml-editor
+                                          read-only
+                                          auto-update
+                                          .value=${content.tool_calls}
+                                        ></ha-yaml-editor>
+                                      </ha-expansion-panel>
+                                    `
+                                  : nothing
+                              }
+                            `
+                    )}
+                  </div>
+                  <div style="clear:both"></div>
+                `
+              : ""
+          }
         </div>
       </ha-card>
 
       ${maybeRenderError(this.pipelineRun, "ready", lastRunStage)}
-      ${hasStage(this.pipelineRun, "wake_word")
-        ? html`
-            <ha-card>
-              <div class="card-content">
-                <div class="row heading">
-                  <span
-                    >${this.hass.localize(
-                      "ui.panel.config.voice_assistants.debug.stages.wake_word"
-                    )}</span
-                  >
-                  ${renderProgress(this.hass, this.pipelineRun, "wake_word")}
-                </div>
-                ${this.pipelineRun.wake_word
-                  ? html`
-                      <div class="card-content">
-                        ${renderData(
-                          this.hass,
-                          this.pipelineRun.wake_word,
-                          WAKE_WORD_DATA
-                        )}
-                        ${this.pipelineRun.wake_word.wake_word_output
-                          ? html`<div class="row">
-                                <div>
-                                  ${this.hass.localize(
-                                    "ui.panel.config.voice_assistants.debug.stages.model"
-                                  )}
-                                </div>
-                                <div>
-                                  ${this.pipelineRun.wake_word.wake_word_output
-                                    .ww_id}
-                                </div>
-                              </div>
-                              <div class="row">
-                                <div>
-                                  ${this.hass.localize(
-                                    "ui.panel.config.voice_assistants.debug.stages.timestamp"
-                                  )}
-                                </div>
-                                <div>
-                                  ${this.pipelineRun.wake_word.wake_word_output
-                                    .timestamp}
-                                </div>
-                              </div>`
-                          : ""}
-                        ${dataMinusKeysRender(
-                          this.hass,
-                          this.pipelineRun.wake_word,
-                          WAKE_WORD_DATA
-                        )}
-                      </div>
-                    `
-                  : ""}
-              </div>
-            </ha-card>
-          `
-        : ""}
-      ${maybeRenderError(this.pipelineRun, "wake_word", lastRunStage)}
-      ${hasStage(this.pipelineRun, "stt")
-        ? html`
-            <ha-card>
-              <div class="card-content">
-                <div class="row heading">
-                  <span
-                    >${this.hass.localize(
-                      "ui.panel.config.voice_assistants.debug.stages.speech_to_text"
-                    )}</span
-                  >
-                  ${renderProgress(
-                    this.hass,
-                    this.pipelineRun,
-                    "stt",
-                    "-vad-end"
-                  )}
-                </div>
-                ${this.pipelineRun.stt
-                  ? html`
-                      <div class="card-content">
-                        ${renderData(this.hass, this.pipelineRun.stt, STT_DATA)}
-                        <div class="row">
-                          <div>
-                            ${this.hass.localize(
-                              "ui.panel.config.voice_assistants.debug.stages.language"
+      ${
+        hasStage(this.pipelineRun, "wake_word")
+          ? html`
+              <ha-card>
+                <div class="card-content">
+                  <div class="row heading">
+                    <span
+                      >${this.hass.localize(
+                        "ui.panel.config.voice_assistants.debug.stages.wake_word"
+                      )}</span
+                    >
+                    ${renderProgress(this.hass, this.pipelineRun, "wake_word")}
+                  </div>
+                  ${
+                    this.pipelineRun.wake_word
+                      ? html`
+                          <div class="card-content">
+                            ${renderData(
+                              this.hass,
+                              this.pipelineRun.wake_word,
+                              WAKE_WORD_DATA
+                            )}
+                            ${
+                              this.pipelineRun.wake_word.wake_word_output
+                                ? html`<div class="row">
+                                      <div>
+                                        ${this.hass.localize(
+                                          "ui.panel.config.voice_assistants.debug.stages.model"
+                                        )}
+                                      </div>
+                                      <div>
+                                        ${
+                                          this.pipelineRun.wake_word
+                                            .wake_word_output.ww_id
+                                        }
+                                      </div>
+                                    </div>
+                                    <div class="row">
+                                      <div>
+                                        ${this.hass.localize(
+                                          "ui.panel.config.voice_assistants.debug.stages.timestamp"
+                                        )}
+                                      </div>
+                                      <div>
+                                        ${
+                                          this.pipelineRun.wake_word
+                                            .wake_word_output.timestamp
+                                        }
+                                      </div>
+                                    </div>`
+                                : ""
+                            }
+                            ${dataMinusKeysRender(
+                              this.hass,
+                              this.pipelineRun.wake_word,
+                              WAKE_WORD_DATA
                             )}
                           </div>
-                          <div>${this.pipelineRun.stt.metadata.language}</div>
-                        </div>
-                        ${this.pipelineRun.stt.stt_output
-                          ? html`<div class="row">
+                        `
+                      : ""
+                  }
+                </div>
+              </ha-card>
+            `
+          : ""
+      }
+      ${maybeRenderError(this.pipelineRun, "wake_word", lastRunStage)}
+      ${
+        hasStage(this.pipelineRun, "stt")
+          ? html`
+              <ha-card>
+                <div class="card-content">
+                  <div class="row heading">
+                    <span
+                      >${this.hass.localize(
+                        "ui.panel.config.voice_assistants.debug.stages.speech_to_text"
+                      )}</span
+                    >
+                    ${renderProgress(
+                      this.hass,
+                      this.pipelineRun,
+                      "stt",
+                      "-vad-end"
+                    )}
+                  </div>
+                  ${
+                    this.pipelineRun.stt
+                      ? html`
+                          <div class="card-content">
+                            ${renderData(this.hass, this.pipelineRun.stt, STT_DATA)}
+                            <div class="row">
                               <div>
                                 ${this.hass.localize(
-                                  "ui.panel.config.voice_assistants.debug.stages.output"
+                                  "ui.panel.config.voice_assistants.debug.stages.language"
                                 )}
                               </div>
-                              <div>${this.pipelineRun.stt.stt_output.text}</div>
-                            </div>`
-                          : ""}
-                        ${dataMinusKeysRender(
-                          this.hass,
-                          this.pipelineRun.stt,
-                          STT_DATA
-                        )}
-                      </div>
-                    `
-                  : ""}
-              </div>
-            </ha-card>
-          `
-        : ""}
-      ${maybeRenderError(this.pipelineRun, "stt", lastRunStage)}
-      ${hasStage(this.pipelineRun, "intent")
-        ? html`
-            <ha-card>
-              <div class="card-content">
-                <div class="row heading">
-                  <span
-                    >${this.hass.localize(
-                      "ui.panel.config.voice_assistants.debug.stages.natural_language_processing"
-                    )}</span
-                  >
-                  ${renderProgress(this.hass, this.pipelineRun, "intent")}
-                </div>
-                ${this.pipelineRun.intent
-                  ? html`
-                      <div class="card-content">
-                        ${renderData(
-                          this.hass,
-                          this.pipelineRun.intent,
-                          INTENT_DATA
-                        )}
-                        ${this.pipelineRun.intent.intent_output
-                          ? html`<div class="row">
-                                <div>
-                                  ${this.hass.localize(
-                                    "ui.panel.config.voice_assistants.debug.stages.response_type"
-                                  )}
-                                </div>
-                                <div>
-                                  ${this.pipelineRun.intent.intent_output
-                                    .response.response_type}
-                                </div>
+                              <div>
+                                ${this.pipelineRun.stt.metadata.language}
                               </div>
-                              ${this.pipelineRun.intent.intent_output.response
-                                .response_type === "error"
+                            </div>
+                            ${
+                              this.pipelineRun.stt.stt_output
                                 ? html`<div class="row">
                                     <div>
                                       ${this.hass.localize(
-                                        "ui.panel.config.voice_assistants.debug.error.code"
+                                        "ui.panel.config.voice_assistants.debug.stages.output"
                                       )}
                                     </div>
                                     <div>
-                                      ${this.pipelineRun.intent.intent_output
-                                        .response.data.code}
+                                      ${this.pipelineRun.stt.stt_output.text}
                                     </div>
                                   </div>`
-                                : ""}`
-                          : ""}
-                        <div class="row">
-                          <div>
-                            ${this.hass.localize(
-                              "ui.panel.config.voice_assistants.debug.stages.prefer_local"
+                                : ""
+                            }
+                            ${dataMinusKeysRender(
+                              this.hass,
+                              this.pipelineRun.stt,
+                              STT_DATA
                             )}
                           </div>
-                          <div>
-                            ${this.pipelineRun.intent.prefer_local_intents}
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div>
-                            ${this.hass.localize(
-                              "ui.panel.config.voice_assistants.debug.stages.processed_locally"
-                            )}
-                          </div>
-                          <div>
-                            ${this.pipelineRun.intent.processed_locally}
-                          </div>
-                        </div>
-                        ${dataMinusKeysRender(
-                          this.hass,
-                          this.pipelineRun.intent,
-                          INTENT_DATA
-                        )}
-                      </div>
-                    `
-                  : ""}
-              </div>
-            </ha-card>
-          `
-        : ""}
-      ${maybeRenderError(this.pipelineRun, "intent", lastRunStage)}
-      ${hasStage(this.pipelineRun, "tts")
-        ? html`
-            <ha-card>
-              <div class="card-content">
-                <div class="row heading">
-                  <span
-                    >${this.hass.localize(
-                      "ui.panel.config.voice_assistants.debug.stages.text_to_speech"
-                    )}</span
-                  >
-                  ${renderProgress(this.hass, this.pipelineRun, "tts")}
+                        `
+                      : ""
+                  }
                 </div>
-                ${this.pipelineRun.tts
-                  ? html`
-                      <div class="card-content">
-                        ${renderData(this.hass, this.pipelineRun.tts, TTS_DATA)}
-                        ${dataMinusKeysRender(
-                          this.hass,
-                          this.pipelineRun.tts,
-                          TTS_DATA
-                        )}
-                      </div>
-                    `
-                  : ""}
-              </div>
-              ${this.pipelineRun?.tts?.tts_output
-                ? html`
-                    <div class="card-actions">
-                      <ha-button
-                        .variant=${this._isPlaying ? "danger" : "brand"}
-                        @click=${this._isPlaying
-                          ? this._stopTTS
-                          : this._playTTS}
-                      >
-                        ${this._isPlaying
-                          ? this.hass.localize(
-                              "ui.panel.config.voice_assistants.debug.stop_audio"
-                            )
-                          : this.hass.localize(
-                              "ui.panel.config.voice_assistants.debug.play_audio"
+              </ha-card>
+            `
+          : ""
+      }
+      ${maybeRenderError(this.pipelineRun, "stt", lastRunStage)}
+      ${
+        hasStage(this.pipelineRun, "intent")
+          ? html`
+              <ha-card>
+                <div class="card-content">
+                  <div class="row heading">
+                    <span
+                      >${this.hass.localize(
+                        "ui.panel.config.voice_assistants.debug.stages.natural_language_processing"
+                      )}</span
+                    >
+                    ${renderProgress(this.hass, this.pipelineRun, "intent")}
+                  </div>
+                  ${
+                    this.pipelineRun.intent
+                      ? html`
+                          <div class="card-content">
+                            ${renderData(
+                              this.hass,
+                              this.pipelineRun.intent,
+                              INTENT_DATA
                             )}
-                      </ha-button>
-                    </div>
-                  `
-                : ""}
-            </ha-card>
-          `
-        : ""}
+                            ${
+                              this.pipelineRun.intent.intent_output
+                                ? html`<div class="row">
+                                      <div>
+                                        ${this.hass.localize(
+                                          "ui.panel.config.voice_assistants.debug.stages.response_type"
+                                        )}
+                                      </div>
+                                      <div>
+                                        ${
+                                          this.pipelineRun.intent.intent_output
+                                            .response.response_type
+                                        }
+                                      </div>
+                                    </div>
+                                    ${
+                                      this.pipelineRun.intent.intent_output
+                                        .response.response_type === "error"
+                                        ? html`<div class="row">
+                                            <div>
+                                              ${this.hass.localize(
+                                                "ui.panel.config.voice_assistants.debug.error.code"
+                                              )}
+                                            </div>
+                                            <div>
+                                              ${
+                                                this.pipelineRun.intent
+                                                  .intent_output.response.data
+                                                  .code
+                                              }
+                                            </div>
+                                          </div>`
+                                        : ""
+                                    }`
+                                : ""
+                            }
+                            <div class="row">
+                              <div>
+                                ${this.hass.localize(
+                                  "ui.panel.config.voice_assistants.debug.stages.prefer_local"
+                                )}
+                              </div>
+                              <div>
+                                ${this.pipelineRun.intent.prefer_local_intents}
+                              </div>
+                            </div>
+                            <div class="row">
+                              <div>
+                                ${this.hass.localize(
+                                  "ui.panel.config.voice_assistants.debug.stages.processed_locally"
+                                )}
+                              </div>
+                              <div>
+                                ${this.pipelineRun.intent.processed_locally}
+                              </div>
+                            </div>
+                            ${dataMinusKeysRender(
+                              this.hass,
+                              this.pipelineRun.intent,
+                              INTENT_DATA
+                            )}
+                          </div>
+                        `
+                      : ""
+                  }
+                </div>
+              </ha-card>
+            `
+          : ""
+      }
+      ${maybeRenderError(this.pipelineRun, "intent", lastRunStage)}
+      ${
+        hasStage(this.pipelineRun, "tts")
+          ? html`
+              <ha-card>
+                <div class="card-content">
+                  <div class="row heading">
+                    <span
+                      >${this.hass.localize(
+                        "ui.panel.config.voice_assistants.debug.stages.text_to_speech"
+                      )}</span
+                    >
+                    ${renderProgress(this.hass, this.pipelineRun, "tts")}
+                  </div>
+                  ${
+                    this.pipelineRun.tts
+                      ? html`
+                          <div class="card-content">
+                            ${renderData(this.hass, this.pipelineRun.tts, TTS_DATA)}
+                            ${dataMinusKeysRender(
+                              this.hass,
+                              this.pipelineRun.tts,
+                              TTS_DATA
+                            )}
+                          </div>
+                        `
+                      : ""
+                  }
+                </div>
+                ${
+                  this.pipelineRun?.tts?.tts_output
+                    ? html`
+                        <div class="card-actions">
+                          <ha-button
+                            .variant=${this._isPlaying ? "danger" : "brand"}
+                            @click=${
+                              this._isPlaying ? this._stopTTS : this._playTTS
+                            }
+                          >
+                            ${
+                              this._isPlaying
+                                ? this.hass.localize(
+                                    "ui.panel.config.voice_assistants.debug.stop_audio"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.voice_assistants.debug.play_audio"
+                                  )
+                            }
+                          </ha-button>
+                        </div>
+                      `
+                    : ""
+                }
+              </ha-card>
+            `
+          : ""
+      }
       ${maybeRenderError(this.pipelineRun, "tts", lastRunStage)}
       <ha-card>
         <ha-expansion-panel class="yaml-expansion">

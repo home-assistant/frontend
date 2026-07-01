@@ -158,16 +158,18 @@ class DialogAreaDetail
 
   private _renderSettings(entry: AreaRegistryEntry | undefined) {
     return html`
-      ${entry
-        ? html`
-            <ha-settings-row>
-              <span slot="heading">
-                ${this.hass.localize("ui.panel.config.areas.editor.area_id")}
-              </span>
-              <span slot="description"> ${entry.area_id} </span>
-            </ha-settings-row>
-          `
-        : nothing}
+      ${
+        entry
+          ? html`
+              <ha-settings-row>
+                <span slot="heading">
+                  ${this.hass.localize("ui.panel.config.areas.editor.area_id")}
+                </span>
+                <span slot="description"> ${entry.area_id} </span>
+              </ha-settings-row>
+            `
+          : nothing
+      }
 
       <ha-input
         autofocus
@@ -366,9 +368,11 @@ class DialogAreaDetail
       <ha-dialog
         .hass=${this.hass}
         .open=${this._open}
-        header-title=${entry
-          ? this.hass.localize("ui.panel.config.areas.editor.update_area")
-          : this.hass.localize("ui.panel.config.areas.editor.create_area")}
+        header-title=${
+          entry
+            ? this.hass.localize("ui.panel.config.areas.editor.update_area")
+            : this.hass.localize("ui.panel.config.areas.editor.create_area")
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
@@ -379,44 +383,52 @@ class DialogAreaDetail
           @suggestion=${this._handleSuggestion}
         ></ha-suggest-with-ai-button>
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="form">
             ${this._renderSettings(entry)} ${this._renderAliasExpansion()}
             ${!isNew ? this._renderRelatedEntitiesExpansion() : nothing}
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${!isNew
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
+          ${
+            !isNew
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteArea}
+                    .disabled=${this._submitting}
+                  >
+                    ${this.hass.localize("ui.common.delete")}
+                  </ha-button>
+                `
+              : html`<ha-button
                   appearance="plain"
-                  @click=${this._deleteArea}
-                  .disabled=${this._submitting}
+                  slot="secondaryAction"
+                  @click=${this.closeDialog}
                 >
-                  ${this.hass.localize("ui.common.delete")}
-                </ha-button>
-              `
-            : html`<ha-button
-                appearance="plain"
-                slot="secondaryAction"
-                @click=${this.closeDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>`}
+                  ${this.hass.localize("ui.common.cancel")}
+                </ha-button>`
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${nameInvalid ||
-            this._submitting ||
-            (!!this._params?.entry && !this.isDirtyState)}
+            .disabled=${
+              nameInvalid ||
+              this._submitting ||
+              (!!this._params?.entry && !this.isDirtyState)
+            }
           >
-            ${entry
-              ? this.hass.localize("ui.common.save")
-              : this.hass.localize("ui.common.create")}
+            ${
+              entry
+                ? this.hass.localize("ui.common.save")
+                : this.hass.localize("ui.common.create")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

@@ -14,9 +14,7 @@ class HaPushNotificationsRow extends LitElement {
   protected render(): TemplateResult {
     const platformLoaded = isComponentLoaded(this.hass.config, "html5.notify");
     let descriptionKey:
-      | "error_use_https"
-      | "error_load_platform"
-      | "description";
+      "error_use_https" | "error_load_platform" | "description";
     if (!pushSupported) {
       descriptionKey = "error_use_https";
     } else if (!platformLoaded) {

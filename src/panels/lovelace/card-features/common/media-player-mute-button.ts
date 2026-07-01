@@ -2,6 +2,7 @@ import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
 import { html, nothing } from "lit";
 import type { TemplateResult } from "lit";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-control-button";
 import "../../../../components/ha-svg-icon";
 import { forwardHaptic } from "../../../../data/haptics";
@@ -12,7 +13,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 
 export const renderMuteButton = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   stateObj: MediaPlayerEntity,
   showMuteButton: boolean | undefined,
   disabled: boolean,
@@ -28,7 +29,7 @@ export const renderMuteButton = (
   return html`
     <ha-control-button
       class="mute"
-      .label=${hass.localize(
+      .label=${localize(
         `ui.card.media_player.${isMuted ? "media_volume_unmute" : "media_volume_mute"}`
       )}
       .disabled=${disabled}
@@ -43,13 +44,13 @@ export const renderMuteButton = (
 
 export const toggleMediaPlayerMute = (
   ev: Event,
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   stateObj: MediaPlayerEntity,
   el: HTMLElement
 ): void => {
   ev.stopPropagation();
   forwardHaptic(el, "light");
-  hass.callService("media_player", "volume_mute", {
+  callService("media_player", "volume_mute", {
     entity_id: stateObj.entity_id,
     is_volume_muted: !stateObj.attributes.is_volume_muted,
   });

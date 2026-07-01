@@ -72,26 +72,30 @@ class HaBackupOverviewBackups extends LitElement {
               >${headline}</span
             >
           </ha-list-item-base>
-          ${description || description === null
-            ? html`<ha-list-item-base>
-                <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-                <span
-                  slot="headline"
-                  class=${description === null ? "skeleton" : ""}
-                  >${description}</span
-                >
+          ${
+            description || description === null
+              ? html`<ha-list-item-base>
+                  <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
+                  <span
+                    slot="headline"
+                    class=${description === null ? "skeleton" : ""}
+                    >${description}</span
+                  >
 
-                ${lastCompletedDate
-                  ? html` <ha-icon-button
-                      slot="end"
-                      @click=${this._createAdditionalBackupDescription(
-                        lastCompletedDate
-                      )}
-                      .path=${mdiInformationOutline}
-                    ></ha-icon-button>`
-                  : nothing}
-              </ha-list-item-base>`
-            : nothing}
+                  ${
+                    lastCompletedDate
+                      ? html` <ha-icon-button
+                          slot="end"
+                          @click=${this._createAdditionalBackupDescription(
+                            lastCompletedDate
+                          )}
+                          .path=${mdiInformationOutline}
+                        ></ha-icon-button>`
+                      : nothing
+                  }
+                </ha-list-item-base>`
+              : nothing
+          }
         </ha-list-base>
       </ha-backup-summary-card>
     `;

@@ -7,11 +7,7 @@ import "../../../../components/ha-svg-icon";
 @customElement("supervisor-apps-tag")
 class SupervisorAppsTag extends LitElement {
   @property() public variant:
-    | "brand"
-    | "success"
-    | "warning"
-    | "danger"
-    | "neutral" = "neutral";
+    "brand" | "success" | "warning" | "danger" | "neutral" = "neutral";
 
   @property({ attribute: "icon-path" }) public iconPath?: string;
 
@@ -19,9 +15,11 @@ class SupervisorAppsTag extends LitElement {
 
   protected render(): TemplateResult {
     return html`<wa-tag .variant=${this.variant}>
-      ${this.iconPath
-        ? html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`
-        : nothing}
+      ${
+        this.iconPath
+          ? html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`
+          : nothing
+      }
       ${this.label}
     </wa-tag>`;
   }

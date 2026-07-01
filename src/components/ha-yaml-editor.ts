@@ -111,9 +111,11 @@ export class HaYamlEditor extends LitElement {
       return nothing;
     }
     return html`
-      ${this.label
-        ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
-        : nothing}
+      ${
+        this.label
+          ? html`<p>${this.label}${this.required ? " *" : ""}</p>`
+          : nothing
+      }
       <ha-code-editor
         .value=${this._yaml}
         .readOnly=${this.readOnly}
@@ -128,22 +130,26 @@ export class HaYamlEditor extends LitElement {
         @editor-save=${this._onEditorSave}
         dir="ltr"
       ></ha-code-editor>
-      ${this.copyClipboard || this.hasExtraActions
-        ? html`
-            <div class="card-actions">
-              ${this.copyClipboard
-                ? html`
-                    <ha-button appearance="plain" @click=${this._copyYaml}>
-                      ${this._i18n!.localize(
-                        "ui.components.yaml-editor.copy_to_clipboard"
-                      )}
-                    </ha-button>
-                  `
-                : nothing}
-              <slot name="extra-actions"></slot>
-            </div>
-          `
-        : nothing}
+      ${
+        this.copyClipboard || this.hasExtraActions
+          ? html`
+              <div class="card-actions">
+                ${
+                  this.copyClipboard
+                    ? html`
+                        <ha-button appearance="plain" @click=${this._copyYaml}>
+                          ${this._i18n!.localize(
+                            "ui.components.yaml-editor.copy_to_clipboard"
+                          )}
+                        </ha-button>
+                      `
+                    : nothing
+                }
+                <slot name="extra-actions"></slot>
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 

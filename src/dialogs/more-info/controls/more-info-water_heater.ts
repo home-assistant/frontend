@@ -66,24 +66,26 @@ class MoreInfoWaterHeater extends LitElement {
 
     return html`
       <div class="current">
-        ${currentTemperature != null
-          ? html`
-              <div>
-                <p class="label">
-                  ${this._formatters.formatEntityAttributeName(
-                    this.stateObj,
-                    "current_temperature"
-                  )}
-                </p>
-                <p class="value">
-                  ${this._formatters.formatEntityAttributeValue(
-                    this.stateObj,
-                    "current_temperature"
-                  )}
-                </p>
-              </div>
-            `
-          : nothing}
+        ${
+          currentTemperature != null
+            ? html`
+                <div>
+                  <p class="label">
+                    ${this._formatters.formatEntityAttributeName(
+                      this.stateObj,
+                      "current_temperature"
+                    )}
+                  </p>
+                  <p class="value">
+                    ${this._formatters.formatEntityAttributeValue(
+                      this.stateObj,
+                      "current_temperature"
+                    )}
+                  </p>
+                </div>
+              `
+            : nothing
+        }
       </div>
       <div class="controls">
         <ha-state-control-water_heater-temperature
@@ -91,50 +93,57 @@ class MoreInfoWaterHeater extends LitElement {
         ></ha-state-control-water_heater-temperature>
       </div>
       <ha-more-info-control-select-container>
-        ${supportOperationMode && stateObj.attributes.operation_list
-          ? html`
-              <ha-control-select-menu
-                .label=${this._localize("ui.card.water_heater.mode")}
-                .value=${stateObj.state}
-                .disabled=${stateObj.state === UNAVAILABLE}
-                @wa-select=${this._handleOperationModeChanged}
-                .options=${stateObj.attributes.operation_list
-                  .concat()
-                  .sort(compareWaterHeaterOperationMode)
-                  .map((mode) => ({
-                    value: mode,
-                    label: this._formatters.formatEntityState(stateObj, mode),
-                  }))}
-                .renderIcon=${this._renderOperationModeIcon}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiWaterBoiler}></ha-svg-icon>
-              </ha-control-select-menu>
-            `
-          : nothing}
-        ${supportAwayMode
-          ? html`
-              <ha-control-select-menu
-                .label=${this._formatters.formatEntityAttributeName(
-                  stateObj,
-                  "away_mode"
-                )}
-                .value=${stateObj.attributes.away_mode}
-                .disabled=${stateObj.state === UNAVAILABLE}
-                @wa-select=${this._handleAwayModeChanged}
-                .options=${["on", "off"].map((mode) => ({
-                  value: mode,
-                  label: this._formatters.formatEntityAttributeValue(
+        ${
+          supportOperationMode && stateObj.attributes.operation_list
+            ? html`
+                <ha-control-select-menu
+                  .label=${this._localize("ui.card.water_heater.mode")}
+                  .value=${stateObj.state}
+                  .disabled=${stateObj.state === UNAVAILABLE}
+                  @wa-select=${this._handleOperationModeChanged}
+                  .options=${stateObj.attributes.operation_list
+                    .concat()
+                    .sort(compareWaterHeaterOperationMode)
+                    .map((mode) => ({
+                      value: mode,
+                      label: this._formatters.formatEntityState(stateObj, mode),
+                    }))}
+                  .renderIcon=${this._renderOperationModeIcon}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiWaterBoiler}
+                  ></ha-svg-icon>
+                </ha-control-select-menu>
+              `
+            : nothing
+        }
+        ${
+          supportAwayMode
+            ? html`
+                <ha-control-select-menu
+                  .label=${this._formatters.formatEntityAttributeName(
                     stateObj,
-                    "away_mode",
-                    mode
-                  ),
-                  iconPath: mode === "on" ? mdiAccountArrowRight : mdiAccount,
-                }))}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
-              </ha-control-select-menu>
-            `
-          : nothing}
+                    "away_mode"
+                  )}
+                  .value=${stateObj.attributes.away_mode}
+                  .disabled=${stateObj.state === UNAVAILABLE}
+                  @wa-select=${this._handleAwayModeChanged}
+                  .options=${["on", "off"].map((mode) => ({
+                    value: mode,
+                    label: this._formatters.formatEntityAttributeValue(
+                      stateObj,
+                      "away_mode",
+                      mode
+                    ),
+                    iconPath: mode === "on" ? mdiAccountArrowRight : mdiAccount,
+                  }))}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiAccount}></ha-svg-icon>
+                </ha-control-select-menu>
+              `
+            : nothing
+        }
       </ha-more-info-control-select-container>
     `;
   }

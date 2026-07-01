@@ -58,9 +58,10 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
         class="error"
         @click=${this._viewDetail}
         type="button"
-        .label=${this.hass?.localize(
-          "ui.panel.lovelace.editor.error_section.title"
-        ) ?? ""}
+        .label=${
+          this.hass?.localize("ui.panel.lovelace.editor.error_section.title") ??
+          ""
+        }
       >
         <ha-svg-icon slot="icon" .path=${mdiAlertCircle}></ha-svg-icon>
         <div class="content">${this._config.error}</div>

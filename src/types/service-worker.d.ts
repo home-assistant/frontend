@@ -32,8 +32,7 @@ interface ServiceWorkerContainer {
   readonly controller: ServiceWorker;
   readonly ready: Promise<ServiceWorkerRegistration>;
   oncontrollerchange:
-    | ((this: ServiceWorkerContainer, event: Event) => any)
-    | null;
+    ((this: ServiceWorkerContainer, event: Event) => any) | null;
   onerror: ((this: ServiceWorkerContainer, event?: Event) => any) | null;
   onmessage:
     | ((this: ServiceWorkerContainer, event: ServiceWorkerMessageEvent) => any)

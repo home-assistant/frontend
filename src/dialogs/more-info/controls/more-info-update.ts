@@ -139,8 +139,7 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _computeCreateBackupTexts():
-    | { title: string; description?: string }
-    | undefined {
+    { title: string; description?: string } | undefined {
     if (
       !this.stateObj ||
       !supportsFeature(this.stateObj, UpdateEntityFeature.BACKUP)
@@ -237,19 +236,23 @@ class MoreInfoUpdate extends LitElement {
     return html`
       <div class="content">
         <div class="summary">
-          ${this.stateObj.attributes.in_progress
-            ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
-              this.stateObj.attributes.update_percentage !== null
-              ? html`<ha-progress-bar
-                  loading
-                  .value=${this.stateObj.attributes.update_percentage}
-                ></ha-progress-bar>`
-              : html`<ha-progress-bar indeterminate></ha-progress-bar>`
-            : nothing}
+          ${
+            this.stateObj.attributes.in_progress
+              ? supportsFeature(this.stateObj, UpdateEntityFeature.PROGRESS) &&
+                this.stateObj.attributes.update_percentage !== null
+                ? html`<ha-progress-bar
+                    loading
+                    .value=${this.stateObj.attributes.update_percentage}
+                  ></ha-progress-bar>`
+                : html`<ha-progress-bar indeterminate></ha-progress-bar>`
+              : nothing
+          }
           <h3>${this.stateObj.attributes.title}</h3>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
           <div class="row">
             <div class="key">
               ${this._formatters.formatEntityAttributeName(
@@ -258,8 +261,10 @@ class MoreInfoUpdate extends LitElement {
               )}
             </div>
             <div class="value">
-              ${this.stateObj.attributes.installed_version ??
-              this._localize("state.default.unavailable")}
+              ${
+                this.stateObj.attributes.installed_version ??
+                this._localize("state.default.unavailable")
+              }
             </div>
           </div>
           <div class="row">
@@ -270,115 +275,131 @@ class MoreInfoUpdate extends LitElement {
               )}
             </div>
             <div class="value">
-              ${this.stateObj.attributes.latest_version ??
-              this._localize("state.default.unavailable")}
+              ${
+                this.stateObj.attributes.latest_version ??
+                this._localize("state.default.unavailable")
+              }
             </div>
           </div>
 
-          ${this.stateObj.attributes.release_url
-            ? html`<div class="row">
-                <div class="key">
-                  <a
-                    href=${this.stateObj.attributes.release_url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this._localize(
-                      "ui.dialogs.more_info_control.update.release_announcement"
-                    )}
-                  </a>
-                </div>
-              </div>`
-            : nothing}
+          ${
+            this.stateObj.attributes.release_url
+              ? html`<div class="row">
+                  <div class="key">
+                    <a
+                      href=${this.stateObj.attributes.release_url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this._localize(
+                        "ui.dialogs.more_info_control.update.release_announcement"
+                      )}
+                    </a>
+                  </div>
+                </div>`
+              : nothing
+          }
         </div>
-        ${supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
-        !this._error
-          ? this._releaseNotes === undefined
-            ? html`
-                <hr />
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
-            : this._releaseNotes
+        ${
+          supportsFeature(this.stateObj!, UpdateEntityFeature.RELEASE_NOTES) &&
+          !this._error
+            ? this._releaseNotes === undefined
+              ? html`
+                  <hr />
+                  ${this._markdownLoading ? this._renderLoader() : nothing}
+                `
+              : this._releaseNotes
+                ? html`
+                    <hr />
+                    <ha-markdown
+                      @content-resize=${this._markdownLoaded}
+                      .content=${this._releaseNotes}
+                      class=${this._markdownLoading ? "hidden" : ""}
+                    ></ha-markdown>
+                    ${this._markdownLoading ? this._renderLoader() : nothing}
+                  `
+                : nothing
+            : this.stateObj.attributes.release_summary
               ? html`
                   <hr />
                   <ha-markdown
                     @content-resize=${this._markdownLoaded}
-                    .content=${this._releaseNotes}
+                    .content=${this.stateObj.attributes.release_summary}
                     class=${this._markdownLoading ? "hidden" : ""}
                   ></ha-markdown>
                   ${this._markdownLoading ? this._renderLoader() : nothing}
                 `
               : nothing
-          : this.stateObj.attributes.release_summary
-            ? html`
-                <hr />
-                <ha-markdown
-                  @content-resize=${this._markdownLoaded}
-                  .content=${this.stateObj.attributes.release_summary}
-                  class=${this._markdownLoading ? "hidden" : ""}
-                ></ha-markdown>
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
-            : nothing}
+        }
       </div>
       <div class="footer">
-        ${createBackupTexts
-          ? html`
-              <ha-row-item>
-                <span slot="headline">${createBackupTexts.title}</span>
-                ${createBackupTexts.description
-                  ? html`
-                      <span slot="supporting-text">
-                        ${createBackupTexts.description}
-                      </span>
-                    `
-                  : nothing}
-                <ha-switch
-                  slot="end"
-                  .checked=${this._createBackup}
-                  @change=${this._createBackupChanged}
-                  .disabled=${updateIsInstalling(this.stateObj)}
-                ></ha-switch>
-              </ha-row-item>
-            `
-          : nothing}
+        ${
+          createBackupTexts
+            ? html`
+                <ha-row-item>
+                  <span slot="headline">${createBackupTexts.title}</span>
+                  ${
+                    createBackupTexts.description
+                      ? html`
+                          <span slot="supporting-text">
+                            ${createBackupTexts.description}
+                          </span>
+                        `
+                      : nothing
+                  }
+                  <ha-switch
+                    slot="end"
+                    .checked=${this._createBackup}
+                    @change=${this._createBackupChanged}
+                    .disabled=${updateIsInstalling(this.stateObj)}
+                  ></ha-switch>
+                </ha-row-item>
+              `
+            : nothing
+        }
         <div class="actions">
-          ${this.stateObj.state === BINARY_STATE_OFF &&
-          this.stateObj.attributes.skipped_version
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._handleClearSkipped}
-                >
-                  ${this._localize(
-                    "ui.dialogs.more_info_control.update.clear_skipped"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._handleSkip}
-                  .disabled=${latestVersionIsSkipped(this.stateObj) ||
-                  this.stateObj.state === BINARY_STATE_OFF ||
-                  updateIsInstalling(this.stateObj)}
-                >
-                  ${this._localize("ui.dialogs.more_info_control.update.skip")}
-                </ha-button>
-              `}
-          ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
-            ? html`
-                <ha-button
-                  @click=${this._handleInstall}
-                  .loading=${updateIsInstalling(this.stateObj)}
-                  .disabled=${updateButtonIsDisabled(this.stateObj)}
-                >
-                  ${this._localize(
-                    "ui.dialogs.more_info_control.update.update"
-                  )}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this.stateObj.state === BINARY_STATE_OFF &&
+            this.stateObj.attributes.skipped_version
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._handleClearSkipped}
+                  >
+                    ${this._localize(
+                      "ui.dialogs.more_info_control.update.clear_skipped"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._handleSkip}
+                    .disabled=${
+                      latestVersionIsSkipped(this.stateObj) ||
+                      this.stateObj.state === BINARY_STATE_OFF ||
+                      updateIsInstalling(this.stateObj)
+                    }
+                  >
+                    ${this._localize("ui.dialogs.more_info_control.update.skip")}
+                  </ha-button>
+                `
+          }
+          ${
+            supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
+              ? html`
+                  <ha-button
+                    @click=${this._handleInstall}
+                    .loading=${updateIsInstalling(this.stateObj)}
+                    .disabled=${updateButtonIsDisabled(this.stateObj)}
+                  >
+                    ${this._localize(
+                      "ui.dialogs.more_info_control.update.update"
+                    )}
+                  </ha-button>
+                `
+              : nothing
+          }
         </div>
       </div>
     `;

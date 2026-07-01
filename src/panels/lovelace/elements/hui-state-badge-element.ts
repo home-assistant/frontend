@@ -87,16 +87,20 @@ export class HuiStateBadgeElement
     return html`
       <ha-state-label-badge
         .state=${stateObj}
-        .name=${this._config.name === undefined
-          ? computeStateName(stateObj)
-          : this._config.name === null
-            ? ""
-            : this._config.name}
-        .title=${this._config.title === undefined
-          ? computeStateName(stateObj)
-          : this._config.title === null
-            ? ""
-            : this._config.title}
+        .name=${
+          this._config.name === undefined
+            ? computeStateName(stateObj)
+            : this._config.name === null
+              ? ""
+              : this._config.name
+        }
+        .title=${
+          this._config.title === undefined
+            ? computeStateName(stateObj)
+            : this._config.title === null
+              ? ""
+              : this._config.title
+        }
         show-name
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

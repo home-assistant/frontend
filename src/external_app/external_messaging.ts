@@ -347,9 +347,7 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageKioskModeSet;
 
 type EMIncomingMessage =
-  | EMMessageResultSuccess
-  | EMMessageResultError
-  | EMIncomingMessageCommands;
+  EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
 
 type EMIncomingMessageHandler = (msg: EMIncomingMessageCommands) => boolean;
 
