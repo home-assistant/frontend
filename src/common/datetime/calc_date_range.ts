@@ -30,6 +30,9 @@ export type DateRange =
   | "now-365d"
   | "now-12m"
   | "now-1h"
+  | "now-2h"
+  | "now-4h"
+  | "now-8h"
   | "now-12h"
   | "now-24h";
 
@@ -111,6 +114,21 @@ export const calcDateRange = (
     case "now-1h":
       return [
         calcDate(today, subHours, locale, hassConfig, 1),
+        calcDate(today, subHours, locale, hassConfig, 0),
+      ];
+    case "now-2h":
+      return [
+        calcDate(today, subHours, locale, hassConfig, 2),
+        calcDate(today, subHours, locale, hassConfig, 0),
+      ];
+    case "now-4h":
+      return [
+        calcDate(today, subHours, locale, hassConfig, 4),
+        calcDate(today, subHours, locale, hassConfig, 0),
+      ];
+    case "now-8h":
+      return [
+        calcDate(today, subHours, locale, hassConfig, 8),
         calcDate(today, subHours, locale, hassConfig, 0),
       ];
     case "now-12h":
