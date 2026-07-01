@@ -171,7 +171,7 @@ class HaConfigRepairs extends LitElement {
       issue.translation_key &&
       STATISTIC_TYPES.includes(issue.translation_key as any)
     ) {
-      this.hass.loadFragmentTranslation("developer-tools");
+      this.hass.loadFragmentTranslation("config");
       const data = await fetchRepairsIssueData(
         this.hass.connection,
         issue.domain,
