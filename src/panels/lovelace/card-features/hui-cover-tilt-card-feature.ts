@@ -1,11 +1,19 @@
+import { consume } from "@lit/context";
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
+import { apiContext } from "../../../data/context";
 import {
   CoverEntityFeature,
   canCloseTilt,
@@ -13,13 +21,22 @@ import {
   canStopTilt,
   type CoverEntity,
 } from "../../../data/cover";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   CoverTiltCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsCoverTiltCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "cover" &&
+    (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
+      supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT))
+  );
+};
 
 export const supportsCoverTiltCardFeature = (
   hass: HomeAssistant,
@@ -29,12 +46,7 @@ export const supportsCoverTiltCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "cover" &&
-    (supportsFeature(stateObj, CoverEntityFeature.OPEN_TILT) ||
-      supportsFeature(stateObj, CoverEntityFeature.CLOSE_TILT))
-  );
+  return supportsCoverTiltCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-cover-tilt-card-feature")
@@ -42,18 +54,21 @@ class HuiCoverTiltCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: CoverTiltCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: CoverEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as CoverEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state() private _config?: CoverTiltCardFeatureConfig;
 
   static getStubConfig(): CoverTiltCardFeatureConfig {
     return {
@@ -70,21 +85,21 @@ class HuiCoverTiltCardFeature
 
   private _onOpenTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "open_cover_tilt", {
+    this._api.callService("cover", "open_cover_tilt", {
       entity_id: this._stateObj!.entity_id,
     });
   }
 
   private _onCloseTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "close_cover_tilt", {
+    this._api.callService("cover", "close_cover_tilt", {
       entity_id: this._stateObj!.entity_id,
     });
   }
 
   private _onStopTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("cover", "stop_cover_tilt", {
+    this._api.callService("cover", "stop_cover_tilt", {
       entity_id: this._stateObj!.entity_id,
     });
   }
@@ -92,10 +107,9 @@ class HuiCoverTiltCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsCoverTiltCardFeature(this.hass, this.context)
+      !supportsCoverTiltCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -106,7 +120,7 @@ class HuiCoverTiltCardFeature
           supportsFeature(this._stateObj, CoverEntityFeature.OPEN_TILT)
             ? html`
                 <ha-control-button
-                  .label=${this.hass.localize("ui.card.cover.open_tilt_cover")}
+                  .label=${this._localize("ui.card.cover.open_tilt_cover")}
                   @click=${this._onOpenTap}
                   .disabled=${!canOpenTilt(this._stateObj)}
                 >
@@ -119,7 +133,7 @@ class HuiCoverTiltCardFeature
           supportsFeature(this._stateObj, CoverEntityFeature.STOP_TILT)
             ? html`
                 <ha-control-button
-                  .label=${this.hass.localize("ui.card.cover.stop_cover")}
+                  .label=${this._localize("ui.card.cover.stop_cover")}
                   @click=${this._onStopTap}
                   .disabled=${!canStopTilt(this._stateObj)}
                 >
@@ -132,7 +146,7 @@ class HuiCoverTiltCardFeature
           supportsFeature(this._stateObj, CoverEntityFeature.CLOSE_TILT)
             ? html`
                 <ha-control-button
-                  .label=${this.hass.localize("ui.card.cover.close_tilt_cover")}
+                  .label=${this._localize("ui.card.cover.close_tilt_cover")}
                   @click=${this._onCloseTap}
                   .disabled=${!canCloseTilt(this._stateObj)}
                 >

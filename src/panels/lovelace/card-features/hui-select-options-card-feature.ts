@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { InputSelectEntity } from "../../../data/input_select";
@@ -16,6 +17,11 @@ import type {
 
 type SelectOptionEntity = SelectEntity | InputSelectEntity;
 
+const supportsSelectOptionsCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "select" || domain === "input_select";
+};
+
 export const supportsSelectOptionsCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -24,8 +30,7 @@ export const supportsSelectOptionsCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "select" || domain === "input_select";
+  return supportsSelectOptionsCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-select-options-card-feature")
@@ -49,7 +54,7 @@ class HuiSelectOptionsCardFeature
   protected readonly _serviceAction = "select_option";
 
   protected get _label(): string {
-    return this.hass!.localize("ui.card.select.option");
+    return this._localize("ui.card.select.option");
   }
 
   protected readonly _allowIconsStyle = false;
@@ -72,7 +77,7 @@ class HuiSelectOptionsCardFeature
   }
 
   protected _getOptions(): HuiModeSelectOption[] {
-    if (!this._stateObj || !this.hass) {
+    if (!this._stateObj) {
       return [];
     }
 
@@ -81,7 +86,7 @@ class HuiSelectOptionsCardFeature
       this._config?.options
     ).map((option) => ({
       value: option,
-      label: this.hass!.formatEntityState(this._stateObj!, option),
+      label: this._formatters.formatEntityState(this._stateObj!, option),
     }));
   }
 
@@ -98,9 +103,8 @@ class HuiSelectOptionsCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsSelectOptionsCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsSelectOptionsCardFeatureFromState(this._stateObj)
     );
   }
 }

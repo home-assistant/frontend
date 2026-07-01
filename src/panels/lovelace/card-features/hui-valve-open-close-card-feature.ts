@@ -1,15 +1,23 @@
+import { consume } from "@lit/context";
 import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-switch";
 import "../../../components/ha-svg-icon";
+import { apiContext } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import {
   canClose,
@@ -18,13 +26,22 @@ import {
   ValveEntityFeature,
   type ValveEntity,
 } from "../../../data/valve";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
   ValveOpenCloseCardFeatureConfig,
 } from "./types";
+
+const supportsValveOpenCloseCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "valve" &&
+    (supportsFeature(stateObj, ValveEntityFeature.OPEN) ||
+      supportsFeature(stateObj, ValveEntityFeature.CLOSE))
+  );
+};
 
 export const supportsValveOpenCloseCardFeature = (
   hass: HomeAssistant,
@@ -34,12 +51,7 @@ export const supportsValveOpenCloseCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "valve" &&
-    (supportsFeature(stateObj, ValveEntityFeature.OPEN) ||
-      supportsFeature(stateObj, ValveEntityFeature.CLOSE))
-  );
+  return supportsValveOpenCloseCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-valve-open-close-card-feature")
@@ -47,18 +59,21 @@ class HuiValveOpenCloseCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: ValveOpenCloseCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: ValveEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as ValveEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state() private _config?: ValveOpenCloseCardFeatureConfig;
 
   static getStubConfig(): ValveOpenCloseCardFeatureConfig {
     return {
@@ -74,13 +89,13 @@ class HuiValveOpenCloseCardFeature
   }
 
   private _onOpenValve(): void {
-    this.hass!.callService("valve", "open_valve", {
+    this._api.callService("valve", "open_valve", {
       entity_id: this._stateObj!.entity_id,
     });
   }
 
   private _onCloseValve(): void {
-    this.hass!.callService("valve", "close_valve", {
+    this._api.callService("valve", "close_valve", {
       entity_id: this._stateObj!.entity_id,
     });
   }
@@ -97,7 +112,7 @@ class HuiValveOpenCloseCardFeature
 
   private _onStopTap(ev): void {
     ev.stopPropagation();
-    this.hass!.callService("valve", "stop_valve", {
+    this._api.callService("valve", "stop_valve", {
       entity_id: this._stateObj!.entity_id,
     });
   }
@@ -116,10 +131,9 @@ class HuiValveOpenCloseCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsValveOpenCloseCardFeature(this.hass, this.context)
+      !supportsValveOpenCloseCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -146,7 +160,7 @@ class HuiValveOpenCloseCardFeature
             supportsFeature(this._stateObj, ValveEntityFeature.CLOSE)
               ? html`
                   <ha-control-button
-                    .label=${this.hass.localize("ui.card.valve.close_valve")}
+                    .label=${this._localize("ui.card.valve.close_valve")}
                     @click=${this._onCloseTap}
                     .disabled=${!canClose(this._stateObj)}
                     class=${classMap({
@@ -165,7 +179,7 @@ class HuiValveOpenCloseCardFeature
             supportsFeature(this._stateObj, ValveEntityFeature.STOP)
               ? html`
                   <ha-control-button
-                    .label=${this.hass.localize("ui.card.valve.stop_valve")}
+                    .label=${this._localize("ui.card.valve.stop_valve")}
                     @click=${this._onStopTap}
                     .disabled=${!canStop(this._stateObj)}
                   >
@@ -178,7 +192,7 @@ class HuiValveOpenCloseCardFeature
             supportsFeature(this._stateObj, ValveEntityFeature.OPEN)
               ? html`
                   <ha-control-button
-                    .label=${this.hass.localize("ui.card.valve.open_valve")}
+                    .label=${this._localize("ui.card.valve.open_valve")}
                     @click=${this._onOpenTap}
                     .disabled=${!canOpen(this._stateObj)}
                     class=${classMap({
@@ -203,7 +217,7 @@ class HuiValveOpenCloseCardFeature
         .pathOff=${closedIcon}
         .checked=${isOpen}
         @change=${this._valueChanged}
-        .label=${this.hass.localize("ui.card.common.toggle")}
+        .label=${this._localize("ui.card.common.toggle")}
         .disabled=${this._stateObj.state === UNAVAILABLE}
       >
       </ha-control-switch>

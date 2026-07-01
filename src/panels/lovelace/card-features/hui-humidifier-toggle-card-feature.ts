@@ -1,25 +1,42 @@
+import { consume } from "@lit/context";
 import { mdiPower, mdiWaterPercent } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { stateColorCss } from "../../../common/entity/state_color";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
+import { apiContext, formattersContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   HumidifierEntity,
   HumidifierState,
 } from "../../../data/humidifier";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   HumidifierToggleCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsHumidifierToggleCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "humidifier";
+};
 
 export const supportsHumidifierToggleCardFeature = (
   hass: HomeAssistant,
@@ -29,8 +46,7 @@ export const supportsHumidifierToggleCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "humidifier";
+  return supportsHumidifierToggleCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-humidifier-toggle-card-feature")
@@ -38,21 +54,27 @@ class HuiHumidifierToggleCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HumidifierEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
 
   @state() private _config?: HumidifierToggleCardFeatureConfig;
 
   @state() _currentState?: HumidifierState;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      HumidifierEntity | undefined;
-  }
 
   static getStubConfig(): HumidifierToggleCardFeatureConfig {
     return {
@@ -67,17 +89,10 @@ class HuiHumidifierToggleCardFeature
     this._config = config;
   }
 
-  protected willUpdate(changedProp: PropertyValues<this>): void {
+  protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (
-      (changedProp.has("hass") || changedProp.has("context")) &&
-      this._stateObj
-    ) {
-      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context!.entity_id!];
-      if (oldStateObj !== this._stateObj) {
-        this._currentState = this._stateObj.state as HumidifierState;
-      }
+    if (changedProp.has("_stateObj") && this._stateObj) {
+      this._currentState = this._stateObj.state as HumidifierState;
     }
   }
 
@@ -99,7 +114,7 @@ class HuiHumidifierToggleCardFeature
   }
 
   private async _setState(newState: HumidifierState) {
-    await this.hass!.callService(
+    await this._api.callService(
       "humidifier",
       newState === "on" ? "turn_on" : "turn_off",
       {
@@ -111,10 +126,9 @@ class HuiHumidifierToggleCardFeature
   protected render(): TemplateResult | null {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsHumidifierToggleCardFeature(this.hass, this.context)
+      !supportsHumidifierToggleCardFeatureFromState(this._stateObj)
     ) {
       return null;
     }
@@ -123,7 +137,7 @@ class HuiHumidifierToggleCardFeature
 
     const options = ["off", "on"].map<ControlSelectOption>((entityState) => ({
       value: entityState,
-      label: this.hass!.formatEntityState(this._stateObj!, entityState),
+      label: this._formatters.formatEntityState(this._stateObj!, entityState),
       path: entityState === "on" ? mdiWaterPercent : mdiPower,
     }));
 
@@ -133,7 +147,7 @@ class HuiHumidifierToggleCardFeature
         .value=${this._currentState}
         @value-changed=${this._valueChanged}
         hide-option-label
-        .label=${this.hass.localize("ui.card.humidifier.state")}
+        .label=${this._localize("ui.card.humidifier.state")}
         style=${styleMap({
           "--control-select-color": color,
         })}

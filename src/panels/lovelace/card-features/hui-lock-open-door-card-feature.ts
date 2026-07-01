@@ -1,24 +1,37 @@
+import { consume } from "@lit/context";
 import { mdiCheck } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import { apiContext } from "../../../data/context";
 import {
   callProtectedLockService,
   canOpen,
   LockEntityFeature,
   type LockEntity,
 } from "../../../data/lock";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LockOpenDoorCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsLockOpenDoorCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "lock" && supportsFeature(stateObj, LockEntityFeature.OPEN);
+};
 
 export const supportsLockOpenDoorCardFeature = (
   hass: HomeAssistant,
@@ -28,8 +41,7 @@ export const supportsLockOpenDoorCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "lock" && supportsFeature(stateObj, LockEntityFeature.OPEN);
+  return supportsLockOpenDoorCardFeatureFromState(stateObj);
 };
 
 const CONFIRM_TIMEOUT_SECOND = 5;
@@ -42,22 +54,25 @@ class HuiLockOpenDoorCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: LockEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @state() public _buttonState: ButtonState = "normal";
 
   @state() private _config?: LockOpenDoorCardFeatureConfig;
 
   private _buttonTimeout?: number;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as LockEntity | undefined;
-  }
 
   static getStubConfig(): LockOpenDoorCardFeatureConfig {
     return {
@@ -87,10 +102,19 @@ class HuiLockOpenDoorCardFeature
       this._setButtonState("confirm", CONFIRM_TIMEOUT_SECOND);
       return;
     }
-    if (!this.hass || !this._stateObj) {
+    if (!this._stateObj) {
       return;
     }
-    callProtectedLockService(this, this.hass, this._stateObj!, "open");
+    callProtectedLockService(
+      this,
+      {
+        callService: this._api.callService,
+        callWS: this._api.callWS,
+        localize: this._localize,
+      },
+      this._stateObj,
+      "open"
+    );
 
     this._setButtonState("done", DONE_TIMEOUT_SECOND);
   }
@@ -98,10 +122,9 @@ class HuiLockOpenDoorCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsLockOpenDoorCardFeature(this.hass, this.context)
+      !supportsLockOpenDoorCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -112,7 +135,7 @@ class HuiLockOpenDoorCardFeature
           ? html`
               <p class="open-done">
                 <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-                ${this.hass.localize("ui.card.lock.open_door_done")}
+                ${this._localize("ui.card.lock.open_door_done")}
               </p>
             `
           : html`
@@ -124,8 +147,8 @@ class HuiLockOpenDoorCardFeature
                 >
                   ${
                     this._buttonState === "confirm"
-                      ? this.hass.localize("ui.card.lock.open_door_confirm")
-                      : this.hass.localize("ui.card.lock.open_door")
+                      ? this._localize("ui.card.lock.open_door_confirm")
+                      : this._localize("ui.card.lock.open_door")
                   }
                 </ha-control-button>
               </ha-control-button-group>
