@@ -54,7 +54,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-voice-assistants";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-state-icon";
+import "../../../components/ha-entity-id-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { getSignedPath } from "../../../data/auth";
@@ -355,9 +355,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         moveable: false,
         template: (helper) =>
           helper.entity
-            ? html`<ha-state-icon
+            ? html`<ha-entity-id-icon
                 .entityId=${helper.entity_id}
-              ></ha-state-icon>`
+                state-title
+              ></ha-entity-id-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
                 style="color: var(--error-color)"

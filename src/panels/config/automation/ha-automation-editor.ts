@@ -170,6 +170,32 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     }
   }
 
+  private _renderDeprecatedMigratedAlert(): TemplateResult | typeof nothing {
+    if (!this.deprecatedConfigMigrated || this.readOnly) {
+      return nothing;
+    }
+    return html`<ha-alert
+      alert-type="warning"
+      .title=${this.hass.localize(
+        "ui.panel.config.automation.editor.deprecated_migrated.title"
+      )}
+    >
+      ${this.hass.localize(
+        "ui.panel.config.automation.editor.deprecated_migrated.description"
+      )}
+      <ha-button
+        appearance="filled"
+        size="s"
+        variant="warning"
+        slot="action"
+        .disabled=${this.saving}
+        @click=${this._handleSaveAutomation}
+      >
+        ${this.hass.localize("ui.common.save")}
+      </ha-button>
+    </ha-alert>`;
+  }
+
   protected render(): TemplateResult | typeof nothing {
     if (!this.config) {
       return this.renderLoading();
@@ -443,6 +469,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           @editor-save=${this._handleSaveAutomation}
                         >
                           <div class="alert-wrapper" slot="alerts">
+                            ${this._renderDeprecatedMigratedAlert()}
                             ${this.errors || stateObj?.state === UNAVAILABLE
                               ? html`<ha-alert
                                   alert-type="error"
@@ -527,7 +554,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 </div>
               `
             : this.mode === "yaml"
-              ? html`${stateObj?.state === "off"
+              ? html`${this._renderDeprecatedMigratedAlert()}
+                  ${stateObj?.state === "off"
                     ? html`
                         <ha-alert alert-type="info">
                           ${this.hass.localize(
@@ -1013,6 +1041,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       }
 
       this._markDirtyStateClean();
+      this.deprecatedConfigMigrated = false;
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
       showEditorToast(this, {

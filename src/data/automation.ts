@@ -416,12 +416,22 @@ export const saveAutomationConfig = (
   config: AutomationConfig
 ) => hass.callApi<undefined>("POST", `config/automation/config/${id}`, config);
 
+/**
+ * Accumulates whether a deprecated config option was migrated while
+ * normalizing an automation or script config. Used to surface an alert
+ * offering to save the migrated configuration.
+ */
+export interface AutomationMigrationReport {
+  deprecated: boolean;
+}
+
 export const normalizeAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,
 >(
-  config: T
+  config: T,
+  report?: AutomationMigrationReport
 ): T => {
-  config = migrateAutomationConfig(config);
+  config = migrateAutomationConfig(config, report);
 
   // Normalize data: ensure triggers, actions and conditions are lists
   // Happens when people copy paste their automations into the config
@@ -438,7 +448,8 @@ export const normalizeAutomationConfig = <
 export const migrateAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,
 >(
-  config: T
+  config: T,
+  report?: AutomationMigrationReport
 ) => {
   if ("trigger" in config) {
     if (!("triggers" in config)) {
@@ -460,29 +471,30 @@ export const migrateAutomationConfig = <
   }
 
   if (config.triggers) {
-    config.triggers = migrateAutomationTrigger(config.triggers);
+    config.triggers = migrateAutomationTrigger(config.triggers, report);
   }
 
   if (config.actions) {
-    config.actions = migrateAutomationAction(config.actions);
+    config.actions = migrateAutomationAction(config.actions, report);
   }
 
   return config;
 };
 
 export const migrateAutomationTrigger = (
-  trigger: Trigger | Trigger[]
+  trigger: Trigger | Trigger[],
+  report?: AutomationMigrationReport
 ): Trigger | Trigger[] => {
   if (!trigger) {
     return trigger;
   }
 
   if (Array.isArray(trigger)) {
-    return trigger.map(migrateAutomationTrigger) as Trigger[];
+    return trigger.map((t) => migrateAutomationTrigger(t, report)) as Trigger[];
   }
 
   if ("triggers" in trigger && trigger.triggers) {
-    trigger.triggers = migrateAutomationTrigger(trigger.triggers);
+    trigger.triggers = migrateAutomationTrigger(trigger.triggers, report);
   }
 
   if ("platform" in trigger) {
@@ -495,10 +507,18 @@ export const migrateAutomationTrigger = (
 
   if ("options" in trigger) {
     if (trigger.options && "behavior" in trigger.options) {
+      // Deprecated behavior values renamed in 2026; the backend raises a repair
+      // when they are still used, so flag the migration to offer saving.
       if (trigger.options.behavior === "any") {
         trigger.options.behavior = "each";
+        if (report) {
+          report.deprecated = true;
+        }
       } else if (trigger.options.behavior === "last") {
         trigger.options.behavior = "all";
+        if (report) {
+          report.deprecated = true;
+        }
       }
     }
   }
