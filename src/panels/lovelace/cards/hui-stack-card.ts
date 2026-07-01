@@ -68,9 +68,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         this._cards.forEach((card) => {
           card.hass = this.hass;
         });
-        if (this._errorCard) {
-          this._errorCard.hass = this.hass;
-        }
       }
       if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
