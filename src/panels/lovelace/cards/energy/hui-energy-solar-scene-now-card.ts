@@ -20,6 +20,7 @@ import {
   getEnergyDataCollection,
   getPowerFromState,
 } from "../../../../data/energy";
+import { hasLocation } from "../../../energy/strategies/energy-cards";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { formatNumber } from "../../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../../common/translations/blank_before_unit";
@@ -402,16 +403,6 @@ function livePowerEqual(a: LivePower, b?: LivePower): boolean {
   );
 }
 
-// A home location is configured when both coordinates are finite and not the meaningless (0, 0) origin.
-// Without one the card renders nothing rather than falling back to a guessed default position.
-function hasLocation(latitude: number, longitude: number): boolean {
-  return (
-    Number.isFinite(latitude) &&
-    Number.isFinite(longitude) &&
-    !(latitude === 0 && longitude === 0)
-  );
-}
-
 @customElement("hui-energy-solar-scene-now-card")
 export class HuiEnergySolarSceneNowCard
   extends SubscribeMixin(LitElement)
@@ -601,8 +592,8 @@ export class HuiEnergySolarSceneNowCard
     // No card without a configured home location (see hasLocation): render() returns nothing and we skip
     // the build, so nothing is ever placed at a guessed default position. Left unbuilt so a location set
     // later still builds.
+    if (!hasLocation(this.hass)) return;
     const { latitude, longitude } = this.hass.config;
-    if (!hasLocation(latitude, longitude)) return;
     this._built = true;
     // Live basemap whenever the browser is online.
     this._liveMap = navigator.onLine;
@@ -612,7 +603,8 @@ export class HuiEnergySolarSceneNowCard
     this._bearing = latitude < 0 ? 0 : DEFAULT_BEARING;
     const zoom = GROUND_ZOOM;
     this._pxPerMetre =
-      (TILE_PX * 2 ** zoom) / (EARTH_CIRCUMFERENCE_M * Math.cos(latitude * DEG));
+      (TILE_PX * 2 ** zoom) /
+      (EARTH_CIRCUMFERENCE_M * Math.cos(latitude * DEG));
     this._buildGround(latitude, longitude, zoom);
     this._buildHome();
   }
@@ -1621,11 +1613,7 @@ export class HuiEnergySolarSceneNowCard
   }
 
   protected render() {
-    if (
-      !this._config ||
-      !this.hass ||
-      !hasLocation(this.hass.config.latitude, this.hass.config.longitude)
-    ) {
+    if (!this._config || !this.hass || !hasLocation(this.hass)) {
       return nothing;
     }
     return html`

@@ -4,6 +4,7 @@ import type {
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
+import type { HomeAssistant } from "../../../types";
 
 /** Strategy config shared by the per-view energy strategies. */
 export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
@@ -45,6 +46,16 @@ export const hasSolarPower = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some(
     (source) => source.type === "solar" && !!source.stat_rate
   );
+
+/** A home location is configured when both coordinates are finite and not the meaningless (0, 0) origin. */
+export const hasLocation = (hass: HomeAssistant): boolean => {
+  const { latitude, longitude } = hass.config;
+  return (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    !(latitude === 0 && longitude === 0)
+  );
+};
 
 export const hasBattery = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "battery");
