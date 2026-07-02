@@ -145,6 +145,41 @@ test.describe("App shell", () => {
     ).toBeAttached({ timeout: PANEL_TIMEOUT });
   });
 
+  test("sidebar renders notification badge", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    const notificationsLink = sidebar.locator("#sidebar-notifications");
+    await expect(notificationsLink).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(notificationsLink.locator(".badge").first()).toHaveText("1", {
+      timeout: SHELL_TIMEOUT,
+    });
+  });
+
+  test("sidebar marks the active panel as selected", async ({ page }) => {
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    const lovelaceLink = sidebar.locator("#sidebar-panel-lovelace");
+    const historyLink = sidebar.locator("#sidebar-panel-history");
+
+    await goToPanel(page, "/lovelace");
+    await expect(lovelaceLink).toHaveClass(/selected/, {
+      timeout: SHELL_TIMEOUT,
+    });
+    await expect(historyLink).not.toHaveClass(/selected/);
+
+    await goToPanel(page, "/history");
+    await expect(historyLink).toHaveClass(/selected/, {
+      timeout: SHELL_TIMEOUT,
+    });
+    await expect(lovelaceLink).not.toHaveClass(/selected/);
+  });
+
   test("non-admin user does NOT see config panel in sidebar", async ({
     page,
   }) => {
