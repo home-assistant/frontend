@@ -195,7 +195,7 @@ export class HaPlatformCondition extends LitElement {
                   this._manifest.is_built_in
                     ? documentationUrl(
                         this.hass,
-                        `/integrations/${this._manifest.domain}`
+                        `/conditions/${this.condition.condition}`
                       )
                     : this._manifest.documentation
                 }

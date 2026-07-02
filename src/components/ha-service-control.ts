@@ -525,10 +525,10 @@ export class HaServiceControl extends LitElement {
                 this._manifest
                   ? html` <a
                       href=${
-                        this._manifest.is_built_in
+                        this._manifest.is_built_in && this._value?.action
                           ? documentationUrl(
                               this.hass,
-                              `/integrations/${this._manifest.domain}`
+                              `/actions/${this._value.action}`
                             )
                           : this._manifest.documentation
                       }
