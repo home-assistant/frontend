@@ -25,8 +25,8 @@ yarn lint          # ESLint + Prettier + TypeScript + Lit
 yarn format        # Auto-fix ESLint + Prettier
 yarn lint:types    # TypeScript compiler (run WITHOUT file arguments)
 yarn test          # Vitest
-yarn dev           # Development server
-yarn dev:serve     # Development server with serve
+yarn dev           # Dev server (app; --background/--status/--stop/--logs)
+yarn dev:serve     # Dev server with serve (-c core URL, -p port; --background/--status/--stop/--logs)
 ```
 
 > **WARNING:** Never run `tsc` or `yarn lint:types` with file arguments (e.g., `yarn lint:types src/file.ts`). When `tsc` receives file arguments, it ignores `tsconfig.json` and emits `.js` files into `src/`, polluting the codebase. Always run `yarn lint:types` without arguments. For individual file type checking, rely on IDE diagnostics. If `.js` files are accidentally generated, clean up with `git clean -fd src/`.
@@ -496,9 +496,15 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 4. **Test**: `yarn test` - Add and run tests
 5. **Build**: `script/build_frontend` - Test production build
 
+### Dev servers
+
+`yarn dev` builds and watches the app, served by a running Home Assistant core (`development_repo` setting). `yarn dev:serve` also serves it locally (`-c` core URL, `-p` port, default 8124).
+
+These and the e2e dev servers below take `--background`, `--status`, `--stop`, and `--logs [--follow]`.
+
 ### End-to-end (e2e) tests
 
-The e2e suites run with Playwright, each on its own port. Each suite has a matching dev server, and you must start it first. Playwright reuses a dev server that is already listening on the suite's port (`reuseExistingServer` locally) and starts testing right away; if none is running it falls back to a slow full production build. The rspack watcher recompiles on save, so once a server is up you can re-run the suite without restarting it.
+Each Playwright suite has a dev server on its own port. Playwright reuses a server already on the port (`reuseExistingServer` locally); otherwise it does a slow full build. The rspack watcher recompiles on save, so re-runs need no restart.
 
 Start the suite's dev server, then run the suite:
 
@@ -506,13 +512,9 @@ Start the suite's dev server, then run the suite:
 - **Demo** (8090): `yarn dev:demo`, then `yarn test:e2e:demo`
 - **Gallery** (8100): `yarn dev:gallery`, then `yarn test:e2e:gallery`
 
-Each of these dev-server commands runs in the foreground. For unattended or agent use, append `--background`: it waits until the server is serving, prints the URL and pid, then detaches so you can run the suite in the same shell. When a coding agent is detected (via environment markers), `--background` turns on automatically; set `HA_DEV_BACKGROUND=0` to force foreground. Manage the detached server with `--status`, `--stop`, and `--logs` (for example `yarn dev:demo --stop`). Reuse and stop key off a `/__ha_dev_status` health check, so a stray program on the same port is never mistaken for the dev server and starting or stopping twice is harmless.
+Server reuse and `--stop` key off a `/__ha_dev_status` health check, so starting or stopping twice is harmless. The app suite uses a stripped-down harness built only for e2e; demo and gallery use their normal dev servers.
 
-The app suite runs against a stripped-down harness app built only for e2e; demo and gallery run against their normal dev servers, so `yarn dev:demo` and `yarn dev:gallery` are thin wrappers around `demo/script/develop_demo` and `gallery/script/develop_gallery`.
-
-Add `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs all three.
-
-Run the suite directly; don't pipe it through `tail`/`head`, which hides Playwright's progress and truncates results.
+Add `-g "<title>" --project=chromium` to narrow a run; `yarn test:e2e` runs all three. Run the suite directly, since piping through `tail`/`head` hides progress and truncates results.
 
 ### Gallery
 

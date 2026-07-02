@@ -7,4 +7,4 @@ set -e
 
 cd "$(dirname "$0")/../../../.."
 
-exec node build-scripts/dev-server.mjs --suite app "$@"
+exec node build-scripts/dev-server.mjs --suite e2e-app "$@"

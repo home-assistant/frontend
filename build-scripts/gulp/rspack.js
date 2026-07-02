@@ -260,7 +260,7 @@ gulp.task("rspack-dev-server-e2e-test-app", () =>
     contentBase: paths.e2eTestApp_output_root,
     port: 8095,
     open: false,
-    suite: "app",
+    suite: "e2e-app",
   })
 );
 
