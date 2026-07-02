@@ -24,6 +24,7 @@ import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCompareTransform,
+  getPeriodMidpointOffset,
   splitUntrackedConsumption,
 } from "./common/energy-chart-options";
 import { getEnergyColor } from "./common/color";
@@ -237,12 +238,15 @@ function processUntracked(
   const sortedTimes = Object.keys(consumptionData.used_total).sort(
     (a, b) => Number(a) - Number(b)
   );
-  // Only start timestamps available here, so estimate midpoint from the gap
-  // between the first two entries. Assumes uniform period spacing.
+  // Only start timestamps available here, so center sub-daily bars using the
+  // gap between the first two entries. With a lone first-of-day bucket there is
+  // no gap to measure, so fall back to the nominal period midpoint — which
+  // matches the device bars' computeStatMidpoint instead of collapsing to the
+  // period start and splitting into a second stack.
   const periodOffset =
     (period === "hour" || period === "5minute") && sortedTimes.length >= 2
       ? (Number(sortedTimes[1]) - Number(sortedTimes[0])) / 2
-      : 0;
+      : getPeriodMidpointOffset(period);
   sortedTimes.forEach((time) => {
     const ts = Number(time);
     const x = compare
