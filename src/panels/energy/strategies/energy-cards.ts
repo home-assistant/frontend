@@ -103,7 +103,7 @@ export interface EnergyCardEntry {
   isApplicable: (prefs: EnergyPreferences) => boolean;
 }
 
-export const energyCardKey = (view: EnergyViewPath, cardType: string): string =>
+const energyCardKey = (view: EnergyViewPath, cardType: string): string =>
   `${view}.${cardType}`;
 
 const entry = (
@@ -307,8 +307,14 @@ const VIEW_DEFAULT_APPLICABILITY: Record<
   now: hasPowerSources,
 };
 
-const getExternalEnergyCards = (): EnergyCardEntry[] =>
-  energyCardRegistrations
+/**
+ * The full energy card catalog: built-in entries followed by any cards
+ * registered via `window.registerEnergyCard`. All entries share the
+ * `EnergyCardEntry` interface, so callers need no type guards.
+ */
+export const getEnergyCardCatalog = (): readonly EnergyCardEntry[] => [
+  ...ENERGY_CARD_CATALOG,
+  ...energyCardRegistrations
     .filter((r) => r.view in VIEW_DEFAULT_APPLICABILITY)
     .map((r) => {
       const view = r.view as EnergyViewPath;
@@ -322,16 +328,7 @@ const getExternalEnergyCards = (): EnergyCardEntry[] =>
             ((prefs: EnergyPreferences) => boolean) | undefined) ??
           VIEW_DEFAULT_APPLICABILITY[view],
       };
-    });
-
-/**
- * The full energy card catalog: built-in entries followed by any cards
- * registered via `window.registerEnergyCard`. All entries share the
- * `EnergyCardEntry` interface, so callers need no type guards.
- */
-export const getEnergyCardCatalog = (): readonly EnergyCardEntry[] => [
-  ...ENERGY_CARD_CATALOG,
-  ...getExternalEnergyCards(),
+    }),
 ];
 
 /**
@@ -345,14 +342,20 @@ export const getVisibleExternalCardConfigs = (
   hidden: string[] | undefined,
   collectionKey: string
 ): LovelaceCardConfig[] =>
-  getExternalEnergyCards()
-    .filter(
-      (e) =>
-        e.view === view && e.isApplicable(prefs) && !hidden?.includes(e.key)
-    )
-    .map((e) => ({
-      // key is "<view>.custom:<type>"; slice past the "<view>." prefix
-      type: e.key.slice(view.length + 1),
+  energyCardRegistrations
+    .filter((r) => {
+      if (r.view !== view) return false;
+      if (hidden?.includes(energyCardKey(view, `custom:${r.type}`))) {
+        return false;
+      }
+      const isApplicable =
+        (r.isApplicable as
+          ((prefs: EnergyPreferences) => boolean) | undefined) ??
+        VIEW_DEFAULT_APPLICABILITY[view];
+      return isApplicable(prefs);
+    })
+    .map((r) => ({
+      type: `custom:${r.type}`,
       collection_key: collectionKey,
       grid_options: { columns: 36 },
     }));
@@ -368,12 +371,6 @@ const energyCardEntry = (
   cardType: string
 ): EnergyCardEntry | undefined =>
   ENERGY_CARD_CATALOG_BY_KEY.get(energyCardKey(view, cardType));
-
-export const isEnergyCardHidden = (
-  view: EnergyViewPath,
-  cardType: string,
-  hidden: string[] | undefined
-): boolean => !!hidden?.includes(energyCardKey(view, cardType));
 
 /**
  * Single source of truth for whether a view strategy should emit a card: the
@@ -396,8 +393,7 @@ export const isEnergyCardVisible = (
   );
 };
 
-/** Keys of all catalog cards (built-in and external) that apply for a view. */
-export const applicableEnergyCardKeys = (
+const applicableEnergyCardKeys = (
   view: EnergyViewPath,
   prefs: EnergyPreferences
 ): string[] =>

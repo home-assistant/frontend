@@ -5,14 +5,11 @@ import type {
 } from "../../../../src/data/energy";
 import { energyCardRegistrations } from "../../../../src/data/lovelace_custom_cards";
 import {
-  applicableEnergyCardKeys,
-  energyCardKey,
   getEnergyCardCatalog,
   getVisibleExternalCardConfigs,
   hasEnergySource,
   hasGasRateSource,
   hasWaterRateSource,
-  isEnergyCardHidden,
   isEnergyCardVisible,
   isEnergyViewEmpty,
 } from "../../../../src/panels/energy/strategies/energy-cards";
@@ -48,49 +45,23 @@ const WATER_RATE = source({
   stat_rate: "sensor.water_rate",
 });
 
-describe("energyCardKey", () => {
-  it("joins the view path and card type", () => {
-    expect(energyCardKey("electricity", "energy-solar-graph")).toBe(
-      "electricity.energy-solar-graph"
-    );
-    expect(energyCardKey("now", "power-sankey")).toBe("now.power-sankey");
-  });
-});
-
-describe("isEnergyCardHidden", () => {
-  it("returns true only when the composite key is in the hidden list", () => {
-    const hidden = ["electricity.energy-solar-graph"];
-    expect(
-      isEnergyCardHidden("electricity", "energy-solar-graph", hidden)
-    ).toBe(true);
-    // Same card type in a different view is independent.
-    expect(isEnergyCardHidden("overview", "energy-solar-graph", hidden)).toBe(
-      false
-    );
-    expect(
-      isEnergyCardHidden("electricity", "energy-usage-graph", hidden)
-    ).toBe(false);
-  });
-
-  it("treats undefined/empty hidden lists as nothing hidden", () => {
-    expect(
-      isEnergyCardHidden("electricity", "energy-solar-graph", undefined)
-    ).toBe(false);
-    expect(isEnergyCardHidden("electricity", "energy-solar-graph", [])).toBe(
-      false
-    );
-  });
-});
-
 describe("catalog applicability", () => {
+  const applicableKeys = (
+    view: Parameters<typeof isEnergyCardVisible>[0],
+    prefs: Parameters<typeof isEnergyCardVisible>[2]
+  ) =>
+    getEnergyCardCatalog()
+      .filter((c) => c.view === view && c.isApplicable(prefs))
+      .map((c) => c.key);
+
   it("only lists cards relevant to the configured sources", () => {
     const gasOnly = makePrefs({ energy_sources: [GAS] });
-    expect(applicableEnergyCardKeys("gas", gasOnly)).toEqual([
+    expect(applicableKeys("gas", gasOnly)).toEqual([
       "gas.energy-gas-graph",
       "gas.energy-sources-table",
     ]);
     // No electricity sources -> no electricity cards apply.
-    expect(applicableEnergyCardKeys("electricity", gasOnly)).toEqual([]);
+    expect(applicableKeys("electricity", gasOnly)).toEqual([]);
   });
 
   it("gates the solar graph and gauges on their sources", () => {
@@ -389,8 +360,13 @@ describe("getVisibleExternalCardConfigs", () => {
   });
 });
 
-describe("applicableEnergyCardKeys with external cards", () => {
+describe("external card applicability", () => {
   const gasPrefs = makePrefs({ energy_sources: [GAS] });
+
+  const applicableKeys = (view: Parameters<typeof isEnergyCardVisible>[0]) =>
+    getEnergyCardCatalog()
+      .filter((c) => c.view === view && c.isApplicable(gasPrefs))
+      .map((c) => c.key);
 
   beforeEach(() => {
     energyCardRegistrations.splice(0);
@@ -401,9 +377,7 @@ describe("applicableEnergyCardKeys with external cards", () => {
 
   it("includes an external card key when it is applicable", () => {
     energyCardRegistrations.push({ type: "my-gas-card", view: "gas" });
-    expect(applicableEnergyCardKeys("gas", gasPrefs)).toContain(
-      "gas.custom:my-gas-card"
-    );
+    expect(applicableKeys("gas")).toContain("gas.custom:my-gas-card");
   });
 
   it("excludes an external card key when it is not applicable", () => {
@@ -412,9 +386,7 @@ describe("applicableEnergyCardKeys with external cards", () => {
       view: "gas",
       isApplicable: () => false,
     });
-    expect(applicableEnergyCardKeys("gas", gasPrefs)).not.toContain(
-      "gas.custom:never"
-    );
+    expect(applicableKeys("gas")).not.toContain("gas.custom:never");
   });
 });
 
@@ -436,7 +408,9 @@ describe("isEnergyViewEmpty with external cards", () => {
 
   it("is true when all cards including external are hidden", () => {
     energyCardRegistrations.push({ type: "extra", view: "gas" });
-    const allKeys = applicableEnergyCardKeys("gas", gasPrefs);
+    const allKeys = getEnergyCardCatalog()
+      .filter((c) => c.view === "gas" && c.isApplicable(gasPrefs))
+      .map((c) => c.key);
     expect(isEnergyViewEmpty("gas", gasPrefs, allKeys)).toBe(true);
   });
 });
