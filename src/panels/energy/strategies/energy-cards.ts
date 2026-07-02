@@ -25,9 +25,9 @@ export type EnergyViewPath =
 // --- Applicability helpers -------------------------------------------------
 // Source-shape predicates shared by the catalog entries below, the view
 // strategies (for view-level decisions and badges), and the dashboard
-// strategy. Card applicability itself lives in the catalog: strategies decide
-// whether to emit a card through `isEnergyCardVisible()`, so they never
-// re-derive these conditions inline and can never disagree with the catalog.
+// strategy. Card applicability itself lives in the catalog: strategies render
+// whatever `visibleEnergyCards()` returns, so they never re-derive these
+// conditions inline and can never disagree with the catalog.
 
 export const hasGridSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some(
@@ -594,11 +594,10 @@ const energyCardEntry = (
   ENERGY_CARD_CATALOG_BY_KEY.get(energyCardKey(view, cardType));
 
 /**
- * Single source of truth for whether a view strategy should emit a card: the
- * card must be in the catalog, apply to the current preferences, and not be
- * hidden by the user. Strategies call this instead of re-deriving the
- * applicability conditions inline, so the catalog and the strategies can never
- * disagree on what "applicable" means.
+ * Whether a single built-in card is visible: it must be in the catalog, apply
+ * to the current preferences, and not be hidden by the user. `visibleEnergyCards`
+ * is the batch equivalent used by the strategies; this predicate expresses the
+ * same rule for one `(view, cardType)` pair.
  */
 export const isEnergyCardVisible = (
   view: EnergyViewPath,
