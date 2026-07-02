@@ -89,6 +89,8 @@ export interface EnergyDataOptions {
   period?: "5minute" | "hour" | "day";
   compare?: boolean;
   prefs?: EnergyPreferences;
+  /** Probability a period is missing (creates gaps); 0 for a dense dataset. */
+  gapChance?: number;
 }
 
 const statisticIdsForPrefs = (prefs: EnergyPreferences): string[] => {
@@ -115,7 +117,7 @@ export const generateEnergyData = (
   seed: number,
   options: EnergyDataOptions
 ): EnergyData => {
-  const { days, period = "hour", compare = false } = options;
+  const { days, period = "hour", compare = false, gapChance } = options;
   const prefs = options.prefs ?? generateEnergyPreferences();
   const ids = statisticIdsForPrefs(prefs);
   const dayMs = 24 * 60 * 60 * 1000;
@@ -124,6 +126,7 @@ export const generateEnergyData = (
     ids,
     period,
     days,
+    gapChance,
     sumStatistics: true,
   });
   const statsCompare = compare
@@ -132,6 +135,7 @@ export const generateEnergyData = (
         period,
         days,
         startMs: FIXED_EPOCH_MS - days * dayMs,
+        gapChance,
         sumStatistics: true,
       })
     : ({} as EnergyData["statsCompare"]);

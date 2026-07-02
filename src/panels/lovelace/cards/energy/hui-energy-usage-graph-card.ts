@@ -39,6 +39,7 @@ import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
+  getPeriodMidpointOffset,
 } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
@@ -585,14 +586,15 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
-    // Only center bars for sub-daily periods (hour/5min).
-    // Only start timestamps available here, so estimate midpoint from the gap
-    // between the first two entries. Assumes uniform period spacing.
+    // Only center bars for sub-daily periods (hour/5min). Only start timestamps
+    // available here, so estimate midpoint from the gap between the first two
+    // entries; with a lone first-of-day bucket there is no gap to measure, so
+    // fall back to the nominal period midpoint so the bar stays centered.
     const period = getSuggestedPeriod(this._start, this._end);
     const periodOffset =
       (period === "hour" || period === "5minute") && uniqueKeys.length >= 2
         ? (uniqueKeys[1] - uniqueKeys[0]) / 2
-        : 0;
+        : getPeriodMidpointOffset(period);
 
     const compareTransform = getCompareTransform(
       this._start,
