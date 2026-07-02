@@ -4,15 +4,32 @@ import type {
   EnergySource,
 } from "../../../../src/data/energy";
 import { energyCardRegistrations } from "../../../../src/data/lovelace_custom_cards";
+import type { HomeAssistant } from "../../../../src/types";
 import {
   getEnergyCardCatalog,
-  getVisibleExternalCardConfigs,
   hasEnergySource,
   hasGasRateSource,
   hasWaterRateSource,
   isEnergyCardVisible,
   isEnergyViewEmpty,
+  visibleEnergyCards,
 } from "../../../../src/panels/energy/strategies/energy-cards";
+
+// visibleEnergyCards builds each card's config, so the built-in gas cards it
+// touches only need `localize`; no gas card is a sankey, so no other hass state
+// is read.
+const mockHass = { localize: (k: string) => k } as unknown as HomeAssistant;
+
+// The external (custom:) card configs a strategy would render for a view.
+const externalConfigs = (
+  view: Parameters<typeof visibleEnergyCards>[0],
+  prefs: EnergyPreferences,
+  hidden: string[] | undefined,
+  collectionKey: string
+) =>
+  visibleEnergyCards(view, { hass: mockHass, prefs, collectionKey }, hidden)
+    .filter((c) => c.type.startsWith("custom:"))
+    .map((c) => c.config);
 
 const source = (s: Partial<EnergySource> & { type: string }): EnergySource =>
   s as unknown as EnergySource;
@@ -283,7 +300,7 @@ describe("getEnergyCardCatalog — external card entries", () => {
   });
 });
 
-describe("getVisibleExternalCardConfigs", () => {
+describe("visibleEnergyCards — external card configs", () => {
   const gasPrefs = makePrefs({ energy_sources: [GAS] });
 
   beforeEach(() => {
@@ -294,19 +311,12 @@ describe("getVisibleExternalCardConfigs", () => {
   });
 
   it("returns an empty array when there are no registrations", () => {
-    expect(
-      getVisibleExternalCardConfigs("gas", gasPrefs, undefined, "energy_1")
-    ).toEqual([]);
+    expect(externalConfigs("gas", gasPrefs, undefined, "energy_1")).toEqual([]);
   });
 
   it("returns a card config for an applicable, visible registration", () => {
     energyCardRegistrations.push({ type: "my-gas-card", view: "gas" });
-    const configs = getVisibleExternalCardConfigs(
-      "gas",
-      gasPrefs,
-      undefined,
-      "energy_1"
-    );
+    const configs = externalConfigs("gas", gasPrefs, undefined, "energy_1");
     expect(configs).toHaveLength(1);
     expect(configs[0]).toEqual({
       type: "custom:my-gas-card",
@@ -321,7 +331,7 @@ describe("getVisibleExternalCardConfigs", () => {
       view: "electricity",
     });
     expect(
-      getVisibleExternalCardConfigs("gas", gasPrefs, undefined, "energy_1")
+      externalConfigs("gas", gasPrefs, undefined, "energy_1")
     ).toHaveLength(0);
   });
 
@@ -332,25 +342,20 @@ describe("getVisibleExternalCardConfigs", () => {
       isApplicable: () => false,
     });
     expect(
-      getVisibleExternalCardConfigs("gas", gasPrefs, undefined, "energy_1")
+      externalConfigs("gas", gasPrefs, undefined, "energy_1")
     ).toHaveLength(0);
   });
 
   it("excludes cards whose key is in the hidden list", () => {
     energyCardRegistrations.push({ type: "hidden-card", view: "gas" });
     expect(
-      getVisibleExternalCardConfigs(
-        "gas",
-        gasPrefs,
-        ["gas.custom:hidden-card"],
-        "energy_1"
-      )
+      externalConfigs("gas", gasPrefs, ["gas.custom:hidden-card"], "energy_1")
     ).toHaveLength(0);
   });
 
   it("propagates the collection_key into every config", () => {
     energyCardRegistrations.push({ type: "card", view: "gas" });
-    const [config] = getVisibleExternalCardConfigs(
+    const [config] = externalConfigs(
       "gas",
       gasPrefs,
       undefined,

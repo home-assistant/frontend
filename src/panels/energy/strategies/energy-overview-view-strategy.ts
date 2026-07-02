@@ -8,11 +8,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import {
-  getVisibleExternalCardConfigs,
-  hasWaterSource,
-  isEnergyCardVisible,
-} from "./energy-cards";
+import { visibleEnergyCards } from "./energy-cards";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -58,115 +54,12 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       return view;
     }
 
-    if (isEnergyCardVisible("overview", "energy-distribution", prefs, hidden)) {
-      view.sections!.push({
-        type: "grid",
-        cards: [
-          {
-            title: hass.localize(
-              "ui.panel.energy.cards.energy_distribution_title"
-            ),
-            type: "energy-distribution",
-            collection_key: collectionKey,
-          },
-        ],
-      });
-    }
-
-    if (
-      isEnergyCardVisible("overview", "energy-sources-table", prefs, hidden)
-    ) {
-      view.sections!.push({
-        type: "grid",
-        cards: [
-          {
-            title: hass.localize(
-              "ui.panel.energy.cards.energy_sources_table_title"
-            ),
-            type: "energy-sources-table",
-            collection_key: collectionKey,
-            show_only_totals: true,
-          },
-        ],
-      });
-    }
-
-    if (isEnergyCardVisible("overview", "power-sources-graph", prefs, hidden)) {
-      view.sections!.push({
-        type: "grid",
-        cards: [
-          {
-            title: hass.localize(
-              "ui.panel.energy.cards.power_sources_graph_title"
-            ),
-            type: "power-sources-graph",
-            collection_key: collectionKey,
-            show_legend: false,
-          },
-        ],
-      });
-    }
-
-    if (isEnergyCardVisible("overview", "energy-usage-graph", prefs, hidden)) {
-      view.sections!.push({
-        type: "grid",
-        cards: [
-          {
-            title: hass.localize(
-              "ui.panel.energy.cards.energy_usage_graph_title"
-            ),
-            type: "energy-usage-graph",
-            collection_key: collectionKey,
-          },
-        ],
-      });
-    }
-
-    if (isEnergyCardVisible("overview", "energy-gas-graph", prefs, hidden)) {
-      view.sections!.push({
-        type: "grid",
-        cards: [
-          {
-            title: hass.localize(
-              "ui.panel.energy.cards.energy_gas_graph_title"
-            ),
-            type: "energy-gas-graph",
-            collection_key: collectionKey,
-          },
-        ],
-      });
-    }
-
-    if (isEnergyCardVisible("overview", "energy-water-graph", prefs, hidden)) {
-      view.sections!.push({
-        type: "grid",
-        cards: [
-          hasWaterSource(prefs)
-            ? {
-                title: hass.localize(
-                  "ui.panel.energy.cards.energy_water_graph_title"
-                ),
-                type: "energy-water-graph",
-                collection_key: collectionKey,
-              }
-            : {
-                title: hass.localize(
-                  "ui.panel.energy.cards.water_sankey_title"
-                ),
-                type: "water-sankey",
-                collection_key: collectionKey,
-              },
-        ],
-      });
-    }
-
-    for (const cardConfig of getVisibleExternalCardConfigs(
+    for (const { config } of visibleEnergyCards(
       "overview",
-      prefs,
-      hidden,
-      collectionKey
+      { hass, prefs, collectionKey },
+      hidden
     )) {
-      view.sections!.push({ type: "grid", cards: [cardConfig] });
+      view.sections!.push({ type: "grid", cards: [config] });
     }
 
     return view;

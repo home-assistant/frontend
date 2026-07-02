@@ -8,15 +8,13 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
-  getVisibleExternalCardConfigs,
   hasGasRateSource,
   hasPowerDevices,
   hasPowerSources,
   hasWaterRateDevices,
   hasWaterRateSource,
-  isEnergyCardVisible,
+  visibleEnergyCards,
 } from "./energy-cards";
-import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
@@ -79,17 +77,6 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
-    if (isEnergyCardVisible("now", "power-sources-graph", prefs, hidden)) {
-      chartsSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
-        type: "power-sources-graph",
-        collection_key: collectionKey,
-        grid_options: {
-          columns: 36,
-        },
-      });
-    }
-
     if (hasGasSrc) {
       badges.push({
         type: "gas-total",
@@ -113,45 +100,13 @@ export class PowerViewStrategy extends ReactiveElement {
       }
     });
 
-    if (isEnergyCardVisible("now", "power-sankey", prefs, hidden)) {
-      const showFloorsAndAreas = shouldShowFloorsAndAreas(
-        prefs.device_consumption,
-        hass,
-        (d) => d.stat_rate
-      );
-      chartsSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
-        type: "power-sankey",
-        collection_key: collectionKey,
-        group_by_floor: showFloorsAndAreas,
-        group_by_area: showFloorsAndAreas,
-        grid_options: {
-          columns: 36,
-        },
-      });
+    for (const { config } of visibleEnergyCards(
+      "now",
+      { hass, prefs, collectionKey },
+      hidden
+    )) {
+      chartsSection.cards!.push(config);
     }
-
-    if (isEnergyCardVisible("now", "water-flow-sankey", prefs, hidden)) {
-      const showFloorsAndAreas = shouldShowFloorsAndAreas(
-        prefs.device_consumption_water,
-        hass,
-        (d) => d.stat_rate
-      );
-      chartsSection.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.water_flow_sankey_title"),
-        type: "water-flow-sankey",
-        collection_key: collectionKey,
-        group_by_floor: showFloorsAndAreas,
-        group_by_area: showFloorsAndAreas,
-        grid_options: {
-          columns: 36,
-        },
-      });
-    }
-
-    chartsSection.cards!.push(
-      ...getVisibleExternalCardConfigs("now", prefs, hidden, collectionKey)
-    );
 
     if (badges.length) {
       view.badges = badges;

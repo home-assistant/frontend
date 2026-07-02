@@ -10,12 +10,10 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
-  getVisibleExternalCardConfigs,
   hasWaterDevices,
   hasWaterSource,
-  isEnergyCardVisible,
+  visibleEnergyCards,
 } from "./energy-cards";
-import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("water-view-strategy")
 export class WaterViewStrategy extends ReactiveElement {
@@ -66,52 +64,12 @@ export class WaterViewStrategy extends ReactiveElement {
       },
     });
 
-    if (isEnergyCardVisible("water", "energy-water-graph", prefs, hidden)) {
-      section.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
-        type: "energy-water-graph",
-        collection_key: collectionKey,
-        grid_options: {
-          columns: 24,
-        },
-      });
-    }
-
-    if (isEnergyCardVisible("water", "energy-sources-table", prefs, hidden)) {
-      section.cards!.push({
-        title: hass.localize(
-          "ui.panel.energy.cards.energy_sources_table_title"
-        ),
-        type: "energy-sources-table",
-        collection_key: collectionKey,
-        types: ["water"],
-        grid_options: {
-          columns: 12,
-        },
-      });
-    }
-
-    section.cards!.push(
-      ...getVisibleExternalCardConfigs("water", prefs, hidden, collectionKey)
-    );
-
-    // Only include if we have at least 1 water device in the config.
-    if (isEnergyCardVisible("water", "water-sankey", prefs, hidden)) {
-      const showFloorsAndAreas = shouldShowFloorsAndAreas(
-        prefs.device_consumption_water,
-        hass,
-        (d) => d.stat_consumption
-      );
-      section.cards!.push({
-        title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
-        type: "water-sankey",
-        collection_key: collectionKey,
-        group_by_floor: showFloorsAndAreas,
-        group_by_area: showFloorsAndAreas,
-        grid_options: {
-          columns: 24,
-        },
-      });
+    for (const { config } of visibleEnergyCards(
+      "water",
+      { hass, prefs, collectionKey },
+      hidden
+    )) {
+      section.cards!.push(config);
     }
 
     return view;
