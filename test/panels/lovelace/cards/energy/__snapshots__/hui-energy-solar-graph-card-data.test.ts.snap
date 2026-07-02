@@ -11,8 +11,8 @@ exports[`generateEnergySolarGraphData > large 5-minute payload digest is stable 
     "total",
     "yAxisFractionDigits",
   ],
-  "numberCount": 232066,
-  "numberSum": "1.50908786888e+17",
+  "numberCount": 285622,
+  "numberSum": "1.81353699874e+17",
   "type": "object",
 }
 `;
@@ -1010,6 +1010,15 @@ exports[`generateEnergySolarGraphData > matches snapshot for the daily period 1`
         },
         {
           "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1705276800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
             "borderRadius": [
               4,
               4,
@@ -1261,6 +1270,15 @@ exports[`generateEnergySolarGraphData > matches snapshot for the daily period 1`
             1706745600000,
             1.403,
             1706745600000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1706832000000,
+            0,
           ],
         },
         {
@@ -1639,6 +1657,438 @@ exports[`generateEnergySolarGraphData > matches snapshot for two solar sources w
           0.287,
           1704063600000,
         ],
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704155400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704159000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704162600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704166200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704169800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704173400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704177000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704180600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704184200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704187800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704191400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704195000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704198600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704202200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704205800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704209400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704213000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704216600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704220200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704223800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704227400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704231000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704234600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704238200000,
+            0,
+          ],
+        },
       ],
       "id": "compare-sensor.solar_production",
       "itemStyle": {
@@ -2371,6 +2821,438 @@ exports[`generateEnergySolarGraphData > matches snapshot for two solar sources w
             1704065400000,
             1.861,
             1704063600000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704069000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704072600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704076200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704079800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704083400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704087000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704094200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704097800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704101400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704105000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704108600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704112200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704115800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704119400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704123000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704126600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704130200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704133800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704137400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704141000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704144600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704148200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704151800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704155400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704159000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704162600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704166200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704169800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704173400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704177000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704180600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704184200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704187800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704191400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704195000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704198600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704202200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704205800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704209400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704213000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704216600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704220200000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704223800000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704227400000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704231000000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704234600000,
+            0,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704238200000,
+            0,
           ],
         },
       ],
@@ -5592,6 +6474,15 @@ exports[`generateEnergySolarGraphData > matches snapshot with hourly forecast da
             1704087000000,
             1.321,
             1704085200000,
+          ],
+        },
+        {
+          "itemStyle": {
+            "borderWidth": 0,
+          },
+          "value": [
+            1704090600000,
+            0,
           ],
         },
         {

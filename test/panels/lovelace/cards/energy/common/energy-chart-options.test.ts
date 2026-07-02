@@ -5,7 +5,9 @@ import {
   computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   fillLineGaps,
+  generateFillBuckets,
   getCompareTransform,
+  getPeriodMidpointOffset,
   getSuggestedMax,
   splitUntrackedConsumption,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/energy-chart-options";
@@ -497,6 +499,307 @@ describe("fillDataGapsAndRoundCaps", () => {
     fillDataGapsAndRoundCaps(datasets);
 
     assert.equal(datasets[0].data!.length, 0);
+  });
+
+  it("does not fill trailing buckets without an explicit grid", () => {
+    // Legacy behavior pin: buckets past a dataset's last real point are
+    // only appended when extraBuckets is passed.
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, 10]],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [
+          [1000, 100],
+          [2000, 200],
+        ],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets);
+
+    assert.equal(datasets[0].data!.length, 1);
+    assert.equal(datasets[1].data!.length, 2);
+  });
+
+  it("appends trailing zero buckets from the explicit grid", () => {
+    // The single-reading case: one real point in the first bucket must
+    // be padded with zero buckets across the whole grid, otherwise ECharts
+    // derives a degenerate bar band width and expands the time axis.
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, 10]],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets, true, [1000, 2000, 3000, 4000]);
+
+    assert.equal(datasets[0].data!.length, 4);
+    assert.equal(getBarItem(datasets[0], 0).value[1], 10);
+    for (const index of [1, 2, 3]) {
+      const item = getBarItem(datasets[0], index);
+      assert.equal(item.value[0], 1000 * (index + 1));
+      assert.equal(item.value[1], 0);
+      assert.equal(item.itemStyle.borderWidth, 0);
+    }
+  });
+
+  it("fills leading and middle buckets from the explicit grid", () => {
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [[3000, 30]],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets, true, [1000, 2000, 3000, 4000]);
+
+    assert.equal(datasets[0].data!.length, 4);
+    assert.deepEqual(
+      datasets[0].data!.map((item) => getX(item)),
+      [1000, 2000, 3000, 4000]
+    );
+    assert.deepEqual(
+      datasets[0].data!.map((item) => getY(item)),
+      [0, 0, 30, 0]
+    );
+  });
+
+  it("keeps originally-empty datasets empty when a grid is passed", () => {
+    // Compare placeholder datasets must stay empty so no-data detection
+    // keeps working.
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [],
+      },
+      {
+        type: "bar",
+        stack: "a",
+        data: [[1000, 10]],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets, true, [1000, 2000]);
+
+    assert.equal(datasets[0].data!.length, 0);
+    assert.equal(datasets[1].data!.length, 2);
+  });
+
+  it("still rounds caps on the real bar when grid buckets are added", () => {
+    const datasets: BarSeriesOption[] = [
+      {
+        type: "bar",
+        stack: "a",
+        data: [[2000, 10]],
+      },
+    ];
+
+    fillDataGapsAndRoundCaps(datasets, true, [1000, 2000, 3000]);
+
+    const realItem = getBarItem(datasets[0], 1);
+    assert.equal(realItem.value[1], 10);
+    assert.deepEqual(realItem.itemStyle.borderRadius, [4, 4, 0, 0]);
+    // Zero fills get no border at all
+    assert.equal(getBarItem(datasets[0], 0).itemStyle.borderWidth, 0);
+    assert.equal(getBarItem(datasets[0], 2).itemStyle.borderWidth, 0);
+  });
+});
+
+describe("getPeriodMidpointOffset", () => {
+  const HOUR = 60 * 60 * 1000;
+
+  it("returns half the nominal period when no gap was measured", () => {
+    assert.equal(getPeriodMidpointOffset("hour"), HOUR / 2);
+    assert.equal(getPeriodMidpointOffset("5minute"), 2.5 * 60 * 1000);
+  });
+
+  it("returns 0 for daily and longer periods", () => {
+    assert.equal(getPeriodMidpointOffset("day"), 0);
+    assert.equal(getPeriodMidpointOffset("week"), 0);
+    assert.equal(getPeriodMidpointOffset("month"), 0);
+    // Even with a measured gap
+    assert.equal(getPeriodMidpointOffset("day", 24 * HOUR), 0);
+  });
+
+  it("uses half the measured gap for finer-grained data", () => {
+    // e.g. 5-minute data shown with an hourly period
+    assert.equal(
+      getPeriodMidpointOffset("hour", 5 * 60 * 1000),
+      2.5 * 60 * 1000
+    );
+  });
+
+  it("clamps the measured gap to the nominal period for sparse data", () => {
+    // e.g. two readings 12h apart in an hourly view
+    assert.equal(getPeriodMidpointOffset("hour", 12 * HOUR), HOUR / 2);
+  });
+});
+
+describe("generateFillBuckets", () => {
+  const HOUR = 60 * 60 * 1000;
+  // Tests run in TZ=Etc/UTC, so local time equals UTC here.
+  const start = new Date("2024-03-15T00:00:00.000Z");
+  const end = new Date("2024-03-16T00:00:00.000Z");
+
+  const barsAt = (xs: number[], id = "main"): BarSeriesOption => ({
+    type: "bar",
+    id,
+    data: xs.map((x) => [x, 1, x - HOUR / 2]),
+  });
+
+  it("expands a single hourly bucket to the full day grid", () => {
+    // Real bucket: 09:00-10:00 centered at 09:30
+    const anchor = start.getTime() + 9.5 * HOUR;
+    const buckets = generateFillBuckets([barsAt([anchor])], start, end, "hour");
+
+    assert.equal(buckets.length, 24);
+    const sorted = [...buckets].sort((a, b) => a - b);
+    assert.equal(sorted[0], start.getTime() + 0.5 * HOUR);
+    assert.equal(sorted[23], start.getTime() + 23.5 * HOUR);
+    for (let i = 1; i < sorted.length; i++) {
+      assert.equal(sorted[i] - sorted[i - 1], HOUR);
+    }
+    assert.include(buckets, anchor);
+  });
+
+  it("keeps the grid anchored on data not aligned to the range start", () => {
+    // Half-hour timezone simulation: recorder buckets sit at :30 local, so
+    // midpoints are on the whole hour. The grid must follow the data, not
+    // the local-midnight range start.
+    const anchor = start.getTime() + 10 * HOUR; // 09:30-10:30 bucket
+    const buckets = generateFillBuckets([barsAt([anchor])], start, end, "hour");
+
+    const sorted = [...buckets].sort((a, b) => a - b);
+    assert.equal(sorted[0], start.getTime());
+    assert.equal(sorted[sorted.length - 1], start.getTime() + 23 * HOUR);
+    assert.isTrue(sorted.every((ts) => (ts - anchor) % HOUR === 0));
+  });
+
+  it("generates 5minute buckets", () => {
+    const fiveMin = 5 * 60 * 1000;
+    const anchor = start.getTime() + fiveMin / 2;
+    const shortEnd = new Date(start.getTime() + HOUR);
+    const buckets = generateFillBuckets(
+      [barsAt([anchor])],
+      start,
+      shortEnd,
+      "5minute"
+    );
+
+    assert.equal(buckets.length, 12);
+    const sorted = [...buckets].sort((a, b) => a - b);
+    for (let i = 1; i < sorted.length; i++) {
+      assert.equal(sorted[i] - sorted[i - 1], fiveMin);
+    }
+  });
+
+  it("generates day buckets at period starts", () => {
+    const weekEnd = new Date("2024-03-22T00:00:00.000Z");
+    const anchor = start.getTime() + 3 * 24 * HOUR; // day 4 of the range
+    const buckets = generateFillBuckets(
+      [barsAt([anchor])],
+      start,
+      weekEnd,
+      "day"
+    );
+
+    assert.equal(buckets.length, 7);
+    const sorted = [...buckets].sort((a, b) => a - b);
+    assert.equal(sorted[0], start.getTime());
+    assert.equal(sorted[6], start.getTime() + 6 * 24 * HOUR);
+  });
+
+  it("generates month buckets with variable month lengths", () => {
+    const yearStart = new Date("2024-01-01T00:00:00.000Z");
+    const yearEnd = new Date("2025-01-01T00:00:00.000Z");
+    const anchor = Date.UTC(2024, 4, 1); // May 1st
+    const buckets = generateFillBuckets(
+      [barsAt([anchor])],
+      yearStart,
+      yearEnd,
+      "month"
+    );
+
+    assert.equal(buckets.length, 12);
+    const sorted = [...buckets].sort((a, b) => a - b);
+    for (let month = 0; month < 12; month++) {
+      assert.equal(sorted[month], Date.UTC(2024, month, 1));
+    }
+  });
+
+  it("ignores compare series and placeholders when picking the anchor", () => {
+    const compareAnchor = start.getTime() + 0.25 * HOUR; // off-grid transform
+    const mainAnchor = start.getTime() + 9.5 * HOUR;
+    const buckets = generateFillBuckets(
+      [
+        { type: "bar", id: "compare-placeholder", data: [] },
+        barsAt([compareAnchor], "compare-sensor.water"),
+        barsAt([mainAnchor], "sensor.water"),
+      ],
+      start,
+      end,
+      "hour"
+    );
+
+    assert.include(buckets, mainAnchor);
+    assert.isTrue(
+      buckets.every((ts) => (ts - mainAnchor) % HOUR === 0),
+      "grid must be anchored on the main series"
+    );
+  });
+
+  it("skips empty main series and anchors on the next one with data", () => {
+    const anchor = start.getTime() + 9.5 * HOUR;
+    const buckets = generateFillBuckets(
+      [barsAt([], "sensor.empty"), barsAt([anchor], "sensor.water")],
+      start,
+      end,
+      "hour"
+    );
+
+    assert.equal(buckets.length, 24);
+    assert.include(buckets, anchor);
+  });
+
+  it("returns an empty grid when there is no data to anchor on", () => {
+    assert.deepEqual(generateFillBuckets([], start, end, "hour"), []);
+    assert.deepEqual(
+      generateFillBuckets(
+        [barsAt([], "sensor.empty"), barsAt([1000], "compare-sensor.water")],
+        start,
+        end,
+        "hour"
+      ),
+      []
+    );
+  });
+
+  it("reads the anchor from object-format data items", () => {
+    const anchor = start.getTime() + 9.5 * HOUR;
+    const buckets = generateFillBuckets(
+      [
+        {
+          type: "bar",
+          id: "main",
+          data: [{ value: [anchor, 1] }],
+        },
+      ],
+      start,
+      end,
+      "hour"
+    );
+
+    assert.equal(buckets.length, 24);
+    assert.include(buckets, anchor);
   });
 });
 

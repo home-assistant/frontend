@@ -12,12 +12,14 @@ import {
   startOfMonth,
   addYears,
   addMonths,
+  addMinutes,
   addHours,
   startOfDay,
   addDays,
   subDays,
 } from "date-fns";
 import type {
+  BarSeriesOption,
   CallbackDataParams,
   LineSeriesOption,
   TopLevelFormatterParams,
@@ -377,12 +379,97 @@ const PERIOD_MS: Record<string, number> = {
 /**
  * Offset from a period's start to its midpoint, for centering sub-daily bars
  * (and forecast lines) between axis ticks — 0 for daily+ periods, which sit at
- * the start. Derived from the period, not from the data, so the first/only
- * bucket centers identically to every other bucket. (Previously estimated from
- * the gap between the first two entries, which collapsed to 0 with one bucket.)
+ * the start.
+ *
+ * `measuredGap` is the gap between the first two entries, when available. It
+ * adapts the offset to data that is finer-grained than the nominal period
+ * (e.g. external forecast data), but is clamped to the nominal period so
+ * sparse data (gaps between readings) can't inflate the offset, and a lone
+ * bucket (no gap to measure) still centers on the nominal midpoint.
  */
-export function getPeriodMidpointOffset(period: string): number {
-  return (PERIOD_MS[period] ?? 0) / 2;
+export function getPeriodMidpointOffset(
+  period: string,
+  measuredGap?: number
+): number {
+  const nominal = PERIOD_MS[period] ?? 0;
+  return (measuredGap ? Math.min(measuredGap, nominal) : nominal) / 2;
+}
+
+/**
+ * Generate the expected statistics-bucket grid across [start, end) so sparse
+ * data can be zero-filled. Without a dense grid, ECharts derives the bar band
+ * width from the minimum gap between data points: sparse data yields
+ * oversized bars, and a single point makes ECharts expand the time axis by
+ * ±40% of its span, ignoring the configured min/max.
+ *
+ * The grid is anchored on the first real data bucket of a non-compare bar
+ * series rather than on `start`: recorder buckets are UTC-aligned, so in
+ * half-hour timezones they don't sit on local period boundaries. Stepping
+ * from a real bucket keeps generated buckets exactly on the data's grid
+ * (midpoints for sub-daily periods, period starts otherwise). Returns an
+ * empty array when there is no data to anchor on.
+ */
+export function generateFillBuckets(
+  datasets: BarSeriesOption[],
+  start: Date,
+  end: Date,
+  period: "5minute" | "hour" | "day" | "month"
+): number[] {
+  let anchor: number | undefined;
+  for (const dataset of datasets) {
+    if (
+      dataset.type !== "bar" ||
+      String(dataset.id).startsWith("compare-") ||
+      !dataset.data?.length
+    ) {
+      continue;
+    }
+    const first = dataset.data[0];
+    const value =
+      first && typeof first === "object" && "value" in first
+        ? first.value
+        : first;
+    const x = Number((value as number[])?.[0]);
+    if (!Number.isNaN(x)) {
+      anchor = x;
+      break;
+    }
+  }
+  if (anchor === undefined) {
+    return [];
+  }
+
+  const anchorDate = new Date(anchor);
+  // Step relative to the anchor (not iteratively) so month-length clamping
+  // and DST shifts can't accumulate drift.
+  const bucketAt = (n: number): number =>
+    (period === "5minute"
+      ? addMinutes(anchorDate, 5 * n)
+      : period === "hour"
+        ? addHours(anchorDate, n)
+        : period === "day"
+          ? addDays(anchorDate, n)
+          : addMonths(anchorDate, n)
+    ).getTime();
+
+  const startMs = start.getTime();
+  const endMs = end.getTime();
+  const buckets: number[] = [];
+  for (let n = 0; ; n--) {
+    const ts = bucketAt(n);
+    if (ts < startMs) {
+      break;
+    }
+    buckets.push(ts);
+  }
+  for (let n = 1; ; n++) {
+    const ts = bucketAt(n);
+    if (ts >= endMs) {
+      break;
+    }
+    buckets.push(ts);
+  }
+  return buckets;
 }
 
 export interface UntrackedSplit {
