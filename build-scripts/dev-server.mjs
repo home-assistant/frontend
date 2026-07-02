@@ -262,6 +262,13 @@ const terminate = async (suite, pid, isStopped, onStopped) => {
   /* eslint-enable no-await-in-loop */
   // Escalate if it is still up.
   killProcessTree(pid, "SIGKILL");
+  await sleep(300);
+  if (!(await isStopped())) {
+    process.stderr.write(
+      `Failed to stop dev server (${suite}) (pid ${pid}). Stop it manually.\n`
+    );
+    return 1;
+  }
   onStopped?.();
   process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
   return 0;
@@ -396,6 +403,10 @@ const runStatusHealth = async (suite, cfg) => {
     process.stdout.write(
       `Dev server (${suite}) running at http://localhost:${port}` +
         `${pid ? ` (pid ${pid})` : ""}\n`
+    );
+  } else if (status.state === "ours") {
+    process.stdout.write(
+      `Port ${port} is serving a different Home Assistant frontend dev server (suite ${status.suite ?? "unknown"}); not ${suite}.\n`
     );
   } else if (status.state === "foreign") {
     process.stdout.write(
