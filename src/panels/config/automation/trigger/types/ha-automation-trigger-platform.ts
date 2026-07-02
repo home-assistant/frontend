@@ -189,7 +189,7 @@ export class HaPlatformTrigger extends LitElement {
               href=${this._manifest.is_built_in
                 ? documentationUrl(
                     this.hass,
-                    `/integrations/${this._manifest.domain}`
+                    `/triggers/${this.trigger.trigger}`
                   )
                 : this._manifest.documentation}
               title=${this.hass.localize(
