@@ -18,7 +18,7 @@ import {
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { fixStatisticsIssue } from "../developer-tools/statistics/fix-statistics";
+import { fixStatisticsIssue } from "../tools/statistics/fix-statistics";
 import { showVacuumSegmentMappingDialog } from "../entities/dialogs/show-dialog-vacuum-segment-mapping";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
@@ -171,7 +171,7 @@ class HaConfigRepairs extends LitElement {
       issue.translation_key &&
       STATISTIC_TYPES.includes(issue.translation_key as any)
     ) {
-      this.hass.loadFragmentTranslation("developer-tools");
+      this.hass.loadFragmentTranslation("config");
       const data = await fetchRepairsIssueData(
         this.hass.connection,
         issue.domain,

@@ -50,7 +50,7 @@ const TEMPLATE_DOCS_LINKS: { key: string; path: string }[] = [
   { key: "docs_functions", path: "/template-functions/" },
 ];
 
-@customElement("developer-tools-template")
+@customElement("tools-template")
 class HaPanelDevTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -118,7 +118,7 @@ class HaPanelDevTemplate extends LitElement {
       <div class="content">
         <ha-expansion-panel
           .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.templates.about"
+            "ui.panel.config.tools.tabs.templates.about"
           )}
           outlined
           .expanded=${this._descriptionExpanded}
@@ -127,17 +127,17 @@ class HaPanelDevTemplate extends LitElement {
           <div class="description">
             <p>
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.templates.description"
+                "ui.panel.config.tools.tabs.templates.description"
               )}
             </p>
             <p>
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.templates.engine_info"
+                "ui.panel.config.tools.tabs.templates.engine_info"
               )}
             </p>
             <h3>
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.templates.learn_more"
+                "ui.panel.config.tools.tabs.templates.learn_more"
               )}
             </h3>
             <ul>
@@ -149,12 +149,12 @@ class HaPanelDevTemplate extends LitElement {
                       target="_blank"
                       rel="noreferrer"
                       >${this.hass.localize(
-                        `ui.panel.config.developer-tools.tabs.templates.${link.key}` as LocalizeKeys
+                        `ui.panel.config.tools.tabs.templates.${link.key}` as LocalizeKeys
                       )}</a
                     >
                     <span class="link-description"
                       >${this.hass.localize(
-                        `ui.panel.config.developer-tools.tabs.templates.${link.key}_description` as LocalizeKeys
+                        `ui.panel.config.tools.tabs.templates.${link.key}_description` as LocalizeKeys
                       )}</span
                     >
                   </li>
@@ -174,7 +174,7 @@ class HaPanelDevTemplate extends LitElement {
         <ha-card
           class="edit-pane"
           header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.templates.editor"
+            "ui.panel.config.tools.tabs.templates.editor"
           )}
         >
           <div class="card-content">
@@ -192,7 +192,7 @@ class HaPanelDevTemplate extends LitElement {
           <div class="card-actions">
             <ha-button appearance="plain" @click=${this._restoreDemo}>
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.templates.reset"
+                "ui.panel.config.tools.tabs.templates.reset"
               )}
             </ha-button>
             <ha-button appearance="plain" @click=${this._clear}>
@@ -201,7 +201,7 @@ class HaPanelDevTemplate extends LitElement {
           </div>
           <ha-tip>
             ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.templates.keyboard_tip",
+              "ui.panel.config.tools.tabs.templates.keyboard_tip",
               {
                 autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
               }
@@ -212,7 +212,7 @@ class HaPanelDevTemplate extends LitElement {
         <ha-card
           class="render-pane"
           header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.templates.result"
+            "ui.panel.config.tools.tabs.templates.result"
           )}
         >
           <div class="card-content ha-scrollbar">
@@ -246,7 +246,7 @@ ${
 }</pre>
                     <p>
                       ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.templates.result_type"
+                        "ui.panel.config.tools.tabs.templates.result_type"
                       )}:
                       ${resultType}
                     </p>
@@ -255,7 +255,7 @@ ${
                         ? html`
                             <p>
                               ${this.hass.localize(
-                                "ui.panel.config.developer-tools.tabs.templates.time"
+                                "ui.panel.config.tools.tabs.templates.time"
                               )}
                             </p>
                           `
@@ -268,7 +268,7 @@ ${
                           ? html`
                               <p class="all_listeners">
                                 ${this.hass.localize(
-                                  "ui.panel.config.developer-tools.tabs.templates.all_listeners"
+                                  "ui.panel.config.tools.tabs.templates.all_listeners"
                                 )}
                               </p>
                             `
@@ -277,7 +277,7 @@ ${
                             ? html`
                                 <p>
                                   ${this.hass.localize(
-                                    "ui.panel.config.developer-tools.tabs.templates.listeners"
+                                    "ui.panel.config.tools.tabs.templates.listeners"
                                   )}
                                 </p>
                                 <ul>
@@ -288,7 +288,7 @@ ${
                                         <li>
                                           <b
                                             >${this.hass.localize(
-                                              "ui.panel.config.developer-tools.tabs.templates.domain"
+                                              "ui.panel.config.tools.tabs.templates.domain"
                                             )}</b
                                           >: ${domain}
                                         </li>
@@ -301,7 +301,7 @@ ${
                                         <li>
                                           <b
                                             >${this.hass.localize(
-                                              "ui.panel.config.developer-tools.tabs.templates.entity"
+                                              "ui.panel.config.tools.tabs.templates.entity"
                                             )}</b
                                           >: ${entity_id}
                                         </li>
@@ -312,7 +312,7 @@ ${
                             : !this._templateResult.listeners.time
                               ? html`<span class="all_listeners">
                                   ${this.hass.localize(
-                                    "ui.panel.config.developer-tools.tabs.templates.no_listeners"
+                                    "ui.panel.config.tools.tabs.templates.no_listeners"
                                   )}
                                 </span>`
                               : nothing
@@ -622,7 +622,7 @@ ${
     if (
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.templates.confirm_reset"
+          "ui.panel.config.tools.tabs.templates.confirm_reset"
         ),
         warning: true,
       }))
@@ -638,7 +638,7 @@ ${
     if (
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.templates.confirm_clear"
+          "ui.panel.config.tools.tabs.templates.confirm_clear"
         ),
         warning: true,
       }))
@@ -658,6 +658,6 @@ ${
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-template": HaPanelDevTemplate;
+    "tools-template": HaPanelDevTemplate;
   }
 }

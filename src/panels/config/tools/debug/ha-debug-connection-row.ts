@@ -17,12 +17,12 @@ class HaDebugConnectionRow extends LitElement {
       <ha-list-item-base>
         <span slot="headline"
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.debug_connection.title"
+            "ui.panel.config.tools.tabs.debug.debug_connection.title"
           )}</span
         >
         <span slot="supporting-text"
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.debug.debug_connection.description"
+            "ui.panel.config.tools.tabs.debug.debug_connection.description"
           )}</span
         >
         <ha-switch

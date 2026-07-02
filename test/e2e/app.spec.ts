@@ -241,20 +241,85 @@ test.describe("Panel navigation", () => {
     });
   });
 
-  test("navigates to developer-tools panel", async ({ page }) => {
-    // Since 2026.2 developer-tools is part of the config panel
-    await goToPanel(page, "/config/developer-tools");
-    await expect(
-      page.locator("ha-panel-config, developer-tools-main").first()
-    ).toBeAttached({ timeout: PANEL_TIMEOUT });
-  });
-
   test("navigates to profile panel", async ({ page }) => {
     await goToPanel(page, "/profile");
     await expect(
       page.locator("ha-panel-profile, ha-config-user-profile").first()
     ).toBeAttached({ timeout: PANEL_TIMEOUT });
   });
+});
+
+// ---------------------------------------------------------------------------
+// Tools panel (formerly Developer tools)
+// ---------------------------------------------------------------------------
+
+/**
+ * Every tool sub-page reachable under /config/tools, mapped to the custom
+ * element tools-router mounts for it (see tools-router.ts). Asserting on the
+ * specific element proves the route actually rendered its tool, not just the
+ * shared ha-panel-tools shell.
+ */
+const TOOLS_SUBPAGES: { route: string; element: string }[] = [
+  { route: "yaml", element: "tools-yaml-config" },
+  { route: "state", element: "tools-state" },
+  { route: "action", element: "tools-action" },
+  { route: "template", element: "tools-template" },
+  { route: "event", element: "tools-event" },
+  { route: "statistics", element: "tools-statistics" },
+  { route: "assist", element: "tools-assist" },
+  { route: "debug", element: "tools-debug" },
+];
+
+test.describe("Tools panel", () => {
+  test("base path renders the tools panel", async ({ page }) => {
+    await goToPanel(page, "/config/tools");
+    await expect(page.locator("ha-panel-tools")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  for (const { route, element } of TOOLS_SUBPAGES) {
+    test(`renders the ${route} sub-page`, async ({ page }) => {
+      await goToPanel(page, `/config/tools/${route}`);
+      await expect(page.locator(element)).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
+
+  test("service is an alias for the action tool", async ({ page }) => {
+    await goToPanel(page, "/config/tools/service");
+    await expect(page.locator("tools-action")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tools redirects (old developer-tools URLs)
+// ---------------------------------------------------------------------------
+
+test.describe("Tools redirects", () => {
+  // The panel moved from top-level /developer-tools (pre-2026.2) to
+  // /config/developer-tools (2026.2), then was renamed to /config/tools
+  // (2026.8). Both old locations must redirect to the new one, and deep links
+  // must keep their sub-page. See the updateRoute() redirect in
+  // src/layouts/home-assistant.ts.
+  for (const oldBase of ["/developer-tools", "/config/developer-tools"]) {
+    test(`redirects ${oldBase} to the tools panel`, async ({ page }) => {
+      await goToPanel(page, oldBase);
+      await expect(page.locator("ha-panel-tools")).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+
+    test(`redirects ${oldBase}/state to the state tool`, async ({ page }) => {
+      await goToPanel(page, `${oldBase}/state`);
+      await expect(page.locator("tools-state")).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
 });
 
 // ---------------------------------------------------------------------------

@@ -70,9 +70,9 @@ class HaPanelConfig extends HassRouterPage {
         tag: "ha-config-system-navigation",
         load: () => import("./core/ha-config-system-navigation"),
       },
-      "developer-tools": {
-        tag: "ha-panel-developer-tools",
-        load: () => import("./developer-tools/ha-panel-developer-tools"),
+      tools: {
+        tag: "ha-panel-tools",
+        load: () => import("./tools/ha-panel-tools"),
         cache: true,
       },
       logs: {
