@@ -3,15 +3,12 @@ import type {
   LocalizeKeys,
 } from "../../../common/translations/localize";
 import type {
-  DeviceConsumptionEnergyPreference,
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
 import { energyCardRegistrations } from "../../../data/lovelace_custom_cards";
-import type { HomeAssistant } from "../../../types";
-import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 /** Strategy config shared by the per-view energy strategies. */
 export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
@@ -95,17 +92,6 @@ export const hasGasRateSource = (prefs: EnergyPreferences): boolean =>
 
 // --- Card catalog ----------------------------------------------------------
 
-/**
- * Everything a card's config builder needs. Passed in by the view strategy at
- * generation time, so the catalog never imports runtime state — it only
- * receives it.
- */
-export interface EnergyCardContext {
-  hass: HomeAssistant;
-  prefs: EnergyPreferences;
-  collectionKey: string;
-}
-
 /** Uniform shape for both built-in and externally-registered energy card entries. */
 export interface EnergyCardEntry {
   /** Stable identifier and storage token: `<view>.<cardType>`. */
@@ -117,14 +103,16 @@ export interface EnergyCardEntry {
   getLabel: (localize: LocalizeFunc) => string;
   /** Whether this card is emitted for the given preferences. */
   isApplicable: (prefs: EnergyPreferences) => boolean;
-  /** Builds the Lovelace card config to render for this entry. */
-  buildConfig: (ctx: EnergyCardContext) => LovelaceCardConfig;
 }
 
-/** A visible card and the config a strategy should push for it. */
+/**
+ * A card the strategy should render: its type and a resolver for its title.
+ * The strategy owns the card's config (grid width, placement, etc.); the
+ * catalog only says which cards are visible and what they're called.
+ */
 export interface VisibleEnergyCard {
   type: string;
-  config: LovelaceCardConfig;
+  getLabel: (localize: LocalizeFunc) => string;
 }
 
 const energyCardKey = (view: EnergyViewPath, cardType: string): string =>
@@ -134,107 +122,46 @@ const entry = (
   view: EnergyViewPath,
   cardType: string,
   labelKey: LocalizeKeys,
-  isApplicable: (prefs: EnergyPreferences) => boolean,
-  buildConfig: (ctx: EnergyCardContext) => LovelaceCardConfig
+  isApplicable: (prefs: EnergyPreferences) => boolean
 ): EnergyCardEntry => ({
   key: energyCardKey(view, cardType),
   view,
   type: cardType,
   getLabel: (localize) => localize(labelKey),
   isApplicable,
-  buildConfig,
 });
-
-/**
- * Shared config for the four sankey cards, which differ only by title, target
- * device list, entity-id accessor, and grid width. The floors/areas grouping is
- * derived from the current preferences via `shouldShowFloorsAndAreas`.
- */
-const sankeyConfig = (
-  ctx: EnergyCardContext,
-  type: string,
-  titleKey: LocalizeKeys,
-  devices: DeviceConsumptionEnergyPreference[],
-  getEntityId: (
-    device: DeviceConsumptionEnergyPreference
-  ) => string | undefined,
-  columns: number
-): LovelaceCardConfig => {
-  const showFloorsAndAreas = shouldShowFloorsAndAreas(
-    devices,
-    ctx.hass,
-    getEntityId
-  );
-  return {
-    title: ctx.hass.localize(titleKey),
-    type,
-    collection_key: ctx.collectionKey,
-    group_by_floor: showFloorsAndAreas,
-    group_by_area: showFloorsAndAreas,
-    grid_options: { columns },
-  };
-};
 
 const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
   // --- Overview ---
-  // Overview cards each render in their own grid section, at the default
-  // width, so they carry no grid_options.
   entry(
     "overview",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
-    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-      type: "energy-distribution",
-      collection_key: collectionKey,
-    })
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
   ),
   entry(
     "overview",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => p.energy_sources.length > 0,
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
-      type: "energy-sources-table",
-      collection_key: collectionKey,
-      show_only_totals: true,
-    })
+    (p) => p.energy_sources.length > 0
   ),
   entry(
     "overview",
     "power-sources-graph",
     "ui.panel.energy.cards.power_sources_graph_title",
-    (p) => hasPowerSources(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
-      type: "power-sources-graph",
-      collection_key: collectionKey,
-      show_legend: false,
-    })
+    (p) => hasPowerSources(p)
   ),
   entry(
     "overview",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasGridSource(p) || hasBattery(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
-      type: "energy-usage-graph",
-      collection_key: collectionKey,
-    })
+    (p) => hasGridSource(p) || hasBattery(p)
   ),
   entry(
     "overview",
     "energy-gas-graph",
     "ui.panel.energy.cards.energy_gas_graph_title",
-    (p) => hasGasSource(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
-      type: "energy-gas-graph",
-      collection_key: collectionKey,
-    })
+    (p) => hasGasSource(p)
   ),
   // One toggle gates the water row, which renders energy-water-graph (sources)
   // or, with only water devices, water-sankey.
@@ -242,21 +169,7 @@ const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
     "overview",
     "energy-water-graph",
     "ui.panel.energy.cards.energy_water_graph_title",
-    (p) => hasWaterSource(p) || hasWaterDevices(p),
-    ({ hass, prefs, collectionKey }) =>
-      hasWaterSource(prefs)
-        ? {
-            title: hass.localize(
-              "ui.panel.energy.cards.energy_water_graph_title"
-            ),
-            type: "energy-water-graph",
-            collection_key: collectionKey,
-          }
-        : {
-            title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
-            type: "water-sankey",
-            collection_key: collectionKey,
-          }
+    (p) => hasWaterSource(p) || hasWaterDevices(p)
   ),
 
   // --- Electricity ---
@@ -264,140 +177,73 @@ const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
     "electricity",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
-    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
-      type: "energy-distribution",
-      collection_key: collectionKey,
-    })
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
   ),
   entry(
     "electricity",
     "energy-grid-balance",
     "ui.panel.energy.cards.energy_grid_balance_title",
-    (p) => hasGridSource(p) && hasReturn(p),
-    ({ collectionKey }) => ({
-      type: "energy-grid-balance",
-      collection_key: collectionKey,
-    })
+    (p) => hasGridSource(p) && hasReturn(p)
   ),
   entry(
     "electricity",
     "energy-grid-neutrality-gauge",
     "ui.panel.energy.cards.energy_grid_neutrality_gauge_title",
-    (p) => hasReturn(p),
-    ({ collectionKey }) => ({
-      type: "energy-grid-neutrality-gauge",
-      collection_key: collectionKey,
-    })
+    (p) => hasReturn(p)
   ),
   entry(
     "electricity",
     "energy-solar-consumed-gauge",
     "ui.panel.energy.cards.energy_solar_consumed_gauge_title",
-    (p) => hasSolar(p) && hasReturn(p),
-    ({ collectionKey }) => ({
-      type: "energy-solar-consumed-gauge",
-      collection_key: collectionKey,
-    })
+    (p) => hasSolar(p) && hasReturn(p)
   ),
   entry(
     "electricity",
     "energy-self-sufficiency-gauge",
     "ui.panel.energy.cards.energy_self_sufficiency_gauge_title",
-    (p) => hasSolar(p) && hasGridSource(p),
-    ({ collectionKey }) => ({
-      type: "energy-self-sufficiency-gauge",
-      collection_key: collectionKey,
-    })
+    (p) => hasSolar(p) && hasGridSource(p)
   ),
   entry(
     "electricity",
     "energy-carbon-consumed-gauge",
     "ui.panel.energy.cards.energy_carbon_consumed_gauge_title",
-    (p) => hasGridSource(p),
-    ({ collectionKey }) => ({
-      type: "energy-carbon-consumed-gauge",
-      collection_key: collectionKey,
-    })
+    (p) => hasGridSource(p)
   ),
   entry(
     "electricity",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasGridSource(p) || hasBattery(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
-      type: "energy-usage-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 36 },
-    })
+    (p) => hasGridSource(p) || hasBattery(p)
   ),
   entry(
     "electricity",
     "energy-solar-graph",
     "ui.panel.energy.cards.energy_solar_graph_title",
-    (p) => hasSolar(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_solar_graph_title"),
-      type: "energy-solar-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 36 },
-    })
+    (p) => hasSolar(p)
   ),
   entry(
     "electricity",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => hasGridSource(p) || hasSolar(p) || hasBattery(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
-      type: "energy-sources-table",
-      collection_key: collectionKey,
-      types: ["grid", "solar", "battery"],
-      grid_options: { columns: 36 },
-    })
+    (p) => hasGridSource(p) || hasSolar(p) || hasBattery(p)
   ),
   entry(
     "electricity",
     "energy-devices-detail-graph",
     "ui.panel.energy.cards.energy_devices_detail_graph_title",
-    (p) => hasDeviceConsumption(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize(
-        "ui.panel.energy.cards.energy_devices_detail_graph_title"
-      ),
-      type: "energy-devices-detail-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 36 },
-    })
+    (p) => hasDeviceConsumption(p)
   ),
   entry(
     "electricity",
     "energy-devices-graph",
     "ui.panel.energy.cards.energy_devices_graph_title",
-    (p) => hasDeviceConsumption(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_devices_graph_title"),
-      type: "energy-devices-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 36 },
-    })
+    (p) => hasDeviceConsumption(p)
   ),
   entry(
     "electricity",
     "energy-sankey",
     "ui.panel.energy.cards.energy_sankey_title",
-    (p) => hasDeviceConsumption(p),
-    (ctx) =>
-      sankeyConfig(
-        ctx,
-        "energy-sankey",
-        "ui.panel.energy.cards.energy_sankey_title",
-        ctx.prefs.device_consumption,
-        (d) => d.stat_consumption,
-        36
-      )
+    (p) => hasDeviceConsumption(p)
   ),
 
   // --- Gas ---
@@ -405,26 +251,13 @@ const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
     "gas",
     "energy-gas-graph",
     "ui.panel.energy.cards.energy_gas_graph_title",
-    (p) => hasGasSource(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
-      type: "energy-gas-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 24 },
-    })
+    (p) => hasGasSource(p)
   ),
   entry(
     "gas",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => hasGasSource(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
-      type: "energy-sources-table",
-      collection_key: collectionKey,
-      types: ["gas"],
-      grid_options: { columns: 12 },
-    })
+    (p) => hasGasSource(p)
   ),
 
   // --- Water ---
@@ -432,41 +265,19 @@ const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
     "water",
     "energy-water-graph",
     "ui.panel.energy.cards.energy_water_graph_title",
-    (p) => hasWaterSource(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
-      type: "energy-water-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 24 },
-    })
+    (p) => hasWaterSource(p)
   ),
   entry(
     "water",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => hasWaterSource(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.energy_sources_table_title"),
-      type: "energy-sources-table",
-      collection_key: collectionKey,
-      types: ["water"],
-      grid_options: { columns: 12 },
-    })
+    (p) => hasWaterSource(p)
   ),
   entry(
     "water",
     "water-sankey",
     "ui.panel.energy.cards.water_sankey_title",
-    (p) => hasWaterDevices(p),
-    (ctx) =>
-      sankeyConfig(
-        ctx,
-        "water-sankey",
-        "ui.panel.energy.cards.water_sankey_title",
-        ctx.prefs.device_consumption_water,
-        (d) => d.stat_consumption,
-        24
-      )
+    (p) => hasWaterDevices(p)
   ),
 
   // --- Now (power) ---
@@ -474,43 +285,19 @@ const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
     "now",
     "power-sources-graph",
     "ui.panel.energy.cards.power_sources_graph_title",
-    (p) => hasPowerSources(p),
-    ({ hass, collectionKey }) => ({
-      title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
-      type: "power-sources-graph",
-      collection_key: collectionKey,
-      grid_options: { columns: 36 },
-    })
+    (p) => hasPowerSources(p)
   ),
   entry(
     "now",
     "power-sankey",
     "ui.panel.energy.cards.power_sankey_title",
-    (p) => hasPowerDevices(p),
-    (ctx) =>
-      sankeyConfig(
-        ctx,
-        "power-sankey",
-        "ui.panel.energy.cards.power_sankey_title",
-        ctx.prefs.device_consumption,
-        (d) => d.stat_rate,
-        36
-      )
+    (p) => hasPowerDevices(p)
   ),
   entry(
     "now",
     "water-flow-sankey",
     "ui.panel.energy.cards.water_flow_sankey_title",
-    (p) => hasWaterRateDevices(p),
-    (ctx) =>
-      sankeyConfig(
-        ctx,
-        "water-flow-sankey",
-        "ui.panel.energy.cards.water_flow_sankey_title",
-        ctx.prefs.device_consumption_water,
-        (d) => d.stat_rate,
-        36
-      )
+    (p) => hasWaterRateDevices(p)
   ),
 ];
 
@@ -555,31 +342,62 @@ export const getEnergyCardCatalog = (): readonly EnergyCardEntry[] => [
           (r.isApplicable as
             ((prefs: EnergyPreferences) => boolean) | undefined) ??
           VIEW_DEFAULT_APPLICABILITY[view],
-        buildConfig: ({ collectionKey }) => ({
-          type,
-          collection_key: collectionKey,
-          grid_options: { columns: 36 },
-        }),
       };
     }),
 ];
 
 /**
  * The cards a view strategy should render, in catalog order (built-ins first,
- * then externally-registered cards). Each entry's config is already built from
- * the given context, so the strategy only decides placement.
+ * then externally-registered cards). Returns only what a strategy can't derive
+ * itself — the card's type and title — leaving the card's config and placement
+ * to the strategy.
  */
 export const visibleEnergyCards = (
   view: EnergyViewPath,
-  ctx: EnergyCardContext,
+  prefs: EnergyPreferences,
   hidden: string[] | undefined
 ): VisibleEnergyCard[] =>
   getEnergyCardCatalog()
     .filter(
       (c) =>
-        c.view === view && c.isApplicable(ctx.prefs) && !hidden?.includes(c.key)
+        c.view === view && c.isApplicable(prefs) && !hidden?.includes(c.key)
     )
-    .map((c) => ({ type: c.type, config: c.buildConfig(ctx) }));
+    .map((c) => ({ type: c.type, getLabel: c.getLabel }));
+
+/**
+ * A per-card config override for a view: the card type plus any options that
+ * differ from the view's default (a narrower grid, a source-type filter, sankey
+ * grouping). The title is filled in from the catalog, so it is not repeated.
+ */
+export type EnergyViewCardConfig = Partial<LovelaceCardConfig> & {
+  type: string;
+};
+
+/**
+ * Assemble the card list for a single-section view. Every visible card (built-in
+ * and externally registered) renders in catalog order as
+ * `{ default, ...override }`, with its title taken from the catalog. The view
+ * supplies a `defaultConfig` shared by all its cards and per-card `overrides`
+ * for the ones that differ; placement stays with the strategy.
+ */
+export const buildEnergyViewCards = (
+  view: EnergyViewPath,
+  prefs: EnergyPreferences,
+  hidden: string[] | undefined,
+  localize: LocalizeFunc,
+  collectionKey: string,
+  defaultConfig: Partial<LovelaceCardConfig>,
+  overrides: EnergyViewCardConfig[] = []
+): LovelaceCardConfig[] => {
+  const byType = new Map(overrides.map((o) => [o.type, o]));
+  return visibleEnergyCards(view, prefs, hidden).map((card) => ({
+    collection_key: collectionKey,
+    title: card.getLabel(localize),
+    ...defaultConfig,
+    type: card.type,
+    ...byType.get(card.type),
+  }));
+};
 
 // --- Lookup helpers --------------------------------------------------------
 
@@ -594,10 +412,11 @@ const energyCardEntry = (
   ENERGY_CARD_CATALOG_BY_KEY.get(energyCardKey(view, cardType));
 
 /**
- * Whether a single built-in card is visible: it must be in the catalog, apply
- * to the current preferences, and not be hidden by the user. `visibleEnergyCards`
- * is the batch equivalent used by the strategies; this predicate expresses the
- * same rule for one `(view, cardType)` pair.
+ * Single source of truth for whether a view strategy should emit a card: the
+ * card must be in the catalog, apply to the current preferences, and not be
+ * hidden by the user. Strategies call this instead of re-deriving the
+ * applicability conditions inline, so the catalog and the strategies can never
+ * disagree on what "applicable" means.
  */
 export const isEnergyCardVisible = (
   view: EnergyViewPath,

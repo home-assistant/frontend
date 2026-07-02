@@ -8,13 +8,14 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
+  buildEnergyViewCards,
   hasGasRateSource,
   hasPowerDevices,
   hasPowerSources,
   hasWaterRateDevices,
   hasWaterRateSource,
-  visibleEnergyCards,
 } from "./energy-cards";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
@@ -100,13 +101,39 @@ export class PowerViewStrategy extends ReactiveElement {
       }
     });
 
-    for (const { config } of visibleEnergyCards(
-      "now",
-      { hass, prefs, collectionKey },
-      hidden
-    )) {
-      chartsSection.cards!.push(config);
-    }
+    const powerSankeyGrouping = shouldShowFloorsAndAreas(
+      prefs.device_consumption,
+      hass,
+      (d) => d.stat_rate
+    );
+    const waterFlowGrouping = shouldShowFloorsAndAreas(
+      prefs.device_consumption_water,
+      hass,
+      (d) => d.stat_rate
+    );
+
+    chartsSection.cards!.push(
+      ...buildEnergyViewCards(
+        "now",
+        prefs,
+        hidden,
+        hass.localize,
+        collectionKey,
+        { grid_options: { columns: 36 } },
+        [
+          {
+            type: "power-sankey",
+            group_by_floor: powerSankeyGrouping,
+            group_by_area: powerSankeyGrouping,
+          },
+          {
+            type: "water-flow-sankey",
+            group_by_floor: waterFlowGrouping,
+            group_by_area: waterFlowGrouping,
+          },
+        ]
+      )
+    );
 
     if (badges.length) {
       view.badges = badges;

@@ -10,10 +10,11 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
+  buildEnergyViewCards,
   hasWaterDevices,
   hasWaterSource,
-  visibleEnergyCards,
 } from "./energy-cards";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 
 @customElement("water-view-strategy")
 export class WaterViewStrategy extends ReactiveElement {
@@ -64,13 +65,36 @@ export class WaterViewStrategy extends ReactiveElement {
       },
     });
 
-    for (const { config } of visibleEnergyCards(
-      "water",
-      { hass, prefs, collectionKey },
-      hidden
-    )) {
-      section.cards!.push(config);
-    }
+    // The sankey grouping depends on the device tree, so it's computed here and
+    // handed to the card config the view owns.
+    const waterSankeyGrouping = shouldShowFloorsAndAreas(
+      prefs.device_consumption_water,
+      hass,
+      (d) => d.stat_consumption
+    );
+
+    section.cards!.push(
+      ...buildEnergyViewCards(
+        "water",
+        prefs,
+        hidden,
+        hass.localize,
+        collectionKey,
+        { grid_options: { columns: 24 } },
+        [
+          {
+            type: "energy-sources-table",
+            types: ["water"],
+            grid_options: { columns: 12 },
+          },
+          {
+            type: "water-sankey",
+            group_by_floor: waterSankeyGrouping,
+            group_by_area: waterSankeyGrouping,
+          },
+        ]
+      )
+    );
 
     return view;
   }

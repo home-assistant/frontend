@@ -7,7 +7,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasGasSource, visibleEnergyCards } from "./energy-cards";
+import { buildEnergyViewCards, hasGasSource } from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
@@ -60,13 +60,25 @@ export class GasViewStrategy extends ReactiveElement {
       },
     });
 
-    for (const { config } of visibleEnergyCards(
-      "gas",
-      { hass, prefs, collectionKey },
-      hidden
-    )) {
-      section.cards!.push(config);
-    }
+    // Titles come from the catalog; the view sets a default width and overrides
+    // only the cards that differ. External gas cards are appended automatically.
+    section.cards!.push(
+      ...buildEnergyViewCards(
+        "gas",
+        prefs,
+        hidden,
+        hass.localize,
+        collectionKey,
+        { grid_options: { columns: 24 } },
+        [
+          {
+            type: "energy-sources-table",
+            types: ["gas"],
+            grid_options: { columns: 12 },
+          },
+        ]
+      )
+    );
 
     return view;
   }

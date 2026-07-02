@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import type { LocalizeFunc } from "../../../../src/common/translations/localize";
 import type {
   EnergyPreferences,
   EnergySource,
 } from "../../../../src/data/energy";
 import { energyCardRegistrations } from "../../../../src/data/lovelace_custom_cards";
-import type { HomeAssistant } from "../../../../src/types";
 import {
+  buildEnergyViewCards,
   getEnergyCardCatalog,
   hasEnergySource,
   hasGasRateSource,
@@ -15,21 +16,16 @@ import {
   visibleEnergyCards,
 } from "../../../../src/panels/energy/strategies/energy-cards";
 
-// visibleEnergyCards builds each card's config, so the built-in gas cards it
-// touches only need `localize`; no gas card is a sankey, so no other hass state
-// is read.
-const mockHass = { localize: (k: string) => k } as unknown as HomeAssistant;
+// buildEnergyViewCards only calls localize to resolve titles; echoing the key
+// back is enough for assertions.
+const localize = ((key: string) => key) as unknown as LocalizeFunc;
 
-// The external (custom:) card configs a strategy would render for a view.
-const externalConfigs = (
+// The types of the cards visible in a view (built-in and external).
+const visibleTypes = (
   view: Parameters<typeof visibleEnergyCards>[0],
   prefs: EnergyPreferences,
-  hidden: string[] | undefined,
-  collectionKey: string
-) =>
-  visibleEnergyCards(view, { hass: mockHass, prefs, collectionKey }, hidden)
-    .filter((c) => c.type.startsWith("custom:"))
-    .map((c) => c.config);
+  hidden: string[] | undefined
+) => visibleEnergyCards(view, prefs, hidden).map((c) => c.type);
 
 const source = (s: Partial<EnergySource> & { type: string }): EnergySource =>
   s as unknown as EnergySource;
@@ -205,13 +201,12 @@ describe("isEnergyCardVisible", () => {
       energy_sources: [GRID_RETURN, SOLAR, GAS, WATER],
     });
     for (const card of getEnergyCardCatalog()) {
-      const cardType = card.key.slice(card.view.length + 1);
       expect(
-        isEnergyCardVisible(card.view, cardType, richPrefs, undefined)
+        isEnergyCardVisible(card.view, card.type, richPrefs, undefined)
       ).toBe(card.isApplicable(richPrefs));
       // Hiding the card's own key always wins.
       expect(
-        isEnergyCardVisible(card.view, cardType, richPrefs, [card.key])
+        isEnergyCardVisible(card.view, card.type, richPrefs, [card.key])
       ).toBe(false);
     }
   });
@@ -300,7 +295,7 @@ describe("getEnergyCardCatalog — external card entries", () => {
   });
 });
 
-describe("visibleEnergyCards — external card configs", () => {
+describe("visibleEnergyCards — external cards", () => {
   const gasPrefs = makePrefs({ energy_sources: [GAS] });
 
   beforeEach(() => {
@@ -310,19 +305,19 @@ describe("visibleEnergyCards — external card configs", () => {
     energyCardRegistrations.splice(0);
   });
 
-  it("returns an empty array when there are no registrations", () => {
-    expect(externalConfigs("gas", gasPrefs, undefined, "energy_1")).toEqual([]);
+  it("includes no custom cards when there are no registrations", () => {
+    expect(
+      visibleTypes("gas", gasPrefs, undefined).filter((t) =>
+        t.startsWith("custom:")
+      )
+    ).toEqual([]);
   });
 
-  it("returns a card config for an applicable, visible registration", () => {
+  it("includes an applicable, visible registration as a custom type", () => {
     energyCardRegistrations.push({ type: "my-gas-card", view: "gas" });
-    const configs = externalConfigs("gas", gasPrefs, undefined, "energy_1");
-    expect(configs).toHaveLength(1);
-    expect(configs[0]).toEqual({
-      type: "custom:my-gas-card",
-      collection_key: "energy_1",
-      grid_options: { columns: 36 },
-    });
+    expect(visibleTypes("gas", gasPrefs, undefined)).toContain(
+      "custom:my-gas-card"
+    );
   });
 
   it("excludes cards registered for a different view", () => {
@@ -330,9 +325,9 @@ describe("visibleEnergyCards — external card configs", () => {
       type: "electricity-card",
       view: "electricity",
     });
-    expect(
-      externalConfigs("gas", gasPrefs, undefined, "energy_1")
-    ).toHaveLength(0);
+    expect(visibleTypes("gas", gasPrefs, undefined)).not.toContain(
+      "custom:electricity-card"
+    );
   });
 
   it("excludes cards whose isApplicable predicate returns false", () => {
@@ -341,27 +336,96 @@ describe("visibleEnergyCards — external card configs", () => {
       view: "gas",
       isApplicable: () => false,
     });
-    expect(
-      externalConfigs("gas", gasPrefs, undefined, "energy_1")
-    ).toHaveLength(0);
+    expect(visibleTypes("gas", gasPrefs, undefined)).not.toContain(
+      "custom:never-shown"
+    );
   });
 
   it("excludes cards whose key is in the hidden list", () => {
     energyCardRegistrations.push({ type: "hidden-card", view: "gas" });
     expect(
-      externalConfigs("gas", gasPrefs, ["gas.custom:hidden-card"], "energy_1")
-    ).toHaveLength(0);
+      visibleTypes("gas", gasPrefs, ["gas.custom:hidden-card"])
+    ).not.toContain("custom:hidden-card");
+  });
+});
+
+describe("buildEnergyViewCards", () => {
+  const gasPrefs = makePrefs({ energy_sources: [GAS] });
+
+  beforeEach(() => {
+    energyCardRegistrations.splice(0);
+  });
+  afterEach(() => {
+    energyCardRegistrations.splice(0);
   });
 
-  it("propagates the collection_key into every config", () => {
-    energyCardRegistrations.push({ type: "card", view: "gas" });
-    const [config] = externalConfigs(
+  it("applies the view default to cards without an override", () => {
+    const cards = buildEnergyViewCards(
       "gas",
       gasPrefs,
       undefined,
-      "my_collection"
+      localize,
+      "energy_1",
+      { grid_options: { columns: 24 } }
     );
-    expect(config.collection_key).toBe("my_collection");
+    const gasGraph = cards.find((c) => c.type === "energy-gas-graph")!;
+    expect(gasGraph).toMatchObject({
+      type: "energy-gas-graph",
+      collection_key: "energy_1",
+      grid_options: { columns: 24 },
+      // title comes from the catalog (localize echoes the key back)
+      title: "ui.panel.energy.cards.energy_gas_graph_title",
+    });
+  });
+
+  it("lets a per-card override replace the default", () => {
+    const cards = buildEnergyViewCards(
+      "gas",
+      gasPrefs,
+      undefined,
+      localize,
+      "energy_1",
+      { grid_options: { columns: 24 } },
+      [
+        {
+          type: "energy-sources-table",
+          types: ["gas"],
+          grid_options: { columns: 12 },
+        },
+      ]
+    );
+    const table = cards.find((c) => c.type === "energy-sources-table")!;
+    expect(table.grid_options).toEqual({ columns: 12 });
+    expect(table.types).toEqual(["gas"]);
+  });
+
+  it("appends visible external cards with the view default", () => {
+    energyCardRegistrations.push({ type: "my-gas-card", view: "gas" });
+    const cards = buildEnergyViewCards(
+      "gas",
+      gasPrefs,
+      undefined,
+      localize,
+      "energy_1",
+      { grid_options: { columns: 24 } }
+    );
+    expect(cards[cards.length - 1]).toMatchObject({
+      type: "custom:my-gas-card",
+      collection_key: "energy_1",
+      grid_options: { columns: 24 },
+    });
+  });
+
+  it("omits cards hidden by the user", () => {
+    const cards = buildEnergyViewCards(
+      "gas",
+      gasPrefs,
+      ["gas.energy-gas-graph"],
+      localize,
+      "energy_1",
+      { grid_options: { columns: 24 } }
+    );
+    expect(cards.some((c) => c.type === "energy-gas-graph")).toBe(false);
   });
 });
 

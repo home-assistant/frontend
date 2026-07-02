@@ -9,6 +9,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import { visibleEnergyCards } from "./energy-cards";
+import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -65,35 +66,37 @@ export class EnergyViewStrategy extends ReactiveElement {
     const gaugeCards: LovelaceCardConfig[] = [];
     const sidebarSection = view.sidebar!.sections![0];
 
-    // Card configs come from the catalog; this strategy only decides placement,
-    // which differs by card: the distribution and grid-balance cards go in the
-    // sidebar (with a small-screen mirror section), the gauges are grouped, and
-    // everything else flows into the main column in catalog order.
-    const visible = visibleEnergyCards(
-      "electricity",
-      { hass, prefs, collectionKey },
-      hidden
+    // This view's card configs are built here; the catalog only says which are
+    // visible. Placement differs by card: distribution and grid-balance go in
+    // the sidebar (with a small-screen mirror), the gauges are grouped, and
+    // everything else flows into the main column.
+    const visibleTypes = new Set(
+      visibleEnergyCards("electricity", prefs, hidden).map((c) => c.type)
     );
-    const byType = new Map(visible.map((c) => [c.type, c.config]));
 
-    const placeInSidebarWithMirror = (config: LovelaceCardConfig) => {
-      sidebarSection.cards!.push(config);
+    const placeInSidebarWithMirror = (card: LovelaceCardConfig) => {
+      sidebarSection.cards!.push(card);
       view.sections!.push({
         type: "grid",
         column_span: 1,
-        cards: [config],
+        cards: [card],
         visibility: [SMALL_SCREEN_CONDITION],
       });
     };
 
-    const distribution = byType.get("energy-distribution");
-    if (distribution) {
-      placeInSidebarWithMirror(distribution);
+    if (visibleTypes.has("energy-distribution")) {
+      placeInSidebarWithMirror({
+        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
+        type: "energy-distribution",
+        collection_key: collectionKey,
+      });
     }
 
-    const gridBalance = byType.get("energy-grid-balance");
-    if (gridBalance) {
-      placeInSidebarWithMirror(gridBalance);
+    if (visibleTypes.has("energy-grid-balance")) {
+      placeInSidebarWithMirror({
+        type: "energy-grid-balance",
+        collection_key: collectionKey,
+      });
     }
 
     const GAUGE_TYPES = [
@@ -103,9 +106,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       "energy-carbon-consumed-gauge",
     ];
     for (const type of GAUGE_TYPES) {
-      const gauge = byType.get(type);
-      if (gauge) {
-        gaugeCards.push(gauge);
+      if (visibleTypes.has(type)) {
+        gaugeCards.push({ type, collection_key: collectionKey });
       }
     }
 
@@ -135,17 +137,88 @@ export class EnergyViewStrategy extends ReactiveElement {
       grid_options: { columns: 36 },
     });
 
-    // The remaining cards (graphs, tables, sankey, and any external cards) all
-    // flow into the main column in catalog order.
-    const SIDEBAR_TYPES = new Set([
+    if (visibleTypes.has("energy-usage-graph")) {
+      mainCards.push({
+        title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
+        type: "energy-usage-graph",
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
+    }
+    if (visibleTypes.has("energy-solar-graph")) {
+      mainCards.push({
+        title: hass.localize("ui.panel.energy.cards.energy_solar_graph_title"),
+        type: "energy-solar-graph",
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
+    }
+    if (visibleTypes.has("energy-sources-table")) {
+      mainCards.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_sources_table_title"
+        ),
+        type: "energy-sources-table",
+        collection_key: collectionKey,
+        types: ["grid", "solar", "battery"],
+        grid_options: { columns: 36 },
+      });
+    }
+    if (visibleTypes.has("energy-devices-detail-graph")) {
+      mainCards.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_devices_detail_graph_title"
+        ),
+        type: "energy-devices-detail-graph",
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
+    }
+    if (visibleTypes.has("energy-devices-graph")) {
+      mainCards.push({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_devices_graph_title"
+        ),
+        type: "energy-devices-graph",
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
+    }
+    if (visibleTypes.has("energy-sankey")) {
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption,
+        hass,
+        (d) => d.stat_consumption
+      );
+      mainCards.push({
+        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
+        type: "energy-sankey",
+        collection_key: collectionKey,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
+        grid_options: { columns: 36 },
+      });
+    }
+
+    // Externally-registered electricity cards, at full width.
+    const builtInTypes = new Set([
       "energy-distribution",
       "energy-grid-balance",
       ...GAUGE_TYPES,
+      "energy-usage-graph",
+      "energy-solar-graph",
+      "energy-sources-table",
+      "energy-devices-detail-graph",
+      "energy-devices-graph",
+      "energy-sankey",
     ]);
-    for (const { type, config } of visible) {
-      if (!SIDEBAR_TYPES.has(type)) {
-        mainCards.push(config);
-      }
+    for (const card of visibleEnergyCards("electricity", prefs, hidden)) {
+      if (builtInTypes.has(card.type)) continue;
+      mainCards.push({
+        type: card.type,
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
     }
 
     view.sections!.push({

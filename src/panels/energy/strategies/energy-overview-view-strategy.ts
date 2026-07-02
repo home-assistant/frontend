@@ -5,10 +5,11 @@ import {
   getEnergyDataCollection,
 } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { visibleEnergyCards } from "./energy-cards";
+import { hasWaterSource, visibleEnergyCards } from "./energy-cards";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -54,12 +55,88 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       return view;
     }
 
-    for (const { config } of visibleEnergyCards(
-      "overview",
-      { hass, prefs, collectionKey },
-      hidden
-    )) {
-      view.sections!.push({ type: "grid", cards: [config] });
+    // Overview renders each card in its own full-width grid section.
+    const addSection = (card: LovelaceCardConfig) =>
+      view.sections!.push({ type: "grid", cards: [card] });
+
+    const visible = visibleEnergyCards("overview", prefs, hidden);
+    const visibleTypes = new Set(visible.map((c) => c.type));
+
+    if (visibleTypes.has("energy-distribution")) {
+      addSection({
+        title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
+        type: "energy-distribution",
+        collection_key: collectionKey,
+      });
+    }
+    if (visibleTypes.has("energy-sources-table")) {
+      addSection({
+        title: hass.localize(
+          "ui.panel.energy.cards.energy_sources_table_title"
+        ),
+        type: "energy-sources-table",
+        collection_key: collectionKey,
+        show_only_totals: true,
+      });
+    }
+    if (visibleTypes.has("power-sources-graph")) {
+      addSection({
+        title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
+        type: "power-sources-graph",
+        collection_key: collectionKey,
+        show_legend: false,
+      });
+    }
+    if (visibleTypes.has("energy-usage-graph")) {
+      addSection({
+        title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
+        type: "energy-usage-graph",
+        collection_key: collectionKey,
+      });
+    }
+    if (visibleTypes.has("energy-gas-graph")) {
+      addSection({
+        title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
+        type: "energy-gas-graph",
+        collection_key: collectionKey,
+      });
+    }
+    // One toggle gates the water row: sources render energy-water-graph,
+    // device-only configs render water-sankey.
+    if (visibleTypes.has("energy-water-graph")) {
+      addSection(
+        hasWaterSource(prefs)
+          ? {
+              title: hass.localize(
+                "ui.panel.energy.cards.energy_water_graph_title"
+              ),
+              type: "energy-water-graph",
+              collection_key: collectionKey,
+            }
+          : {
+              title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
+              type: "water-sankey",
+              collection_key: collectionKey,
+            }
+      );
+    }
+
+    // Externally-registered overview cards, each at full width.
+    const builtInTypes = new Set([
+      "energy-distribution",
+      "energy-sources-table",
+      "power-sources-graph",
+      "energy-usage-graph",
+      "energy-gas-graph",
+      "energy-water-graph",
+    ]);
+    for (const card of visible) {
+      if (builtInTypes.has(card.type)) continue;
+      addSection({
+        type: card.type,
+        collection_key: collectionKey,
+        grid_options: { columns: 36 },
+      });
     }
 
     return view;
