@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
@@ -56,12 +55,7 @@ export class HaConfigAppsRepositories extends LitElement {
   @state() private _error?: string;
 
   protected firstUpdated() {
-    this._loadData().then(() => {
-      const repositoryUrl = extractSearchParam("repository_url");
-      if (repositoryUrl) {
-        this._addRepository(repositoryUrl);
-      }
-    });
+    this._loadData();
   }
 
   private _columns = memoizeOne(
@@ -222,18 +216,6 @@ export class HaConfigAppsRepositories extends LitElement {
         }
       },
     });
-  }
-
-  private async _addRepository(url: string) {
-    try {
-      await addStoreRepository(this.hass, url);
-      await this._loadData();
-      fireEvent(this, "apps-collection-refresh", { collection: "store" });
-    } catch (err: any) {
-      showAlertDialog(this, {
-        text: extractApiErrorMessage(err),
-      });
-    }
   }
 
   private _removeRepository = async (ev: Event) => {
