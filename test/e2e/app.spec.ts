@@ -99,7 +99,7 @@ test.describe("App shell", () => {
     await goToPanel(page, "/lovelace");
 
     // Regular panels use #sidebar-panel-{urlPath} inside ha-sidebar's shadow root
-    for (const urlPath of ["lovelace", "energy", "history"]) {
+    for (const urlPath of ["lovelace", "map", "energy", "history"]) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
         page.locator(
@@ -113,6 +113,71 @@ test.describe("App shell", () => {
         `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
       )
     ).toBeAttached();
+  });
+
+  test("sidebar navigation changes the active panel", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    const historyLink = sidebar.locator("#sidebar-panel-history");
+    if (!(await historyLink.isVisible().catch(() => false))) {
+      await page.locator("ha-test >> home-assistant-main").evaluate((el) => {
+        el.dispatchEvent(
+          new CustomEvent("hass-toggle-menu", {
+            detail: { open: true },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      });
+    }
+
+    await expect(historyLink).toBeVisible({ timeout: SHELL_TIMEOUT });
+    await historyLink.click();
+
+    await expect(page).toHaveURL(/\/#\/history$/, { timeout: SHELL_TIMEOUT });
+    await expect(
+      page.locator("ha-panel-history, history-panel").first()
+    ).toBeAttached({ timeout: PANEL_TIMEOUT });
+  });
+
+  test("sidebar renders notification badge", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    const notificationsLink = sidebar.locator("#sidebar-notifications");
+    await expect(notificationsLink).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(notificationsLink.locator(".badge").first()).toHaveText("1", {
+      timeout: SHELL_TIMEOUT,
+    });
+  });
+
+  test("sidebar marks the active panel as selected", async ({ page }) => {
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    const lovelaceLink = sidebar.locator("#sidebar-panel-lovelace");
+    const historyLink = sidebar.locator("#sidebar-panel-history");
+
+    await goToPanel(page, "/lovelace");
+    await expect(lovelaceLink).toHaveClass(/selected/, {
+      timeout: SHELL_TIMEOUT,
+    });
+    await expect(historyLink).not.toHaveClass(/selected/);
+
+    await goToPanel(page, "/history");
+    await expect(historyLink).toHaveClass(/selected/, {
+      timeout: SHELL_TIMEOUT,
+    });
+    await expect(lovelaceLink).not.toHaveClass(/selected/);
   });
 
   test("non-admin user does NOT see config panel in sidebar", async ({
@@ -153,6 +218,15 @@ test.describe("Panel navigation", () => {
     await goToPanel(page, "/energy");
     await expect(
       page.locator("ha-panel-energy, energy-view").first()
+    ).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  test("navigates to map panel", async ({ page }) => {
+    await goToPanel(page, "/map");
+    await expect(
+      page.locator("ha-panel-lovelace, hui-root").first()
     ).toBeAttached({
       timeout: PANEL_TIMEOUT,
     });
