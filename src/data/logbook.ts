@@ -1,5 +1,6 @@
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../common/const";
+import type { TimestampStateDomain } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import type { LocalizeFunc } from "../common/translations/localize";
@@ -26,6 +27,7 @@ export interface LogbookEntry {
   source?: string; // The trigger source (English phrase, parsed for the cause)
   domain?: string;
   state?: string; // The state of the entity
+  attributes?: { event_type?: string }; // Selected attributes the backend surfaces
   // Context data
   context_id?: string;
   context_user_id?: string;
@@ -143,7 +145,10 @@ export const subscribeLogbook = (
   }
   return hass.connection.subscribeMessage<LogbookStreamMessage>(
     (message) => callbackFunction(message, subscriptionId),
-    params
+    params,
+    // Don't auto-resubscribe: the replay uses a stale start_time and ha-logbook
+    // appends events without deduping, so it resubscribes on `ready` instead.
+    { resubscribe: false }
   );
 };
 
@@ -184,8 +189,11 @@ export const createHistoricState = (
 // translate the bare description here.
 export const localizeTriggerSource = (
   localize: LocalizeFunc,
-  source: string
+  source: string | null
 ) => {
+  if (!source) {
+    return "";
+  }
   for (const key of Object.keys(triggerPhrases) as TriggerPhraseKey[]) {
     const phrase = triggerPhrases[key];
     if (source.startsWith(phrase)) {
@@ -236,16 +244,62 @@ export const parseTriggerSource = (source: string): ParsedTriggerSource => {
   return {};
 };
 
+// Short label shown instead of the bare timestamp for each timestamp-state
+// domain. Typed to TIMESTAMP_STATE_DOMAINS minus datetime (a real value) and
+// event (handled separately via its event type), so a new timestamp domain
+// won't compile until it gets a label here.
+type LogbookActionMessage =
+  | "pressed"
+  | "activated"
+  | "scanned"
+  | "updated"
+  | "sent"
+  | "detected"
+  | "transcribed"
+  | "spoke"
+  | "responded"
+  | "ran"
+  | "command_sent";
+
+const STATE_ACTION_MESSAGES: Record<
+  Exclude<TimestampStateDomain, "datetime" | "event">,
+  LogbookActionMessage
+> = {
+  button: "pressed",
+  input_button: "pressed",
+  scene: "activated",
+  tag: "scanned",
+  image: "updated",
+  notify: "sent",
+  wake_word: "detected",
+  stt: "transcribed",
+  tts: "spoke",
+  conversation: "responded",
+  ai_task: "ran",
+  infrared: "command_sent",
+  radio_frequency: "command_sent",
+};
+
 export const localizeStateMessage = (
   hass: HomeAssistant,
   state: string,
   stateObj: HassEntity,
-  domain: string
+  domain: string,
+  attributes?: LogbookEntry["attributes"]
 ): string => {
-  // Events expose a timestamp as their state, which has no meaningful display
-  // value, so keep a dedicated phrase.
+  // Events show the triggered event type, falling back to a generic label when
+  // the type is unknown (the timestamp state is meaningless on its own).
   if (domain === "event") {
+    const eventType = attributes?.event_type;
+    if (eventType != null) {
+      return hass.formatEntityAttributeValue(stateObj, "event_type", eventType);
+    }
     return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.detected_event_no_type`);
+  }
+  const actionKey: LogbookActionMessage | undefined =
+    STATE_ACTION_MESSAGES[domain as keyof typeof STATE_ACTION_MESSAGES];
+  if (actionKey) {
+    return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.${actionKey}`);
   }
   // Every other domain reuses the backend state translation, so the logbook
   // speaks the same vocabulary as the rest of the UI.

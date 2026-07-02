@@ -122,11 +122,16 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
     return html`
       <p class="label">
-        ${action && action !== "off"
-          ? this._formatters.formatEntityAttributeValue(this.stateObj, "action")
-          : isHumidityDisplayed
-            ? this._formatters.formatEntityState(this.stateObj)
-            : nothing}
+        ${
+          action && action !== "off"
+            ? this._formatters.formatEntityAttributeValue(
+                this.stateObj,
+                "action"
+              )
+            : isHumidityDisplayed
+              ? this._formatters.formatEntityState(this.stateObj)
+              : nothing
+        }
       </p>
     `;
   }

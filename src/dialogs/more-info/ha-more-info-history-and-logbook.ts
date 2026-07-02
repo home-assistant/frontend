@@ -16,22 +16,26 @@ export class MoreInfoHistoryAndLogbook extends LitElement {
 
   protected render() {
     return html`
-      ${computeShowHistoryComponent(this.hass, this.entityId)
-        ? html`
-            <ha-more-info-history
-              .hass=${this.hass}
-              .entityId=${this.entityId}
-            ></ha-more-info-history>
-          `
-        : ""}
-      ${computeShowLogBookComponent(this.hass, this.entityId)
-        ? html`
-            <ha-more-info-logbook
-              .hass=${this.hass}
-              .entityId=${this.entityId}
-            ></ha-more-info-logbook>
-          `
-        : ""}
+      ${
+        computeShowHistoryComponent(this.hass, this.entityId)
+          ? html`
+              <ha-more-info-history
+                .hass=${this.hass}
+                .entityId=${this.entityId}
+              ></ha-more-info-history>
+            `
+          : ""
+      }
+      ${
+        computeShowLogBookComponent(this.hass, this.entityId)
+          ? html`
+              <ha-more-info-logbook
+                .hass=${this.hass}
+                .entityId=${this.entityId}
+              ></ha-more-info-logbook>
+            `
+          : ""
+      }
     `;
   }
 

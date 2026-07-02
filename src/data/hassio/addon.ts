@@ -19,18 +19,9 @@ export type AddonStage = "stable" | "experimental" | "deprecated";
 export type AddonAppArmour = "disable" | "default" | "profile";
 export type AddonRole = "default" | "homeassistant" | "manager" | "admin";
 export type AddonStartup =
-  | "initialize"
-  | "system"
-  | "services"
-  | "application"
-  | "once";
+  "initialize" | "system" | "services" | "application" | "once";
 export type AddonState =
-  | "startup"
-  | "started"
-  | "stopped"
-  | "unknown"
-  | "error"
-  | null;
+  "startup" | "started" | "stopped" | "unknown" | "error" | null;
 export type AddonRepository = "core" | "local" | string;
 
 interface AddonFieldTranslation {

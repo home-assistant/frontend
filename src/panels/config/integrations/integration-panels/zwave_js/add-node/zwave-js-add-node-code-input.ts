@@ -24,9 +24,11 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
   render() {
     return html`
       <p>${this.description}</p>
-      ${this.error
-        ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
-        : nothing}
+      ${
+        this.error
+          ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
+          : nothing
+      }
       <ha-input
         .placeholder=${this.placeholder}
         .value=${this.value}
@@ -35,11 +37,13 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
         required
         autofocus
       ></ha-input>
-      ${this.referenceKey
-        ? html`<div>
-            <span>${this.value.padEnd(5, "·")}</span>${this.referenceKey}
-          </div> `
-        : nothing}
+      ${
+        this.referenceKey
+          ? html`<div>
+              <span>${this.value.padEnd(5, "·")}</span>${this.referenceKey}
+            </div> `
+          : nothing
+      }
     `;
   }
 

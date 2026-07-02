@@ -30,7 +30,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "../components/ha-config-navigation-list";
 import "../ha-config-section";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 
 @customElement("ha-config-system-navigation")
 class HaConfigSystemNavigation extends LitElement {

@@ -100,6 +100,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _lowSecurityReason?: number;
 
+  @state() private _interviewProgress?: number;
+
   @state() private _device?: ZWaveJSAddNodeDevice;
 
   @state() private _deviceOptions?: ZWaveJSAddNodeSmartStartOptions;
@@ -147,9 +149,13 @@ class DialogZWaveJSAddNode extends LitElement {
       >
         <ha-dialog-header slot="header"> ${headerHtml} </ha-dialog-header>
         ${content}
-        ${actions === nothing
-          ? nothing
-          : html`<ha-dialog-footer slot="footer">${actions}</ha-dialog-footer>`}
+        ${
+          actions === nothing
+            ? nothing
+            : html`<ha-dialog-footer slot="footer"
+                >${actions}</ha-dialog-footer
+              >`
+        }
       </ha-dialog>
     `;
   }
@@ -225,14 +231,16 @@ class DialogZWaveJSAddNode extends LitElement {
     );
 
     return html`
-      ${icon
-        ? html`<ha-icon-button
-            slot="navigationIcon"
-            @click=${this._handleCloseOrBack}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${icon}
-          ></ha-icon-button>`
-        : nothing}
+      ${
+        icon
+          ? html`<ha-icon-button
+              slot="navigationIcon"
+              @click=${this._handleCloseOrBack}
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${icon}
+            ></ha-icon-button>`
+          : nothing
+      }
       <span slot="title">${headerText}</span>
     `;
   }
@@ -250,7 +258,6 @@ class DialogZWaveJSAddNode extends LitElement {
       return html`
         <div>
           <ha-qr-scanner
-            .hass=${this.hass}
             @qr-code-scanned=${this._qrCodeScanned}
             @qr-code-closed=${this.closeDialog}
             @qr-code-more-options=${this._qrScanShowMoreOptions}
@@ -288,8 +295,9 @@ class DialogZWaveJSAddNode extends LitElement {
           .showAddAnotherDevice=${this._step === "search_smart_start_device"}
           .showSecurityOptions=${this._step === "search_devices"}
           .inclusionStrategy=${this._inclusionStrategy}
-          @show-z-wave-security-options=${this
-            ._searchDevicesShowSecurityOptions}
+          @show-z-wave-security-options=${
+            this._searchDevicesShowSecurityOptions
+          }
           @add-another-z-wave-device=${this._addAnotherDevice}
         ></zwave-js-add-node-searching-devices>
       `;
@@ -306,9 +314,11 @@ class DialogZWaveJSAddNode extends LitElement {
       return html`<zwave-js-add-node-configure-device
         .hass=${this.hass}
         .deviceName=${this._device?.name ?? ""}
-        .longRangeSupported=${!!this._device?.provisioningInfo?.supportedProtocols?.includes(
-          Protocols.ZWaveLongRange
-        ) && this._controllerSupportsLongRange}
+        .longRangeSupported=${
+          !!this._device?.provisioningInfo?.supportedProtocols?.includes(
+            Protocols.ZWaveLongRange
+          ) && this._controllerSupportsLongRange
+        }
         @value-changed=${this._setDeviceOptions}
       ></zwave-js-add-node-configure-device> `;
     }
@@ -339,6 +349,10 @@ class DialogZWaveJSAddNode extends LitElement {
     ) {
       return html`
         <zwave-js-add-node-loading
+          .hass=${this.hass}
+          .progress=${
+            this._step === "interviewing" ? this._interviewProgress : undefined
+          }
           .description=${this.hass.localize(
             `ui.panel.config.zwave_js.add_node.${this._step !== "rename_device" ? "getting_device_information" : "saving_device"}`
           )}
@@ -379,6 +393,7 @@ class DialogZWaveJSAddNode extends LitElement {
     }
 
     return html`<zwave-js-add-node-loading
+      .hass=${this.hass}
       .delay=${1000}
     ></zwave-js-add-node-loading>`;
   }
@@ -703,8 +718,12 @@ class DialogZWaveJSAddNode extends LitElement {
             break;
           case "node added":
             this._step = "interviewing";
+            this._interviewProgress = undefined;
             this._lowSecurity = message.node.low_security;
             this._lowSecurityReason = message.node.low_security_reason;
+            break;
+          case "interview progress":
+            this._interviewProgress = message.progress;
             break;
           case "interview completed":
             this._unsubscribeAddZwaveNode();
@@ -1081,6 +1100,7 @@ class DialogZWaveJSAddNode extends LitElement {
     this._dskPin = "";
     this._lowSecurity = false;
     this._lowSecurityReason = undefined;
+    this._interviewProgress = undefined;
     this._inclusionStrategy = undefined;
 
     if (this._addNodeTimeoutHandle) {

@@ -98,7 +98,10 @@ function createYAxisLabelFormatter(
   fractionDigits: number
 ) {
   return (value: number): string =>
-    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
+    formatNumber(value, locale, {
+      minimumFractionDigits: value === 0 ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
 }
 
 export function getCommonOptions(
@@ -297,11 +300,11 @@ function formatTooltip(
     return nothing;
   }
   return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
-    ${rows.map(
-      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
-    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
-      : nothing}`;
+    ${rows.map((row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`)}${
+      sumPositive !== 0 && countPositive > 1 && formatTotal
+        ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+        : nothing
+    }`;
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {

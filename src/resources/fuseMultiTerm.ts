@@ -2,7 +2,6 @@ import type {
   Expression,
   FuseIndex,
   FuseOptionKey,
-  FuseResult,
   IFuseOptions,
 } from "fuse.js";
 import Fuse from "fuse.js";
@@ -126,13 +125,12 @@ export function multiTermSearch<T>(
  * This function splits the search string into individual terms and searches for each term
  * independently. Results are aggregated and scored based on:
  * - Number of terms matched (items must match ALL terms to be included)
- * - Fuse.js match score for each term
- * - Weight of the matched keys
+ * - The Fuse.js relevance score of each term, which reflects key weight,
+ *   match quality and field length
  *
  * @template T - The type of items being searched
  * @param items - The array of items to search through
  * @param search - The search string, which will be split by spaces into multiple terms
- * @param searchKeys - Array of weighted keys configuration for Fuse.js search
  * @param getItemId - Function to extract a unique identifier from each item
  * @param fuseIndex - Optional but highly recommended! Pre-built Fuse.js index for improved performance
  * @param options - Optional Fuse.js options to customize search behavior
@@ -142,7 +140,6 @@ export function multiTermSearch<T>(
 export function multiTermSortedSearch<T>(
   items: T[],
   search: string,
-  searchKeys: FuseWeightedKey[],
   getItemId: (item: T) => string,
   fuseIndex?: FuseIndex<T>,
   options: IFuseOptions<T> = {}
@@ -178,7 +175,6 @@ export function multiTermSortedSearch<T>(
       ...options,
       shouldSort: false,
       includeScore: true,
-      includeMatches: true,
     });
 
     if (termResults.length) {
@@ -195,12 +191,9 @@ export function multiTermSortedSearch<T>(
 
         searchResults[itemId].hits += 1;
 
-        const weight = _getMatchedKeyHighestWeight<T>(r, searchKeys);
-
-        const score = r.score ? 1 - r.score : 0;
-        const weightedScore = score * weight;
-
-        searchResults[itemId].score += weightedScore;
+        // Multiply the terms' scores to combine them; summing -log does the same
+        // while turning a lower (better) Fuse score into a bigger contribution.
+        searchResults[itemId].score += -Math.log(r.score || Number.MIN_VALUE);
       });
     }
   });
@@ -215,41 +208,8 @@ export function multiTermSortedSearch<T>(
     ({ hits }) => hits === terms.length
   );
 
-  // Sort by score descending
+  // Sort by aggregated relevance (higher is better)
   results.sort((a, b) => b.score - a.score);
 
   return results.map(({ item }) => item);
-}
-
-/**
- * Finds the highest weight among all matched keys in a Fuse.js search result.
- *
- * @typeParam T - The type of items being searched
- * @param result - A single Fuse.js search result containing match information
- * @param searchKeys - Array of weighted search keys configured for the Fuse instance
- * @returns The highest weight value among matched keys, or 1 if no matches exist or no weights are defined
- */
-function _getMatchedKeyHighestWeight<T>(
-  result: FuseResult<T>,
-  searchKeys: FuseWeightedKey[]
-): number {
-  if (!result.matches || result.matches.length === 0) {
-    return 1;
-  }
-
-  // Find the highest weighted key that matched
-  let maxWeight = 1;
-  for (const match of result.matches) {
-    const keyConfig = searchKeys.find((k) => {
-      if (typeof k.name === "string") {
-        return k.name === match.key;
-      }
-      return k.name.join(".") === match.key;
-    });
-    if (keyConfig && keyConfig.weight && keyConfig.weight > maxWeight) {
-      maxWeight = keyConfig.weight;
-    }
-  }
-
-  return maxWeight;
 }

@@ -123,18 +123,22 @@ export class DialogLovelaceResourceDetail extends DirtyStateProviderMixin<
           <ha-button
             slot="primaryAction"
             @click=${this._updateResource}
-            .disabled=${urlInvalid ||
-            !this._data?.res_type ||
-            this._submitting ||
-            !this.isDirtyState}
+            .disabled=${
+              urlInvalid ||
+              !this._data?.res_type ||
+              this._submitting ||
+              !this.isDirtyState
+            }
           >
-            ${this._params.resource
-              ? this.hass!.localize(
-                  "ui.panel.config.lovelace.resources.detail.update"
-                )
-              : this.hass!.localize(
-                  "ui.panel.config.lovelace.resources.detail.create"
-                )}
+            ${
+              this._params.resource
+                ? this.hass!.localize(
+                    "ui.panel.config.lovelace.resources.detail.update"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.config.lovelace.resources.detail.create"
+                  )
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

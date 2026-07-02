@@ -98,9 +98,11 @@ export class DemoAutomationDescribeTrigger extends LitElement {
       <ha-card header="Triggers">
         <div class="trigger">
           <span>
-            ${this._trigger
-              ? describeTrigger(this._trigger, this.hass, [])
-              : "<invalid YAML>"}
+            ${
+              this._trigger
+                ? describeTrigger(this._trigger, this.hass, [])
+                : "<invalid YAML>"
+            }
           </span>
           <ha-yaml-editor
             label="Trigger Config"

@@ -8,12 +8,7 @@ import type { VacuumEntity } from "../../data/vacuum";
 import { isCleaning } from "../../data/vacuum";
 
 type VacuumVisualState =
-  | "cleaning"
-  | "docked"
-  | "returning"
-  | "paused"
-  | "error"
-  | "idle";
+  "cleaning" | "docked" | "returning" | "paused" | "error" | "idle";
 
 const computeVisualState = (stateObj: VacuumEntity): VacuumVisualState => {
   if (stateObj.state === UNAVAILABLE) {

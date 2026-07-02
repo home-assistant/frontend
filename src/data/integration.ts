@@ -18,13 +18,7 @@ export const integrationsWithPanel = {
 };
 
 export type IntegrationType =
-  | "device"
-  | "helper"
-  | "hub"
-  | "service"
-  | "hardware"
-  | "entity"
-  | "system";
+  "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
 
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 

@@ -15,6 +15,8 @@ import { SENSOR_TIMESTAMP_DEVICE_CLASSES } from "../../../../data/sensor";
 import type { EntitiesCardEntityConfig } from "../../cards/types";
 import type { LovelaceRowEditor } from "../../types";
 import { entitiesConfigStruct } from "../structs/entities-struct";
+import { DOMAIN_TO_ELEMENT_TYPE } from "../../create-element/create-row-element";
+import { TIMESTAMP_STATE_DOMAINS } from "../../../../common/const";
 
 const SECONDARY_INFO_VALUES = {
   none: {},
@@ -88,7 +90,7 @@ export class HuiGenericEntityRowEditor
         ...(showTimeFormat
           ? ([
               {
-                name: "format",
+                name: "time_format",
                 selector: {
                   ui_time_format: {},
                 },
@@ -105,13 +107,17 @@ export class HuiGenericEntityRowEditor
     }
 
     const entity = this._config.entity;
-    const domain = entity ? computeDomain(entity) : undefined;
-    const showTimeFormat =
-      domain === "event" ||
-      (domain === "sensor" &&
-        SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
-          this.hass.states[entity]?.attributes.device_class
-        ));
+    const domain = entity ? computeDomain(entity) : "";
+    const simpleEntity =
+      (DOMAIN_TO_ELEMENT_TYPE[domain] ||
+        DOMAIN_TO_ELEMENT_TYPE["_domain_not_found"]) === "simple";
+    const showTimeFormat = simpleEntity
+      ? TIMESTAMP_STATE_DOMAINS.has(domain)
+      : domain === "event" ||
+        (domain === "sensor" &&
+          SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+            this.hass.states[entity]?.attributes.device_class
+          ));
 
     const schema =
       this.schema ||
@@ -139,10 +145,6 @@ export class HuiGenericEntityRowEditor
       case "secondary_info":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.entity-row.${schema.name}`
-        );
-      case "format":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.time_format`
         );
       default:
         return this.hass!.localize(

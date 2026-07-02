@@ -181,8 +181,7 @@ class HuiPrecipitationForecastCardFeature
   private _shouldResubscribe(changedProps: PropertyValues): boolean {
     if (changedProps.has("context")) {
       const previous = changedProps.get("context") as
-        | LovelaceCardFeatureContext
-        | undefined;
+        LovelaceCardFeatureContext | undefined;
       if (previous?.entity_id !== this.context?.entity_id) return true;
     }
     if (changedProps.has("_config")) {
@@ -276,9 +275,11 @@ class HuiPrecipitationForecastCardFeature
       return html`
         <div class=${containerClasses}>
           <div class="bars">${hourlyBars}</div>
-          ${this._showLabels && this._locale
-            ? renderHourSlotLabels(hoursToShow, this._locale)
-            : nothing}
+          ${
+            this._showLabels && this._locale
+              ? renderHourSlotLabels(hoursToShow, this._locale)
+              : nothing
+          }
         </div>
       `;
     }
@@ -304,9 +305,11 @@ class HuiPrecipitationForecastCardFeature
         <div class="bars">
           ${this._renderDailyBars(entries, precipitationType, fill)}
         </div>
-        ${this._showLabels && this._locale
-          ? renderDayLabels(entries, entriesPerDay, this._locale)
-          : nothing}
+        ${
+          this._showLabels && this._locale
+            ? renderDayLabels(entries, entriesPerDay, this._locale)
+            : nothing
+        }
       </div>
     `;
   }

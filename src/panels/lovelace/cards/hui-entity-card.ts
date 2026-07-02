@@ -173,23 +173,25 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
         </div>
         <div class="info">
-          ${"attribute" in this._config
-            ? this._renderValueWithUnit(
-                stateObj.attributes[this._config.attribute!] !== undefined
-                  ? html`<ha-attribute-value
-                      hide-unit
-                      .stateObj=${stateObj}
-                      .attribute=${this._config.attribute!}
-                    ></ha-attribute-value>`
-                  : this.hass.localize("state.default.unknown"),
-                unit,
-                false
-              )
-            : this._renderValueWithUnit(
-                valueFromParts(stateParts),
-                unit,
-                unitFirst
-              )}
+          ${
+            "attribute" in this._config
+              ? this._renderValueWithUnit(
+                  stateObj.attributes[this._config.attribute!] !== undefined
+                    ? html`<ha-attribute-value
+                        hide-unit
+                        .stateObj=${stateObj}
+                        .attribute=${this._config.attribute!}
+                      ></ha-attribute-value>`
+                    : this.hass.localize("state.default.unknown"),
+                  unit,
+                  false
+                )
+              : this._renderValueWithUnit(
+                  valueFromParts(stateParts),
+                  unit,
+                  unitFirst
+                )
+          }
         </div>
         <div
           class="footer"
@@ -213,12 +215,14 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     return html`<span
         class=${classMap({ value: true, "first-part": !unitFirst })}
         >${value}</span
-      >${unit
-        ? html`<span
-            class=${classMap({ measurement: true, "first-part": unitFirst })}
-            >${unit}</span
-          >`
-        : nothing}`;
+      >${
+        unit
+          ? html`<span
+              class=${classMap({ measurement: true, "first-part": unitFirst })}
+              >${unit}</span
+            >`
+          : nothing
+      }`;
   }
 
   private _computeColor(stateObj: HassEntity): string | undefined {
@@ -241,7 +245,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
     // Side Effect used to update footer hass while keeping optimizations
-    if (this._footerElement) {
+    if (this._footerElement && "hass" in this._footerElement) {
       this._footerElement.hass = this.hass;
     }
 
@@ -256,8 +260,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntityCardConfig
-      | undefined;
+      EntityCardConfig | undefined;
 
     if (
       !oldHass ||

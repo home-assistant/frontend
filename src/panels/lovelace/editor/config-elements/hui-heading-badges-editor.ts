@@ -67,22 +67,24 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     return html`
-      ${this.badges?.length
-        ? html`
-            <ha-sortable
-              handle-selector=".handle"
-              @item-moved=${this._badgeMoved}
-            >
-              <div class="badges">
-                ${repeat(
-                  this.badges.filter(Boolean),
-                  (badge) => this._getKey(badge),
-                  (badge, index) => this._renderBadgeItem(badge, index)
-                )}
-              </div>
-            </ha-sortable>
-          `
-        : nothing}
+      ${
+        this.badges?.length
+          ? html`
+              <ha-sortable
+                handle-selector=".handle"
+                @item-moved=${this._badgeMoved}
+              >
+                <div class="badges">
+                  ${repeat(
+                    this.badges.filter(Boolean),
+                    (badge) => this._getKey(badge),
+                    (badge, index) => this._renderBadgeItem(badge, index)
+                  )}
+                </div>
+              </ha-sortable>
+            `
+          : nothing
+      }
       <ha-dropdown @wa-select=${this._addBadge}>
         <ha-button slot="trigger" appearance="filled" size="s">
           <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
@@ -111,11 +113,13 @@ export class HuiHeadingBadgesEditor extends LitElement {
         <div class="handle">
           <ha-svg-icon .path=${mdiDragHorizontalVariant}></ha-svg-icon>
         </div>
-        ${type === "entity"
-          ? this._renderEntityBadge(entityBadge)
-          : type === "button"
-            ? this._renderButtonBadge(badge as ButtonHeadingBadgeConfig)
-            : this._renderUnknownBadge(type)}
+        ${
+          type === "entity"
+            ? this._renderEntityBadge(entityBadge)
+            : type === "button"
+              ? this._renderButtonBadge(badge as ButtonHeadingBadgeConfig)
+              : this._renderUnknownBadge(type)
+        }
         <ha-icon-button
           .label=${this.hass.localize(`ui.panel.lovelace.editor.badges.edit`)}
           .path=${mdiPencil}
@@ -191,9 +195,11 @@ export class HuiHeadingBadgesEditor extends LitElement {
       <div class="badge-content">
         <div>
           <span>${primary}</span>
-          ${secondary
-            ? html`<span class="secondary">${secondary}</span>`
-            : nothing}
+          ${
+            secondary
+              ? html`<span class="secondary">${secondary}</span>`
+              : nothing
+          }
         </div>
       </div>
     `;
@@ -204,9 +210,11 @@ export class HuiHeadingBadgesEditor extends LitElement {
       <div class="badge-content">
         <div>
           <span>${this._getBadgeTypeLabel("button")}</span>
-          ${badge.text
-            ? html`<span class="secondary">${badge.text}</span>`
-            : nothing}
+          ${
+            badge.text
+              ? html`<span class="secondary">${badge.text}</span>`
+              : nothing
+          }
         </div>
       </div>
     `;

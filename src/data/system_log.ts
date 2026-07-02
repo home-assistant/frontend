@@ -1,11 +1,7 @@
 import type { HomeAssistant } from "../types";
 
 export type SystemLogLevel =
-  | "critical"
-  | "error"
-  | "warning"
-  | "info"
-  | "debug";
+  "critical" | "error" | "warning" | "info" | "debug";
 
 export interface LoggedError {
   name: string;

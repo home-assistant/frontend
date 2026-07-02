@@ -91,20 +91,22 @@ class DialogMatterLockManage extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
-        ${this._loading
-          ? html`<div class="center">
-              <ha-spinner></ha-spinner>
-            </div>`
-          : this._lockInfo && !this._lockInfo.supports_user_management
-            ? html`<div class="content">
-                <ha-alert alert-type="warning">
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.lock.errors.no_user_management"
-                  )}
-                </ha-alert>
-                ${this._renderDocsLink()}
+        ${
+          this._loading
+            ? html`<div class="center">
+                <ha-spinner></ha-spinner>
               </div>`
-            : html`<div class="content">${this._renderUsers()}</div>`}
+            : this._lockInfo && !this._lockInfo.supports_user_management
+              ? html`<div class="content">
+                  <ha-alert alert-type="warning">
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.lock.errors.no_user_management"
+                    )}
+                  </ha-alert>
+                  ${this._renderDocsLink()}
+                </div>`
+              : html`<div class="content">${this._renderUsers()}</div>`
+        }
       </ha-dialog>
     `;
   }
@@ -134,69 +136,77 @@ class DialogMatterLockManage extends LitElement {
 
     return html`
       <div class="users-content">
-        ${hasNoManageableCredentials
-          ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.matter.lock.errors.no_credential_types_supported"
-                )}
-              </ha-alert>
-              ${this._renderDocsLink()}`
-          : !this._supportsPinCredential
-            ? html`<ha-alert alert-type="info">
+        ${
+          hasNoManageableCredentials
+            ? html`<ha-alert alert-type="warning">
                   ${this.hass.localize(
-                    "ui.panel.config.matter.lock.errors.pin_not_supported"
+                    "ui.panel.config.matter.lock.errors.no_credential_types_supported"
                   )}
                 </ha-alert>
                 ${this._renderDocsLink()}`
-            : nothing}
-        ${occupiedUsers.length === 0
-          ? html`<p class="empty">
-              ${this.hass.localize(
-                "ui.panel.config.matter.lock.users.no_users"
-              )}
-            </p>`
-          : html`
-              <ha-md-list>
-                ${occupiedUsers.map(
-                  (user) => html`
-                    <ha-md-list-item
-                      type="button"
-                      .user=${user}
-                      @click=${this._handleUserClick}
-                    >
-                      <div slot="start" class="icon-background">
-                        <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
-                      </div>
-                      <div slot="headline">
-                        ${user.user_name || `User ${user.user_index}`}
-                      </div>
-                      <div slot="supporting-text">
-                        ${this.hass.localize(
-                          `ui.panel.config.matter.lock.users.user_type.${user.user_type}`
-                        )}
-                        ${user.credentials.length > 0
-                          ? ` - ${user.credentials.length} ${this.hass.localize("ui.panel.config.matter.lock.users.credentials").toLowerCase()}`
-                          : ""}
-                      </div>
-                      <ha-icon-button
-                        slot="end"
-                        .path=${mdiDelete}
-                        .user=${user}
-                        @click=${this._handleDeleteUserClick}
-                      ></ha-icon-button>
-                    </ha-md-list-item>
-                  `
+            : !this._supportsPinCredential
+              ? html`<ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.lock.errors.pin_not_supported"
+                    )}
+                  </ha-alert>
+                  ${this._renderDocsLink()}`
+              : nothing
+        }
+        ${
+          occupiedUsers.length === 0
+            ? html`<p class="empty">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.lock.users.no_users"
                 )}
-              </ha-md-list>
-            `}
-        ${this._supportsPinCredential
-          ? html`<div class="actions">
-              <ha-button @click=${this._addUser}>
-                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                ${this.hass.localize("ui.panel.config.matter.lock.users.add")}
-              </ha-button>
-            </div>`
-          : nothing}
+              </p>`
+            : html`
+                <ha-md-list>
+                  ${occupiedUsers.map(
+                    (user) => html`
+                      <ha-md-list-item
+                        type="button"
+                        .user=${user}
+                        @click=${this._handleUserClick}
+                      >
+                        <div slot="start" class="icon-background">
+                          <ha-svg-icon .path=${mdiLock}></ha-svg-icon>
+                        </div>
+                        <div slot="headline">
+                          ${user.user_name || `User ${user.user_index}`}
+                        </div>
+                        <div slot="supporting-text">
+                          ${this.hass.localize(
+                            `ui.panel.config.matter.lock.users.user_type.${user.user_type}`
+                          )}
+                          ${
+                            user.credentials.length > 0
+                              ? ` - ${user.credentials.length} ${this.hass.localize("ui.panel.config.matter.lock.users.credentials").toLowerCase()}`
+                              : ""
+                          }
+                        </div>
+                        <ha-icon-button
+                          slot="end"
+                          .path=${mdiDelete}
+                          .user=${user}
+                          @click=${this._handleDeleteUserClick}
+                        ></ha-icon-button>
+                      </ha-md-list-item>
+                    `
+                  )}
+                </ha-md-list>
+              `
+        }
+        ${
+          this._supportsPinCredential
+            ? html`<div class="actions">
+                <ha-button @click=${this._addUser}>
+                  <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.config.matter.lock.users.add")}
+                </ha-button>
+              </div>`
+            : nothing
+        }
       </div>
     `;
   }

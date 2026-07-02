@@ -3,6 +3,7 @@ import { css, unsafeCSS } from "lit";
 export const fontStyles = css`
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Thin"),
       local("Roboto-Thin"),
@@ -13,6 +14,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Thin Italic"),
       local("Roboto-ThinItalic"),
@@ -23,6 +25,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Light"),
       local("Roboto-Light"),
@@ -33,6 +36,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Light Italic"),
       local("Roboto-LightItalic"),
@@ -43,6 +47,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Regular"),
       local("Roboto-Regular"),
@@ -53,6 +58,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Italic"),
       local("Roboto-Italic"),
@@ -63,6 +69,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Medium"),
       local("Roboto-Medium"),
@@ -73,6 +80,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Medium Italic"),
       local("Roboto-MediumItalic"),
@@ -83,6 +91,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Bold"),
       local("Roboto-Bold"),
@@ -93,6 +102,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Bold Italic"),
       local("Roboto-BoldItalic"),
@@ -103,6 +113,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Black"),
       local("Roboto-Black"),
@@ -113,6 +124,7 @@ export const fontStyles = css`
   }
   @font-face {
     font-family: "Roboto";
+    font-display: swap;
     src:
       local("Roboto Black Italic"),
       local("Roboto-BlackItalic"),

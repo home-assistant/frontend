@@ -106,18 +106,26 @@ export class HaSelectBox extends LitElement {
             <span id=${`label-${option.value}`} class="label"
               >${option.label}</span
             >
-            ${option.description
-              ? html`<span class="description" id="desc-${option.value}"
-                  >${option.description}</span
-                >`
-              : nothing}
+            ${
+              option.description
+                ? html`<span class="description" id="desc-${option.value}"
+                    >${option.description}</span
+                  >`
+                : nothing
+            }
           </div>
         </div>
-        ${imageSrc
-          ? html`
-              <img class=${imageFlip ? "flipped" : ""} alt="" src=${imageSrc} />
-            `
-          : nothing}
+        ${
+          imageSrc
+            ? html`
+                <img
+                  class=${imageFlip ? "flipped" : ""}
+                  alt=""
+                  src=${imageSrc}
+                />
+              `
+            : nothing
+        }
       </label>
     `;
   }

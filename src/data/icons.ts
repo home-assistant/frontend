@@ -241,11 +241,7 @@ type ConditionIcons = Record<
 >;
 
 export type IconCategory =
-  | "entity"
-  | "entity_component"
-  | "services"
-  | "triggers"
-  | "conditions";
+  "entity" | "entity_component" | "services" | "triggers" | "conditions";
 
 interface CategoryType {
   entity: PlatformIcons;
@@ -463,8 +459,7 @@ export const entityIcon = async (
   state?: string
 ) => {
   const entry = entities?.[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   if (entry?.icon) {
     return entry.icon;
   }
@@ -559,8 +554,7 @@ export const attributeIcon = async (
   const domain = computeStateDomain(state);
   const deviceClass = state.attributes.device_class;
   const entity = entities[state.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   const platform = entity?.platform;
   const translation_key = entity?.translation_key;
   const value =

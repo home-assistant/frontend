@@ -1,14 +1,39 @@
-import { customElement, property } from "lit/decorators";
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import type { HassEntity } from "home-assistant-js-websocket";
+import { customElement, property, state } from "lit/decorators";
+import { transform } from "../common/decorators/transform";
 import { formatNumber } from "../common/number/format_number";
+import {
+  configContext,
+  formattersContext,
+  internationalizationContext,
+} from "../data/context";
+import type { FrontendLocaleData } from "../data/translation";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../types";
 
 @customElement("ha-water_heater-state")
 export class HaWaterHeaterState extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: HomeAssistantConfig;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -16,17 +41,16 @@ export class HaWaterHeaterState extends LitElement {
     return html`
       <div class="target">
         <span class="state-label label">
-          ${this.hass.formatEntityState(this.stateObj)}
+          ${this._formatters?.formatEntityState(this.stateObj)}
         </span>
-        <span class="label"
-          >${this._computeTarget(this.hass, this.stateObj)}</span
-        >
+        <span class="label">${this._computeTarget()}</span>
       </div>
     `;
   }
 
-  private _computeTarget(hass: HomeAssistant, stateObj: HassEntity) {
-    if (!hass || !stateObj) return null;
+  private _computeTarget() {
+    if (!this._locale || !this._hassConfig || !this.stateObj) return null;
+    const stateObj = this.stateObj;
     // We're using "!= null" on purpose so that we match both null and undefined.
 
     if (
@@ -35,17 +59,17 @@ export class HaWaterHeaterState extends LitElement {
     ) {
       return `${formatNumber(
         stateObj.attributes.target_temp_low,
-        this.hass.locale
+        this._locale
       )} – ${formatNumber(
         stateObj.attributes.target_temp_high,
-        this.hass.locale
-      )} ${hass.config.unit_system.temperature}`;
+        this._locale
+      )} ${this._hassConfig.config.unit_system.temperature}`;
     }
     if (stateObj.attributes.temperature != null) {
       return `${formatNumber(
         stateObj.attributes.temperature,
-        this.hass.locale
-      )} ${hass.config.unit_system.temperature}`;
+        this._locale
+      )} ${this._hassConfig.config.unit_system.temperature}`;
     }
 
     return "";

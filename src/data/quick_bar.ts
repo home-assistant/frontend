@@ -13,7 +13,7 @@ import {
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
-import { configSections } from "../panels/config/ha-panel-config";
+import { configSections } from "../panels/config/config-sections";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
 import type { HassioAddonInfo } from "./hassio/addon";

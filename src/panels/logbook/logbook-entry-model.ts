@@ -35,8 +35,10 @@ export const classifyLogbookEntry = (
   return "integration";
 };
 
-// A device lives in exactly one area, so `device` (and `entity`) imply it too.
-export type LogbookScope = "entity" | "device" | "area";
+// How much naming detail an entity row shows, from least to most. The value is
+// the broadest part shown: `none` (name hidden), `entity`, `device` (device ▸
+// entity), `area` (area ▸ device ▸ entity).
+export type LogbookNameDetail = "none" | "entity" | "device" | "area";
 
 export interface EntityDisplay {
   primary?: string;
@@ -46,7 +48,7 @@ export interface EntityDisplay {
 export const entityDisplay = (
   hass: HomeAssistant,
   entityId: string,
-  scope?: LogbookScope
+  nameDetail?: LogbookNameDetail
 ): EntityDisplay => {
   const stateObj = hass.states[entityId] as HassEntity | undefined;
   if (!stateObj) {
@@ -69,14 +71,15 @@ export const entityDisplay = (
   const deviceQualifier = entityName ? deviceName : undefined;
 
   let parts: (string | undefined)[];
-  switch (scope) {
+  switch (nameDetail) {
+    case "none":
     case "entity":
-    case "device":
       parts = [];
       break;
-    case "area":
+    case "device":
       parts = [deviceQualifier];
       break;
+    case "area":
     default:
       parts = [areaName, deviceQualifier];
   }
@@ -123,6 +126,7 @@ export interface LogbookCause {
   type: LogbookCauseType;
   name: string;
   userId?: string;
+  systemUser?: boolean;
   entityId?: string;
   brandDomain?: string;
 }
@@ -130,13 +134,19 @@ export interface LogbookCause {
 export const computeLogbookCause = (
   hass: HomeAssistant,
   item: LogbookEntry,
-  userIdToName: Record<string, string>
+  userIdToName: Record<string, string>,
+  systemUserIds?: Set<string>
 ): LogbookCause | undefined => {
   const userName = item.context_user_id
     ? userIdToName[item.context_user_id]
     : undefined;
   if (userName) {
-    return { type: "user", name: userName, userId: item.context_user_id };
+    return {
+      type: "user",
+      name: userName,
+      userId: item.context_user_id,
+      systemUser: systemUserIds?.has(item.context_user_id!),
+    };
   }
 
   if (
@@ -263,7 +273,13 @@ const computeLogbookValue = (
   if (item.entity_id && item.state) {
     return {
       text: stateObj
-        ? localizeStateMessage(hass, item.state, stateObj, domain!)
+        ? localizeStateMessage(
+            hass,
+            item.state,
+            stateObj,
+            domain!,
+            item.attributes
+          )
         : item.state,
       type: "state",
     };
@@ -307,8 +323,9 @@ export interface LogbookItem {
 }
 
 export interface BuildLogbookItemOptions {
-  scope?: LogbookScope;
+  nameDetail?: LogbookNameDetail;
   userIdToName?: Record<string, string>;
+  systemUserIds?: Set<string>;
 }
 
 export const computeLogbookItem = (
@@ -328,7 +345,7 @@ export const computeLogbookItem = (
     : undefined;
 
   const display = entry.entity_id
-    ? entityDisplay(hass, entry.entity_id, opts.scope)
+    ? entityDisplay(hass, entry.entity_id, opts.nameDetail)
     : undefined;
 
   return {
@@ -338,7 +355,12 @@ export const computeLogbookItem = (
     name: display?.primary ?? entry.name,
     context: display?.secondary,
     value: computeLogbookValue(hass, entry, domain, historicStateObj),
-    cause: computeLogbookCause(hass, entry, opts.userIdToName ?? {}),
+    cause: computeLogbookCause(
+      hass,
+      entry,
+      opts.userIdToName ?? {},
+      opts.systemUserIds
+    ),
     when: entry.when * 1000,
   };
 };

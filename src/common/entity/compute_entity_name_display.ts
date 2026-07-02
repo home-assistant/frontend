@@ -125,7 +125,15 @@ export interface EntityPickerDisplay {
 }
 
 export const computeEntityPickerDisplay = (
-  hass: HomeAssistant,
+  hass: Pick<
+    HomeAssistant,
+    | "entities"
+    | "devices"
+    | "areas"
+    | "floors"
+    | "language"
+    | "translationMetadata"
+  >,
   stateObj: HassEntity
 ): EntityPickerDisplay => {
   const [entityName, deviceName, areaName] = computeEntityNameList(

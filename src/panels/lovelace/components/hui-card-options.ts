@@ -103,36 +103,38 @@ export class HuiCardOptions extends LitElement {
           >
           <div class="right">
             <slot name="buttons"></slot>
-            ${!this.hidePosition
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.decrease_position"
-                    )}
-                    .path=${mdiMinus}
-                    class="move-arrow"
-                    @click=${this._decreaseCardPosiion}
-                    ?disabled=${cardIndex === 0}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    @click=${this._changeCardPosition}
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.change_position"
-                    )}
-                  >
-                    <div class="position-badge">${cardIndex + 1}</div>
-                  </ha-icon-button>
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_card.increase_position"
-                    )}
-                    .path=${mdiPlus}
-                    class="move-arrow"
-                    @click=${this._increaseCardPosition}
-                    .disabled=${this._cards!.length === cardIndex + 1}
-                  ></ha-icon-button>
-                `
-              : nothing}
+            ${
+              !this.hidePosition
+                ? html`
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.decrease_position"
+                      )}
+                      .path=${mdiMinus}
+                      class="move-arrow"
+                      @click=${this._decreaseCardPosiion}
+                      ?disabled=${cardIndex === 0}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      @click=${this._changeCardPosition}
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.change_position"
+                      )}
+                    >
+                      <div class="position-badge">${cardIndex + 1}</div>
+                    </ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_card.increase_position"
+                      )}
+                      .path=${mdiPlus}
+                      class="move-arrow"
+                      @click=${this._increaseCardPosition}
+                      .disabled=${this._cards!.length === cardIndex + 1}
+                    ></ha-icon-button>
+                  `
+                : nothing
+            }
             <ha-dropdown
               @wa-select=${this._handleDropdownSelect}
               placement="bottom-end"

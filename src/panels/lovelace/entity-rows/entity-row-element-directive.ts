@@ -30,7 +30,9 @@ class EntityRowDirective extends Directive {
     }
     this._entityId = entityId;
     this._name = name;
-    this._element.hass = hass;
+    if ("hass" in this._element) {
+      this._element.hass = hass;
+    }
     return this._element;
   }
 }

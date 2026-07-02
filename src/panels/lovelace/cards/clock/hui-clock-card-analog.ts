@@ -132,21 +132,25 @@ export class HuiClockCardAnalog extends LitElement {
           roman: isRoman,
         })}
       >
-        ${number && this.config?.face_style !== "markers"
-          ? html`<div
-              class=${classMap({
-                number: true,
-                [this.config?.clock_size ?? ""]: true,
-                upright: isUpright,
-              })}
-            >
-              ${isRoman
-                ? romanize12HourClock(number)
-                : isNumbers
-                  ? number
-                  : nothing}
-            </div>`
-          : nothing}
+        ${
+          number && this.config?.face_style !== "markers"
+            ? html`<div
+                class=${classMap({
+                  number: true,
+                  [this.config?.clock_size ?? ""]: true,
+                  upright: isUpright,
+                })}
+              >
+                ${
+                  isRoman
+                    ? romanize12HourClock(number)
+                    : isNumbers
+                      ? number
+                      : nothing
+                }
+              </div>`
+            : nothing
+        }
       </div>
     `;
 
@@ -162,52 +166,56 @@ export class HuiClockCardAnalog extends LitElement {
             "dial-border": this.config.border ?? false,
           })}
         >
-          ${this.config.ticks === "quarter"
-            ? Array.from({ length: 4 }, (_, i) => i).map(
-                (i) =>
-                  // 4 ticks (12, 3, 6, 9) at 0°, 90°, 180°, 270°
-                  html`
-                    <div
-                      aria-hidden="true"
-                      class="tick hour"
-                      style=${`--tick-rotation: ${i * 90}deg;`}
-                    >
-                      ${indicator([12, 3, 6, 9][i])}
-                    </div>
-                  `
-              )
-            : !this.config.ticks || // Default to hour ticks
-                this.config.ticks === "hour"
-              ? Array.from({ length: 12 }, (_, i) => i).map(
+          ${
+            this.config.ticks === "quarter"
+              ? Array.from({ length: 4 }, (_, i) => i).map(
                   (i) =>
-                    // 12 ticks (1-12)
+                    // 4 ticks (12, 3, 6, 9) at 0°, 90°, 180°, 270°
                     html`
                       <div
                         aria-hidden="true"
                         class="tick hour"
-                        style=${`--tick-rotation: ${i * 30}deg;`}
+                        style=${`--tick-rotation: ${i * 90}deg;`}
                       >
-                        ${indicator(((i + 11) % 12) + 1)}
+                        ${indicator([12, 3, 6, 9][i])}
                       </div>
                     `
                 )
-              : this.config.ticks === "minute"
-                ? Array.from({ length: 60 }, (_, i) => i).map(
+              : !this.config.ticks || // Default to hour ticks
+                  this.config.ticks === "hour"
+                ? Array.from({ length: 12 }, (_, i) => i).map(
                     (i) =>
-                      // 60 ticks (1-60)
+                      // 12 ticks (1-12)
                       html`
                         <div
                           aria-hidden="true"
-                          class="tick ${i % 5 === 0 ? "hour" : "minute"}"
-                          style=${`--tick-rotation: ${i * 6}deg;`}
+                          class="tick hour"
+                          style=${`--tick-rotation: ${i * 30}deg;`}
                         >
-                          ${i % 5 === 0
-                            ? indicator(((i / 5 + 11) % 12) + 1)
-                            : indicator()}
+                          ${indicator(((i + 11) % 12) + 1)}
                         </div>
                       `
                   )
-                : nothing}
+                : this.config.ticks === "minute"
+                  ? Array.from({ length: 60 }, (_, i) => i).map(
+                      (i) =>
+                        // 60 ticks (1-60)
+                        html`
+                          <div
+                            aria-hidden="true"
+                            class="tick ${i % 5 === 0 ? "hour" : "minute"}"
+                            style=${`--tick-rotation: ${i * 6}deg;`}
+                          >
+                            ${
+                              i % 5 === 0
+                                ? indicator(((i / 5 + 11) % 12) + 1)
+                                : indicator()
+                            }
+                          </div>
+                        `
+                    )
+                  : nothing
+          }
           <div class="center-dot"></div>
           <div
             class="hand hour"
@@ -217,20 +225,22 @@ export class HuiClockCardAnalog extends LitElement {
             class="hand minute"
             style=${`animation-delay: -${this._minuteOffsetSec ?? 0}s;`}
           ></div>
-          ${this.config.show_seconds
-            ? html`<div
-                class=${classMap({
-                  hand: true,
-                  second: true,
-                  step: this.config.seconds_motion === "tick",
-                })}
-                style=${`animation-delay: -${
-                  (this.config.seconds_motion === "tick"
-                    ? Math.floor(this._secondOffsetSec ?? 0)
-                    : (this._secondOffsetSec ?? 0)) as number
-                }s;`}
-              ></div>`
-            : nothing}
+          ${
+            this.config.show_seconds
+              ? html`<div
+                  class=${classMap({
+                    hand: true,
+                    second: true,
+                    step: this.config.seconds_motion === "tick",
+                  })}
+                  style=${`animation-delay: -${
+                    (this.config.seconds_motion === "tick"
+                      ? Math.floor(this._secondOffsetSec ?? 0)
+                      : (this._secondOffsetSec ?? 0)) as number
+                  }s;`}
+                ></div>`
+              : nothing
+          }
         </div>
       </div>
     `;

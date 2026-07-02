@@ -159,127 +159,142 @@ class MoreInfoFan extends LitElement {
         .stateOverride=${this._stateOverride}
       ></ha-more-info-state-header>
       <div class="controls">
-        ${supportsSpeed
-          ? html`
-              <ha-state-control-fan-speed .stateObj=${this.stateObj}>
-              </ha-state-control-fan-speed>
-            `
-          : html`
-              <ha-state-control-toggle
-                .stateObj=${this.stateObj}
-                .iconPathOn=${mdiFan}
-                .iconPathOff=${mdiFanOff}
-              ></ha-state-control-toggle>
-            `}
-        ${supportSpeedPercentage
-          ? html`
-              <div class="buttons">
-                ${supportSpeedPercentage
-                  ? html`
-                      <ha-outlined-icon-button
-                        .disabled=${this.stateObj.state === UNAVAILABLE}
-                        @click=${this._toggle}
-                      >
-                        <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                      </ha-outlined-icon-button>
-                    `
-                  : nothing}
-              </div>
-            `
-          : nothing}
+        ${
+          supportsSpeed
+            ? html`
+                <ha-state-control-fan-speed .stateObj=${this.stateObj}>
+                </ha-state-control-fan-speed>
+              `
+            : html`
+                <ha-state-control-toggle
+                  .stateObj=${this.stateObj}
+                  .iconPathOn=${mdiFan}
+                  .iconPathOff=${mdiFanOff}
+                ></ha-state-control-toggle>
+              `
+        }
+        ${
+          supportSpeedPercentage
+            ? html`
+                <div class="buttons">
+                  ${
+                    supportSpeedPercentage
+                      ? html`
+                          <ha-outlined-icon-button
+                            .disabled=${this.stateObj.state === UNAVAILABLE}
+                            @click=${this._toggle}
+                          >
+                            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                          </ha-outlined-icon-button>
+                        `
+                      : nothing
+                  }
+                </div>
+              `
+            : nothing
+        }
       </div>
       <ha-more-info-control-select-container>
-        ${supportsPresetMode && this.stateObj.attributes.preset_modes
-          ? html`
-              <ha-control-select-menu
-                .label=${this._formatters.formatEntityAttributeName(
-                  this.stateObj,
-                  "preset_mode"
-                )}
-                .value=${this.stateObj.attributes.preset_mode}
-                .disabled=${this.stateObj.state === UNAVAILABLE}
-                @wa-select=${this._handlePresetMode}
-                .options=${this.stateObj.attributes.preset_modes.map(
-                  (mode) => ({
-                    value: mode,
-                    label: this._formatters.formatEntityAttributeValue(
-                      this.stateObj!,
-                      "preset_mode",
-                      mode
-                    ),
-                  })
-                )}
-                .renderIcon=${this._renderPresetModeIcon}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiTuneVariant}></ha-svg-icon>
-              </ha-control-select-menu>
-            `
-          : nothing}
-        ${supportsDirection
-          ? html`
-              <ha-control-select-menu
-                .label=${this._formatters.formatEntityAttributeName(
-                  this.stateObj,
-                  "direction"
-                )}
-                .value=${this.stateObj.attributes.direction}
-                .disabled=${this.stateObj.state === UNAVAILABLE}
-                @wa-select=${this._handleDirection}
-                .options=${["forward", "reverse"].map((direction) => ({
-                  value: direction,
-                  label: this.stateObj
-                    ? this._formatters.formatEntityAttributeValue(
-                        this.stateObj,
-                        "direction",
-                        direction
-                      )
-                    : direction,
-                }))}
-                .renderIcon=${this._renderDirectionIcon}
-              >
-                <ha-attribute-icon
-                  slot="icon"
-                  .stateObj=${this.stateObj}
-                  attribute="direction"
-                  .attributeValue=${this.stateObj.attributes.direction}
-                ></ha-attribute-icon>
-              </ha-control-select-menu>
-            `
-          : nothing}
-        ${supportsOscillate
-          ? html`
-              <ha-control-select-menu
-                .label=${this._formatters.formatEntityAttributeName(
-                  this.stateObj,
-                  "oscillating"
-                )}
-                .value=${this.stateObj.attributes.oscillating
-                  ? "true"
-                  : "false"}
-                .disabled=${this.stateObj.state === UNAVAILABLE}
-                @wa-select=${this._handleOscillating}
-                .options=${["true", "false"].map((val) => ({
-                  value: val,
-                  iconPath:
-                    val === "true"
-                      ? mdiArrowOscillating
-                      : mdiArrowOscillatingOff,
-                  label: this.stateObj
-                    ? this._formatters.formatEntityAttributeValue(
-                        this.stateObj,
-                        "oscillating",
-                        val === "true"
-                      )
-                    : val,
-                }))}
-              >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiArrowOscillatingOff}
-                ></ha-svg-icon>
-              </ha-control-select-menu>
-            `
-          : nothing}
+        ${
+          supportsPresetMode && this.stateObj.attributes.preset_modes
+            ? html`
+                <ha-control-select-menu
+                  .label=${this._formatters.formatEntityAttributeName(
+                    this.stateObj,
+                    "preset_mode"
+                  )}
+                  .value=${this.stateObj.attributes.preset_mode}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  @wa-select=${this._handlePresetMode}
+                  .options=${this.stateObj.attributes.preset_modes.map(
+                    (mode) => ({
+                      value: mode,
+                      label: this._formatters.formatEntityAttributeValue(
+                        this.stateObj!,
+                        "preset_mode",
+                        mode
+                      ),
+                    })
+                  )}
+                  .renderIcon=${this._renderPresetModeIcon}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiTuneVariant}
+                  ></ha-svg-icon>
+                </ha-control-select-menu>
+              `
+            : nothing
+        }
+        ${
+          supportsDirection
+            ? html`
+                <ha-control-select-menu
+                  .label=${this._formatters.formatEntityAttributeName(
+                    this.stateObj,
+                    "direction"
+                  )}
+                  .value=${this.stateObj.attributes.direction}
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  @wa-select=${this._handleDirection}
+                  .options=${["forward", "reverse"].map((direction) => ({
+                    value: direction,
+                    label: this.stateObj
+                      ? this._formatters.formatEntityAttributeValue(
+                          this.stateObj,
+                          "direction",
+                          direction
+                        )
+                      : direction,
+                  }))}
+                  .renderIcon=${this._renderDirectionIcon}
+                >
+                  <ha-attribute-icon
+                    slot="icon"
+                    .stateObj=${this.stateObj}
+                    attribute="direction"
+                    .attributeValue=${this.stateObj.attributes.direction}
+                  ></ha-attribute-icon>
+                </ha-control-select-menu>
+              `
+            : nothing
+        }
+        ${
+          supportsOscillate
+            ? html`
+                <ha-control-select-menu
+                  .label=${this._formatters.formatEntityAttributeName(
+                    this.stateObj,
+                    "oscillating"
+                  )}
+                  .value=${
+                    this.stateObj.attributes.oscillating ? "true" : "false"
+                  }
+                  .disabled=${this.stateObj.state === UNAVAILABLE}
+                  @wa-select=${this._handleOscillating}
+                  .options=${["true", "false"].map((val) => ({
+                    value: val,
+                    iconPath:
+                      val === "true"
+                        ? mdiArrowOscillating
+                        : mdiArrowOscillatingOff,
+                    label: this.stateObj
+                      ? this._formatters.formatEntityAttributeValue(
+                          this.stateObj,
+                          "oscillating",
+                          val === "true"
+                        )
+                      : val,
+                  }))}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiArrowOscillatingOff}
+                  ></ha-svg-icon>
+                </ha-control-select-menu>
+              `
+            : nothing
+        }
       </ha-more-info-control-select-container>
     `;
   }

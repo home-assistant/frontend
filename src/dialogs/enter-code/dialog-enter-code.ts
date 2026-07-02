@@ -120,8 +120,10 @@ export class DialogEnterCode
       return html`
         <ha-adaptive-dialog
           .open=${this._open}
-          header-title=${this._dialogParams.title ??
-          this.hass.localize("ui.dialogs.enter_code.title")}
+          header-title=${
+            this._dialogParams.title ??
+            this.hass.localize("ui.dialogs.enter_code.title")
+          }
           width="small"
           @closed=${this._dialogClosed}
         >
@@ -143,12 +145,16 @@ export class DialogEnterCode
               appearance="plain"
               @click=${this._cancel}
             >
-              ${this._dialogParams.cancelText ??
-              this.hass.localize("ui.common.cancel")}
+              ${
+                this._dialogParams.cancelText ??
+                this.hass.localize("ui.common.cancel")
+              }
             </ha-button>
             <ha-button slot="primaryAction" @click=${this._submit}>
-              ${this._dialogParams.submitText ??
-              this.hass.localize("ui.common.submit")}
+              ${
+                this._dialogParams.submitText ??
+                this.hass.localize("ui.common.submit")
+              }
             </ha-button>
           </ha-dialog-footer>
         </ha-adaptive-dialog>
@@ -193,8 +199,10 @@ export class DialogEnterCode
                         <ha-control-button
                           @click=${this._submit}
                           class="submit"
-                          .label=${this._dialogParams!.submitText ??
-                          this.hass!.localize("ui.common.submit")}
+                          .label=${
+                            this._dialogParams!.submitText ??
+                            this.hass!.localize("ui.common.submit")
+                          }
                         >
                           <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
                         </ha-control-button>

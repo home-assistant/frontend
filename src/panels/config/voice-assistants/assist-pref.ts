@@ -107,10 +107,7 @@ export class AssistPref extends LitElement {
     return html`
       <ha-card outlined>
         <h1 class="card-header">
-          <voice-assistant-brand-icon
-            .voiceAssistantId=${"conversation"}
-            .hass=${this.hass}
-          >
+          <voice-assistant-brand-icon .voiceAssistantId=${"conversation"}>
           </voice-assistant-brand-icon
           >Assist
         </h1>
@@ -138,9 +135,11 @@ export class AssistPref extends LitElement {
               >
                 <span>
                   ${pipeline.name}
-                  ${this._preferred === pipeline.id
-                    ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>`
-                    : ""}
+                  ${
+                    this._preferred === pipeline.id
+                      ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>`
+                      : ""
+                  }
                 </span>
                 <span slot="secondary">
                   ${formatLanguageCode(pipeline.language, this.hass.locale)}
@@ -247,19 +246,21 @@ export class AssistPref extends LitElement {
               }
             )}
           </ha-button>
-          ${this._pipelineEntitiesCount > 0
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  href="/config/voice-assistants/assist/devices"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
-                    { number: this._pipelineEntitiesCount }
-                  )}
-                </ha-button>
-              `
-            : ""}
+          ${
+            this._pipelineEntitiesCount > 0
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    href="/config/voice-assistants/assist/devices"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.assist_devices",
+                      { number: this._pipelineEntitiesCount }
+                    )}
+                  </ha-button>
+                `
+              : ""
+          }
         </div>
       </ha-card>
     `;

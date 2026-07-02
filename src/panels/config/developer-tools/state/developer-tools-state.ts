@@ -168,34 +168,36 @@ class HaPanelDevState extends LitElement {
             "ui.panel.config.developer-tools.tabs.states.current_entities"
           )}
         </h1>
-        ${!this.narrow
-          ? html`
-              <div class="filters-toggles">
+        ${
+          !this.narrow
+            ? html`
+                <div class="filters-toggles">
+                  <ha-checkbox
+                    .checked=${this._showDevice}
+                    @change=${this._saveDeviceCheckboxState}
+                  >
+                    ${this._i18n.localize(
+                      "ui.panel.config.entities.picker.headers.device"
+                    )}
+                  </ha-checkbox>
+                  <ha-checkbox
+                    .checked=${this._showArea}
+                    @change=${this._saveAreaCheckboxState}
+                  >
+                    ${this._i18n.localize("ui.panel.config.generic.headers.area")}
+                  </ha-checkbox>
+                </div>
                 <ha-checkbox
-                  .checked=${this._showDevice}
-                  @change=${this._saveDeviceCheckboxState}
+                  .checked=${this._showAttributes}
+                  @change=${this._saveAttributeCheckboxState}
                 >
                   ${this._i18n.localize(
-                    "ui.panel.config.entities.picker.headers.device"
+                    "ui.panel.config.developer-tools.tabs.states.attributes"
                   )}
                 </ha-checkbox>
-                <ha-checkbox
-                  .checked=${this._showArea}
-                  @change=${this._saveAreaCheckboxState}
-                >
-                  ${this._i18n.localize("ui.panel.config.generic.headers.area")}
-                </ha-checkbox>
-              </div>
-              <ha-checkbox
-                .checked=${this._showAttributes}
-                @change=${this._saveAttributeCheckboxState}
-              >
-                ${this._i18n.localize(
-                  "ui.panel.config.developer-tools.tabs.states.attributes"
-                )}
-              </ha-checkbox>
-            `
-          : nothing}
+              `
+            : nothing
+        }
       </div>
       <ha-expansion-panel
         .header=${this._i18n.localize(
@@ -213,32 +215,35 @@ class HaPanelDevState extends LitElement {
             "ui.panel.config.developer-tools.tabs.states.description2"
           )}
         </p>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <div class="state-wrapper flex-horizontal">
           <div class="inputs">
             <ha-entity-picker
               autofocus
-              .hass=${this.hass}
               .value=${this._entityId}
               @value-changed=${this._entityIdChanged}
               show-entity-id
             ></ha-entity-picker>
-            ${this._entityId
-              ? html`
-                  <div class="entity-id">
-                    <span>${this._entityId}</span>
-                    <ha-icon-button
-                      .path=${mdiContentCopy}
-                      @click=${this._copyStateEntity}
-                      title=${this._i18n.localize(
-                        "ui.panel.config.developer-tools.tabs.states.copy_id"
-                      )}
-                    ></ha-icon-button>
-                  </div>
-                `
-              : nothing}
+            ${
+              this._entityId
+                ? html`
+                    <div class="entity-id">
+                      <span>${this._entityId}</span>
+                      <ha-icon-button
+                        .path=${mdiContentCopy}
+                        @click=${this._copyStateEntity}
+                        title=${this._i18n.localize(
+                          "ui.panel.config.developer-tools.tabs.states.copy_id"
+                        )}
+                      ></ha-icon-button>
+                    </div>
+                  `
+                : nothing
+            }
             <ha-input
               .label=${this._i18n.localize(
                 "ui.panel.config.developer-tools.tabs.states.state"
@@ -280,28 +285,30 @@ class HaPanelDevState extends LitElement {
             </div>
           </div>
           <div class="info">
-            ${this._entity
-              ? html`<p>
-                    <b
-                      >${this._i18n.localize(
-                        "ui.panel.config.developer-tools.tabs.states.last_changed"
-                      )}:</b
-                    ><br />
-                    <a href=${this._historyFromLastChanged(this._entity)}
-                      >${this._lastChangedString(this._entity)}</a
-                    >
-                  </p>
-                  <p>
-                    <b
-                      >${this._i18n.localize(
-                        "ui.panel.config.developer-tools.tabs.states.last_updated"
-                      )}:</b
-                    ><br />
-                    <a href=${this._historyFromLastUpdated(this._entity)}
-                      >${this._lastUpdatedString(this._entity)}</a
-                    >
-                  </p>`
-              : nothing}
+            ${
+              this._entity
+                ? html`<p>
+                      <b
+                        >${this._i18n.localize(
+                          "ui.panel.config.developer-tools.tabs.states.last_changed"
+                        )}:</b
+                      ><br />
+                      <a href=${this._historyFromLastChanged(this._entity)}
+                        >${this._lastChangedString(this._entity)}</a
+                      >
+                    </p>
+                    <p>
+                      <b
+                        >${this._i18n.localize(
+                          "ui.panel.config.developer-tools.tabs.states.last_updated"
+                        )}:</b
+                      ><br />
+                      <a href=${this._historyFromLastUpdated(this._entity)}
+                        >${this._lastUpdatedString(this._entity)}</a
+                      >
+                    </p>`
+                : nothing
+            }
           </div>
         </div>
       </ha-expansion-panel>

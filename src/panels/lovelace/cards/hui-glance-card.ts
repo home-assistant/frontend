@@ -32,6 +32,34 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GlanceCardConfig, GlanceConfigEntity } from "./types";
+import { TIMESTAMP_STATE_DOMAINS } from "../../../common/const";
+
+export const migrateGlanceCardConfig = (
+  config: GlanceCardConfig
+): GlanceCardConfig => {
+  let changed = false;
+  const newEntities = config.entities?.map((e) => {
+    if (typeof e !== "object") {
+      return e;
+    }
+    if (!("format" in e)) {
+      return e;
+    }
+    changed = true;
+    const { format, ...rest } = e;
+    return {
+      ...rest,
+      time_format: rest.time_format ?? format,
+    };
+  });
+  if (!changed) {
+    return config;
+  }
+  return {
+    ...config,
+    entities: newEntities as (GlanceConfigEntity | string)[],
+  };
+};
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -78,14 +106,15 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GlanceCardConfig): void {
+    const migratedConfig = migrateGlanceCardConfig(config);
     this._config = {
       show_name: true,
       show_state: true,
       show_icon: true,
       state_color: true,
-      ...config,
+      ...migratedConfig,
     };
-    const entities = processConfigEntities(config.entities).map(
+    const entities = processConfigEntities(migratedConfig.entities).map(
       (entityConf) => ({
         hold_action: { action: "more-info" } as MoreInfoActionConfig,
         ...entityConf,
@@ -107,7 +136,8 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       }
     }
 
-    const columns = config.columns || Math.min(config.entities.length, 5);
+    const columns =
+      migratedConfig.columns || Math.min(migratedConfig.entities.length, 5);
     this.style.setProperty("--glance-column-width", `${100 / columns}%`);
 
     this._configEntities = entities;
@@ -146,8 +176,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | GlanceCardConfig
-      | undefined;
+      GlanceCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -236,26 +265,31 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`<div class="entity warning">
-        ${this._config!.show_name
-          ? html`
-              <div class="name">
-                ${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
-              </div>
-            `
-          : ""}
-        ${this._config!.show_icon
-          ? html` <hui-warning-element
-              .label=${createEntityNotFoundWarning(
-                this.hass!,
-                entityConf.entity
-              )}
-            ></hui-warning-element>`
-          : ""}
+        ${
+          this._config!.show_name
+            ? html`
+                <div class="name">
+                  ${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
+                </div>
+              `
+            : ""
+        }
+        ${
+          this._config!.show_icon
+            ? html` <hui-warning-element
+                .label=${createEntityNotFoundWarning(
+                  this.hass!,
+                  entityConf.entity
+                )}
+              ></hui-warning-element>`
+            : ""
+        }
         <div>${this._config!.show_state ? entityConf.entity : ""}</div>
       </div>`;
     }
 
     const name = this.hass!.formatEntityName(stateObj, entityConf.name);
+    const domain = computeDomain(entityConf.entity);
 
     return html`
       <div
@@ -272,53 +306,64 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        ${this._config!.show_name
-          ? html` <div class="name" .title=${name}>${name}</div> `
-          : ""}
-        ${this._config!.show_icon
-          ? html`
-              <state-badge
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .overrideIcon=${entityConf.icon}
-                .overrideImage=${entityConf.image}
-                .stateColor=${entityConf.state_color ??
-                this._config!.state_color}
-              ></state-badge>
-            `
-          : ""}
-        ${this._config!.show_state && entityConf.show_state !== false
-          ? html`
-              <div>
-                ${computeDomain(entityConf.entity) === "sensor" &&
-                SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
-                  stateObj.attributes.device_class
-                ) &&
-                stateObj.state !== UNAVAILABLE &&
-                stateObj.state !== UNKNOWN
-                  ? html`
-                      <hui-timestamp-display
-                        .hass=${this.hass}
-                        .ts=${new Date(stateObj.state)}
-                        .format=${entityConf.format ??
-                        (stateObj.attributes.device_class ===
-                        SENSOR_DEVICE_CLASS_UPTIME
-                          ? "total"
-                          : undefined)}
-                        capitalize
-                      ></hui-timestamp-display>
-                    `
-                  : entityConf.show_last_changed
-                    ? html`
-                        <ha-relative-time
-                          .datetime=${stateObj.last_changed}
-                          capitalize
-                        ></ha-relative-time>
-                      `
-                    : this.hass!.formatEntityState(stateObj)}
-              </div>
-            `
-          : ""}
+        ${
+          this._config!.show_name
+            ? html` <div class="name" .title=${name}>${name}</div> `
+            : ""
+        }
+        ${
+          this._config!.show_icon
+            ? html`
+                <state-badge
+                  .stateObj=${stateObj}
+                  .overrideIcon=${entityConf.icon}
+                  .overrideImage=${entityConf.image}
+                  .stateColor=${
+                    entityConf.state_color ?? this._config!.state_color
+                  }
+                ></state-badge>
+              `
+            : ""
+        }
+        ${
+          this._config!.show_state && entityConf.show_state !== false
+            ? html`
+                <div>
+                  ${
+                    (TIMESTAMP_STATE_DOMAINS.has(domain) ||
+                      (domain === "sensor" &&
+                        SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+                          stateObj.attributes.device_class
+                        ))) &&
+                    stateObj.state !== UNAVAILABLE &&
+                    stateObj.state !== UNKNOWN
+                      ? html`
+                          <hui-timestamp-display
+                            .hass=${this.hass}
+                            .ts=${new Date(stateObj.state)}
+                            .format=${
+                              entityConf.time_format ??
+                              (stateObj.attributes.device_class ===
+                              SENSOR_DEVICE_CLASS_UPTIME
+                                ? "total"
+                                : undefined)
+                            }
+                            capitalize
+                          ></hui-timestamp-display>
+                        `
+                      : entityConf.show_last_changed
+                        ? html`
+                            <ha-relative-time
+                              .datetime=${stateObj.last_changed}
+                              capitalize
+                            ></ha-relative-time>
+                          `
+                        : this.hass!.formatEntityState(stateObj)
+                  }
+                </div>
+              `
+            : ""
+        }
       </div>
     `;
   }

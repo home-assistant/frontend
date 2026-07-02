@@ -31,9 +31,9 @@ class HaPanelDevEvent extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div
-        class=${this.narrow
-          ? "content layout vertical"
-          : "content layout horizontal"}
+        class=${
+          this.narrow ? "content layout vertical" : "content layout horizontal"
+        }
       >
         <div class="flex">
           <ha-card>

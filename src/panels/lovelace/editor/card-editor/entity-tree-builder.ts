@@ -86,7 +86,7 @@ export type EntityFuseIndex = FuseIndex<SearchableEntity>;
 // Fuse.createIndex (50-100ms on large registries).
 export const buildSearchIndex = (
   entities: SearchableEntity[]
-): EntityFuseIndex => Fuse.createIndex(FUSE_KEY_NAMES, entities);
+): EntityFuseIndex => Fuse.createIndex(entityComboBoxKeys, entities);
 
 export const OTHER_AREAS_ID = "__other_areas__";
 const SEP = "~";
@@ -99,8 +99,6 @@ export const deviceKey = (parent: string, id: string) =>
 export const domainKey = (parent: string, domain: string) =>
   `${parent}${SEP}dom|${domain}`;
 export const childKeyPrefix = (key: string) => `${key}${SEP}`;
-
-const FUSE_KEY_NAMES = entityComboBoxKeys.map((k) => k.name as string);
 
 export interface BuildEntityTreeInput {
   states: HomeAssistant["states"];
@@ -372,7 +370,6 @@ export function searchEntities(
   return multiTermSortedSearch(
     entities,
     filter,
-    entityComboBoxKeys,
     (item) => item.id,
     index
   ).slice(0, limit);

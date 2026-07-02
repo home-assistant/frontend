@@ -190,15 +190,15 @@ class DialogShortcuts extends DialogMixin(LitElement) {
         ${shortcutKeys.map(
           (shortcutKey) =>
             html`<span
-              >${shortcutKey === CTRL_CMD
-                ? isMac
-                  ? "⌘"
-                  : this._i18n.localize("ui.dialogs.shortcuts.keys.ctrl")
-                : typeof shortcutKey === "string"
-                  ? shortcutKey
-                  : this._i18n.localize(
-                      shortcutKey.shortcutTranslationKey
-                    )}</span
+              >${
+                shortcutKey === CTRL_CMD
+                  ? isMac
+                    ? "⌘"
+                    : this._i18n.localize("ui.dialogs.shortcuts.keys.ctrl")
+                  : typeof shortcutKey === "string"
+                    ? shortcutKey
+                    : this._i18n.localize(shortcutKey.shortcutTranslationKey)
+              }</span
             >`
         )}
         ${this._i18n.localize(descriptionKey)}

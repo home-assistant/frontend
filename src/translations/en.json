@@ -715,7 +715,18 @@
         "retrieval_error": "Could not load activity",
         "not_loaded": "[%key:ui::dialogs::helper_settings::platform_not_loaded%]",
         "messages": {
-          "detected_event_no_type": "detected an event"
+          "detected_event_no_type": "Event detected",
+          "pressed": "Pressed",
+          "activated": "Activated",
+          "scanned": "Scanned",
+          "updated": "Updated",
+          "sent": "Sent",
+          "detected": "Detected",
+          "transcribed": "Transcribed",
+          "spoke": "Spoke",
+          "responded": "Responded",
+          "ran": "Ran",
+          "command_sent": "Command sent"
         }
       },
       "entity": {
@@ -2492,6 +2503,7 @@
       "edit_sidebar": "Edit sidebar",
       "edit_subtitle": "Synced on all devices",
       "migrate_to_user_data": "This will change the sidebar on all the devices you are logged in to. To create a sidebar per device, you should use a different user for that device.",
+      "default": "default",
       "reset_to_defaults": "Reset to defaults",
       "reset_confirmation": "Are you sure you want to reset the sidebar to its default configuration? This will restore the original order and visibility of all panels."
     },
@@ -4503,6 +4515,13 @@
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
           "download_logs": "Download logs",
+          "log_file_disabled_title": "Log file disabled",
+          "log_file_disabled": {
+            "environment": "Home Assistant is not writing a log file because HA_DISABLE_LOG_FILE is set. Raw log view and log download are unavailable."
+          },
+          "log_file_disabled_debug_download": {
+            "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
+          },
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
@@ -5021,6 +5040,10 @@
             "disabled": "Automation is disabled",
             "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "unavailable": "Automation is unavailable",
+            "deprecated_migrated": {
+              "title": "Deprecated options updated",
+              "description": "This automation used deprecated options that have been automatically updated to their new equivalents. Save the automation to apply the changes."
+            },
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
@@ -5107,6 +5130,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
+            "time_sun": "Time and sun",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -5175,7 +5199,6 @@
               "cut_to_clipboard": "Trigger cut to clipboard",
               "select": "Select a trigger",
               "no_items_for_target": "No triggers available for",
-              "no_items_for_target_note": "This is a {labs_link} feature. More triggers will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5183,8 +5206,11 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "time_location": {
-                  "label": "Time and location"
+                "time": {
+                  "label": "Time"
+                },
+                "sun": {
+                  "label": "Sun"
                 },
                 "generic": {
                   "label": "Generic"
@@ -5248,6 +5274,12 @@
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
                     "full": "When{hasAttribute, select, \n true { {attribute} of} \n other {}\n} {hasEntity, select, \n true {{entity}} \n other {something}\n} changes{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n special { state or any attributes} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                  },
+                  "for_type": {
+                    "choices": {
+                      "duration": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::for_type::choices::duration%]",
+                      "template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::for_type::choices::template%]"
+                    }
                   }
                 },
                 "homeassistant": {
@@ -5278,12 +5310,24 @@
                   "upper_limit": "Upper limit",
                   "value_template": "Value template",
                   "type_value": "Fixed number",
-                  "type_input": "Numeric value of another entity",
+                  "type_input": "Value of an entity",
                   "description": {
                     "picker": "Triggers when the numeric value of an entity''s state (or attribute''s value) crosses a given threshold.",
                     "above": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }",
                     "above-below": "When {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {is}\n} above {above} and below {below}{duration, select, \n undefined {} \n other { for {duration}}\n }"
+                  },
+                  "threshold_type": {
+                    "choices": {
+                      "value": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_value%]",
+                      "input": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::type_input%]"
+                    }
+                  },
+                  "for_type": {
+                    "choices": {
+                      "duration": "Duration",
+                      "template": "Template"
+                    }
                   }
                 },
                 "persistent_notification": {
@@ -5341,6 +5385,12 @@
                   "description": {
                     "picker": "Triggers when a template evaluates to true.",
                     "full": "When a template changes from false to true{hasDuration, select, \n true { for {duration}} \n other {}\n }"
+                  },
+                  "for_type": {
+                    "choices": {
+                      "duration": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::for_type::choices::duration%]",
+                      "template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::for_type::choices::template%]"
+                    }
                   }
                 },
                 "time": {
@@ -5437,6 +5487,10 @@
               "invalid_condition": "Invalid condition configuration",
               "validation_failed": "Condition validation failed",
               "test_failed": "Error occurred while testing condition",
+              "duration_priming": {
+                "entity_not_recorded": "One or more of the selected entities aren''t being recorded, so their history can''t be used. After a restart or reload, this condition only becomes true once they''ve been in the matching state for the full duration.",
+                "history_capped": "Only the last {hours} hours of history are checked. For longer durations, after a restart or reload this condition only becomes true once the entities have been in the matching state for the full duration."
+              },
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
@@ -5454,7 +5508,6 @@
               "cut_to_clipboard": "Condition cut to clipboard",
               "select": "Select a condition",
               "no_items_for_target": "No conditions available for",
-              "no_items_for_target_note": "This is a {labs_link} feature. More conditions will be added in future updates.",
               "groups": {
                 "device": {
                   "label": "Device"
@@ -5462,8 +5515,11 @@
                 "entity": {
                   "label": "Entity"
                 },
-                "time_location": {
-                  "label": "Time and location"
+                "time": {
+                  "label": "Time"
+                },
+                "sun": {
+                  "label": "Sun"
                 },
                 "generic": {
                   "label": "Generic"
@@ -5921,6 +5977,7 @@
               "template_errors": "Template errors:",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
+              "not_triggered": "This trigger evaluated a relevant change but did not trigger the automation. The reason is shown in the result below.",
               "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
@@ -5944,6 +6001,8 @@
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached at {time} (runtime: {executiontime} seconds)",
               "stopped_error": "Stopped because an error was encountered at {time} (runtime: {executiontime} seconds)",
               "stopped_unknown_reason": "Stopped because of unknown reason {reason} at {time} (runtime: {executiontime} seconds)",
+              "evaluated_not_triggered": "Evaluated a change at {time}",
+              "not_triggered": "Did not trigger at {time}. Select the trigger step details to see why.",
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
@@ -5960,7 +6019,8 @@
               "stopped_failed_single": "Stopped because only a single execution is allowed",
               "stopped_failed_max_runs": "Stopped because maximum number of parallel runs reached",
               "stopped_error": "Stopped on error: {error} (runtime: {executiontime}s)",
-              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)"
+              "stopped_unknown_reason": "Stopped for an unknown reason (runtime: {executiontime}s)",
+              "not_triggered": "Did not trigger"
             }
           }
         },
@@ -6089,6 +6149,10 @@
             "confirm_take_control": "You are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
+            "deprecated_migrated": {
+              "title": "[%key:ui::panel::config::automation::editor::deprecated_migrated::title%]",
+              "description": "This script used deprecated options that have been automatically updated to their new equivalents. Save the script to apply the changes."
+            },
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {
@@ -6146,7 +6210,8 @@
             "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "loading": "Loading"
           }
         },
         "scene": {
@@ -6294,6 +6359,8 @@
           },
           "account": {
             "download_support_package": "Download support package",
+            "support_package_generating_preview": "Generating preview",
+            "support_package_privacy_warning": "This file may contain personal data about your home. Avoid sharing them with unverified or untrusted parties.",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
             "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
@@ -6520,8 +6587,7 @@
             "actions": {
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
-            },
-            "no_device_automations": "There are no automations, scripts or scenes available for this device."
+            }
           },
           "script": {
             "scripts_heading": "Scripts",
@@ -7156,6 +7222,7 @@
           "loading_error": "Failed to load radio frequency devices",
           "name": "Name",
           "type": "Type",
+          "frequencies": "Frequencies",
           "last_used": "Last used",
           "devices_navigation": "Devices"
         },
@@ -9185,6 +9252,9 @@
             "title": "Delete section",
             "text": "This section and all its cards will be deleted."
           },
+          "error_section": {
+            "title": "Error"
+          },
           "edit_section": {
             "header": "Edit section",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
@@ -9471,7 +9541,15 @@
             "logbook": {
               "name": "Activity",
               "description": "This card shows a list of events for entities.",
-              "state_filter": "State filter"
+              "state_filter": "State filter",
+              "name_detail": "Name detail",
+              "name_detail_options": {
+                "auto": "Automatic",
+                "none": "None",
+                "entity": "Entity",
+                "device": "Device ▸ Entity",
+                "area": "Area ▸ Device ▸ Entity"
+              }
             },
             "history-graph": {
               "name": "History graph",
@@ -10495,7 +10573,15 @@
             "domain": "Domain",
             "entity": "Entity",
             "by_entity": "By entity",
-            "by_badge": "By badge"
+            "by_badge": "By badge",
+            "with_name": "With name",
+            "suggestions_title": "[%key:ui::panel::lovelace::editor::cardpicker::suggestions_title%]",
+            "community_title": "[%key:ui::panel::lovelace::editor::cardpicker::community_title%]",
+            "selected_entity": "[%key:ui::panel::lovelace::editor::cardpicker::selected_entity%]",
+            "content_empty_title": "[%key:ui::panel::lovelace::editor::cardpicker::content_empty_title%]",
+            "content_empty_description": "Or browse all badge types.",
+            "browse_badges": "Browse all badges",
+            "not_found": "Can't find the badge you want?"
           },
           "header-footer": {
             "header": "Header",

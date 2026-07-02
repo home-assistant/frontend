@@ -1,5 +1,5 @@
 import { mdiDotsVertical } from "@mdi/js";
-import { DEFAULT_SCHEMA, Type } from "js-yaml";
+import { defineScalarTag, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -47,12 +47,11 @@ const SUPPORTED_UI_TYPES = [
   "schema",
 ];
 
-const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
-  new Type("!secret", {
-    kind: "scalar",
-    construct: (data) => `!secret ${data}`,
-  }),
-]);
+const secretTag = defineScalarTag("!secret", {
+  resolve: (data) => `!secret ${data}`,
+});
+
+const ADDON_YAML_SCHEMA = YAML11_SCHEMA.withTags(secretTag);
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
@@ -275,13 +274,15 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
                 value="toggle_yaml"
                 .disabled=${!this._canShowSchema || this.disabled}
               >
-                ${this._yamlMode
-                  ? this.hass.localize(
-                      "ui.panel.config.apps.configuration.options.edit_in_ui"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.apps.configuration.options.edit_in_yaml"
-                    )}
+                ${
+                  this._yamlMode
+                    ? this.hass.localize(
+                        "ui.panel.config.apps.configuration.options.edit_in_ui"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.apps.configuration.options.edit_in_yaml"
+                      )
+                }
               </ha-dropdown-item>
               <ha-dropdown-item
                 value="reset"
@@ -297,58 +298,66 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
         </div>
 
         <div class="card-content">
-          ${showForm
-            ? html`<ha-form
-                .hass=${this.hass}
-                .disabled=${this.disabled}
-                .data=${this._options!}
-                @value-changed=${this._configChanged}
-                .computeLabel=${this.computeLabel}
-                .computeHelper=${this.computeHelper}
-                .schema=${this._convertSchema(
-                  this._showOptional
-                    ? this.addon.schema!
-                    : this._filteredSchema(
-                        this.addon.options,
-                        this.addon.schema!
-                      ),
-                  this.hass.language,
-                  this.addon.translations
-                )}
-              ></ha-form>`
-            : html`<ha-yaml-editor
-                @value-changed=${this._configChanged}
-                .yamlSchema=${ADDON_YAML_SCHEMA}
-              ></ha-yaml-editor>`}
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          ${!this._yamlMode ||
-          (this._canShowSchema && this.addon.schema) ||
-          this._valid
-            ? ""
-            : html`
-                <ha-alert alert-type="error">
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.configuration.options.invalid_yaml"
+          ${
+            showForm
+              ? html`<ha-form
+                  .hass=${this.hass}
+                  .disabled=${this.disabled}
+                  .data=${this._options!}
+                  @value-changed=${this._configChanged}
+                  .computeLabel=${this.computeLabel}
+                  .computeHelper=${this.computeHelper}
+                  .schema=${this._convertSchema(
+                    this._showOptional
+                      ? this.addon.schema!
+                      : this._filteredSchema(
+                          this.addon.options,
+                          this.addon.schema!
+                        ),
+                    this.hass.language,
+                    this.addon.translations
                   )}
-                </ha-alert>
-              `}
+                ></ha-form>`
+              : html`<ha-yaml-editor
+                  @value-changed=${this._configChanged}
+                  .yamlSchema=${ADDON_YAML_SCHEMA}
+                ></ha-yaml-editor>`
+          }
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
+          ${
+            !this._yamlMode ||
+            (this._canShowSchema && this.addon.schema) ||
+            this._valid
+              ? ""
+              : html`
+                  <ha-alert alert-type="error">
+                    ${this.hass.localize(
+                      "ui.panel.config.apps.configuration.options.invalid_yaml"
+                    )}
+                  </ha-alert>
+                `
+          }
         </div>
-        ${hasHiddenOptions
-          ? html`<ha-formfield
-              class="show-additional"
-              .label=${this.hass.localize(
-                "ui.panel.config.apps.configuration.options.show_unused_optional"
-              )}
-            >
-              <ha-switch
-                @change=${this._toggleOptional}
-                .checked=${this._showOptional}
+        ${
+          hasHiddenOptions
+            ? html`<ha-formfield
+                class="show-additional"
+                .label=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.options.show_unused_optional"
+                )}
               >
-              </ha-switch>
-            </ha-formfield>`
-          : ""}
+                <ha-switch
+                  @change=${this._toggleOptional}
+                  .checked=${this._showOptional}
+                >
+                </ha-switch>
+              </ha-formfield>`
+            : ""
+        }
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}

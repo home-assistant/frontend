@@ -95,9 +95,11 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
             "ui.panel.config.voice_assistants.satellite_wizard.success.secondary"
           )}
         </p>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <div class="rows">
           <div class="row">
             <ha-input
@@ -113,87 +115,97 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
               @change=${this._deviceNameChanged}
             ></ha-input>
           </div>
-          ${this.assistConfiguration &&
-          this.assistConfiguration.available_wake_words.length > 1
-            ? html`<div class="row">
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.wake_word_id"
-                  )}
-                  .value=${this.assistConfiguration.active_wake_words[0]}
-                  @selected=${this._wakeWordPicked}
-                  .options=${this.assistConfiguration.available_wake_words.map(
-                    (wakeword) => ({
-                      value: wakeword.id,
-                      label: wakeword.wake_word,
-                    })
-                  )}
-                ></ha-select>
-                <ha-button
-                  appearance="plain"
-                  size="s"
-                  @click=${this._testWakeWord}
-                >
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiMicrophone}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.satellite_wizard.success.test_wakeword"
-                  )}
-                </ha-button>
-              </div>`
-            : nothing}
-          ${pipelineEntity
-            ? html`<div class="row">
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
-                  )}
-                  @closed=${stopPropagation}
-                  .value=${pipelineEntity?.state}
-                  @selected=${this._pipelinePicked}
-                  .options=${pipelineEntity?.attributes.options.map(
-                    (pipeline) => ({
-                      value: pipeline,
-                      label: this.hass.formatEntityState(
-                        pipelineEntity,
-                        pipeline
-                      ),
-                    })
-                  )}
-                >
-                </ha-select>
-                <ha-button
-                  appearance="plain"
-                  size="s"
-                  @click=${this._openPipeline}
-                >
-                  <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.satellite_wizard.success.edit_pipeline"
-                  )}
-                </ha-button>
-              </div>`
-            : nothing}
-          ${this._ttsSettings
-            ? html`<div class="row">
-                <ha-tts-voice-picker
-                  .hass=${this.hass}
-                  .engineId=${this._ttsSettings.engine}
-                  .language=${this._ttsSettings.language}
-                  .value=${this._ttsSettings.voice}
-                  @value-changed=${this._voicePicked}
-                  @closed=${stopPropagation}
-                ></ha-tts-voice-picker>
-                <ha-button appearance="plain" size="s" @click=${this._testTts}>
-                  <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.satellite_wizard.success.try_tts"
-                  )}
-                </ha-button>
-              </div>`
-            : nothing}
+          ${
+            this.assistConfiguration &&
+            this.assistConfiguration.available_wake_words.length > 1
+              ? html`<div class="row">
+                  <ha-select
+                    .label=${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.form.wake_word_id"
+                    )}
+                    .value=${this.assistConfiguration.active_wake_words[0]}
+                    @selected=${this._wakeWordPicked}
+                    .options=${this.assistConfiguration.available_wake_words.map(
+                      (wakeword) => ({
+                        value: wakeword.id,
+                        label: wakeword.wake_word,
+                      })
+                    )}
+                  ></ha-select>
+                  <ha-button
+                    appearance="plain"
+                    size="s"
+                    @click=${this._testWakeWord}
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiMicrophone}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.satellite_wizard.success.test_wakeword"
+                    )}
+                  </ha-button>
+                </div>`
+              : nothing
+          }
+          ${
+            pipelineEntity
+              ? html`<div class="row">
+                  <ha-select
+                    .label=${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.pipeline.devices.pipeline"
+                    )}
+                    @closed=${stopPropagation}
+                    .value=${pipelineEntity?.state}
+                    @selected=${this._pipelinePicked}
+                    .options=${pipelineEntity?.attributes.options.map(
+                      (pipeline) => ({
+                        value: pipeline,
+                        label: this.hass.formatEntityState(
+                          pipelineEntity,
+                          pipeline
+                        ),
+                      })
+                    )}
+                  >
+                  </ha-select>
+                  <ha-button
+                    appearance="plain"
+                    size="s"
+                    @click=${this._openPipeline}
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.satellite_wizard.success.edit_pipeline"
+                    )}
+                  </ha-button>
+                </div>`
+              : nothing
+          }
+          ${
+            this._ttsSettings
+              ? html`<div class="row">
+                  <ha-tts-voice-picker
+                    .hass=${this.hass}
+                    .engineId=${this._ttsSettings.engine}
+                    .language=${this._ttsSettings.language}
+                    .value=${this._ttsSettings.voice}
+                    @value-changed=${this._voicePicked}
+                    @closed=${stopPropagation}
+                  ></ha-tts-voice-picker>
+                  <ha-button
+                    appearance="plain"
+                    size="s"
+                    @click=${this._testTts}
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.satellite_wizard.success.try_tts"
+                    )}
+                  </ha-button>
+                </div>`
+              : nothing
+          }
         </div>
       </div>
       <div class="footer">

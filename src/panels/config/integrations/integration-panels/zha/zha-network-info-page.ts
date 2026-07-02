@@ -51,84 +51,92 @@ class ZHANetworkInfoPage extends LitElement {
       >
         <div class="container">
           <ha-card>
-            ${this._networkSettings
-              ? html`<ha-md-list>
-                  <ha-md-list-item>
-                    <span slot="headline"
-                      >${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.channel_label"
-                      )}</span
-                    >
-                    <span slot="supporting-text"
-                      >${this._networkSettings.settings.network_info
-                        .channel}</span
-                    >
-                    <ha-icon-button
-                      slot="end"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.change_channel"
-                      )}
-                      .path=${mdiPencil}
-                      @click=${this._showChannelMigrationDialog}
-                    ></ha-icon-button>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">PAN ID</span>
-                    <span slot="supporting-text"
-                      >${this._networkSettings.settings.network_info
-                        .pan_id}</span
-                    >
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">Extended PAN ID</span>
-                    <span slot="supporting-text"
-                      >${this._networkSettings.settings.network_info
-                        .extended_pan_id}</span
-                    >
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">Coordinator IEEE</span>
-                    <span slot="supporting-text"
-                      >${this._networkSettings.settings.node_info.ieee}</span
-                    >
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline"
-                      >${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.radio_type"
-                      )}</span
-                    >
-                    <span slot="supporting-text"
-                      >${this._networkSettings.radio_type}</span
-                    >
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline"
-                      >${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.serial_port"
-                      )}</span
-                    >
-                    <span slot="supporting-text"
-                      >${this._networkSettings.device.path}</span
-                    >
-                  </ha-md-list-item>
-                  ${this._networkSettings.device.baudrate &&
-                  !this._networkSettings.device.path.startsWith("socket://")
-                    ? html`
-                        <ha-md-list-item>
-                          <span slot="headline"
-                            >${this.hass.localize(
-                              "ui.panel.config.zha.configuration_page.baudrate"
-                            )}</span
-                          >
-                          <span slot="supporting-text"
-                            >${this._networkSettings.device.baudrate}</span
-                          >
-                        </ha-md-list-item>
-                      `
-                    : nothing}
-                </ha-md-list>`
-              : nothing}
+            ${
+              this._networkSettings
+                ? html`<ha-md-list>
+                    <ha-md-list-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.channel_label"
+                        )}</span
+                      >
+                      <span slot="supporting-text"
+                        >${
+                          this._networkSettings.settings.network_info.channel
+                        }</span
+                      >
+                      <ha-icon-button
+                        slot="end"
+                        .label=${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.change_channel"
+                        )}
+                        .path=${mdiPencil}
+                        @click=${this._showChannelMigrationDialog}
+                      ></ha-icon-button>
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">PAN ID</span>
+                      <span slot="supporting-text"
+                        >${
+                          this._networkSettings.settings.network_info.pan_id
+                        }</span
+                      >
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">Extended PAN ID</span>
+                      <span slot="supporting-text"
+                        >${
+                          this._networkSettings.settings.network_info
+                            .extended_pan_id
+                        }</span
+                      >
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">Coordinator IEEE</span>
+                      <span slot="supporting-text"
+                        >${this._networkSettings.settings.node_info.ieee}</span
+                      >
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.radio_type"
+                        )}</span
+                      >
+                      <span slot="supporting-text"
+                        >${this._networkSettings.radio_type}</span
+                      >
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.serial_port"
+                        )}</span
+                      >
+                      <span slot="supporting-text"
+                        >${this._networkSettings.device.path}</span
+                      >
+                    </ha-md-list-item>
+                    ${
+                      this._networkSettings.device.baudrate &&
+                      !this._networkSettings.device.path.startsWith("socket://")
+                        ? html`
+                            <ha-md-list-item>
+                              <span slot="headline"
+                                >${this.hass.localize(
+                                  "ui.panel.config.zha.configuration_page.baudrate"
+                                )}</span
+                              >
+                              <span slot="supporting-text"
+                                >${this._networkSettings.device.baudrate}</span
+                              >
+                            </ha-md-list-item>
+                          `
+                        : nothing
+                    }
+                  </ha-md-list>`
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>

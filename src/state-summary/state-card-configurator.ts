@@ -23,11 +23,13 @@ class StateCardConfigurator extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        ${this.inDialog
-          ? html`<ha-button appearance="plain" size="s"
-              >${this.hass.formatEntityState(this.stateObj)}</ha-button
-            >`
-          : nothing}
+        ${
+          this.inDialog
+            ? html`<ha-button appearance="plain" size="s"
+                >${this.hass.formatEntityState(this.stateObj)}</ha-button
+              >`
+            : nothing
+        }
       </div>
     `;
   }

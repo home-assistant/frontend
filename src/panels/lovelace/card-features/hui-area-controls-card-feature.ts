@@ -73,8 +73,7 @@ class HuiAreaControlsCardFeature
       return undefined;
     }
     return this.hass.areas[this.context.area_id!] as
-      | AreaRegistryEntry
-      | undefined;
+      AreaRegistryEntry | undefined;
   }
 
   private get _controls(): AreaControl[] {
@@ -287,13 +286,15 @@ class HuiAreaControlsCardFeature
               .control=${normalized}
               @click=${this._handleButtonTap}
             >
-              ${normalized.type === "domain"
-                ? html`<ha-domain-icon
-                    .domain=${domain}
-                    .deviceClass=${deviceClass}
-                    .state=${entityState}
-                  ></ha-domain-icon>`
-                : html`<ha-state-icon .stateObj=${entity}></ha-state-icon>`}
+              ${
+                normalized.type === "domain"
+                  ? html`<ha-domain-icon
+                      .domain=${domain}
+                      .deviceClass=${deviceClass}
+                      .state=${entityState}
+                    ></ha-domain-icon>`
+                  : html`<ha-state-icon .stateObj=${entity}></ha-state-icon>`
+              }
             </ha-control-button>
           `;
         })}

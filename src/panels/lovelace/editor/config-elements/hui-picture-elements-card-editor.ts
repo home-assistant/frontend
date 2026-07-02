@@ -179,16 +179,18 @@ export class HuiPictureElementsCardEditor
 
     if (this._subElementEditorConfig) {
       return html`
-        ${this._subElementEditorConfig.type === "element" &&
-        this._subElementEditorConfig.elementConfig?.type !== "conditional"
-          ? html`
-              <ha-alert alert-type="info">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.card.picture-elements.position_hint"
-                )}
-              </ha-alert>
-            `
-          : nothing}
+        ${
+          this._subElementEditorConfig.type === "element" &&
+          this._subElementEditorConfig.elementConfig?.type !== "conditional"
+            ? html`
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.picture-elements.position_hint"
+                  )}
+                </ha-alert>
+              `
+            : nothing
+        }
         <hui-sub-element-editor
           .hass=${this.hass}
           .config=${this._subElementEditorConfig}

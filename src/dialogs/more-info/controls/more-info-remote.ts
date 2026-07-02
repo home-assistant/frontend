@@ -35,26 +35,30 @@ class MoreInfoRemote extends LitElement {
     const stateObj = this.stateObj;
 
     return html`
-      ${supportsFeature(stateObj, RemoteEntityFeature.ACTIVITY)
-        ? html`
-            <ha-select
-              .label=${this._localize(
-                "ui.dialogs.more_info_control.remote.activity"
-              )}
-              .value=${stateObj.attributes.current_activity || ""}
-              @selected=${this._handleActivityChanged}
-              .options=${stateObj.attributes.activity_list?.map((activity) => ({
-                value: activity,
-                label: this._formatters.formatEntityAttributeValue(
-                  stateObj,
-                  "activity",
-                  activity
-                ),
-              }))}
-            >
-            </ha-select>
-          `
-        : nothing}
+      ${
+        supportsFeature(stateObj, RemoteEntityFeature.ACTIVITY)
+          ? html`
+              <ha-select
+                .label=${this._localize(
+                  "ui.dialogs.more_info_control.remote.activity"
+                )}
+                .value=${stateObj.attributes.current_activity || ""}
+                @selected=${this._handleActivityChanged}
+                .options=${stateObj.attributes.activity_list?.map(
+                  (activity) => ({
+                    value: activity,
+                    label: this._formatters.formatEntityAttributeValue(
+                      stateObj,
+                      "activity",
+                      activity
+                    ),
+                  })
+                )}
+              >
+              </ha-select>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -50,4 +50,15 @@ module.exports = {
   ),
 
   translations_src: path.resolve(__dirname, "../src/translations"),
+
+  e2eTestApp_dir: path.resolve(__dirname, "../test/e2e/app"),
+  e2eTestApp_output_root: path.resolve(__dirname, "../test/e2e/app/dist"),
+  e2eTestApp_output_static: path.resolve(
+    __dirname,
+    "../test/e2e/app/dist/static"
+  ),
+  e2eTestApp_output_latest: path.resolve(
+    __dirname,
+    "../test/e2e/app/dist/frontend_latest"
+  ),
 };

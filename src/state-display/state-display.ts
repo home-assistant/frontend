@@ -168,11 +168,13 @@ class StateDisplay extends LitElement {
           <hui-timestamp-display
             .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
-            .format=${this.timeFormat ||
-            (this.stateObj.attributes.device_class ===
-            SENSOR_DEVICE_CLASS_UPTIME
-              ? "total"
-              : "relative")}
+            .format=${
+              this.timeFormat ||
+              (this.stateObj.attributes.device_class ===
+              SENSOR_DEVICE_CLASS_UPTIME
+                ? "total"
+                : "relative")
+            }
             capitalize
           ></hui-timestamp-display>
         `;

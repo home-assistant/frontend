@@ -229,11 +229,7 @@ export class HaAutomationRowTargets extends LitElement {
         ["floor" | "area" | "device" | "entity" | "label", string][]
       >((acc, [targetType, targetId]) => {
         const type = targetType.replace("_id", "") as
-          | "floor"
-          | "area"
-          | "device"
-          | "entity"
-          | "label";
+          "floor" | "area" | "device" | "entity" | "label";
         return [
           ...acc,
           ...ensureArray(targetId).map((id): [typeof type, string] => [
@@ -255,11 +251,7 @@ export class HaAutomationRowTargets extends LitElement {
       .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
         (acc, [targetType, targetId]) => {
           const type = targetType.replace("_id", "") as
-            | "floor"
-            | "area"
-            | "device"
-            | "entity"
-            | "label";
+            "floor" | "area" | "device" | "entity" | "label";
           return [
             ...acc,
             ...ensureArray(targetId).map((id): [typeof type, string] => [
@@ -296,17 +288,20 @@ export class HaAutomationRowTargets extends LitElement {
           <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
         </button>
         ${rows.map(([targetType, targetId]) => {
-          const content = html`${lastTargetType !== null &&
-          lastTargetType !== targetType
-            ? html`<wa-divider></wa-divider>`
-            : nothing}
-          ${!lastTargetType || lastTargetType !== targetType
-            ? html`<h3>
-                ${this._i18n.localize(
-                  `ui.panel.config.automation.editor.target_summary.types.${targetType}`
-                )}
-              </h3>`
-            : nothing}
+          const content = html`${
+            lastTargetType !== null && lastTargetType !== targetType
+              ? html`<wa-divider></wa-divider>`
+              : nothing
+          }
+          ${
+            !lastTargetType || lastTargetType !== targetType
+              ? html`<h3>
+                  ${this._i18n.localize(
+                    `ui.panel.config.automation.editor.target_summary.types.${targetType}`
+                  )}
+                </h3>`
+              : nothing
+          }
           ${this._renderTarget(targetType, targetId, true)}`;
           lastTargetType = targetType;
           return content;

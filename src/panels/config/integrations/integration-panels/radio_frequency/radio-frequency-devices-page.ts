@@ -12,7 +12,10 @@ import type {
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-relative-time";
 import { UNAVAILABLE, UNKNOWN } from "../../../../../data/entity/entity";
-import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
+import {
+  formatFrequencyRanges,
+  type RadioFrequencyTransmitter,
+} from "../../../../../data/radio_frequency";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -22,6 +25,7 @@ interface RadioFrequencyTransmitterRow {
   id: string;
   name: string;
   type: string;
+  frequencies: string;
   last_used?: string;
   device_id: string | null;
 }
@@ -64,6 +68,13 @@ export class RadioFrequencyDevicesPage extends LitElement {
           filterable: true,
           groupable: true,
         },
+        frequencies: {
+          title: localize("ui.panel.config.radio_frequency.frequencies"),
+          sortable: true,
+          filterable: true,
+          flex: 2,
+          template: (transmitter) => transmitter.frequencies || "—",
+        },
         last_used: {
           title: localize("ui.panel.config.radio_frequency.last_used"),
           sortable: true,
@@ -86,7 +97,8 @@ export class RadioFrequencyDevicesPage extends LitElement {
     (
       transmitters: RadioFrequencyTransmitter[],
       states: HomeAssistant["states"],
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      locale: HomeAssistant["locale"]
     ): RadioFrequencyTransmitterRow[] =>
       transmitters.map((transmitter) => {
         const stateObj = states[transmitter.entity_id];
@@ -104,6 +116,10 @@ export class RadioFrequencyDevicesPage extends LitElement {
           id: transmitter.entity_id,
           name: stateObj ? computeStateName(stateObj) : transmitter.entity_id,
           type: localize("component.radio_frequency.entity_component._.name"),
+          frequencies: formatFrequencyRanges(
+            transmitter.supported_frequency_ranges,
+            locale
+          ),
           last_used,
           device_id: transmitter.device_id,
         };
@@ -122,7 +138,8 @@ export class RadioFrequencyDevicesPage extends LitElement {
         .data=${this._data(
           this.transmitters,
           this.hass.states,
-          this.hass.localize
+          this.hass.localize,
+          this.hass.locale
         )}
         .noDataText=${this.hass.localize(
           "ui.panel.config.radio_frequency.no_devices"

@@ -33,11 +33,13 @@ export class MoreInfoConfigurator extends LitElement {
           .content=${this.stateObj.attributes.description}
         ></ha-markdown>
 
-        ${this.stateObj.attributes.errors
-          ? html`<ha-alert alert-type="error">
-              ${this.stateObj.attributes.errors}
-            </ha-alert>`
-          : nothing}
+        ${
+          this.stateObj.attributes.errors
+            ? html`<ha-alert alert-type="error">
+                ${this.stateObj.attributes.errors}
+              </ha-alert>`
+            : nothing
+        }
         ${this.stateObj.attributes.fields.map(
           (field) =>
             html`<ha-input
@@ -47,17 +49,19 @@ export class MoreInfoConfigurator extends LitElement {
               @change=${this._fieldChanged}
             ></ha-input>`
         )}
-        ${this.stateObj.attributes.submit_caption
-          ? html`<p class="submit">
-              <ha-button
-                .disabled=${this._isConfiguring}
-                @click=${this._submitClicked}
-                .loading=${this._isConfiguring}
-              >
-                ${this.stateObj.attributes.submit_caption}
-              </ha-button>
-            </p>`
-          : nothing}
+        ${
+          this.stateObj.attributes.submit_caption
+            ? html`<p class="submit">
+                <ha-button
+                  .disabled=${this._isConfiguring}
+                  @click=${this._submitClicked}
+                  .loading=${this._isConfiguring}
+                >
+                  ${this.stateObj.attributes.submit_caption}
+                </ha-button>
+              </p>`
+            : nothing
+        }
       </div>
     `;
   }

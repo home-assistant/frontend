@@ -1,5 +1,6 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiClose, mdiConnection, mdiMemory, mdiPencil, mdiUsb } from "@mdi/js";
+import Fuse from "fuse.js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -48,11 +49,7 @@ const SECTION_ORDER: SerialPortType[] = [
 ];
 
 type BaseSerialPortType =
-  | "serial_proxy"
-  | "integration"
-  | "usb"
-  | "embedded"
-  | "unnamed";
+  "serial_proxy" | "integration" | "usb" | "embedded" | "unnamed";
 
 const TYPE_ICONS: Record<BaseSerialPortType, string> = {
   serial_proxy: mdiEsphomeLogo,
@@ -405,11 +402,12 @@ export class HaSerialPortSelector extends LitElement {
       }
       let groupItems: SerialPickerItem[] = grouped[type];
       if (searchString) {
+        const fuseIndex = Fuse.createIndex(DEFAULT_SEARCH_KEYS, groupItems);
         groupItems = multiTermSortedSearch(
           groupItems,
           searchString,
-          DEFAULT_SEARCH_KEYS,
-          (item) => item.id
+          (item) => item.id,
+          fuseIndex
         );
       }
       if (!groupItems.length) {
@@ -451,28 +449,36 @@ export class HaSerialPortSelector extends LitElement {
               : "",
         })}
       >
-        ${item.icon_path
-          ? html`<ha-svg-icon
-              slot="start"
-              .path=${item.icon_path}
-            ></ha-svg-icon>`
-          : nothing}
+        ${
+          item.icon_path
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>`
+            : nothing
+        }
         <span slot="headline" style="white-space: normal">${item.primary}</span>
-        ${used_by
-          ? html`<span slot="supporting-text" style="white-space: normal"
-              >${used_by}</span
-            >`
-          : nothing}
-        ${description
-          ? html`<span slot="supporting-text" style="white-space: normal"
-              >${description}</span
-            >`
-          : nothing}
-        ${item.secondary
-          ? html`<span slot="supporting-text" style="white-space: normal"
-              >${item.secondary}</span
-            >`
-          : nothing}
+        ${
+          used_by
+            ? html`<span slot="supporting-text" style="white-space: normal"
+                >${used_by}</span
+              >`
+            : nothing
+        }
+        ${
+          description
+            ? html`<span slot="supporting-text" style="white-space: normal"
+                >${description}</span
+              >`
+            : nothing
+        }
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text" style="white-space: normal"
+                >${item.secondary}</span
+              >`
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -492,15 +498,17 @@ export class HaSerialPortSelector extends LitElement {
           @input=${this._handleInputChange}
           @change=${this._handleInputChange}
         >
-          ${this._manualEntry
-            ? html`
-                <ha-icon-button
-                  slot="end"
-                  @click=${this._revertToDropdown}
-                  .path=${mdiClose}
-                ></ha-icon-button>
-              `
-            : nothing}
+          ${
+            this._manualEntry
+              ? html`
+                  <ha-icon-button
+                    slot="end"
+                    @click=${this._revertToDropdown}
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                `
+              : nothing
+          }
         </ha-input>
       `;
     }

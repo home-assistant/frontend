@@ -16,7 +16,7 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
-import { DEFAULT_POWER_COLLECTION_KEY } from "./constants";
+import { DEFAULT_POWER_COLLECTION_KEY } from "../../data/energy";
 
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {

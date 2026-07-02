@@ -34,37 +34,47 @@ export class HaProgressButton extends LitElement {
         .appearance=${appearance}
         .disabled=${this.disabled}
         .loading=${this.progress}
-        .variant=${this._result === "success"
-          ? "success"
-          : this._result === "error"
-            ? "danger"
-            : this.variant}
+        .variant=${
+          this._result === "success"
+            ? "success"
+            : this._result === "error"
+              ? "danger"
+              : this.variant
+        }
         class=${classMap({
           result: !!this._result,
           success: this._result === "success",
           error: this._result === "error",
         })}
       >
-        ${this.iconPath
-          ? html`<ha-svg-icon
-              .path=${this.iconPath}
-              slot="start"
-            ></ha-svg-icon>`
-          : nothing}
+        ${
+          this.iconPath
+            ? html`<ha-svg-icon
+                .path=${this.iconPath}
+                slot="start"
+              ></ha-svg-icon>`
+            : nothing
+        }
 
         <slot>${this.label}</slot>
       </ha-button>
-      ${!this._result
-        ? nothing
-        : html`
-            <div class="progress">
-              ${this._result === "success"
-                ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
-                : this._result === "error"
-                  ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
-                  : nothing}
-            </div>
-          `}
+      ${
+        !this._result
+          ? nothing
+          : html`
+              <div class="progress">
+                ${
+                  this._result === "success"
+                    ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
+                    : this._result === "error"
+                      ? html`<ha-svg-icon
+                          .path=${mdiAlertOctagram}
+                        ></ha-svg-icon>`
+                      : nothing
+                }
+              </div>
+            `
+      }
     `;
   }
 

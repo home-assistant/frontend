@@ -293,20 +293,22 @@ export class HaStateContentPicker extends LitElement {
                   `;
                 }
               )}
-              ${this.disabled
-                ? nothing
-                : html`
-                    <ha-assist-chip
-                      @click=${this._addItem}
-                      .disabled=${this.disabled}
-                      label=${this.hass.localize(
-                        "ui.components.entity.entity-state-content-picker.add"
-                      )}
-                      class="add"
-                    >
-                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                    </ha-assist-chip>
-                  `}
+              ${
+                this.disabled
+                  ? nothing
+                  : html`
+                      <ha-assist-chip
+                        @click=${this._addItem}
+                        .disabled=${this.disabled}
+                        label=${this.hass.localize(
+                          "ui.components.entity.entity-state-content-picker.add"
+                        )}
+                        class="add"
+                      >
+                        <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                      </ha-assist-chip>
+                    `
+              }
             </ha-chip-set>
           </ha-sortable>
         </div>

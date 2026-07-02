@@ -26,30 +26,36 @@ class HaClimateState extends LitElement {
       this.stateObj.state === UNAVAILABLE || this.stateObj.state === UNKNOWN;
 
     return html`<div class="target">
-        ${!noValue
-          ? html`<span class="state-label">
-                ${this._localizeState()}
-                ${this.stateObj.attributes.preset_mode &&
-                this.stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
-                  ? html`-
-                    ${this._formatters!.formatEntityAttributeValue(
-                      this.stateObj,
-                      "preset_mode"
-                    )}`
-                  : nothing}
-              </span>
-              <div class="unit">${this._computeTarget()}</div>`
-          : this._localizeState()}
+        ${
+          !noValue
+            ? html`<span class="state-label">
+                  ${this._localizeState()}
+                  ${
+                    this.stateObj.attributes.preset_mode &&
+                    this.stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
+                      ? html`-
+                        ${this._formatters!.formatEntityAttributeValue(
+                          this.stateObj,
+                          "preset_mode"
+                        )}`
+                      : nothing
+                  }
+                </span>
+                <div class="unit">${this._computeTarget()}</div>`
+            : this._localizeState()
+        }
       </div>
 
-      ${currentStatus && !noValue
-        ? html`
-            <div class="current">
-              ${this._localize("ui.card.climate.currently")}:
-              <div class="unit">${currentStatus}</div>
-            </div>
-          `
-        : nothing}`;
+      ${
+        currentStatus && !noValue
+          ? html`
+              <div class="current">
+                ${this._localize("ui.card.climate.currently")}:
+                <div class="unit">${currentStatus}</div>
+              </div>
+            `
+          : nothing
+      }`;
   }
 
   private _computeCurrentStatus(): string | undefined {

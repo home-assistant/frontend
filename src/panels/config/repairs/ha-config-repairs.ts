@@ -80,38 +80,50 @@ class HaConfigRepairs extends LitElement {
                 referrerpolicy="no-referrer"
               />
               <span slot="headline">
-                ${this.hass.localize(
-                  `component.${issue.domain}.issues.${issue.translation_key || issue.issue_id}.title`,
-                  issue.translation_placeholders || {}
-                ) ||
-                `${issue.domain}: ${issue.translation_key || issue.issue_id}`}
+                ${
+                  this.hass.localize(
+                    `component.${issue.domain}.issues.${issue.translation_key || issue.issue_id}.title`,
+                    issue.translation_placeholders || {}
+                  ) ||
+                  `${issue.domain}: ${issue.translation_key || issue.issue_id}`
+                }
               </span>
               <span slot="supporting-text">
-                ${issue.severity === "critical" || issue.severity === "error"
-                  ? html`<span class="error"
-                      >${this.hass.localize(
-                        `ui.panel.config.repairs.${issue.severity}`
-                      )}</span
-                    >`
-                  : nothing}
-                ${(issue.severity === "critical" ||
-                  issue.severity === "error") &&
-                issue.created
-                  ? STRINGS_SEPARATOR_DOT
-                  : nothing}
-                ${createdBy
-                  ? html`<span .title=${createdBy}>${createdBy}</span>`
-                  : nothing}
-                ${issue.ignored
-                  ? ` · ${this.hass.localize(
-                      "ui.panel.config.repairs.dialog.ignored_in_version_short",
-                      { version: issue.dismissed_version }
-                    )}`
-                  : nothing}
+                ${
+                  issue.severity === "critical" || issue.severity === "error"
+                    ? html`<span class="error"
+                        >${this.hass.localize(
+                          `ui.panel.config.repairs.${issue.severity}`
+                        )}</span
+                      >`
+                    : nothing
+                }
+                ${
+                  (issue.severity === "critical" ||
+                    issue.severity === "error") &&
+                  issue.created
+                    ? STRINGS_SEPARATOR_DOT
+                    : nothing
+                }
+                ${
+                  createdBy
+                    ? html`<span .title=${createdBy}>${createdBy}</span>`
+                    : nothing
+                }
+                ${
+                  issue.ignored
+                    ? ` · ${this.hass.localize(
+                        "ui.panel.config.repairs.dialog.ignored_in_version_short",
+                        { version: issue.dismissed_version }
+                      )}`
+                    : nothing
+                }
               </span>
-              ${!this.narrow
-                ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                : nothing}
+              ${
+                !this.narrow
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  : nothing
+              }
             </ha-list-item-button>
           `;
         })}

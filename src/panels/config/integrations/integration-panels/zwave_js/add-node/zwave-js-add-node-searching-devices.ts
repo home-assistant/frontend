@@ -52,54 +52,60 @@ export class ZWaveJsAddNodeSearchingDevices extends WakeLockMixin(LitElement) {
             <div class="circle"></div>
           </wa-animation>
         </div>
-        ${this.smartStart
-          ? html`<ha-alert
-                .title=${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.specific_device.turn_on_device"
-                )}
-              >
-                <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
+        ${
+          this.smartStart
+            ? html`<ha-alert
+                  .title=${this.hass.localize(
+                    "ui.panel.config.zwave_js.add_node.specific_device.turn_on_device"
+                  )}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiRestart}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.add_node.specific_device.turn_on_device_description"
+                  )}
+                </ha-alert>
+                <p class="note">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.add_node.specific_device.close_description"
+                  )}
+                </p>`
+            : html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.add_node.follow_device_instructions"
+                  )}
+                </p>
+              `
+        }
+        ${
+          this.showSecurityOptions && !inclusionStrategyTranslationKey
+            ? html`<ha-button @click=${this._handleSecurityOptions}>
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.specific_device.turn_on_device_description"
+                  "ui.panel.config.zwave_js.add_node.security_options"
                 )}
-              </ha-alert>
-              <p class="note">
+              </ha-button>`
+            : inclusionStrategyTranslationKey
+              ? html`<span class="note">
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.add_node.select_strategy.inclusion_strategy",
+                    {
+                      strategy: this.hass.localize(
+                        `ui.panel.config.zwave_js.add_node.select_strategy.${inclusionStrategyTranslationKey}_label`
+                      ),
+                    }
+                  )}
+                </span>`
+              : nothing
+        }
+        ${
+          this.showAddAnotherDevice
+            ? html`<ha-button @click=${this._handleAddAnotherDevice}>
                 ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.specific_device.close_description"
+                  "ui.panel.config.zwave_js.add_node.specific_device.add_another_z_wave_device"
                 )}
-              </p>`
-          : html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.follow_device_instructions"
-                )}
-              </p>
-            `}
-        ${this.showSecurityOptions && !inclusionStrategyTranslationKey
-          ? html`<ha-button @click=${this._handleSecurityOptions}>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.add_node.security_options"
-              )}
-            </ha-button>`
-          : inclusionStrategyTranslationKey
-            ? html`<span class="note">
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.select_strategy.inclusion_strategy",
-                  {
-                    strategy: this.hass.localize(
-                      `ui.panel.config.zwave_js.add_node.select_strategy.${inclusionStrategyTranslationKey}_label`
-                    ),
-                  }
-                )}
-              </span>`
-            : nothing}
-        ${this.showAddAnotherDevice
-          ? html`<ha-button @click=${this._handleAddAnotherDevice}>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.add_node.specific_device.add_another_z_wave_device"
-              )}
-            </ha-button>`
-          : nothing}
+              </ha-button>`
+            : nothing
+        }
       </div>
     `;
   }
