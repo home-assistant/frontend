@@ -359,14 +359,25 @@ describe("buildEnergyViewCards", () => {
     energyCardRegistrations.splice(0);
   });
 
-  it("applies the view default to cards without an override", () => {
+  // The full gas card list, in the strategy's declared render order.
+  const gasCardConfigs = [
+    { type: "energy-gas-graph" },
+    {
+      type: "energy-sources-table",
+      types: ["gas"],
+      grid_options: { columns: 12 },
+    },
+  ];
+
+  it("applies the view default to a card without its own options", () => {
     const cards = buildEnergyViewCards(
       "gas",
       gasPrefs,
       undefined,
       localize,
       "energy_1",
-      { grid_options: { columns: 24 } }
+      { grid_options: { columns: 24 } },
+      gasCardConfigs
     );
     const gasGraph = cards.find((c) => c.type === "energy-gas-graph")!;
     expect(gasGraph).toMatchObject({
@@ -378,7 +389,7 @@ describe("buildEnergyViewCards", () => {
     });
   });
 
-  it("lets a per-card override replace the default", () => {
+  it("lets a per-card config replace the default", () => {
     const cards = buildEnergyViewCards(
       "gas",
       gasPrefs,
@@ -386,17 +397,29 @@ describe("buildEnergyViewCards", () => {
       localize,
       "energy_1",
       { grid_options: { columns: 24 } },
-      [
-        {
-          type: "energy-sources-table",
-          types: ["gas"],
-          grid_options: { columns: 12 },
-        },
-      ]
+      gasCardConfigs
     );
     const table = cards.find((c) => c.type === "energy-sources-table")!;
     expect(table.grid_options).toEqual({ columns: 12 });
     expect(table.types).toEqual(["gas"]);
+  });
+
+  it("renders built-in cards in the strategy's order, customs last", () => {
+    energyCardRegistrations.push({ type: "my-gas-card", view: "gas" });
+    const cards = buildEnergyViewCards(
+      "gas",
+      gasPrefs,
+      undefined,
+      localize,
+      "energy_1",
+      { grid_options: { columns: 24 } },
+      gasCardConfigs
+    );
+    expect(cards.map((c) => c.type)).toEqual([
+      "energy-gas-graph",
+      "energy-sources-table",
+      "custom:my-gas-card",
+    ]);
   });
 
   it("appends visible external cards with the view default", () => {
@@ -407,7 +430,8 @@ describe("buildEnergyViewCards", () => {
       undefined,
       localize,
       "energy_1",
-      { grid_options: { columns: 24 } }
+      { grid_options: { columns: 24 } },
+      gasCardConfigs
     );
     expect(cards[cards.length - 1]).toMatchObject({
       type: "custom:my-gas-card",
@@ -423,7 +447,8 @@ describe("buildEnergyViewCards", () => {
       ["gas.energy-gas-graph"],
       localize,
       "energy_1",
-      { grid_options: { columns: 24 } }
+      { grid_options: { columns: 24 } },
+      gasCardConfigs
     );
     expect(cards.some((c) => c.type === "energy-gas-graph")).toBe(false);
   });

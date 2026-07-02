@@ -121,6 +121,7 @@ export class PowerViewStrategy extends ReactiveElement {
         collectionKey,
         { grid_options: { columns: 36 } },
         [
+          { type: "power-sources-graph" },
           {
             type: "power-sankey",
             group_by_floor: powerSankeyGrouping,

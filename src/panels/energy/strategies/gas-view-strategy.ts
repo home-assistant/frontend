@@ -71,6 +71,7 @@ export class GasViewStrategy extends ReactiveElement {
         collectionKey,
         { grid_options: { columns: 24 } },
         [
+          { type: "energy-gas-graph" },
           {
             type: "energy-sources-table",
             types: ["gas"],

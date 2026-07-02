@@ -365,8 +365,8 @@ export const visibleEnergyCards = (
     .map((c) => ({ type: c.type, getLabel: c.getLabel }));
 
 /**
- * A per-card config override for a view: the card type plus any options that
- * differ from the view's default (a narrower grid, a source-type filter, sankey
+ * A view strategy's per-card config: the card type plus any options that differ
+ * from the view's default (a narrower grid, a source-type filter, sankey
  * grouping). The title is filled in from the catalog, so it is not repeated.
  */
 export type EnergyViewCardConfig = Partial<LovelaceCardConfig> & {
@@ -374,11 +374,14 @@ export type EnergyViewCardConfig = Partial<LovelaceCardConfig> & {
 };
 
 /**
- * Assemble the card list for a single-section view. Every visible card (built-in
- * and externally registered) renders in catalog order as
- * `{ default, ...override }`, with its title taken from the catalog. The view
- * supplies a `defaultConfig` shared by all its cards and per-card `overrides`
- * for the ones that differ; placement stays with the strategy.
+ * Assemble the card list for a single-section view.
+ *
+ * The strategy lists its built-in cards in `cardConfigs`, in render order; each
+ * renders as `{ ...default, ...cardConfig }` with its title from the catalog,
+ * and is dropped when it is inapplicable or hidden. Any remaining visible cards
+ * (externally registered ones the strategy doesn't know about) are appended at
+ * the end. Order is therefore the strategy's, never the catalog's, and custom
+ * cards always come last. Placement across sections stays with the strategy.
  */
 export const buildEnergyViewCards = (
   view: EnergyViewPath,
@@ -387,16 +390,37 @@ export const buildEnergyViewCards = (
   localize: LocalizeFunc,
   collectionKey: string,
   defaultConfig: Partial<LovelaceCardConfig>,
-  overrides: EnergyViewCardConfig[] = []
+  cardConfigs: EnergyViewCardConfig[]
 ): LovelaceCardConfig[] => {
-  const byType = new Map(overrides.map((o) => [o.type, o]));
-  return visibleEnergyCards(view, prefs, hidden).map((card) => ({
-    collection_key: collectionKey,
-    title: card.getLabel(localize),
-    ...defaultConfig,
-    type: card.type,
-    ...byType.get(card.type),
-  }));
+  const visible = visibleEnergyCards(view, prefs, hidden);
+  const byType = new Map(visible.map((c) => [c.type, c]));
+  const listed = new Set(cardConfigs.map((c) => c.type));
+  const cards: LovelaceCardConfig[] = [];
+
+  // Built-in cards, in the strategy's declared order.
+  for (const cardConfig of cardConfigs) {
+    const card = byType.get(cardConfig.type);
+    if (!card) continue;
+    cards.push({
+      collection_key: collectionKey,
+      title: card.getLabel(localize),
+      ...defaultConfig,
+      ...cardConfig,
+    });
+  }
+
+  // Externally-registered cards, appended at the end in registration order.
+  for (const card of visible) {
+    if (listed.has(card.type)) continue;
+    cards.push({
+      collection_key: collectionKey,
+      title: card.getLabel(localize),
+      ...defaultConfig,
+      type: card.type,
+    });
+  }
+
+  return cards;
 };
 
 // --- Lookup helpers --------------------------------------------------------
