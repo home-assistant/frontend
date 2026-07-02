@@ -1,14 +1,14 @@
-import type { LocalizeKeys } from "../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
 import type {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strategy";
-import {
-  customCards,
-  energyCardRegistrations,
-} from "../../../data/lovelace_custom_cards";
+import { energyCardRegistrations } from "../../../data/lovelace_custom_cards";
 
 /** Strategy config shared by the per-view energy strategies. */
 export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
@@ -92,36 +92,16 @@ export const hasGasRateSource = (prefs: EnergyPreferences): boolean =>
 
 // --- Card catalog ----------------------------------------------------------
 
-export interface EnergyCardCatalogEntry {
+/** Uniform shape for both built-in and externally-registered energy card entries. */
+export interface EnergyCardEntry {
   /** Stable identifier and storage token: `<view>.<cardType>`. */
   key: string;
   view: EnergyViewPath;
-  /** Localize key for the label shown in the customise dialog. */
-  labelKey: LocalizeKeys;
+  /** Returns the display label for the "Customise energy" dialog. */
+  getLabel: (localize: LocalizeFunc) => string;
   /** Whether this card is emitted for the given preferences. */
   isApplicable: (prefs: EnergyPreferences) => boolean;
 }
-
-/**
- * A custom card registered by a HACS author via `window.registerEnergyCard`.
- * These entries appear in the "Customise energy" dialog alongside built-in
- * cards and are injected into the appropriate view strategy at runtime.
- */
-export interface ExternalEnergyCardEntry {
-  /** Stable key used in hidden_cards storage: `<view>.custom:<type>`. */
-  key: string;
-  view: EnergyViewPath;
-  /** Custom element type name, without the "custom:" prefix. */
-  cardType: string;
-  /** Display label shown in the "Customise energy" toggle list. */
-  label: string;
-  isApplicable: (prefs: EnergyPreferences) => boolean;
-}
-
-/** Type guard that distinguishes external from built-in catalog entries. */
-export const isExternalEnergyCard = (
-  entry: EnergyCardCatalogEntry | ExternalEnergyCardEntry
-): entry is ExternalEnergyCardEntry => "cardType" in entry;
 
 export const energyCardKey = (view: EnergyViewPath, cardType: string): string =>
   `${view}.${cardType}`;
@@ -131,14 +111,14 @@ const entry = (
   cardType: string,
   labelKey: LocalizeKeys,
   isApplicable: (prefs: EnergyPreferences) => boolean
-): EnergyCardCatalogEntry => ({
+): EnergyCardEntry => ({
   key: energyCardKey(view, cardType),
   view,
-  labelKey,
+  getLabel: (localize) => localize(labelKey),
   isApplicable,
 });
 
-export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
+const ENERGY_CARD_CATALOG: readonly EnergyCardEntry[] = [
   // --- Overview ---
   entry(
     "overview",
@@ -333,33 +313,32 @@ const VALID_VIEWS = new Set<string>(Object.keys(VIEW_DEFAULT_APPLICABILITY));
  * Read `window.energyCardRegistrations` (populated by `registerEnergyCard`)
  * and return typed catalog entries for all valid registrations.
  */
-export const getExternalEnergyCards = (): ExternalEnergyCardEntry[] => {
-  const customCardsMap = new Map(customCards.map((c) => [c.type, c]));
-  return energyCardRegistrations
+export const getExternalEnergyCards = (): EnergyCardEntry[] =>
+  energyCardRegistrations
     .filter((r) => VALID_VIEWS.has(r.view))
     .map((r) => {
       const view = r.view as EnergyViewPath;
+      const label = r.label ?? r.type;
       return {
         key: energyCardKey(view, `custom:${r.type}`),
         view,
-        cardType: r.type,
-        label: customCardsMap.get(r.type)?.name ?? r.type,
+        getLabel: () => label,
         isApplicable:
           (r.isApplicable as
             ((prefs: EnergyPreferences) => boolean) | undefined) ??
           VIEW_DEFAULT_APPLICABILITY[view],
       };
     });
-};
 
 /**
  * The full energy card catalog: built-in entries followed by any cards
- * registered via `window.registerEnergyCard`. Consumers that need to handle
- * both types should use `isExternalEnergyCard` to distinguish them.
+ * registered via `window.registerEnergyCard`. All entries share the
+ * `EnergyCardEntry` interface, so callers need no type guards.
  */
-export const getEnergyCardCatalog = (): readonly (
-  EnergyCardCatalogEntry | ExternalEnergyCardEntry
-)[] => [...ENERGY_CARD_CATALOG, ...getExternalEnergyCards()];
+export const getEnergyCardCatalog = (): readonly EnergyCardEntry[] => [
+  ...ENERGY_CARD_CATALOG,
+  ...getExternalEnergyCards(),
+];
 
 /**
  * Card configs for external cards that are visible in a given view, ready to
@@ -372,20 +351,25 @@ export const getVisibleExternalCardConfigs = (
   hidden: string[] | undefined,
   collectionKey: string
 ): LovelaceCardConfig[] =>
-  getExternalEnergyCards()
-    .filter(
-      (e) =>
-        e.view === view && e.isApplicable(prefs) && !hidden?.includes(e.key)
-    )
-    .map((e) => ({
-      type: `custom:${e.cardType}`,
+  energyCardRegistrations
+    .filter((r) => r.view === view)
+    .filter((r) => {
+      const isApplicable =
+        (r.isApplicable as
+          ((prefs: EnergyPreferences) => boolean) | undefined) ??
+        VIEW_DEFAULT_APPLICABILITY[view];
+      return isApplicable(prefs);
+    })
+    .filter((r) => !hidden?.includes(energyCardKey(view, `custom:${r.type}`)))
+    .map((r) => ({
+      type: `custom:${r.type}`,
       collection_key: collectionKey,
       grid_options: { columns: 36 },
     }));
 
 // --- Lookup helpers --------------------------------------------------------
 
-const ENERGY_CARD_CATALOG_BY_KEY = new Map<string, EnergyCardCatalogEntry>(
+const ENERGY_CARD_CATALOG_BY_KEY = new Map<string, EnergyCardEntry>(
   ENERGY_CARD_CATALOG.map((c) => [c.key, c])
 );
 
@@ -393,7 +377,7 @@ const ENERGY_CARD_CATALOG_BY_KEY = new Map<string, EnergyCardCatalogEntry>(
 export const energyCardEntry = (
   view: EnergyViewPath,
   cardType: string
-): EnergyCardCatalogEntry | undefined =>
+): EnergyCardEntry | undefined =>
   ENERGY_CARD_CATALOG_BY_KEY.get(energyCardKey(view, cardType));
 
 export const isEnergyCardHidden = (

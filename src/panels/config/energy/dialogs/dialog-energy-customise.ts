@@ -27,14 +27,10 @@ import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider
 import { haStyleDialog } from "../../../../resources/styles";
 import { showToast } from "../../../../util/toast";
 import type {
-  EnergyCardCatalogEntry,
-  ExternalEnergyCardEntry,
+  EnergyCardEntry,
   EnergyViewPath,
 } from "../../../energy/strategies/energy-cards";
-import {
-  getEnergyCardCatalog,
-  isExternalEnergyCard,
-} from "../../../energy/strategies/energy-cards";
+import { getEnergyCardCatalog } from "../../../energy/strategies/energy-cards";
 import type { EnergyCustomiseDialogParams } from "./show-dialog-energy-customise";
 
 const VIEW_GROUPS: { view: EnergyViewPath; labelKey: LocalizeKeys }[] = [
@@ -188,13 +184,9 @@ export class DialogEnergyCustomise
     });
   }
 
-  private _renderCardRow(
-    card: EnergyCardCatalogEntry | ExternalEnergyCardEntry
-  ) {
+  private _renderCardRow(card: EnergyCardEntry) {
     const applicable = card.isApplicable(this._params!.preferences);
-    const label = isExternalEnergyCard(card)
-      ? card.label
-      : this._i18n.localize(card.labelKey);
+    const label = card.getLabel(this._i18n.localize);
     const rowId = `row-${card.key}`;
     return html`
       <ha-settings-row slim id=${rowId}>

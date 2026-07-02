@@ -58,8 +58,8 @@ export interface CustomCardFeatureEntry {
  * Registration payload pushed by a HACS card author to enroll a custom card
  * into the energy dashboard strategy and "Customise energy" dialog.
  *
- * Call `window.registerEnergyCard(type, view[, isApplicable])` — do not push
- * to this array directly, as the function applies safe defaults.
+ * Call `window.registerEnergyCard(type, view[, options])` — do not push to
+ * this array directly, as the function applies safe defaults.
  */
 export interface EnergyCardRegistration {
   /** Custom element type name, without the "custom:" prefix. */
@@ -69,6 +69,8 @@ export interface EnergyCardRegistration {
    * One of: "overview" | "electricity" | "gas" | "water" | "now"
    */
   view: string;
+  /** Display label shown in the "Customise energy" toggle list. Defaults to the element type name. */
+  label?: string;
   /**
    * Optional predicate that receives the user's energy preferences and returns
    * whether the card is applicable. When omitted the card appears whenever the
@@ -95,7 +97,10 @@ export interface CustomCardsWindow {
   registerEnergyCard?: (
     type: string,
     view: string,
-    isApplicable?: (prefs: unknown) => boolean
+    options?: {
+      label?: string;
+      isApplicable?: (prefs: unknown) => boolean;
+    }
   ) => void;
 }
 
@@ -119,11 +124,12 @@ if (!("energyCardRegistrations" in customCardsWindow)) {
   customCardsWindow.energyCardRegistrations = [];
 }
 if (!("registerEnergyCard" in customCardsWindow)) {
-  customCardsWindow.registerEnergyCard = (type, view, isApplicable) => {
+  customCardsWindow.registerEnergyCard = (type, view, options) => {
     customCardsWindow.energyCardRegistrations!.push({
       type,
       view,
-      isApplicable,
+      label: options?.label,
+      isApplicable: options?.isApplicable,
     });
   };
 }
