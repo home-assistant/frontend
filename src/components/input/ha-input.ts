@@ -173,13 +173,6 @@ export class HaInput extends WaInputMixin(LitElement) {
     }
   }
 
-  public override connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hasUpdated && !this.insetLabel) {
-      this._observeStartSlot();
-    }
-  }
-
   public override disconnectedCallback(): void {
     super.disconnectedCallback();
     this._startSlotResizeObserver?.disconnect();
