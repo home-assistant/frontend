@@ -369,6 +369,22 @@ export function computeStatMidpoint(
   return (start + end) / 2;
 }
 
+const PERIOD_MS: Record<string, number> = {
+  "5minute": 5 * 60 * 1000,
+  hour: 60 * 60 * 1000,
+};
+
+/**
+ * Offset from a period's start to its midpoint, for centering sub-daily bars
+ * (and forecast lines) between axis ticks — 0 for daily+ periods, which sit at
+ * the start. Derived from the period, not from the data, so the first/only
+ * bucket centers identically to every other bucket. (Previously estimated from
+ * the gap between the first two entries, which collapsed to 0 with one bucket.)
+ */
+export function getPeriodMidpointOffset(period: string): number {
+  return (PERIOD_MS[period] ?? 0) / 2;
+}
+
 export interface UntrackedSplit {
   /** Untracked consumption per timestamp, clamped to >= 0. */
   positive: Record<number, number>;

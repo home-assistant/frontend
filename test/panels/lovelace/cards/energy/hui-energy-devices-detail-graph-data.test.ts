@@ -164,6 +164,57 @@ describe("generateEnergyDevicesDetailGraphData", () => {
     ).toMatchSnapshot();
   });
 
+  // Regression test for #52937: at the start of the day only the first hour
+  // has data. The untracked/over-reported bars must center on the same period
+  // midpoint as the device bars so they stack as one bar instead of splitting
+  // into a second stack at the period start.
+  it("stacks untracked bars on the device bars for a lone first-of-day bucket", () => {
+    // Full-day range (so getSuggestedPeriod stays "hour") but keep only the
+    // first hourly bucket in every stat. gapChance: 0 makes the bucket dense.
+    const full = generateEnergyData(1, {
+      days: 1,
+      period: "hour",
+      gapChance: 0,
+      prefs: buildPrefs(false),
+    });
+    const firstStart = full.start.getTime();
+    const energyData = {
+      ...full,
+      stats: Object.fromEntries(
+        Object.entries(full.stats).map(
+          ([id, values]) =>
+            [id, values.filter((s) => s.start === firstStart)] as const
+        )
+      ),
+    };
+
+    const result = generateEnergyDevicesDetailGraphData({
+      ...baseParams,
+      energyData,
+    });
+
+    // Collect the display x of every bar across all series.
+    const xs = new Set<number>();
+    let nonEmptySeries = 0;
+    for (const series of result.chartData) {
+      const points = series.data ?? [];
+      if (points.length) {
+        nonEmptySeries++;
+      }
+      for (const point of points as any[]) {
+        const x = Array.isArray(point) ? point[0] : point?.value?.[0];
+        if (x != null) {
+          xs.add(Number(x));
+        }
+      }
+    }
+
+    // Device bars + at least one untracked series are present...
+    assert.isAtLeast(nonEmptySeries, 2);
+    // ...and they all share a single x, so they render as one full stack.
+    assert.equal(xs.size, 1);
+  });
+
   // The seeded fixtures above all happen to produce fully-negative untracked
   // (devices reference the source stats, so they consume all of used_total).
   // These two cases pin the branches those snapshots can't reach.
