@@ -152,6 +152,7 @@ gulp.task("rspack-dev-server-demo", () =>
     ),
     contentBase: paths.demo_output_root,
     port: 8090,
+    open: false,
   })
 );
 
