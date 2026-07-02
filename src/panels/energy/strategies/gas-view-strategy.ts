@@ -7,7 +7,11 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasGasSource, isEnergyCardVisible } from "./energy-cards";
+import {
+  getVisibleExternalCardConfigs,
+  hasGasSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
@@ -84,6 +88,10 @@ export class GasViewStrategy extends ReactiveElement {
         },
       });
     }
+
+    section.cards!.push(
+      ...getVisibleExternalCardConfigs("gas", prefs, hidden, collectionKey)
+    );
 
     return view;
   }

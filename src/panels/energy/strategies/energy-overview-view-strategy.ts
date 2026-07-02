@@ -8,7 +8,11 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasWaterSource, isEnergyCardVisible } from "./energy-cards";
+import {
+  getVisibleExternalCardConfigs,
+  hasWaterSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 
 @customElement("energy-overview-view-strategy")
 export class EnergyOverviewViewStrategy extends ReactiveElement {
@@ -154,6 +158,15 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
               },
         ],
       });
+    }
+
+    for (const cardConfig of getVisibleExternalCardConfigs(
+      "overview",
+      prefs,
+      hidden,
+      collectionKey
+    )) {
+      view.sections!.push({ type: "grid", cards: [cardConfig] });
     }
 
     return view;

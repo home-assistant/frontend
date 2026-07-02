@@ -8,6 +8,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
+  getVisibleExternalCardConfigs,
   hasGasRateSource,
   hasPowerDevices,
   hasPowerSources,
@@ -147,6 +148,10 @@ export class PowerViewStrategy extends ReactiveElement {
         },
       });
     }
+
+    chartsSection.cards!.push(
+      ...getVisibleExternalCardConfigs("now", prefs, hidden, collectionKey)
+    );
 
     if (badges.length) {
       view.badges = badges;

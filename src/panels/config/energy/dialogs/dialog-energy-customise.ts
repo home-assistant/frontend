@@ -28,9 +28,13 @@ import { haStyleDialog } from "../../../../resources/styles";
 import { showToast } from "../../../../util/toast";
 import type {
   EnergyCardCatalogEntry,
+  ExternalEnergyCardEntry,
   EnergyViewPath,
 } from "../../../energy/strategies/energy-cards";
-import { ENERGY_CARD_CATALOG } from "../../../energy/strategies/energy-cards";
+import {
+  getEnergyCardCatalog,
+  isExternalEnergyCard,
+} from "../../../energy/strategies/energy-cards";
 import type { EnergyCustomiseDialogParams } from "./show-dialog-energy-customise";
 
 const VIEW_GROUPS: { view: EnergyViewPath; labelKey: LocalizeKeys }[] = [
@@ -163,8 +167,9 @@ export class DialogEnergyCustomise
 
   private _renderGroups() {
     const prefs = this._params!.preferences;
+    const catalog = getEnergyCardCatalog();
     return VIEW_GROUPS.map((group) => {
-      const cards = ENERGY_CARD_CATALOG.filter((c) => c.view === group.view);
+      const cards = catalog.filter((c) => c.view === group.view);
       // Hide the whole group when none of its cards apply to the current config.
       if (!cards.some((c) => c.isApplicable(prefs))) {
         return nothing;
@@ -183,9 +188,13 @@ export class DialogEnergyCustomise
     });
   }
 
-  private _renderCardRow(card: EnergyCardCatalogEntry) {
+  private _renderCardRow(
+    card: EnergyCardCatalogEntry | ExternalEnergyCardEntry
+  ) {
     const applicable = card.isApplicable(this._params!.preferences);
-    const label = this._i18n.localize(card.labelKey);
+    const label = isExternalEnergyCard(card)
+      ? card.label
+      : this._i18n.localize(card.labelKey);
     const rowId = `row-${card.key}`;
     return html`
       <ha-settings-row slim id=${rowId}>

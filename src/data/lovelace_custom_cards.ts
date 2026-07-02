@@ -54,6 +54,30 @@ export interface CustomCardFeatureEntry {
   configurable?: boolean;
 }
 
+/**
+ * Registration payload pushed by a HACS card author to enroll a custom card
+ * into the energy dashboard strategy and "Customise energy" dialog.
+ *
+ * Call `window.registerEnergyCard(type, view[, isApplicable])` — do not push
+ * to this array directly, as the function applies safe defaults.
+ */
+export interface EnergyCardRegistration {
+  /** Custom element type name, without the "custom:" prefix. */
+  type: string;
+  /**
+   * Energy dashboard view the card should appear in.
+   * One of: "overview" | "electricity" | "gas" | "water" | "now"
+   */
+  view: string;
+  /**
+   * Optional predicate that receives the user's energy preferences and returns
+   * whether the card is applicable. When omitted the card appears whenever the
+   * target view itself is shown (e.g. a gas-view card appears iff there is a
+   * gas source configured).
+   */
+  isApplicable?: (prefs: unknown) => boolean;
+}
+
 export interface CustomCardsWindow {
   customCards?: CustomCardEntry[];
   customCardFeatures?: CustomCardFeatureEntry[];
@@ -62,6 +86,17 @@ export interface CustomCardsWindow {
    * @deprecated Use customCardFeatures
    */
   customTileFeatures?: CustomCardFeatureEntry[];
+  /** Populated by `registerEnergyCard`; consumed by the energy strategy. */
+  energyCardRegistrations?: EnergyCardRegistration[];
+  /**
+   * Register a custom card to appear in the energy dashboard and the
+   * "Customise energy" dialog. Must be called after `customElements.define`.
+   */
+  registerEnergyCard?: (
+    type: string,
+    view: string,
+    isApplicable?: (prefs: unknown) => boolean
+  ) => void;
 }
 
 export const CUSTOM_TYPE_PREFIX = "custom:";
@@ -80,6 +115,18 @@ if (!("customBadges" in customCardsWindow)) {
 if (!("customTileFeatures" in customCardsWindow)) {
   customCardsWindow.customTileFeatures = [];
 }
+if (!("energyCardRegistrations" in customCardsWindow)) {
+  customCardsWindow.energyCardRegistrations = [];
+}
+if (!("registerEnergyCard" in customCardsWindow)) {
+  customCardsWindow.registerEnergyCard = (type, view, isApplicable) => {
+    customCardsWindow.energyCardRegistrations!.push({
+      type,
+      view,
+      isApplicable,
+    });
+  };
+}
 
 export const customCards = customCardsWindow.customCards!;
 export const getCustomCardFeatures = () => [
@@ -87,6 +134,8 @@ export const getCustomCardFeatures = () => [
   ...customCardsWindow.customTileFeatures!,
 ];
 export const customBadges = customCardsWindow.customBadges!;
+export const energyCardRegistrations =
+  customCardsWindow.energyCardRegistrations!;
 
 export const getCustomCardEntry = (type: string) =>
   customCards.find((card) => card.type === type);

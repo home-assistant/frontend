@@ -10,6 +10,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
+  getVisibleExternalCardConfigs,
   hasWaterDevices,
   hasWaterSource,
   isEnergyCardVisible,
@@ -89,6 +90,10 @@ export class WaterViewStrategy extends ReactiveElement {
         },
       });
     }
+
+    section.cards!.push(
+      ...getVisibleExternalCardConfigs("water", prefs, hidden, collectionKey)
+    );
 
     // Only include if we have at least 1 water device in the config.
     if (isEnergyCardVisible("water", "water-sankey", prefs, hidden)) {
