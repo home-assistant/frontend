@@ -8,7 +8,6 @@ import {
   applicableEnergyCardKeys,
   energyCardKey,
   getEnergyCardCatalog,
-  getExternalEnergyCards,
   getVisibleExternalCardConfigs,
   hasEnergySource,
   hasGasRateSource,
@@ -232,7 +231,12 @@ describe("isEnergyCardVisible", () => {
 
 // --- External (HACS) card registry -----------------------------------------
 
-describe("getExternalEnergyCards", () => {
+const externalEntry = () => {
+  const catalog = getEnergyCardCatalog();
+  return catalog[catalog.length - 1];
+};
+
+describe("getEnergyCardCatalog — external card entries", () => {
   beforeEach(() => {
     energyCardRegistrations.splice(0);
   });
@@ -240,13 +244,15 @@ describe("getExternalEnergyCards", () => {
     energyCardRegistrations.splice(0);
   });
 
-  it("returns an empty array when nothing is registered", () => {
-    expect(getExternalEnergyCards()).toEqual([]);
+  it("contains only built-in entries when nothing is registered", () => {
+    const catalog = getEnergyCardCatalog();
+    expect(catalog.length).toBeGreaterThan(0);
+    expect(catalog.every((e) => !e.key.includes("custom:"))).toBe(true);
   });
 
-  it("maps a registration to a typed entry with the correct key format", () => {
+  it("appends external entries with the correct key format", () => {
     energyCardRegistrations.push({ type: "my-gas-card", view: "gas" });
-    const [entry] = getExternalEnergyCards();
+    const entry = externalEntry();
     expect(entry.key).toBe("gas.custom:my-gas-card");
     expect(entry.view).toBe("gas");
   });
@@ -257,8 +263,7 @@ describe("getExternalEnergyCards", () => {
       view: "electricity",
       label: "My Pretty Card",
     });
-    const [entry] = getExternalEnergyCards();
-    expect(entry.getLabel(() => "")).toBe("My Pretty Card");
+    expect(externalEntry().getLabel(() => "")).toBe("My Pretty Card");
   });
 
   it("falls back to the type string as label when no label is provided", () => {
@@ -266,13 +271,12 @@ describe("getExternalEnergyCards", () => {
       type: "unlabelled-card",
       view: "electricity",
     });
-    const [entry] = getExternalEnergyCards();
-    expect(entry.getLabel(() => "")).toBe("unlabelled-card");
+    expect(externalEntry().getLabel(() => "")).toBe("unlabelled-card");
   });
 
   it("applies the default view predicate when no isApplicable is provided", () => {
     energyCardRegistrations.push({ type: "gas-card", view: "gas" });
-    const [entry] = getExternalEnergyCards();
+    const entry = externalEntry();
     // Default for "gas" is hasGasSource.
     expect(entry.isApplicable(makePrefs({ energy_sources: [GAS] }))).toBe(true);
     expect(entry.isApplicable(makePrefs({ energy_sources: [SOLAR] }))).toBe(
@@ -281,62 +285,30 @@ describe("getExternalEnergyCards", () => {
   });
 
   it("uses a custom isApplicable when provided", () => {
-    const always = () => true;
     energyCardRegistrations.push({
       type: "always-on",
       view: "electricity",
-      isApplicable: always,
+      isApplicable: () => true,
     });
-    const [entry] = getExternalEnergyCards();
-    expect(entry.isApplicable(makePrefs())).toBe(true);
+    expect(externalEntry().isApplicable(makePrefs())).toBe(true);
   });
 
-  it("filters out registrations with unrecognised view names", () => {
+  it("ignores registrations with unrecognised view names", () => {
+    const before = getEnergyCardCatalog().length;
     energyCardRegistrations.push({ type: "bad-card", view: "unknown-view" });
-    expect(getExternalEnergyCards()).toHaveLength(0);
+    expect(getEnergyCardCatalog().length).toBe(before);
   });
 
-  it("returns all valid registrations in order", () => {
+  it("appends multiple registrations in order", () => {
     energyCardRegistrations.push(
       { type: "card-a", view: "electricity" },
       { type: "card-b", view: "gas" }
     );
-    const entries = getExternalEnergyCards();
-    expect(entries).toHaveLength(2);
-    expect(entries[0].key).toBe("electricity.custom:card-a");
-    expect(entries[1].key).toBe("gas.custom:card-b");
-  });
-});
-
-describe("getEnergyCardCatalog", () => {
-  beforeEach(() => {
-    energyCardRegistrations.splice(0);
-  });
-  afterEach(() => {
-    energyCardRegistrations.splice(0);
-  });
-
-  it("contains only built-in entries when no external cards are registered", () => {
     const catalog = getEnergyCardCatalog();
-    // Every entry must have a key, view, getLabel, and isApplicable.
-    expect(catalog.length).toBeGreaterThan(0);
-    for (const entry of catalog) {
-      expect(typeof entry.key).toBe("string");
-      expect(typeof entry.getLabel).toBe("function");
-      expect(typeof entry.isApplicable).toBe("function");
-    }
-  });
-
-  it("appends external entries after the built-in entries", () => {
-    energyCardRegistrations.push({
-      type: "extra",
-      view: "gas",
-      label: "Extra",
-    });
-    const catalog = getEnergyCardCatalog();
-    const last = catalog[catalog.length - 1];
-    expect(last.key).toBe("gas.custom:extra");
-    expect(last.getLabel(() => "")).toBe("Extra");
+    const external = catalog.filter((e) => e.key.includes("custom:"));
+    expect(external).toHaveLength(2);
+    expect(external[0].key).toBe("electricity.custom:card-a");
+    expect(external[1].key).toBe("gas.custom:card-b");
   });
 });
 

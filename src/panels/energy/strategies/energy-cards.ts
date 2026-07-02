@@ -307,15 +307,9 @@ const VIEW_DEFAULT_APPLICABILITY: Record<
   now: hasPowerSources,
 };
 
-const VALID_VIEWS = new Set<string>(Object.keys(VIEW_DEFAULT_APPLICABILITY));
-
-/**
- * Read `window.energyCardRegistrations` (populated by `registerEnergyCard`)
- * and return typed catalog entries for all valid registrations.
- */
-export const getExternalEnergyCards = (): EnergyCardEntry[] =>
+const getExternalEnergyCards = (): EnergyCardEntry[] =>
   energyCardRegistrations
-    .filter((r) => VALID_VIEWS.has(r.view))
+    .filter((r) => r.view in VIEW_DEFAULT_APPLICABILITY)
     .map((r) => {
       const view = r.view as EnergyViewPath;
       const label = r.label ?? r.type;
@@ -351,18 +345,14 @@ export const getVisibleExternalCardConfigs = (
   hidden: string[] | undefined,
   collectionKey: string
 ): LovelaceCardConfig[] =>
-  energyCardRegistrations
-    .filter((r) => r.view === view)
-    .filter((r) => {
-      const isApplicable =
-        (r.isApplicable as
-          ((prefs: EnergyPreferences) => boolean) | undefined) ??
-        VIEW_DEFAULT_APPLICABILITY[view];
-      return isApplicable(prefs);
-    })
-    .filter((r) => !hidden?.includes(energyCardKey(view, `custom:${r.type}`)))
-    .map((r) => ({
-      type: `custom:${r.type}`,
+  getExternalEnergyCards()
+    .filter(
+      (e) =>
+        e.view === view && e.isApplicable(prefs) && !hidden?.includes(e.key)
+    )
+    .map((e) => ({
+      // key is "<view>.custom:<type>"; slice past the "<view>." prefix
+      type: e.key.slice(view.length + 1),
       collection_key: collectionKey,
       grid_options: { columns: 36 },
     }));
@@ -373,8 +363,7 @@ const ENERGY_CARD_CATALOG_BY_KEY = new Map<string, EnergyCardEntry>(
   ENERGY_CARD_CATALOG.map((c) => [c.key, c])
 );
 
-/** The catalog entry for a `(view, cardType)` pair, or undefined if unknown. */
-export const energyCardEntry = (
+const energyCardEntry = (
   view: EnergyViewPath,
   cardType: string
 ): EnergyCardEntry | undefined =>
