@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -39,6 +40,15 @@ For loop example getting entity values in the weather domain:
   {%- if loop.first %}The {% elif loop.last %} and the {% else %}, the {% endif -%}
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`;
+
+// key resolves the label/description translation keys; path is passed through
+// documentationUrl().
+const TEMPLATE_DOCS_LINKS: { key: string; path: string }[] = [
+  { key: "docs_introduction", path: "/docs/templating/introduction/" },
+  { key: "docs_states", path: "/docs/templating/states/" },
+  { key: "docs_debugging", path: "/docs/templating/debugging/" },
+  { key: "docs_functions", path: "/template-functions/" },
+];
 
 @customElement("developer-tools-template")
 class HaPanelDevTemplate extends LitElement {
@@ -120,31 +130,36 @@ class HaPanelDevTemplate extends LitElement {
                 "ui.panel.config.developer-tools.tabs.templates.description"
               )}
             </p>
+            <p>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.templates.engine_info"
+              )}
+            </p>
+            <h3>
+              ${this.hass.localize(
+                "ui.panel.config.developer-tools.tabs.templates.learn_more"
+              )}
+            </h3>
             <ul>
-              <li>
-                <a
-                  href="https://jinja.palletsprojects.com/en/latest/templates/"
-                  target="_blank"
-                  rel="noreferrer"
-                  >${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.templates.jinja_documentation"
-                  )}
-                </a>
-              </li>
-              <li>
-                <a
-                  href=${documentationUrl(
-                    this.hass,
-                    "/docs/configuration/templating/"
-                  )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.templates.template_extensions"
-                  )}</a
-                >
-              </li>
+              ${TEMPLATE_DOCS_LINKS.map(
+                (link) => html`
+                  <li>
+                    <a
+                      href=${documentationUrl(this.hass, link.path)}
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        `ui.panel.config.developer-tools.tabs.templates.${link.key}` as LocalizeKeys
+                      )}</a
+                    >
+                    <span class="link-description"
+                      >${this.hass.localize(
+                        `ui.panel.config.developer-tools.tabs.templates.${link.key}_description` as LocalizeKeys
+                      )}</span
+                    >
+                  </li>
+                `
+              )}
             </ul>
           </div>
         </ha-expansion-panel>
@@ -429,6 +444,17 @@ ${type === "object"
         .description > ul {
           margin-block-start: var(--ha-space-1);
           margin-block-end: var(--ha-space-1);
+        }
+        .description > h3 {
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-medium);
+          margin-block-end: var(--ha-space-1);
+        }
+        .description li {
+          margin-block-end: var(--ha-space-1);
+        }
+        .description .link-description {
+          color: var(--secondary-text-color);
         }
 
         .render-pane .card-content {
