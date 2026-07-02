@@ -25,7 +25,8 @@ yarn lint          # ESLint + Prettier + TypeScript + Lit
 yarn format        # Auto-fix ESLint + Prettier
 yarn lint:types    # TypeScript compiler (run WITHOUT file arguments)
 yarn test          # Vitest
-script/develop     # Development server
+yarn dev           # Development server
+yarn dev:serve     # Development server with serve
 ```
 
 > **WARNING:** Never run `tsc` or `yarn lint:types` with file arguments (e.g., `yarn lint:types src/file.ts`). When `tsc` receives file arguments, it ignores `tsconfig.json` and emits `.js` files into `src/`, polluting the codebase. Always run `yarn lint:types` without arguments. For individual file type checking, rely on IDE diagnostics. If `.js` files are accidentally generated, clean up with `git clean -fd src/`.
