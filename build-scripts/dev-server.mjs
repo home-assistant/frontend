@@ -164,6 +164,109 @@ const hints = (suite) => {
   );
 };
 
+// --- shared spawning and lifecycle ------------------------------------------
+
+// Signal the whole process group (the background server is its group leader),
+// falling back to the bare pid if that is not permitted.
+const killProcessTree = (pid, sig) => {
+  try {
+    process.kill(-pid, sig);
+  } catch {
+    try {
+      process.kill(pid, sig);
+    } catch {
+      // Already gone.
+    }
+  }
+};
+
+const urlSuffix = (port) => (port ? ` at http://localhost:${port}` : "");
+
+// Run a server in the foreground, inheriting stdio; resolve with its exit code.
+const spawnInherit = (cmd, args) =>
+  new Promise((resolve) => {
+    const child = spawn(cmd, args, { cwd: repoRoot, stdio: "inherit" });
+    child.on("exit", (code) => resolve(code ?? 0));
+  });
+
+// Spawn a detached server that writes stdout and stderr to the suite's log file.
+const spawnDetachedToLog = (suite, cmd, args) => {
+  fs.mkdirSync(logDir, { recursive: true });
+  const logFile = logFileFor(suite);
+  const fd = fs.openSync(logFile, "w");
+  const child = spawn(cmd, args, {
+    cwd: repoRoot,
+    detached: true,
+    stdio: ["ignore", fd, fd],
+  });
+  fs.closeSync(fd);
+  child.unref();
+  return { child, logFile };
+};
+
+// Poll until the server is ready, the child exits, or we time out. Prints the
+// progress dots and outcome; returns 0 when ready, 1 otherwise. onExit runs if
+// the child dies before it is ready (used to clear a stale pidfile).
+const awaitReady = async ({ suite, child, logFile, port, isReady, onExit }) => {
+  let childExited = false;
+  child.on("exit", () => {
+    childExited = true;
+  });
+  const deadline = Date.now() + READY_TIMEOUT_MS;
+  process.stdout.write(`Starting ${suite} dev server`);
+  /* eslint-disable no-await-in-loop -- poll until the server is ready */
+  while (Date.now() < deadline) {
+    if (childExited) {
+      process.stdout.write("\n");
+      process.stderr.write(
+        `Dev server (${suite}) exited before it was ready. See ${logFile}\n`
+      );
+      onExit?.();
+      return 1;
+    }
+    if (await isReady()) {
+      process.stdout.write("\n");
+      process.stdout.write(
+        `Dev server (${suite}) running${urlSuffix(port)} ` +
+          `(pid ${child.pid})\n${hints(suite)}`
+      );
+      return 0;
+    }
+    process.stdout.write(".");
+    await sleep(1000);
+  }
+  /* eslint-enable no-await-in-loop */
+  process.stdout.write("\n");
+  process.stderr.write(
+    `Dev server (${suite}) did not become ready within ${
+      READY_TIMEOUT_MS / 1000
+    }s. See ${logFile}\n`
+  );
+  return 1;
+};
+
+// Stop a running background server: SIGTERM, wait for it to go, then SIGKILL.
+// isStopped reports when it is gone; onStopped runs on success (pidfile cleanup).
+const terminate = async (suite, pid, isStopped, onStopped) => {
+  killProcessTree(pid, "SIGTERM");
+  const deadline = Date.now() + 10_000;
+  /* eslint-disable no-await-in-loop -- poll until the server is gone */
+  while (Date.now() < deadline) {
+    await sleep(300);
+    if (await isStopped()) {
+      onStopped?.();
+      process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
+      return 0;
+    }
+  }
+  /* eslint-enable no-await-in-loop */
+  // Escalate if it is still up.
+  killProcessTree(pid, "SIGKILL");
+  onStopped?.();
+  process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
+  return 0;
+};
+
 // --- health liveness (port + /__ha_dev_status) ------------------------------
 
 /**
@@ -247,13 +350,7 @@ const runForegroundHealth = async (suite, cfg) => {
     );
     return 1;
   }
-  const child = spawn(cfg.spawn.cmd, cfg.spawn.args, {
-    cwd: repoRoot,
-    stdio: "inherit",
-  });
-  return new Promise((resolve) => {
-    child.on("exit", (code) => resolve(code ?? 0));
-  });
+  return spawnInherit(cfg.spawn.cmd, cfg.spawn.args);
 };
 
 const runBackgroundHealth = async (suite, cfg) => {
@@ -274,53 +371,21 @@ const runBackgroundHealth = async (suite, cfg) => {
     return 1;
   }
 
-  fs.mkdirSync(logDir, { recursive: true });
-  const logFile = logFileFor(suite);
-  const fd = fs.openSync(logFile, "w");
-  const child = spawn(cfg.spawn.cmd, cfg.spawn.args, {
-    cwd: repoRoot,
-    detached: true,
-    stdio: ["ignore", fd, fd],
-  });
-  fs.closeSync(fd);
-  child.unref();
-
-  let childExited = false;
-  child.on("exit", () => {
-    childExited = true;
-  });
-
-  const deadline = Date.now() + READY_TIMEOUT_MS;
-  process.stdout.write(`Starting ${suite} dev server`);
-  /* eslint-disable no-await-in-loop -- poll the health endpoint until the server is ready */
-  while (Date.now() < deadline) {
-    if (childExited) {
-      process.stdout.write("\n");
-      process.stderr.write(
-        `Dev server (${suite}) exited before it was ready. See ${logFile}\n`
-      );
-      return 1;
-    }
-    const status = await probe(port, 1000);
-    if (status.state === "ours" && status.suite === suite) {
-      process.stdout.write("\n");
-      process.stdout.write(
-        `Dev server (${suite}) running at http://localhost:${port} ` +
-          `(pid ${child.pid})\n${hints(suite)}`
-      );
-      return 0;
-    }
-    process.stdout.write(".");
-    await sleep(1000);
-  }
-  /* eslint-enable no-await-in-loop */
-  process.stdout.write("\n");
-  process.stderr.write(
-    `Dev server (${suite}) did not become ready within ${
-      READY_TIMEOUT_MS / 1000
-    }s. See ${logFile}\n`
+  const { child, logFile } = spawnDetachedToLog(
+    suite,
+    cfg.spawn.cmd,
+    cfg.spawn.args
   );
-  return 1;
+  return awaitReady({
+    suite,
+    child,
+    logFile,
+    port,
+    isReady: async () => {
+      const status = await probe(port, 1000);
+      return status.state === "ours" && status.suite === suite;
+    },
+  });
 };
 
 const runStatusHealth = async (suite, cfg) => {
@@ -358,35 +423,11 @@ const runStopHealth = async (suite, cfg) => {
     );
     return 1;
   }
-  const signal = (sig) => {
-    // The background server is its own process group leader, so signal the
-    // whole group; fall back to the bare pid if that is not permitted.
-    try {
-      process.kill(-pid, sig);
-    } catch {
-      try {
-        process.kill(pid, sig);
-      } catch {
-        // Already gone.
-      }
-    }
-  };
-
-  signal("SIGTERM");
-  const deadline = Date.now() + 10_000;
-  /* eslint-disable no-await-in-loop -- poll until the port stops answering */
-  while (Date.now() < deadline) {
-    await sleep(300);
-    if ((await probe(port, 800)).state === "free") {
-      process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
-      return 0;
-    }
-  }
-  /* eslint-enable no-await-in-loop */
-  // Escalate if it is still up.
-  signal("SIGKILL");
-  process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
-  return 0;
+  return terminate(
+    suite,
+    pid,
+    async () => (await probe(port, 800)).state === "free"
+  );
 };
 
 // --- process liveness (pidfile + log-readiness) -----------------------------
@@ -455,8 +496,6 @@ const spawnArgs = (cfg, passthrough) => [
   ...(cfg.acceptsArgs ? passthrough : []),
 ];
 
-const urlSuffix = (port) => (port ? ` at http://localhost:${port}` : "");
-
 const runForegroundProcess = async (suite, cfg, passthrough) => {
   const existing = readPidFile(suite);
   if (existing && isAlive(existing.pid)) {
@@ -469,13 +508,7 @@ const runForegroundProcess = async (suite, cfg, passthrough) => {
   if (existing) {
     removePidFile(suite);
   }
-  const child = spawn(cfg.spawn.cmd, spawnArgs(cfg, passthrough), {
-    cwd: repoRoot,
-    stdio: "inherit",
-  });
-  return new Promise((resolve) => {
-    child.on("exit", (code) => resolve(code ?? 0));
-  });
+  return spawnInherit(cfg.spawn.cmd, spawnArgs(cfg, passthrough));
 };
 
 const runBackgroundProcess = async (suite, cfg, passthrough) => {
@@ -491,56 +524,23 @@ const runBackgroundProcess = async (suite, cfg, passthrough) => {
     removePidFile(suite);
   }
 
-  fs.mkdirSync(logDir, { recursive: true });
-  const logFile = logFileFor(suite);
-  const fd = fs.openSync(logFile, "w");
-  const child = spawn(cfg.spawn.cmd, spawnArgs(cfg, passthrough), {
-    cwd: repoRoot,
-    detached: true,
-    stdio: ["ignore", fd, fd],
-  });
-  fs.closeSync(fd);
-  child.unref();
+  const { child, logFile } = spawnDetachedToLog(
+    suite,
+    cfg.spawn.cmd,
+    spawnArgs(cfg, passthrough)
+  );
 
   const port = cfg.acceptsArgs ? resolveServePort(passthrough) : cfg.port;
   writePidFile(suite, { pid: child.pid, port });
 
-  let childExited = false;
-  child.on("exit", () => {
-    childExited = true;
+  return awaitReady({
+    suite,
+    child,
+    logFile,
+    port,
+    isReady: () => logIsReady(logFile, cfg.readyLog),
+    onExit: () => removePidFile(suite),
   });
-
-  const deadline = Date.now() + READY_TIMEOUT_MS;
-  process.stdout.write(`Starting ${suite} dev server`);
-  /* eslint-disable no-await-in-loop -- poll the log until the server is ready */
-  while (Date.now() < deadline) {
-    if (childExited) {
-      process.stdout.write("\n");
-      process.stderr.write(
-        `Dev server (${suite}) exited before it was ready. See ${logFile}\n`
-      );
-      removePidFile(suite);
-      return 1;
-    }
-    if (logIsReady(logFile, cfg.readyLog)) {
-      process.stdout.write("\n");
-      process.stdout.write(
-        `Dev server (${suite}) running${urlSuffix(port)} ` +
-          `(pid ${child.pid})\n${hints(suite)}`
-      );
-      return 0;
-    }
-    process.stdout.write(".");
-    await sleep(1000);
-  }
-  /* eslint-enable no-await-in-loop */
-  process.stdout.write("\n");
-  process.stderr.write(
-    `Dev server (${suite}) did not become ready within ${
-      READY_TIMEOUT_MS / 1000
-    }s. See ${logFile}\n`
-  );
-  return 1;
 };
 
 const runStatusProcess = async (suite) => {
@@ -570,37 +570,12 @@ const runStopProcess = async (suite) => {
     return 0;
   }
   const { pid } = existing;
-  const signal = (sig) => {
-    // The background server is its own process group leader, so signal the
-    // whole group; fall back to the bare pid if that is not permitted.
-    try {
-      process.kill(-pid, sig);
-    } catch {
-      try {
-        process.kill(pid, sig);
-      } catch {
-        // Already gone.
-      }
-    }
-  };
-
-  signal("SIGTERM");
-  const deadline = Date.now() + 10_000;
-  /* eslint-disable no-await-in-loop -- poll until the process exits */
-  while (Date.now() < deadline) {
-    await sleep(300);
-    if (!isAlive(pid)) {
-      removePidFile(suite);
-      process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
-      return 0;
-    }
-  }
-  /* eslint-enable no-await-in-loop */
-  // Escalate if it is still up.
-  signal("SIGKILL");
-  removePidFile(suite);
-  process.stdout.write(`Stopped dev server (${suite}) (pid ${pid}).\n`);
-  return 0;
+  return terminate(
+    suite,
+    pid,
+    () => !isAlive(pid),
+    () => removePidFile(suite)
+  );
 };
 
 // --- shared -----------------------------------------------------------------
