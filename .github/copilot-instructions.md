@@ -496,6 +496,24 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 4. **Test**: `yarn test` - Add and run tests
 5. **Build**: `script/build_frontend` - Test production build
 
+### End-to-end (e2e) tests
+
+The e2e suites run with Playwright, each on its own port. Each suite has a matching dev server, and you must start it first. Playwright reuses a dev server that is already listening on the suite's port (`reuseExistingServer` locally) and starts testing right away; if none is running it falls back to a slow full production build. The rspack watcher recompiles on save, so once a server is up you can re-run the suite without restarting it.
+
+Start the suite's dev server, then run the suite:
+
+- **App** (8095): `yarn test:e2e:app:dev`, then `yarn test:e2e:app`
+- **Demo** (8090): `yarn dev:demo`, then `yarn test:e2e:demo`
+- **Gallery** (8100): `yarn dev:gallery`, then `yarn test:e2e:gallery`
+
+Each of these dev-server commands runs in the foreground. For unattended or agent use, append `--background`: it waits until the server is serving, prints the URL and pid, then detaches so you can run the suite in the same shell. When a coding agent is detected (via environment markers), `--background` turns on automatically; set `HA_DEV_BACKGROUND=0` to force foreground. Manage the detached server with `--status`, `--stop`, and `--logs` (for example `yarn dev:demo --stop`). Reuse and stop key off a `/__ha_dev_status` health check, so a stray program on the same port is never mistaken for the dev server and starting or stopping twice is harmless.
+
+The app suite runs against a stripped-down harness app built only for e2e; demo and gallery run against their normal dev servers, so `yarn dev:demo` and `yarn dev:gallery` are thin wrappers around `demo/script/develop_demo` and `gallery/script/develop_gallery`.
+
+Add `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs all three.
+
+Run the suite directly; don't pipe it through `tail`/`head`, which hides Playwright's progress and truncates results.
+
 ### Gallery
 
 For Gallery-specific structure, page/demo naming, sidebar behavior, content standards, and commands, see [`gallery/AGENTS.md`](gallery/AGENTS.md).
