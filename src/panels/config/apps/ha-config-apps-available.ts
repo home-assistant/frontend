@@ -87,17 +87,16 @@ export class HaConfigAppsAvailable extends LitElement {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
+  protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const repositoryUrl = extractSearchParam("repository_url");
     if (repositoryUrl) {
-      navigate("/config/apps/available", { replace: true });
+      await navigate("/config/apps/available", { replace: true });
     }
-    this._loadData().then(() => {
-      if (repositoryUrl) {
-        this._addRepository(repositoryUrl);
-      }
-    });
+    await this._loadData();
+    if (repositoryUrl) {
+      this._addRepository(repositoryUrl);
+    }
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
@@ -250,7 +249,6 @@ export class HaConfigAppsAvailable extends LitElement {
     ) {
       return;
     }
-
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize(
