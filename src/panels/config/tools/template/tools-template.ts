@@ -1,9 +1,8 @@
+import { mdiViewSplitHorizontal, mdiViewSplitVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { customElement, property, state } from "lit/decorators";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
@@ -11,7 +10,11 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-code-editor";
 import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-label";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-split-panel";
+import type { HaSplitPanel } from "../../../../components/ha-split-panel";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tip";
 import type { RenderTemplateResult } from "../../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../../data/ws-templates";
@@ -50,11 +53,18 @@ const TEMPLATE_DOCS_LINKS: { key: string; path: string }[] = [
   { key: "docs_functions", path: "/template-functions/" },
 ];
 
+const STORAGE_KEY_TEMPLATE = "panel-dev-template-template";
+const STORAGE_KEY_SPLIT_POSITION = "panel-dev-template-split-position";
+const STORAGE_KEY_SPLIT_ORIENTATION = "panel-dev-template-split-orientation";
+const DEFAULT_SPLIT_POSITION = 50;
+
+type SplitOrientation = "horizontal" | "vertical";
+
 @customElement("tools-template")
 class HaPanelDevTemplate extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _error?: string;
 
@@ -66,9 +76,9 @@ class HaPanelDevTemplate extends LitElement {
 
   @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
-  @state() private _descriptionExpanded = false;
+  @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
 
-  @query("ha-tip") private _editorTip?: HTMLElement;
+  @state() private _splitOrientation: SplitOrientation = "horizontal";
 
   private _template = "";
 
@@ -77,8 +87,6 @@ class HaPanelDevTemplate extends LitElement {
   // Bumped on every (re)subscribe so a superseded render can be detected and
   // its late-arriving results discarded.
   private _subscribeRequestId = 0;
-
-  private _tipResizeObserver?: ResizeObserver;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -90,18 +98,25 @@ class HaPanelDevTemplate extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeTemplate();
-    this._tipResizeObserver?.disconnect();
-    this._tipResizeObserver = undefined;
   }
 
   protected firstUpdated() {
-    if (localStorage && localStorage["panel-dev-template-template"]) {
-      this._template = localStorage["panel-dev-template-template"];
+    if (localStorage && localStorage[STORAGE_KEY_TEMPLATE]) {
+      this._template = localStorage[STORAGE_KEY_TEMPLATE];
     } else {
       this._template = DEMO_TEMPLATE;
     }
+    const storedPosition = localStorage?.[STORAGE_KEY_SPLIT_POSITION];
+    if (storedPosition) {
+      const parsed = parseFloat(storedPosition);
+      if (!isNaN(parsed) && parsed >= 0 && parsed <= 100) {
+        this._splitPosition = parsed;
+      }
+    }
+    if (localStorage?.[STORAGE_KEY_SPLIT_ORIENTATION] === "vertical") {
+      this._splitOrientation = "vertical";
+    }
     this._subscribeTemplate();
-    this._observeTipHeight();
     this._inited = true;
   }
 
@@ -114,15 +129,20 @@ class HaPanelDevTemplate extends LitElement {
           : "dict"
         : type;
 
+    const editorCard = this._renderEditorCard();
+    const resultCard = this._renderResultCard(type, resultType);
+
+    // On narrow viewports side-by-side is too cramped, so force the (still
+    // resizable) stacked layout and hide the orientation toggle.
+    const orientation = this.narrow ? "vertical" : this._splitOrientation;
+
     return html`
-      <div class="content">
+      <div class="about">
         <ha-expansion-panel
           .header=${this.hass.localize(
             "ui.panel.config.tools.tabs.templates.about"
           )}
           outlined
-          .expanded=${this._descriptionExpanded}
-          @expanded-changed=${this._expandedChanged}
         >
           <div class="description">
             <p>
@@ -164,99 +184,145 @@ class HaPanelDevTemplate extends LitElement {
           </div>
         </ha-expansion-panel>
       </div>
-      <div
-        class="content ${classMap({
-          layout: !this.narrow,
-          horizontal: !this.narrow,
-        })}"
-        style="--description-expanded: ${this._descriptionExpanded ? 1 : 0}"
-      >
-        <ha-card
-          class="edit-pane"
-          header=${this.hass.localize(
-            "ui.panel.config.tools.tabs.templates.editor"
-          )}
-        >
-          <div class="card-content">
-            <ha-code-editor
-              mode="jinja2"
-              .value=${this._template}
-              .error=${this._error}
-              autofocus
-              autocomplete-entities
-              autocomplete-icons
-              @value-changed=${this._templateChanged}
-              dir="ltr"
-            ></ha-code-editor>
-          </div>
-          <div class="card-actions">
-            <ha-button appearance="plain" @click=${this._restoreDemo}>
-              ${this.hass.localize(
-                "ui.panel.config.tools.tabs.templates.reset"
-              )}
-            </ha-button>
-            <ha-button appearance="plain" @click=${this._clear}>
-              ${this.hass.localize("ui.common.clear")}
-            </ha-button>
-          </div>
-          <ha-tip>
-            ${this.hass.localize(
-              "ui.panel.config.tools.tabs.templates.keyboard_tip",
-              {
-                autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
-              }
-            )}
-          </ha-tip>
-        </ha-card>
 
-        <ha-card
-          class="render-pane"
-          header=${this.hass.localize(
-            "ui.panel.config.tools.tabs.templates.result"
+      <ha-split-panel
+        class="panes ${orientation === "vertical" ? "vertical" : ""}"
+        .position=${this._splitPosition}
+        .orientation=${orientation}
+        snap="50%"
+        @wa-reposition=${this._splitRepositioned}
+      >
+        <div slot="start" class="pane">${editorCard}</div>
+        <div slot="end" class="pane">${resultCard}</div>
+        ${this.narrow ? nothing : this._renderOrientationToggle()}
+      </ha-split-panel>
+    `;
+  }
+
+  private _renderOrientationToggle() {
+    const label = this.hass.localize(
+      this._splitOrientation === "vertical"
+        ? "ui.panel.config.tools.tabs.templates.layout_side_by_side"
+        : "ui.panel.config.tools.tabs.templates.layout_stacked"
+    );
+    return html`
+      <button
+        type="button"
+        slot="divider"
+        class="divider-toggle"
+        .title=${label}
+        aria-label=${label}
+        @mousedown=${this._dividerPointerDown}
+        @touchstart=${this._dividerPointerDown}
+        @click=${this._dividerClick}
+      >
+        <ha-svg-icon
+          .path=${
+            this._splitOrientation === "vertical"
+              ? mdiViewSplitVertical
+              : mdiViewSplitHorizontal
+          }
+        ></ha-svg-icon>
+      </button>
+    `;
+  }
+
+  private _renderEditorCard() {
+    return html`
+      <ha-card
+        class="edit-pane"
+        header=${this.hass.localize(
+          "ui.panel.config.tools.tabs.templates.editor"
+        )}
+      >
+        <div class="card-content">
+          <ha-code-editor
+            mode="jinja2"
+            .value=${this._template}
+            .error=${this._error}
+            autofocus
+            autocomplete-entities
+            autocomplete-icons
+            @value-changed=${this._templateChanged}
+            dir="ltr"
+          ></ha-code-editor>
+        </div>
+        <div class="card-actions">
+          <ha-button appearance="plain" @click=${this._restoreDemo}>
+            ${this.hass.localize("ui.panel.config.tools.tabs.templates.reset")}
+          </ha-button>
+          <ha-button appearance="plain" @click=${this._clear}>
+            ${this.hass.localize("ui.common.clear")}
+          </ha-button>
+        </div>
+        <ha-tip>
+          ${this.hass.localize(
+            "ui.panel.config.tools.tabs.templates.keyboard_tip",
+            {
+              autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+            }
           )}
-        >
-          <div class="card-content ha-scrollbar">
-            ${
-              this._rendering
-                ? html`<ha-spinner
-                    class="render-spinner"
-                    size="small"
-                  ></ha-spinner>`
-                : ""
-            }
-            ${
-              this._error
-                ? html`<ha-alert
-                    alert-type=${this._errorLevel?.toLowerCase() || "error"}
-                    >${this._error}</ha-alert
-                  >`
-                : nothing
-            }
-            ${
-              this._templateResult
-                ? html`<pre
-                      class="rendered ${classMap({
-                        [resultType]: resultType,
-                      })}"
-                    >
+        </ha-tip>
+      </ha-card>
+    `;
+  }
+
+  private _renderResultCard(type: string, resultType: string) {
+    const showEmptyState =
+      !this._error && !this._rendering && !this._template?.trim();
+
+    return html`
+      <ha-card
+        class="render-pane"
+        header=${this.hass.localize(
+          "ui.panel.config.tools.tabs.templates.result"
+        )}
+      >
+        <div class="card-content ha-scrollbar">
+          ${
+            this._rendering
+              ? html`<ha-spinner
+                  class="render-spinner"
+                  size="small"
+                ></ha-spinner>`
+              : ""
+          }
+          ${
+            this._error
+              ? html`<ha-alert
+                  alert-type=${this._errorLevel?.toLowerCase() || "error"}
+                  >${this._error}</ha-alert
+                >`
+              : nothing
+          }
+          ${
+            showEmptyState
+              ? html`<div class="empty">
+                  ${this.hass.localize(
+                    "ui.panel.config.tools.tabs.templates.result_placeholder"
+                  )}
+                </div>`
+              : this._templateResult
+                ? html`
+                    <ha-label dense>
+                      ${this.hass.localize(
+                        "ui.panel.config.tools.tabs.templates.result_type"
+                      )}:
+                      ${resultType}
+                    </ha-label>
+                    <pre class="rendered">
 ${
   type === "object"
     ? JSON.stringify(this._templateResult.result, null, 2)
     : this._templateResult.result
 }</pre>
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.tools.tabs.templates.result_type"
-                      )}:
-                      ${resultType}
-                    </p>
                     ${
                       this._templateResult.listeners.time
                         ? html`
                             <p>
                               ${this.hass.localize(
-                                "ui.panel.config.tools.tabs.templates.time"
-                              )}
+                              "ui.panel.config.tools.tabs.templates.time"
+                            )}
                             </p>
                           `
                         : ""
@@ -268,8 +334,8 @@ ${
                           ? html`
                               <p class="all_listeners">
                                 ${this.hass.localize(
-                                  "ui.panel.config.tools.tabs.templates.all_listeners"
-                                )}
+                                "ui.panel.config.tools.tabs.templates.all_listeners"
+                              )}
                               </p>
                             `
                           : this._templateResult.listeners.domains.length ||
@@ -277,74 +343,97 @@ ${
                             ? html`
                                 <p>
                                   ${this.hass.localize(
-                                    "ui.panel.config.tools.tabs.templates.listeners"
-                                  )}
+                                  "ui.panel.config.tools.tabs.templates.listeners"
+                                )}
                                 </p>
                                 <ul>
                                   ${this._templateResult.listeners.domains
-                                    .sort()
-                                    .map(
-                                      (domain) => html`
-                                        <li>
-                                          <b
-                                            >${this.hass.localize(
-                                              "ui.panel.config.tools.tabs.templates.domain"
-                                            )}</b
-                                          >: ${domain}
-                                        </li>
-                                      `
-                                    )}
+                                  .sort()
+                                  .map(
+                                    (domain) => html`
+                                      <li>
+                                        <b
+                                          >${this.hass.localize(
+                                          "ui.panel.config.tools.tabs.templates.domain"
+                                        )}</b
+                                        >: ${domain}
+                                      </li>
+                                    `
+                                  )}
                                   ${this._templateResult.listeners.entities
-                                    .sort()
-                                    .map(
-                                      (entity_id) => html`
-                                        <li>
-                                          <b
-                                            >${this.hass.localize(
-                                              "ui.panel.config.tools.tabs.templates.entity"
-                                            )}</b
-                                          >: ${entity_id}
-                                        </li>
-                                      `
-                                    )}
+                                  .sort()
+                                  .map(
+                                    (entity_id) => html`
+                                      <li>
+                                        <b
+                                          >${this.hass.localize(
+                                          "ui.panel.config.tools.tabs.templates.entity"
+                                        )}</b
+                                        >: ${entity_id}
+                                      </li>
+                                    `
+                                  )}
                                 </ul>
                               `
                             : !this._templateResult.listeners.time
                               ? html`<span class="all_listeners">
                                   ${this.hass.localize(
-                                    "ui.panel.config.tools.tabs.templates.no_listeners"
-                                  )}
+                                  "ui.panel.config.tools.tabs.templates.no_listeners"
+                                )}
                                 </span>`
                               : nothing
-                    }`
+                    }
+                  `
                 : nothing
-            }
-          </div>
-        </ha-card>
-      </div>
+          }
+        </div>
+      </ha-card>
     `;
   }
 
-  private _observeTipHeight() {
-    if (!this._editorTip || this._tipResizeObserver) {
-      return;
-    }
-    this._tipResizeObserver = new ResizeObserver((entries) => {
-      const height =
-        entries[0]?.borderBoxSize?.[0]?.blockSize ??
-        entries[0]?.contentRect.height;
-      if (height) {
-        this.style.setProperty("--tip-height", `${height}px`);
-      }
-    });
-    this._tipResizeObserver.observe(this._editorTip);
+  private _splitRepositioned(ev: Event) {
+    this._splitPosition = (ev.target as HaSplitPanel).position;
+    this._storeSplitPosition();
   }
 
-  private _expandedChanged(
-    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
-  ) {
-    this._descriptionExpanded = ev.detail.expanded;
+  private _toggleOrientation() {
+    this._splitOrientation =
+      this._splitOrientation === "vertical" ? "horizontal" : "vertical";
+    if (this._inited) {
+      localStorage[STORAGE_KEY_SPLIT_ORIENTATION] = this._splitOrientation;
+    }
   }
+
+  private _dividerPointerStart?: { x: number; y: number };
+
+  private _dividerPointerDown = (ev: MouseEvent | TouchEvent) => {
+    const point = "touches" in ev ? ev.touches[0] : ev;
+    if (point) {
+      this._dividerPointerStart = { x: point.clientX, y: point.clientY };
+    }
+  };
+
+  private _dividerClick = (ev: MouseEvent) => {
+    const start = this._dividerPointerStart;
+    this._dividerPointerStart = undefined;
+    // Ignore the click that ends a drag-resize; only a genuine (still) click
+    // toggles the orientation.
+    if (start && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 5) {
+      return;
+    }
+    this._toggleOrientation();
+  };
+
+  private _storeSplitPosition = debounce(
+    () => {
+      if (!this._inited) {
+        return;
+      }
+      localStorage[STORAGE_KEY_SPLIT_POSITION] = String(this._splitPosition);
+    },
+    500,
+    false
+  );
 
   static get styles(): CSSResultGroup {
     return [
@@ -352,71 +441,139 @@ ${
       haStyleScrollbar,
       css`
         :host {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
           user-select: none;
         }
 
-        .content {
-          gap: var(--ha-space-4);
+        .about {
+          flex: none;
           padding: var(--ha-space-4);
-        }
-
-        .content:has(ha-expansion-panel) {
           padding-bottom: 0;
         }
 
-        .content.horizontal {
-          --panel-header-height: calc(
-            var(--header-height) + 1em * 2 + var(--ha-line-height-normal) *
-              var(--ha-font-size-m) + 1px + 2px
-          );
-          --description-pane-height: calc(
-            var(--ha-space-4) + 48px +
-              (
-                var(--ha-line-height-normal) * var(--ha-font-size-m) * 3 +
-                  var(--ha-space-1) * 2
-              ) *
-              var(--description-expanded) + var(--ha-card-border-width, 1px) * 2
-          );
-          --card-header-height: calc(
-            var(--ha-space-3) + var(--ha-space-4) +
-              var(--ha-line-height-expanded) *
-              var(--ha-card-header-font-size, var(--ha-font-size-2xl))
-          );
-          --card-actions-height: calc(1px + var(--ha-space-2) * 2 + 40px);
-          --tip-height-minimal: calc(
-            var(--mdc-icon-size, 24px) + var(--ha-space-4)
-          );
-          --edit-pane-height: calc(
-            100vh - var(--panel-header-height) - var(
-                --description-pane-height
-              ) - var(--ha-space-4) *
-              2
-          );
-          --code-mirror-max-height: calc(
-            var(--edit-pane-height) - var(--card-header-height) +
-              var(--ha-space-2) - var(--card-actions-height) - var(
-                --tip-height,
-                var(--tip-height-minimal)
-              ) - var(--ha-space-4) - var(--ha-card-border-width, 1px) *
-              2
-          );
+        .about a {
+          color: var(--primary-color);
+        }
+
+        .panes {
+          flex: 1;
+          min-height: 0;
+          box-sizing: border-box;
+          padding: var(--ha-space-4);
+          --ha-split-panel-min: 20%;
+          --ha-split-panel-max: 80%;
+          --ha-split-panel-divider-hit-area: var(--ha-space-4);
+        }
+
+        /* On wide viewports we slot our own handle (the orientation toggle)
+           into the divider, so hide the default grip. On narrow there is no
+           toggle, so keep the default grip as the resize affordance. */
+        :host(:not([narrow])) .panes {
+          --ha-split-panel-grip-display: none;
+        }
+
+        /* Orientation toggle that lives on the divider and doubles as a grip.
+           Clicks toggle orientation; dragging the divider elsewhere resizes. */
+        .divider-toggle {
+          position: relative;
+          z-index: 1;
+          flex: none;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          box-sizing: border-box;
+          width: 24px;
+          height: 24px;
+          margin: 0;
+          padding: 0;
+          border: 1px solid var(--divider-color);
+          border-radius: 50%;
+          background-color: var(--card-background-color);
+          color: var(--secondary-text-color);
+          cursor: pointer;
+          --mdc-icon-size: 16px;
+          transition:
+            color var(--ha-animation-duration-fast, 150ms) ease-out,
+            border-color var(--ha-animation-duration-fast, 150ms) ease-out;
+        }
+
+        @media (hover: hover) {
+          .divider-toggle:hover {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+          }
+        }
+
+        .divider-toggle:focus-visible {
+          outline: none;
+          color: var(--primary-color);
+          border-color: var(--primary-color);
+        }
+
+        .pane {
+          display: flex;
+          min-width: 0;
+          height: 100%;
+          box-sizing: border-box;
+        }
+
+        .pane[slot="start"] {
+          padding-inline-end: var(--ha-space-4);
+        }
+
+        .pane[slot="end"] {
+          padding-inline-start: var(--ha-space-4);
+        }
+
+        .panes.vertical .pane[slot="start"] {
+          padding-inline-end: 0;
+          padding-block-end: var(--ha-space-4);
+        }
+
+        .panes.vertical .pane[slot="end"] {
+          padding-inline-start: 0;
+          padding-block-start: var(--ha-space-4);
+        }
+
+        .pane ha-card {
+          flex: 1;
+          min-width: 0;
         }
 
         ha-card {
-          margin-bottom: var(--ha-space-4);
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          margin: 0;
+        }
+
+        .edit-pane .card-content {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+        }
+
+        .edit-pane ha-code-editor {
+          flex: 1;
+          min-height: 0;
+          width: 100%;
+          --code-mirror-height: 100%;
+        }
+
+        .render-pane .card-content {
+          flex: 1;
+          min-height: 0;
+          overflow: auto;
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-2);
+          user-select: text;
         }
 
         .edit-pane {
           direction: var(--direction);
-        }
-
-        .edit-pane a {
-          color: var(--primary-color);
-        }
-
-        .content.horizontal > * {
-          width: 50%;
-          margin-bottom: 0px;
         }
 
         .render-spinner {
@@ -428,8 +585,22 @@ ${
         }
 
         ha-alert {
-          margin-bottom: var(--ha-space-2);
           display: block;
+        }
+
+        .render-pane ha-label {
+          align-self: flex-start;
+        }
+
+        .empty {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          min-height: 120px;
+          padding: var(--ha-space-4);
+          text-align: center;
+          color: var(--secondary-text-color);
         }
 
         .rendered {
@@ -439,6 +610,7 @@ ${
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
+          border-radius: var(--ha-border-radius-md);
           padding: var(--ha-space-2);
           margin-top: 0;
           margin-bottom: 0;
@@ -447,7 +619,7 @@ ${
 
         p,
         ul {
-          margin-block-end: 0;
+          margin-block: 0;
         }
         .description > p {
           margin-block-start: 0;
@@ -468,26 +640,6 @@ ${
           color: var(--secondary-text-color);
         }
 
-        .render-pane .card-content {
-          user-select: text;
-        }
-
-        .content.horizontal .render-pane .card-content {
-          overflow: auto;
-          max-height: calc(
-            var(--code-mirror-max-height) +
-              47px - var(--ha-card-border-radius, var(--ha-border-radius-lg))
-          );
-        }
-
-        .content.horizontal .render-pane {
-          overflow: hidden;
-          padding-bottom: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-        }
-
         .all_listeners {
           color: var(--warning-color);
         }
@@ -506,12 +658,6 @@ ${
           border-radius: var(--ha-border-radius-xs);
           background-color: var(--secondary-background-color);
           white-space: nowrap;
-        }
-
-        @media all and (max-width: 870px) {
-          .content ha-card {
-            max-width: 100%;
-          }
         }
 
         .card-actions {
@@ -615,7 +761,7 @@ ${
     if (!this._inited) {
       return;
     }
-    localStorage["panel-dev-template-template"] = this._template;
+    localStorage[STORAGE_KEY_TEMPLATE] = this._template;
   }
 
   private async _restoreDemo() {
@@ -631,7 +777,7 @@ ${
     }
     this._template = DEMO_TEMPLATE;
     this._subscribeTemplate();
-    delete localStorage["panel-dev-template-template"];
+    delete localStorage[STORAGE_KEY_TEMPLATE];
   }
 
   private async _clear() {
@@ -647,12 +793,8 @@ ${
     }
     this._unsubscribeTemplate();
     this._template = "";
-    // Reset to empty result. Setting to 'undefined' results in a different visual
-    // behaviour compared to manually emptying the template input box.
-    this._templateResult = {
-      result: "",
-      listeners: { all: false, entities: [], domains: [], time: false },
-    };
+    // An empty template shows the placeholder empty state.
+    this._templateResult = undefined;
   }
 }
 
