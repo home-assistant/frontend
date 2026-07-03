@@ -6,12 +6,14 @@ on:
       - dev
       - master
     paths:
+      - ".github/actions/**"
       - ".github/workflows/**"
   pull_request:
     branches:
       - dev
       - master
     paths:
+      - ".github/actions/**"
       - ".github/workflows/**"
 
 concurrency:

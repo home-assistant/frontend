@@ -1,0 +1,19 @@
+name: Build frontend target
+description: Run a gulp build target
+
+inputs:
+  target:
+    description: gulp target to run
+    required: true
+  github-token:
+    description: GITHUB_TOKEN for the build
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Build ${{ inputs.target }}
+      shell: bash
+      run: ./node_modules/.bin/gulp ${{ inputs.target }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
