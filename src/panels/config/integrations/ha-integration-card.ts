@@ -64,21 +64,24 @@ export class HaIntegrationCard extends LitElement {
               .hass=${this.hass}
               .domain=${this.domain}
               .localizedDomainName=${this.items[0].localized_domain_name}
-              .error=${ERROR_STATES.includes(entryState)
-                ? this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.state.${entryState}`
-                  )
-                : undefined}
-              .warning=${entryState !== "loaded" &&
-              !ERROR_STATES.includes(entryState)
-                ? this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.state.${entryState}`
-                  )
-                : debugLoggingEnabled
+              .error=${
+                ERROR_STATES.includes(entryState)
                   ? this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                      `ui.panel.config.integrations.config_entry.state.${entryState}`
                     )
-                  : undefined}
+                  : undefined
+              }
+              .warning=${
+                entryState !== "loaded" && !ERROR_STATES.includes(entryState)
+                  ? this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.state.${entryState}`
+                    )
+                  : debugLoggingEnabled
+                    ? this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                      )
+                    : undefined
+              }
               .manifest=${this.manifest}
             ></ha-integration-card-header>
             <ha-integration-card-footer

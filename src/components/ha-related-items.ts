@@ -153,103 +153,84 @@ export class HaRelatedItems extends LitElement {
     );
 
     return html`
-      ${this._related.entity
-        ? html`
-            <h3>${this.hass.localize("ui.components.related-items.entity")}</h3>
-            <ha-list>
-              ${this._relatedEntities(this._related.entity).map(
-                (entity) => html`
-                  <ha-list-item
-                    @click=${this._openMoreInfo}
-                    .entityId=${entity.entity_id}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <ha-state-icon
-                      .stateObj=${entity}
-                      slot="graphic"
-                    ></ha-state-icon>
-                    ${entity.attributes.friendly_name || entity.entity_id}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}
-            </ha-list>
-          `
-        : nothing}
-      ${this._related.device
-        ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.device")}
-            </h3>
-            <ha-list>
-              ${this._related.device.map((relatedDeviceId) => {
-                const device = this.hass.devices[relatedDeviceId];
-                if (!device) {
-                  return nothing;
-                }
-                return html`
-                  <a href="/config/devices/device/${relatedDeviceId}">
-                    <ha-list-item hasMeta graphic="icon">
-                      <ha-svg-icon
-                        .path=${device.entry_type === "service"
-                          ? mdiTransitConnectionVariant
-                          : mdiDevices}
+      ${
+        this._related.entity
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.entity")}
+              </h3>
+              <ha-list>
+                ${this._relatedEntities(this._related.entity).map(
+                  (entity) => html`
+                    <ha-list-item
+                      @click=${this._openMoreInfo}
+                      .entityId=${entity.entity_id}
+                      hasMeta
+                      graphic="icon"
+                    >
+                      <ha-state-icon
+                        .stateObj=${entity}
                         slot="graphic"
-                      ></ha-svg-icon>
-                      ${device.name_by_user || device.name}
+                      ></ha-state-icon>
+                      ${entity.attributes.friendly_name || entity.entity_id}
                       <ha-icon-next slot="meta"></ha-icon-next>
                     </ha-list-item>
-                  </a>
-                `;
-              })}
-            </ha-list>`
-        : nothing}
-      ${configEntries || this._related.integration
-        ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.integration")}
-            </h3>
-            <ha-list
-              >${configEntries?.map((entry) => {
-                if (!entry) {
-                  return nothing;
-                }
-                return html`
-                  <a
-                    href=${`/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`}
-                  >
-                    <ha-list-item hasMeta graphic="icon">
-                      <img
-                        .src=${brandsUrl(
-                          {
-                            domain: entry.domain,
-                            type: "icon",
-                            darkOptimized: this.hass.themes?.darkMode,
-                          },
-                          this.hass.auth.data.hassUrl
-                        )}
-                        crossorigin="anonymous"
-                        referrerpolicy="no-referrer"
-                        alt=${entry.domain}
-                        slot="graphic"
-                      />
-                      ${this.hass.localize(`component.${entry.domain}.title`)}:
-                      ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
-                    </ha-list-item>
-                  </a>
-                `;
-              })}
-              ${this._related.integration
-                ?.filter((integration) => !configEntryDomains.has(integration))
-                .map(
-                  (integration) =>
-                    html`<a
-                      href=${`/config/integrations/integration/${integration}`}
+                  `
+                )}
+              </ha-list>
+            `
+          : nothing
+      }
+      ${
+        this._related.device
+          ? html`<h3>
+                ${this.hass.localize("ui.components.related-items.device")}
+              </h3>
+              <ha-list>
+                ${this._related.device.map((relatedDeviceId) => {
+                  const device = this.hass.devices[relatedDeviceId];
+                  if (!device) {
+                    return nothing;
+                  }
+                  return html`
+                    <a href="/config/devices/device/${relatedDeviceId}">
+                      <ha-list-item hasMeta graphic="icon">
+                        <ha-svg-icon
+                          .path=${
+                            device.entry_type === "service"
+                              ? mdiTransitConnectionVariant
+                              : mdiDevices
+                          }
+                          slot="graphic"
+                        ></ha-svg-icon>
+                        ${device.name_by_user || device.name}
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>
+                  `;
+                })}
+              </ha-list>`
+          : nothing
+      }
+      ${
+        configEntries || this._related.integration
+          ? html`<h3>
+                ${this.hass.localize("ui.components.related-items.integration")}
+              </h3>
+              <ha-list
+                >${configEntries?.map((entry) => {
+                  if (!entry) {
+                    return nothing;
+                  }
+                  return html`
+                    <a
+                      href=${`/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`}
                     >
                       <ha-list-item hasMeta graphic="icon">
                         <img
                           .src=${brandsUrl(
                             {
-                              domain: integration,
+                              domain: entry.domain,
                               type: "icon",
                               darkOptimized: this.hass.themes?.darkMode,
                             },
@@ -257,208 +238,267 @@ export class HaRelatedItems extends LitElement {
                           )}
                           crossorigin="anonymous"
                           referrerpolicy="no-referrer"
-                          alt=${integration}
+                          alt=${entry.domain}
                           slot="graphic"
                         />
-                        ${this.hass.localize(`component.${integration}.title`)}
+                        ${this.hass.localize(`component.${entry.domain}.title`)}:
+                        ${entry.title} <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>
+                  `;
+                })}
+                ${this._related.integration
+                  ?.filter(
+                    (integration) => !configEntryDomains.has(integration)
+                  )
+                  .map(
+                    (integration) =>
+                      html`<a
+                        href=${`/config/integrations/integration/${integration}`}
+                      >
+                        <ha-list-item hasMeta graphic="icon">
+                          <img
+                            .src=${brandsUrl(
+                              {
+                                domain: integration,
+                                type: "icon",
+                                darkOptimized: this.hass.themes?.darkMode,
+                              },
+                              this.hass.auth.data.hassUrl
+                            )}
+                            crossorigin="anonymous"
+                            referrerpolicy="no-referrer"
+                            alt=${integration}
+                            slot="graphic"
+                          />
+                          ${this.hass.localize(`component.${integration}.title`)}
+                          <ha-icon-next slot="meta"></ha-icon-next>
+                        </ha-list-item>
+                      </a>`
+                  )}
+              </ha-list>`
+          : nothing
+      }
+      ${
+        this._related.area
+          ? html`<h3>
+                ${this.hass.localize("ui.components.related-items.area")}
+              </h3>
+              <ha-list
+                >${this._related.area.map((relatedAreaId) => {
+                  const area = this.hass.areas[relatedAreaId];
+                  if (!area) {
+                    return nothing;
+                  }
+                  return html`
+                    <a href="/config/areas/area/${relatedAreaId}">
+                      <ha-list-item
+                        hasMeta
+                        .graphic=${area.picture ? "avatar" : "icon"}
+                      >
+                        ${
+                          area.picture
+                            ? html` <div
+                                class="avatar"
+                                style=${styleMap({
+                                  backgroundImage: `url(${area.picture})`,
+                                })}
+                                slot="graphic"
+                              ></div>`
+                            : area.icon
+                              ? html`<ha-icon
+                                  slot="graphic"
+                                  .icon=${area.icon}
+                                ></ha-icon>`
+                              : html`<ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiTextureBox}
+                                ></ha-svg-icon>`
+                        }
+                        ${area.name}
                         <ha-icon-next slot="meta"></ha-icon-next>
                       </ha-list-item>
-                    </a>`
-                )}
-            </ha-list>`
-        : nothing}
-      ${this._related.area
-        ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.area")}
-            </h3>
-            <ha-list
-              >${this._related.area.map((relatedAreaId) => {
-                const area = this.hass.areas[relatedAreaId];
-                if (!area) {
-                  return nothing;
-                }
-                return html`
-                  <a href="/config/areas/area/${relatedAreaId}">
+                    </a>
+                  `;
+                })}
+              </ha-list>`
+          : nothing
+      }
+      ${
+        this._related.group
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.group")}
+              </h3>
+              <ha-list>
+                ${this._relatedGroups(this._related.group).map(
+                  (group) => html`
                     <ha-list-item
+                      @click=${this._openMoreInfo}
+                      .entityId=${group.entity_id}
                       hasMeta
-                      .graphic=${area.picture ? "avatar" : "icon"}
+                      graphic="icon"
                     >
-                      ${area.picture
-                        ? html` <div
-                            class="avatar"
-                            style=${styleMap({
-                              backgroundImage: `url(${area.picture})`,
-                            })}
-                            slot="graphic"
-                          ></div>`
-                        : area.icon
-                          ? html`<ha-icon
-                              slot="graphic"
-                              .icon=${area.icon}
-                            ></ha-icon>`
-                          : html`<ha-svg-icon
-                              slot="graphic"
-                              .path=${mdiTextureBox}
-                            ></ha-svg-icon>`}
-                      ${area.name}
+                      <ha-state-icon
+                        .stateObj=${group}
+                        slot="graphic"
+                      ></ha-state-icon>
+                      ${group.attributes.friendly_name || group.entity_id}
                       <ha-icon-next slot="meta"></ha-icon-next>
                     </ha-list-item>
-                  </a>
-                `;
-              })}
-            </ha-list>`
-        : nothing}
-      ${this._related.group
-        ? html`
-            <h3>${this.hass.localize("ui.components.related-items.group")}</h3>
-            <ha-list>
-              ${this._relatedGroups(this._related.group).map(
-                (group) => html`
-                  <ha-list-item
-                    @click=${this._openMoreInfo}
-                    .entityId=${group.entity_id}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <ha-state-icon
-                      .stateObj=${group}
-                      slot="graphic"
-                    ></ha-state-icon>
-                    ${group.attributes.friendly_name || group.entity_id}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}
-            </ha-list>
-          `
-        : nothing}
-      ${this._related.scene
-        ? html`
-            <h3>${this.hass.localize("ui.components.related-items.scene")}</h3>
-            <ha-list>
-              ${this._relatedScenes(this._related.scene).map(
-                (scene) => html`
-                  <ha-list-item
-                    @click=${this._openMoreInfo}
-                    .entityId=${scene.entity_id}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <ha-state-icon
-                      .stateObj=${scene}
-                      slot="graphic"
-                    ></ha-state-icon>
-                    ${scene.attributes.friendly_name || scene.entity_id}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}
-            </ha-list>
-          `
-        : nothing}
-      ${this._related.automation_blueprint
-        ? html`
-            <h3>
-              ${this.hass.localize("ui.components.related-items.blueprint")}
-            </h3>
-            <ha-list>
-              ${this._related.automation_blueprint.map((path) => {
-                const blueprintMeta = this._blueprints
-                  ? this._blueprints.automation[path]
-                  : undefined;
-                return html`<a href="/config/blueprint/dashboard">
-                  <ha-list-item hasMeta graphic="icon">
-                    <ha-svg-icon
-                      .path=${mdiPaletteSwatch}
-                      slot="graphic"
-                    ></ha-svg-icon>
-                    ${!blueprintMeta || "error" in blueprintMeta
-                      ? path
-                      : blueprintMeta.metadata.name || path}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                </a>`;
-              })}
-            </ha-list>
-          `
-        : nothing}
-      ${this._related.automation
-        ? html`
-            <h3>
-              ${this.hass.localize("ui.components.related-items.automation")}
-            </h3>
-            <ha-list>
-              ${this._relatedAutomations(this._related.automation).map(
-                (automation) => html`
-                  <ha-list-item
-                    @click=${this._openMoreInfo}
-                    .entityId=${automation.entity_id}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <ha-state-icon
-                      .stateObj=${automation}
-                      slot="graphic"
-                    ></ha-state-icon>
-                    ${automation.attributes.friendly_name ||
-                    automation.entity_id}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}
-            </ha-list>
-          `
-        : nothing}
-      ${this._related.script_blueprint
-        ? html`
-            <h3>
-              ${this.hass.localize("ui.components.related-items.blueprint")}
-            </h3>
-            <ha-list>
-              ${this._related.script_blueprint.map((path) => {
-                const blueprintMeta = this._blueprints
-                  ? this._blueprints.script[path]
-                  : undefined;
-                return html`<a href="/config/blueprint/dashboard">
-                  <ha-list-item hasMeta graphic="icon">
-                    <ha-svg-icon
-                      .path=${mdiPaletteSwatch}
-                      slot="graphic"
-                    ></ha-svg-icon>
-                    ${!blueprintMeta || "error" in blueprintMeta
-                      ? path
-                      : blueprintMeta.metadata.name || path}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                </a>`;
-              })}
-            </ha-list>
-          `
-        : nothing}
-      ${this._related.script
-        ? html`
-            <h3>${this.hass.localize("ui.components.related-items.script")}</h3>
-            <ha-list>
-              ${this._relatedScripts(this._related.script).map(
-                (script) => html`
-                  <ha-list-item
-                    @click=${this._openMoreInfo}
-                    .entityId=${script.entity_id}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <ha-state-icon
-                      .stateObj=${script}
-                      slot="graphic"
-                    ></ha-state-icon>
-                    ${script.attributes.friendly_name || script.entity_id}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}
-            </ha-list>
-          `
-        : nothing}
+                  `
+                )}
+              </ha-list>
+            `
+          : nothing
+      }
+      ${
+        this._related.scene
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.scene")}
+              </h3>
+              <ha-list>
+                ${this._relatedScenes(this._related.scene).map(
+                  (scene) => html`
+                    <ha-list-item
+                      @click=${this._openMoreInfo}
+                      .entityId=${scene.entity_id}
+                      hasMeta
+                      graphic="icon"
+                    >
+                      <ha-state-icon
+                        .stateObj=${scene}
+                        slot="graphic"
+                      ></ha-state-icon>
+                      ${scene.attributes.friendly_name || scene.entity_id}
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  `
+                )}
+              </ha-list>
+            `
+          : nothing
+      }
+      ${
+        this._related.automation_blueprint
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.blueprint")}
+              </h3>
+              <ha-list>
+                ${this._related.automation_blueprint.map((path) => {
+                  const blueprintMeta = this._blueprints
+                    ? this._blueprints.automation[path]
+                    : undefined;
+                  return html`<a href="/config/blueprint/dashboard">
+                    <ha-list-item hasMeta graphic="icon">
+                      <ha-svg-icon
+                        .path=${mdiPaletteSwatch}
+                        slot="graphic"
+                      ></ha-svg-icon>
+                      ${
+                        !blueprintMeta || "error" in blueprintMeta
+                          ? path
+                          : blueprintMeta.metadata.name || path
+                      }
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>`;
+                })}
+              </ha-list>
+            `
+          : nothing
+      }
+      ${
+        this._related.automation
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.automation")}
+              </h3>
+              <ha-list>
+                ${this._relatedAutomations(this._related.automation).map(
+                  (automation) => html`
+                    <ha-list-item
+                      @click=${this._openMoreInfo}
+                      .entityId=${automation.entity_id}
+                      hasMeta
+                      graphic="icon"
+                    >
+                      <ha-state-icon
+                        .stateObj=${automation}
+                        slot="graphic"
+                      ></ha-state-icon>
+                      ${
+                        automation.attributes.friendly_name ||
+                        automation.entity_id
+                      }
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  `
+                )}
+              </ha-list>
+            `
+          : nothing
+      }
+      ${
+        this._related.script_blueprint
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.blueprint")}
+              </h3>
+              <ha-list>
+                ${this._related.script_blueprint.map((path) => {
+                  const blueprintMeta = this._blueprints
+                    ? this._blueprints.script[path]
+                    : undefined;
+                  return html`<a href="/config/blueprint/dashboard">
+                    <ha-list-item hasMeta graphic="icon">
+                      <ha-svg-icon
+                        .path=${mdiPaletteSwatch}
+                        slot="graphic"
+                      ></ha-svg-icon>
+                      ${
+                        !blueprintMeta || "error" in blueprintMeta
+                          ? path
+                          : blueprintMeta.metadata.name || path
+                      }
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>`;
+                })}
+              </ha-list>
+            `
+          : nothing
+      }
+      ${
+        this._related.script
+          ? html`
+              <h3>
+                ${this.hass.localize("ui.components.related-items.script")}
+              </h3>
+              <ha-list>
+                ${this._relatedScripts(this._related.script).map(
+                  (script) => html`
+                    <ha-list-item
+                      @click=${this._openMoreInfo}
+                      .entityId=${script.entity_id}
+                      hasMeta
+                      graphic="icon"
+                    >
+                      <ha-state-icon
+                        .stateObj=${script}
+                        slot="graphic"
+                      ></ha-state-icon>
+                      ${script.attributes.friendly_name || script.entity_id}
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  `
+                )}
+              </ha-list>
+            `
+          : nothing
+      }
     `;
   }
 

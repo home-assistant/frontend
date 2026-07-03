@@ -319,21 +319,23 @@ export class HaFloorPicker extends LitElement {
 
   private _rowRenderer: RenderItemFunction<FloorComboBoxItem> = (item) => html`
     <ha-combo-box-item type="button" compact>
-      ${item.icon_path
-        ? html`
-            <ha-svg-icon
-              slot="start"
-              style="margin: 0 4px"
-              .path=${item.icon_path}
-            ></ha-svg-icon>
-          `
-        : html`
-            <ha-floor-icon
-              slot="start"
-              .floor=${item.floor}
-              style="margin: 0 4px"
-            ></ha-floor-icon>
-          `}
+      ${
+        item.icon_path
+          ? html`
+              <ha-svg-icon
+                slot="start"
+                style="margin: 0 4px"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
+            `
+          : html`
+              <ha-floor-icon
+                slot="start"
+                .floor=${item.floor}
+                style="margin: 0 4px"
+              ></ha-floor-icon>
+            `
+      }
       <span slot="headline">${item.primary}</span>
     </ha-combo-box-item>
   `;

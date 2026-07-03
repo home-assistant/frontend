@@ -24,7 +24,7 @@ import { haStyle } from "../../../../resources/styles";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
 import { showToast } from "../../../../util/toast";
 
-@customElement("developer-tools-state-renderer")
+@customElement("tools-state-renderer")
 class HaPanelDevStateRenderer extends LitElement {
   @property({ attribute: false }) public entities: HassEntity[] = [];
 
@@ -79,16 +79,12 @@ class HaPanelDevStateRenderer extends LitElement {
         <div class="row" role="row" aria-rowindex="1">
           <div class="header" role="columnheader">
             <span class="padded">
-              ${this._i18n.localize(
-                "ui.panel.config.developer-tools.tabs.states.entity"
-              )}
+              ${this._i18n.localize("ui.panel.config.tools.tabs.states.entity")}
             </span>
           </div>
           <div class="header" role="columnheader">
             <span class="padded">
-              ${this._i18n.localize(
-                "ui.panel.config.developer-tools.tabs.states.state"
-              )}
+              ${this._i18n.localize("ui.panel.config.tools.tabs.states.state")}
             </span>
           </div>
           <div class="header" role="columnheader" ?hidden=${!showDevice}>
@@ -106,7 +102,7 @@ class HaPanelDevStateRenderer extends LitElement {
           <div class="header" role="columnheader">
             <span class="padded">
               ${this._i18n.localize(
-                "ui.panel.config.developer-tools.tabs.states.attributes"
+                "ui.panel.config.tools.tabs.states.attributes"
               )}
             </span>
           </div>
@@ -128,26 +124,30 @@ class HaPanelDevStateRenderer extends LitElement {
             <slot name="filter-attributes"></slot>
           </div>
         </div>
-        ${this.entities.length === 0
-          ? html` <div class="row" role="row" aria-rowindex="3">
-              <div class="cell" role="cell" aria-colspan="5">
-                <span class="padded">
-                  ${this._i18n.localize(
-                    "ui.panel.config.developer-tools.tabs.states.no_entities"
-                  )}
-                </span>
-              </div>
-            </div>`
-          : nothing}
-        ${this.virtualize
-          ? html`<lit-virtualizer
-              .items=${this.entities}
-              .renderItem=${this._renderStateItem}
-            >
-            </lit-virtualizer>`
-          : this.entities.map((item, index) =>
-              this._renderStateItem(item, index)
-            )}
+        ${
+          this.entities.length === 0
+            ? html` <div class="row" role="row" aria-rowindex="3">
+                <div class="cell" role="cell" aria-colspan="5">
+                  <span class="padded">
+                    ${this._i18n.localize(
+                      "ui.panel.config.tools.tabs.states.no_entities"
+                    )}
+                  </span>
+                </div>
+              </div>`
+            : nothing
+        }
+        ${
+          this.virtualize
+            ? html`<lit-virtualizer
+                .items=${this.entities}
+                .renderItem=${this._renderStateItem}
+              >
+              </lit-virtualizer>`
+            : this.entities.map((item, index) =>
+                this._renderStateItem(item, index)
+              )
+        }
       </div>
     `;
   }
@@ -191,10 +191,10 @@ class HaPanelDevStateRenderer extends LitElement {
                   @click=${this._copyEntity}
                   .entity=${item}
                   alt=${this._i18n.localize(
-                    "ui.panel.config.developer-tools.tabs.states.copy_id"
+                    "ui.panel.config.tools.tabs.states.copy_id"
                   )}
                   title=${this._i18n.localize(
-                    "ui.panel.config.developer-tools.tabs.states.copy_id"
+                    "ui.panel.config.tools.tabs.states.copy_id"
                   )}
                   .path=${mdiClipboardTextMultipleOutline}
                 ></ha-svg-icon>
@@ -207,10 +207,10 @@ class HaPanelDevStateRenderer extends LitElement {
                   @click=${this._entityMoreInfo}
                   .entity=${item}
                   alt=${this._i18n.localize(
-                    "ui.panel.config.developer-tools.tabs.states.more_info"
+                    "ui.panel.config.tools.tabs.states.more_info"
                   )}
                   title=${this._i18n.localize(
-                    "ui.panel.config.developer-tools.tabs.states.more_info"
+                    "ui.panel.config.tools.tabs.states.more_info"
                   )}
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
@@ -434,7 +434,7 @@ class HaPanelDevStateRenderer extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-state-renderer": HaPanelDevStateRenderer;
+    "tools-state-renderer": HaPanelDevStateRenderer;
   }
 
   interface HASSDomEvents {

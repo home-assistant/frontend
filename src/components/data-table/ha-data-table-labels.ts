@@ -61,29 +61,34 @@ class HaDataTableLabels extends LitElement {
             (label) => label.label_id,
             (label) => this._renderLabel(label, true)
           )}
-          ${hidden > 0
-            ? html`
-                <ha-dropdown
-                  role="button"
-                  tabindex="0"
-                  @click=${stopPropagation}
-                  @wa-select=${this._handleDropdownSelect}
-                >
-                  <ha-label slot="trigger" class="plus" dense>
-                    +${hidden}
-                  </ha-label>
-                  ${repeat(
-                    labels.slice(this._visibleCount),
-                    (label) => label.label_id,
-                    (label) => html`
-                      <ha-dropdown-item .value=${label.label_id} .item=${label}>
-                        ${this._renderLabel(label, false)}
-                      </ha-dropdown-item>
-                    `
-                  )}
-                </ha-dropdown>
-              `
-            : nothing}
+          ${
+            hidden > 0
+              ? html`
+                  <ha-dropdown
+                    role="button"
+                    tabindex="0"
+                    @click=${stopPropagation}
+                    @wa-select=${this._handleDropdownSelect}
+                  >
+                    <ha-label slot="trigger" class="plus" dense>
+                      +${hidden}
+                    </ha-label>
+                    ${repeat(
+                      labels.slice(this._visibleCount),
+                      (label) => label.label_id,
+                      (label) => html`
+                        <ha-dropdown-item
+                          .value=${label.label_id}
+                          .item=${label}
+                        >
+                          ${this._renderLabel(label, false)}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                  </ha-dropdown>
+                `
+              : nothing
+          }
         </ha-chip-set>
       </div>
 
@@ -187,9 +192,11 @@ class HaDataTableLabels extends LitElement {
         @keydown=${clickAction ? this._labelClicked : undefined}
         .description=${label.description}
       >
-        ${label?.icon
-          ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-          : nothing}
+        ${
+          label?.icon
+            ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+            : nothing
+        }
         ${label.name}
       </ha-label>
     `;

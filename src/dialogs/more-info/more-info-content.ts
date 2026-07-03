@@ -68,15 +68,17 @@ class MoreInfoContent extends LitElement {
         editMode: this.editMode,
         data: this.data,
       })}
-      ${memberIds?.length
-        ? html`
-            <hui-section
-              .hass=${this.hass}
-              .config=${this._entitiesSectionConfig(memberIds)}
-            >
-            </hui-section>
-          `
-        : nothing}
+      ${
+        memberIds?.length
+          ? html`
+              <hui-section
+                .hass=${this.hass}
+                .config=${this._entitiesSectionConfig(memberIds)}
+              >
+              </hui-section>
+            `
+          : nothing
+      }
     `;
   }
 

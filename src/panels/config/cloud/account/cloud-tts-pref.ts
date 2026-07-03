@@ -113,16 +113,18 @@ export class CloudTTSPref extends LitElement {
               )}
             </div>
             <code>${defaultVoice[1]}</code>
-            ${this.narrow
-              ? nothing
-              : html`
-                  <ha-icon-button
-                    .path=${mdiContentCopy}
-                    title=${this.hass.localize(
-                      "ui.components.media-browser.tts.copy_voice_id"
-                    )}
-                  ></ha-icon-button>
-                `}
+            ${
+              this.narrow
+                ? nothing
+                : html`
+                    <ha-icon-button
+                      .path=${mdiContentCopy}
+                      title=${this.hass.localize(
+                        "ui.components.media-browser.tts.copy_voice_id"
+                      )}
+                    ></ha-icon-button>
+                  `
+            }
           </div>
           <div class="flex"></div>
           <ha-button appearance="plain" @click=${this._openTryDialog}>

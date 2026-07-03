@@ -172,14 +172,18 @@ export class HaAdaptiveDialog extends LitElement {
     return html`
       <ha-dialog-header .subtitlePosition=${this.headerSubtitlePosition}>
         ${this._renderCloseButton("navigationIcon")}
-        ${this.headerTitle !== undefined
-          ? html`<span slot="title" class="title" id="ha-dialog-title">
-              ${this.headerTitle}
-            </span>`
-          : html`<slot name="headerTitle" slot="title"></slot>`}
-        ${this.headerSubtitle !== undefined
-          ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
-          : html`<slot name="headerSubtitle" slot="subtitle"></slot>`}
+        ${
+          this.headerTitle !== undefined
+            ? html`<span slot="title" class="title" id="ha-dialog-title">
+                ${this.headerTitle}
+              </span>`
+            : html`<slot name="headerTitle" slot="title"></slot>`
+        }
+        ${
+          this.headerSubtitle !== undefined
+            ? html`<span slot="subtitle">${this.headerSubtitle}</span>`
+            : html`<slot name="headerSubtitle" slot="subtitle"></slot>`
+        }
         <slot name="headerActionItems" slot="actionItems"></slot>
       </ha-dialog-header>
     `;
@@ -202,13 +206,15 @@ export class HaAdaptiveDialog extends LitElement {
           .open=${this.open}
           .preventScrimClose=${this.preventScrimClose}
         >
-          ${!this.withoutHeader
-            ? html`
-                <slot name="header" slot="header"
-                  >${this._renderHeaderContent()}</slot
-                >
-              `
-            : nothing}
+          ${
+            !this.withoutHeader
+              ? html`
+                  <slot name="header" slot="header"
+                    >${this._renderHeaderContent()}</slot
+                  >
+                `
+              : nothing
+          }
           <slot></slot>
           <slot name="footer" slot="footer"></slot>
         </ha-bottom-sheet>

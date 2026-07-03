@@ -20,8 +20,7 @@ export interface LegacyLovelaceConfig extends LovelaceConfig {
 }
 
 export type LovelaceRawConfig =
-  | LovelaceConfig
-  | LovelaceDashboardStrategyConfig;
+  LovelaceConfig | LovelaceDashboardStrategyConfig;
 
 export function isStrategyDashboard(
   config: LovelaceRawConfig

@@ -78,74 +78,86 @@ export class HaIntegrationCardFooter extends LitElement {
       <div class="footer">
         ${countBadge}
         <div class="icons">
-          ${this.manifest && !this.manifest.is_built_in
-            ? html`<span
-                class="icon ${this.manifest.overwrites_built_in
-                  ? "overwrites"
-                  : "custom"}"
-              >
-                <ha-svg-icon
-                  id="icon-custom"
-                  .path=${mdiPackageVariant}
-                ></ha-svg-icon>
-                <ha-tooltip
-                  for="icon-custom"
-                  .placement=${computeRTL(
-                    this.hass.language,
-                    this.hass.translationMetadata.translations
-                  )
-                    ? "right"
-                    : "left"}
+          ${
+            this.manifest && !this.manifest.is_built_in
+              ? html`<span
+                  class="icon ${
+                    this.manifest.overwrites_built_in ? "overwrites" : "custom"
+                  }"
                 >
-                  ${this.hass.localize(
-                    this.manifest.overwrites_built_in
-                      ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                      : "ui.panel.config.integrations.config_entry.custom_integration"
-                  )}
-                </ha-tooltip>
-              </span>`
-            : nothing}
-          ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
-            ? html`<span class="icon cloud">
-                <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
-                <ha-tooltip
-                  for="icon-cloud"
-                  .placement=${computeRTL(
-                    this.hass.language,
-                    this.hass.translationMetadata.translations
-                  )
-                    ? "right"
-                    : "left"}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                  )}
-                </ha-tooltip>
-              </span>`
-            : nothing}
-          ${this.manifest &&
-          !this.manifest?.config_flow &&
-          !this.items.every((itm) => itm.source === "system")
-            ? html`<span class="icon yaml">
-                <ha-svg-icon
-                  id="icon-yaml"
-                  .path=${mdiFileCodeOutline}
-                ></ha-svg-icon>
-                <ha-tooltip
-                  for="icon-yaml"
-                  .placement=${computeRTL(
-                    this.hass.language,
-                    this.hass.translationMetadata.translations
-                  )
-                    ? "right"
-                    : "left"}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.no_config_flow"
-                  )}
-                </ha-tooltip>
-              </span>`
-            : nothing}
+                  <ha-svg-icon
+                    id="icon-custom"
+                    .path=${mdiPackageVariant}
+                  ></ha-svg-icon>
+                  <ha-tooltip
+                    for="icon-custom"
+                    .placement=${
+                      computeRTL(
+                        this.hass.language,
+                        this.hass.translationMetadata.translations
+                      )
+                        ? "right"
+                        : "left"
+                    }
+                  >
+                    ${this.hass.localize(
+                      this.manifest.overwrites_built_in
+                        ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                        : "ui.panel.config.integrations.config_entry.custom_integration"
+                    )}
+                  </ha-tooltip>
+                </span>`
+              : nothing
+          }
+          ${
+            this.manifest && this.manifest.iot_class?.startsWith("cloud_")
+              ? html`<span class="icon cloud">
+                  <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+                  <ha-tooltip
+                    for="icon-cloud"
+                    .placement=${
+                      computeRTL(
+                        this.hass.language,
+                        this.hass.translationMetadata.translations
+                      )
+                        ? "right"
+                        : "left"
+                    }
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                    )}
+                  </ha-tooltip>
+                </span>`
+              : nothing
+          }
+          ${
+            this.manifest &&
+            !this.manifest?.config_flow &&
+            !this.items.every((itm) => itm.source === "system")
+              ? html`<span class="icon yaml">
+                  <ha-svg-icon
+                    id="icon-yaml"
+                    .path=${mdiFileCodeOutline}
+                  ></ha-svg-icon>
+                  <ha-tooltip
+                    for="icon-yaml"
+                    .placement=${
+                      computeRTL(
+                        this.hass.language,
+                        this.hass.translationMetadata.translations
+                      )
+                        ? "right"
+                        : "left"
+                    }
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.no_config_flow"
+                    )}
+                  </ha-tooltip>
+                </span>`
+              : nothing
+          }
         </div>
       </div>
     `;

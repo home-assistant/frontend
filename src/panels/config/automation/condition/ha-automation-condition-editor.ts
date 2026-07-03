@@ -65,46 +65,52 @@ export default class HaAutomationConditionEditor extends LitElement {
           card: !this.inSidebar,
         })}
       >
-        ${yamlMode
-          ? html`
-              ${!this.uiSupported
-                ? html`
-                    <ha-automation-editor-warning
-                      .alertTitle=${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                        { condition: condition.condition }
-                      )}
-                      .localize=${this.hass.localize}
-                    ></ha-automation-editor-warning>
-                  `
-                : nothing}
-              <ha-yaml-editor
-                .defaultValue=${this.condition}
-                @value-changed=${this._onYamlChange}
-                .readOnly=${this.disabled}
-              ></ha-yaml-editor>
-            `
-          : html`
-              <div @value-changed=${this._onUiChanged}>
-                ${this.description
-                  ? html`<ha-automation-condition-platform
-                      .hass=${this.hass}
-                      .condition=${this.condition}
-                      .description=${this.description}
-                      .disabled=${this.disabled}
-                    ></ha-automation-condition-platform>`
-                  : dynamicElement(
-                      `ha-automation-condition-${condition.condition}`,
-                      {
-                        hass: this.hass,
-                        condition: condition,
-                        disabled: this.disabled,
-                        optionsInSidebar: this.indent,
-                        narrow: this.narrow,
-                      }
-                    )}
-              </div>
-            `}
+        ${
+          yamlMode
+            ? html`
+                ${
+                  !this.uiSupported
+                    ? html`
+                        <ha-automation-editor-warning
+                          .alertTitle=${this.hass.localize(
+                            "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                            { condition: condition.condition }
+                          )}
+                          .localize=${this.hass.localize}
+                        ></ha-automation-editor-warning>
+                      `
+                    : nothing
+                }
+                <ha-yaml-editor
+                  .defaultValue=${this.condition}
+                  @value-changed=${this._onYamlChange}
+                  .readOnly=${this.disabled}
+                ></ha-yaml-editor>
+              `
+            : html`
+                <div @value-changed=${this._onUiChanged}>
+                  ${
+                    this.description
+                      ? html`<ha-automation-condition-platform
+                          .hass=${this.hass}
+                          .condition=${this.condition}
+                          .description=${this.description}
+                          .disabled=${this.disabled}
+                        ></ha-automation-condition-platform>`
+                      : dynamicElement(
+                          `ha-automation-condition-${condition.condition}`,
+                          {
+                            hass: this.hass,
+                            condition: condition,
+                            disabled: this.disabled,
+                            optionsInSidebar: this.indent,
+                            narrow: this.narrow,
+                          }
+                        )
+                  }
+                </div>
+              `
+        }
       </div>
     `;
   }

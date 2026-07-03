@@ -125,9 +125,11 @@ export class HuiEnergyDevicesDetailGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<h1 class="card-header">${this._config.title}</h1>`
-          : ""}
+        ${
+          this._config.title
+            ? html`<h1 class="card-header">${this._config.title}</h1>`
+            : ""
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,

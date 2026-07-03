@@ -138,13 +138,15 @@ export class HaControlSelect extends LitElement {
         @keydown=${this._handleKeydown}
         ?disabled=${this.disabled}
       >
-        ${this.options
-          ? repeat(
-              this.options,
-              (option) => option.value,
-              (option) => this._renderOption(option)
-            )
-          : nothing}
+        ${
+          this.options
+            ? repeat(
+                this.options,
+                (option) => option.value,
+                (option) => this._renderOption(option)
+              )
+            : nothing
+        }
       </div>
     `;
   }
@@ -171,12 +173,16 @@ export class HaControlSelect extends LitElement {
         @mouseup=${this._handleOptionMouseUp}
       >
         <div class="content">
-          ${option.path
-            ? html`<ha-svg-icon .path=${option.path}></ha-svg-icon>`
-            : option.icon || nothing}
-          ${option.label && !this.hideOptionLabel
-            ? html`<span>${option.label}</span>`
-            : nothing}
+          ${
+            option.path
+              ? html`<ha-svg-icon .path=${option.path}></ha-svg-icon>`
+              : option.icon || nothing
+          }
+          ${
+            option.label && !this.hideOptionLabel
+              ? html`<span>${option.label}</span>`
+              : nothing
+          }
         </div>
       </div>
     `;

@@ -205,9 +205,9 @@ export class StateHistoryChartLine extends LitElement {
       return html`<br /><ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}
         ></ha-chart-tooltip-marker>
-        ${param.seriesName
-          ? html`${param.seriesName}: `
-          : nothing}${value}${statSuffix}`;
+        ${
+          param.seriesName ? html`${param.seriesName}: ` : nothing
+        }${value}${statSuffix}`;
     })}`;
   };
 

@@ -160,20 +160,22 @@ export class HuiViewFooter extends LitElement {
           "--row-size": typeof rows === "number" ? String(rows) : undefined,
         })}
       >
-        ${editMode
-          ? html`
-              <hui-card-edit-mode
-                @ll-edit-card=${this._editCard}
-                @ll-delete-card=${this._deleteCard}
-                .lovelace=${this.lovelace!}
-                .path=${[0]}
-                no-duplicate
-                no-move
-              >
-                ${card}
-              </hui-card-edit-mode>
-            `
-          : card}
+        ${
+          editMode
+            ? html`
+                <hui-card-edit-mode
+                  @ll-edit-card=${this._editCard}
+                  @ll-delete-card=${this._deleteCard}
+                  .lovelace=${this.lovelace!}
+                  .path=${[0]}
+                  no-duplicate
+                  no-move
+                >
+                  ${card}
+                </hui-card-edit-mode>
+              `
+            : card
+        }
       </div>
     `;
   }
@@ -195,33 +197,37 @@ export class HuiViewFooter extends LitElement {
           "--footer-max-width": `${this.config?.max_width || DEFAULT_FOOTER_MAX_WIDTH_PX}px`,
         })}
       >
-        ${editMode
-          ? html`
-              <div class="actions-container">
-                <div class="actions">
-                  <ha-icon-button
-                    .label=${this.hass.localize("ui.common.edit")}
-                    @click=${this._configure}
-                    .path=${mdiPencil}
-                  ></ha-icon-button>
+        ${
+          editMode
+            ? html`
+                <div class="actions-container">
+                  <div class="actions">
+                    <ha-icon-button
+                      .label=${this.hass.localize("ui.common.edit")}
+                      @click=${this._configure}
+                      .path=${mdiPencil}
+                    ></ha-icon-button>
+                  </div>
                 </div>
-              </div>
-            `
-          : nothing}
+              `
+            : nothing
+        }
         <div class=${classMap({ container: true, "edit-mode": editMode })}>
-          ${card
-            ? this._renderCard(card, editMode)
-            : editMode
-              ? html`
-                  <button class="add" @click=${this._addCard}>
-                    <ha-ripple></ha-ripple>
-                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.editor.edit_view_footer.add"
-                    )}
-                  </button>
-                `
-              : nothing}
+          ${
+            card
+              ? this._renderCard(card, editMode)
+              : editMode
+                ? html`
+                    <button class="add" @click=${this._addCard}>
+                      <ha-ripple></ha-ripple>
+                      <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.edit_view_footer.add"
+                      )}
+                    </button>
+                  `
+                : nothing
+          }
         </div>
       </div>
     `;

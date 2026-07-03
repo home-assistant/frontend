@@ -73,75 +73,87 @@ export class HuiDialogSelectView extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._params.header ||
-        this.hass.localize("ui.panel.lovelace.editor.select_view.header")}
+        header-title=${
+          this._params.header ||
+          this.hass.localize("ui.panel.lovelace.editor.select_view.header")
+        }
         @closed=${this._dialogClosed}
       >
-        ${this._params.allowDashboardChange
-          ? html`<ha-select
-              .label=${this.hass.localize(
-                "ui.panel.lovelace.editor.select_view.dashboard_label"
-              )}
-              .disabled=${!this._dashboards.length}
-              .value=${this._urlPath || defaultPanel}
-              @selected=${this._dashboardChanged}
-              autofocus
-              .options=${this._dashboards
-                .map((dashboard) => ({
-                  value: dashboard.url_path,
-                  label: `${dashboard.title}${dashboard.id === "lovelace" ? ` (${this.hass.localize("ui.common.default")})` : ""}`,
-                  disabled: dashboard.mode !== "storage",
-                }))
-                .sort((a, b) =>
-                  a.value === "lovelace"
-                    ? -1
-                    : b.value === "lovelace"
-                      ? 1
-                      : a.label.localeCompare(b.label)
+        ${
+          this._params.allowDashboardChange
+            ? html`<ha-select
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.editor.select_view.dashboard_label"
                 )}
-            >
-            </ha-select>`
-          : nothing}
-        ${!this._config || (this._config.views || []).length < 1
-          ? html`<ha-alert alert-type="error"
-              >${this.hass.localize(
-                this._config
-                  ? "ui.panel.lovelace.editor.select_view.no_views"
-                  : "ui.panel.lovelace.editor.select_view.no_config"
-              )}</ha-alert
-            >`
-          : this._config.views.length > 1
-            ? html`
-                <ha-list>
-                  ${this._config.views.map((view, idx) => {
-                    const isStrategy = isStrategyView(view);
+                .disabled=${!this._dashboards.length}
+                .value=${this._urlPath || defaultPanel}
+                @selected=${this._dashboardChanged}
+                autofocus
+                .options=${this._dashboards
+                  .map((dashboard) => ({
+                    value: dashboard.url_path,
+                    label: `${dashboard.title}${dashboard.id === "lovelace" ? ` (${this.hass.localize("ui.common.default")})` : ""}`,
+                    disabled: dashboard.mode !== "storage",
+                  }))
+                  .sort((a, b) =>
+                    a.value === "lovelace"
+                      ? -1
+                      : b.value === "lovelace"
+                        ? 1
+                        : a.label.localeCompare(b.label)
+                  )}
+              >
+              </ha-select>`
+            : nothing
+        }
+        ${
+          !this._config || (this._config.views || []).length < 1
+            ? html`<ha-alert alert-type="error"
+                >${this.hass.localize(
+                  this._config
+                    ? "ui.panel.lovelace.editor.select_view.no_views"
+                    : "ui.panel.lovelace.editor.select_view.no_config"
+                )}</ha-alert
+              >`
+            : this._config.views.length > 1
+              ? html`
+                  <ha-list>
+                    ${this._config.views.map((view, idx) => {
+                      const isStrategy = isStrategyView(view);
 
-                    return html`
-                      <ha-radio-list-item
-                        .graphic=${this._config?.views.some(({ icon }) => icon)
-                          ? "icon"
-                          : nothing}
-                        @click=${this._viewChanged}
-                        .value=${idx.toString()}
-                        .selected=${this._selectedViewIdx === idx}
-                        .disabled=${isStrategy &&
-                        !this._params?.includeStrategyViews}
-                        ?autofocus=${idx === 0 &&
-                        !this._params!.allowDashboardChange}
-                      >
-                        <span>
-                          ${view.title}${isStrategy
-                            ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
-                            : nothing}
-                        </span>
+                      return html`
+                        <ha-radio-list-item
+                          .graphic=${
+                            this._config?.views.some(({ icon }) => icon)
+                              ? "icon"
+                              : nothing
+                          }
+                          @click=${this._viewChanged}
+                          .value=${idx.toString()}
+                          .selected=${this._selectedViewIdx === idx}
+                          .disabled=${
+                            isStrategy && !this._params?.includeStrategyViews
+                          }
+                          ?autofocus=${
+                            idx === 0 && !this._params!.allowDashboardChange
+                          }
+                        >
+                          <span>
+                            ${view.title}${
+                              isStrategy
+                                ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
+                                : nothing
+                            }
+                          </span>
 
-                        <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
-                      </ha-radio-list-item>
-                    `;
-                  })}
-                </ha-list>
-              `
-            : nothing}
+                          <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
+                        </ha-radio-list-item>
+                      `;
+                    })}
+                  </ha-list>
+                `
+              : nothing
+        }
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"

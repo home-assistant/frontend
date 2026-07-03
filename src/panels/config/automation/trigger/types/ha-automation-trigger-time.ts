@@ -27,9 +27,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _inputMode:
-    | undefined
-    | typeof MODE_TIME
-    | typeof MODE_ENTITY;
+    undefined | typeof MODE_TIME | typeof MODE_ENTITY;
 
   public static get defaultConfig(): TimeTrigger {
     return { trigger: "time", at: "" };
@@ -116,8 +114,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     (
       inputMode: undefined | typeof MODE_ENTITY | typeof MODE_TIME,
       at:
-        | string
-        | { entity_id: string | undefined; offset?: string | undefined },
+        string | { entity_id: string | undefined; offset?: string | undefined },
       weekday: string | string[] | undefined
     ): {
       mode: typeof MODE_TIME | typeof MODE_ENTITY;

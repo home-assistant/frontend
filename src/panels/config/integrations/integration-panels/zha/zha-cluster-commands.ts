@@ -69,46 +69,50 @@ export class ZHAClusterCommands extends LitElement {
           >
           </ha-select>
         </div>
-        ${this._selectedCommandId !== undefined
-          ? html`
-              <div class="input-text">
-                <ha-input
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.zha.common.manufacturer_code_override"
-                  )}
-                  type="number"
-                  .value=${this._manufacturerCodeOverride}
-                  @change=${this._onManufacturerCodeOverrideChanged}
-                  .placeholder=${this.hass!.localize(
-                    "ui.panel.config.zha.common.value"
-                  )}
-                ></ha-input>
-              </div>
-              <div class="command-form">
-                <ha-form
-                  .hass=${this.hass}
-                  .schema=${this._commands.find(
-                    (command) => command.id === this._selectedCommandId
-                  )!.schema}
-                  @value-changed=${this._commandDataChanged}
-                  .data=${this._commandData}
-                ></ha-form>
-              </div>
-              <div class="card-actions">
-                <ha-call-service-button
-                  domain="zha"
-                  service="issue_zigbee_cluster_command"
-                  .data=${this._issueClusterCommandServiceData}
-                  .disabled=${!this._canIssueCommand}
-                  appearance="accent"
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.cluster_commands.issue_zigbee_command"
-                  )}
-                </ha-call-service-button>
-              </div>
-            `
-          : ""}
+        ${
+          this._selectedCommandId !== undefined
+            ? html`
+                <div class="input-text">
+                  <ha-input
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.zha.common.manufacturer_code_override"
+                    )}
+                    type="number"
+                    .value=${this._manufacturerCodeOverride}
+                    @change=${this._onManufacturerCodeOverrideChanged}
+                    .placeholder=${this.hass!.localize(
+                      "ui.panel.config.zha.common.value"
+                    )}
+                  ></ha-input>
+                </div>
+                <div class="command-form">
+                  <ha-form
+                    .hass=${this.hass}
+                    .schema=${
+                      this._commands.find(
+                        (command) => command.id === this._selectedCommandId
+                      )!.schema
+                    }
+                    @value-changed=${this._commandDataChanged}
+                    .data=${this._commandData}
+                  ></ha-form>
+                </div>
+                <div class="card-actions">
+                  <ha-call-service-button
+                    domain="zha"
+                    service="issue_zigbee_cluster_command"
+                    .data=${this._issueClusterCommandServiceData}
+                    .disabled=${!this._canIssueCommand}
+                    appearance="accent"
+                  >
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.cluster_commands.issue_zigbee_command"
+                    )}
+                  </ha-call-service-button>
+                </div>
+              `
+            : ""
+        }
       </div>
     `;
   }
@@ -130,8 +134,7 @@ export class ZHAClusterCommands extends LitElement {
   }
 
   private _computeIssueClusterCommandServiceData():
-    | IssueCommandServiceData
-    | undefined {
+    IssueCommandServiceData | undefined {
     if (!this.device || !this.selectedCluster || !this._commands) {
       return undefined;
     }

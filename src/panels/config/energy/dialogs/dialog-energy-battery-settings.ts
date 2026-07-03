@@ -205,19 +205,21 @@ export class DialogEnergyBatterySettings
             this._source?.stat_energy_from || this._source?.stat_energy_to
           )}
           .value=${this._source?.name || ""}
-          .placeholder=${this._source?.stat_energy_from
-            ? getStatisticLabel(
-                this.hass,
-                this._source.stat_energy_from,
-                this._params?.statsMetadata?.[this._source.stat_energy_from]
-              )
-            : this._source?.stat_energy_to
+          .placeholder=${
+            this._source?.stat_energy_from
               ? getStatisticLabel(
                   this.hass,
-                  this._source.stat_energy_to,
-                  this._params?.statsMetadata?.[this._source.stat_energy_to]
+                  this._source.stat_energy_from,
+                  this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
-              : ""}
+              : this._source?.stat_energy_to
+                ? getStatisticLabel(
+                    this.hass,
+                    this._source.stat_energy_to,
+                    this._params?.statsMetadata?.[this._source.stat_energy_to]
+                  )
+                : ""
+          }
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -256,8 +258,9 @@ export class DialogEnergyBatterySettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._isValid() ||
-            (!!this._params?.source && !this.isDirtyState)}
+            .disabled=${
+              !this._isValid() || (!!this._params?.source && !this.isDirtyState)
+            }
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}

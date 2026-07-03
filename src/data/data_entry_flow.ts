@@ -3,10 +3,7 @@ import type { HaFormSchema } from "../components/ha-form/types";
 import type { ConfigEntry } from "./config_entries";
 
 export type FlowType =
-  | "config_flow"
-  | "config_subentries_flow"
-  | "options_flow"
-  | "repair_flow";
+  "config_flow" | "config_subentries_flow" | "options_flow" | "repair_flow";
 
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";

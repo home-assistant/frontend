@@ -26,43 +26,47 @@ export class HuiHeaderFooterEditor extends LitElement {
           ${this.hass.localize(
             `ui.panel.lovelace.editor.header-footer.${this.configValue}`
           )}:
-          ${!this.config?.type
-            ? this.hass!.localize("ui.panel.lovelace.editor.common.none")
-            : this.hass!.localize(
-                `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
-              )}
+          ${
+            !this.config?.type
+              ? this.hass!.localize("ui.panel.lovelace.editor.common.none")
+              : this.hass!.localize(
+                  `ui.panel.lovelace.editor.header-footer.types.${this.config?.type}.name`
+                )
+          }
         </span>
       </div>
       <div>
-        ${!this.config?.type
-          ? html`
-              <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.common.add"
-                )}
-                .path=${mdiPlus}
-                class="add-icon"
-                @click=${this._add}
-              ></ha-icon-button>
-            `
-          : html`
-              <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.common.clear"
-                )}
-                .path=${mdiClose}
-                class="remove-icon"
-                @click=${this._delete}
-              ></ha-icon-button>
-              <ha-icon-button
-                .label=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.common.edit"
-                )}
-                .path=${mdiPencil}
-                class="edit-icon"
-                @click=${this._edit}
-              ></ha-icon-button>
-            `}
+        ${
+          !this.config?.type
+            ? html`
+                <ha-icon-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.lovelace.editor.common.add"
+                  )}
+                  .path=${mdiPlus}
+                  class="add-icon"
+                  @click=${this._add}
+                ></ha-icon-button>
+              `
+            : html`
+                <ha-icon-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.lovelace.editor.common.clear"
+                  )}
+                  .path=${mdiClose}
+                  class="remove-icon"
+                  @click=${this._delete}
+                ></ha-icon-button>
+                <ha-icon-button
+                  .label=${this.hass!.localize(
+                    "ui.panel.lovelace.editor.common.edit"
+                  )}
+                  .path=${mdiPencil}
+                  class="edit-icon"
+                  @click=${this._edit}
+                ></ha-icon-button>
+              `
+        }
       </div>
     `;
   }

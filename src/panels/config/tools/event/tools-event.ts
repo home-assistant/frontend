@@ -14,7 +14,7 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
 
-@customElement("developer-tools-event")
+@customElement("tools-event")
 class HaPanelDevEvent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -31,16 +31,16 @@ class HaPanelDevEvent extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div
-        class=${this.narrow
-          ? "content layout vertical"
-          : "content layout horizontal"}
+        class=${
+          this.narrow ? "content layout vertical" : "content layout horizontal"
+        }
       >
         <div class="flex">
           <ha-card>
             <div class="card-content">
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.events.description"
+                  "ui.panel.config.tools.tabs.events.description"
                 )}
                 <a
                   href=${documentationUrl(
@@ -51,14 +51,14 @@ class HaPanelDevEvent extends LitElement {
                   rel="noreferrer"
                 >
                   ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.events.documentation"
+                    "ui.panel.config.tools.tabs.events.documentation"
                   )}
                 </a>
               </p>
               <div class="inputs">
                 <ha-input
                   .label=${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.events.type"
+                    "ui.panel.config.tools.tabs.events.type"
                   )}
                   autofocus
                   required
@@ -67,7 +67,7 @@ class HaPanelDevEvent extends LitElement {
                 ></ha-input>
                 <p>
                   ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.events.data"
+                    "ui.panel.config.tools.tabs.events.data"
                   )}
                 </p>
               </div>
@@ -85,7 +85,7 @@ class HaPanelDevEvent extends LitElement {
                 appearance="filled"
                 .disabled=${!this._isValid}
                 >${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.events.fire_event"
+                  "ui.panel.config.tools.tabs.events.fire_event"
                 )}</ha-button
               >
             </div>
@@ -101,7 +101,7 @@ class HaPanelDevEvent extends LitElement {
         <div>
           <h2>
             ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.events.active_listeners"
+              "ui.panel.config.tools.tabs.events.active_listeners"
             )}
           </h2>
           <events-list
@@ -131,7 +131,7 @@ class HaPanelDevEvent extends LitElement {
     if (!this._eventType) {
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.events.alert_event_type"
+          "ui.panel.config.tools.tabs.events.alert_event_type"
         ),
       });
       return;
@@ -143,7 +143,7 @@ class HaPanelDevEvent extends LitElement {
     );
     fireEvent(this, "hass-notification", {
       message: this.hass.localize(
-        "ui.panel.config.developer-tools.tabs.events.notification_event_fired",
+        "ui.panel.config.tools.tabs.events.notification_event_fired",
         { type: this._eventType }
       ),
     });
@@ -221,6 +221,6 @@ class HaPanelDevEvent extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-event": HaPanelDevEvent;
+    "tools-event": HaPanelDevEvent;
   }
 }

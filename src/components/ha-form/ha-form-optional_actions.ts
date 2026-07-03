@@ -110,43 +110,52 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
     );
 
     return html`
-      ${schema.length > 0
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this.data}
-              .schema=${schema}
-              .disabled=${this.disabled}
-              .computeLabel=${this.computeLabel}
-              .computeHelper=${this.computeHelper}
-              .localizeValue=${this.localizeValue}
-            ></ha-form>
-          `
-        : nothing}
-      ${hiddenActions.length > 0
-        ? html`
-            <ha-dropdown
-              @wa-select=${this._handleAddAction}
-              @closed=${stopPropagation}
-            >
-              <ha-button slot="trigger" appearance="filled" size="s">
-                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-                ${this.localize?.("ui.components.form-optional-actions.add") ||
-                "Add interaction"}
-              </ha-button>
-              ${hiddenActions.map((action) => {
-                const actionSchema = schemaMap.get(action);
-                return html`
-                  <ha-dropdown-item .value=${action}>
-                    ${this.computeLabel && actionSchema
-                      ? this.computeLabel(actionSchema)
-                      : action}
-                  </ha-dropdown-item>
-                `;
-              })}
-            </ha-dropdown>
-          `
-        : nothing}
+      ${
+        schema.length > 0
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this.data}
+                .schema=${schema}
+                .disabled=${this.disabled}
+                .computeLabel=${this.computeLabel}
+                .computeHelper=${this.computeHelper}
+                .localizeValue=${this.localizeValue}
+              ></ha-form>
+            `
+          : nothing
+      }
+      ${
+        hiddenActions.length > 0
+          ? html`
+              <ha-dropdown
+                @wa-select=${this._handleAddAction}
+                @closed=${stopPropagation}
+              >
+                <ha-button slot="trigger" appearance="filled" size="s">
+                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                  ${
+                    this.localize?.(
+                      "ui.components.form-optional-actions.add"
+                    ) || "Add interaction"
+                  }
+                </ha-button>
+                ${hiddenActions.map((action) => {
+                  const actionSchema = schemaMap.get(action);
+                  return html`
+                    <ha-dropdown-item .value=${action}>
+                      ${
+                        this.computeLabel && actionSchema
+                          ? this.computeLabel(actionSchema)
+                          : action
+                      }
+                    </ha-dropdown-item>
+                  `;
+                })}
+              </ha-dropdown>
+            `
+          : nothing
+      }
     `;
   }
 

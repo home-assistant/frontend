@@ -140,24 +140,28 @@ class HaConfigInfo extends LitElement {
                 <span class="version-label">Core</span>
                 <span class="version">${hass.connection.haVersion}</span>
               </li>
-              ${this._hassioInfo
-                ? html`
-                    <li>
-                      <span class="version-label">Supervisor</span>
-                      <span class="version"
-                        >${this._hassioInfo.supervisor}</span
-                      >
-                    </li>
-                  `
-                : nothing}
-              ${this._osInfo
-                ? html`
-                    <li>
-                      <span class="version-label">Operating System</span>
-                      <span class="version">${this._osInfo.version}</span>
-                    </li>
-                  `
-                : nothing}
+              ${
+                this._hassioInfo
+                  ? html`
+                      <li>
+                        <span class="version-label">Supervisor</span>
+                        <span class="version"
+                          >${this._hassioInfo.supervisor}</span
+                        >
+                      </li>
+                    `
+                  : nothing
+              }
+              ${
+                this._osInfo
+                  ? html`
+                      <li>
+                        <span class="version-label">Operating System</span>
+                        <span class="version">${this._osInfo.version}</span>
+                      </li>
+                    `
+                  : nothing
+              }
               <li>
                 <span class="version-label">
                   ${this.hass.localize(
@@ -168,20 +172,22 @@ class HaConfigInfo extends LitElement {
                   ${JS_VERSION}${JS_TYPE !== "modern" ? ` · ${JS_TYPE}` : ""}
                 </span>
               </li>
-              ${this.hass.auth.external?.config.appVersion
-                ? html`
-                    <li>
-                      <span class="version-label"
-                        >${this.hass.localize(
-                          "ui.panel.config.info.external_app_version"
-                        )}</span
-                      >
-                      <span class="version"
-                        >${this.hass.auth.external?.config.appVersion}</span
-                      >
-                    </li>
-                  `
-                : nothing}
+              ${
+                this.hass.auth.external?.config.appVersion
+                  ? html`
+                      <li>
+                        <span class="version-label"
+                          >${this.hass.localize(
+                            "ui.panel.config.info.external_app_version"
+                          )}</span
+                        >
+                        <span class="version"
+                          >${this.hass.auth.external?.config.appVersion}</span
+                        >
+                      </li>
+                    `
+                  : nothing
+              }
             </ul>
           </ha-card>
           <ha-card outlined class="ohf ${isDark ? "dark" : ""}">
@@ -236,22 +242,28 @@ class HaConfigInfo extends LitElement {
                 `
               )}
             </ha-list-base>
-            ${customUiList.length
-              ? html`
-                  <div class="custom-ui">
-                    ${this.hass.localize("ui.panel.config.info.custom_uis")}
-                    ${customUiList.map(
-                      (item) => html`
-                        <div>
-                          <a href=${item.url} target="_blank" rel="noreferrer">
-                            ${item.name}</a
-                          >: ${item.version}
-                        </div>
-                      `
-                    )}
-                  </div>
-                `
-              : nothing}
+            ${
+              customUiList.length
+                ? html`
+                    <div class="custom-ui">
+                      ${this.hass.localize("ui.panel.config.info.custom_uis")}
+                      ${customUiList.map(
+                        (item) => html`
+                          <div>
+                            <a
+                              href=${item.url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              ${item.name}</a
+                            >: ${item.version}
+                          </div>
+                        `
+                      )}
+                    </div>
+                  `
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>

@@ -35,8 +35,10 @@ class MoreInfoCounter extends LitElement {
           size="s"
           .action=${"increment"}
           @click=${this._handleActionClick}
-          .disabled=${disabled ||
-          Number(this.stateObj.state) === this.stateObj.attributes.maximum}
+          .disabled=${
+            disabled ||
+            Number(this.stateObj.state) === this.stateObj.attributes.maximum
+          }
         >
           ${this._localize("ui.card.counter.actions.increment")}
         </ha-button>
@@ -45,8 +47,10 @@ class MoreInfoCounter extends LitElement {
           size="s"
           .action=${"decrement"}
           @click=${this._handleActionClick}
-          .disabled=${disabled ||
-          Number(this.stateObj.state) === this.stateObj.attributes.minimum}
+          .disabled=${
+            disabled ||
+            Number(this.stateObj.state) === this.stateObj.attributes.minimum
+          }
         >
           ${this._localize("ui.card.counter.actions.decrement")}
         </ha-button>

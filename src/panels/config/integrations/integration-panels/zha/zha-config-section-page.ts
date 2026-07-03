@@ -47,40 +47,44 @@ class ZHAConfigSectionPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${this.hass.localize(
-          `component.zha.config_panel.${this.sectionId}.title`
-        ) || this.sectionId}
+        .header=${
+          this.hass.localize(
+            `component.zha.config_panel.${this.sectionId}.title`
+          ) || this.sectionId
+        }
         back-path="/config/zha/dashboard"
       >
         <div class="container">
           <ha-card>
-            ${schema && data
-              ? html`
-                  <div class="card-content">
-                    <ha-form
-                      .hass=${this.hass}
-                      .schema=${schema}
-                      .data=${data}
-                      @value-changed=${this._dataChanged}
-                      .computeLabel=${this._computeLabelCallback(
-                        this.hass.localize,
-                        this.sectionId
-                      )}
-                    ></ha-form>
-                  </div>
-                  <div class="card-actions">
-                    <ha-progress-button
-                      appearance="filled"
-                      variant="brand"
-                      @click=${this._updateConfiguration}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zha.configuration_page.update_button"
-                      )}
-                    </ha-progress-button>
-                  </div>
-                `
-              : nothing}
+            ${
+              schema && data
+                ? html`
+                    <div class="card-content">
+                      <ha-form
+                        .hass=${this.hass}
+                        .schema=${schema}
+                        .data=${data}
+                        @value-changed=${this._dataChanged}
+                        .computeLabel=${this._computeLabelCallback(
+                          this.hass.localize,
+                          this.sectionId
+                        )}
+                      ></ha-form>
+                    </div>
+                    <div class="card-actions">
+                      <ha-progress-button
+                        appearance="filled"
+                        variant="brand"
+                        @click=${this._updateConfiguration}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zha.configuration_page.update_button"
+                        )}
+                      </ha-progress-button>
+                    </div>
+                  `
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>

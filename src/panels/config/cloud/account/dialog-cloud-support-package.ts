@@ -46,19 +46,21 @@ export class DialogSupportPackage extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
-        ${this._supportPackage
-          ? html`<ha-markdown-element
-              .content=${this._supportPackage}
-              breaks
-            ></ha-markdown-element>`
-          : html`
-              <div class="progress-container">
-                <ha-spinner></ha-spinner>
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.support_package_generating_preview"
-                )}...
-              </div>
-            `}
+        ${
+          this._supportPackage
+            ? html`<ha-markdown-element
+                .content=${this._supportPackage}
+                breaks
+              ></ha-markdown-element>`
+            : html`
+                <div class="progress-container">
+                  <ha-spinner></ha-spinner>
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.support_package_generating_preview"
+                  )}...
+                </div>
+              `
+        }
         <div slot="footer" class="footer">
           <ha-alert>
             ${this.hass.localize(

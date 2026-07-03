@@ -83,40 +83,44 @@ export class HaFilterEntities extends LitElement {
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.entities.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`
-              <ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-              >
-              </ha-input-search>
-              <ha-list class="ha-scrollbar" multi>
-                <lit-virtualizer
-                  .items=${this._entities(
-                    this._states,
-                    this.type,
-                    this._filter || "",
-                    this._i18n.locale.language,
-                    this.value
-                  )}
-                  .keyFunction=${this._keyFunction}
-                  .renderItem=${this._renderItem}
-                  @click=${this._handleItemClick}
-                  @keydown=${this._handleItemKeydown}
+        ${
+          this._shouldRender
+            ? html`
+                <ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
                 >
-                </lit-virtualizer>
-              </ha-list>
-            `
-          : nothing}
+                </ha-input-search>
+                <ha-list class="ha-scrollbar" multi>
+                  <lit-virtualizer
+                    .items=${this._entities(
+                      this._states,
+                      this.type,
+                      this._filter || "",
+                      this._i18n.locale.language,
+                      this.value
+                    )}
+                    .keyFunction=${this._keyFunction}
+                    .renderItem=${this._renderItem}
+                    @click=${this._handleItemClick}
+                    @keydown=${this._handleItemKeydown}
+                  >
+                  </lit-virtualizer>
+                </ha-list>
+              `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

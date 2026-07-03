@@ -161,8 +161,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PictureGlanceCardConfig
-      | undefined;
+      PictureGlanceCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -240,15 +239,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             .cameraView=${this._config.camera_view}
             .entity=${this._config.entity}
             .fitMode=${this._config.fit_mode}
-            .aspectRatio=${ignoreAspectRatio
-              ? undefined
-              : this._config.aspect_ratio}
+            .aspectRatio=${
+              ignoreAspectRatio ? undefined : this._config.aspect_ratio
+            }
           ></hui-image>
         </div>
         <div class="box">
-          ${this._config.title
-            ? html`<div class="title">${this._config.title}</div>`
-            : ""}
+          ${
+            this._config.title
+              ? html`<div class="title">${this._config.title}</div>`
+              : ""
+          }
           <div class="row">
             ${this._entitiesDialog!.map((entityConf) =>
               this._renderEntity(entityConf, true)
@@ -310,19 +311,23 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           ></ha-state-icon>
         </ha-icon-button>
 
-        ${this._config!.show_state !== true && entityConf.show_state !== true
-          ? html`<div class="state"></div>`
-          : html`
-              <div class="state">
-                ${entityConf.attribute
-                  ? html`
-                      ${entityConf.prefix}${stateObj.attributes[
-                        entityConf.attribute
-                      ]}${entityConf.suffix}
-                    `
-                  : this.hass.formatEntityState(stateObj)}
-              </div>
-            `}
+        ${
+          this._config!.show_state !== true && entityConf.show_state !== true
+            ? html`<div class="state"></div>`
+            : html`
+                <div class="state">
+                  ${
+                    entityConf.attribute
+                      ? html`
+                          ${entityConf.prefix}${
+                            stateObj.attributes[entityConf.attribute]
+                          }${entityConf.suffix}
+                        `
+                      : this.hass.formatEntityState(stateObj)
+                  }
+                </div>
+              `
+        }
       </div>
     `;
   }

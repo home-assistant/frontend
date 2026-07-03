@@ -42,8 +42,7 @@ export interface ScriptSaveDialogParams extends BaseRenameDialogParams {
 }
 
 export type SaveDialogParams =
-  | AutomationSaveDialogParams
-  | ScriptSaveDialogParams;
+  AutomationSaveDialogParams | ScriptSaveDialogParams;
 
 export const showAutomationSaveDialog = (
   element: HTMLElement,

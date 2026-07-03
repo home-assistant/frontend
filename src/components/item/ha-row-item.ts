@@ -90,9 +90,11 @@ export class HaRowItem extends LitElement {
         <slot name="start" @slotchange=${this._onSlotChange("start")}></slot>
       </div>
       <div part="content" class="content">
-        ${hasContent
-          ? html`<slot name="content"></slot>`
-          : this._renderDefaultContent()}
+        ${
+          hasContent
+            ? html`<slot name="content"></slot>`
+            : this._renderDefaultContent()
+        }
       </div>
       <div part="end" class="end" ?hidden=${!this._hasEnd}>
         <slot name="end" @slotchange=${this._onSlotChange("end")}></slot>
@@ -109,18 +111,22 @@ export class HaRowItem extends LitElement {
       hasSupportingSlot || this.supportingText !== undefined;
 
     return html`
-      ${showHeadline
-        ? html`<div part="headline" class="headline">
-            <slot name="headline">${this.headline ?? nothing}</slot>
-          </div>`
-        : nothing}
-      ${showSupporting
-        ? html`<div part="supporting-text" class="supporting">
-            <slot name="supporting-text"
-              >${this.supportingText ?? nothing}</slot
-            >
-          </div>`
-        : nothing}
+      ${
+        showHeadline
+          ? html`<div part="headline" class="headline">
+              <slot name="headline">${this.headline ?? nothing}</slot>
+            </div>`
+          : nothing
+      }
+      ${
+        showSupporting
+          ? html`<div part="supporting-text" class="supporting">
+              <slot name="supporting-text"
+                >${this.supportingText ?? nothing}</slot
+              >
+            </div>`
+          : nothing
+      }
     `;
   }
 

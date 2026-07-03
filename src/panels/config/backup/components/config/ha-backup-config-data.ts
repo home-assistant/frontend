@@ -245,13 +245,15 @@ class HaBackupConfigData extends LitElement {
             ${this.hass.localize("ui.panel.config.backup.data.ha_settings")}
           </span>
           <span slot="supporting-text">
-            ${this.forceHomeAssistant
-              ? this.hass.localize(
-                  "ui.panel.config.backup.data.ha_settings_included_description"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.backup.data.ha_settings_description"
-                )}
+            ${
+              this.forceHomeAssistant
+                ? this.hass.localize(
+                    "ui.panel.config.backup.data.ha_settings_included_description"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.backup.data.ha_settings_description"
+                  )
+            }
           </span>
           <ha-switch
             id="homeassistant"
@@ -262,159 +264,169 @@ class HaBackupConfigData extends LitElement {
           ></ha-switch>
         </ha-list-item-base>
 
-        ${this._showDbOption
-          ? html`<ha-list-item-base>
-              <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
-              <span slot="headline">
-                ${this.hass.localize("ui.panel.config.backup.data.history")}
-              </span>
-              <span slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.data.history_description"
-                )}
-              </span>
-              <ha-switch
-                id="database"
-                slot="end"
-                @change=${this._switchChanged}
-                .checked=${data.database}
-              ></ha-switch>
-            </ha-list-item-base>`
-          : nothing}
-        ${isHassio
-          ? html`
-              <ha-list-item-base>
-                <ha-svg-icon
-                  slot="start"
-                  .path=${mdiPlayBoxMultiple}
-                ></ha-svg-icon>
+        ${
+          this._showDbOption
+            ? html`<ha-list-item-base>
+                <ha-svg-icon slot="start" .path=${mdiChartBox}></ha-svg-icon>
                 <span slot="headline">
-                  ${this.hass.localize("ui.panel.config.backup.data.media")}
+                  ${this.hass.localize("ui.panel.config.backup.data.history")}
                 </span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
-                    "ui.panel.config.backup.data.media_description"
+                    "ui.panel.config.backup.data.history_description"
                   )}
                 </span>
                 <ha-switch
-                  id="media"
+                  id="database"
                   slot="end"
                   @change=${this._switchChanged}
-                  .checked=${data.media}
+                  .checked=${data.database}
                 ></ha-switch>
-              </ha-list-item-base>
+              </ha-list-item-base>`
+            : nothing
+        }
+        ${
+          isHassio
+            ? html`
+                <ha-list-item-base>
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiPlayBoxMultiple}
+                  ></ha-svg-icon>
+                  <span slot="headline">
+                    ${this.hass.localize("ui.panel.config.backup.data.media")}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.data.media_description"
+                    )}
+                  </span>
+                  <ha-switch
+                    id="media"
+                    slot="end"
+                    @change=${this._switchChanged}
+                    .checked=${data.media}
+                  ></ha-switch>
+                </ha-list-item-base>
 
-              <ha-list-item-base>
-                <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.data.share_folder"
-                  )}
-                </span>
-                <span slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.data.share_folder_desc"
-                  )}
-                </span>
-                <ha-switch
-                  id="share"
-                  slot="end"
-                  @change=${this._switchChanged}
-                  .checked=${data.share}
-                ></ha-switch>
-              </ha-list-item-base>
+                <ha-list-item-base>
+                  <ha-svg-icon slot="start" .path=${mdiFolder}></ha-svg-icon>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.data.share_folder"
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.data.share_folder_desc"
+                    )}
+                  </span>
+                  <ha-switch
+                    id="share"
+                    slot="end"
+                    @change=${this._switchChanged}
+                    .checked=${data.share}
+                  ></ha-switch>
+                </ha-list-item-base>
 
-              ${this._hasLocalAddons(this._addons)
-                ? html`
-                    <ha-list-item-base>
-                      <ha-svg-icon
-                        slot="start"
-                        .path=${mdiFolder}
-                      ></ha-svg-icon>
-                      <span slot="headline">
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.data.local_apps"
-                        )}
-                      </span>
-                      <span slot="supporting-text">
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.data.local_apps_description"
-                        )}
-                      </span>
-                      <ha-switch
-                        id="local_addons"
-                        slot="end"
-                        @change=${this._switchChanged}
-                        .checked=${data.local_addons}
-                      ></ha-switch>
-                    </ha-list-item-base>
-                  `
-                : nothing}
-              ${this._addons.length
-                ? html`
-                    <ha-list-item-base>
-                      <ha-svg-icon
-                        slot="start"
-                        .path=${mdiPuzzle}
-                      ></ha-svg-icon>
-                      <span slot="headline">
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.data.apps"
-                        )}
-                      </span>
-                      <span slot="supporting-text">
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.data.apps_description"
-                        )}
-                      </span>
-                      <ha-select
-                        slot="end"
-                        @selected=${this._selectChanged}
-                        .value=${data.addons_mode}
-                        .options=${[
-                          {
-                            value: "all",
-                            label: this.hass.localize(
-                              "ui.panel.config.backup.data.apps_all"
-                            ),
-                          },
-                          {
-                            value: "none",
-                            label: this.hass.localize(
-                              "ui.panel.config.backup.data.apps_none"
-                            ),
-                          },
-                          {
-                            value: "custom",
-                            label: this.hass.localize(
-                              "ui.panel.config.backup.data.apps_custom"
-                            ),
-                          },
-                        ]}
-                      ></ha-select>
-                    </ha-list-item-base>
-                  `
-                : nothing}
-            `
-          : nothing}
+                ${
+                  this._hasLocalAddons(this._addons)
+                    ? html`
+                        <ha-list-item-base>
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiFolder}
+                          ></ha-svg-icon>
+                          <span slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.local_apps"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.local_apps_description"
+                            )}
+                          </span>
+                          <ha-switch
+                            id="local_addons"
+                            slot="end"
+                            @change=${this._switchChanged}
+                            .checked=${data.local_addons}
+                          ></ha-switch>
+                        </ha-list-item-base>
+                      `
+                    : nothing
+                }
+                ${
+                  this._addons.length
+                    ? html`
+                        <ha-list-item-base>
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiPuzzle}
+                          ></ha-svg-icon>
+                          <span slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.apps"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.data.apps_description"
+                            )}
+                          </span>
+                          <ha-select
+                            slot="end"
+                            @selected=${this._selectChanged}
+                            .value=${data.addons_mode}
+                            .options=${[
+                              {
+                                value: "all",
+                                label: this.hass.localize(
+                                  "ui.panel.config.backup.data.apps_all"
+                                ),
+                              },
+                              {
+                                value: "none",
+                                label: this.hass.localize(
+                                  "ui.panel.config.backup.data.apps_none"
+                                ),
+                              },
+                              {
+                                value: "custom",
+                                label: this.hass.localize(
+                                  "ui.panel.config.backup.data.apps_custom"
+                                ),
+                              },
+                            ]}
+                          ></ha-select>
+                        </ha-list-item-base>
+                      `
+                    : nothing
+                }
+              `
+            : nothing
+        }
       </ha-list-base>
-      ${isHassio && this._showAddons && this._addons.length
-        ? html`
-            <ha-expansion-panel
-              .header=${this.hass.localize("ui.panel.config.backup.data.apps")}
-              outlined
-              expanded
-            >
-              <ha-backup-addons-picker
-                .hass=${this.hass}
-                .value=${data.addons}
-                @value-changed=${this._addonsChanged}
-                .addons=${this._addons}
-                .hideVersion=${this.hideAddonVersion}
-              ></ha-backup-addons-picker>
-            </ha-expansion-panel>
-          `
-        : nothing}
+      ${
+        isHassio && this._showAddons && this._addons.length
+          ? html`
+              <ha-expansion-panel
+                .header=${this.hass.localize("ui.panel.config.backup.data.apps")}
+                outlined
+                expanded
+              >
+                <ha-backup-addons-picker
+                  .hass=${this.hass}
+                  .value=${data.addons}
+                  @value-changed=${this._addonsChanged}
+                  .addons=${this._addons}
+                  .hideVersion=${this.hideAddonVersion}
+                ></ha-backup-addons-picker>
+              </ha-expansion-panel>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -461,17 +473,15 @@ class HaBackupConfigData extends LitElement {
 
     const data = this._getData(this.value, this._showAddons);
 
-    if (
-      !(
-        data.homeassistant ||
-        data.database ||
-        data.media ||
-        data.share ||
-        data.local_addons ||
-        data.addons_mode === "all" ||
-        (data.addons_mode === "custom" && data.addons.length > 0)
-      )
-    ) {
+    if (!(
+      data.homeassistant ||
+      data.database ||
+      data.media ||
+      data.share ||
+      data.local_addons ||
+      data.addons_mode === "all" ||
+      (data.addons_mode === "custom" && data.addons.length > 0)
+    )) {
       return nothing;
     }
 
@@ -513,11 +523,13 @@ class HaBackupConfigData extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.backup.data.estimated_size_disclaimer"
             )}
-            ${addonsNotAccurate
-              ? html`<br /><br />${this.hass.localize(
-                    "ui.panel.config.backup.data.estimated_size_disclaimer_apps_custom"
-                  )}`
-              : nothing}
+            ${
+              addonsNotAccurate
+                ? html`<br /><br />${this.hass.localize(
+                      "ui.panel.config.backup.data.estimated_size_disclaimer_apps_custom"
+                    )}`
+                : nothing
+            }
           </ha-tooltip>
         </span>
         <span class="estimated-size-value">

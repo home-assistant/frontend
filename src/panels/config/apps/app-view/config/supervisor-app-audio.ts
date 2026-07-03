@@ -45,37 +45,43 @@ class SupervisorAppAudio extends LitElement {
         )}
       >
         <div class="card-content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          ${this._inputDevices &&
-          html`<ha-select
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.configuration.audio.input"
-            )}
-            @selected=${this._setInputDevice}
-            .value=${this._selectedInput!}
-            .disabled=${this.disabled}
-            .options=${this._inputDevices.map((item) => ({
-              value: item.device || "",
-              label: item.name,
-            }))}
-          >
-          </ha-select>`}
-          ${this._outputDevices &&
-          html`<ha-select
-            .label=${this.hass.localize(
-              "ui.panel.config.apps.configuration.audio.output"
-            )}
-            @selected=${this._setOutputDevice}
-            .value=${this._selectedOutput!}
-            .disabled=${this.disabled}
-            .options=${this._outputDevices.map((item) => ({
-              value: item.device || "",
-              label: item.name,
-            }))}
-          >
-          </ha-select>`}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
+          ${
+            this._inputDevices &&
+            html`<ha-select
+              .label=${this.hass.localize(
+                "ui.panel.config.apps.configuration.audio.input"
+              )}
+              @selected=${this._setInputDevice}
+              .value=${this._selectedInput!}
+              .disabled=${this.disabled}
+              .options=${this._inputDevices.map((item) => ({
+                value: item.device || "",
+                label: item.name,
+              }))}
+            >
+            </ha-select>`
+          }
+          ${
+            this._outputDevices &&
+            html`<ha-select
+              .label=${this.hass.localize(
+                "ui.panel.config.apps.configuration.audio.output"
+              )}
+              @selected=${this._setOutputDevice}
+              .value=${this._selectedOutput!}
+              .disabled=${this.disabled}
+              .options=${this._outputDevices.map((item) => ({
+                value: item.device || "",
+                label: item.name,
+              }))}
+            >
+            </ha-select>`
+          }
         </div>
         <div class="card-actions">
           <ha-progress-button

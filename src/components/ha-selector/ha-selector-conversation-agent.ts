@@ -28,8 +28,9 @@ export class HaConversationAgentSelector extends LitElement {
     return html`<ha-conversation-agent-picker
       .hass=${this.hass}
       .value=${this.value}
-      .language=${this.selector.conversation_agent?.language ||
-      this.context?.language}
+      .language=${
+        this.selector.conversation_agent?.language || this.context?.language
+      }
       .label=${this.label}
       .helper=${this.helper}
       .disabled=${this.disabled}

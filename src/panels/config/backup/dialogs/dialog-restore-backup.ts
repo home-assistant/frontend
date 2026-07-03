@@ -152,25 +152,29 @@ class DialogRestoreBackup
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : this._step === "confirm"
-              ? this._renderConfirm()
-              : this._step === "encryption"
-                ? this._renderEncryption()
-                : this._renderProgress()}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : this._step === "confirm"
+                ? this._renderConfirm()
+                : this._step === "encryption"
+                  ? this._renderEncryption()
+                  : this._renderProgress()
+          }
         </div>
-        ${this._error
-          ? html`
-              <ha-dialog-footer slot="footer">
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-              </ha-dialog-footer>
-            `
-          : this._step === "confirm" || this._step === "encryption"
-            ? this._renderConfirmActions()
-            : nothing}
+        ${
+          this._error
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+            : this._step === "confirm" || this._step === "encryption"
+              ? this._renderConfirmActions()
+              : nothing
+        }
       </ha-dialog>
     `;
   }
@@ -198,15 +202,17 @@ class DialogRestoreBackup
         ${this.hass.localize(
           "ui.panel.config.backup.dialogs.restore.encryption.different_key"
         )}
-        ${this._params!.selectedData.homeassistant_included
-          ? html`
-              <ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.dialogs.restore.encryption.warning"
-                )}
-              </ha-alert>
-            `
-          : nothing}
+        ${
+          this._params!.selectedData.homeassistant_included
+            ? html`
+                <ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.dialogs.restore.encryption.warning"
+                  )}
+                </ha-alert>
+              `
+            : nothing
+        }
       `;
     }
     return html`
@@ -260,11 +266,13 @@ class DialogRestoreBackup
     return html`<div class="centered">
       <ha-spinner></ha-spinner>
       <p>
-        ${this.hass.connected
-          ? this._restoreState()
-          : this.hass.localize(
-              "ui.panel.config.backup.dialogs.restore.progress.restarting"
-            )}
+        ${
+          this.hass.connected
+            ? this._restoreState()
+            : this.hass.localize(
+                "ui.panel.config.backup.dialogs.restore.progress.restarting"
+              )
+        }
       </p>
     </div>`;
   }

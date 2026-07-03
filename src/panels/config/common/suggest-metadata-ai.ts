@@ -17,10 +17,7 @@ export interface MetadataSuggestionResult {
 }
 
 export type MetadataSuggestionDomain =
-  | "automation"
-  | "script"
-  | "scene"
-  | "area";
+  "automation" | "script" | "scene" | "area";
 
 export interface MetadataSuggestionInclude {
   name: boolean;

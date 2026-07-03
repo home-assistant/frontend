@@ -82,16 +82,18 @@ class DialogAutomationSaveTimeout extends LitElement {
               ),
             }
           )}
-          ${this._saveComplete
-            ? html`<p></p>
-                <ha-alert alert-type="success"
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.new_automation_setup_timedout_success"
-                  )}</ha-alert
-                >`
-            : html`<div class="loading">
-                <ha-spinner size="medium"> </ha-spinner>
-              </div>`}
+          ${
+            this._saveComplete
+              ? html`<p></p>
+                  <ha-alert alert-type="success"
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.new_automation_setup_timedout_success"
+                    )}</ha-alert
+                  >`
+              : html`<div class="loading">
+                  <ha-spinner size="medium"> </ha-spinner>
+                </div>`
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button

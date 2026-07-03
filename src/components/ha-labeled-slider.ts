@@ -48,11 +48,13 @@ class HaLabeledSlider extends LitElement {
           ></ha-slider>
         </div>
       </div>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}>
-            ${this.helper}
-          </ha-input-helper-text>`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}>
+              ${this.helper}
+            </ha-input-helper-text>`
+          : nothing
+      }
     `;
   }
 

@@ -80,67 +80,75 @@ export class HaFilterLabels extends LitElement {
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.labels.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-              >
-              </ha-input-search>
-              <ha-list
-                @selected=${this._labelSelected}
-                class="ha-scrollbar"
-                multi
-              >
-                ${repeat(
-                  this._filteredLabels(
-                    this._labels || [],
-                    this._filter,
-                    this._i18n.locale.language,
-                    this.value
-                  ),
-                  (label) => label.label_id,
-                  (label) =>
-                    html`<ha-check-list-item
-                      .value=${label.label_id}
-                      .selected=${(this.value || []).includes(label.label_id)}
-                      hasMeta
-                    >
-                      <ha-label
-                        .color=${label.color}
-                        .description=${label.description}
+        ${
+          this._shouldRender
+            ? html`<ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                >
+                </ha-input-search>
+                <ha-list
+                  @selected=${this._labelSelected}
+                  class="ha-scrollbar"
+                  multi
+                >
+                  ${repeat(
+                    this._filteredLabels(
+                      this._labels || [],
+                      this._filter,
+                      this._i18n.locale.language,
+                      this.value
+                    ),
+                    (label) => label.label_id,
+                    (label) =>
+                      html`<ha-check-list-item
+                        .value=${label.label_id}
+                        .selected=${(this.value || []).includes(label.label_id)}
+                        hasMeta
                       >
-                        ${label.icon
-                          ? html`<ha-icon
-                              slot="icon"
-                              .icon=${label.icon}
-                            ></ha-icon>`
-                          : nothing}
-                        ${label.name}
-                      </ha-label>
-                    </ha-check-list-item>`
-                )}
-              </ha-list> `
-          : nothing}
+                        <ha-label
+                          .color=${label.color}
+                          .description=${label.description}
+                        >
+                          ${
+                            label.icon
+                              ? html`<ha-icon
+                                  slot="icon"
+                                  .icon=${label.icon}
+                                ></ha-icon>`
+                              : nothing
+                          }
+                          ${label.name}
+                        </ha-label>
+                      </ha-check-list-item>`
+                  )}
+                </ha-list> `
+            : nothing
+        }
       </ha-expansion-panel>
-      ${this.expanded
-        ? html`<ha-list-item
-            graphic="icon"
-            @click=${this._manageLabels}
-            class="add"
-          >
-            <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
-            ${this._localize("ui.panel.config.labels.manage_labels")}
-          </ha-list-item>`
-        : nothing}
+      ${
+        this.expanded
+          ? html`<ha-list-item
+              graphic="icon"
+              @click=${this._manageLabels}
+              class="add"
+            >
+              <ha-svg-icon slot="graphic" .path=${mdiCog}></ha-svg-icon>
+              ${this._localize("ui.panel.config.labels.manage_labels")}
+            </ha-list-item>`
+          : nothing
+      }
     `;
   }
 

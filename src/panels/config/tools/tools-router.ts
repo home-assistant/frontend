@@ -3,8 +3,8 @@ import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
 
-@customElement("developer-tools-router")
-class DeveloperToolsRouter extends HassRouterPage {
+@customElement("tools-router")
+class ToolsRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -22,37 +22,37 @@ class DeveloperToolsRouter extends HassRouterPage {
     showLoading: true,
     routes: {
       event: {
-        tag: "developer-tools-event",
-        load: () => import("./event/developer-tools-event"),
+        tag: "tools-event",
+        load: () => import("./event/tools-event"),
       },
       service: "action",
       action: {
-        tag: "developer-tools-action",
-        load: () => import("./action/developer-tools-action"),
+        tag: "tools-action",
+        load: () => import("./action/tools-action"),
       },
       state: {
-        tag: "developer-tools-state",
-        load: () => import("./state/developer-tools-state"),
+        tag: "tools-state",
+        load: () => import("./state/tools-state"),
       },
       template: {
-        tag: "developer-tools-template",
-        load: () => import("./template/developer-tools-template"),
+        tag: "tools-template",
+        load: () => import("./template/tools-template"),
       },
       statistics: {
-        tag: "developer-tools-statistics",
-        load: () => import("./statistics/developer-tools-statistics"),
+        tag: "tools-statistics",
+        load: () => import("./statistics/tools-statistics"),
       },
       yaml: {
-        tag: "developer-yaml-config",
-        load: () => import("./yaml_configuration/developer-yaml-config"),
+        tag: "tools-yaml-config",
+        load: () => import("./yaml_configuration/tools-yaml-config"),
       },
       assist: {
-        tag: "developer-tools-assist",
-        load: () => import("./assist/developer-tools-assist"),
+        tag: "tools-assist",
+        load: () => import("./assist/tools-assist"),
       },
       debug: {
-        tag: "developer-tools-debug",
-        load: () => import("./debug/developer-tools-debug"),
+        tag: "tools-debug",
+        load: () => import("./debug/tools-debug"),
       },
     },
   };
@@ -77,6 +77,6 @@ class DeveloperToolsRouter extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-router": DeveloperToolsRouter;
+    "tools-router": ToolsRouter;
   }
 }

@@ -54,9 +54,9 @@ export class HaEntityToggle extends LitElement {
           .path=${mdiFlashOff}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
-          class=${!this._isOn && this.stateObj.state !== UNKNOWN
-            ? "state-active"
-            : ""}
+          class=${
+            !this._isOn && this.stateObj.state !== UNKNOWN ? "state-active" : ""
+          }
         ></ha-icon-button>
         <ha-icon-button
           .label=${`Turn ${computeStateName(this.stateObj)} on`}

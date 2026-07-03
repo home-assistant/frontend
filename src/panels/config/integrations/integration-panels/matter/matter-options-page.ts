@@ -50,34 +50,38 @@ class MatterOptionsPage extends LitElement {
       >
         <div class="container">
           <ha-card>
-            ${this._error
-              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-              : nothing}
+            ${
+              this._error
+                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+                : nothing
+            }
             <ha-md-list>
-              ${canCommissionMatterExternal(this.hass)
-                ? html`<ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.panel.mobile_app_commisioning"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.panel.mobile_app_commisioning_description"
-                      )}
-                    </span>
-                    <ha-button
-                      appearance="plain"
-                      slot="end"
-                      size="s"
-                      @click=${this._startMobileCommissioning}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.panel.mobile_app_commisioning_action"
-                      )}
-                    </ha-button>
-                  </ha-md-list-item>`
-                : nothing}
+              ${
+                canCommissionMatterExternal(this.hass)
+                  ? html`<ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.panel.mobile_app_commisioning"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.panel.mobile_app_commisioning_description"
+                        )}
+                      </span>
+                      <ha-button
+                        appearance="plain"
+                        slot="end"
+                        size="s"
+                        @click=${this._startMobileCommissioning}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.panel.mobile_app_commisioning_action"
+                        )}
+                      </ha-button>
+                    </ha-md-list-item>`
+                  : nothing
+              }
               <ha-md-list-item>
                 <span slot="headline">
                   ${this.hass.localize(

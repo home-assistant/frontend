@@ -159,16 +159,18 @@ export class HuiViewBackgroundEditor extends LitElement {
     const background = this._backgroundData(this._config);
 
     return html`
-      ${this._resolvedImage
-        ? html`<div class="previewContainer">
-            <img
-              src=${this._resolvedImage}
-              alt=${this.hass.localize(
-                "ui.components.picture-upload.current_image_alt"
-              )}
-            />
-          </div>`
-        : nothing}
+      ${
+        this._resolvedImage
+          ? html`<div class="previewContainer">
+              <img
+                src=${this._resolvedImage}
+                alt=${this.hass.localize(
+                  "ui.components.picture-upload.current_image_alt"
+                )}
+              />
+            </div>`
+          : nothing
+      }
       <ha-form
         .hass=${this.hass}
         .data=${background}
