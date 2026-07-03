@@ -146,7 +146,7 @@ jobs:
       # Playwright itself, not every unrelated dependency bump.
       - name: Resolve Playwright version
         id: playwright-version
-        run: echo "version=$(node -e "console.log(require('@playwright/test/package.json').version)")" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(node -p 'require("@playwright/test/package.json").version')" >> "$GITHUB_OUTPUT"
 
       # Cache the downloaded browser build keyed on the installed Playwright
       # version, so re-runs skip the ~170 MB download unless Playwright changes.
