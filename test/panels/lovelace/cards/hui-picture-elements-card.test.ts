@@ -1,11 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { handleAction } from "../../../../src/panels/lovelace/common/handle-action";
+import { describe, expect, it, vi } from "vitest";
 import "../../../../src/panels/lovelace/cards/hui-picture-elements-card";
+import type {
+  ActionHandlerOptions,
+  ActionHandlerResolution,
+} from "../../../../src/data/lovelace/action_handler";
 
-// The card owns the gesture on #root. These tests stub geometry (_routeTarget)
-// and drive _onRoutedEvent directly, exercising the pointer choreography
-// (button/detail guards, hold/tap/double_tap, touch-vs-mouse contextmenu,
-// per-element double-tap window) without a DOM layout.
+// The card resolves pointer gestures on #root to the routed element they
+// belong to; the gesture engine itself is the shared action-handler directive
+// (tested separately). These tests exercise the resolver: reserved-element
+// pass-through, seed collection from the rendered DOM, and nearest routing.
 
 // Hoisted above the imports at runtime: bundler-defined globals the card's
 // import graph reads at eval (setup.ts already provides __DEMO__/__DEV__).
@@ -21,144 +24,140 @@ vi.hoisted(() => {
   });
 });
 
-// vi.mock is hoisted above the imports, so the card uses this stubbed handleAction.
-vi.mock(
-  "../../../../src/panels/lovelace/common/handle-action",
-  async (importActual) => ({
-    ...(await importActual<Record<string, unknown>>()),
-    handleAction: vi.fn(),
-  })
-);
-
-interface Seed {
-  element: HTMLElement;
-  config: Record<string, unknown>;
-  isIcon: boolean;
-}
 interface CardInternals {
   hass: unknown;
   preview: boolean;
+
+  _elements?: HTMLElement[];
   // eslint-disable-next-line @typescript-eslint/naming-convention -- private card internals
-  _routeTarget: (ev: Event) => Seed | undefined;
-  // eslint-disable-next-line @typescript-eslint/naming-convention -- private card internals
-  _onRoutedEvent: (ev: Event) => void;
+  _resolveGesture: (
+    x: number,
+    y: number,
+    ev: Event
+  ) => ActionHandlerResolution | null;
 }
 
-const action = vi.mocked(handleAction);
+interface FakeElementInit {
+  delegated?: boolean;
+  visible?: boolean;
+  rect?: DOMRect | null;
+  isText?: boolean;
+  options?: ActionHandlerOptions;
+}
 
-const makeCard = () => {
+const OPTIONS: ActionHandlerOptions = {
+  hasTap: true,
+  hasHold: true,
+  hasDoubleClick: false,
+};
+
+const makeElement = ({
+  delegated = true,
+  visible = true,
+  rect = new DOMRect(0, 0, 24, 24),
+  isText = false,
+  options = OPTIONS,
+}: FakeElementInit = {}): HTMLElement => {
+  const el = document.createElement("div");
+  el.classList.add("element");
+  Object.assign(el, {
+    delegatedActions: delegated,
+    checkVisibility: () => visible,
+    getHitInfo: () =>
+      rect ? { rect, isText: isText || undefined, options } : null,
+  });
+  return el;
+};
+
+const makeCard = (elements: HTMLElement[]) => {
   const card = document.createElement(
     "hui-picture-elements-card"
   ) as unknown as CardInternals;
   card.hass = {};
   card.preview = false;
-  let routed: Seed | undefined;
-  card._routeTarget = () => routed;
-  const aim = (config: Record<string, unknown>): Seed => {
-    routed = { element: document.createElement("div"), config, isIcon: true };
-    return routed;
-  };
-  return { card, aim };
+  card._elements = elements;
+  const root = document.createElement("div");
+  root.getBoundingClientRect = () => new DOMRect(0, 0, 400, 300);
+  elements.forEach((el) => root.appendChild(el));
+  Object.defineProperty(card, "_root", { value: root });
+  const press = (x: number, y: number, target?: HTMLElement, init?: object) =>
+    card._resolveGesture(x, y, {
+      type: "mousedown",
+      button: 0,
+      ctrlKey: false,
+      composedPath: () => [target ?? root, root],
+      ...init,
+    } as unknown as Event);
+  return { card, root, press };
 };
 
-const mouse = (type: string, init: MouseEventInit = {}) =>
-  new MouseEvent(type, { button: 0, detail: 1, cancelable: true, ...init });
-const touch = (type: string) => new Event(type, { cancelable: true });
+const iconAt = (x: number, y: number, init: FakeElementInit = {}) =>
+  makeElement({ rect: new DOMRect(x - 12, y - 12, 24, 24), ...init });
 
-describe("hui-picture-elements-card gesture routing", () => {
-  beforeEach(() => {
-    action.mockClear();
-    vi.useFakeTimers();
-  });
-  afterEach(() => vi.useRealTimers());
-
-  it("routes a mouse tap to the target", () => {
-    const { card, aim } = makeCard();
-    const seed = aim({ tap_action: { action: "toggle" } });
-    card._onRoutedEvent(mouse("mousedown"));
-    card._onRoutedEvent(mouse("click"));
-    expect(action).toHaveBeenCalledTimes(1);
-    expect(action).toHaveBeenCalledWith(seed.element, {}, seed.config, "tap");
+describe("hui-picture-elements-card gesture resolver", () => {
+  it("routes a background press in reach to the nearest icon", () => {
+    const near = iconAt(100, 100);
+    const far = iconAt(200, 100);
+    const { press } = makeCard([near, far]);
+    const resolution = press(120, 100);
+    expect(resolution?.target).toBe(near);
+    expect(resolution?.options).toBe(OPTIONS);
   });
 
-  it("never routes a keyboard/assistive-tech click (detail 0)", () => {
-    const { card, aim } = makeCard();
-    aim({ tap_action: { action: "toggle" } });
-    card._onRoutedEvent(mouse("mousedown"));
-    card._onRoutedEvent(mouse("click", { detail: 0 }));
-    expect(action).not.toHaveBeenCalled();
+  it("returns null beyond reach of every seed", () => {
+    const { press } = makeCard([iconAt(100, 100)]);
+    expect(press(160, 100)).toBeNull();
   });
 
-  it("ignores a non-primary button and a ctrl-click", () => {
-    const { card, aim } = makeCard();
-    aim({ tap_action: { action: "toggle" } });
-    card._onRoutedEvent(mouse("mousedown", { button: 2 }));
-    card._onRoutedEvent(mouse("click"));
-    card._onRoutedEvent(mouse("mousedown", { ctrlKey: true }));
-    card._onRoutedEvent(mouse("click"));
-    expect(action).not.toHaveBeenCalled();
+  it("resolves overlapping icons by distance, not paint order", () => {
+    const a = iconAt(100, 100);
+    const b = iconAt(110, 100);
+    const { press } = makeCard([a, b]);
+    // Inside both boxes, but closer to a's center.
+    expect(press(102, 100, b)?.target).toBe(a);
   });
 
-  it("fires the hold action after the hold time", () => {
-    const { card, aim } = makeCard();
-    const seed = aim({
-      tap_action: { action: "toggle" },
-      hold_action: { action: "more-info" },
+  it("a press on a label's own text keeps the label", () => {
+    const label = makeElement({
+      rect: new DOMRect(90, 94, 80, 12),
+      isText: true,
     });
-    card._onRoutedEvent(mouse("mousedown"));
-    vi.advanceTimersByTime(500);
-    card._onRoutedEvent(mouse("click"));
-    expect(action).toHaveBeenCalledWith(seed.element, {}, seed.config, "hold");
+    const icon = iconAt(100, 80);
+    const { press } = makeCard([label, icon]);
+    expect(press(100, 100)?.target).toBe(label);
   });
 
-  it("resolves two rapid taps on the same element to a single double_tap", () => {
-    const { card, aim } = makeCard();
-    const seed = aim({
-      tap_action: { action: "toggle" },
-      double_tap_action: { action: "more-info" },
-    });
-    card._onRoutedEvent(mouse("mousedown"));
-    card._onRoutedEvent(mouse("click", { detail: 1 }));
-    card._onRoutedEvent(mouse("mousedown"));
-    card._onRoutedEvent(mouse("click", { detail: 2 }));
-    vi.advanceTimersByTime(300);
-    expect(action).toHaveBeenCalledTimes(1);
-    expect(action).toHaveBeenCalledWith(
-      seed.element,
-      {},
-      seed.config,
-      "double_tap"
-    );
+  it("never routes in the editor preview", () => {
+    const { card, press } = makeCard([iconAt(100, 100)]);
+    (card as unknown as { preview: boolean }).preview = true;
+    expect(press(100, 100)).toBeNull();
   });
 
-  it("keeps two elements' double-tap windows independent", () => {
-    // Regression: a card-global window made a quick tap on B double_tap and
-    // cancel A. Each element must resolve its own tap.
-    const dbl = { double_tap_action: { action: "more-info" } };
-    const { card, aim } = makeCard();
-    const a = aim(dbl);
-    card._onRoutedEvent(touch("touchstart"));
-    card._onRoutedEvent(touch("touchend")); // arm A's tap
-    const b = aim(dbl);
-    card._onRoutedEvent(touch("touchstart"));
-    card._onRoutedEvent(touch("touchend")); // must NOT become a double_tap
-    vi.advanceTimersByTime(300);
-    expect(action).toHaveBeenCalledTimes(2);
-    expect(action).toHaveBeenCalledWith(a.element, {}, a.config, "tap");
-    expect(action).toHaveBeenCalledWith(b.element, {}, b.config, "tap");
+  it("never routes a non-primary or ctrl press", () => {
+    const { press } = makeCard([iconAt(100, 100)]);
+    expect(press(100, 100, undefined, { button: 2 })).toBeNull();
+    expect(press(100, 100, undefined, { ctrlKey: true })).toBeNull();
   });
 
-  it("suppresses the context menu only for a touch gesture", () => {
-    const { card, aim } = makeCard();
-    aim({ hold_action: { action: "more-info" } });
-    card._onRoutedEvent(mouse("mousedown"));
-    const mouseMenu = new MouseEvent("contextmenu", { cancelable: true });
-    card._onRoutedEvent(mouseMenu);
-    expect(mouseMenu.defaultPrevented).toBe(false);
+  it("leaves a press on a non-routed element to that element", () => {
+    // An image element, service button, or conditional child handles its own
+    // gestures; routing must not steal a press landing on it, even in reach.
+    const reserved = makeElement({ delegated: false, rect: null });
+    const icon = iconAt(100, 100);
+    const { press } = makeCard([reserved, icon]);
+    expect(press(105, 100, reserved)).toBeNull();
+  });
 
-    card._onRoutedEvent(touch("touchstart"));
-    const touchMenu = new MouseEvent("contextmenu", { cancelable: true });
-    card._onRoutedEvent(touchMenu);
-    expect(touchMenu.defaultPrevented).toBe(true);
+  it("skips warning and action-less elements", () => {
+    const warning = makeElement({ rect: null });
+    const { press } = makeCard([warning]);
+    expect(press(100, 100)).toBeNull();
+  });
+
+  it("skips hidden and zero-size elements", () => {
+    const hidden = iconAt(100, 100, { visible: false });
+    const collapsed = makeElement({ rect: new DOMRect(100, 100, 0, 0) });
+    const { press } = makeCard([hidden, collapsed]);
+    expect(press(100, 100)).toBeNull();
   });
 });

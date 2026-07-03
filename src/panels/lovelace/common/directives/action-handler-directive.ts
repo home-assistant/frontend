@@ -8,6 +8,7 @@ import { deepEqual } from "../../../../common/util/deep-equal";
 import type {
   ActionHandlerDetail,
   ActionHandlerOptions,
+  ActionHandlerResolution,
 } from "../../../../data/lovelace/action_handler";
 import { isTouch } from "../../../../util/is_touch";
 
@@ -33,14 +34,24 @@ declare global {
   }
 }
 
-// Gesture timings, exported so features that resolve a tap to a target the
-// pointer is not directly over (e.g. the picture-elements card) match them.
-export const ACTION_HANDLER_HOLD_TIME = 500;
-export const ACTION_HANDLER_DOUBLE_CLICK_TIME = 250;
+const DOUBLE_CLICK_TIME = 250;
+
+// The coordinates of the pointer that changed: for touch events the finger
+// that just went down/up (touches[0] would be the *first* finger during a
+// multi-touch), for mouse events the pointer itself.
+const eventCoordinates = (ev: Event): { x: number; y: number } => {
+  const touch = (ev as TouchEvent).changedTouches?.[0];
+  return touch
+    ? { x: touch.clientX, y: touch.clientY }
+    : { x: (ev as MouseEvent).clientX, y: (ev as MouseEvent).clientY };
+};
+
+const activeTouchCount = (ev: Event): number =>
+  (ev as TouchEvent).touches?.length ?? 0;
 
 @customElement("action-handler")
 class ActionHandler extends HTMLElement implements ActionHandlerType {
-  public holdTime = ACTION_HANDLER_HOLD_TIME;
+  public holdTime = 500;
 
   protected timer?: number;
 
@@ -49,6 +60,14 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
   private cancelled = false;
 
   private dblClickTimeout?: number;
+
+  // The double-tap window only pairs two taps on the same target; a quick tap
+  // on a different target starts its own window instead of completing one.
+  private dblClickTarget?: HTMLElement;
+
+  // The delegated target of the gesture in flight on a container binding
+  // (options.resolve); undefined while no resolved gesture is active.
+  private resolved?: ActionHandlerResolution;
 
   // eslint-disable-next-line lit/lifecycle-super -- not a LitElement
   public connectedCallback() {
@@ -113,6 +132,16 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
         "keydown",
         element.actionHandler.handleKeyDown!
       );
+    } else if (options.resolve) {
+      // A container binding suppresses the context menu only while it owns a
+      // gesture (a touch long-press); a plain right-click keeps its menu.
+      element.addEventListener("contextmenu", (ev: Event) => {
+        if (!this.resolved) {
+          return;
+        }
+        ev.preventDefault();
+        ev.stopPropagation();
+      });
     } else {
       element.addEventListener("contextmenu", (ev: Event) => {
         const e = ev || window.event;
@@ -136,17 +165,30 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
 
     element.actionHandler.start = (ev: Event) => {
       this.cancelled = false;
-      let x;
-      let y;
-      if ((ev as TouchEvent).touches) {
-        x = (ev as TouchEvent).touches[0].clientX;
-        y = (ev as TouchEvent).touches[0].clientY;
+      const { x, y } = eventCoordinates(ev);
+
+      if (options.resolve) {
+        this.resolved = undefined;
+        // More than one finger is a pinch or scroll, not a gesture.
+        if (activeTouchCount(ev) > 1) {
+          if (this.timer) {
+            this._stopAnimation();
+            clearTimeout(this.timer);
+            this.timer = undefined;
+          }
+          return;
+        }
+        const resolution = options.resolve(x, y, ev);
+        if (!resolution) {
+          return;
+        }
+        this.resolved = resolution;
       } else {
-        x = (ev as MouseEvent).clientX;
-        y = (ev as MouseEvent).clientY;
+        this.resolved = undefined;
       }
 
-      if (options.hasHold) {
+      const opts = options.resolve ? this.resolved!.options : options;
+      if (opts.hasHold) {
         this.held = false;
         this.timer = window.setTimeout(() => {
           this._startAnimation(x, y);
@@ -161,37 +203,79 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
         ev.type === "touchcancel" ||
         (ev.type === "touchend" && this.cancelled)
       ) {
+        if (options.resolve) {
+          this.resolved = undefined;
+        }
         return;
       }
-      const target = ev.target as HTMLElement;
+
+      let target = ev.target as HTMLElement;
+      let opts = options;
+      if (options.resolve) {
+        const resolved = this.resolved;
+        // Only handle gestures the resolver claimed at their start (not a
+        // click bubbling from an interactive child or keyboard activation).
+        if (!resolved) {
+          return;
+        }
+        // An end while other fingers remain belongs to a pinch or scroll.
+        if (activeTouchCount(ev) > 0) {
+          return;
+        }
+        this.resolved = undefined;
+        // The release must still resolve to the same target, so dragging
+        // away from the press target aborts, as it does on a per-element
+        // binding where the click never reaches the element.
+        const { x, y } = eventCoordinates(ev);
+        if (options.resolve(x, y, ev)?.target !== resolved.target) {
+          if (this.timer) {
+            this._stopAnimation();
+            clearTimeout(this.timer);
+            this.timer = undefined;
+          }
+          return;
+        }
+        target = resolved.target;
+        opts = resolved.options;
+      }
+
       // Prevent mouse event if touch event
       if (ev.cancelable) {
         ev.preventDefault();
       }
-      if (options.hasHold) {
+      if (opts.hasHold) {
         clearTimeout(this.timer);
         this._stopAnimation();
         this.timer = undefined;
       }
-      if (options.hasHold && this.held) {
+      if (opts.hasHold && this.held) {
         fireEvent(target, "action", { action: "hold" });
-      } else if (options.hasDoubleClick) {
+      } else if (opts.hasDoubleClick) {
         if (
           (ev.type === "click" && (ev as MouseEvent).detail < 2) ||
-          !this.dblClickTimeout
+          !this.dblClickTimeout ||
+          this.dblClickTarget !== target
         ) {
-          this.dblClickTimeout = window.setTimeout(() => {
-            this.dblClickTimeout = undefined;
-            if (options.hasTap !== false) {
+          const timeoutId = window.setTimeout(() => {
+            // Only clear the shared pending state if a later tap has not
+            // re-armed it for another target.
+            if (this.dblClickTimeout === timeoutId) {
+              this.dblClickTimeout = undefined;
+              this.dblClickTarget = undefined;
+            }
+            if (opts.hasTap !== false) {
               fireEvent(target, "action", { action: "tap" });
             }
-          }, ACTION_HANDLER_DOUBLE_CLICK_TIME);
+          }, DOUBLE_CLICK_TIME);
+          this.dblClickTimeout = timeoutId;
+          this.dblClickTarget = target;
         } else {
           clearTimeout(this.dblClickTimeout);
           this.dblClickTimeout = undefined;
+          this.dblClickTarget = undefined;
           fireEvent(target, "action", { action: "double_tap" });
         }
-      } else if (options.hasTap !== false) {
+      } else if (opts.hasTap !== false) {
         fireEvent(target, "action", { action: "tap" });
       }
     };
@@ -203,16 +287,18 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
       (ev.currentTarget as ActionHandlerElement).actionHandler!.end!(ev);
     };
 
-    element.addEventListener("touchstart", element.actionHandler.start, {
-      passive: true,
-    });
-    element.addEventListener("touchend", element.actionHandler.end);
-    element.addEventListener("touchcancel", element.actionHandler.end);
+    if (!options.keyboardOnly) {
+      element.addEventListener("touchstart", element.actionHandler.start, {
+        passive: true,
+      });
+      element.addEventListener("touchend", element.actionHandler.end);
+      element.addEventListener("touchcancel", element.actionHandler.end);
 
-    element.addEventListener("mousedown", element.actionHandler.start, {
-      passive: true,
-    });
-    element.addEventListener("click", element.actionHandler.end);
+      element.addEventListener("mousedown", element.actionHandler.start, {
+        passive: true,
+      });
+      element.addEventListener("click", element.actionHandler.end);
+    }
 
     element.addEventListener("keydown", element.actionHandler.handleKeyDown);
   }

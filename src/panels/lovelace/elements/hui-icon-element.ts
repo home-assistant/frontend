@@ -9,7 +9,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type { LovelacePictureElementEditor } from "../types";
-import type { IconElementConfig, LovelaceElement } from "./types";
+import type {
+  IconElementConfig,
+  LovelaceElement,
+  LovelaceElementHitInfo,
+} from "./types";
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
@@ -24,7 +28,20 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
 
   public hass?: HomeAssistant;
 
+  // Pointer gestures are delegated to the picture-elements card's routing;
+  // this element keeps keyboard activation (see LovelaceElement).
+  public delegatedActions = false;
+
   @state() private _config?: IconElementConfig;
+
+  public constructor() {
+    super();
+    // Listen on the host so both the own (keyboard) gesture path and an
+    // action delegated by the picture-elements card land here.
+    this.addEventListener("action", (ev) =>
+      this._handleAction(ev as ActionHandlerEvent)
+    );
+  }
 
   public setConfig(config: IconElementConfig): void {
     if (!config.icon) {
@@ -38,6 +55,21 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     };
   }
 
+  public getHitInfo(): LovelaceElementHitInfo | null {
+    if (!this._config) {
+      return null;
+    }
+    const options = {
+      hasTap: hasAction(this._config.tap_action),
+      hasHold: hasAction(this._config.hold_action),
+      hasDoubleClick: hasAction(this._config.double_tap_action),
+    };
+    if (!options.hasTap && !options.hasHold && !options.hasDoubleClick) {
+      return null;
+    }
+    return { rect: this.getBoundingClientRect(), options };
+  }
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -47,10 +79,10 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
       <ha-icon
         .icon=${this._config.icon}
         .title=${computeTooltip(this.hass, this._config)}
-        @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
+          keyboardOnly: this.delegatedActions || undefined,
         })}
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
