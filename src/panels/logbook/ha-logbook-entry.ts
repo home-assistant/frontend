@@ -864,7 +864,10 @@ class HaLogbookEntry extends LitElement {
 
         .primary {
           display: flex;
-          align-items: center;
+          /* Baseline-align so a wrapped multi-line value keeps the subject and
+             the trailing time on its first line, while a single-line entry
+             stays aligned with the text. */
+          align-items: baseline;
           gap: var(--ha-space-2);
           color: var(--primary-text-color);
         }
@@ -876,9 +879,9 @@ class HaLogbookEntry extends LitElement {
         .primary-text {
           flex: 1;
           min-width: 0;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          /* Wrap long entries onto multiple lines instead of truncating them to
+             a single line with an ellipsis. */
+          overflow-wrap: anywhere;
         }
 
         .primary > .subject {
@@ -903,13 +906,12 @@ class HaLogbookEntry extends LitElement {
         }
 
         .value {
-          /* Don't shrink: the subject absorbs all truncation so a short state
-             stays whole. max-width still caps a long one. */
+          /* Don't shrink: the subject absorbs truncation so a short state stays
+             whole. A long value wraps within its max-width instead of being cut
+             off. */
           flex: 0 0 auto;
           max-width: 60%;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          overflow-wrap: anywhere;
           text-align: right;
         }
 
