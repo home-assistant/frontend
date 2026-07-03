@@ -1192,6 +1192,10 @@
         "play": "Play",
         "play-media": "Play media",
         "pick-media": "Pick media",
+        "search": {
+          "search_placeholder": "Search {name}",
+          "no_results": "No results found"
+        },
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
