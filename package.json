@@ -198,7 +198,7 @@
     "map-stream": "0.0.7",
     "minify-literals": "2.1.0",
     "pinst": "3.0.0",
-    "prettier": "3.9.3",
+    "prettier": "3.9.4",
     "rspack-manifest-plugin": "5.2.2",
     "serve": "14.2.6",
     "sinon": "22.0.0",
