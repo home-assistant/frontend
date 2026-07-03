@@ -91,10 +91,11 @@ jobs:
       - name: Setup Node and install
         uses: ./.github/actions/setup
       - name: Build Application
-        run: ./node_modules/.bin/gulp build-app
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IS_TEST: "true"
+        uses: ./.github/actions/build
+        with:
+          target: build-app
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
       - name: Upload bundle stats
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

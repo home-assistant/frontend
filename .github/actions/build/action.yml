@@ -8,6 +8,9 @@ inputs:
   github-token:
     description: GITHUB_TOKEN for the build
     required: true
+  is-test:
+    description: Set IS_TEST for the build (skips source maps and compression)
+    default: "false"
 
 runs:
   using: composite
@@ -17,3 +20,4 @@ runs:
       run: ./node_modules/.bin/gulp ${{ inputs.target }}
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
+        IS_TEST: ${{ inputs.is-test }}
