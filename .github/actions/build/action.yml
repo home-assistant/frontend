@@ -6,8 +6,8 @@ inputs:
     description: gulp target to run
     required: true
   github-token:
-    description: GITHUB_TOKEN for the build
-    required: true
+    description: GitHub token for fetching nightly translations; omit to build English-only
+    default: ""
   is-test:
     description: Set IS_TEST for the build (skips source maps and compression)
     default: "false"
