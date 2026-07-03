@@ -161,113 +161,134 @@ export class HaAssistChat extends LitElement {
 
     return html`
       <div class="messages ha-scrollbar">
-        ${controlHA
-          ? nothing
-          : html`
-              <ha-alert>
-                ${this._localize(
-                  "ui.dialogs.voice_command.conversation_no_control"
-                )}
-              </ha-alert>
-            `}
+        ${
+          controlHA
+            ? nothing
+            : html`
+                <ha-alert>
+                  ${this._localize(
+                    "ui.dialogs.voice_command.conversation_no_control"
+                  )}
+                </ha-alert>
+              `
+        }
         <div class="spacer"></div>
         ${this._conversation!.map(
           (message, index) => html`
             <div class="message-container ${classMap({ [message.who]: true })}">
-              ${message.text ||
-              message.error ||
-              message.thinking ||
-              (message.tool_calls && Object.keys(message.tool_calls).length > 0)
-                ? html`
-                    <div
-                      class="message ${classMap({
-                        error: !!message.error,
-                        [message.who]: true,
-                      })}"
-                    >
-                      ${message.thinking ||
-                      (message.tool_calls &&
-                        Object.keys(message.tool_calls).length > 0)
-                        ? html`
-                            <div
-                              class="thinking-wrapper ${classMap({
-                                expanded: !!message.thinking_expanded,
-                              })}"
-                            >
-                              <button
-                                class="thinking-header"
-                                .index=${index}
-                                @click=${this._handleToggleThinking}
-                                aria-expanded=${message.thinking_expanded
-                                  ? "true"
-                                  : "false"}
-                              >
-                                <ha-svg-icon
-                                  .path=${mdiCommentProcessingOutline}
-                                ></ha-svg-icon>
-                                <span class="thinking-label">
-                                  ${this._localize(
-                                    "ui.dialogs.voice_command.show_details"
-                                  )}
-                                </span>
-                                <ha-svg-icon
-                                  .path=${message.thinking_expanded
-                                    ? mdiChevronUp
-                                    : mdiChevronDown}
-                                ></ha-svg-icon>
-                              </button>
-                              <div class="thinking-content">
-                                ${message.thinking
-                                  ? html`<ha-markdown
-                                      .content=${message.thinking}
-                                    ></ha-markdown>`
-                                  : nothing}
-                                ${message.tool_calls &&
-                                Object.keys(message.tool_calls).length > 0
-                                  ? html`
-                                      <div class="tool-calls">
-                                        ${Object.values(message.tool_calls).map(
-                                          (toolCall) => html`
-                                            <div class="tool-call">
-                                              <div class="tool-name">
-                                                ${toolCall.tool_name}
-                                              </div>
-                                              <div class="tool-data">
-                                                <pre>
-${JSON.stringify(toolCall.tool_args, null, 2)}</pre
-                                                >
-                                              </div>
-                                              ${toolCall.result
-                                                ? html`
+              ${
+                message.text ||
+                message.error ||
+                message.thinking ||
+                (message.tool_calls &&
+                  Object.keys(message.tool_calls).length > 0)
+                  ? html`
+                      <div
+                        class="message ${classMap({
+                          error: !!message.error,
+                          [message.who]: true,
+                        })}"
+                      >
+                        ${
+                          message.thinking ||
+                          (message.tool_calls &&
+                            Object.keys(message.tool_calls).length > 0)
+                            ? html`
+                                <div
+                                  class="thinking-wrapper ${classMap({
+                                    expanded: !!message.thinking_expanded,
+                                  })}"
+                                >
+                                  <button
+                                    class="thinking-header"
+                                    .index=${index}
+                                    @click=${this._handleToggleThinking}
+                                    aria-expanded=${
+                                      message.thinking_expanded
+                                        ? "true"
+                                        : "false"
+                                    }
+                                  >
+                                    <ha-svg-icon
+                                      .path=${mdiCommentProcessingOutline}
+                                    ></ha-svg-icon>
+                                    <span class="thinking-label">
+                                      ${this._localize(
+                                        "ui.dialogs.voice_command.show_details"
+                                      )}
+                                    </span>
+                                    <ha-svg-icon
+                                      .path=${
+                                        message.thinking_expanded
+                                          ? mdiChevronUp
+                                          : mdiChevronDown
+                                      }
+                                    ></ha-svg-icon>
+                                  </button>
+                                  <div class="thinking-content">
+                                    ${
+                                      message.thinking
+                                        ? html`<ha-markdown
+                                            .content=${message.thinking}
+                                          ></ha-markdown>`
+                                        : nothing
+                                    }
+                                    ${
+                                      message.tool_calls &&
+                                      Object.keys(message.tool_calls).length > 0
+                                        ? html`
+                                            <div class="tool-calls">
+                                              ${Object.values(
+                                                message.tool_calls
+                                              ).map(
+                                                (toolCall) => html`
+                                                  <div class="tool-call">
+                                                    <div class="tool-name">
+                                                      ${toolCall.tool_name}
+                                                    </div>
                                                     <div class="tool-data">
                                                       <pre>
-${JSON.stringify(toolCall.result, null, 2)}</pre
-                                                      >
+${JSON.stringify(toolCall.tool_args, null, 2)}</pre>
                                                     </div>
-                                                  `
-                                                : nothing}
+                                                    ${
+                                                      toolCall.result
+                                                        ? html`
+                                                            <div
+                                                              class="tool-data"
+                                                            >
+                                                              <pre>
+${JSON.stringify(toolCall.result, null, 2)}</pre>
+                                                            </div>
+                                                          `
+                                                        : nothing
+                                                    }
+                                                  </div>
+                                                `
+                                              )}
                                             </div>
                                           `
-                                        )}
-                                      </div>
-                                    `
-                                  : nothing}
-                              </div>
-                            </div>
-                          `
-                        : nothing}
-                      ${message.text
-                        ? html`
-                            <ha-markdown
-                              breaks
-                              cache
-                              .content=${message.text}
-                            ></ha-markdown>
-                          `
-                        : nothing}
-                    </div>
-                  `
-                : nothing}
+                                        : nothing
+                                    }
+                                  </div>
+                                </div>
+                              `
+                            : nothing
+                        }
+                        ${
+                          message.text
+                            ? html`
+                                <ha-markdown
+                                  breaks
+                                  cache
+                                  .content=${message.text}
+                                ></ha-markdown>
+                              `
+                            : nothing
+                        }
+                      </div>
+                    `
+                  : nothing
+              }
             </div>
           `
         )}
@@ -280,49 +301,55 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre
           .label=${this._localize(`ui.dialogs.voice_command.input_label`)}
         >
           <div slot="end">
-            ${this._showSendButton || !supportsSTT
-              ? html`
-                  <ha-icon-button
-                    class="listening-icon"
-                    .path=${mdiSend}
-                    @click=${this._handleSendMessage}
-                    .disabled=${this._processing}
-                    .label=${this._localize(
-                      "ui.dialogs.voice_command.send_text"
-                    )}
-                  >
-                  </ha-icon-button>
-                `
-              : html`
-                  ${this._audioRecorder?.active
-                    ? html`
-                        <div class="bouncer">
-                          <div class="double-bounce1"></div>
-                          <div class="double-bounce2"></div>
-                        </div>
-                      `
-                    : nothing}
-
-                  <div class="listening-icon">
+            ${
+              this._showSendButton || !supportsSTT
+                ? html`
                     <ha-icon-button
-                      .path=${mdiMicrophone}
-                      @click=${this._handleListeningButton}
+                      class="listening-icon"
+                      .path=${mdiSend}
+                      @click=${this._handleSendMessage}
                       .disabled=${this._processing}
                       .label=${this._localize(
-                        "ui.dialogs.voice_command.start_listening"
+                        "ui.dialogs.voice_command.send_text"
                       )}
                     >
                     </ha-icon-button>
-                    ${!supportsMicrophone
-                      ? html`
-                          <ha-svg-icon
-                            .path=${mdiAlertCircle}
-                            class="unsupported"
-                          ></ha-svg-icon>
-                        `
-                      : null}
-                  </div>
-                `}
+                  `
+                : html`
+                    ${
+                      this._audioRecorder?.active
+                        ? html`
+                            <div class="bouncer">
+                              <div class="double-bounce1"></div>
+                              <div class="double-bounce2"></div>
+                            </div>
+                          `
+                        : nothing
+                    }
+
+                    <div class="listening-icon">
+                      <ha-icon-button
+                        .path=${mdiMicrophone}
+                        @click=${this._handleListeningButton}
+                        .disabled=${this._processing}
+                        .label=${this._localize(
+                          "ui.dialogs.voice_command.start_listening"
+                        )}
+                      >
+                      </ha-icon-button>
+                      ${
+                        !supportsMicrophone
+                          ? html`
+                              <ha-svg-icon
+                                .path=${mdiAlertCircle}
+                                class="unsupported"
+                              ></ha-svg-icon>
+                            `
+                          : null
+                      }
+                    </div>
+                  `
+            }
           </div>
         </ha-input>
       </div>

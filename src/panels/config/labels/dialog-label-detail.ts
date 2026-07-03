@@ -78,15 +78,19 @@ class DialogLabelDetail extends DirtyStateProviderMixin<LabelFormState>()(
     return html`
       <ha-dialog
         open
-        header-title=${this.params.entry
-          ? this.params.entry.name || this.params.entry.label_id
-          : this._i18n.localize("ui.dialogs.label-detail.new_label")}
+        header-title=${
+          this.params.entry
+            ? this.params.entry.name || this.params.entry.label_id
+            : this._i18n.localize("ui.dialogs.label-detail.new_label")
+        }
         .preventScrimClose=${this.isDirtyState}
       >
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="form">
             <ha-input
               autofocus
@@ -123,37 +127,43 @@ class DialogLabelDetail extends DirtyStateProviderMixin<LabelFormState>()(
         </div>
 
         <ha-dialog-footer slot="footer">
-          ${this.params.entry && this.params.removeEntry
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._deleteEntry}
-                  .disabled=${this._submitting}
-                >
-                  ${this._i18n.localize("ui.common.delete")}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  appearance="plain"
-                  slot="secondaryAction"
-                  @click=${this.closeDialog}
-                >
-                  ${this._i18n.localize("ui.common.cancel")}
-                </ha-button>
-              `}
+          ${
+            this.params.entry && this.params.removeEntry
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._deleteEntry}
+                    .disabled=${this._submitting}
+                  >
+                    ${this._i18n.localize("ui.common.delete")}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    appearance="plain"
+                    slot="secondaryAction"
+                    @click=${this.closeDialog}
+                  >
+                    ${this._i18n.localize("ui.common.cancel")}
+                  </ha-button>
+                `
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${this._submitting ||
-            !this._name ||
-            (!!this.params.entry && !this.isDirtyState)}
+            .disabled=${
+              this._submitting ||
+              !this._name ||
+              (!!this.params.entry && !this.isDirtyState)
+            }
           >
-            ${this.params.entry
-              ? this._i18n.localize("ui.common.update")
-              : this._i18n.localize("ui.common.create")}
+            ${
+              this.params.entry
+                ? this._i18n.localize("ui.common.update")
+                : this._i18n.localize("ui.common.create")
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

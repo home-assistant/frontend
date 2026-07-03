@@ -103,8 +103,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | ThermostatCardConfig
-      | undefined;
+      ThermostatCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -143,24 +142,26 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <ha-card>
         <p class="title">${name}</p>
         <div class="container">
-          ${domain === "water_heater"
-            ? html` <ha-state-control-water_heater-temperature
-                style=${styleMap({
-                  maxWidth: controlMaxWidth,
-                })}
-                prevent-interaction-on-scroll
-                show-current
-                .stateObj=${stateObj}
-              ></ha-state-control-water_heater-temperature>`
-            : html` <ha-state-control-climate-temperature
-                style=${styleMap({
-                  maxWidth: controlMaxWidth,
-                })}
-                prevent-interaction-on-scroll
-                .showCurrentAsPrimary=${this._config.show_current_as_primary}
-                show-secondary
-                .stateObj=${stateObj}
-              ></ha-state-control-climate-temperature>`}
+          ${
+            domain === "water_heater"
+              ? html` <ha-state-control-water_heater-temperature
+                  style=${styleMap({
+                    maxWidth: controlMaxWidth,
+                  })}
+                  prevent-interaction-on-scroll
+                  show-current
+                  .stateObj=${stateObj}
+                ></ha-state-control-water_heater-temperature>`
+              : html` <ha-state-control-climate-temperature
+                  style=${styleMap({
+                    maxWidth: controlMaxWidth,
+                  })}
+                  prevent-interaction-on-scroll
+                  .showCurrentAsPrimary=${this._config.show_current_as_primary}
+                  show-secondary
+                  .stateObj=${stateObj}
+                ></ha-state-control-climate-temperature>`
+          }
         </div>
         <ha-icon-button
           class="more-info"
@@ -171,16 +172,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           @click=${this._handleMoreInfo}
           tabindex="0"
         ></ha-icon-button>
-        ${this._config.features?.length
-          ? html`<hui-card-features
-              style=${styleMap({
-                "--feature-color": color,
-              })}
-              .hass=${this.hass}
-              .context=${this._featureContext}
-              .features=${this._config.features}
-            ></hui-card-features>`
-          : nothing}
+        ${
+          this._config.features?.length
+            ? html`<hui-card-features
+                style=${styleMap({
+                  "--feature-color": color,
+                })}
+                .hass=${this.hass}
+                .context=${this._featureContext}
+                .features=${this._config.features}
+              ></hui-card-features>`
+            : nothing
+        }
       </ha-card>
     `;
   }

@@ -87,14 +87,16 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         id="columns"
         class=${this.lovelace?.editMode ? "edit-mode" : ""}
       ></div>
-      ${this.lovelace?.editMode
-        ? html`
-            <ha-button size="l" @click=${this._addCard}>
-              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
-            </ha-button>
-          `
-        : ""}
+      ${
+        this.lovelace?.editMode
+          ? html`
+              <ha-button size="l" @click=${this._addCard}>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+              </ha-button>
+            `
+          : ""
+      }
     `;
   }
 
@@ -125,8 +127,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as
-        | HomeAssistant
-        | undefined;
+        HomeAssistant | undefined;
 
       if (this.hass!.dockedSidebar !== oldHass?.dockedSidebar) {
         this._updateColumns();
@@ -140,8 +141,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
-      | Lovelace
-      | undefined;
+      Lovelace | undefined;
 
     if (
       changedProperties.has("cards") ||

@@ -35,9 +35,7 @@ export class HaSelect extends LitElement {
   @property({ type: Boolean }) public clearable = false;
 
   @property({ attribute: false }) public options?:
-    | HaSelectOption[]
-    | string[]
-    | number[];
+    HaSelectOption[] | string[] | number[];
 
   @property() public label?: string;
 
@@ -95,32 +93,43 @@ export class HaSelect extends LitElement {
         @wa-hide=${this._handleHide}
       >
         ${this._renderField()}
-        ${this.options
-          ? this.options.map((option) => {
-              const simpleOption = ["string", "number"].includes(typeof option);
-              return html`
-                <ha-dropdown-item
-                  .value=${simpleOption ? option : option.value}
-                  .disabled=${simpleOption ? false : (option.disabled ?? false)}
-                  .selected=${this.value ===
-                  (simpleOption ? option : option.value)}
-                >
-                  ${option.iconPath
-                    ? html`<ha-svg-icon
-                        slot="icon"
-                        .path=${option.iconPath}
-                      ></ha-svg-icon>`
-                    : nothing}
-                  <div class="content">
-                    ${simpleOption ? option : option.label || option.value}
-                    ${option.secondary
-                      ? html`<div class="secondary">${option.secondary}</div>`
-                      : nothing}
-                  </div>
-                </ha-dropdown-item>
-              `;
-            })
-          : html`<slot></slot>`}
+        ${
+          this.options
+            ? this.options.map((option) => {
+                const simpleOption = ["string", "number"].includes(
+                  typeof option
+                );
+                return html`
+                  <ha-dropdown-item
+                    .value=${simpleOption ? option : option.value}
+                    .disabled=${simpleOption ? false : (option.disabled ?? false)}
+                    .selected=${
+                      this.value === (simpleOption ? option : option.value)
+                    }
+                  >
+                    ${
+                      option.iconPath
+                        ? html`<ha-svg-icon
+                            slot="icon"
+                            .path=${option.iconPath}
+                          ></ha-svg-icon>`
+                        : nothing
+                    }
+                    <div class="content">
+                      ${simpleOption ? option : option.label || option.value}
+                      ${
+                        option.secondary
+                          ? html`<div class="secondary">
+                              ${option.secondary}
+                            </div>`
+                          : nothing
+                      }
+                    </div>
+                  </ha-dropdown-item>
+                `;
+              })
+            : html`<slot></slot>`
+        }
       </ha-dropdown>
       ${this._renderHelper()}
     `;
@@ -141,10 +150,12 @@ export class HaSelect extends LitElement {
         .value=${valueLabel}
         .required=${this.required}
         .disabled=${this.disabled}
-        .hideClearIcon=${!this.clearable ||
-        this.required ||
-        this.disabled ||
-        !String(this.value)}
+        .hideClearIcon=${
+          !this.clearable ||
+          this.required ||
+          this.disabled ||
+          !String(this.value)
+        }
       >
       </ha-picker-field>
     `;

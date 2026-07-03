@@ -85,8 +85,9 @@ export class HaTTSPicker extends LitElement {
 
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass!.localize("ui.components.tts-picker.tts")}
+        .label=${
+          this.label || this.hass!.localize("ui.components.tts-picker.tts")
+        }
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}

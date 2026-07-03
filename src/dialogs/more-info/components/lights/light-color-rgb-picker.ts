@@ -98,72 +98,86 @@ class LightRgbColorPicker extends LitElement {
           @value-changed=${this._hsColorChanged}
           @cursor-moved=${this._hsColorCursorMoved}
           .value=${this._hsPickerValue}
-          .colorBrightness=${this._colorBrightnessSliderValue != null
-            ? (this._colorBrightnessSliderValue * 255) / 100
-            : undefined}
-          .wv=${this._wvSliderValue != null
-            ? (this._wvSliderValue * 255) / 100
-            : undefined}
-          .ww=${this._wwSliderValue != null
-            ? (this._wwSliderValue * 255) / 100
-            : undefined}
-          .cw=${this._cwSliderValue != null
-            ? (this._cwSliderValue * 255) / 100
-            : undefined}
+          .colorBrightness=${
+            this._colorBrightnessSliderValue != null
+              ? (this._colorBrightnessSliderValue * 255) / 100
+              : undefined
+          }
+          .wv=${
+            this._wvSliderValue != null
+              ? (this._wvSliderValue * 255) / 100
+              : undefined
+          }
+          .ww=${
+            this._wwSliderValue != null
+              ? (this._wwSliderValue * 255) / 100
+              : undefined
+          }
+          .cw=${
+            this._cwSliderValue != null
+              ? (this._cwSliderValue * 255) / 100
+              : undefined
+          }
           .minKelvin=${this.stateObj.attributes.min_color_temp_kelvin}
           .maxKelvin=${this.stateObj.attributes.max_color_temp_kelvin}
         >
         </ha-hs-color-picker>
       </div>
-      ${supportsRgbw || supportsRgbww
-        ? html`<ha-labeled-slider
-            labeled
-            .caption=${this._localize("ui.card.light.color_brightness")}
-            icon="mdi:brightness-7"
-            min="0"
-            max="100"
-            .value=${this._colorBrightnessSliderValue}
-            @value-changed=${this._colorBrightnessSliderChanged}
-          ></ha-labeled-slider>`
-        : nothing}
-      ${supportsRgbw
-        ? html`
-            <ha-labeled-slider
+      ${
+        supportsRgbw || supportsRgbww
+          ? html`<ha-labeled-slider
               labeled
-              .caption=${this._localize("ui.card.light.white_value")}
-              icon="mdi:file-word-box"
+              .caption=${this._localize("ui.card.light.color_brightness")}
+              icon="mdi:brightness-7"
               min="0"
               max="100"
-              .name=${"wv"}
-              .value=${this._wvSliderValue}
-              @value-changed=${this._wvSliderChanged}
-            ></ha-labeled-slider>
-          `
-        : nothing}
-      ${supportsRgbww
-        ? html`
-            <ha-labeled-slider
-              labeled
-              .caption=${this._localize("ui.card.light.cold_white_value")}
-              icon="mdi:file-word-box-outline"
-              min="0"
-              max="100"
-              .name=${"cw"}
-              .value=${this._cwSliderValue}
-              @value-changed=${this._wvSliderChanged}
-            ></ha-labeled-slider>
-            <ha-labeled-slider
-              labeled
-              .caption=${this._localize("ui.card.light.warm_white_value")}
-              icon="mdi:file-word-box"
-              min="0"
-              max="100"
-              .name=${"ww"}
-              .value=${this._wwSliderValue}
-              @value-changed=${this._wvSliderChanged}
-            ></ha-labeled-slider>
-          `
-        : nothing}
+              .value=${this._colorBrightnessSliderValue}
+              @value-changed=${this._colorBrightnessSliderChanged}
+            ></ha-labeled-slider>`
+          : nothing
+      }
+      ${
+        supportsRgbw
+          ? html`
+              <ha-labeled-slider
+                labeled
+                .caption=${this._localize("ui.card.light.white_value")}
+                icon="mdi:file-word-box"
+                min="0"
+                max="100"
+                .name=${"wv"}
+                .value=${this._wvSliderValue}
+                @value-changed=${this._wvSliderChanged}
+              ></ha-labeled-slider>
+            `
+          : nothing
+      }
+      ${
+        supportsRgbww
+          ? html`
+              <ha-labeled-slider
+                labeled
+                .caption=${this._localize("ui.card.light.cold_white_value")}
+                icon="mdi:file-word-box-outline"
+                min="0"
+                max="100"
+                .name=${"cw"}
+                .value=${this._cwSliderValue}
+                @value-changed=${this._wvSliderChanged}
+              ></ha-labeled-slider>
+              <ha-labeled-slider
+                labeled
+                .caption=${this._localize("ui.card.light.warm_white_value")}
+                icon="mdi:file-word-box"
+                min="0"
+                max="100"
+                .name=${"ww"}
+                .value=${this._wwSliderValue}
+                @value-changed=${this._wvSliderChanged}
+              ></ha-labeled-slider>
+            `
+          : nothing
+      }
     `;
   }
 

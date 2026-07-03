@@ -1,4 +1,5 @@
 import { mdiTuneVariant } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -12,6 +13,14 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
+const supportsHumidifierModesCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "humidifier" &&
+    supportsFeature(stateObj, HumidifierEntityFeature.MODES)
+  );
+};
+
 export const supportsHumidifierModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -20,11 +29,7 @@ export const supportsHumidifierModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "humidifier" &&
-    supportsFeature(stateObj, HumidifierEntityFeature.MODES)
-  );
+  return supportsHumidifierModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-humidifier-modes-card-feature")
@@ -63,9 +68,8 @@ class HuiHumidifierModesCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsHumidifierModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsHumidifierModesCardFeatureFromState(this._stateObj)
     );
   }
 }

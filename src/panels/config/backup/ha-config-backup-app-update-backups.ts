@@ -59,9 +59,11 @@ class HaConfigBackupAppUpdateBackups extends LitElement {
                   "ui.panel.config.backup.settings.app_update_backup.local_only"
                 )}
               </p>
-              ${this._error
-                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-                : nothing}
+              ${
+                this._error
+                  ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+                  : nothing
+              }
               <ha-backup-config-addon
                 .hass=${this.hass}
                 .supervisorUpdateConfig=${this._supervisorUpdateConfig}

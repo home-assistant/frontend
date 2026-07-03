@@ -65,8 +65,7 @@ export class HuiMediaPlayerPlaybackCardFeatureEditor
 
     const stateObj = this.context?.entity_id
       ? (this.hass.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
 
     const data = customizableListData(this._config, "controls");
@@ -87,8 +86,7 @@ export class HuiMediaPlayerPlaybackCardFeatureEditor
   private _valueChanged(ev: CustomEvent): void {
     const stateObj = this.context?.entity_id
       ? (this.hass!.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
     const defaults = getDefaultMediaPlayerControls(stateObj).filter(
       (control) =>

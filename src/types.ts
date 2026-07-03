@@ -154,10 +154,7 @@ export interface CalendarViewChanged {
 }
 
 export type FullCalendarView =
-  | "dayGridMonth"
-  | "dayGridWeek"
-  | "dayGridDay"
-  | "listWeek";
+  "dayGridMonth" | "dayGridWeek" | "dayGridDay" | "listWeek";
 
 export const THEME_MODES = ["auto", "light", "dark"] as const;
 export type ThemeMode = (typeof THEME_MODES)[number];

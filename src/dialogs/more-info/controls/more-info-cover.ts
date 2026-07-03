@@ -131,39 +131,45 @@ class MoreInfoCover extends LitElement {
           ${
             this._mode === "position"
               ? html`
-                  ${supportsPosition
-                    ? html`
-                        <ha-state-control-cover-position
-                          .stateObj=${this.stateObj}
-                        ></ha-state-control-cover-position>
-                      `
-                    : nothing}
-                  ${supportsTiltPosition
-                    ? html`
-                        <ha-state-control-cover-tilt-position
-                          .stateObj=${this.stateObj}
-                        ></ha-state-control-cover-tilt-position>
-                      `
-                    : nothing}
+                  ${
+                    supportsPosition
+                      ? html`
+                          <ha-state-control-cover-position
+                            .stateObj=${this.stateObj}
+                          ></ha-state-control-cover-position>
+                        `
+                      : nothing
+                  }
+                  ${
+                    supportsTiltPosition
+                      ? html`
+                          <ha-state-control-cover-tilt-position
+                            .stateObj=${this.stateObj}
+                          ></ha-state-control-cover-tilt-position>
+                        `
+                      : nothing
+                  }
                 `
               : nothing
           }
           ${
             this._mode === "button"
               ? html`
-                  ${supportsOpenCloseOnly
-                    ? html`
-                        <ha-state-control-cover-toggle
-                          .stateObj=${this.stateObj}
-                        ></ha-state-control-cover-toggle>
-                      `
-                    : supportsOpenClose || supportsTilt
+                  ${
+                    supportsOpenCloseOnly
                       ? html`
-                          <ha-state-control-cover-buttons
+                          <ha-state-control-cover-toggle
                             .stateObj=${this.stateObj}
-                          ></ha-state-control-cover-buttons>
+                          ></ha-state-control-cover-toggle>
                         `
-                      : nothing}
+                      : supportsOpenClose || supportsTilt
+                        ? html`
+                            <ha-state-control-cover-buttons
+                              .stateObj=${this.stateObj}
+                            ></ha-state-control-cover-buttons>
+                          `
+                        : nothing
+                  }
                 `
               : nothing
           }

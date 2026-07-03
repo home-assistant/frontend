@@ -12,9 +12,10 @@ class DialogApp extends DialogMixin<AppDialogParams>(LitElement) {
     }
     return html`<ha-dialog
       open
-      header-title=${this.params.localize(
-        "ui.panel.page-onboarding.welcome.download_app"
-      ) || "Click here to download the app"}
+      header-title=${
+        this.params.localize("ui.panel.page-onboarding.welcome.download_app") ||
+        "Click here to download the app"
+      }
     >
       <div>
         <div class="app-qr">

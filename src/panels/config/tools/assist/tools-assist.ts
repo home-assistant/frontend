@@ -25,7 +25,7 @@ interface SentenceParsingResult {
   result: AssistDebugResult | null;
 }
 
-@customElement("developer-tools-assist")
+@customElement("tools-assist")
 class HaPanelDevAssist extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -118,30 +118,32 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       <div class="content">
         <ha-card
           .header=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.assist.title"
+            "ui.panel.config.tools.tabs.assist.title"
           )}
           class="form"
         >
           <div class="card-content">
             <p class="description">
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.description"
+                "ui.panel.config.tools.tabs.assist.description"
               )}
             </p>
-            ${this.supportedLanguages
-              ? html`
-                  <ha-language-picker
-                    .languages=${this.supportedLanguages}
-                    .hass=${this.hass}
-                    .value=${this._language}
-                    @value-changed=${this._languageChanged}
-                  ></ha-language-picker>
-                `
-              : nothing}
+            ${
+              this.supportedLanguages
+                ? html`
+                    <ha-language-picker
+                      .languages=${this.supportedLanguages}
+                      .hass=${this.hass}
+                      .value=${this._language}
+                      @value-changed=${this._languageChanged}
+                    ></ha-language-picker>
+                  `
+                : nothing
+            }
             <ha-textarea
               resize="auto"
               .label=${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.sentences"
+                "ui.panel.config.tools.tabs.assist.sentences"
               )}
               id="sentences-input"
               @input=${this._textAreaInput}
@@ -155,32 +157,40 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
               .disabled=${!this._language || !this._validInput}
             >
               ${this.hass.localize(
-                "ui.panel.config.developer-tools.tabs.assist.parse_sentences"
+                "ui.panel.config.tools.tabs.assist.parse_sentences"
               )}
             </ha-button>
           </div>
         </ha-card>
 
-        ${this._results.length
-          ? html`
-              <div class="result-toolbar">
-                <ha-button
-                  appearance="filled"
-                  @click=${this._clear}
-                  variant="danger"
-                >
-                  <ha-svg-icon slot="start" .path=${mdiTrashCan}></ha-svg-icon>
-                  ${this.hass.localize("ui.common.clear")}
-                </ha-button>
-                <ha-button appearance="filled" @click=${this._download}>
-                  <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.assist.download_results"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : ""}
+        ${
+          this._results.length
+            ? html`
+                <div class="result-toolbar">
+                  <ha-button
+                    appearance="filled"
+                    @click=${this._clear}
+                    variant="danger"
+                  >
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiTrashCan}
+                    ></ha-svg-icon>
+                    ${this.hass.localize("ui.common.clear")}
+                  </ha-button>
+                  <ha-button appearance="filled" @click=${this._download}>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiDownload}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.tools.tabs.assist.download_results"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : ""
+        }
         ${this._results.map((r) => {
           const { sentence, result, language } = r;
           const matched = result != null;
@@ -194,25 +204,27 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                 </div>
                 <div class="info">
                   ${this.hass.localize(
-                    "ui.panel.config.developer-tools.tabs.assist.language"
+                    "ui.panel.config.tools.tabs.assist.language"
                   )}:
                   ${formatLanguageCode(language, this.hass.locale)}
                   (${language})
                 </div>
-                ${result
-                  ? html`
-                      <ha-code-editor
-                        mode="yaml"
-                        .value=${dump(result).trimRight()}
-                        read-only
-                        dir="ltr"
-                      ></ha-code-editor>
-                    `
-                  : html`<ha-alert alert-type="error">
-                      ${this.hass.localize(
-                        "ui.panel.config.developer-tools.tabs.assist.no_match"
-                      )}
-                    </ha-alert>`}
+                ${
+                  result
+                    ? html`
+                        <ha-code-editor
+                          mode="yaml"
+                          .value=${dump(result).trimRight()}
+                          read-only
+                          dir="ltr"
+                        ></ha-code-editor>
+                      `
+                    : html`<ha-alert alert-type="error">
+                        ${this.hass.localize(
+                          "ui.panel.config.tools.tabs.assist.no_match"
+                        )}
+                      </ha-alert>`
+                }
               </div>
             </ha-card>
           `;
@@ -292,6 +304,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "developer-tools-assist": HaPanelDevAssist;
+    "tools-assist": HaPanelDevAssist;
   }
 }

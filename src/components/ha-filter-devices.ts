@@ -101,37 +101,41 @@ export class HaFilterDevices extends LitElement {
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.devices.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                  @keydown=${this._handleClearFilterKeydown}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                    @keydown=${this._handleClearFilterKeydown}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-                @keydown=${this._handleSearchKeydown}
-              >
-              </ha-input-search>
-              <ha-list-selectable-virtualized
-                multi
-                .rows=${this._devices(
-                  this._devicesReg,
-                  this._filter || "",
-                  this._localize,
-                  this._states,
-                  this._i18n.locale.language
-                )}
-                .rowRenderer=${this._renderItem}
-                @ha-list-item-selected=${this._handleAdded}
-                @ha-list-item-deselected=${this._handleRemoved}
-              ></ha-list-selectable-virtualized>`
-          : nothing}
+        ${
+          this._shouldRender
+            ? html`<ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                  @keydown=${this._handleSearchKeydown}
+                >
+                </ha-input-search>
+                <ha-list-selectable-virtualized
+                  multi
+                  .rows=${this._devices(
+                    this._devicesReg,
+                    this._filter || "",
+                    this._localize,
+                    this._states,
+                    this._i18n.locale.language
+                  )}
+                  .rowRenderer=${this._renderItem}
+                  @ha-list-item-selected=${this._handleAdded}
+                  @ha-list-item-deselected=${this._handleRemoved}
+                ></ha-list-selectable-virtualized>`
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

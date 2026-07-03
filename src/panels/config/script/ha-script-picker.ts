@@ -430,9 +430,9 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config"
+        }
         .route=${this.route}
         .tabs=${configSections.automations}
         .searchLabel=${this.hass.localize(
@@ -452,14 +452,16 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        .filters=${Object.values(this._filters).filter((filter) =>
-          Array.isArray(filter.value)
-            ? filter.value.length
-            : filter.value &&
-              Object.values(filter.value).some((val) =>
-                Array.isArray(val) ? val.length : val
-              )
-        ).length}
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter.value)
+              ? filter.value.length
+              : filter.value &&
+                Object.values(filter.value).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
         .columns=${this._columns(this.hass.localize, scripts)}
         .data=${scripts}
         .empty=${!this.scripts.length}
@@ -546,138 +548,156 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-blueprints>
 
-        ${!this.narrow
-          ? html`<ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._handleBulkCategory}
-              >
-                <ha-assist-chip
-                  slot="trigger"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.picker.bulk_actions.move_category"
-                  )}
+        ${
+          !this.narrow
+            ? html`<ha-dropdown
+                  slot="selection-bar"
+                  @wa-select=${this._handleBulkCategory}
                 >
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiMenuDown}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-                ${this._renderCategoryItems()}
-              </ha-dropdown>
-              ${labelsInOverflow
-                ? nothing
-                : html`<ha-dropdown
-                    slot="selection-bar"
-                    @wa-select=${this._handleBulkLabel}
-                  >
-                    <ha-assist-chip
-                      slot="trigger"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.picker.bulk_actions.add_label"
-                      )}
-                    >
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiMenuDown}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>
-                    ${this._renderLabelItems()}
-                  </ha-dropdown>`}
-              ${areasInOverflow
-                ? nothing
-                : html`<ha-dropdown
-                    slot="selection-bar"
-                    @wa-select=${this._handleBulkArea}
-                  >
-                    <ha-assist-chip
-                      slot="trigger"
-                      .label=${this.hass.localize(
-                        "ui.panel.config.devices.picker.bulk_actions.move_area"
-                      )}
-                    >
-                      <ha-svg-icon
-                        slot="trailing-icon"
-                        .path=${mdiMenuDown}
-                      ></ha-svg-icon>
-                    </ha-assist-chip>
-                    ${this._renderAreaItems()}
-                  </ha-dropdown>`}`
-          : nothing}
-        ${this.narrow || areasInOverflow
-          ? html` <ha-dropdown
-              slot="selection-bar"
-              @wa-select=${this._handleBulkAction}
-            >
-              ${this.narrow
-                ? html`<ha-assist-chip
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
-                    )}
+                  <ha-assist-chip
                     slot="trigger"
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.move_category"
+                    )}
                   >
                     <ha-svg-icon
                       slot="trailing-icon"
                       .path=${mdiMenuDown}
                     ></ha-svg-icon>
-                  </ha-assist-chip>`
-                : html`<ha-icon-button
-                    .path=${mdiDotsVertical}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
-                    )}
-                    slot="trigger"
-                  ></ha-icon-button>`}
-              ${this.narrow
-                ? html`<ha-dropdown-item>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_actions.move_category"
-                    )}
-                    ${this._renderCategoryItems("submenu")}
-                  </ha-dropdown-item>`
-                : nothing}
-              ${this.narrow || labelsInOverflow
-                ? html`<ha-dropdown-item>
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.picker.bulk_actions.add_label"
-                    )}
-                    ${this._renderLabelItems("submenu")}
-                  </ha-dropdown-item>`
-                : nothing}
-              ${this.narrow || areasInOverflow
-                ? html`<ha-dropdown-item>
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.picker.bulk_actions.move_area"
-                    )}
-                    ${this._renderAreaItems("submenu")}
-                  </ha-dropdown-item>`
-                : nothing}
-            </ha-dropdown>`
-          : nothing}
-        ${!this.scripts.length
-          ? html` <div class="empty" slot="empty">
-              <ha-svg-icon .path=${mdiScriptText}></ha-svg-icon>
-              <h1>
-                ${this.hass.localize(
-                  "ui.panel.config.script.picker.empty_header"
-                )}
-              </h1>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.script.picker.empty_text"
-                )}
-              </p>
-              <ha-button
-                appearance="plain"
-                href=${documentationUrl(this.hass, "/docs/script/editor/")}
-                target="_blank"
-                rel="noreferrer"
-                size="s"
+                  </ha-assist-chip>
+                  ${this._renderCategoryItems()}
+                </ha-dropdown>
+                ${
+                  labelsInOverflow
+                    ? nothing
+                    : html`<ha-dropdown
+                        slot="selection-bar"
+                        @wa-select=${this._handleBulkLabel}
+                      >
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.picker.bulk_actions.add_label"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${this._renderLabelItems()}
+                      </ha-dropdown>`
+                }
+                ${
+                  areasInOverflow
+                    ? nothing
+                    : html`<ha-dropdown
+                        slot="selection-bar"
+                        @wa-select=${this._handleBulkArea}
+                      >
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.devices.picker.bulk_actions.move_area"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${this._renderAreaItems()}
+                      </ha-dropdown>`
+                }`
+            : nothing
+        }
+        ${
+          this.narrow || areasInOverflow
+            ? html` <ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._handleBulkAction}
               >
-                ${this.hass.localize("ui.panel.config.common.learn_more")}
-                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-              </ha-button>
-            </div>`
-          : nothing}
+                ${
+                  this.narrow
+                    ? html`<ha-assist-chip
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_action"
+                        )}
+                        slot="trigger"
+                      >
+                        <ha-svg-icon
+                          slot="trailing-icon"
+                          .path=${mdiMenuDown}
+                        ></ha-svg-icon>
+                      </ha-assist-chip>`
+                    : html`<ha-icon-button
+                        .path=${mdiDotsVertical}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_action"
+                        )}
+                        slot="trigger"
+                      ></ha-icon-button>`
+                }
+                ${
+                  this.narrow
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.move_category"
+                        )}
+                        ${this._renderCategoryItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+                ${
+                  this.narrow || labelsInOverflow
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.bulk_actions.add_label"
+                        )}
+                        ${this._renderLabelItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+                ${
+                  this.narrow || areasInOverflow
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.picker.bulk_actions.move_area"
+                        )}
+                        ${this._renderAreaItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+              </ha-dropdown>`
+            : nothing
+        }
+        ${
+          !this.scripts.length
+            ? html` <div class="empty" slot="empty">
+                <ha-svg-icon .path=${mdiScriptText}></ha-svg-icon>
+                <h1>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.picker.empty_header"
+                  )}
+                </h1>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.script.picker.empty_text"
+                  )}
+                </p>
+                <ha-button
+                  appearance="plain"
+                  href=${documentationUrl(this.hass, "/docs/script/editor/")}
+                  target="_blank"
+                  rel="noreferrer"
+                  size="s"
+                >
+                  ${this.hass.localize("ui.panel.config.common.learn_more")}
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                </ha-button>
+              </div>`
+            : nothing
+        }
         <ha-button slot="fab" size="l" @click=${this._createNew}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.script.picker.add_script")}
@@ -933,9 +953,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         }),
         text: html`<pre>
 ${rejected
-            .map((r) => r.reason.message || r.reason.code || r.reason)
-            .join("\r\n")}</pre
-        >`,
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
       });
     }
   }
@@ -976,9 +995,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-            .map((r) => r.reason.message || r.reason.code || r.reason)
-            .join("\r\n")}</pre
-        >`,
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1186,9 +1204,8 @@ ${rejected
         }),
         text: html`<pre>
 ${rejected
-            .map((r) => r.reason.message || r.reason.code || r.reason)
-            .join("\r\n")}</pre
-        >`,
+  .map((r) => r.reason.message || r.reason.code || r.reason)
+  .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1210,9 +1227,11 @@ ${rejected
             .slot=${slot}
             .value=${`category_${category.category_id}`}
           >
-            ${category.icon
-              ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
-              : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`}
+            ${
+              category.icon
+                ? html`<ha-icon slot="icon" .icon=${category.icon}></ha-icon>`
+                : html`<ha-svg-icon slot="icon" .path=${mdiTag}></ha-svg-icon>`
+            }
             ${category.name}
           </ha-dropdown-item>`
       )}
@@ -1247,9 +1266,11 @@ ${rejected
             .indeterminate=${partial}
           ></ha-checkbox>
           <ha-label .color=${label.color} .description=${label.description}>
-            ${label.icon
-              ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
-              : nothing}
+            ${
+              label.icon
+                ? html`<ha-icon slot="icon" .icon=${label.icon}></ha-icon>`
+                : nothing
+            }
             ${label.name}
           </ha-label>
         </ha-dropdown-item>`;
@@ -1263,12 +1284,14 @@ ${rejected
     html`${Object.values(this.hass.areas).map(
         (area) =>
           html`<ha-dropdown-item .slot=${slot} .value=${`area_${area.area_id}`}>
-            ${area.icon
-              ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
-              : html`<ha-svg-icon
-                  slot="icon"
-                  .path=${mdiTextureBox}
-                ></ha-svg-icon>`}
+            ${
+              area.icon
+                ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
+                : html`<ha-svg-icon
+                    slot="icon"
+                    .path=${mdiTextureBox}
+                  ></ha-svg-icon>`
+            }
             ${area.name}
           </ha-dropdown-item>`
       )}

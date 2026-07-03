@@ -42,8 +42,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   public assistConfiguration?: AssistSatelliteConfiguration;
 
   @property({ attribute: false }) public localOption!:
-    | "focused_local"
-    | "full_local";
+    "focused_local" | "full_local";
 
   @property({ attribute: false }) public language!: string;
 
@@ -60,72 +59,40 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
   protected override render() {
     return html`<div class="content">
-      ${this._state === "INSTALLING"
-        ? html`<img
-              src="/static/images/voice-assistant/update.png"
-              alt="Casita Home Assistant loading logo"
-            />
-            <h1>
-              ${this.hass.localize(
-                "ui.panel.config.voice_assistants.satellite_wizard.local.title"
-              )}
-            </h1>
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.voice_assistants.satellite_wizard.local.secondary"
-              )}
-            </p>
-            <ha-spinner></ha-spinner>
-            <p>
-              ${this._detailState || "Installation can take several minutes"}
-            </p>`
-        : this._state === "ERROR"
+      ${
+        this._state === "INSTALLING"
           ? html`<img
-                src="/static/images/voice-assistant/error.png"
-                alt="Casita Home Assistant error logo"
+                src="/static/images/voice-assistant/update.png"
+                alt="Casita Home Assistant loading logo"
               />
               <h1>
                 ${this.hass.localize(
-                  "ui.panel.config.voice_assistants.satellite_wizard.local.failed_title"
+                  "ui.panel.config.voice_assistants.satellite_wizard.local.title"
                 )}
               </h1>
-              <p>${this._error}</p>
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.voice_assistants.satellite_wizard.local.failed_secondary"
+                  "ui.panel.config.voice_assistants.satellite_wizard.local.secondary"
                 )}
               </p>
-              <ha-button appearance="plain" size="s" @click=${this._prevStep}
-                >${this.hass.localize("ui.common.back")}</ha-button
-              >
-              <ha-button
-                href=${documentationUrl(
-                  this.hass,
-                  "/voice_control/voice_remote_local_assistant/"
-                )}
-                target="_blank"
-                rel="noreferrer noopener"
-                size="s"
-                appearance="plain"
-              >
-                <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
-                ${this.hass.localize(
-                  "ui.panel.config.common.learn_more"
-                )}</ha-button
-              >`
-          : this._state === "NOT_SUPPORTED"
+              <ha-spinner></ha-spinner>
+              <p>
+                ${this._detailState || "Installation can take several minutes"}
+              </p>`
+          : this._state === "ERROR"
             ? html`<img
                   src="/static/images/voice-assistant/error.png"
                   alt="Casita Home Assistant error logo"
                 />
                 <h1>
                   ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_title"
+                    "ui.panel.config.voice_assistants.satellite_wizard.local.failed_title"
                   )}
                 </h1>
+                <p>${this._error}</p>
                 <p>
                   ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_secondary"
+                    "ui.panel.config.voice_assistants.satellite_wizard.local.failed_secondary"
                   )}
                 </p>
                 <ha-button appearance="plain" size="s" @click=${this._prevStep}
@@ -138,15 +105,55 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                   )}
                   target="_blank"
                   rel="noreferrer noopener"
-                  appearance="plain"
                   size="s"
+                  appearance="plain"
                 >
                   <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.config.common.learn_more"
                   )}</ha-button
                 >`
-            : nothing}
+            : this._state === "NOT_SUPPORTED"
+              ? html`<img
+                    src="/static/images/voice-assistant/error.png"
+                    alt="Casita Home Assistant error logo"
+                  />
+                  <h1>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_title"
+                    )}
+                  </h1>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.satellite_wizard.local.not_supported_secondary"
+                    )}
+                  </p>
+                  <ha-button
+                    appearance="plain"
+                    size="s"
+                    @click=${this._prevStep}
+                    >${this.hass.localize("ui.common.back")}</ha-button
+                  >
+                  <ha-button
+                    href=${documentationUrl(
+                      this.hass,
+                      "/voice_control/voice_remote_local_assistant/"
+                    )}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    appearance="plain"
+                    size="s"
+                  >
+                    <ha-svg-icon
+                      .path=${mdiOpenInNew}
+                      slot="start"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.common.learn_more"
+                    )}</ha-button
+                  >`
+              : nothing
+      }
     </div>`;
   }
 

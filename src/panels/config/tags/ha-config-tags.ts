@@ -99,12 +99,14 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         sortable: true,
         direction: "desc",
         template: (tag) => html`
-          ${tag.last_scanned_datetime
-            ? html`<ha-relative-time
-                .datetime=${tag.last_scanned_datetime}
-                capitalize
-              ></ha-relative-time>`
-            : this.hass.localize("ui.panel.config.tag.never_scanned")}
+          ${
+            tag.last_scanned_datetime
+              ? html`<ha-relative-time
+                  .datetime=${tag.last_scanned_datetime}
+                  capitalize
+                ></ha-relative-time>`
+              : this.hass.localize("ui.panel.config.tag.never_scanned")
+          }
         `,
       },
     };

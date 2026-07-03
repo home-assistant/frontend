@@ -130,9 +130,11 @@ export class BluetoothNetworkVisualization extends LitElement {
         )}
         back-path="/config/bluetooth/dashboard"
       >
-        ${this.narrow
-          ? html`<div slot="header">${this._renderInputSearch()}</div>`
-          : nothing}
+        ${
+          this.narrow
+            ? html`<div slot="header">${this._renderInputSearch()}</div>`
+            : nothing
+        }
         <ha-network-graph
           .hass=${this.hass}
           .searchFilter=${this._searchFilter}
@@ -236,8 +238,7 @@ export class BluetoothNetworkVisualization extends LitElement {
       const links: NetworkLink[] = [];
       Object.values(scanners).forEach((scanner) => {
         const scannerDevice = this._sourceDevices[scanner.source] as
-          | DeviceRegistryEntry
-          | undefined;
+          DeviceRegistryEntry | undefined;
         const area = scannerDevice
           ? getDeviceArea(scannerDevice, this.hass.areas)
           : undefined;
@@ -279,8 +280,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           return;
         }
         const device = this._sourceDevices[node.address] as
-          | DeviceRegistryEntry
-          | undefined;
+          DeviceRegistryEntry | undefined;
         const area = device
           ? getDeviceArea(device, this.hass.areas)
           : undefined;
@@ -337,10 +337,14 @@ export class BluetoothNetworkVisualization extends LitElement {
       const sourceName = this._getBluetoothDeviceName(source);
       const targetName = this._getBluetoothDeviceName(target);
       return html`${sourceName} →
-      ${targetName}${source !== CORE_SOURCE_ID
-        ? html` <b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b>
-            ${value}`
-        : nothing}`;
+      ${targetName}${
+        source !== CORE_SOURCE_ID
+          ? html` <b
+                >${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b
+              >
+              ${value}`
+          : nothing
+      }`;
     }
     const { id: address } = data as any;
     const name = this._getBluetoothDeviceName(address);

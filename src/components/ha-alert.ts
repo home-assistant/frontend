@@ -33,10 +33,7 @@ class HaAlert extends LitElement {
   @property() public title = "";
 
   @property({ attribute: "alert-type" }) public alertType:
-    | "info"
-    | "warning"
-    | "error"
-    | "success" = "info";
+    "info" | "warning" | "error" | "success" = "info";
 
   @property({ type: Boolean }) public dismissable = false;
 
@@ -61,20 +58,24 @@ class HaAlert extends LitElement {
         </div>
         <div class=${classMap({ content: true, narrow: this.narrow })}>
           <div class="main-content">
-            ${this.title
-              ? html`<div class="title">${this.title}</div>`
-              : nothing}
+            ${
+              this.title
+                ? html`<div class="title">${this.title}</div>`
+                : nothing
+            }
             <slot></slot>
           </div>
           <div class="action">
             <slot name="action">
-              ${this.dismissable
-                ? html`<ha-icon-button
-                    @click=${this._dismissClicked}
-                    .label=${this._localize?.("ui.common.dismiss_alert")}
-                    .path=${mdiClose}
-                  ></ha-icon-button>`
-                : nothing}
+              ${
+                this.dismissable
+                  ? html`<ha-icon-button
+                      @click=${this._dismissClicked}
+                      .label=${this._localize?.("ui.common.dismiss_alert")}
+                      .path=${mdiClose}
+                    ></ha-icon-button>`
+                  : nothing
+              }
             </slot>
           </div>
         </div>

@@ -47,23 +47,77 @@ class HaDomainIntegrations extends LitElement {
 
   protected render() {
     return html`<ha-list-base>
-      ${this.flowsInProgress?.length
-        ? html`<h3>
-              ${this.hass.localize("ui.panel.config.integrations.discovered")}
-            </h3>
-            ${this.flowsInProgress.map(
-              (flow) =>
-                html`<ha-list-item-button
-                  .flow=${flow}
-                  @click=${this._flowInProgressPicked}
+      ${
+        this.flowsInProgress?.length
+          ? html`<h3>
+                ${this.hass.localize("ui.panel.config.integrations.discovered")}
+              </h3>
+              ${this.flowsInProgress.map(
+                (flow) =>
+                  html`<ha-list-item-button
+                    .flow=${flow}
+                    @click=${this._flowInProgressPicked}
+                  >
+                    <img
+                      alt=""
+                      slot="start"
+                      loading="lazy"
+                      src=${brandsUrl(
+                        {
+                          domain: flow.handler,
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                    />
+                    <span slot="headline"
+                      >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
+                    >
+                    <span slot="supporting-text"
+                      >${domainToName(this.hass.localize, flow.handler)}</span
+                    >
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-list-item-button>`
+              )}
+              <wa-divider></wa-divider>
+              ${
+                this.integration &&
+                "integrations" in this.integration &&
+                this.integration.integrations
+                  ? html`<h3>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.available_integrations"
+                      )}
+                    </h3>`
+                  : nothing
+              }`
+          : nothing
+      }
+      ${
+        this.integration?.iot_standards
+          ? this.integration.iot_standards
+              .filter((standard) =>
+                (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
+                  standardToDomain[standard] || standard
+                )
+              )
+              .map((standard) => {
+                const domain: (typeof PROTOCOL_INTEGRATIONS)[number] =
+                  standardToDomain[standard] || standard;
+                return html`<ha-list-item-button
+                  .domain=${domain}
+                  @click=${this._standardPicked}
                 >
                   <img
-                    alt=""
                     slot="start"
                     loading="lazy"
+                    alt=""
                     src=${brandsUrl(
                       {
-                        domain: flow.handler,
+                        domain,
                         type: "icon",
                         darkOptimized: this.hass.themes?.darkMode,
                       },
@@ -73,188 +127,150 @@ class HaDomainIntegrations extends LitElement {
                     referrerpolicy="no-referrer"
                   />
                   <span slot="headline"
-                    >${localizeConfigFlowTitle(this.hass.localize, flow)}</span
-                  >
-                  <span slot="supporting-text"
-                    >${domainToName(this.hass.localize, flow.handler)}</span
+                    >${this.hass.localize(
+                      `ui.panel.config.integrations.add_${domain}_device`
+                    )}</span
                   >
                   <ha-icon-next slot="end"></ha-icon-next>
-                </ha-list-item-button>`
-            )}
-            <wa-divider></wa-divider>
-            ${this.integration &&
-            "integrations" in this.integration &&
-            this.integration.integrations
-              ? html`<h3>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.available_integrations"
-                  )}
-                </h3>`
-              : nothing}`
-        : nothing}
-      ${this.integration?.iot_standards
-        ? this.integration.iot_standards
-            .filter((standard) =>
-              (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
-                standardToDomain[standard] || standard
+                </ha-list-item-button>`;
+              })
+          : ""
+      }
+      ${
+        this.integration &&
+        "integrations" in this.integration &&
+        this.integration.integrations
+          ? Object.entries(this.integration.integrations)
+              .filter(([, val]) => val.integration_type !== "hardware")
+              .sort((a, b) => {
+                if (a[1].config_flow && !b[1].config_flow) {
+                  return -1;
+                }
+                if (b[1].config_flow && !a[1].config_flow) {
+                  return 0;
+                }
+                return caseInsensitiveStringCompare(
+                  a[1].name || domainToName(this.hass.localize, a[0]),
+                  b[1].name || domainToName(this.hass.localize, b[0]),
+                  this.hass.locale.language
+                );
+              })
+              .map(
+                ([dom, val]) =>
+                  html`<ha-integration-list-item
+                    .domain=${dom}
+                    .integration=${{
+                      ...val,
+                      domain: dom,
+                      name: val.name || domainToName(this.hass.localize, dom),
+                      is_built_in: val.is_built_in !== false,
+                      cloud: val.iot_class?.startsWith("cloud_"),
+                    }}
+                    @click=${this._integrationPicked}
+                  >
+                  </ha-integration-list-item>`
               )
-            )
-            .map((standard) => {
-              const domain: (typeof PROTOCOL_INTEGRATIONS)[number] =
-                standardToDomain[standard] || standard;
-              return html`<ha-list-item-button
-                .domain=${domain}
-                @click=${this._standardPicked}
-              >
-                <img
-                  slot="start"
-                  loading="lazy"
-                  alt=""
-                  src=${brandsUrl(
-                    {
-                      domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    },
-                    this.hass.auth.data.hassUrl
-                  )}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-                <span slot="headline"
-                  >${this.hass.localize(
-                    `ui.panel.config.integrations.add_${domain}_device`
-                  )}</span
-                >
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-list-item-button>`;
-            })
-        : ""}
-      ${this.integration &&
-      "integrations" in this.integration &&
-      this.integration.integrations
-        ? Object.entries(this.integration.integrations)
-            .filter(([, val]) => val.integration_type !== "hardware")
-            .sort((a, b) => {
-              if (a[1].config_flow && !b[1].config_flow) {
-                return -1;
-              }
-              if (b[1].config_flow && !a[1].config_flow) {
-                return 0;
-              }
-              return caseInsensitiveStringCompare(
-                a[1].name || domainToName(this.hass.localize, a[0]),
-                b[1].name || domainToName(this.hass.localize, b[0]),
-                this.hass.locale.language
-              );
-            })
-            .map(
-              ([dom, val]) =>
-                html`<ha-integration-list-item
-                  .domain=${dom}
-                  .integration=${{
-                    ...val,
-                    domain: dom,
-                    name: val.name || domainToName(this.hass.localize, dom),
-                    is_built_in: val.is_built_in !== false,
-                    cloud: val.iot_class?.startsWith("cloud_"),
-                  }}
-                  @click=${this._integrationPicked}
-                >
-                </ha-integration-list-item>`
-            )
-        : ""}
-      ${(PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
-        ? html`<ha-list-item-button
-            .domain=${this.domain}
-            @click=${this._standardPicked}
-          >
-            <img
-              slot="start"
-              loading="lazy"
-              alt=""
-              src=${brandsUrl(
-                {
-                  domain: this.domain,
-                  type: "icon",
-                  darkOptimized: this.hass.themes?.darkMode,
-                },
-                this.hass.auth.data.hassUrl
-              )}
-              crossorigin="anonymous"
-              referrerpolicy="no-referrer"
-            />
-            <span slot="headline"
-              >${this.hass.localize(
-                `ui.panel.config.integrations.add_${
-                  this.domain as (typeof PROTOCOL_INTEGRATIONS)[number]
-                }_device`
-              )}</span
+          : ""
+      }
+      ${
+        (PROTOCOL_INTEGRATIONS as readonly string[]).includes(this.domain)
+          ? html`<ha-list-item-button
+              .domain=${this.domain}
+              @click=${this._standardPicked}
             >
-            <ha-icon-next slot="end"></ha-icon-next>
-          </ha-list-item-button>`
-        : ""}
-      ${this.integration &&
-      "config_flow" in this.integration &&
-      this.integration.config_flow
-        ? html`${this.flowsInProgress?.length
-            ? html`<ha-list-item-button
-                .domain=${this.domain}
-                @click=${this._integrationPicked}
-                .integration=${{
-                  ...this.integration,
-                  domain: this.domain,
-                  name:
-                    this.integration.name ||
-                    domainToName(this.hass.localize, this.domain),
-                  is_built_in: this.integration.is_built_in !== false,
-                  cloud: this.integration.iot_class?.startsWith("cloud_"),
-                }}
+              <img
+                slot="start"
+                loading="lazy"
+                alt=""
+                src=${brandsUrl(
+                  {
+                    domain: this.domain,
+                    type: "icon",
+                    darkOptimized: this.hass.themes?.darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+              />
+              <span slot="headline"
+                >${this.hass.localize(
+                  `ui.panel.config.integrations.add_${
+                    this.domain as (typeof PROTOCOL_INTEGRATIONS)[number]
+                  }_device`
+                )}</span
               >
-                <span slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.new_flow",
-                    {
-                      integration:
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+          : ""
+      }
+      ${
+        this.integration &&
+        "config_flow" in this.integration &&
+        this.integration.config_flow
+          ? html`${
+              this.flowsInProgress?.length
+                ? html`<ha-list-item-button
+                    .domain=${this.domain}
+                    @click=${this._integrationPicked}
+                    .integration=${{
+                      ...this.integration,
+                      domain: this.domain,
+                      name:
                         this.integration.name ||
                         domainToName(this.hass.localize, this.domain),
-                    }
-                  )}
-                </span>
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-list-item-button>`
-            : html`<ha-integration-list-item
-                .domain=${this.domain}
-                .integration=${{
-                  ...this.integration,
-                  domain: this.domain,
-                  name:
-                    this.integration.name ||
-                    domainToName(this.hass.localize, this.domain),
-                  is_built_in: this.integration.is_built_in !== false,
-                  cloud: this.integration.iot_class?.startsWith("cloud_"),
-                }}
-                @click=${this._integrationPicked}
+                      is_built_in: this.integration.is_built_in !== false,
+                      cloud: this.integration.iot_class?.startsWith("cloud_"),
+                    }}
+                  >
+                    <span slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.new_flow",
+                        {
+                          integration:
+                            this.integration.name ||
+                            domainToName(this.hass.localize, this.domain),
+                        }
+                      )}
+                    </span>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-list-item-button>`
+                : html`<ha-integration-list-item
+                    .domain=${this.domain}
+                    .integration=${{
+                      ...this.integration,
+                      domain: this.domain,
+                      name:
+                        this.integration.name ||
+                        domainToName(this.hass.localize, this.domain),
+                      is_built_in: this.integration.is_built_in !== false,
+                      cloud: this.integration.iot_class?.startsWith("cloud_"),
+                    }}
+                    @click=${this._integrationPicked}
+                  >
+                  </ha-integration-list-item>`
+            }`
+          : ""
+      }
+      ${
+        this.showManageLink &&
+        // Only show manage link if not already on the integrations dashboard
+        !location.pathname.startsWith("/config/integrations")
+          ? html`<ha-list-item-button @click=${this._manageDiscovered}>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.manage_discovered"
+                )}</span
               >
-              </ha-integration-list-item>`}`
-        : ""}
-      ${this.showManageLink &&
-      // Only show manage link if not already on the integrations dashboard
-      !location.pathname.startsWith("/config/integrations")
-        ? html`<ha-list-item-button @click=${this._manageDiscovered}>
-            <span slot="headline"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.manage_discovered"
-              )}</span
-            >
-            <span slot="supporting-text"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.manage_discovered_description"
-              )}</span
-            >
-            <ha-icon-next slot="end"></ha-icon-next>
-          </ha-list-item-button>`
-        : nothing}
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.manage_discovered_description"
+                )}</span
+              >
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>`
+          : nothing
+      }
     </ha-list-base> `;
   }
 

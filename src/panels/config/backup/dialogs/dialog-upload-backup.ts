@@ -82,9 +82,11 @@ export class DialogUploadBackup
         .preventScrimClose=${this.isDirtyState || this._uploading}
         @closed=${this._dialogClosed}
       >
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-file-upload
           .uploading=${this._uploading}
           .icon=${mdiFolderUpload}

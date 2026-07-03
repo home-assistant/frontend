@@ -59,9 +59,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
-        ${this.narrow
-          ? html`<div slot="header">${this._renderInputSearch()}</div>`
-          : nothing}
+        ${
+          this.narrow
+            ? html`<div slot="header">${this._renderInputSearch()}</div>`
+            : nothing
+        }
         <ha-network-graph
           .hass=${this.hass}
           .searchFilter=${this._searchFilter}
@@ -145,41 +147,47 @@ export class ZHANetworkVisualizationPage extends LitElement {
         (link) => link.source === source && link.target === target
       )?.reverseValue;
       return html`${sourceName} →
-      ${targetName}${value
-        ? html` <b>LQI:</b> ${value}`
-        : nothing}${reverseValue
-        ? html`<br />${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`
-        : nothing}`;
+      ${targetName}${value ? html` <b>LQI:</b> ${value}` : nothing}${
+        reverseValue
+          ? html`<br />${targetName} → ${sourceName}
+              <b>LQI:</b> ${reverseValue}`
+          : nothing
+      }`;
     }
     const device = this._devices.find((d) => d.ieee === (data as any).id);
     if (!device) {
       return html`${name}`;
     }
     const haDevice = this.hass.devices[device.device_reg_id] as
-      | DeviceRegistryEntry
-      | undefined;
+      DeviceRegistryEntry | undefined;
     const area = haDevice
       ? getDeviceArea(haDevice, this.hass.areas)
       : undefined;
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
-      >${device.device_type.replace("_", " ")}${device.nwk != null
-        ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
-        : nothing}${device.manufacturer != null && device.model != null
-        ? html`<br /><b
-              >${this.hass.localize(
-                "ui.panel.config.zha.visualization.device"
-              )}: </b
-            >${device.manufacturer} ${device.model}`
-        : html`<br /><b
-              >${this.hass.localize(
-                "ui.panel.config.zha.visualization.device_not_in_db"
-              )}</b
-            >`}${area
-        ? html`<br /><b
-              >${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b
-            >${area.name}`
-        : nothing}`;
+      >${device.device_type.replace("_", " ")}${
+        device.nwk != null
+          ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
+          : nothing
+      }${
+        device.manufacturer != null && device.model != null
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zha.visualization.device"
+                )}: </b
+              >${device.manufacturer} ${device.model}`
+          : html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zha.visualization.device_not_in_db"
+                )}</b
+              >`
+      }${
+        area
+          ? html`<br /><b
+                >${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b
+              >${area.name}`
+          : nothing
+      }`;
   };
 
   private async _refreshTopology(): Promise<void> {

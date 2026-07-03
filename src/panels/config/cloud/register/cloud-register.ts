@@ -130,9 +130,13 @@ export class CloudRegister extends LitElement {
                 "ui.panel.config.cloud.register.create_account"
               )}
               ><div class="card-content register-form">
-                ${this._error
-                  ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-                  : ""}
+                ${
+                  this._error
+                    ? html`<ha-alert alert-type="error"
+                        >${this._error}</ha-alert
+                      >`
+                    : ""
+                }
                 <ha-input
                   autofocus
                   id="email"

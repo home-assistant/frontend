@@ -66,11 +66,13 @@ export class HaDateTimeSelector extends LitElement {
           @value-changed=${this._valueChanged}
         ></ha-time-input>
       </div>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : ""}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : ""
+      }
     `;
   }
 

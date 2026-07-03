@@ -35,16 +35,20 @@ class SupervisorAppDocumentationDashboard extends LitElement {
     return html`
       <div class="content">
         <ha-card outlined>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
           <div class="card-content">
-            ${this._content
-              ? html`<ha-markdown
-                  .content=${this._content}
-                  lazy-images
-                ></ha-markdown>`
-              : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
+            ${
+              this._content
+                ? html`<ha-markdown
+                    .content=${this._content}
+                    lazy-images
+                  ></ha-markdown>`
+                : html`<hass-loading-screen no-toolbar></hass-loading-screen>`
+            }
           </div>
         </ha-card>
       </div>

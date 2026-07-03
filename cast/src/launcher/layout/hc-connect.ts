@@ -135,9 +135,11 @@ export class HcConnect extends LitElement {
               Show Demo
               <ha-svg-icon
                 slot="end"
-                .path=${this.castManager.castState === "CONNECTED"
-                  ? mdiCastConnected
-                  : mdiCast}
+                .path=${
+                  this.castManager.castState === "CONNECTED"
+                    ? mdiCastConnected
+                    : mdiCast
+                }
               ></ha-svg-icon>
             </ha-button>
             <div class="spacer"></div>

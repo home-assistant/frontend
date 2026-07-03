@@ -95,8 +95,9 @@ export class HaConditionIcon extends LitElement {
 
     return html`
       <ha-svg-icon
-        .path=${CONDITION_ICONS[this.condition!] ||
-        FALLBACK_DOMAIN_ICONS[domain]}
+        .path=${
+          CONDITION_ICONS[this.condition!] || FALLBACK_DOMAIN_ICONS[domain]
+        }
       ></ha-svg-icon>
     `;
   }

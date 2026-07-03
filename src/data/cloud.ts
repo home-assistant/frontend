@@ -45,12 +45,7 @@ export interface CloudStatusLoggedIn {
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
   remote_certificate_status:
-    | null
-    | "error"
-    | "generating"
-    | "loaded"
-    | "loading"
-    | "ready";
+    null | "error" | "generating" | "loaded" | "loading" | "ready";
   http_use_ssl: boolean;
   active_subscription: boolean;
 }

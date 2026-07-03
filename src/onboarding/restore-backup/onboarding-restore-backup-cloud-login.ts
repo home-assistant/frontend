@@ -41,26 +41,28 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
         )}
       </p>
       ${this._showResetPasswordDone ? this._renderResetPasswordDone() : nothing}
-      ${this._view === "login"
-        ? html`<cloud-login
-            card-less
-            .email=${this._email}
-            .localize=${this.localize}
-            translation-key-panel="page-onboarding.restore.ha-cloud"
-            @cloud-forgot-password=${this._showForgotPassword}
-          ></cloud-login>`
-        : this._view === "loading"
-          ? html`<div class="loading">
-              <ha-spinner size="large"></ha-spinner>
-            </div>`
-          : html`<cloud-forgot-password-card
+      ${
+        this._view === "login"
+          ? html`<cloud-login
               card-less
               .email=${this._email}
               .localize=${this.localize}
-              translation-key-panel="page-onboarding.restore.ha-cloud.forgot_password"
-              @cloud-email-changed=${this._emailChanged}
-              @cloud-done=${this._showPasswordResetDone}
-            ></cloud-forgot-password-card>`}
+              translation-key-panel="page-onboarding.restore.ha-cloud"
+              @cloud-forgot-password=${this._showForgotPassword}
+            ></cloud-login>`
+          : this._view === "loading"
+            ? html`<div class="loading">
+                <ha-spinner size="large"></ha-spinner>
+              </div>`
+            : html`<cloud-forgot-password-card
+                card-less
+                .email=${this._email}
+                .localize=${this.localize}
+                translation-key-panel="page-onboarding.restore.ha-cloud.forgot_password"
+                @cloud-email-changed=${this._emailChanged}
+                @cloud-done=${this._showPasswordResetDone}
+              ></cloud-forgot-password-card>`
+      }
     `;
   }
 

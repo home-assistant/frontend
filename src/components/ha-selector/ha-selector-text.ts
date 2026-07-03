@@ -87,12 +87,16 @@ export class HaTextSelector extends LitElement {
       .autocomplete=${this.selector.text?.autocomplete}
       .passwordToggle=${this.selector.text?.type === "password"}
     >
-      ${this.selector.text?.prefix
-        ? html`<span slot="start">${this.selector.text.prefix}</span>`
-        : nothing}
-      ${this.selector.text?.suffix
-        ? html`<span slot="end">${this.selector.text.suffix}</span>`
-        : nothing}
+      ${
+        this.selector.text?.prefix
+          ? html`<span slot="start">${this.selector.text.prefix}</span>`
+          : nothing
+      }
+      ${
+        this.selector.text?.suffix
+          ? html`<span slot="end">${this.selector.text.suffix}</span>`
+          : nothing
+      }
     </ha-input>`;
   }
 

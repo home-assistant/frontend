@@ -201,14 +201,16 @@ export class HaStateControlClimateTemperature extends LitElement {
 
     return html`
       <p class="label">
-        ${action && action !== "off"
-          ? this._formatters.formatEntityAttributeValue(
-              this.stateObj,
-              "hvac_action"
-            )
-          : isTemperatureDisplayed
-            ? this._formatters.formatEntityState(this.stateObj)
-            : nothing}
+        ${
+          action && action !== "off"
+            ? this._formatters.formatEntityAttributeValue(
+                this.stateObj,
+                "hvac_action"
+              )
+            : isTemperatureDisplayed
+              ? this._formatters.formatEntityState(this.stateObj)
+              : nothing
+        }
       </p>
     `;
   }

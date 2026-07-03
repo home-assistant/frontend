@@ -57,51 +57,55 @@ export class HaFilterDomains extends LitElement {
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.domains.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-              >
-              </ha-input-search>
-              <ha-list
-                class="ha-scrollbar"
-                @selected=${this._handleItemSelected}
-                multi
-              >
-                ${repeat(
-                  this._domains(
-                    this._states,
-                    this._localize,
-                    this._i18n.locale.language,
-                    this._filter,
-                    this.value
-                  ),
-                  (i) => i,
-                  (domain) =>
-                    html`<ha-check-list-item
-                      .value=${domain}
-                      .selected=${(this.value || []).includes(domain)}
-                      graphic="icon"
-                    >
-                      <ha-domain-icon
-                        slot="graphic"
-                        .domain=${domain}
-                        brand-fallback
-                      ></ha-domain-icon>
-                      ${domainToName(this._localize, domain)}
-                    </ha-check-list-item>`
-                )}
-              </ha-list> `
-          : nothing}
+        ${
+          this._shouldRender
+            ? html`<ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                >
+                </ha-input-search>
+                <ha-list
+                  class="ha-scrollbar"
+                  @selected=${this._handleItemSelected}
+                  multi
+                >
+                  ${repeat(
+                    this._domains(
+                      this._states,
+                      this._localize,
+                      this._i18n.locale.language,
+                      this._filter,
+                      this.value
+                    ),
+                    (i) => i,
+                    (domain) =>
+                      html`<ha-check-list-item
+                        .value=${domain}
+                        .selected=${(this.value || []).includes(domain)}
+                        graphic="icon"
+                      >
+                        <ha-domain-icon
+                          slot="graphic"
+                          .domain=${domain}
+                          brand-fallback
+                        ></ha-domain-icon>
+                        ${domainToName(this._localize, domain)}
+                      </ha-check-list-item>`
+                  )}
+                </ha-list> `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

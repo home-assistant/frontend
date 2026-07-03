@@ -530,8 +530,7 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
 
     const sections = (
       [favoritesSection, mobileSummarySection, ...floorsSections] satisfies (
-        | LovelaceSectionRawConfig
-        | undefined
+        LovelaceSectionRawConfig | undefined
       )[]
     ).filter(Boolean) as LovelaceSectionRawConfig[];
 

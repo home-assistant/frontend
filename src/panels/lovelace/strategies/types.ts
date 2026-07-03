@@ -7,12 +7,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceGenericElementEditor } from "../types";
 
 export type LovelaceStrategyDependency =
-  | "entities"
-  | "devices"
-  | "areas"
-  | "floors"
-  | "labels"
-  | "panels";
+  "entities" | "devices" | "areas" | "floors" | "labels" | "panels";
 
 export interface LovelaceStrategy<T = any> {
   generate(config: LovelaceStrategyConfig, hass: HomeAssistant): Promise<T>;

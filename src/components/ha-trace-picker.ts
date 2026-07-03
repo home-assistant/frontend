@@ -161,13 +161,15 @@ class HaTracePicker extends LitElement {
 
   private _renderTracePickerValue = (runId: string) => {
     const trace = this.traces?.find((t) => t.run_id === runId);
-    return html`${trace
-      ? formatDateTimeWithSeconds(
-          new Date(trace.timestamp.start),
-          this.hass.locale,
-          this.hass.config
-        )
-      : runId}`;
+    return html`${
+      trace
+        ? formatDateTimeWithSeconds(
+            new Date(trace.timestamp.start),
+            this.hass.locale,
+            this.hass.config
+          )
+        : runId
+    }`;
   };
 
   static get styles(): CSSResultGroup {

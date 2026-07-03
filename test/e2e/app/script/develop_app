@@ -1,9 +1,10 @@
 #!/bin/sh
-# Develop the e2e test app
+# Develop the e2e test app. Pass --background/--status/--stop/--logs to manage a
+# detached instance (see build-scripts/dev-server.mjs).
 
 # Stop on errors
 set -e
 
 cd "$(dirname "$0")/../../../.."
 
-./node_modules/.bin/gulp develop-e2e-test-app
+exec node build-scripts/dev-server.mjs --suite e2e-app "$@"

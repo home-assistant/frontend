@@ -121,9 +121,11 @@ export class HaStateControlValveToggle extends LitElement {
         reversed
         .checked=${isOn}
         @change=${this._valueChanged}
-        .label=${isOn
-          ? this._localize("ui.card.valve.close_valve")
-          : this._localize("ui.card.valve.open_valve")}
+        .label=${
+          isOn
+            ? this._localize("ui.card.valve.close_valve")
+            : this._localize("ui.card.valve.open_valve")
+        }
         style=${styleMap({
           "--control-switch-on-color": onColor,
           "--control-switch-off-color": offColor,

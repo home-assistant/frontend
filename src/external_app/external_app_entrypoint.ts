@@ -22,8 +22,7 @@ import type {
 const barCodeListeners = new Set<
   (
     msg:
-      | EMIncomingMessageBarCodeScanResult
-      | EMIncomingMessageBarCodeScanAborted
+      EMIncomingMessageBarCodeScanResult | EMIncomingMessageBarCodeScanAborted
   ) => boolean
 >();
 
@@ -43,8 +42,7 @@ export const attachExternalToApp = (hassMainEl: HomeAssistantMain) => {
 export const addExternalBarCodeListener = (
   listener: (
     msg:
-      | EMIncomingMessageBarCodeScanResult
-      | EMIncomingMessageBarCodeScanAborted
+      EMIncomingMessageBarCodeScanResult | EMIncomingMessageBarCodeScanAborted
   ) => boolean
 ) => {
   barCodeListeners.add(listener);

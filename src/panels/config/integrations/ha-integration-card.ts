@@ -69,21 +69,24 @@ export class HaIntegrationCard extends LitElement {
             .hass=${this.hass}
             .domain=${this.domain}
             .localizedDomainName=${this.items[0].localized_domain_name}
-            .error=${ERROR_STATES.includes(entryState)
-              ? this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.state.${entryState}`
-                )
-              : undefined}
-            .warning=${entryState !== "loaded" &&
-            !ERROR_STATES.includes(entryState)
-              ? this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.state.${entryState}`
-                )
-              : debugLoggingEnabled
+            .error=${
+              ERROR_STATES.includes(entryState)
                 ? this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                    `ui.panel.config.integrations.config_entry.state.${entryState}`
                   )
-                : undefined}
+                : undefined
+            }
+            .warning=${
+              entryState !== "loaded" && !ERROR_STATES.includes(entryState)
+                ? this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.state.${entryState}`
+                  )
+                : debugLoggingEnabled
+                  ? this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                    )
+                  : undefined
+            }
             .manifest=${this.manifest}
           >
           </ha-integration-header>
@@ -108,116 +111,132 @@ export class HaIntegrationCard extends LitElement {
 
     return html`
       <div class="card-actions">
-        ${devices.length > 0
-          ? html`<ha-button
-              appearance="plain"
-              href=${devices.length === 1 &&
-              // Always link to device page for protocol integrations to show Add Device button
-              // @ts-expect-error
-              !PROTOCOL_INTEGRATIONS.includes(this.domain)
-                ? `/config/devices/device/${devices[0].id}`
-                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
-            >
-              ${this.hass.localize(
-                `ui.panel.config.integrations.config_entry.${
-                  services ? "services" : "devices"
-                }`,
-                { count: devices.length }
-              )}
-            </ha-button>`
-          : entitiesCount > 0
+        ${
+          devices.length > 0
             ? html`<ha-button
                 appearance="plain"
-                href=${`/config/entities?historyBack=1&domain=${this.domain}`}
+                href=${
+                  devices.length === 1 &&
+                  // Always link to device page for protocol integrations to show Add Device button
+                  // @ts-expect-error
+                  !PROTOCOL_INTEGRATIONS.includes(this.domain)
+                    ? `/config/devices/device/${devices[0].id}`
+                    : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`
+                }
               >
                 ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entities`,
-                  { count: entitiesCount }
+                  `ui.panel.config.integrations.config_entry.${
+                    services ? "services" : "devices"
+                  }`,
+                  { count: devices.length }
                 )}
               </ha-button>`
-            : this.items.find((itm) => itm.source !== "yaml")
+            : entitiesCount > 0
               ? html`<ha-button
                   appearance="plain"
-                  href=${`/config/integrations/integration/${this.domain}`}
+                  href=${`/config/entities?historyBack=1&domain=${this.domain}`}
                 >
                   ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entries`,
-                    {
-                      count: this.items.filter((itm) => itm.source !== "yaml")
-                        .length,
-                    }
+                    `ui.panel.config.integrations.config_entry.entities`,
+                    { count: entitiesCount }
                   )}
                 </ha-button>`
-              : html`<div class="spacer"></div>`}
+              : this.items.find((itm) => itm.source !== "yaml")
+                ? html`<ha-button
+                    appearance="plain"
+                    href=${`/config/integrations/integration/${this.domain}`}
+                  >
+                    ${this.hass.localize(
+                      `ui.panel.config.integrations.config_entry.entries`,
+                      {
+                        count: this.items.filter((itm) => itm.source !== "yaml")
+                          .length,
+                      }
+                    )}
+                  </ha-button>`
+                : html`<div class="spacer"></div>`
+        }
         <div class="icons">
-          ${this.manifest && !this.manifest.is_built_in
-            ? html`<span
-                class="icon ${this.manifest.overwrites_built_in
-                  ? "overwrites"
-                  : "custom"}"
-              >
-                <ha-svg-icon
-                  id="icon-custom"
-                  .path=${mdiPackageVariant}
-                ></ha-svg-icon>
-                <ha-tooltip
-                  for="icon-custom"
-                  .placement=${computeRTL(
-                    this.hass.language,
-                    this.hass.translationMetadata.translations
-                  )
-                    ? "right"
-                    : "left"}
+          ${
+            this.manifest && !this.manifest.is_built_in
+              ? html`<span
+                  class="icon ${
+                    this.manifest.overwrites_built_in ? "overwrites" : "custom"
+                  }"
                 >
-                  ${this.hass.localize(
-                    this.manifest.overwrites_built_in
-                      ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                      : "ui.panel.config.integrations.config_entry.custom_integration"
-                  )}
-                </ha-tooltip>
-              </span>`
-            : nothing}
-          ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
-            ? html`<div class="icon cloud">
-                <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
-                <ha-tooltip
-                  for="icon-cloud"
-                  .placement=${computeRTL(
-                    this.hass.language,
-                    this.hass.translationMetadata.translations
-                  )
-                    ? "right"
-                    : "left"}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                  )}
-                </ha-tooltip>
-              </div>`
-            : nothing}
-          ${this.manifest &&
-          !this.manifest?.config_flow &&
-          !this.items.every((itm) => itm.source === "system")
-            ? html`<div class="icon yaml">
-                <ha-svg-icon
-                  id="icon-yaml"
-                  .path=${mdiFileCodeOutline}
-                ></ha-svg-icon>
-                <ha-tooltip
-                  for="icon-yaml"
-                  .placement=${computeRTL(
-                    this.hass.language,
-                    this.hass.translationMetadata.translations
-                  )
-                    ? "right"
-                    : "left"}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.no_config_flow"
-                  )}
-                </ha-tooltip>
-              </div>`
-            : nothing}
+                  <ha-svg-icon
+                    id="icon-custom"
+                    .path=${mdiPackageVariant}
+                  ></ha-svg-icon>
+                  <ha-tooltip
+                    for="icon-custom"
+                    .placement=${
+                      computeRTL(
+                        this.hass.language,
+                        this.hass.translationMetadata.translations
+                      )
+                        ? "right"
+                        : "left"
+                    }
+                  >
+                    ${this.hass.localize(
+                      this.manifest.overwrites_built_in
+                        ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                        : "ui.panel.config.integrations.config_entry.custom_integration"
+                    )}
+                  </ha-tooltip>
+                </span>`
+              : nothing
+          }
+          ${
+            this.manifest && this.manifest.iot_class?.startsWith("cloud_")
+              ? html`<div class="icon cloud">
+                  <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+                  <ha-tooltip
+                    for="icon-cloud"
+                    .placement=${
+                      computeRTL(
+                        this.hass.language,
+                        this.hass.translationMetadata.translations
+                      )
+                        ? "right"
+                        : "left"
+                    }
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                    )}
+                  </ha-tooltip>
+                </div>`
+              : nothing
+          }
+          ${
+            this.manifest &&
+            !this.manifest?.config_flow &&
+            !this.items.every((itm) => itm.source === "system")
+              ? html`<div class="icon yaml">
+                  <ha-svg-icon
+                    id="icon-yaml"
+                    .path=${mdiFileCodeOutline}
+                  ></ha-svg-icon>
+                  <ha-tooltip
+                    for="icon-yaml"
+                    .placement=${
+                      computeRTL(
+                        this.hass.language,
+                        this.hass.translationMetadata.translations
+                      )
+                        ? "right"
+                        : "left"
+                    }
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.no_config_flow"
+                    )}
+                  </ha-tooltip>
+                </div>`
+              : nothing
+          }
         </div>
       </div>
     `;

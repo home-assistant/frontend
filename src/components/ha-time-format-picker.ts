@@ -59,20 +59,22 @@ export class HaTimeFormatPicker extends LitElement {
           .options=${this._options(this._localize)}
         >
         </ha-select>
-        ${this.value
-          ? html`
-              <ha-select
-                .label=${this._localize(
-                  "ui.components.time-format-picker.style"
-                )}
-                .value=${style || "auto"}
-                .disabled=${this.disabled}
-                @selected=${this._styleChanged}
-                .options=${this._styleOptions(this._localize)}
-              >
-              </ha-select>
-            `
-          : nothing}
+        ${
+          this.value
+            ? html`
+                <ha-select
+                  .label=${this._localize(
+                    "ui.components.time-format-picker.style"
+                  )}
+                  .value=${style || "auto"}
+                  .disabled=${this.disabled}
+                  @selected=${this._styleChanged}
+                  .options=${this._styleOptions(this._localize)}
+                >
+                </ha-select>
+              `
+            : nothing
+        }
       </div>
     `;
   }

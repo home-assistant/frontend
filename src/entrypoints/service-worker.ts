@@ -204,18 +204,18 @@ const initPushNotifications = () => {
         return;
       }
       event.waitUntil(
-        self.registration
-          .showNotification(data.title, data)
-          .then((/* notification */) => {
-            firePushCallback(
-              {
-                type: "received",
-                tag: data.tag,
-                data: data.data,
-              },
-              data.data.jwt
-            );
-          })
+        self.registration.showNotification(data.title, data).then((
+          /* notification */
+        ) => {
+          firePushCallback(
+            {
+              type: "received",
+              tag: data.tag,
+              data: data.data,
+            },
+            data.data.jwt
+          );
+        })
       );
     }
   });

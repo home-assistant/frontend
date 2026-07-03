@@ -1,8 +1,7 @@
 import type { HomeAssistant } from "../../types";
 
 export type LovelaceDashboard =
-  | LovelaceYamlDashboard
-  | LovelaceStorageDashboard;
+  LovelaceYamlDashboard | LovelaceStorageDashboard;
 
 interface LovelaceGenericDashboard {
   id: string;

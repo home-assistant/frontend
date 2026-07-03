@@ -101,25 +101,29 @@ export default class HaAutomationSidebarScriptField extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.delete"
           )}
-          ${!this.narrow
-            ? html`<span class="shortcut">
-                <span
-                  >${isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )}</span
-                >
-                <span>+</span>
-                <span
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.del"
-                  )}</span
-                >
-              </span>`
-            : nothing}
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${
+                      isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )
+                    }</span
+                  >
+                  <span>+</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.del"
+                    )}</span
+                  >
+                </span>`
+              : nothing
+          }
         </div>
       </ha-dropdown-item>
       ${keyed(
@@ -136,12 +140,14 @@ export default class HaAutomationSidebarScriptField extends LitElement {
           @yaml-changed=${this._yamlChangedSidebar}
         ></ha-script-field-editor>`
       )}
-      ${this.config.config.field.description?.trim() && !this.yamlMode
-        ? html`<ha-automation-note
-            @edit-note=${this.config.editNote}
-            .note=${this.config.config.field.description}
-          ></ha-automation-note>`
-        : nothing}
+      ${
+        this.config.config.field.description?.trim() && !this.yamlMode
+          ? html`<ha-automation-note
+              @edit-note=${this.config.editNote}
+              .note=${this.config.config.field.description}
+            ></ha-automation-note>`
+          : nothing
+      }
     </ha-automation-sidebar-card>`;
   }
 

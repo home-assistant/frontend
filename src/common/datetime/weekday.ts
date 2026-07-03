@@ -1,13 +1,7 @@
 export type WeekdayIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export type WeekdayShort =
-  | "sun"
-  | "mon"
-  | "tue"
-  | "wed"
-  | "thu"
-  | "fri"
-  | "sat";
+  "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
 
 export type WeekdayLong =
   | "sunday"

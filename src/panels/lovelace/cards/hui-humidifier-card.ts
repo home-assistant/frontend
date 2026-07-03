@@ -105,8 +105,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | HumidifierCardConfig
-      | undefined;
+      HumidifierCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -163,16 +162,18 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
           @click=${this._handleMoreInfo}
           tabindex="0"
         ></ha-icon-button>
-        ${this._config.features?.length
-          ? html`<hui-card-features
-              style=${styleMap({
-                "--feature-color": color,
-              })}
-              .hass=${this.hass}
-              .context=${this._featureContext}
-              .features=${this._config.features}
-            ></hui-card-features>`
-          : nothing}
+        ${
+          this._config.features?.length
+            ? html`<hui-card-features
+                style=${styleMap({
+                  "--feature-color": color,
+                })}
+                .hass=${this.hass}
+                .context=${this._featureContext}
+                .features=${this._config.features}
+              ></hui-card-features>`
+            : nothing
+        }
       </ha-card>
     `;
   }

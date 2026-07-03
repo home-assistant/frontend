@@ -132,7 +132,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
           @click=${this._fetchOutliers}
         >
           ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.outliers"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.outliers"
           )}
         </ha-button>
         <ha-button slot="primaryAction" data-dialog="close">
@@ -156,7 +156,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
           @click=${this._fixIssue}
         >
           ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.adjust"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.adjust"
           )}</ha-button
         >
       `;
@@ -166,7 +166,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       <ha-dialog
         .open=${this._open}
         header-title=${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.title"
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.title"
         )}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
@@ -194,7 +194,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>
         ${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.no_statistics_found"
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.no_statistics_found"
         )}
       </p>`;
     } else {
@@ -234,20 +234,20 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     return html`
       <div class="text-content">
         ${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.info_text_1"
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.info_text_1"
         )}
       </div>
       <div class="text-content">
         <b
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.statistic"
           )}</b
         >
         ${this._params!.statistic.statistic_id}
       </div>
       <ha-selector-datetime
         .label=${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
         )}
         .hass=${this.hass}
         .selector=${this._dateTimeSelector}
@@ -289,7 +289,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       <div class="text-content">
         <b
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.statistic"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.statistic"
           )}</b
         >
         ${this._params!.statistic.statistic_id}
@@ -298,7 +298,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       <div class="table-row">
         <span
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.start"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.start"
           )}</span
         >
         <span
@@ -313,7 +313,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       <div class="table-row">
         <span
           >${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.end"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.end"
           )}</span
         >
         <span
@@ -327,7 +327,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
       <ha-selector-number
         .label=${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.new_value"
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
         .hass=${this.hass}
         .selector=${this._amountSelector(unit || undefined, this._precision)}
@@ -506,7 +506,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       this._busy = false;
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
           { message: err.message || err }
         ),
       });
@@ -514,7 +514,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     }
     showToast(this, {
       message: this.hass.localize(
-        "ui.panel.config.developer-tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
+        "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
     this._markDirtyStateClean();

@@ -60,52 +60,54 @@ class HaMoreInfoDetails extends LitElement {
 
     return html`
       <div class="content">
-        ${this.yamlMode
-          ? html`<ha-yaml-editor
-              .value=${yamlData}
-              read-only
-              auto-update
-              in-dialog
-            ></ha-yaml-editor>`
-          : html`
-              <section class="section">
-                <h2 class="section-title">
-                  ${this.hass.localize(
-                    "ui.components.entity.entity-state-picker.state"
-                  )}
-                </h2>
-                <ha-card>
-                  <div class="card-content">
-                    <div class="data-group">
-                      ${stateEntries.map(
-                        (entry) =>
-                          html`<div class="data-entry">
-                            <div class="key">
-                              ${this.hass.localize(entry.translationKey)}
-                            </div>
-                            <div class="value">${entry.value}</div>
-                          </div>`
-                      )}
+        ${
+          this.yamlMode
+            ? html`<ha-yaml-editor
+                .value=${yamlData}
+                read-only
+                auto-update
+                in-dialog
+              ></ha-yaml-editor>`
+            : html`
+                <section class="section">
+                  <h2 class="section-title">
+                    ${this.hass.localize(
+                      "ui.components.entity.entity-state-picker.state"
+                    )}
+                  </h2>
+                  <ha-card>
+                    <div class="card-content">
+                      <div class="data-group">
+                        ${stateEntries.map(
+                          (entry) =>
+                            html`<div class="data-entry">
+                              <div class="key">
+                                ${this.hass.localize(entry.translationKey)}
+                              </div>
+                              <div class="value">${entry.value}</div>
+                            </div>`
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </ha-card>
-              </section>
+                  </ha-card>
+                </section>
 
-              <section class="section">
-                <h2 class="section-title">
-                  ${this.hass.localize(
-                    "ui.dialogs.more_info_control.attributes"
-                  )}
-                </h2>
-                <ha-card>
-                  <div class="card-content">
-                    <div class="data-group">
-                      ${this._renderAttributes(attributes)}
+                <section class="section">
+                  <h2 class="section-title">
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.attributes"
+                    )}
+                  </h2>
+                  <ha-card>
+                    <div class="card-content">
+                      <div class="data-group">
+                        ${this._renderAttributes(attributes)}
+                      </div>
                     </div>
-                  </div>
-                </ha-card>
-              </section>
-            `}
+                  </ha-card>
+                </section>
+              `
+        }
       </div>
     `;
   }
@@ -200,14 +202,16 @@ class HaMoreInfoDetails extends LitElement {
             )}
           </div>
           <div class="value">
-            ${attribute === "supported_features" && featureEnum
-              ? this._renderFeatures(featureEnum, this._stateObj!)
-              : html`
-                  <ha-attribute-value
-                    .attribute=${attribute}
-                    .stateObj=${this._stateObj}
-                  ></ha-attribute-value>
-                `}
+            ${
+              attribute === "supported_features" && featureEnum
+                ? this._renderFeatures(featureEnum, this._stateObj!)
+                : html`
+                    <ha-attribute-value
+                      .attribute=${attribute}
+                      .stateObj=${this._stateObj}
+                    ></ha-attribute-value>
+                  `
+            }
           </div>
         </div>
       `

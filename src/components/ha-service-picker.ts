@@ -69,18 +69,22 @@ class HaServicePicker extends LitElement {
       ></ha-service-icon>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
-      ${item.service_id && this.showServiceId
-        ? html`<span slot="supporting-text" class="code">
-            ${item.service_id}
-          </span>`
-        : nothing}
-      ${item.domain_name
-        ? html`
-            <div slot="trailing-supporting-text" class="domain">
-              ${item.domain_name}
-            </div>
-          `
-        : nothing}
+      ${
+        item.service_id && this.showServiceId
+          ? html`<span slot="supporting-text" class="code">
+              ${item.service_id}
+            </span>`
+          : nothing
+      }
+      ${
+        item.domain_name
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${item.domain_name}
+              </div>
+            `
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 
@@ -118,11 +122,13 @@ class HaServicePicker extends LitElement {
             .service=${serviceId}
           ></ha-service-icon>
           <span slot="headline">${serviceName}</span>
-          ${this.showServiceId
-            ? html`<span slot="supporting-text" class="code"
-                >${serviceId}</span
-              >`
-            : nothing}
+          ${
+            this.showServiceId
+              ? html`<span slot="supporting-text" class="code"
+                  >${serviceId}</span
+                >`
+              : nothing
+          }
         `;
       }
   );

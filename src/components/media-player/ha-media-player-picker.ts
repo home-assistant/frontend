@@ -189,28 +189,34 @@ export class HaMediaPlayerPicker extends LitElement {
         })}
       >
         <ha-combo-box-item type="button" compact .disabled=${!!item.disabled}>
-          ${item.icon_path
-            ? html`
-                <ha-svg-icon
-                  slot="start"
-                  style="margin: 0 4px"
-                  .path=${item.icon_path}
-                ></ha-svg-icon>
-              `
-            : html`
-                <state-badge slot="start" .stateObj=${stateObj}></state-badge>
-              `}
+          ${
+            item.icon_path
+              ? html`
+                  <ha-svg-icon
+                    slot="start"
+                    style="margin: 0 4px"
+                    .path=${item.icon_path}
+                  ></ha-svg-icon>
+                `
+              : html`
+                  <state-badge slot="start" .stateObj=${stateObj}></state-badge>
+                `
+          }
           <span slot="headline">${item.primary}</span>
-          ${item.secondary
-            ? html`<span slot="supporting-text">${item.secondary}</span>`
-            : nothing}
-          ${stateObj && this._hassConfig.userData?.showEntityIdPicker
-            ? html`
-                <span slot="supporting-text" class="code">
-                  ${stateObj.entity_id}
-                </span>
-              `
-            : nothing}
+          ${
+            item.secondary
+              ? html`<span slot="supporting-text">${item.secondary}</span>`
+              : nothing
+          }
+          ${
+            stateObj && this._hassConfig.userData?.showEntityIdPicker
+              ? html`
+                  <span slot="supporting-text" class="code">
+                    ${stateObj.entity_id}
+                  </span>
+                `
+              : nothing
+          }
         </ha-combo-box-item>
       </div>
     `;

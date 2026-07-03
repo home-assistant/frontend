@@ -44,8 +44,7 @@ class DialogJoinMediaPlayers extends LitElement {
     this._open = true;
 
     const stateObj = this.hass.states[params.entityId] as
-      | MediaPlayerEntity
-      | undefined;
+      MediaPlayerEntity | undefined;
 
     this._groupMembers =
       stateObj?.attributes.group_members?.filter(
@@ -95,9 +94,11 @@ class DialogJoinMediaPlayers extends LitElement {
             ${this.hass.localize("ui.card.media_player.select_all")}
           </ha-button>
         </ha-dialog-header>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <div class="content">
           <ha-media-player-toggle
             .entityId=${entityId}
