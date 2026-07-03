@@ -6,6 +6,7 @@ on:
     branches:
       - dev
     paths:
+      - .github/workflows/translations.yaml
       - src/translations/en.json
 
 permissions:
@@ -22,6 +23,6 @@ jobs:
           persist-credentials: false
 
       - name: Upload Translations
-        run: |
-          export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
-          ./script/translations_upload_base
+        run: ./script/translations_upload_base
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
