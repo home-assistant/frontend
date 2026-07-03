@@ -36,12 +36,14 @@ export class HaNavigationSelector extends LitElement {
         .context=${this.selector.navigation ?? this.context}
         .excludePaths=${this.selector.navigation?.exclude_paths}
         .excludeRelated=${this.selector.navigation?.exclude_related ?? false}
-        .excludeDashboards=${this.selector.navigation?.exclude_dashboards ??
-        false}
+        .excludeDashboards=${
+          this.selector.navigation?.exclude_dashboards ?? false
+        }
         .excludeViews=${this.selector.navigation?.exclude_views ?? false}
         .excludeApps=${this.selector.navigation?.exclude_apps ?? false}
-        .excludeOtherRoutes=${this.selector.navigation?.exclude_other_routes ??
-        false}
+        .excludeOtherRoutes=${
+          this.selector.navigation?.exclude_other_routes ?? false
+        }
         @value-changed=${this._valueChanged}
       ></ha-navigation-picker>
     `;
