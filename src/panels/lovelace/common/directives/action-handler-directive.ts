@@ -218,8 +218,16 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
         if (!resolved) {
           return;
         }
-        // An end while other fingers remain belongs to a pinch or scroll.
+        // An end while other fingers remain belongs to a pinch or scroll:
+        // drop the claimed gesture so lifting the last finger cannot fire a
+        // stray tap from what was a multi-touch gesture.
         if (activeTouchCount(ev) > 0) {
+          this.resolved = undefined;
+          if (this.timer) {
+            this._stopAnimation();
+            clearTimeout(this.timer);
+            this.timer = undefined;
+          }
           return;
         }
         this.resolved = undefined;

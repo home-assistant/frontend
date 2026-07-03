@@ -163,6 +163,19 @@ describe("action-handler container (resolve) bindings", () => {
     expect(aActions).toEqual([]);
   });
 
+  it("fires no stray tap when a single-finger press turns into a pinch", () => {
+    // Finger 1 down (claims a gesture), finger 2 down (pinch), then lift both:
+    // lifting the last finger must not re-resolve into a tap.
+    bindByHalf({ hasDoubleClick: false, hasHold: false });
+    container.dispatchEvent(touch("touchstart", { x: 10, y: 10 }, 1));
+    container.dispatchEvent(touch("touchstart", { x: 40, y: 10 }, 2));
+    container.dispatchEvent(touch("touchend", { x: 40, y: 10 }, 2)); // finger 1 up, 1 remains
+    container.dispatchEvent(touch("touchend", { x: 10, y: 10 }, 1)); // last finger up
+    vi.runOnlyPendingTimers();
+    expect(aActions).toEqual([]);
+    expect(bActions).toEqual([]);
+  });
+
   it("routes a second finger's press by its own coordinates", () => {
     // touches[0] would be the first finger; changedTouches is the new one.
     bindByHalf({ hasDoubleClick: false, hasHold: false });
