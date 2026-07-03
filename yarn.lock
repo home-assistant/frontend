@@ -6357,7 +6357,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"acorn@npm:^8.10.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.16.0":
+"acorn@npm:^8.10.0, acorn@npm:^8.11.0, acorn@npm:^8.15.0, acorn@npm:^8.16.0, acorn@npm:^8.17.0":
   version: 8.17.0
   resolution: "acorn@npm:8.17.0"
   bin:
@@ -9856,7 +9856,7 @@ __metadata:
     map-stream: "npm:0.0.7"
     marked: "npm:18.0.5"
     memoize-one: "npm:6.0.0"
-    minify-literals: "npm:2.0.2"
+    minify-literals: "npm:2.1.0"
     node-vibrant: "npm:4.0.4"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
@@ -9935,9 +9935,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-minifier-next@npm:^6.2.8":
-  version: 6.2.11
-  resolution: "html-minifier-next@npm:6.2.11"
+"html-minifier-next@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "html-minifier-next@npm:7.0.0"
   dependencies:
     commander: "npm:^15.0.0"
     entities: "npm:^8.0.0"
@@ -9952,7 +9952,7 @@ __metadata:
   bin:
     hmn: cli.js
     html-minifier-next: cli.js
-  checksum: 10/d2b3923f77fff918ab09a9cfdfc3819b89dd928e1e64c60dcb39a2b08ddf6bbd3c696d90e8feb830fed11cd5d5757b271de65cb9d1713ddc171ee9668708eda6
+  checksum: 10/4c0ade3459281ae3c30147d28c7ec77d371d8a1a2e0b61873b555179e071a32e596e7a962c1e072c89355cef72dd627a60ce7bc8cf07763e9f3ed6b0d46250b3
   languageName: node
   linkType: hard
 
@@ -11663,16 +11663,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minify-literals@npm:2.0.2":
-  version: 2.0.2
-  resolution: "minify-literals@npm:2.0.2"
+"minify-literals@npm:2.1.0":
+  version: 2.1.0
+  resolution: "minify-literals@npm:2.1.0"
   dependencies:
     "@sveltejs/acorn-typescript": "npm:^1.0.10"
-    acorn: "npm:^8.16.0"
-    html-minifier-next: "npm:^6.2.8"
+    acorn: "npm:^8.17.0"
+    html-minifier-next: "npm:^7.0.0"
     lightningcss: "npm:^1.32.0"
     magic-string: "npm:^0.30.21"
-  checksum: 10/51de4b6affcebe082f00709241b8d1587aff06164cf9fd5797ffc45b322c14d0f77e9085171bd78cc35c5a9b0a22c5211f36d177a50fe5d0f8c57e6c10735838
+  checksum: 10/95bcd25afcf638c00bcd8981c2e6409be8c2feb4fd8f954bc9a547b2ade917810cef17bb075ad95e5ceaac6fffc8e625c161ab77b2363c36de53da6d139de872
   languageName: node
   linkType: hard
 
