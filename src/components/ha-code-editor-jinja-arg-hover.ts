@@ -12,9 +12,11 @@ export class HaCodeEditorJinjaArgHover extends LitElement {
 
   render() {
     return html`
-      ${this.heading
-        ? html`<div class="heading">${this.heading}</div>`
-        : nothing}
+      ${
+        this.heading
+          ? html`<div class="heading">${this.heading}</div>`
+          : nothing
+      }
       <ha-code-editor-completion-items
         .items=${this.items}
       ></ha-code-editor-completion-items>

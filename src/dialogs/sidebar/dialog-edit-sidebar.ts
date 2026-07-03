@@ -247,9 +247,11 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       <ha-dialog
         .open=${this._open}
         header-title=${dialogTitle}
-        header-subtitle=${!this._migrateToUserData
-          ? this.hass.localize("ui.sidebar.edit_subtitle")
-          : ""}
+        header-subtitle=${
+          !this._migrateToUserData
+            ? this.hass.localize("ui.sidebar.edit_subtitle")
+            : ""
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
@@ -275,10 +277,12 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._order ||
-            !this._hidden ||
-            !this._customShortcuts ||
-            !this.isDirtyState}
+            .disabled=${
+              !this._order ||
+              !this._hidden ||
+              !this._customShortcuts ||
+              !this.isDirtyState
+            }
             @click=${this._save}
           >
             ${this.hass.localize("ui.common.save")}

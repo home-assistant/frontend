@@ -102,18 +102,20 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
           @input=${this._filterChanged}
         ></ha-input-search>
         <ha-list multi>
-          ${this._dialogReady
-            ? html` <lit-virtualizer
-                scroller
-                class="ha-scrollbar"
-                @click=${this._itemClicked}
-                @keydown=${this._handleItemKeydown}
-                .items=${entities}
-                .renderItem=${this._renderItem}
-                .keyFunction=${this._keyFunction}
-              >
-              </lit-virtualizer>`
-            : nothing}
+          ${
+            this._dialogReady
+              ? html` <lit-virtualizer
+                  scroller
+                  class="ha-scrollbar"
+                  @click=${this._itemClicked}
+                  @keydown=${this._handleItemKeydown}
+                  .items=${entities}
+                  .renderItem=${this._renderItem}
+                  .keyFunction=${this._keyFunction}
+                >
+                </lit-virtualizer>`
+              : nothing
+          }
         </ha-list>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -263,16 +265,20 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
           .stateObj=${entityState}
         ></ha-state-icon>
         ${primary}
-        ${context || showEntityId
-          ? html`<span slot="secondary">
-              ${context}
-              ${showEntityId
-                ? html`<br /><span class="entity-id"
-                      >${entityState.entity_id}</span
-                    >`
-                : nothing}
-            </span>`
-          : nothing}
+        ${
+          context || showEntityId
+            ? html`<span slot="secondary">
+                ${context}
+                ${
+                  showEntityId
+                    ? html`<br /><span class="entity-id"
+                          >${entityState.entity_id}</span
+                        >`
+                    : nothing
+                }
+              </span>`
+            : nothing
+        }
       </ha-check-list-item>
     `;
   };

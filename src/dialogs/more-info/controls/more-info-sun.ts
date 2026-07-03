@@ -51,13 +51,15 @@ class MoreInfoSun extends LitElement {
           <div class="row">
             <div class="key">
               <span
-                >${item === "ris"
-                  ? this._i18n.localize(
-                      "ui.dialogs.more_info_control.sun.rising"
-                    )
-                  : this._i18n.localize(
-                      "ui.dialogs.more_info_control.sun.setting"
-                    )}</span
+                >${
+                  item === "ris"
+                    ? this._i18n.localize(
+                        "ui.dialogs.more_info_control.sun.rising"
+                      )
+                    : this._i18n.localize(
+                        "ui.dialogs.more_info_control.sun.setting"
+                      )
+                }</span
               >
               <ha-relative-time
                 .datetime=${item === "ris" ? risingDate : settingDate}

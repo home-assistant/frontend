@@ -136,21 +136,27 @@ export class HaStateLabelBadge extends LitElement {
           entityState,
           this._timerTimeRemaining
         )}
-        .description=${this.showName
-          ? (this.name ?? computeStateName(entityState))
-          : undefined}
+        .description=${
+          this.showName
+            ? (this.name ?? computeStateName(entityState))
+            : undefined
+        }
       >
-        ${!image && showIcon
-          ? html`<ha-state-icon
-              .icon=${this.icon}
-              .stateObj=${entityState}
-            ></ha-state-icon>`
-          : ""}
-        ${value && !image && !showIcon
-          ? html`<span class=${value && value.length > 4 ? "big" : ""}
-              >${value}</span
-            >`
-          : ""}
+        ${
+          !image && showIcon
+            ? html`<ha-state-icon
+                .icon=${this.icon}
+                .stateObj=${entityState}
+              ></ha-state-icon>`
+            : ""
+        }
+        ${
+          value && !image && !showIcon
+            ? html`<span class=${value && value.length > 4 ? "big" : ""}
+                >${value}</span
+              >`
+            : ""
+        }
       </ha-label-badge>
     `;
   }

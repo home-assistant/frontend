@@ -49,39 +49,45 @@ class ZHADevicePairingStatusCard extends LitElement {
           </h1>
         </div>
         <div class="card-content">
-          ${[INTERVIEW_COMPLETE, CONFIGURED].includes(
-            this.device.pairing_status!
-          )
-            ? html`
-                <div class="model">${this.device.model}</div>
-                <div class="manuf">
-                  ${this.hass.localize("ui.dialogs.zha_device_info.manuf", {
-                    manufacturer: this.device.manufacturer,
-                  })}
-                </div>
-              `
-            : nothing}
-          <div class="info">
-            ${INCOMPLETE_PAIRING_STATUSES.includes(this.device.pairing_status!)
+          ${
+            [INTERVIEW_COMPLETE, CONFIGURED].includes(
+              this.device.pairing_status!
+            )
               ? html`
-                  <div class="text">IEEE: ${this.device.ieee}</div>
-                  <div class="text">
-                    NWK: ${formatAsPaddedHex(this.device.nwk)}
+                  <div class="model">${this.device.model}</div>
+                  <div class="manuf">
+                    ${this.hass.localize("ui.dialogs.zha_device_info.manuf", {
+                      manufacturer: this.device.manufacturer,
+                    })}
                   </div>
                 `
-              : nothing}
+              : nothing
+          }
+          <div class="info">
+            ${
+              INCOMPLETE_PAIRING_STATUSES.includes(this.device.pairing_status!)
+                ? html`
+                    <div class="text">IEEE: ${this.device.ieee}</div>
+                    <div class="text">
+                      NWK: ${formatAsPaddedHex(this.device.nwk)}
+                    </div>
+                  `
+                : nothing
+            }
           </div>
-          ${this.device.pairing_status === INITIALIZED
-            ? html`
-                <zha-device-card
-                  class="card"
-                  .hass=${this.hass}
-                  .device=${this.device}
-                  .narrow=${this.narrow}
-                  .showHelp=${this._showHelp}
-                ></zha-device-card>
-              `
-            : nothing}
+          ${
+            this.device.pairing_status === INITIALIZED
+              ? html`
+                  <zha-device-card
+                    class="card"
+                    .hass=${this.hass}
+                    .device=${this.device}
+                    .narrow=${this.narrow}
+                    .showHelp=${this._showHelp}
+                  ></zha-device-card>
+                `
+              : nothing
+          }
         </div>
       </ha-card>
     `;

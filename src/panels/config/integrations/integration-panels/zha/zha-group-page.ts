@@ -127,45 +127,51 @@ export class ZHAGroupPage extends LitElement {
 
           <div class="members-section">
             <h2>${this.hass.localize("ui.panel.config.zha.groups.members")}</h2>
-            ${this.group.members.length
-              ? html`
-                  <zha-device-endpoint-list
-                    id="removeMembers"
-                    scrollable
-                    show-device-link
-                    selectable
-                    .deviceEndpoints=${this.group.members}
-                    .narrow=${this.narrow}
-                    .emptyText=${this.hass.localize(
-                      "ui.panel.config.zha.groups.no_members"
-                    )}
-                    @selection-changed=${this._handleRemoveSelectionChanged}
-                  ></zha-device-endpoint-list>
-                `
-              : html`
-                  <ha-card class="empty-card">
-                    ${this.hass.localize(
-                      "ui.panel.config.zha.groups.no_members"
-                    )}
-                  </ha-card>
-                `}
-            <div class="buttons">
-              ${this.group.members.length
+            ${
+              this.group.members.length
                 ? html`
-                    <ha-button
-                      appearance="plain"
-                      variant="danger"
-                      .disabled=${!this._selectedDevicesToRemove.length ||
-                      this._processingRemove}
-                      @click=${this._removeMembersFromGroup}
-                      .loading=${this._processingRemove}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zha.groups.remove_members"
+                    <zha-device-endpoint-list
+                      id="removeMembers"
+                      scrollable
+                      show-device-link
+                      selectable
+                      .deviceEndpoints=${this.group.members}
+                      .narrow=${this.narrow}
+                      .emptyText=${this.hass.localize(
+                        "ui.panel.config.zha.groups.no_members"
                       )}
-                    </ha-button>
+                      @selection-changed=${this._handleRemoveSelectionChanged}
+                    ></zha-device-endpoint-list>
                   `
-                : nothing}
+                : html`
+                    <ha-card class="empty-card">
+                      ${this.hass.localize(
+                        "ui.panel.config.zha.groups.no_members"
+                      )}
+                    </ha-card>
+                  `
+            }
+            <div class="buttons">
+              ${
+                this.group.members.length
+                  ? html`
+                      <ha-button
+                        appearance="plain"
+                        variant="danger"
+                        .disabled=${
+                          !this._selectedDevicesToRemove.length ||
+                          this._processingRemove
+                        }
+                        @click=${this._removeMembersFromGroup}
+                        .loading=${this._processingRemove}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zha.groups.remove_members"
+                        )}
+                      </ha-button>
+                    `
+                  : nothing
+              }
               <ha-button @click=${this._showAddMembersDialog}>
                 <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.config.zha.groups.add_members")}

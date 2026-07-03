@@ -45,10 +45,7 @@ export interface Stream {
 }
 
 export type WebRtcOfferEvent =
-  | WebRtcId
-  | WebRtcAnswer
-  | WebRtcCandidate
-  | WebRtcError;
+  WebRtcId | WebRtcAnswer | WebRtcCandidate | WebRtcError;
 
 export interface WebRtcId {
   type: "session";

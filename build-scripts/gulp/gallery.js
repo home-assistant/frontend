@@ -1,7 +1,7 @@
 import fs from "fs";
 import { glob } from "glob";
 import gulp from "gulp";
-import yaml from "js-yaml";
+import { load as loadYaml } from "js-yaml";
 import { marked } from "marked";
 import path from "path";
 import paths from "../paths.cjs";
@@ -47,7 +47,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
       if (descriptionContent.startsWith("---")) {
         const metadataEnd = descriptionContent.indexOf("---", 3);
-        metadata = yaml.load(descriptionContent.substring(3, metadataEnd));
+        metadata = loadYaml(descriptionContent.substring(3, metadataEnd));
         descriptionContent = descriptionContent
           .substring(metadataEnd + 3)
           .trim();

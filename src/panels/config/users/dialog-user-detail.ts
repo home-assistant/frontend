@@ -93,86 +93,98 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._error
-            ? html`<div class="error">${this._error}</div>`
-            : nothing}
+          ${
+            this._error
+              ? html`<div class="error">${this._error}</div>`
+              : nothing
+          }
           <div class="secondary">
             ${this.hass.localize("ui.panel.config.users.editor.id")}:
             ${user.id}<br />
           </div>
-          ${badges.length === 0
-            ? nothing
-            : html`
-                <div class="badge-container">
-                  ${badges.map(
-                    ([icon, label]) => html`
-                      <ha-label>
-                        <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
-                        ${label}
-                      </ha-label>
-                    `
-                  )}
-                </div>
-              `}
-          <div class="form">
-            ${!user.system_generated
-              ? html`
-                  <ha-input
-                    autofocus
-                    .value=${this._name}
-                    @input=${this._nameChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.users.editor.name"
+          ${
+            badges.length === 0
+              ? nothing
+              : html`
+                  <div class="badge-container">
+                    ${badges.map(
+                      ([icon, label]) => html`
+                        <ha-label>
+                          <ha-svg-icon slot="icon" .path=${icon}></ha-svg-icon>
+                          ${label}
+                        </ha-label>
+                      `
                     )}
-                  ></ha-input>
-                  <ha-row-item>
-                    <span slot="headline"
-                      >${this.hass.localize(
-                        "ui.panel.config.users.editor.username"
-                      )}</span
-                    >
-                    <span slot="supporting-text">${user.username}</span>
-                    ${this.hass.user?.is_owner
-                      ? html`
-                          <ha-icon-button
-                            slot="end"
-                            .path=${mdiPencil}
-                            @click=${this._changeUsername}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.users.editor.change_username"
-                            )}
-                          >
-                          </ha-icon-button>
-                        `
-                      : nothing}
-                  </ha-row-item>
+                  </div>
                 `
-              : nothing}
-            ${!user.system_generated && this.hass.user?.is_owner
-              ? html`
-                  <ha-row-item>
-                    <span slot="headline"
-                      >${this.hass.localize(
-                        "ui.panel.config.users.editor.password"
-                      )}</span
-                    >
-                    <span slot="supporting-text">************</span>
-                    ${this.hass.user?.is_owner
-                      ? html`
-                          <ha-icon-button
-                            slot="end"
-                            .path=${mdiPencil}
-                            @click=${this._changePassword}
-                            .label=${this.hass.localize(
-                              "ui.panel.config.users.editor.change_password"
-                            )}
-                          >
-                          </ha-icon-button>
-                        `
-                      : nothing}
-                  </ha-row-item>
-                `
-              : nothing}
+          }
+          <div class="form">
+            ${
+              !user.system_generated
+                ? html`
+                    <ha-input
+                      autofocus
+                      .value=${this._name}
+                      @input=${this._nameChanged}
+                      .label=${this.hass!.localize(
+                        "ui.panel.config.users.editor.name"
+                      )}
+                    ></ha-input>
+                    <ha-row-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.users.editor.username"
+                        )}</span
+                      >
+                      <span slot="supporting-text">${user.username}</span>
+                      ${
+                        this.hass.user?.is_owner
+                          ? html`
+                              <ha-icon-button
+                                slot="end"
+                                .path=${mdiPencil}
+                                @click=${this._changeUsername}
+                                .label=${this.hass.localize(
+                                  "ui.panel.config.users.editor.change_username"
+                                )}
+                              >
+                              </ha-icon-button>
+                            `
+                          : nothing
+                      }
+                    </ha-row-item>
+                  `
+                : nothing
+            }
+            ${
+              !user.system_generated && this.hass.user?.is_owner
+                ? html`
+                    <ha-row-item>
+                      <span slot="headline"
+                        >${this.hass.localize(
+                          "ui.panel.config.users.editor.password"
+                        )}</span
+                      >
+                      <span slot="supporting-text">************</span>
+                      ${
+                        this.hass.user?.is_owner
+                          ? html`
+                              <ha-icon-button
+                                slot="end"
+                                .path=${mdiPencil}
+                                @click=${this._changePassword}
+                                .label=${this.hass.localize(
+                                  "ui.panel.config.users.editor.change_password"
+                                )}
+                              >
+                              </ha-icon-button>
+                            `
+                          : nothing
+                      }
+                    </ha-row-item>
+                  `
+                : nothing
+            }
             <ha-row-item>
               <span slot="headline"
                 >${this.hass.localize(
@@ -227,25 +239,29 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
                 @change=${this._adminChanged}
               ></ha-switch>
             </ha-row-item>
-            ${!this._isAdmin && !user.system_generated
+            ${
+              !this._isAdmin && !user.system_generated
+                ? html`
+                    <ha-alert alert-type="info">
+                      ${this.hass.localize(
+                        "ui.panel.config.users.users_privileges_note"
+                      )}
+                    </ha-alert>
+                  `
+                : nothing
+            }
+          </div>
+          ${
+            user.system_generated
               ? html`
                   <ha-alert alert-type="info">
                     ${this.hass.localize(
-                      "ui.panel.config.users.users_privileges_note"
+                      "ui.panel.config.users.editor.system_generated_read_only_users"
                     )}
                   </ha-alert>
                 `
-              : nothing}
-          </div>
-          ${user.system_generated
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.users.editor.system_generated_read_only_users"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
+              : nothing
+          }
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -254,19 +270,21 @@ class DialogUserDetail extends DirtyStateProviderMixin<UserDetailFormState>()(
             variant="danger"
             appearance="plain"
             @click=${this._deleteEntry}
-            .disabled=${this._submitting ||
-            user.system_generated ||
-            user.is_owner}
+            .disabled=${
+              this._submitting || user.system_generated || user.is_owner
+            }
           >
             ${this.hass!.localize("ui.panel.config.users.editor.delete_user")}
           </ha-button>
           <ha-button
             slot="primaryAction"
             @click=${this._updateEntry}
-            .disabled=${!this._name ||
-            this._submitting ||
-            user.system_generated ||
-            !this.isDirtyState}
+            .disabled=${
+              !this._name ||
+              this._submitting ||
+              user.system_generated ||
+              !this.isDirtyState
+            }
           >
             ${this.hass!.localize("ui.common.save")}
           </ha-button>

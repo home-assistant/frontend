@@ -56,11 +56,11 @@ export class HaListItemOption extends HaListItemBase {
 
   protected _renderBase(inner: TemplateResult): TemplateResult {
     return html`<div part="base" class="base" id="item">
-      ${this._renderRipple()}${this.selectionPosition === "start"
-        ? this._renderCheckbox()
-        : nothing}${inner}${this.selectionPosition === "end"
-        ? this._renderCheckbox()
-        : nothing}
+      ${this._renderRipple()}${
+        this.selectionPosition === "start" ? this._renderCheckbox() : nothing
+      }${inner}${
+        this.selectionPosition === "end" ? this._renderCheckbox() : nothing
+      }
     </div>`;
   }
 

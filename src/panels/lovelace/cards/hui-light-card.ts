@@ -149,9 +149,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           </div>
 
           <div id="info" .title=${name}>
-            ${stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
-              ? html` <div>${this.hass.formatEntityState(stateObj)}</div> `
-              : html` <div class="brightness">%</div> `}
+            ${
+              stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
+                ? html` <div>${this.hass.formatEntityState(stateObj)}</div> `
+                : html` <div class="brightness">%</div> `
+            }
             ${name}
           </div>
         </div>
@@ -177,8 +179,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | LightCardConfig
-      | undefined;
+      LightCardConfig | undefined;
 
     if (
       !oldHass ||

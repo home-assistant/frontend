@@ -342,19 +342,21 @@ export class HuiTileCardEditor
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
           ></hui-card-features-editor>
-          ${hasCompatibleFeatures && hasFeatures
-            ? html`
-                <ha-form
-                  class="features-form"
-                  .hass=${this.hass}
-                  .data=${data}
-                  .schema=${featuresSchema}
-                  .computeLabel=${this._computeLabelCallback}
-                  .computeHelper=${this._computeHelperCallback}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `
-            : nothing}
+          ${
+            hasCompatibleFeatures && hasFeatures
+              ? html`
+                  <ha-form
+                    class="features-form"
+                    .hass=${this.hass}
+                    .data=${data}
+                    .schema=${featuresSchema}
+                    .computeLabel=${this._computeLabelCallback}
+                    .computeHelper=${this._computeHelperCallback}
+                    @value-changed=${this._valueChanged}
+                  ></ha-form>
+                `
+              : nothing
+          }
         </div>
       </ha-expansion-panel>
     `;

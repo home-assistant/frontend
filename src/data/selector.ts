@@ -131,8 +131,7 @@ export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
 export type AutomationBehaviorConditionMode = "all" | "any";
 
 export type AutomationBehavior =
-  | AutomationBehaviorTriggerMode
-  | AutomationBehaviorConditionMode;
+  AutomationBehaviorTriggerMode | AutomationBehaviorConditionMode;
 
 export interface AutomationBehaviorSelector {
   automation_behavior: {

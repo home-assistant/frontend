@@ -64,81 +64,96 @@ export class HaThemeSettings extends LitElement {
 
     return html`
       <ha-settings-row .narrow=${this.narrow} ?empty=${!this.showThemePicker}>
-        ${this.heading
-          ? html`<span slot="heading">${this.heading}</span>`
-          : nothing}
-        ${this.description
-          ? html`<span slot="description">${this.description}</span>`
-          : nothing}
-        ${this.showThemePicker
-          ? html`
-              <ha-theme-picker
-                .label=${this.labels?.theme}
-                .noThemeLabel=${this.labels?.noTheme}
-                .value=${themeSettings?.theme || undefined}
-                .disabled=${this.themePickerDisabled}
-                ?include-default=${this.includeDefault}
-                @value-changed=${this._handleThemeSelection}
-              ></ha-theme-picker>
-            `
-          : nothing}
+        ${
+          this.heading
+            ? html`<span slot="heading">${this.heading}</span>`
+            : nothing
+        }
+        ${
+          this.description
+            ? html`<span slot="description">${this.description}</span>`
+            : nothing
+        }
+        ${
+          this.showThemePicker
+            ? html`
+                <ha-theme-picker
+                  .label=${this.labels?.theme}
+                  .noThemeLabel=${this.labels?.noTheme}
+                  .value=${themeSettings?.theme || undefined}
+                  .disabled=${this.themePickerDisabled}
+                  ?include-default=${this.includeDefault}
+                  @value-changed=${this._handleThemeSelection}
+                ></ha-theme-picker>
+              `
+            : nothing
+        }
       </ha-settings-row>
-      ${curTheme === HOME_ASSISTANT_THEME ||
-      (curThemeIsUseDefault &&
-        this.hass.themes.default_dark_theme &&
-        this.hass.themes.default_theme) ||
-      this._supportsModeSelection(curTheme)
-        ? html`<div class="inputs">
-            <ha-radio-group
-              @change=${this._handleDarkMode}
-              name="dark_mode"
-              .ariaLabel=${this.labels?.mode ?? "Theme mode"}
-              .value=${themeSettings?.dark === undefined
-                ? "auto"
-                : themeSettings.dark
-                  ? "dark"
-                  : "light"}
-              orientation="horizontal"
-            >
-              <ha-radio-option value="auto">
-                ${this.labels?.autoMode ?? "Auto"}
-              </ha-radio-option>
-              <ha-radio-option value="light">
-                ${this.labels?.lightMode ?? "Light"}
-              </ha-radio-option>
-              <ha-radio-option value="dark">
-                ${this.labels?.darkMode ?? "Dark"}
-              </ha-radio-option>
-            </ha-radio-group>
-            ${curTheme === HOME_ASSISTANT_THEME
-              ? html`<div class="color-pickers">
-                  <ha-input
-                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
-                    type="color"
-                    .label=${this.labels?.primaryColor ?? "Primary color"}
-                    .name=${"primaryColor"}
-                    @change=${this._handleColorChange}
-                  ></ha-input>
-                  <ha-input
-                    .value=${themeSettings?.accentColor || DefaultAccentColor}
-                    type="color"
-                    .label=${this.labels?.accentColor ?? "Accent color"}
-                    .name=${"accentColor"}
-                    @change=${this._handleColorChange}
-                  ></ha-input>
-                  ${themeSettings?.primaryColor || themeSettings?.accentColor
-                    ? html` <ha-button
-                        appearance="plain"
-                        size="s"
-                        @click=${this._resetColors}
-                      >
-                        ${this.labels?.reset ?? "Reset"}
-                      </ha-button>`
-                    : nothing}
-                </div>`
-              : nothing}
-          </div>`
-        : nothing}
+      ${
+        curTheme === HOME_ASSISTANT_THEME ||
+        (curThemeIsUseDefault &&
+          this.hass.themes.default_dark_theme &&
+          this.hass.themes.default_theme) ||
+        this._supportsModeSelection(curTheme)
+          ? html`<div class="inputs">
+              <ha-radio-group
+                @change=${this._handleDarkMode}
+                name="dark_mode"
+                .ariaLabel=${this.labels?.mode ?? "Theme mode"}
+                .value=${
+                  themeSettings?.dark === undefined
+                    ? "auto"
+                    : themeSettings.dark
+                      ? "dark"
+                      : "light"
+                }
+                orientation="horizontal"
+              >
+                <ha-radio-option value="auto">
+                  ${this.labels?.autoMode ?? "Auto"}
+                </ha-radio-option>
+                <ha-radio-option value="light">
+                  ${this.labels?.lightMode ?? "Light"}
+                </ha-radio-option>
+                <ha-radio-option value="dark">
+                  ${this.labels?.darkMode ?? "Dark"}
+                </ha-radio-option>
+              </ha-radio-group>
+              ${
+                curTheme === HOME_ASSISTANT_THEME
+                  ? html`<div class="color-pickers">
+                      <ha-input
+                        .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
+                        type="color"
+                        .label=${this.labels?.primaryColor ?? "Primary color"}
+                        .name=${"primaryColor"}
+                        @change=${this._handleColorChange}
+                      ></ha-input>
+                      <ha-input
+                        .value=${themeSettings?.accentColor || DefaultAccentColor}
+                        type="color"
+                        .label=${this.labels?.accentColor ?? "Accent color"}
+                        .name=${"accentColor"}
+                        @change=${this._handleColorChange}
+                      ></ha-input>
+                      ${
+                        themeSettings?.primaryColor ||
+                        themeSettings?.accentColor
+                          ? html` <ha-button
+                              appearance="plain"
+                              size="s"
+                              @click=${this._resetColors}
+                            >
+                              ${this.labels?.reset ?? "Reset"}
+                            </ha-button>`
+                          : nothing
+                      }
+                    </div>`
+                  : nothing
+              }
+            </div>`
+          : nothing
+      }
     `;
   }
 

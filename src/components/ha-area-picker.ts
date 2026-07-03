@@ -179,16 +179,20 @@ export class HaAreaPicker extends LitElement {
         const icon = area.icon;
 
         return html`
-          ${icon
-            ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
-            : html`<ha-svg-icon
-                slot="start"
-                .path=${mdiTextureBox}
-              ></ha-svg-icon>`}
+          ${
+            icon
+              ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
+              : html`<ha-svg-icon
+                  slot="start"
+                  .path=${mdiTextureBox}
+                ></ha-svg-icon>`
+          }
           <span slot="headline">${areaName}</span>
-          ${floorName
-            ? html`<span slot="supporting-text">${floorName}</span>`
-            : nothing}
+          ${
+            floorName
+              ? html`<span slot="supporting-text">${floorName}</span>`
+              : nothing
+          }
         `;
       }
   );

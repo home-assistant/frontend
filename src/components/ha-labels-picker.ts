@@ -128,41 +128,45 @@ export class HaLabelsPicker extends LitElement {
         @value-changed=${this._labelChanged}
       >
         <ha-chip-set>
-          ${labels?.length
-            ? repeat(
-                labels,
-                (label) => label?.label_id,
-                (label) => {
-                  if (!label) return nothing;
-                  const elementId = "label-" + label.label_id;
-                  return html`
-                    <ha-tooltip
-                      .for=${elementId}
-                      .disabled=${!label.description?.trim()}
-                    >
-                      ${label.description}
-                    </ha-tooltip>
-                    <ha-input-chip
-                      .item=${label}
-                      .id=${elementId}
-                      @remove=${this._removeItem}
-                      @click=${this._openDetail}
-                      .disabled=${this.disabled}
-                      .label=${label.name}
-                      selected
-                      style=${label.style}
-                    >
-                      ${label.icon
-                        ? html`<ha-icon
-                            slot="icon"
-                            .icon=${label.icon}
-                          ></ha-icon>`
-                        : nothing}
-                    </ha-input-chip>
-                  `;
-                }
-              )
-            : nothing}
+          ${
+            labels?.length
+              ? repeat(
+                  labels,
+                  (label) => label?.label_id,
+                  (label) => {
+                    if (!label) return nothing;
+                    const elementId = "label-" + label.label_id;
+                    return html`
+                      <ha-tooltip
+                        .for=${elementId}
+                        .disabled=${!label.description?.trim()}
+                      >
+                        ${label.description}
+                      </ha-tooltip>
+                      <ha-input-chip
+                        .item=${label}
+                        .id=${elementId}
+                        @remove=${this._removeItem}
+                        @click=${this._openDetail}
+                        .disabled=${this.disabled}
+                        .label=${label.name}
+                        selected
+                        style=${label.style}
+                      >
+                        ${
+                          label.icon
+                            ? html`<ha-icon
+                                slot="icon"
+                                .icon=${label.icon}
+                              ></ha-icon>`
+                            : nothing
+                        }
+                      </ha-input-chip>
+                    `;
+                  }
+                )
+              : nothing
+          }
           <ha-button
             id="picker"
             size="s"

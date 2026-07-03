@@ -266,10 +266,7 @@ export const computeUpdateStateDisplay = (
 };
 
 export type UpdateType =
-  | "addon"
-  | "home_assistant"
-  | "home_assistant_os"
-  | "generic";
+  "addon" | "home_assistant" | "home_assistant_os" | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,

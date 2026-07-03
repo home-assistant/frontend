@@ -76,34 +76,38 @@ class EventSubscribeCard extends LitElement {
     return html`
       <ha-card
         header=${this.hass!.localize(
-          "ui.panel.config.developer-tools.tabs.events.listen_to_events"
+          "ui.panel.config.tools.tabs.events.listen_to_events"
         )}
       >
         <div class="card-content">
           <ha-input
-            .label=${this._subscribed
-              ? this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.listening_to"
-                )
-              : this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.subscribe_to"
-                )}
+            .label=${
+              this._subscribed
+                ? this.hass!.localize(
+                    "ui.panel.config.tools.tabs.events.listening_to"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.config.tools.tabs.events.subscribe_to"
+                  )
+            }
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
             @input=${this._valueChanged}
           ></ha-input>
           <ha-input
             .label=${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.filter_events"
+              "ui.panel.config.tools.tabs.events.filter_events"
             )}
             .value=${this._eventFilter}
             .disabled=${this._subscribed !== undefined}
-            .hint=${`${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.config.developer-tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
+            .hint=${`${this.hass!.localize("ui.panel.config.tools.tabs.events.filter_helper")}${this._ignoredEventsCount ? ` ${this.hass!.localize("ui.panel.config.tools.tabs.events.filter_ignored", { count: this._ignoredEventsCount })}` : ""}`}
             @input=${this._filterChanged}
           ></ha-input>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
         </div>
         <div class="card-actions">
           <ha-button
@@ -111,13 +115,15 @@ class EventSubscribeCard extends LitElement {
             .disabled=${this._eventType === ""}
             @click=${this._startOrStopListening}
           >
-            ${this._subscribed
-              ? this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.stop_listening"
-                )
-              : this.hass!.localize(
-                  "ui.panel.config.developer-tools.tabs.events.start_listening"
-                )}
+            ${
+              this._subscribed
+                ? this.hass!.localize(
+                    "ui.panel.config.tools.tabs.events.stop_listening"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.config.tools.tabs.events.start_listening"
+                  )
+            }
           </ha-button>
           <ha-button
             appearance="plain"
@@ -125,7 +131,7 @@ class EventSubscribeCard extends LitElement {
             @click=${this._clearEvents}
           >
             ${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.clear_events"
+              "ui.panel.config.tools.tabs.events.clear_events"
             )}
           </ha-button>
         </div>
@@ -138,10 +144,10 @@ class EventSubscribeCard extends LitElement {
     if (!this._events.length) {
       const message = this._subscribed
         ? this.hass!.localize(
-            "ui.panel.config.developer-tools.tabs.events.waiting_for_events"
+            "ui.panel.config.tools.tabs.events.waiting_for_events"
           )
         : this.hass!.localize(
-            "ui.panel.config.developer-tools.tabs.events.subscribe_prompt"
+            "ui.panel.config.tools.tabs.events.subscribe_prompt"
           );
       return html`
         <ha-card class="events-card">
@@ -166,7 +172,7 @@ class EventSubscribeCard extends LitElement {
             .path=${mdiChevronDoubleLeft}
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.oldest_event"
+              "ui.panel.config.tools.tabs.events.oldest_event"
             )}
             @click=${this._showOldest}
           ></ha-icon-button>
@@ -174,13 +180,13 @@ class EventSubscribeCard extends LitElement {
             .path=${mdiChevronLeft}
             .disabled=${index >= bufferTotal - 1}
             .label=${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.older_event"
+              "ui.panel.config.tools.tabs.events.older_event"
             )}
             @click=${this._showOlder}
           ></ha-icon-button>
           <div class="event-info">
             ${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.event_fired",
+              "ui.panel.config.tools.tabs.events.event_fired",
               {
                 name: position,
                 time: formatTimeWithSeconds(
@@ -191,29 +197,31 @@ class EventSubscribeCard extends LitElement {
               }
             )}
             <span class="counter">(${bufferPosition} / ${bufferTotal})</span>
-            ${hasRolledOver
-              ? html`
-                  <ha-svg-icon
-                    id="buffer-info"
-                    class="buffer-info"
-                    .path=${mdiInformationOutline}
-                  ></ha-svg-icon>
-                  <ha-tooltip for="buffer-info" placement="bottom">
-                    <span class="buffer-tooltip">
-                      ${this.hass!.localize(
-                        "ui.panel.config.developer-tools.tabs.events.buffer_disclaimer",
-                        { count: MAX_BUFFERED_EVENTS }
-                      )}
-                    </span>
-                  </ha-tooltip>
-                `
-              : nothing}
+            ${
+              hasRolledOver
+                ? html`
+                    <ha-svg-icon
+                      id="buffer-info"
+                      class="buffer-info"
+                      .path=${mdiInformationOutline}
+                    ></ha-svg-icon>
+                    <ha-tooltip for="buffer-info" placement="bottom">
+                      <span class="buffer-tooltip">
+                        ${this.hass!.localize(
+                          "ui.panel.config.tools.tabs.events.buffer_disclaimer",
+                          { count: MAX_BUFFERED_EVENTS }
+                        )}
+                      </span>
+                    </ha-tooltip>
+                  `
+                : nothing
+            }
           </div>
           <ha-icon-button
             .path=${mdiChevronRight}
             .disabled=${atNewest}
             .label=${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.newer_event"
+              "ui.panel.config.tools.tabs.events.newer_event"
             )}
             @click=${this._showNewer}
           ></ha-icon-button>
@@ -221,7 +229,7 @@ class EventSubscribeCard extends LitElement {
             .path=${mdiChevronDoubleRight}
             .disabled=${atNewest}
             .label=${this.hass!.localize(
-              "ui.panel.config.developer-tools.tabs.events.newest_event"
+              "ui.panel.config.tools.tabs.events.newest_event"
             )}
             @click=${this._showNewest}
           ></ha-icon-button>
@@ -354,13 +362,13 @@ class EventSubscribeCard extends LitElement {
           }, this._eventType);
       } catch (error) {
         this._error = this.hass!.localize(
-          "ui.panel.config.developer-tools.tabs.events.subscribe_failed",
+          "ui.panel.config.tools.tabs.events.subscribe_failed",
           {
             error:
               error instanceof Error
                 ? error.message
                 : this.hass!.localize(
-                    "ui.panel.config.developer-tools.tabs.events.unknown_error"
+                    "ui.panel.config.tools.tabs.events.unknown_error"
                   ),
           }
         );

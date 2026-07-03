@@ -78,9 +78,9 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
         ${this._snowflakes.map(
           (flake) => html`
             <svg
-              class="snowflake ${this.narrow && flake.id >= 30
-                ? "hide-narrow"
-                : ""}"
+              class="snowflake ${
+                this.narrow && flake.id >= 30 ? "hide-narrow" : ""
+              }"
               style="
                 left: ${flake.left}%;
                 width: ${flake.size}px;

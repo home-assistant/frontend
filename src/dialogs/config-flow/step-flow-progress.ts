@@ -26,15 +26,17 @@ class StepFlowProgress extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
-        ${this.progress
-          ? html`
-              <ha-progress-ring .value=${this.progress} size="large"
-                >${this.progress}${blankBeforePercent(
-                  this.hass.locale
-                )}%</ha-progress-ring
-              >
-            `
-          : html`<ha-spinner size="large"></ha-spinner>`}
+        ${
+          this.progress
+            ? html`
+                <ha-progress-ring .value=${this.progress} size="large"
+                  >${this.progress}${blankBeforePercent(
+                    this.hass.locale
+                  )}%</ha-progress-ring
+                >
+              `
+            : html`<ha-spinner size="large"></ha-spinner>`
+        }
         ${this.flowConfig.renderShowFormProgressDescription(
           this.hass,
           this.step

@@ -112,8 +112,9 @@ class HaStatisticsPicker extends LitElement {
       <div>
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeStatisticsUnitOfMeasurement=${this
-            .includeStatisticsUnitOfMeasurement}
+          .includeStatisticsUnitOfMeasurement=${
+            this.includeStatisticsUnitOfMeasurement
+          }
           .includeUnitClass=${this.includeUnitClass}
           .includeDeviceClass=${this.includeDeviceClass}
           .statisticTypes=${this.statisticTypes}

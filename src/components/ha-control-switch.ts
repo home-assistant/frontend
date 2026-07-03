@@ -176,13 +176,15 @@ export class HaControlSwitch extends LitElement {
       >
         <div class="background"></div>
         <div class="button" aria-hidden="true">
-          ${this.checked
-            ? this.pathOn
-              ? html`<ha-svg-icon .path=${this.pathOn}></ha-svg-icon>`
-              : html`<slot name="icon-on"></slot>`
-            : this.pathOff
-              ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
-              : html`<slot name="icon-off"></slot>`}
+          ${
+            this.checked
+              ? this.pathOn
+                ? html`<ha-svg-icon .path=${this.pathOn}></ha-svg-icon>`
+                : html`<slot name="icon-on"></slot>`
+              : this.pathOff
+                ? html`<ha-svg-icon .path=${this.pathOff}></ha-svg-icon>`
+                : html`<slot name="icon-off"></slot>`
+          }
         </div>
       </div>
     `;

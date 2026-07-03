@@ -153,29 +153,33 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${!this._hideWakeWord ||
-        this._params.hideWakeWord ||
-        !this._hasWakeWorkEntities(this.hass.states)
-          ? nothing
-          : html`<ha-dropdown
-              slot="headerActionItems"
-              @wa-select=${this._handleDropdownSelect}
-              placement="bottom-end"
-            >
-              <ha-icon-button
-                .path=${mdiDotsVertical}
-                slot="trigger"
-              ></ha-icon-button>
-              <ha-dropdown-item value="show_wake_word">
-                ${this.hass.localize(
-                  "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
-                )}
-              </ha-dropdown-item></ha-dropdown
-            >`}
+        ${
+          !this._hideWakeWord ||
+          this._params.hideWakeWord ||
+          !this._hasWakeWorkEntities(this.hass.states)
+            ? nothing
+            : html`<ha-dropdown
+                slot="headerActionItems"
+                @wa-select=${this._handleDropdownSelect}
+                placement="bottom-end"
+              >
+                <ha-icon-button
+                  .path=${mdiDotsVertical}
+                  slot="trigger"
+                ></ha-icon-button>
+                <ha-dropdown-item value="show_wake_word">
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_streaming_wake_word"
+                  )}
+                </ha-dropdown-item></ha-dropdown
+              >`
+        }
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
           <assist-pipeline-detail-config
             .hass=${this.hass}
             .data=${this._data}
@@ -190,22 +194,24 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
             keys="conversation_engine,conversation_language,prefer_local_intents"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-conversation>
-          ${!this._cloudActive &&
-          (this._data.tts_engine === "cloud" ||
-            this._data.stt_engine === "cloud")
-            ? html`
-                <ha-alert alert-type="warning">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
-                  )}
-                  <ha-button size="s" href="/config/cloud" slot="action">
+          ${
+            !this._cloudActive &&
+            (this._data.tts_engine === "cloud" ||
+              this._data.stt_engine === "cloud")
+              ? html`
+                  <ha-alert alert-type="warning">
                     ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
+                      "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_message"
                     )}
-                  </ha-button>
-                </ha-alert>
-              `
-            : nothing}
+                    <ha-button size="s" href="/config/cloud" slot="action">
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.pipeline.detail.no_cloud_action"
+                      )}
+                    </ha-button>
+                  </ha-alert>
+                `
+              : nothing
+          }
           <assist-pipeline-detail-stt
             .hass=${this.hass}
             .data=${this._data}
@@ -218,14 +224,16 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
             keys="tts_engine,tts_language,tts_voice"
             @value-changed=${this._valueChanged}
           ></assist-pipeline-detail-tts>
-          ${this._hideWakeWord
-            ? nothing
-            : html`<assist-pipeline-detail-wakeword
-                .hass=${this.hass}
-                .data=${this._data}
-                keys="wake_word_entity,wake_word_id"
-                @value-changed=${this._valueChanged}
-              ></assist-pipeline-detail-wakeword>`}
+          ${
+            this._hideWakeWord
+              ? nothing
+              : html`<assist-pipeline-detail-wakeword
+                  .hass=${this.hass}
+                  .data=${this._data}
+                  keys="wake_word_entity,wake_word_id"
+                  @value-changed=${this._valueChanged}
+                ></assist-pipeline-detail-wakeword>`
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -241,13 +249,15 @@ export class DialogVoiceAssistantPipelineDetail extends DirtyStateProviderMixin<
             .loading=${this._submitting}
             .disabled=${!this.isDirtyState}
           >
-            ${isExistingPipeline
-              ? this.hass.localize(
-                  "ui.panel.config.voice_assistants.assistants.pipeline.detail.update_assistant_action"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_action"
-                )}
+            ${
+              isExistingPipeline
+                ? this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.update_assistant_action"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.pipeline.detail.add_assistant_action"
+                  )
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

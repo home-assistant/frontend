@@ -157,9 +157,11 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
 
           <div class="flex">
             <ha-checkbox
@@ -181,102 +183,117 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
               .disabled=${!canUpdate}
             ></ha-input>
           </div>
-          ${this._completedTime
-            ? html`<div class="italic">
-                ${this.hass.localize("ui.components.todo.item.completed_time", {
-                  datetime: formatShortDateTimeWithConditionalYear(
-                    this._completedTime,
-                    this.hass.locale,
-                    this.hass.config
-                  ),
-                })}
-              </div>`
-            : nothing}
-          ${this._todoListSupportsFeature(
-            TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
-          )
-            ? html`<ha-textarea
-                class="description"
-                name="description"
-                .label=${this.hass.localize(
-                  "ui.components.todo.item.description"
-                )}
-                .hint=${supportsMarkdownHelper(this.hass.localize)}
-                .value=${this._description}
-                @input=${this._handleDescriptionChanged}
-                resize="auto"
-                .disabled=${!canUpdate}
-              ></ha-textarea>`
-            : nothing}
-          ${this._todoListSupportsFeature(
-            TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
-          ) ||
-          this._todoListSupportsFeature(
-            TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
-          )
-            ? html`<div>
-                <span class="label"
-                  >${this.hass.localize("ui.components.todo.item.due")}:</span
-                >
-                <div class="flex">
-                  <ha-date-input
-                    .value=${dueDate}
-                    .locale=${this.hass.locale}
-                    .disabled=${!canUpdate}
-                    @value-changed=${this._dueDateChanged}
-                    can-clear
-                  ></ha-date-input>
-                  ${this._todoListSupportsFeature(
-                    TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
-                  )
-                    ? html`<ha-time-input
-                        .value=${dueTime}
-                        .locale=${this.hass.locale}
-                        .disabled=${!canUpdate}
-                        @value-changed=${this._dueTimeChanged}
-                      ></ha-time-input>`
-                    : nothing}
-                </div>
-              </div>`
-            : nothing}
+          ${
+            this._completedTime
+              ? html`<div class="italic">
+                  ${this.hass.localize(
+                    "ui.components.todo.item.completed_time",
+                    {
+                      datetime: formatShortDateTimeWithConditionalYear(
+                        this._completedTime,
+                        this.hass.locale,
+                        this.hass.config
+                      ),
+                    }
+                  )}
+                </div>`
+              : nothing
+          }
+          ${
+            this._todoListSupportsFeature(
+              TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
+            )
+              ? html`<ha-textarea
+                  class="description"
+                  name="description"
+                  .label=${this.hass.localize(
+                    "ui.components.todo.item.description"
+                  )}
+                  .hint=${supportsMarkdownHelper(this.hass.localize)}
+                  .value=${this._description}
+                  @input=${this._handleDescriptionChanged}
+                  resize="auto"
+                  .disabled=${!canUpdate}
+                ></ha-textarea>`
+              : nothing
+          }
+          ${
+            this._todoListSupportsFeature(
+              TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
+            ) ||
+            this._todoListSupportsFeature(
+              TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+            )
+              ? html`<div>
+                  <span class="label"
+                    >${this.hass.localize("ui.components.todo.item.due")}:</span
+                  >
+                  <div class="flex">
+                    <ha-date-input
+                      .value=${dueDate}
+                      .locale=${this.hass.locale}
+                      .disabled=${!canUpdate}
+                      @value-changed=${this._dueDateChanged}
+                      can-clear
+                    ></ha-date-input>
+                    ${
+                      this._todoListSupportsFeature(
+                        TodoListEntityFeature.SET_DUE_DATETIME_ON_ITEM
+                      )
+                        ? html`<ha-time-input
+                            .value=${dueTime}
+                            .locale=${this.hass.locale}
+                            .disabled=${!canUpdate}
+                            @value-changed=${this._dueTimeChanged}
+                          ></ha-time-input>`
+                        : nothing
+                    }
+                  </div>
+                </div>`
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
-          ${isCreate
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._createItem}
-                  .disabled=${this._submitting || !this.isDirtyState}
-                >
-                  ${this.hass.localize("ui.components.todo.item.add")}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._saveItem}
-                  .disabled=${!canUpdate ||
-                  this._submitting ||
-                  !this.isDirtyState}
-                >
-                  ${this.hass.localize("ui.components.todo.item.save")}
-                </ha-button>
-                ${this._todoListSupportsFeature(
-                  TodoListEntityFeature.DELETE_TODO_ITEM
-                )
-                  ? html`
-                      <ha-button
-                        slot="secondaryAction"
-                        variant="danger"
-                        appearance="plain"
-                        @click=${this._deleteItem}
-                        .disabled=${this._submitting}
-                      >
-                        ${this.hass.localize("ui.components.todo.item.delete")}
-                      </ha-button>
-                    `
-                  : ""}
-              `}
+          ${
+            isCreate
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._createItem}
+                    .disabled=${this._submitting || !this.isDirtyState}
+                  >
+                    ${this.hass.localize("ui.components.todo.item.add")}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._saveItem}
+                    .disabled=${
+                      !canUpdate || this._submitting || !this.isDirtyState
+                    }
+                  >
+                    ${this.hass.localize("ui.components.todo.item.save")}
+                  </ha-button>
+                  ${
+                    this._todoListSupportsFeature(
+                      TodoListEntityFeature.DELETE_TODO_ITEM
+                    )
+                      ? html`
+                          <ha-button
+                            slot="secondaryAction"
+                            variant="danger"
+                            appearance="plain"
+                            @click=${this._deleteItem}
+                            .disabled=${this._submitting}
+                          >
+                            ${this.hass.localize("ui.components.todo.item.delete")}
+                          </ha-button>
+                        `
+                      : ""
+                  }
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

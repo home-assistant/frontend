@@ -167,85 +167,91 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     const label = this.useTopLabel && this.value ? undefined : this.label;
 
     return html`<div class="container">
-        ${this.useTopLabel && this.label
-          ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
-          : nothing}
+        ${
+          this.useTopLabel && this.label
+            ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+            : nothing
+        }
         <div id="picker">
           <slot name="field">
-            ${this.addButtonLabel && !this.value
-              ? html`<ha-button
-                  size="s"
-                  appearance="filled"
-                  @click=${this.open}
-                  .disabled=${this.disabled}
-                >
-                  <ha-svg-icon
-                    .path=${mdiPlaylistPlus}
-                    slot="start"
-                  ></ha-svg-icon>
-                  ${this.addButtonLabel}
-                </ha-button>`
-              : html`<ha-picker-field
-                  type="button"
-                  class=${this._opened ? "opened" : ""}
-                  compact
-                  .unknown=${this._unknownValue}
-                  .unknownItemText=${this.unknownItemText}
-                  aria-label=${ifDefined(this.label)}
-                  @click=${this.open}
-                  @clear=${this._clear}
-                  .icon=${this.icon}
-                  .image=${this.image}
-                  .label=${label}
-                  .placeholder=${this.placeholder}
-                  .value=${this.value}
-                  .valueRenderer=${this.valueRenderer}
-                  .required=${this.required}
-                  .disabled=${this.disabled}
-                  .invalid=${this.invalid}
-                  .hideClearIcon=${this.hideClearIcon}
-                >
-                  <slot name="start"></slot>
-                </ha-picker-field>`}
+            ${
+              this.addButtonLabel && !this.value
+                ? html`<ha-button
+                    size="s"
+                    appearance="filled"
+                    @click=${this.open}
+                    .disabled=${this.disabled}
+                  >
+                    <ha-svg-icon
+                      .path=${mdiPlaylistPlus}
+                      slot="start"
+                    ></ha-svg-icon>
+                    ${this.addButtonLabel}
+                  </ha-button>`
+                : html`<ha-picker-field
+                    type="button"
+                    class=${this._opened ? "opened" : ""}
+                    compact
+                    .unknown=${this._unknownValue}
+                    .unknownItemText=${this.unknownItemText}
+                    aria-label=${ifDefined(this.label)}
+                    @click=${this.open}
+                    @clear=${this._clear}
+                    .icon=${this.icon}
+                    .image=${this.image}
+                    .label=${label}
+                    .placeholder=${this.placeholder}
+                    .value=${this.value}
+                    .valueRenderer=${this.valueRenderer}
+                    .required=${this.required}
+                    .disabled=${this.disabled}
+                    .invalid=${this.invalid}
+                    .hideClearIcon=${this.hideClearIcon}
+                  >
+                    <slot name="start"></slot>
+                  </ha-picker-field>`
+            }
           </slot>
         </div>
-        ${this._pickerWrapperOpen || this._opened
-          ? this._openedNarrow
-            ? html`
-                <ha-bottom-sheet
-                  flexcontent
-                  .open=${this._pickerWrapperOpen}
-                  @wa-after-show=${this._dialogOpened}
-                  @closed=${this._hidePicker}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label=${this.label || "Select option"}
-                >
-                  ${this._renderComboBox(true)}
-                </ha-bottom-sheet>
-              `
-            : html`
-                <wa-popover
-                  .open=${this._pickerWrapperOpen}
-                  style="--body-width: ${this._popoverWidth}px;"
-                  without-arrow
-                  distance="-4"
-                  .placement=${this.popoverPlacement}
-                  .for=${this.popoverAnchor ? null : "picker"}
-                  .anchor=${this.popoverAnchor ?? null}
-                  auto-size="vertical"
-                  auto-size-padding="16"
-                  @wa-after-show=${this._dialogOpened}
-                  @wa-after-hide=${this._hidePicker}
-                  trap-focus
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label=${this.label || "Select option"}
-                >
-                  ${this._renderComboBox()}
-                </wa-popover>
-              `
-          : nothing}
+        ${
+          this._pickerWrapperOpen || this._opened
+            ? this._openedNarrow
+              ? html`
+                  <ha-bottom-sheet
+                    flexcontent
+                    .open=${this._pickerWrapperOpen}
+                    @wa-after-show=${this._dialogOpened}
+                    @closed=${this._hidePicker}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label=${this.label || "Select option"}
+                  >
+                    ${this._renderComboBox(true)}
+                  </ha-bottom-sheet>
+                `
+              : html`
+                  <wa-popover
+                    .open=${this._pickerWrapperOpen}
+                    style="--body-width: ${this._popoverWidth}px;"
+                    without-arrow
+                    distance="-4"
+                    .placement=${this.popoverPlacement}
+                    .for=${this.popoverAnchor ? null : "picker"}
+                    .anchor=${this.popoverAnchor ?? null}
+                    auto-size="vertical"
+                    auto-size-padding="16"
+                    @wa-after-show=${this._dialogOpened}
+                    @wa-after-hide=${this._hidePicker}
+                    trap-focus
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label=${this.label || "Select option"}
+                  >
+                    ${this._renderComboBox()}
+                  </wa-popover>
+                `
+            : nothing
+        }
       </div>
       ${this._renderHelper()}`;
   }

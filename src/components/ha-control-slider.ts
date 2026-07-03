@@ -360,25 +360,27 @@ export class HaControlSlider extends LitElement {
         >
           <div class="slider-track-background"></div>
           <slot name="background"></slot>
-          ${this.mode === "cursor"
-            ? this.value != null
-              ? html`
+          ${
+            this.mode === "cursor"
+              ? this.value != null
+                ? html`
+                    <div
+                      class=${classMap({
+                        "slider-track-cursor": true,
+                      })}
+                    ></div>
+                  `
+                : null
+              : html`
                   <div
                     class=${classMap({
-                      "slider-track-cursor": true,
+                      "slider-track-bar": true,
+                      [this.mode ?? "start"]: true,
+                      "show-handle": this.showHandle,
                     })}
                   ></div>
                 `
-              : null
-            : html`
-                <div
-                  class=${classMap({
-                    "slider-track-bar": true,
-                    [this.mode ?? "start"]: true,
-                    "show-handle": this.showHandle,
-                  })}
-                ></div>
-              `}
+          }
         </div>
         ${this._renderTooltip()}
       </div>

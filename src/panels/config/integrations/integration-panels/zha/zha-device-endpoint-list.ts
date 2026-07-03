@@ -85,55 +85,63 @@ export class ZHADeviceEndpointList extends LitElement {
           this.scrollable ? "scrollable" : ""
         }`}
       >
-        ${showSearch
-          ? html`
-              <div class="search">
-                <ha-input-search
-                  appearance="outlined"
-                  .value=${this._filter}
-                  @input=${this._handleFilterChanged}
-                ></ha-input-search>
-              </div>
-            `
-          : ""}
-        ${deviceEndpoints.length
-          ? html`
-              ${this.selectable
-                ? html`
-                    <ha-list-selectable
-                      multi
-                      @ha-list-item-selected=${this._handleItemSelected}
-                      @ha-list-item-deselected=${this._handleItemDeselected}
-                    >
-                      ${repeat(
-                        deviceEndpoints,
-                        (deviceEndpoint) => deviceEndpoint.id,
-                        (deviceEndpoint) =>
-                          this._renderSelectableListRow(deviceEndpoint)
-                      )}
-                    </ha-list-selectable>
-                  `
-                : html`
-                    <ha-list>
-                      ${repeat(
-                        deviceEndpoints,
-                        (deviceEndpoint) => deviceEndpoint.id,
-                        (deviceEndpoint) =>
-                          this._renderReadonlyListRow(deviceEndpoint)
-                      )}
-                    </ha-list>
-                  `}
-            `
-          : html`
-              <div class="empty-list">
-                ${this._filter
-                  ? this._i18n.localize(
-                      "ui.panel.config.zha.groups.no_devices_found"
-                    )
-                  : this.emptyText ||
-                    this._i18n.localize("ui.components.data-table.no-data")}
-              </div>
-            `}
+        ${
+          showSearch
+            ? html`
+                <div class="search">
+                  <ha-input-search
+                    appearance="outlined"
+                    .value=${this._filter}
+                    @input=${this._handleFilterChanged}
+                  ></ha-input-search>
+                </div>
+              `
+            : ""
+        }
+        ${
+          deviceEndpoints.length
+            ? html`
+                ${
+                  this.selectable
+                    ? html`
+                        <ha-list-selectable
+                          multi
+                          @ha-list-item-selected=${this._handleItemSelected}
+                          @ha-list-item-deselected=${this._handleItemDeselected}
+                        >
+                          ${repeat(
+                            deviceEndpoints,
+                            (deviceEndpoint) => deviceEndpoint.id,
+                            (deviceEndpoint) =>
+                              this._renderSelectableListRow(deviceEndpoint)
+                          )}
+                        </ha-list-selectable>
+                      `
+                    : html`
+                        <ha-list>
+                          ${repeat(
+                            deviceEndpoints,
+                            (deviceEndpoint) => deviceEndpoint.id,
+                            (deviceEndpoint) =>
+                              this._renderReadonlyListRow(deviceEndpoint)
+                          )}
+                        </ha-list>
+                      `
+                }
+              `
+            : html`
+                <div class="empty-list">
+                  ${
+                    this._filter
+                      ? this._i18n.localize(
+                          "ui.panel.config.zha.groups.no_devices_found"
+                        )
+                      : this.emptyText ||
+                        this._i18n.localize("ui.components.data-table.no-data")
+                  }
+                </div>
+              `
+        }
       </ha-card>
     `;
   }
@@ -170,19 +178,21 @@ export class ZHADeviceEndpointList extends LitElement {
         <span slot="supporting-text">
           ${this._deviceEndpointDetails(deviceEndpoint)}
         </span>
-        ${this.showDeviceLink
-          ? html`
-              <ha-icon-button
-                slot="end"
-                .path=${mdiOpenInNew}
-                .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
-                .label=${this._i18n.localize(
-                  "ui.panel.config.zha.groups.open_device"
-                )}
-                @click=${this._stopPropagation}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.showDeviceLink
+            ? html`
+                <ha-icon-button
+                  slot="end"
+                  .path=${mdiOpenInNew}
+                  .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
+                  .label=${this._i18n.localize(
+                    "ui.panel.config.zha.groups.open_device"
+                  )}
+                  @click=${this._stopPropagation}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
       </ha-list-item-option>
     `;
   }
@@ -196,18 +206,20 @@ export class ZHADeviceEndpointList extends LitElement {
         <span slot="supporting-text">
           ${this._deviceEndpointDetails(deviceEndpoint)}
         </span>
-        ${this.showDeviceLink
-          ? html`
-              <ha-icon-button
-                slot="end"
-                .path=${mdiOpenInNew}
-                .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
-                .label=${this._i18n.localize(
-                  "ui.panel.config.zha.groups.open_device"
-                )}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.showDeviceLink
+            ? html`
+                <ha-icon-button
+                  slot="end"
+                  .path=${mdiOpenInNew}
+                  .href=${`/config/devices/device/${deviceEndpoint.dev_id}`}
+                  .label=${this._i18n.localize(
+                    "ui.panel.config.zha.groups.open_device"
+                  )}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
       </ha-list-item-base>
     `;
   }

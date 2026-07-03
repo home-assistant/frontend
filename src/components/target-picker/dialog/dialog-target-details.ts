@@ -168,21 +168,23 @@ class DialogTargetDetails extends LitElement implements HassDialog {
             .ariaLabel=${`${this.hass.localize(`ui.components.target-picker.type.${this._params.type}`)}: ${this._params.title}`}
             wrap-focus
           >
-            ${waitingForSources
-              ? nothing
-              : html`
-                  <ha-target-picker-item-row
-                    .hass=${this.hass}
-                    .type=${this._params.type}
-                    .itemId=${this._params.itemId}
-                    .deviceFilter=${deviceFilter}
-                    .entityFilter=${entityFilter}
-                    .includeDomains=${includeDomains}
-                    .includeDeviceClasses=${includeDeviceClasses}
-                    .primaryEntitiesOnly=${primaryEntitiesOnly}
-                    expand
-                  ></ha-target-picker-item-row>
-                `}
+            ${
+              waitingForSources
+                ? nothing
+                : html`
+                    <ha-target-picker-item-row
+                      .hass=${this.hass}
+                      .type=${this._params.type}
+                      .itemId=${this._params.itemId}
+                      .deviceFilter=${deviceFilter}
+                      .entityFilter=${entityFilter}
+                      .includeDomains=${includeDomains}
+                      .includeDeviceClasses=${includeDeviceClasses}
+                      .primaryEntitiesOnly=${primaryEntitiesOnly}
+                      expand
+                    ></ha-target-picker-item-row>
+                  `
+            }
           </ha-list-base>
         </div>
       </ha-adaptive-dialog>

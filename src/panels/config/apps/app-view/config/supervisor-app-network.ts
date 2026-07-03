@@ -61,9 +61,11 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
               "ui.panel.config.apps.configuration.network.introduction"
             )}
           </p>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
 
           <ha-form
             .disabled=${this.disabled}
@@ -74,20 +76,22 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
             .schema=${this._createSchema(this._config, this._showOptional)}
           ></ha-form>
         </div>
-        ${hasHiddenOptions
-          ? html`<ha-formfield
-              class="show-optional"
-              .label=${this.hass.localize(
-                "ui.panel.config.apps.configuration.network.show_disabled"
-              )}
-            >
-              <ha-switch
-                @change=${this._toggleOptional}
-                .checked=${this._showOptional}
+        ${
+          hasHiddenOptions
+            ? html`<ha-formfield
+                class="show-optional"
+                .label=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.network.show_disabled"
+                )}
               >
-              </ha-switch>
-            </ha-formfield>`
-          : nothing}
+                <ha-switch
+                  @change=${this._toggleOptional}
+                  .checked=${this._showOptional}
+                >
+                </ha-switch>
+              </ha-formfield>`
+            : nothing
+        }
         <div class="card-actions">
           <ha-progress-button
             variant="danger"

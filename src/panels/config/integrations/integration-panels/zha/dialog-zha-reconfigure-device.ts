@@ -82,245 +82,273 @@ class DialogZHAReconfigureDevice extends LitElement {
       <ha-dialog
         .open=${this._open}
         width="large"
-        header-title=${this.hass.localize(
-          `ui.dialogs.zha_reconfigure_device.heading`
-        ) +
-        ": " +
-        (this._params.device.user_given_name || this._params.device.name)}
+        header-title=${
+          this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`) +
+          ": " +
+          (this._params.device.user_given_name || this._params.device.name)
+        }
         @closed=${this._dialogClosed}
       >
-        ${!this._status
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.dialogs.zha_reconfigure_device.introduction"
-                )}
-              </p>
-              <p>
-                <em>
+        ${
+          !this._status
+            ? html`
+                <p>
                   ${this.hass.localize(
-                    "ui.dialogs.zha_reconfigure_device.battery_device_warning"
+                    "ui.dialogs.zha_reconfigure_device.introduction"
                   )}
-                </em>
-              </p>
-            `
-          : ``}
-        ${this._status === "started"
-          ? html`
-              <div class="flex-container">
-                <ha-spinner></ha-spinner>
-                <div class="status">
-                  <p>
-                    <b>
+                </p>
+                <p>
+                  <em>
+                    ${this.hass.localize(
+                      "ui.dialogs.zha_reconfigure_device.battery_device_warning"
+                    )}
+                  </em>
+                </p>
+              `
+            : ``
+        }
+        ${
+          this._status === "started"
+            ? html`
+                <div class="flex-container">
+                  <ha-spinner></ha-spinner>
+                  <div class="status">
+                    <p>
+                      <b>
+                        ${this.hass.localize(
+                          "ui.dialogs.zha_reconfigure_device.in_progress"
+                        )}
+                      </b>
+                    </p>
+                    <p>
                       ${this.hass.localize(
-                        "ui.dialogs.zha_reconfigure_device.in_progress"
+                        "ui.dialogs.zha_reconfigure_device.run_in_background"
                       )}
-                    </b>
-                  </p>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.dialogs.zha_reconfigure_device.run_in_background"
-                    )}
-                  </p>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.dialogs.zha_reconfigure_device.configuration_failed"
-                    )}
-                  </p>
+              `
+            : ``
+        }
+        ${
+          this._status === "failed"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCloseCircle}
+                    class="failed"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.dialogs.zha_reconfigure_device.configuration_failed"
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "finished"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.dialogs.zha_reconfigure_device.configuration_complete"
-                    )}
-                  </p>
+              `
+            : ``
+        }
+        ${
+          this._status === "finished"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCheckCircle}
+                    class="success"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.dialogs.zha_reconfigure_device.configuration_complete"
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            `
-          : ``}
-        ${this._stages
-          ? html`
-              <div class="stages">
-                ${this._stages.map(
-                  (stage) => html`
-                    <span class="stage">
-                      <ha-svg-icon
-                        .path=${mdiCheckCircle}
-                        class="success"
-                      ></ha-svg-icon>
-                      ${stage}
-                    </span>
-                  `
-                )}
-              </div>
-            `
-          : ""}
-        ${this._showDetails
-          ? html`
-              <div class="wrapper">
-                <h2 class="grid-item">
-                  ${this.hass.localize(
-                    `ui.dialogs.zha_reconfigure_device.cluster_header`
+              `
+            : ``
+        }
+        ${
+          this._stages
+            ? html`
+                <div class="stages">
+                  ${this._stages.map(
+                    (stage) => html`
+                      <span class="stage">
+                        <ha-svg-icon
+                          .path=${mdiCheckCircle}
+                          class="success"
+                        ></ha-svg-icon>
+                        ${stage}
+                      </span>
+                    `
                   )}
-                </h2>
-                <h2 class="grid-item">
-                  ${this.hass.localize(
-                    `ui.dialogs.zha_reconfigure_device.bind_header`
-                  )}
-                </h2>
-                <h2 class="grid-item">
-                  ${this.hass.localize(
-                    `ui.dialogs.zha_reconfigure_device.reporting_header`
-                  )}
-                </h2>
+                </div>
+              `
+            : ""
+        }
+        ${
+          this._showDetails
+            ? html`
+                <div class="wrapper">
+                  <h2 class="grid-item">
+                    ${this.hass.localize(
+                      `ui.dialogs.zha_reconfigure_device.cluster_header`
+                    )}
+                  </h2>
+                  <h2 class="grid-item">
+                    ${this.hass.localize(
+                      `ui.dialogs.zha_reconfigure_device.bind_header`
+                    )}
+                  </h2>
+                  <h2 class="grid-item">
+                    ${this.hass.localize(
+                      `ui.dialogs.zha_reconfigure_device.reporting_header`
+                    )}
+                  </h2>
 
-                ${this._clusterConfigurationStatuses?.size
-                  ? html`
-                      ${Array.from(
-                        this._clusterConfigurationStatuses.values()
-                      ).map(
-                        (clusterStatus) => html`
-                          <div class="grid-item">
-                            ${clusterStatus.cluster.name}
-                          </div>
-                          <div class="grid-item">
-                            ${clusterStatus.bindSuccess !== undefined
-                              ? clusterStatus.bindSuccess
-                                ? html`
-                                    <span class="stage">
-                                      <ha-svg-icon
-                                        .path=${mdiCheckCircle}
-                                        class="success"
-                                      ></ha-svg-icon>
-                                    </span>
-                                  `
-                                : html`
-                                    <span class="stage">
-                                      <ha-svg-icon
-                                        .path=${mdiCloseCircle}
-                                        class="failed"
-                                      ></ha-svg-icon>
-                                    </span>
-                                  `
-                              : ""}
-                          </div>
-                          <div class="grid-item">
-                            ${clusterStatus.attributes.size > 0
-                              ? html`
-                                  <div class="attributes">
-                                    <div class="grid-item">
-                                      ${this.hass.localize(
-                                        `ui.dialogs.zha_reconfigure_device.attribute`
-                                      )}
-                                    </div>
-                                    <div class="grid-item">
-                                      <div>
-                                        ${this.hass.localize(
-                                          `ui.dialogs.zha_reconfigure_device.min_max_change`
-                                        )}
-                                      </div>
-                                    </div>
-                                    ${Array.from(
-                                      clusterStatus.attributes.values()
-                                    ).map(
-                                      (attribute) => html`
-                                        <span class="grid-item">
-                                          ${attribute.name}:
-                                          ${attribute.status === "SUCCESS"
-                                            ? html`
-                                                <span class="stage">
-                                                  <ha-svg-icon
-                                                    .path=${mdiCheckCircle}
-                                                    class="success"
-                                                  ></ha-svg-icon>
-                                                </span>
-                                              `
-                                            : html`
-                                                <span class="stage">
-                                                  <ha-svg-icon
-                                                    .id="svg-icon-${clusterStatus
-                                                      .cluster.name}"
-                                                    .path=${mdiCloseCircle}
-                                                    class="failed"
-                                                  ></ha-svg-icon>
-                                                  <ha-tooltip
-                                                    .for="svg-icon-${clusterStatus
-                                                      .cluster.name}"
-                                                    placement="top"
-                                                  >
-                                                    ${attribute.status}
-                                                  </ha-tooltip>
-                                                </span>
-                                              `}
-                                        </span>
-                                        <div class="grid-item">
-                                          ${attribute.min}/${attribute.max}/${attribute.change}
+                  ${
+                    this._clusterConfigurationStatuses?.size
+                      ? html`
+                          ${Array.from(
+                            this._clusterConfigurationStatuses.values()
+                          ).map(
+                            (clusterStatus) => html`
+                              <div class="grid-item">
+                                ${clusterStatus.cluster.name}
+                              </div>
+                              <div class="grid-item">
+                                ${
+                                  clusterStatus.bindSuccess !== undefined
+                                    ? clusterStatus.bindSuccess
+                                      ? html`
+                                          <span class="stage">
+                                            <ha-svg-icon
+                                              .path=${mdiCheckCircle}
+                                              class="success"
+                                            ></ha-svg-icon>
+                                          </span>
+                                        `
+                                      : html`
+                                          <span class="stage">
+                                            <ha-svg-icon
+                                              .path=${mdiCloseCircle}
+                                              class="failed"
+                                            ></ha-svg-icon>
+                                          </span>
+                                        `
+                                    : ""
+                                }
+                              </div>
+                              <div class="grid-item">
+                                ${
+                                  clusterStatus.attributes.size > 0
+                                    ? html`
+                                        <div class="attributes">
+                                          <div class="grid-item">
+                                            ${this.hass.localize(
+                                              `ui.dialogs.zha_reconfigure_device.attribute`
+                                            )}
+                                          </div>
+                                          <div class="grid-item">
+                                            <div>
+                                              ${this.hass.localize(
+                                                `ui.dialogs.zha_reconfigure_device.min_max_change`
+                                              )}
+                                            </div>
+                                          </div>
+                                          ${Array.from(
+                                            clusterStatus.attributes.values()
+                                          ).map(
+                                            (attribute) => html`
+                                              <span class="grid-item">
+                                                ${attribute.name}:
+                                                ${
+                                                  attribute.status === "SUCCESS"
+                                                    ? html`
+                                                        <span class="stage">
+                                                          <ha-svg-icon
+                                                            .path=${mdiCheckCircle}
+                                                            class="success"
+                                                          ></ha-svg-icon>
+                                                        </span>
+                                                      `
+                                                    : html`
+                                                        <span class="stage">
+                                                          <ha-svg-icon
+                                                            .id="svg-icon-${
+                                                              clusterStatus
+                                                                .cluster.name
+                                                            }"
+                                                            .path=${mdiCloseCircle}
+                                                            class="failed"
+                                                          ></ha-svg-icon>
+                                                          <ha-tooltip
+                                                            .for="svg-icon-${
+                                                              clusterStatus
+                                                                .cluster.name
+                                                            }"
+                                                            placement="top"
+                                                          >
+                                                            ${attribute.status}
+                                                          </ha-tooltip>
+                                                        </span>
+                                                      `
+                                                }
+                                              </span>
+                                              <div class="grid-item">
+                                                ${attribute.min}/${attribute.max}/${attribute.change}
+                                              </div>
+                                            `
+                                          )}
                                         </div>
                                       `
-                                    )}
-                                  </div>
-                                `
-                              : ""}
-                          </div>
+                                    : ""
+                                }
+                              </div>
+                            `
+                          )}
                         `
-                      )}
-                    `
-                  : ""}
-              </div>
-            `
-          : ""}
-        <ha-dialog-footer slot="footer">
-          ${!this._status
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._startReconfiguration}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.zha_reconfigure_device.start_reconfiguration"
-                  )}
-                </ha-button>
+                      : ""
+                  }
+                </div>
               `
-            : html`
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this._toggleDetails}
-                >
-                  ${this._showDetails
-                    ? this.hass.localize(
-                        `ui.dialogs.zha_reconfigure_device.button_hide`
-                      )
-                    : this.hass.localize(
-                        `ui.dialogs.zha_reconfigure_device.button_show`
-                      )}
-                </ha-button>
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-              `}
+            : ""
+        }
+        <ha-dialog-footer slot="footer">
+          ${
+            !this._status
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._startReconfiguration}
+                  >
+                    ${this.hass.localize(
+                      "ui.dialogs.zha_reconfigure_device.start_reconfiguration"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this._toggleDetails}
+                  >
+                    ${
+                      this._showDetails
+                        ? this.hass.localize(
+                            `ui.dialogs.zha_reconfigure_device.button_hide`
+                          )
+                        : this.hass.localize(
+                            `ui.dialogs.zha_reconfigure_device.button_show`
+                          )
+                    }
+                  </ha-button>
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

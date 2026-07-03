@@ -88,11 +88,13 @@ export class HaTracePathDetails extends LitElement {
           `
         )}
       </ha-tab-group>
-      ${this._view === "step_config"
-        ? this._renderSelectedConfig()
-        : this._view === "changed_variables"
-          ? this._renderChangedVars()
-          : this._renderLogbook()}
+      ${
+        this._view === "step_config"
+          ? this._renderSelectedConfig()
+          : this._view === "changed_variables"
+            ? this._renderChangedVars()
+            : this._renderLogbook()
+      }
     `;
   }
 
@@ -192,63 +194,69 @@ export class HaTracePathDetails extends LitElement {
           const selectedType = this.selected.type;
 
           return html`
-            ${curPath === this.selected.path
-              ? currentDetail.alias
-                ? html`<h2>${currentDetail.alias}</h2>`
-                : selectedType === "trigger"
-                  ? html`<h2>
-                      ${describeTrigger(
-                        migrateAutomationTrigger({
-                          ...currentDetail,
-                        }) as Trigger,
-                        this.hass,
-                        this._entityReg
-                      )}
-                    </h2>`
-                  : selectedType === "condition"
+            ${
+              curPath === this.selected.path
+                ? currentDetail.alias
+                  ? html`<h2>${currentDetail.alias}</h2>`
+                  : selectedType === "trigger"
                     ? html`<h2>
-                        ${describeCondition(
-                          currentDetail,
+                        ${describeTrigger(
+                          migrateAutomationTrigger({
+                            ...currentDetail,
+                          }) as Trigger,
                           this.hass,
                           this._entityReg
                         )}
                       </h2>`
-                    : selectedType === "action"
+                    : selectedType === "condition"
                       ? html`<h2>
-                          ${describeAction(
+                          ${describeCondition(
+                            currentDetail,
                             this.hass,
-                            this._entityReg,
-                            currentDetail
+                            this._entityReg
                           )}
                         </h2>`
-                      : selectedType === "chooseOption"
+                      : selectedType === "action"
                         ? html`<h2>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.actions.type.choose.option",
-                              { number: pathParts[pathParts.length - 1] }
+                            ${describeAction(
+                              this.hass,
+                              this._entityReg,
+                              currentDetail
                             )}
                           </h2>`
-                        : nothing
-              : html`<h2>
-                  ${curPath.substring(this.selected.path.length + 1)}
-                </h2>`}
-            ${data.length === 1
-              ? nothing
-              : html`<h3>
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.iteration",
-                    { number: iterationNumber(trace, idx) }
-                  )}
-                </h3>`}
-            ${curPath
-              .substring(this.selected.path.length + 1)
-              .includes("condition")
-              ? html`[${describeCondition(
-                    currentDetail,
-                    this.hass,
-                    this._entityReg
-                  )}]<br />`
-              : nothing}
+                        : selectedType === "chooseOption"
+                          ? html`<h2>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.actions.type.choose.option",
+                                { number: pathParts[pathParts.length - 1] }
+                              )}
+                            </h2>`
+                          : nothing
+                : html`<h2>
+                    ${curPath.substring(this.selected.path.length + 1)}
+                  </h2>`
+            }
+            ${
+              data.length === 1
+                ? nothing
+                : html`<h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.iteration",
+                      { number: iterationNumber(trace, idx) }
+                    )}
+                  </h3>`
+            }
+            ${
+              curPath
+                .substring(this.selected.path.length + 1)
+                .includes("condition")
+                ? html`[${describeCondition(
+                      currentDetail,
+                      this.hass,
+                      this._entityReg
+                    )}]<br />`
+                : nothing
+            }
             ${this.hass!.localize(
               "ui.panel.config.automation.trace.path.executed",
               {
@@ -260,43 +268,54 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
-            ${error
-              ? html`<div class="error">
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.error",
-                    {
-                      error: error,
-                    }
-                  )}
-                </div>`
-              : nothing}
-            ${template_errors?.length
-              ? html`<div class="error">
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.template_errors"
-                  )}
-                  <ul>
-                    ${template_errors.map(
-                      (templateError: string) => html`<li>${templateError}</li>`
+            ${
+              error
+                ? html`<div class="error">
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.error",
+                      {
+                        error: error,
+                      }
                     )}
-                  </ul>
-                </div>`
-              : nothing}
-            ${result
-              ? html`${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.result"
-                  )}
-                  <pre>${dump(result)}</pre>`
-              : nothing}
-            ${Object.keys(rest).length === 0
-              ? nothing
-              : html`<pre>${dump(rest)}</pre>`}
-            ${currentDetail.entity_id &&
-            curPath
-              .substring(this.selected.path.length + 1)
-              .includes("entity_id")
-              ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
-              : nothing}
+                  </div>`
+                : nothing
+            }
+            ${
+              template_errors?.length
+                ? html`<div class="error">
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.template_errors"
+                    )}
+                    <ul>
+                      ${template_errors.map(
+                        (templateError: string) =>
+                          html`<li>${templateError}</li>`
+                      )}
+                    </ul>
+                  </div>`
+                : nothing
+            }
+            ${
+              result
+                ? html`${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.result"
+                    )}
+                    <pre>${dump(result)}</pre>`
+                : nothing
+            }
+            ${
+              Object.keys(rest).length === 0
+                ? nothing
+                : html`<pre>${dump(rest)}</pre>`
+            }
+            ${
+              currentDetail.entity_id &&
+              curPath
+                .substring(this.selected.path.length + 1)
+                .includes("entity_id")
+                ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
+                : nothing
+            }
           `;
         })
       );
@@ -337,23 +356,27 @@ export class HaTracePathDetails extends LitElement {
       <div class="padded-box">
         ${data.map(
           (trace, idx) => html`
-            ${data.length > 1
-              ? html`<p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.automation.trace.path.iteration",
-                    { number: iterationNumber(trace, idx) }
-                  )}
-                </p>`
-              : ""}
-            ${Object.keys(trace.changed_variables || {}).length === 0
-              ? this.hass!.localize(
-                  "ui.panel.config.automation.trace.path.no_variables_changed"
-                )
-              : html`<ha-code-editor
-                  read-only
-                  dir="ltr"
-                  .value=${dump(trace.changed_variables).trimEnd()}
-                ></ha-code-editor>`}
+            ${
+              data.length > 1
+                ? html`<p>
+                    ${this.hass!.localize(
+                      "ui.panel.config.automation.trace.path.iteration",
+                      { number: iterationNumber(trace, idx) }
+                    )}
+                  </p>`
+                : ""
+            }
+            ${
+              Object.keys(trace.changed_variables || {}).length === 0
+                ? this.hass!.localize(
+                    "ui.panel.config.automation.trace.path.no_variables_changed"
+                  )
+                : html`<ha-code-editor
+                    read-only
+                    dir="ltr"
+                    .value=${dump(trace.changed_variables).trimEnd()}
+                  ></ha-code-editor>`
+            }
           `
         )}
       </div>

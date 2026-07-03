@@ -60,43 +60,47 @@ export class HaTargetPickerValueChip extends LitElement {
         @wa-remove=${this._removeItem}
       >
         <div class="icon">
-          ${iconPath
-            ? html`<ha-icon .icon=${iconPath}></ha-icon>`
-            : this._iconImg
-              ? html`<img
-                  alt=${this._domainName || ""}
-                  width="24"
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                  src=${this._iconImg}
-                />`
-              : fallbackIconPath
-                ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-                : stateObject
-                  ? html`<ha-state-icon
-                      .stateObj=${stateObject}
-                    ></ha-state-icon>`
-                  : nothing}
+          ${
+            iconPath
+              ? html`<ha-icon .icon=${iconPath}></ha-icon>`
+              : this._iconImg
+                ? html`<img
+                    alt=${this._domainName || ""}
+                    width="24"
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                    src=${this._iconImg}
+                  />`
+                : fallbackIconPath
+                  ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
+                  : stateObject
+                    ? html`<ha-state-icon
+                        .stateObj=${stateObject}
+                      ></ha-state-icon>`
+                    : nothing
+          }
         </div>
         <span class="name"> ${name} </span>
-        ${this.type === "entity"
-          ? nothing
-          : html`<ha-tooltip .for="expand-${slugify(this.itemId)}"
-                >${this.hass.localize(
-                  `ui.components.target-picker.expand_${this.type}_id`
-                )}
-              </ha-tooltip>
-              <ha-icon-button
-                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                .label=${this.hass.localize(
-                  "ui.components.target-picker.expand"
-                )}
-                .path=${mdiUnfoldMoreVertical}
-                hide-title
-                .id="expand-${slugify(this.itemId)}"
-                .type=${this.type}
-                @click=${this._handleExpand}
-              ></ha-icon-button>`}
+        ${
+          this.type === "entity"
+            ? nothing
+            : html`<ha-tooltip .for="expand-${slugify(this.itemId)}"
+                  >${this.hass.localize(
+                    `ui.components.target-picker.expand_${this.type}_id`
+                  )}
+                </ha-tooltip>
+                <ha-icon-button
+                  class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
+                  .label=${this.hass.localize(
+                    "ui.components.target-picker.expand"
+                  )}
+                  .path=${mdiUnfoldMoreVertical}
+                  hide-title
+                  .id="expand-${slugify(this.itemId)}"
+                  .type=${this.type}
+                  @click=${this._handleExpand}
+                ></ha-icon-button>`
+        }
       </wa-tag>
     `;
   }

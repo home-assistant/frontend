@@ -108,14 +108,16 @@ class ZWaveJSCustomParam extends LitElement {
         </ha-button>
       </div>
       <div class="error">
-        ${this._error
-          ? html`<ha-svg-icon
-                .path=${mdiCloseCircle}
-                class="error-icon"
-                slot="item-icon"
-              ></ha-svg-icon
-              ><em>${this._error}</em>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-svg-icon
+                  .path=${mdiCloseCircle}
+                  class="error-icon"
+                  slot="item-icon"
+                ></ha-svg-icon
+                ><em>${this._error}</em>`
+            : nothing
+        }
       </div>
     `;
   }

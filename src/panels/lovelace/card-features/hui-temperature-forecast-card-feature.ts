@@ -176,8 +176,7 @@ class HuiTemperatureForecastCardFeature
   private _shouldResubscribe(changedProps: PropertyValues): boolean {
     if (changedProps.has("context")) {
       const previous = changedProps.get("context") as
-        | LovelaceCardFeatureContext
-        | undefined;
+        LovelaceCardFeatureContext | undefined;
       if (previous?.entity_id !== this.context?.entity_id) return true;
     }
     if (changedProps.has("_config")) {
@@ -270,9 +269,11 @@ class HuiTemperatureForecastCardFeature
               style=${graphStyle}
             ></hui-graph-base>
           </div>
-          ${this._showLabels && this._locale
-            ? renderHourLabels(hoursToShow, this._locale)
-            : nothing}
+          ${
+            this._showLabels && this._locale
+              ? renderHourLabels(hoursToShow, this._locale)
+              : nothing
+          }
         </div>
       `;
     }
@@ -301,9 +302,11 @@ class HuiTemperatureForecastCardFeature
     return html`
       <div class=${containerClasses}>
         <div class="bars">${this._renderBars(entries, customColor)}</div>
-        ${this._showLabels && this._locale
-          ? renderDayLabels(entries, entriesPerDay, this._locale)
-          : nothing}
+        ${
+          this._showLabels && this._locale
+            ? renderDayLabels(entries, entriesPerDay, this._locale)
+            : nothing
+        }
       </div>
     `;
   }

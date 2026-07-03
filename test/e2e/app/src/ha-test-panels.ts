@@ -43,11 +43,4 @@ export const e2eTestPanels: Panels = {
     config: null,
     url_path: "profile",
   },
-  "developer-tools": {
-    component_name: "developer-tools",
-    icon: "mdi:hammer",
-    title: "developer_tools",
-    config: null,
-    url_path: "developer-tools",
-  },
 };

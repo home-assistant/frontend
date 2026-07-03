@@ -27,7 +27,7 @@ class EventsList extends LitElement {
               >
               <span>
                 ${this.hass.localize(
-                  "ui.panel.config.developer-tools.tabs.events.count_listeners",
+                  "ui.panel.config.tools.tabs.events.count_listeners",
                   {
                     count: event.listener_count,
                   }

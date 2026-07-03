@@ -30,12 +30,7 @@ import {
 import type { HomeAssistantApi } from "../../types";
 
 type CoverButton =
-  | "open"
-  | "close"
-  | "stop"
-  | "open-tilt"
-  | "close-tilt"
-  | "none";
+  "open" | "close" | "stop" | "open-tilt" | "close-tilt" | "none";
 
 interface CoverLayout {
   type: "line" | "cross";
@@ -227,28 +222,32 @@ export class HaStateControlCoverButtons extends LitElement {
     const layout = getCoverLayout(this.stateObj);
 
     return html`
-      ${layout.type === "line"
-        ? html`
-            <ha-control-button-group vertical>
-              ${repeat(
-                layout.buttons,
-                (action) => action,
-                (action) => this.renderButton(action)
-              )}
-            </ha-control-button-group>
-          `
-        : nothing}
-      ${layout.type === "cross"
-        ? html`
-            <div class="cross-container">
-              ${repeat(
-                layout.buttons,
-                (action) => action,
-                (action) => this.renderButton(action)
-              )}
-            </div>
-          `
-        : nothing}
+      ${
+        layout.type === "line"
+          ? html`
+              <ha-control-button-group vertical>
+                ${repeat(
+                  layout.buttons,
+                  (action) => action,
+                  (action) => this.renderButton(action)
+                )}
+              </ha-control-button-group>
+            `
+          : nothing
+      }
+      ${
+        layout.type === "cross"
+          ? html`
+              <div class="cross-container">
+                ${repeat(
+                  layout.buttons,
+                  (action) => action,
+                  (action) => this.renderButton(action)
+                )}
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -696,11 +696,13 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
                 ([key, value]) => html`
                   <ha-settings-row narrow slot=${slot}>
                     <span slot="heading">${value?.name || key}</span>
-                    ${value?.description
-                      ? html`<span slot="description"
-                          >${value?.description}</span
-                        >`
-                      : nothing}
+                    ${
+                      value?.description
+                        ? html`<span slot="description"
+                            >${value?.description}</span
+                          >`
+                        : nothing
+                    }
                     <ha-selector
                       .hass=${this.hass}
                       .selector=${value!.selector}

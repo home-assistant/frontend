@@ -618,8 +618,7 @@ const getEnergyData = async (
 
   let _fossilEnergyConsumption: undefined | Promise<FossilEnergyConsumption>;
   let _fossilEnergyConsumptionCompare:
-    | undefined
-    | Promise<FossilEnergyConsumption>;
+    undefined | Promise<FossilEnergyConsumption>;
   if (co2SignalEntity !== undefined) {
     _fossilEnergyConsumption = getFossilEnergyConsumption(
       hass!,

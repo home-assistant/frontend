@@ -130,8 +130,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @property({ attribute: false }) public addon!:
-    | HassioAddonDetails
-    | StoreAddonDetails;
+    HassioAddonDetails | StoreAddonDetails;
 
   @property({ type: Boolean, attribute: "control-enabled" })
   public controlEnabled = false;
@@ -189,86 +188,98 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       <div class="card-content">
         <div class="addon-header">
           <div class="title">
-            ${this._currentAddon.logo
-              ? html`
-                  <img
-                    class="logo"
-                    alt=""
-                    src="/api/hassio/addons/${this._currentAddon.slug}/logo"
-                  />
-                `
-              : nothing}
-            ${!this.narrow
-              ? getAppDisplayName(
-                  this._currentAddon.name,
-                  this._currentAddon.stage
-                )
-              : nothing}
-            <div class="description">
-              ${this._currentAddon.version
+            ${
+              this._currentAddon.logo
                 ? html`
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.current_version",
-                      { version: this._currentAddon.version }
-                    )}
-                    <div class="changelog" @click=${this._openChangelog}>
-                      (<span class="changelog-link"
+                    <img
+                      class="logo"
+                      alt=""
+                      src="/api/hassio/addons/${this._currentAddon.slug}/logo"
+                    />
+                  `
+                : nothing
+            }
+            ${
+              !this.narrow
+                ? getAppDisplayName(
+                    this._currentAddon.name,
+                    this._currentAddon.stage
+                  )
+                : nothing
+            }
+            <div class="description">
+              ${
+                this._currentAddon.version
+                  ? html`
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.current_version",
+                        { version: this._currentAddon.version }
+                      )}
+                      <div class="changelog" @click=${this._openChangelog}>
+                        (<span class="changelog-link"
+                          >${this.i18n.localize(
+                            "ui.panel.config.apps.dashboard.changelog"
+                          )}</span
+                        >)
+                      </div>
+                    `
+                  : html`${this._currentAddon.version_latest}
+                      <span class="changelog-link" @click=${this._openChangelog}
                         >${this.i18n.localize(
                           "ui.panel.config.apps.dashboard.changelog"
                         )}</span
-                      >)
-                    </div>
-                  `
-                : html`${this._currentAddon.version_latest}
-                    <span class="changelog-link" @click=${this._openChangelog}
-                      >${this.i18n.localize(
-                        "ui.panel.config.apps.dashboard.changelog"
-                      )}</span
-                    >`}
+                      >`
+              }
             </div>
           </div>
-          ${this._currentAddon.update_available ||
-          this._updateState?.attributes?.in_progress
-            ? html`<supervisor-apps-tag
-                variant="brand"
-                .iconPath=${mdiArrowUpBoldCircleOutline}
-                .label=${this.i18n.localize(
-                  `ui.panel.config.apps.state.${this._updateState?.attributes?.in_progress ? "updating" : "update_available"}`
-                )}
-              ></supervisor-apps-tag>`
-            : nothing}
-          ${this._currentAddon.version
-            ? html`<supervisor-apps-state
-                .state=${this._currentAddon.state}
-              ></supervisor-apps-state>`
-            : nothing}
+          ${
+            this._currentAddon.update_available ||
+            this._updateState?.attributes?.in_progress
+              ? html`<supervisor-apps-tag
+                  variant="brand"
+                  .iconPath=${mdiArrowUpBoldCircleOutline}
+                  .label=${this.i18n.localize(
+                    `ui.panel.config.apps.state.${this._updateState?.attributes?.in_progress ? "updating" : "update_available"}`
+                  )}
+                ></supervisor-apps-tag>`
+              : nothing
+          }
+          ${
+            this._currentAddon.version
+              ? html`<supervisor-apps-state
+                  .state=${this._currentAddon.state}
+                ></supervisor-apps-state>`
+              : nothing
+          }
         </div>
 
         <ha-chip-set class="capabilities">
-          ${this._currentAddon.stage !== "stable"
-            ? html`
-                <ha-assist-chip
-                  filled
-                  class=${classMap({
-                    yellow: this._currentAddon.stage === "experimental",
-                    red: this._currentAddon.stage === "deprecated",
-                  })}
-                  @click=${this._showMoreInfo}
-                  id="stage"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      `ui.panel.config.apps.dashboard.capability.stages.${this._currentAddon.stage}`
-                    )
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${STAGE_ICON[this._currentAddon.stage]}
+          ${
+            this._currentAddon.stage !== "stable"
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    class=${classMap({
+                      yellow: this._currentAddon.stage === "experimental",
+                      red: this._currentAddon.stage === "deprecated",
+                    })}
+                    @click=${this._showMoreInfo}
+                    id="stage"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        `ui.panel.config.apps.dashboard.capability.stages.${this._currentAddon.stage}`
+                      )
+                    )}
                   >
-                  </ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${STAGE_ICON[this._currentAddon.stage]}
+                    >
+                    </ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
 
           <ha-assist-chip
             filled
@@ -291,201 +302,225 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             >
             </ha-svg-icon>
           </ha-assist-chip>
-          ${this._currentAddon.host_network
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="host_network"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.host"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiNetwork}> </ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.full_access
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="full_access"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.hardware"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiChip}></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.homeassistant_api
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="homeassistant_api"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.core"
-                    )
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiHomeAssistant}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._computeHassioApi
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="hassio_api"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      `ui.panel.config.apps.dashboard.capability.role.${this._currentAddon.hassio_role}`
-                    ) || this._currentAddon.hassio_role
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiHomeAssistant}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.docker_api
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="docker_api"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.docker"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiDocker}></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.host_pid
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="host_pid"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.host_pid"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiPound}></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.apparmor !== "default"
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  class=${this._computeApparmorClassName}
-                  id="apparmor"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.apparmor"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiShield}></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.auth_api
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="auth_api"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.auth"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiKey}></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.ingress
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="ingress"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.ingress"
-                    )
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiCursorDefaultClickOutline}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${this._currentAddon.signed
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showMoreInfo}
-                  id="signed"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.capability.label.signed"
-                    )
-                  )}
-                >
-                  <ha-svg-icon slot="icon" .path=${mdiLinkLock}></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
-          ${systemManaged
-            ? html`
-                <ha-assist-chip
-                  filled
-                  @click=${this._showSystemManagedInfo}
-                  id="system_managed"
-                  .label=${capitalizeFirstLetter(
-                    this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.system_managed.badge"
-                    )
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiHomeAssistant}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
+          ${
+            this._currentAddon.host_network
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="host_network"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.host"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiNetwork}> </ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.full_access
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="full_access"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.hardware"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiChip}></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.homeassistant_api
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="homeassistant_api"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.core"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._computeHassioApi
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="hassio_api"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        `ui.panel.config.apps.dashboard.capability.role.${this._currentAddon.hassio_role}`
+                      ) || this._currentAddon.hassio_role
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.docker_api
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="docker_api"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.docker"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiDocker}></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.host_pid
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="host_pid"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.host_pid"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiPound}></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.apparmor !== "default"
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    class=${this._computeApparmorClassName}
+                    id="apparmor"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.apparmor"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiShield}></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.auth_api
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="auth_api"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.auth"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiKey}></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.ingress
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="ingress"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.ingress"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiCursorDefaultClickOutline}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.signed
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showMoreInfo}
+                    id="signed"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.capability.label.signed"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiLinkLock}></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
+          ${
+            systemManaged
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showSystemManagedInfo}
+                    id="system_managed"
+                    .label=${capitalizeFirstLetter(
+                      this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.system_managed.badge"
+                      )
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing
+          }
         </ha-chip-set>
 
         <div class="description">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
           ${this._currentAddon.description}.<br />
           ${this.i18n.localize(
             "ui.panel.config.apps.dashboard.visit_app_page",
@@ -503,61 +538,76 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           )}
         </div>
       </div>
-      ${(this._currentAddon.update_available && this._updateEntityId) ||
-      this._computeShowWebUI ||
-      this._computeShowIngressUI ||
-      !this._currentAddon.version
-        ? html`
-            <div class="card-actions">
-              ${this._currentAddon.update_available && this._updateEntityId
-                ? html`
-                    <ha-button appearance="filled" @click=${this._openUpdate}>
-                      <ha-svg-icon
-                        slot="start"
-                        .path=${mdiArrowUpBoldCircleOutline}
-                      ></ha-svg-icon>
-                      ${this.i18n.localize("ui.common.update")}
-                    </ha-button>
-                  `
-                : nothing}
-              ${this._computeShowWebUI || this._computeShowIngressUI
-                ? html`
-                    <ha-button
-                      href=${ifDefined(
-                        !this._computeShowIngressUI ? this._pathWebui! : nothing
-                      )}
-                      target=${ifDefined(
-                        !this._computeShowIngressUI ? "_blank" : nothing
-                      )}
-                      rel=${ifDefined(
-                        !this._computeShowIngressUI ? "noopener" : nothing
-                      )}
-                      @click=${!this._computeShowWebUI
-                        ? this._openIngress
-                        : undefined}
-                    >
-                      ${this.i18n.localize(
-                        "ui.panel.config.apps.dashboard.open_web_ui"
-                      )}
-                    </ha-button>
-                  `
-                : nothing}
-              ${!this._currentAddon.version
-                ? html`
-                    <ha-progress-button
-                      .disabled=${!this._currentAddon.available}
-                      @click=${this._installClicked}
-                      .iconPath=${mdiApplicationImport}
-                    >
-                      ${this.i18n.localize(
-                        "ui.panel.config.apps.dashboard.install"
-                      )}
-                    </ha-progress-button>
-                  `
-                : nothing}
-            </div>
-          `
-        : nothing}
+      ${
+        (this._currentAddon.update_available && this._updateEntityId) ||
+        this._computeShowWebUI ||
+        this._computeShowIngressUI ||
+        !this._currentAddon.version
+          ? html`
+              <div class="card-actions">
+                ${
+                  this._currentAddon.update_available && this._updateEntityId
+                    ? html`
+                        <ha-button
+                          appearance="filled"
+                          @click=${this._openUpdate}
+                        >
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiArrowUpBoldCircleOutline}
+                          ></ha-svg-icon>
+                          ${this.i18n.localize("ui.common.update")}
+                        </ha-button>
+                      `
+                    : nothing
+                }
+                ${
+                  this._computeShowWebUI || this._computeShowIngressUI
+                    ? html`
+                        <ha-button
+                          href=${ifDefined(
+                            !this._computeShowIngressUI
+                              ? this._pathWebui!
+                              : nothing
+                          )}
+                          target=${ifDefined(
+                            !this._computeShowIngressUI ? "_blank" : nothing
+                          )}
+                          rel=${ifDefined(
+                            !this._computeShowIngressUI ? "noopener" : nothing
+                          )}
+                          @click=${
+                            !this._computeShowWebUI
+                              ? this._openIngress
+                              : undefined
+                          }
+                        >
+                          ${this.i18n.localize(
+                            "ui.panel.config.apps.dashboard.open_web_ui"
+                          )}
+                        </ha-button>
+                      `
+                    : nothing
+                }
+                ${
+                  !this._currentAddon.version
+                    ? html`
+                        <ha-progress-button
+                          .disabled=${!this._currentAddon.available}
+                          @click=${this._installClicked}
+                          .iconPath=${mdiApplicationImport}
+                        >
+                          ${this.i18n.localize(
+                            "ui.panel.config.apps.dashboard.install"
+                          )}
+                        </ha-progress-button>
+                      `
+                    : nothing
+                }
+              </div>
+            `
+          : nothing
+      }
     </ha-card>`;
   }
 
@@ -604,244 +654,284 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           <span>
             ${this.i18n.localize("ui.panel.config.apps.dashboard.controls")}
           </span>
-          ${this._currentAddon.version
-            ? html`<ha-dropdown placement="bottom-end">
-                <ha-icon-button
-                  slot="trigger"
-                  .label=${this.i18n.localize("ui.common.menu")}
-                  .path=${mdiDotsVertical}
-                ></ha-icon-button>
+          ${
+            this._currentAddon.version
+              ? html`<ha-dropdown placement="bottom-end">
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.i18n.localize("ui.common.menu")}
+                    .path=${mdiDotsVertical}
+                  ></ha-icon-button>
 
-                <ha-dropdown-item
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._uninstallClicked}
-                  .disabled=${(systemManaged && !this.controlEnabled) ||
-                  this._uninstalling}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiPackageVariantRemove}
-                  ></ha-svg-icon>
-                  ${this.i18n.localize(
-                    "ui.panel.config.apps.dashboard.uninstall"
-                  )}
-                </ha-dropdown-item>
-                ${this._currentAddon.build
-                  ? html`
-                      <ha-dropdown-item
-                        variant="danger"
-                        @click=${this._rebuildClicked}
-                      >
-                        <ha-svg-icon
-                          slot="icon"
-                          .path=${mdiHammer}
-                        ></ha-svg-icon>
-                        ${this.i18n.localize(
-                          "ui.panel.config.apps.dashboard.rebuild"
-                        )}
-                      </ha-dropdown-item>
-                    `
-                  : nothing}
-              </ha-dropdown>`
-            : nothing}
+                  <ha-dropdown-item
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._uninstallClicked}
+                    .disabled=${
+                      (systemManaged && !this.controlEnabled) ||
+                      this._uninstalling
+                    }
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiPackageVariantRemove}
+                    ></ha-svg-icon>
+                    ${this.i18n.localize(
+                      "ui.panel.config.apps.dashboard.uninstall"
+                    )}
+                  </ha-dropdown-item>
+                  ${
+                    this._currentAddon.build
+                      ? html`
+                          <ha-dropdown-item
+                            variant="danger"
+                            @click=${this._rebuildClicked}
+                          >
+                            <ha-svg-icon
+                              slot="icon"
+                              .path=${mdiHammer}
+                            ></ha-svg-icon>
+                            ${this.i18n.localize(
+                              "ui.panel.config.apps.dashboard.rebuild"
+                            )}
+                          </ha-dropdown-item>
+                        `
+                      : nothing
+                  }
+                </ha-dropdown>`
+              : nothing
+          }
         </div>
         <div class="content">
-          ${systemManaged
-            ? html`
-                <supervisor-app-system-managed
-                  .narrow=${this.narrow}
-                  .hideButton=${this.controlEnabled}
-                ></supervisor-app-system-managed>
-              `
-            : nothing}
-          ${this._uninstalling
-            ? html`
-                <ha-alert
-                  alert-type="error"
-                  .title=${this.i18n.localize(
-                    "ui.panel.config.apps.dashboard.uninstalling"
-                  )}
-                >
-                  <ha-spinner
-                    size="small"
-                    slot="icon"
-                    indeterminate
-                  ></ha-spinner>
-                </ha-alert>
-              `
-            : nothing}
+          ${
+            systemManaged
+              ? html`
+                  <supervisor-app-system-managed
+                    .narrow=${this.narrow}
+                    .hideButton=${this.controlEnabled}
+                  ></supervisor-app-system-managed>
+                `
+              : nothing
+          }
+          ${
+            this._uninstalling
+              ? html`
+                  <ha-alert
+                    alert-type="error"
+                    .title=${this.i18n.localize(
+                      "ui.panel.config.apps.dashboard.uninstalling"
+                    )}
+                  >
+                    <ha-spinner
+                      size="small"
+                      slot="icon"
+                      indeterminate
+                    ></ha-spinner>
+                  </ha-alert>
+                `
+              : nothing
+          }
           <div class="actions">
-            ${this._computeIsRunning
-              ? html`<ha-progress-button
-                    variant="danger"
-                    @click=${this._stopClicked}
-                    .disabled=${(systemManaged && !this.controlEnabled) ||
-                    this._uninstalling}
-                    .iconPath=${mdiStop}
+            ${
+              this._computeIsRunning
+                ? html`<ha-progress-button
+                      variant="danger"
+                      @click=${this._stopClicked}
+                      .disabled=${
+                        (systemManaged && !this.controlEnabled) ||
+                        this._uninstalling
+                      }
+                      .iconPath=${mdiStop}
+                    >
+                      ${this.i18n.localize("ui.panel.config.apps.dashboard.stop")}
+                    </ha-progress-button>
+                    <ha-progress-button
+                      variant="danger"
+                      appearance="filled"
+                      @click=${this._restartClicked}
+                      .disabled=${
+                        (systemManaged && !this.controlEnabled) ||
+                        this._uninstalling
+                      }
+                      .iconPath=${mdiRestart}
+                    >
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.restart"
+                      )}
+                    </ha-progress-button> `
+                : html`<ha-progress-button
+                    @click=${this._startClicked}
+                    .progress=${
+                      (this._currentAddon as HassioAddonDetails).state ===
+                      "startup"
+                    }
+                    .iconPath=${mdiPlay}
                   >
-                    ${this.i18n.localize("ui.panel.config.apps.dashboard.stop")}
-                  </ha-progress-button>
-                  <ha-progress-button
-                    variant="danger"
-                    appearance="filled"
-                    @click=${this._restartClicked}
-                    .disabled=${(systemManaged && !this.controlEnabled) ||
-                    this._uninstalling}
-                    .iconPath=${mdiRestart}
-                  >
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.restart"
-                    )}
-                  </ha-progress-button> `
-              : html`<ha-progress-button
-                  @click=${this._startClicked}
-                  .progress=${(this._currentAddon as HassioAddonDetails)
-                    .state === "startup"}
-                  .iconPath=${mdiPlay}
-                >
-                  ${this.i18n.localize("ui.panel.config.apps.dashboard.start")}
-                </ha-progress-button>`}
+                    ${this.i18n.localize("ui.panel.config.apps.dashboard.start")}
+                  </ha-progress-button>`
+            }
           </div>
-          ${this._currentAddon.version
-            ? html`
-                <wa-divider></wa-divider>
-                <ha-row-item>
-                  <span slot="headline">
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.option.boot.title"
-                    )}
-                  </span>
-                  <span slot="supporting-text">
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.option.boot.description"
-                    )}
-                  </span>
-                  <ha-switch
-                    slot="end"
-                    .disabled=${(systemManaged && !this.controlEnabled) ||
-                    this._uninstalling}
-                    @change=${this._startOnBootToggled}
-                    .checked=${this._currentAddon.boot === "auto"}
-                    haptic
-                  ></ha-switch>
-                </ha-row-item>
+          ${
+            this._currentAddon.version
+              ? html`
+                  <wa-divider></wa-divider>
+                  <ha-row-item>
+                    <span slot="headline">
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.option.boot.title"
+                      )}
+                    </span>
+                    <span slot="supporting-text">
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.option.boot.description"
+                      )}
+                    </span>
+                    <ha-switch
+                      slot="end"
+                      .disabled=${
+                        (systemManaged && !this.controlEnabled) ||
+                        this._uninstalling
+                      }
+                      @change=${this._startOnBootToggled}
+                      .checked=${this._currentAddon.boot === "auto"}
+                      haptic
+                    ></ha-switch>
+                  </ha-row-item>
 
-                ${this._currentAddon.startup !== "once"
-                  ? html`
-                      <ha-row-item>
-                        <span slot="headline">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.option.watchdog.title"
-                          )}
-                        </span>
-                        <span slot="supporting-text">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.option.watchdog.description"
-                          )}
-                        </span>
-                        <ha-switch
-                          slot="end"
-                          .disabled=${(systemManaged && !this.controlEnabled) ||
-                          this._uninstalling}
-                          @change=${this._watchdogToggled}
-                          .checked=${this._currentAddon.watchdog || false}
-                          haptic
-                        ></ha-switch>
-                      </ha-row-item>
+                  ${
+                    this._currentAddon.startup !== "once"
+                      ? html`
+                          <ha-row-item>
+                            <span slot="headline">
+                              ${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.watchdog.title"
+                              )}
+                            </span>
+                            <span slot="supporting-text">
+                              ${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.watchdog.description"
+                              )}
+                            </span>
+                            <ha-switch
+                              slot="end"
+                              .disabled=${
+                                (systemManaged && !this.controlEnabled) ||
+                                this._uninstalling
+                              }
+                              @change=${this._watchdogToggled}
+                              .checked=${this._currentAddon.watchdog || false}
+                              haptic
+                            ></ha-switch>
+                          </ha-row-item>
+                        `
+                      : nothing
+                  }
+                  <ha-row-item>
+                    <span slot="headline">
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.option.auto_update.title"
+                      )}
+                    </span>
+                    <span slot="supporting-text">
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.option.auto_update.description"
+                      )}
+                    </span>
+                    <ha-switch
+                      slot="end"
+                      .disabled=${
+                        (systemManaged && !this.controlEnabled) ||
+                        this._uninstalling
+                      }
+                      @change=${this._autoUpdateToggled}
+                      .checked=${this._currentAddon.auto_update}
+                      haptic
+                    ></ha-switch>
+                  </ha-row-item>
+                  ${
+                    !this._computeCannotIngressSidebar &&
+                    this._currentAddon.ingress
+                      ? html`
+                          <ha-row-item>
+                            <span slot="headline">
+                              ${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.ingress_panel.title"
+                              )}
+                            </span>
+                            <span slot="supporting-text">
+                              ${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.ingress_panel.description"
+                              )}
+                            </span>
+                            <ha-switch
+                              slot="end"
+                              .disabled=${
+                                (systemManaged && !this.controlEnabled) ||
+                                this._uninstalling
+                              }
+                              @change=${this._panelToggled}
+                              .checked=${this._currentAddon.ingress_panel}
+                              haptic
+                            ></ha-switch>
+                          </ha-row-item>
+                        `
+                      : nothing
+                  }
+                  ${
+                    this._computeUsesProtectedOptions
+                      ? html`
+                          <ha-row-item>
+                            <span slot="headline">
+                              ${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.protected.title"
+                              )}
+                            </span>
+                            <span slot="supporting-text">
+                              ${this.i18n.localize(
+                                "ui.panel.config.apps.dashboard.option.protected.description"
+                              )}
+                            </span>
+                            <ha-switch
+                              slot="end"
+                              .disabled=${
+                                (systemManaged && !this.controlEnabled) ||
+                                this._uninstalling
+                              }
+                              @change=${this._protectionToggled}
+                              .checked=${this._currentAddon.protected}
+                              haptic
+                            ></ha-switch>
+                          </ha-row-item>
+                        `
+                      : nothing
+                  }
+                `
+              : nothing
+          }
+          ${
+            this._currentAddon.version && this._currentAddon.state === "started"
+              ? html`<wa-divider></wa-divider>
+                  <ha-row-item>
+                    <span slot="supporting-text">
+                      ${this.i18n.localize(
+                        "ui.panel.config.apps.dashboard.hostname"
+                      )}
+                    </span>
+                    <code slot="headline">
+                      ${this._currentAddon.hostname}
+                    </code>
+                  </ha-row-item>
+                  ${metrics.map(
+                    (metric) => html`
+                      <supervisor-app-metric
+                        .description=${metric.description}
+                        .value=${metric.value ?? 0}
+                        .tooltip=${metric.tooltip}
+                      ></supervisor-app-metric>
                     `
-                  : nothing}
-                <ha-row-item>
-                  <span slot="headline">
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.option.auto_update.title"
-                    )}
-                  </span>
-                  <span slot="supporting-text">
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.option.auto_update.description"
-                    )}
-                  </span>
-                  <ha-switch
-                    slot="end"
-                    .disabled=${(systemManaged && !this.controlEnabled) ||
-                    this._uninstalling}
-                    @change=${this._autoUpdateToggled}
-                    .checked=${this._currentAddon.auto_update}
-                    haptic
-                  ></ha-switch>
-                </ha-row-item>
-                ${!this._computeCannotIngressSidebar &&
-                this._currentAddon.ingress
-                  ? html`
-                      <ha-row-item>
-                        <span slot="headline">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.option.ingress_panel.title"
-                          )}
-                        </span>
-                        <span slot="supporting-text">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.option.ingress_panel.description"
-                          )}
-                        </span>
-                        <ha-switch
-                          slot="end"
-                          .disabled=${(systemManaged && !this.controlEnabled) ||
-                          this._uninstalling}
-                          @change=${this._panelToggled}
-                          .checked=${this._currentAddon.ingress_panel}
-                          haptic
-                        ></ha-switch>
-                      </ha-row-item>
-                    `
-                  : nothing}
-                ${this._computeUsesProtectedOptions
-                  ? html`
-                      <ha-row-item>
-                        <span slot="headline">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.option.protected.title"
-                          )}
-                        </span>
-                        <span slot="supporting-text">
-                          ${this.i18n.localize(
-                            "ui.panel.config.apps.dashboard.option.protected.description"
-                          )}
-                        </span>
-                        <ha-switch
-                          slot="end"
-                          .disabled=${(systemManaged && !this.controlEnabled) ||
-                          this._uninstalling}
-                          @change=${this._protectionToggled}
-                          .checked=${this._currentAddon.protected}
-                          haptic
-                        ></ha-switch>
-                      </ha-row-item>
-                    `
-                  : nothing}
-              `
-            : nothing}
-          ${this._currentAddon.version && this._currentAddon.state === "started"
-            ? html`<wa-divider></wa-divider>
-                <ha-row-item>
-                  <span slot="supporting-text">
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.hostname"
-                    )}
-                  </span>
-                  <code slot="headline"> ${this._currentAddon.hostname} </code>
-                </ha-row-item>
-                ${metrics.map(
-                  (metric) => html`
-                    <supervisor-app-metric
-                      .description=${metric.description}
-                      .value=${metric.value ?? 0}
-                      .tooltip=${metric.tooltip}
-                    ></supervisor-app-metric>
-                  `
-                )}`
-            : nothing}
+                  )}`
+              : nothing
+          }
         </div>
       </ha-card>
     `;
@@ -849,46 +939,52 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
 
   protected render(): TemplateResult {
     return html`
-      ${"protected" in this._currentAddon && !this._currentAddon.protected
-        ? html`
-            <ha-alert
-              alert-type="error"
-              .title=${this.i18n.localize(
-                "ui.panel.config.apps.dashboard.protection_mode.title"
-              )}
-            >
-              ${this.i18n.localize(
-                "ui.panel.config.apps.dashboard.protection_mode.content"
-              )}
-              <ha-button
-                variant="danger"
-                slot="action"
-                @click=${this._protectionToggled}
+      ${
+        "protected" in this._currentAddon && !this._currentAddon.protected
+          ? html`
+              <ha-alert
+                alert-type="error"
+                .title=${this.i18n.localize(
+                  "ui.panel.config.apps.dashboard.protection_mode.title"
+                )}
               >
                 ${this.i18n.localize(
-                  "ui.panel.config.apps.dashboard.protection_mode.enable"
+                  "ui.panel.config.apps.dashboard.protection_mode.content"
                 )}
-              </ha-button>
-            </ha-alert>
-          `
-        : nothing}
-      <div
-        class="app ${this._isMobileSize || !this._currentAddon.version
-          ? "column"
-          : ""}"
-      >
-        ${this._isMobileSize || !this._currentAddon.version
-          ? html`
-              ${this._renderInfoCard()}
-              ${this._currentAddon.version
-                ? this._renderControlsCard()
-                : nothing}
-              ${this._renderDescriptionCard()}
+                <ha-button
+                  variant="danger"
+                  slot="action"
+                  @click=${this._protectionToggled}
+                >
+                  ${this.i18n.localize(
+                    "ui.panel.config.apps.dashboard.protection_mode.enable"
+                  )}
+                </ha-button>
+              </ha-alert>
             `
-          : html`<div class="info-column">
-                ${this._renderInfoCard()} ${this._renderDescriptionCard()}
-              </div>
-              <div class="control-column">${this._renderControlsCard()}</div>`}
+          : nothing
+      }
+      <div
+        class="app ${
+          this._isMobileSize || !this._currentAddon.version ? "column" : ""
+        }"
+      >
+        ${
+          this._isMobileSize || !this._currentAddon.version
+            ? html`
+                ${this._renderInfoCard()}
+                ${
+                  this._currentAddon.version
+                    ? this._renderControlsCard()
+                    : nothing
+                }
+                ${this._renderDescriptionCard()}
+              `
+            : html`<div class="info-column">
+                  ${this._renderInfoCard()} ${this._renderDescriptionCard()}
+                </div>
+                <div class="control-column">${this._renderControlsCard()}</div>`
+        }
       </div>
     `;
   }

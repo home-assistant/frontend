@@ -50,23 +50,28 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
-          stateObj.attributes.device_class
-        ) &&
-        stateObj.state !== UNAVAILABLE &&
-        stateObj.state !== UNKNOWN
-          ? html`
-              <hui-timestamp-display
-                .hass=${this.hass}
-                .ts=${new Date(stateObj.state)}
-                .format=${this._config.time_format ??
-                (stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_UPTIME
-                  ? "total"
-                  : undefined)}
-                capitalize
-              ></hui-timestamp-display>
-            `
-          : this.hass.formatEntityState(stateObj)}
+        ${
+          SENSOR_TIMESTAMP_DEVICE_CLASSES.includes(
+            stateObj.attributes.device_class
+          ) &&
+          stateObj.state !== UNAVAILABLE &&
+          stateObj.state !== UNKNOWN
+            ? html`
+                <hui-timestamp-display
+                  .hass=${this.hass}
+                  .ts=${new Date(stateObj.state)}
+                  .format=${
+                    this._config.time_format ??
+                    (stateObj.attributes.device_class ===
+                    SENSOR_DEVICE_CLASS_UPTIME
+                      ? "total"
+                      : undefined)
+                  }
+                  capitalize
+                ></hui-timestamp-display>
+              `
+            : this.hass.formatEntityState(stateObj)
+        }
       </hui-generic-entity-row>
     `;
   }

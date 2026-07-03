@@ -64,53 +64,57 @@ export class HaFilterIntegrations extends LitElement {
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.integrations.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${manifests && this._shouldRender
-          ? html`<ha-input-search
-                appearance="outlined"
-                .value=${this._filter}
-                @input=${this._handleSearchChange}
-              >
-              </ha-input-search>
-              <ha-list
-                class="ha-scrollbar"
-                @selected=${this._itemSelected}
-                multi
-              >
-                ${repeat(
-                  this._integrations(
-                    this._localize,
-                    manifests,
-                    this._filter,
-                    this.value,
-                    this._i18n.locale.language
-                  ),
-                  (i) => i.domain,
-                  (integration) =>
-                    html`<ha-check-list-item
-                      .value=${integration.domain}
-                      .selected=${(this.value || []).includes(
-                        integration.domain
-                      )}
-                      graphic="icon"
-                    >
-                      <ha-domain-icon
-                        slot="graphic"
-                        .domain=${integration.domain}
-                        brand-fallback
-                      ></ha-domain-icon>
-                      ${integration.name}
-                    </ha-check-list-item>`
-                )}
-              </ha-list> `
-          : nothing}
+        ${
+          manifests && this._shouldRender
+            ? html`<ha-input-search
+                  appearance="outlined"
+                  .value=${this._filter}
+                  @input=${this._handleSearchChange}
+                >
+                </ha-input-search>
+                <ha-list
+                  class="ha-scrollbar"
+                  @selected=${this._itemSelected}
+                  multi
+                >
+                  ${repeat(
+                    this._integrations(
+                      this._localize,
+                      manifests,
+                      this._filter,
+                      this.value,
+                      this._i18n.locale.language
+                    ),
+                    (i) => i.domain,
+                    (integration) =>
+                      html`<ha-check-list-item
+                        .value=${integration.domain}
+                        .selected=${(this.value || []).includes(
+                          integration.domain
+                        )}
+                        graphic="icon"
+                      >
+                        <ha-domain-icon
+                          slot="graphic"
+                          .domain=${integration.domain}
+                          brand-fallback
+                        ></ha-domain-icon>
+                        ${integration.name}
+                      </ha-check-list-item>`
+                  )}
+                </ha-list> `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

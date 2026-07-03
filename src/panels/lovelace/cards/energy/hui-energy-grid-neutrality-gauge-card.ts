@@ -117,48 +117,52 @@ class HuiEnergyGridGaugeCard
 
     return html`
       <ha-card>
-        ${value !== undefined
-          ? html`
-              <ha-gauge
-                min="-1"
-                max="1"
-                .value=${value}
-                .valueText=${formatNumber(
-                  Math.abs(returnedToGrid! - consumedFromGrid!),
-                  this.hass.locale,
-                  { maximumFractionDigits: 2 }
-                )}
-                .locale=${this.hass!.locale}
-                .levels=${LEVELS}
-                label="kWh"
-                needle
-              ></ha-gauge>
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
-              <ha-tooltip for="info" placement="left">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
-                )}
-                <br /><br />
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
-                )}
-              </ha-tooltip>
-              <div class="name">
-                ${returnedToGrid! >= consumedFromGrid!
-                  ? this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
-                    )}
-              </div>
-            `
-          : this.hass.localize(
-              "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
-            )}
+        ${
+          value !== undefined
+            ? html`
+                <ha-gauge
+                  min="-1"
+                  max="1"
+                  .value=${value}
+                  .valueText=${formatNumber(
+                    Math.abs(returnedToGrid! - consumedFromGrid!),
+                    this.hass.locale,
+                    { maximumFractionDigits: 2 }
+                  )}
+                  .locale=${this.hass!.locale}
+                  .levels=${LEVELS}
+                  label="kWh"
+                  needle
+                ></ha-gauge>
+                <ha-svg-icon
+                  id="info"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <ha-tooltip for="info" placement="left">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
+                  )}
+                </ha-tooltip>
+                <div class="name">
+                  ${
+                    returnedToGrid! >= consumedFromGrid!
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
+                        )
+                  }
+                </div>
+              `
+            : this.hass.localize(
+                "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
+              )
+        }
       </ha-card>
     `;
   }

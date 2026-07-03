@@ -126,6 +126,7 @@ export interface LogbookCause {
   type: LogbookCauseType;
   name: string;
   userId?: string;
+  systemUser?: boolean;
   entityId?: string;
   brandDomain?: string;
 }
@@ -133,13 +134,19 @@ export interface LogbookCause {
 export const computeLogbookCause = (
   hass: HomeAssistant,
   item: LogbookEntry,
-  userIdToName: Record<string, string>
+  userIdToName: Record<string, string>,
+  systemUserIds?: Set<string>
 ): LogbookCause | undefined => {
   const userName = item.context_user_id
     ? userIdToName[item.context_user_id]
     : undefined;
   if (userName) {
-    return { type: "user", name: userName, userId: item.context_user_id };
+    return {
+      type: "user",
+      name: userName,
+      userId: item.context_user_id,
+      systemUser: systemUserIds?.has(item.context_user_id!),
+    };
   }
 
   if (
@@ -266,7 +273,13 @@ const computeLogbookValue = (
   if (item.entity_id && item.state) {
     return {
       text: stateObj
-        ? localizeStateMessage(hass, item.state, stateObj, domain!)
+        ? localizeStateMessage(
+            hass,
+            item.state,
+            stateObj,
+            domain!,
+            item.attributes
+          )
         : item.state,
       type: "state",
     };
@@ -312,6 +325,7 @@ export interface LogbookItem {
 export interface BuildLogbookItemOptions {
   nameDetail?: LogbookNameDetail;
   userIdToName?: Record<string, string>;
+  systemUserIds?: Set<string>;
 }
 
 export const computeLogbookItem = (
@@ -341,7 +355,12 @@ export const computeLogbookItem = (
     name: display?.primary ?? entry.name,
     context: display?.secondary,
     value: computeLogbookValue(hass, entry, domain, historicStateObj),
-    cause: computeLogbookCause(hass, entry, opts.userIdToName ?? {}),
+    cause: computeLogbookCause(
+      hass,
+      entry,
+      opts.userIdToName ?? {},
+      opts.systemUserIds
+    ),
     when: entry.when * 1000,
   };
 };

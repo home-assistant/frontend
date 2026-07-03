@@ -148,8 +148,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | AlarmPanelCardConfig
-      | undefined;
+      AlarmPanelCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -268,50 +267,56 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             `
           )}
         </div>
-        ${!stateObj.attributes.code_format || defaultCode
-          ? nothing
-          : html`
-              <ha-input
-                .value=${this._value || ""}
-                @input=${this._handleInput}
-                .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
-                type="password"
-                .inputmode=${stateObj.attributes.code_format === FORMAT_NUMBER
-                  ? "numeric"
-                  : "text"}
-              ></ha-input>
-            `}
-        ${stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode
-          ? nothing
-          : html`
-              <div class="keypad">
-                ${BUTTONS.map((value) =>
-                  value === ""
-                    ? html`<span></span>`
-                    : value === "clear"
-                      ? html`
-                          <ha-control-button
-                            @click=${this._handlePadClick}
-                            class="clear"
-                            .value=${value}
-                            .disabled=${!this._value}
-                            .label=${this.hass!.localize("ui.common.clear")}
-                          >
-                            <ha-svg-icon path=${mdiClose}></ha-svg-icon>
-                          </ha-control-button>
-                        `
-                      : html`
-                          <ha-control-button
-                            .value=${value}
-                            @click=${this._handlePadClick}
-                            .label=${value}
-                          >
-                            ${value}
-                          </ha-control-button>
-                        `
-                )}
-              </div>
-            `}
+        ${
+          !stateObj.attributes.code_format || defaultCode
+            ? nothing
+            : html`
+                <ha-input
+                  .value=${this._value || ""}
+                  @input=${this._handleInput}
+                  .label=${this.hass.localize("ui.card.alarm_control_panel.code")}
+                  type="password"
+                  .inputmode=${
+                    stateObj.attributes.code_format === FORMAT_NUMBER
+                      ? "numeric"
+                      : "text"
+                  }
+                ></ha-input>
+              `
+        }
+        ${
+          stateObj.attributes.code_format !== FORMAT_NUMBER || defaultCode
+            ? nothing
+            : html`
+                <div class="keypad">
+                  ${BUTTONS.map((value) =>
+                    value === ""
+                      ? html`<span></span>`
+                      : value === "clear"
+                        ? html`
+                            <ha-control-button
+                              @click=${this._handlePadClick}
+                              class="clear"
+                              .value=${value}
+                              .disabled=${!this._value}
+                              .label=${this.hass!.localize("ui.common.clear")}
+                            >
+                              <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : html`
+                            <ha-control-button
+                              .value=${value}
+                              @click=${this._handlePadClick}
+                              .label=${value}
+                            >
+                              ${value}
+                            </ha-control-button>
+                          `
+                  )}
+                </div>
+              `
+        }
       </ha-card>
     `;
   }

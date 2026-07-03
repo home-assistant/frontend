@@ -252,36 +252,40 @@ export class QuickBar extends LitElement {
         @wa-after-show=${this._dialogOpened}
         @closed=${this._dialogClosed}
       >
-        ${!this._loading && this._opened
-          ? html`<ha-picker-combo-box
-              id="combo-box"
-              @index-selected=${this._handleItemSelected}
-              .notFoundLabel=${this.hass.localize(
-                "ui.dialogs.quick-bar.nothing_found"
-              )}
-              .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
-              .getItems=${this._getItems}
-              .rowRenderer=${this._renderRow}
-              mode="dialog"
-              .sections=${sections}
-              .selectedSection=${this._selectedSection}
-              .sectionTitleFunction=${this._sectionTitleFunction}
-              clearable
-            ></ha-picker-combo-box>`
-          : nothing}
-        ${this._showHint
-          ? html`<ha-tip slot="footer"
-              >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
-                keyboard_shortcut: html`<button
-                  class="link"
-                  @click=${this._openShortcutDialog}
-                >
-                  ${this.hass.localize("ui.tips.keyboard_shortcut")}
-                </button>`,
-                modifier: isMac ? "⌘" : "Ctrl",
-              })}</ha-tip
-            >`
-          : nothing}
+        ${
+          !this._loading && this._opened
+            ? html`<ha-picker-combo-box
+                id="combo-box"
+                @index-selected=${this._handleItemSelected}
+                .notFoundLabel=${this.hass.localize(
+                  "ui.dialogs.quick-bar.nothing_found"
+                )}
+                .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+                .getItems=${this._getItems}
+                .rowRenderer=${this._renderRow}
+                mode="dialog"
+                .sections=${sections}
+                .selectedSection=${this._selectedSection}
+                .sectionTitleFunction=${this._sectionTitleFunction}
+                clearable
+              ></ha-picker-combo-box>`
+            : nothing
+        }
+        ${
+          this._showHint
+            ? html`<ha-tip slot="footer"
+                >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
+                  keyboard_shortcut: html`<button
+                    class="link"
+                    @click=${this._openShortcutDialog}
+                  >
+                    ${this.hass.localize("ui.tips.keyboard_shortcut")}
+                  </button>`,
+                  modifier: isMac ? "⌘" : "Ctrl",
+                })}</ha-tip
+              >`
+            : nothing
+        }
       </ha-adaptive-dialog>
     `;
   }
@@ -305,77 +309,87 @@ export class QuickBar extends LitElement {
         type="button"
         style="--mdc-icon-size: 24px;"
       >
-        ${"stateObj" in item && item.stateObj
-          ? html`
-              <state-badge
-                slot="start"
-                .stateObj=${(item as EntityComboBoxItem).stateObj}
-              ></state-badge>
-            `
-          : "domain" in item && item.domain
+        ${
+          "stateObj" in item && item.stateObj
             ? html`
-                <ha-domain-icon
+                <state-badge
                   slot="start"
-                  style="margin: var(--ha-space-1);"
-                  .domain=${item.domain}
-                  brand-fallback
-                ></ha-domain-icon>
+                  .stateObj=${(item as EntityComboBoxItem).stateObj}
+                ></state-badge>
               `
-            : "image" in item && item.image
+            : "domain" in item && item.domain
               ? html`
-                  <img
+                  <ha-domain-icon
                     slot="start"
-                    alt=${item.primary ?? "Unknown"}
-                    .src=${item.image}
-                    style=${"iconColor" in item && item.iconColor
-                      ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
-                      : ""}
-                  />
-                `
-              : item.icon
-                ? html`<ha-icon
                     style="margin: var(--ha-space-1);"
-                    slot="start"
-                    .icon=${item.icon}
-                  ></ha-icon>`
-                : "iconColor" in item && item.iconColor
-                  ? html`
-                      <div
-                        slot="start"
-                        style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
-                      >
+                    .domain=${item.domain}
+                    brand-fallback
+                  ></ha-domain-icon>
+                `
+              : "image" in item && item.image
+                ? html`
+                    <img
+                      slot="start"
+                      alt=${item.primary ?? "Unknown"}
+                      .src=${item.image}
+                      style=${
+                        "iconColor" in item && item.iconColor
+                          ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                          : ""
+                      }
+                    />
+                  `
+                : item.icon
+                  ? html`<ha-icon
+                      style="margin: var(--ha-space-1);"
+                      slot="start"
+                      .icon=${item.icon}
+                    ></ha-icon>`
+                  : "iconColor" in item && item.iconColor
+                    ? html`
+                        <div
+                          slot="start"
+                          style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
+                        >
+                          <ha-svg-icon
+                            style="color: var(--white-color); --mdc-icon-size: 24px;"
+                            .path=${iconPath}
+                          ></ha-svg-icon>
+                        </div>
+                      `
+                    : html`
                         <ha-svg-icon
-                          style="color: var(--white-color); --mdc-icon-size: 24px;"
+                          style="margin: var(--ha-space-1);"
+                          slot="start"
                           .path=${iconPath}
                         ></ha-svg-icon>
-                      </div>
-                    `
-                  : html`
-                      <ha-svg-icon
-                        style="margin: var(--ha-space-1);"
-                        slot="start"
-                        .path=${iconPath}
-                      ></ha-svg-icon>
-                    `}
+                      `
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${"stateObj" in item && !!this._showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${item.stateObj?.entity_id}
-              </span>
-            `
-          : nothing}
-        ${"domain_name" in item &&
-        (!("stateObj" in item) || !this._showEntityId)
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${(item as EntityComboBoxItem).domain_name}
-              </div>
-            `
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          "stateObj" in item && !!this._showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${item.stateObj?.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          "domain_name" in item &&
+          (!("stateObj" in item) || !this._showEntityId)
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${(item as EntityComboBoxItem).domain_name}
+                </div>
+              `
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };

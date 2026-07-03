@@ -77,30 +77,32 @@ export class HuiButtonCardFeatureEditor
         .computeLabel=${this._computeLabel}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      ${scriptData
-        ? html`<ha-expansion-panel
-            outlined
-            expanded
-            .header=${this.hass.localize(
-              "ui.components.service-control.script_variables"
-            )}
-            .secondary=${this.hass.localize("ui.common.optional")}
-            no-collapse
-          >
-            <ha-svg-icon
-              slot="leading-icon"
-              .path=${mdiApplicationVariableOutline}
-            ></ha-svg-icon>
-            <ha-service-control
-              hide-picker
-              hide-description
-              .hass=${this.hass}
-              .value=${scriptData}
-              .narrow=${false}
-              @value-changed=${this._scriptFieldVariablesChanged}
-            ></ha-service-control
-          ></ha-expansion-panel>`
-        : nothing}
+      ${
+        scriptData
+          ? html`<ha-expansion-panel
+              outlined
+              expanded
+              .header=${this.hass.localize(
+                "ui.components.service-control.script_variables"
+              )}
+              .secondary=${this.hass.localize("ui.common.optional")}
+              no-collapse
+            >
+              <ha-svg-icon
+                slot="leading-icon"
+                .path=${mdiApplicationVariableOutline}
+              ></ha-svg-icon>
+              <ha-service-control
+                hide-picker
+                hide-description
+                .hass=${this.hass}
+                .value=${scriptData}
+                .narrow=${false}
+                @value-changed=${this._scriptFieldVariablesChanged}
+              ></ha-service-control
+            ></ha-expansion-panel>`
+          : nothing
+      }
     `;
   }
 

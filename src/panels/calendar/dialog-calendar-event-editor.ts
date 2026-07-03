@@ -185,17 +185,21 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
         @closed=${this._dialogClosed}
       >
         <div class="content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          ${this._info
-            ? html`<ha-alert
-                alert-type="info"
-                dismissable
-                @alert-dismissed-clicked=${this._clearInfo}
-                >${this._info}</ha-alert
-              >`
-            : ""}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
+          ${
+            this._info
+              ? html`<ha-alert
+                  alert-type="info"
+                  dismissable
+                  @alert-dismissed-clicked=${this._clearInfo}
+                  >${this._info}</ha-alert
+                >`
+              : ""
+          }
 
           <ha-input
             class="summary"
@@ -258,13 +262,15 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
                 .locale=${this.hass.locale}
                 @value-changed=${this._startDateChanged}
               ></ha-date-input>
-              ${!this._allDay
-                ? html`<ha-time-input
-                    .value=${startTime}
-                    .locale=${this.hass.locale}
-                    @value-changed=${this._startTimeChanged}
-                  ></ha-time-input>`
-                : ""}
+              ${
+                !this._allDay
+                  ? html`<ha-time-input
+                      .value=${startTime}
+                      .locale=${this.hass.locale}
+                      @value-changed=${this._startTimeChanged}
+                    ></ha-time-input>`
+                  : ""
+              }
             </div>
           </div>
           <div>
@@ -278,13 +284,15 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
                 .locale=${this.hass.locale}
                 @value-changed=${this._endDateChanged}
               ></ha-date-input>
-              ${!this._allDay
-                ? html`<ha-time-input
-                    .value=${endTime}
-                    .locale=${this.hass.locale}
-                    @value-changed=${this._endTimeChanged}
-                  ></ha-time-input>`
-                : ""}
+              ${
+                !this._allDay
+                  ? html`<ha-time-input
+                      .value=${endTime}
+                      .locale=${this.hass.locale}
+                      @value-changed=${this._endTimeChanged}
+                    ></ha-time-input>`
+                  : ""
+              }
             </div>
           </div>
           <ha-recurrence-rule-editor
@@ -299,40 +307,44 @@ class DialogCalendarEventEditor extends DirtyStateProviderMixin<CalendarEventFor
           </ha-recurrence-rule-editor>
         </div>
         <ha-dialog-footer slot="footer">
-          ${isCreate
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._createEvent}
-                  .disabled=${this._submitting || !this.isDirtyState}
-                >
-                  ${this.hass.localize("ui.components.calendar.event.add")}
-                </ha-button>
-              `
-            : html`
-                ${this._params.canDelete
-                  ? html`
-                      <ha-button
-                        slot="secondaryAction"
-                        appearance="plain"
-                        variant="danger"
-                        @click=${this._deleteEvent}
-                        .disabled=${this._submitting}
-                      >
-                        ${this.hass.localize(
-                          "ui.components.calendar.event.delete"
-                        )}
-                      </ha-button>
-                    `
-                  : ""}
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._saveEvent}
-                  .disabled=${this._submitting || !this.isDirtyState}
-                >
-                  ${this.hass.localize("ui.components.calendar.event.save")}
-                </ha-button>
-              `}
+          ${
+            isCreate
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._createEvent}
+                    .disabled=${this._submitting || !this.isDirtyState}
+                  >
+                    ${this.hass.localize("ui.components.calendar.event.add")}
+                  </ha-button>
+                `
+              : html`
+                  ${
+                    this._params.canDelete
+                      ? html`
+                          <ha-button
+                            slot="secondaryAction"
+                            appearance="plain"
+                            variant="danger"
+                            @click=${this._deleteEvent}
+                            .disabled=${this._submitting}
+                          >
+                            ${this.hass.localize(
+                              "ui.components.calendar.event.delete"
+                            )}
+                          </ha-button>
+                        `
+                      : ""
+                  }
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._saveEvent}
+                    .disabled=${this._submitting || !this.isDirtyState}
+                  >
+                    ${this.hass.localize("ui.components.calendar.event.save")}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

@@ -88,114 +88,126 @@ export class CloudAlexaPref extends LitElement {
           <p>
             ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
           </p>
-          ${manualConfig
-            ? html`<ha-alert alert-type="warning">
-                ${this.hass.localize(
-                  "ui.panel.config.cloud.account.alexa.manual_config"
-                )}
-              </ha-alert>`
-            : nothing}
-          ${!alexa_enabled
-            ? nothing
-            : html`
-                ${!alexa_registered
-                  ? html`<ha-alert
-                      .title=${this.hass.localize(
-                        "ui.panel.config.cloud.account.alexa.not_configured_title"
-                      )}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.alexa.not_configured_text"
-                      )}
+          ${
+            manualConfig
+              ? html`<ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.alexa.manual_config"
+                  )}
+                </ha-alert>`
+              : nothing
+          }
+          ${
+            !alexa_enabled
+              ? nothing
+              : html`
+                  ${
+                    !alexa_registered
+                      ? html`<ha-alert
+                          .title=${this.hass.localize(
+                            "ui.panel.config.cloud.account.alexa.not_configured_title"
+                          )}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.cloud.account.alexa.not_configured_text"
+                          )}
 
-                      <ul>
-                        <li>
-                          <a
-                            href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            ${this.hass!.localize(
-                              "ui.panel.config.cloud.account.alexa.enable_ha_skill"
-                            )}
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            href="https://www.nabucasa.com/config/amazon_alexa/"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            ${this.hass!.localize(
-                              "ui.panel.config.cloud.account.alexa.config_documentation"
-                            )}
-                          </a>
-                        </li>
-                      </ul>
-                    </ha-alert>`
-                  : nothing}
-                <ha-md-list-item>
-                  <span slot="headline"
-                    >${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.expose_new_entities"
-                    )}</span
-                  >
-                  <span slot="supporting-text"
-                    >${this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
-                    )}</span
-                  >
-                  <ha-switch
-                    slot="end"
-                    .checked=${this._exposeNew}
-                    .disabled=${this._exposeNew === undefined}
-                    @change=${this._exposeNewToggleChanged}
-                  ></ha-switch>
-                </ha-md-list-item>
-                ${alexa_registered
-                  ? html`
-                      <ha-md-list-item>
-                        <span slot="headline"
-                          >${this.hass!.localize(
-                            "ui.panel.config.cloud.account.alexa.enable_state_reporting"
-                          )}</span
-                        >
-                        <span slot="supporting-text"
-                          >${this.hass!.localize(
-                            "ui.panel.config.cloud.account.alexa.info_state_reporting"
-                          )}</span
-                        >
-                        <ha-switch
-                          slot="end"
-                          .checked=${alexa_report_state}
-                          @change=${this._reportToggleChanged}
-                        ></ha-switch>
-                      </ha-md-list-item>
-                    `
-                  : nothing}
-              `}
+                          <ul>
+                            <li>
+                              <a
+                                href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                ${this.hass!.localize(
+                                  "ui.panel.config.cloud.account.alexa.enable_ha_skill"
+                                )}
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                href="https://www.nabucasa.com/config/amazon_alexa/"
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                ${this.hass!.localize(
+                                  "ui.panel.config.cloud.account.alexa.config_documentation"
+                                )}
+                              </a>
+                            </li>
+                          </ul>
+                        </ha-alert>`
+                      : nothing
+                  }
+                  <ha-md-list-item>
+                    <span slot="headline"
+                      >${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities"
+                      )}</span
+                    >
+                    <span slot="supporting-text"
+                      >${this.hass!.localize(
+                        "ui.panel.config.cloud.account.alexa.expose_new_entities_info"
+                      )}</span
+                    >
+                    <ha-switch
+                      slot="end"
+                      .checked=${this._exposeNew}
+                      .disabled=${this._exposeNew === undefined}
+                      @change=${this._exposeNewToggleChanged}
+                    ></ha-switch>
+                  </ha-md-list-item>
+                  ${
+                    alexa_registered
+                      ? html`
+                          <ha-md-list-item>
+                            <span slot="headline"
+                              >${this.hass!.localize(
+                                "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                              )}</span
+                            >
+                            <span slot="supporting-text"
+                              >${this.hass!.localize(
+                                "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                              )}</span
+                            >
+                            <ha-switch
+                              slot="end"
+                              .checked=${alexa_report_state}
+                              @change=${this._reportToggleChanged}
+                            ></ha-switch>
+                          </ha-md-list-item>
+                        `
+                      : nothing
+                  }
+                `
+          }
         </div>
-        ${alexa_enabled
-          ? html`<div class="card-actions">
-              <ha-button
-                appearance="plain"
-                href="/config/voice-assistants/expose?assistants=cloud.alexa&historyBack"
-              >
-                ${manualConfig
-                  ? this.hass!.localize(
-                      "ui.panel.config.cloud.account.alexa.show_entities"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.cloud.account.alexa.exposed_entities",
-                      {
-                        number: this.exposedEntities
-                          ? this._exposedEntitiesCount(this.exposedEntities)
-                          : 0,
-                      }
-                    )}
-              </ha-button>
-            </div>`
-          : nothing}
+        ${
+          alexa_enabled
+            ? html`<div class="card-actions">
+                <ha-button
+                  appearance="plain"
+                  href="/config/voice-assistants/expose?assistants=cloud.alexa&historyBack"
+                >
+                  ${
+                    manualConfig
+                      ? this.hass!.localize(
+                          "ui.panel.config.cloud.account.alexa.show_entities"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.alexa.exposed_entities",
+                          {
+                            number: this.exposedEntities
+                              ? this._exposedEntitiesCount(this.exposedEntities)
+                              : 0,
+                          }
+                        )
+                  }
+                </ha-button>
+              </div>`
+            : nothing
+        }
       </ha-card>
     `;
   }

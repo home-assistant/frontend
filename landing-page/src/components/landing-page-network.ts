@@ -55,13 +55,15 @@ class LandingPageNetwork extends LitElement {
           })}
         </p>
         <p>${this.localize("network_issue.resolve_different")}</p>
-        ${!dnsPrimaryInterfaceNameservers
-          ? html`
-              <p>
-                <b>${this.localize("network_issue.no_primary_interface")} </b>
-              </p>
-            `
-          : nothing}
+        ${
+          !dnsPrimaryInterfaceNameservers
+            ? html`
+                <p>
+                  <b>${this.localize("network_issue.no_primary_interface")} </b>
+                </p>
+              `
+            : nothing
+        }
         <div class="actions">
           ${ALTERNATIVE_DNS_SERVERS.map(
             ({ translationKey }, key) =>

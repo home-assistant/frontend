@@ -187,17 +187,19 @@ export class RecurrenceRuleEditor extends LitElement {
   renderMonthly() {
     return html`
       ${this.renderInterval()}
-      ${this._monthlyRepeatItems.length > 0
-        ? html`<ha-select
-            id="monthly"
-            label=${this.hass.localize(
-              "ui.components.calendar.event.repeat.monthly.label"
-            )}
-            @selected=${this._onMonthlyDetailSelected}
-            .value=${this._monthlyRepeat || this._monthlyRepeatItems[0]?.value}
-            .options=${this._monthlyRepeatItems}
-          ></ha-select>`
-        : nothing}
+      ${
+        this._monthlyRepeatItems.length > 0
+          ? html`<ha-select
+              id="monthly"
+              label=${this.hass.localize(
+                "ui.components.calendar.event.repeat.monthly.label"
+              )}
+              @selected=${this._onMonthlyDetailSelected}
+              .value=${this._monthlyRepeat || this._monthlyRepeatItems[0]?.value}
+              .options=${this._monthlyRepeatItems}
+            ></ha-select>`
+          : nothing
+      }
     `;
   }
 
@@ -243,8 +245,9 @@ export class RecurrenceRuleEditor extends LitElement {
       >
         <span slot="end">
           ${this.hass.localize(
-            `ui.components.calendar.event.repeat.interval.${this
-              ._freq!}` as LocalizeKeys
+            `ui.components.calendar.event.repeat.interval.${
+              this._freq!
+            }` as LocalizeKeys
           )}
         </span>
       </ha-input>
@@ -268,39 +271,43 @@ export class RecurrenceRuleEditor extends LitElement {
         }))}
       >
       </ha-select>
-      ${this._end === "after"
-        ? html`
-            <ha-input
-              id="after"
-              label=${this.hass.localize(
-                "ui.components.calendar.event.repeat.end_after.label"
-              )}
-              type="number"
-              min="1"
-              .value=${this._count!}
-              @change=${this._onCountChange}
-            >
-              <span slot="end">
-                ${this.hass.localize(
-                  "ui.components.calendar.event.repeat.end_after.ocurrences"
+      ${
+        this._end === "after"
+          ? html`
+              <ha-input
+                id="after"
+                label=${this.hass.localize(
+                  "ui.components.calendar.event.repeat.end_after.label"
                 )}
-              </span>
-            </ha-input>
-          `
-        : nothing}
-      ${this._end === "on"
-        ? html`
-            <ha-date-input
-              id="on"
-              label=${this.hass.localize(
-                "ui.components.calendar.event.repeat.end_on.label"
-              )}
-              .locale=${this.locale}
-              .value=${formatDate(this._untilDay!, this.timezone!)}
-              @value-changed=${this._onUntilChange}
-            ></ha-date-input>
-          `
-        : nothing}
+                type="number"
+                min="1"
+                .value=${this._count!}
+                @change=${this._onCountChange}
+              >
+                <span slot="end">
+                  ${this.hass.localize(
+                    "ui.components.calendar.event.repeat.end_after.ocurrences"
+                  )}
+                </span>
+              </ha-input>
+            `
+          : nothing
+      }
+      ${
+        this._end === "on"
+          ? html`
+              <ha-date-input
+                id="on"
+                label=${this.hass.localize(
+                  "ui.components.calendar.event.repeat.end_on.label"
+                )}
+                .locale=${this.locale}
+                .value=${formatDate(this._untilDay!, this.timezone!)}
+                @value-changed=${this._onUntilChange}
+              ></ha-date-input>
+            `
+          : nothing
+      }
     `;
   }
 

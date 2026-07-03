@@ -41,13 +41,15 @@ export class HaTileInfo extends LitElement {
         <slot name="primary" class="primary">
           <span>${this.primary}</span>
         </slot>
-        ${this.secondaryLoading
-          ? html`<div class="secondary">
-              <wa-skeleton class="placeholder" effect="pulse"></wa-skeleton>
-            </div>`
-          : html`<slot name="secondary" class="secondary">
-              <span>${this.secondary}</span>
-            </slot>`}
+        ${
+          this.secondaryLoading
+            ? html`<div class="secondary">
+                <wa-skeleton class="placeholder" effect="pulse"></wa-skeleton>
+              </div>`
+            : html`<slot name="secondary" class="secondary">
+                <span>${this.secondary}</span>
+              </slot>`
+        }
       </div>
     `;
   }
