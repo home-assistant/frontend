@@ -224,19 +224,6 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
         @value-changed=${this._changed}
       >
       </ha-items-display-editor>
-      <ha-navigation-picker
-        .hass=${this.hass}
-        .addButtonLabel=${this.hass.localize("ui.sidebar.add_shortcut")}
-        .excludeDashboards=${true}
-        .excludeViews=${true}
-        .excludeApps=${true}
-        .excludeRelated=${true}
-        .excludePaths=${this._computePickerExcludePaths(
-          this.hass.panels,
-          this._customShortcuts ?? []
-        )}
-        @value-changed=${this._addShortcut}
-      ></ha-navigation-picker>
     `;
   }
 
@@ -267,27 +254,42 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
           </ha-dropdown-item>
         </ha-dropdown>
         <div class="content">${this._renderContent()}</div>
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this.closeDialog}
-          >
-            ${this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            slot="primaryAction"
-            .disabled=${
-              !this._order ||
-              !this._hidden ||
-              !this._customShortcuts ||
-              !this.isDirtyState
-            }
-            @click=${this._save}
-          >
-            ${this.hass.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
+        <div slot="footer" class="dialog-footer">
+          <ha-navigation-picker
+            .hass=${this.hass}
+            .addButtonLabel=${this.hass.localize("ui.sidebar.add_shortcut")}
+            .excludeDashboards=${true}
+            .excludeViews=${true}
+            .excludeApps=${true}
+            .excludeRelated=${true}
+            .excludePaths=${this._computePickerExcludePaths(
+              this.hass.panels,
+              this._customShortcuts ?? []
+            )}
+            @value-changed=${this._addShortcut}
+          ></ha-navigation-picker>
+          <ha-dialog-footer>
+            <ha-button
+              slot="secondaryAction"
+              appearance="plain"
+              @click=${this.closeDialog}
+            >
+              ${this.hass.localize("ui.common.cancel")}
+            </ha-button>
+            <ha-button
+              slot="primaryAction"
+              .disabled=${
+                !this._order ||
+                !this._hidden ||
+                !this._customShortcuts ||
+                !this.isDirtyState
+              }
+              @click=${this._save}
+            >
+              ${this.hass.localize("ui.common.save")}
+            </ha-button>
+          </ha-dialog-footer>
+        </div>
       </ha-dialog>
     `;
   }
@@ -408,9 +410,10 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       }
     }
 
-    ha-navigation-picker {
-      display: block;
-      margin-top: var(--ha-space-4);
+    .dialog-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
     }
 
     ha-fade-in {
