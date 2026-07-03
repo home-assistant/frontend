@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Restricts Task issues to organization members: closes and labels the issue with
 // an explanatory comment when the author is not an org member. Invoked from the
-// `check-authorization` job in .github/workflows/restrict-task-creation.yml via
+// `check-authorization` job in .github/workflows/restrict-task-creation.yaml via
 // actions/github-script:
 //
 //   const { default: checkTaskAuthorization } =
