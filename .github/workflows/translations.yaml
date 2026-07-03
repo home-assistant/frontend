@@ -6,6 +6,7 @@ on:
     branches:
       - dev
     paths:
+      - .github/workflows/translations.yaml
       - src/translations/en.json
 
 permissions:
