@@ -1518,62 +1518,74 @@ export class HuiEnergySolarSceneNowCard
     const p = this._power;
     if (!p) return nothing;
     return html`
-      ${p.home != null
-        ? this._chip(
-            "home",
-            "mdi:home",
-            "var(--primary-color)",
-            this._fmtPower(p.home)
-          )
-        : nothing}
-      ${p.pv != null
-        ? this._chip(
-            "pv",
-            "mdi:solar-power",
-            "var(--energy-solar-color)",
-            this._fmtPower(p.pv)
-          )
-        : nothing}
-      ${p.grid != null
-        ? this._chip(
-            "grid",
-            Math.abs(p.grid) <= IDLE_W
-              ? "mdi:transmission-tower"
-              : p.grid > 0
-                ? "mdi:transmission-tower-import"
-                : "mdi:transmission-tower-export",
-            p.grid < -IDLE_W
-              ? "var(--energy-grid-return-color)"
-              : "var(--energy-grid-consumption-color)",
-            this._fmtPower(Math.abs(p.grid))
-          )
-        : nothing}
-      ${p.battery != null
-        ? this._chip(
-            "battery",
-            "mdi:lightning-bolt",
-            p.battery >= 0
-              ? "var(--energy-battery-out-color)"
-              : "var(--energy-battery-in-color)",
-            this._fmtPower(Math.abs(p.battery))
-          )
-        : nothing}
-      ${p.soc != null
-        ? this._chip(
-            "soc",
-            "mdi:battery",
-            "var(--energy-battery-out-color)",
-            `${Math.round(p.soc)}${blankBeforeUnit("%", this.hass.locale)}%`
-          )
-        : nothing}
-      ${p.lowCarbon != null && p.grid != null && p.grid > IDLE_W
-        ? this._chip(
-            "lowcarbon",
-            "mdi:leaf",
-            "var(--energy-non-fossil-color)",
-            `${Math.round(p.lowCarbon)}${blankBeforeUnit("%", this.hass.locale)}%`
-          )
-        : nothing}
+      ${
+        p.home != null
+          ? this._chip(
+              "home",
+              "mdi:home",
+              "var(--primary-color)",
+              this._fmtPower(p.home)
+            )
+          : nothing
+      }
+      ${
+        p.pv != null
+          ? this._chip(
+              "pv",
+              "mdi:solar-power",
+              "var(--energy-solar-color)",
+              this._fmtPower(p.pv)
+            )
+          : nothing
+      }
+      ${
+        p.grid != null
+          ? this._chip(
+              "grid",
+              Math.abs(p.grid) <= IDLE_W
+                ? "mdi:transmission-tower"
+                : p.grid > 0
+                  ? "mdi:transmission-tower-import"
+                  : "mdi:transmission-tower-export",
+              p.grid < -IDLE_W
+                ? "var(--energy-grid-return-color)"
+                : "var(--energy-grid-consumption-color)",
+              this._fmtPower(Math.abs(p.grid))
+            )
+          : nothing
+      }
+      ${
+        p.battery != null
+          ? this._chip(
+              "battery",
+              "mdi:lightning-bolt",
+              p.battery >= 0
+                ? "var(--energy-battery-out-color)"
+                : "var(--energy-battery-in-color)",
+              this._fmtPower(Math.abs(p.battery))
+            )
+          : nothing
+      }
+      ${
+        p.soc != null
+          ? this._chip(
+              "soc",
+              "mdi:battery",
+              "var(--energy-battery-out-color)",
+              `${Math.round(p.soc)}${blankBeforeUnit("%", this.hass.locale)}%`
+            )
+          : nothing
+      }
+      ${
+        p.lowCarbon != null && p.grid != null && p.grid > IDLE_W
+          ? this._chip(
+              "lowcarbon",
+              "mdi:leaf",
+              "var(--energy-non-fossil-color)",
+              `${Math.round(p.lowCarbon)}${blankBeforeUnit("%", this.hass.locale)}%`
+            )
+          : nothing
+      }
     `;
   }
 
@@ -1619,9 +1631,11 @@ export class HuiEnergySolarSceneNowCard
     return html`
       <ha-card>
         <div class="wrap" role="img" aria-label=${this._ariaLabel()}>
-          ${this._config.title
-            ? html`<div class="title">${this._config.title}</div>`
-            : nothing}
+          ${
+            this._config.title
+              ? html`<div class="title">${this._config.title}</div>`
+              : nothing
+          }
           <div class="viewport"><div id="ground"></div></div>
           <svg class="layer l-scene" xmlns="http://www.w3.org/2000/svg"></svg>
           <svg
@@ -1647,23 +1661,25 @@ export class HuiEnergySolarSceneNowCard
             @pointerup=${this._onPointerUp}
             @pointercancel=${this._onPointerUp}
           ></div>
-          ${this._showAttribution
-            ? html`<div class="attribution">
-                &copy;
-                <a
-                  href="https://www.openstreetmap.org/copyright"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >OpenStreetMap</a
-                >, &copy;
-                <a
-                  href="https://carto.com/attributions"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >CARTO</a
-                >
-              </div>`
-            : nothing}
+          ${
+            this._showAttribution
+              ? html`<div class="attribution">
+                  &copy;
+                  <a
+                    href="https://www.openstreetmap.org/copyright"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >OpenStreetMap</a
+                  >, &copy;
+                  <a
+                    href="https://carto.com/attributions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >CARTO</a
+                  >
+                </div>`
+              : nothing
+          }
         </div>
       </ha-card>
     `;
