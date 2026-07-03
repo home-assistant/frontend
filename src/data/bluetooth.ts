@@ -17,6 +17,7 @@ export interface BluetoothDeviceData extends DataTableRowData {
   source: string;
   time: number;
   tx_power: number;
+  raw: string | null;
 }
 
 export interface BluetoothConnectionData extends DataTableRowData {
@@ -58,12 +59,20 @@ export interface BluetoothAllocationsData {
   allocated: string[];
 }
 
+export type BluetoothScannerMode = "active" | "passive";
+
+export type BluetoothScannerRequestedMode = BluetoothScannerMode | "auto";
+
 export interface BluetoothScannerState {
   source: string;
   adapter: string;
-  current_mode: "active" | "passive" | null;
-  requested_mode: "active" | "passive" | null;
+  current_mode: BluetoothScannerMode | null;
+  requested_mode: BluetoothScannerRequestedMode | null;
 }
+
+export const isScannerStateMismatch = (state: BluetoothScannerState): boolean =>
+  state.requested_mode !== "auto" &&
+  state.current_mode !== state.requested_mode;
 
 export const subscribeBluetoothScannersDetailsUpdates = (
   conn: Connection,

@@ -48,14 +48,18 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        .validationMessage=${this.schema.required
-          ? this.localize?.("ui.common.error_required")
-          : undefined}
+        .validationMessage=${
+          this.schema.required
+            ? this.localize?.("ui.common.error_required")
+            : undefined
+        }
         @input=${this._handleInput}
       >
-        ${this.schema.description?.suffix
-          ? html`<span slot="end">${this.schema.description?.suffix}</span>`
-          : nothing}
+        ${
+          this.schema.description?.suffix
+            ? html`<span slot="end">${this.schema.description?.suffix}</span>`
+            : nothing
+        }
       </ha-input>
     `;
   }

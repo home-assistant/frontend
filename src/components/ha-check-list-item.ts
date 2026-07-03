@@ -20,6 +20,7 @@ export class HaCheckListItem extends CheckListItemBase {
   separateCheckboxClick = false;
 
   async onChange(event) {
+    event.stopPropagation();
     super.onChange(event);
     fireEvent(this, event.type);
   }

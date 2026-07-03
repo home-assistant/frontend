@@ -1,8 +1,8 @@
 import { type LitElement, css } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { Constructor } from "../../types";
 import { nativeElementInternalsSupported } from "../../common/feature-detect/support-native-element-internals";
+import type { Constructor } from "../../types";
 
 /**
  * Minimal interface for the inner wa-input / wa-textarea element.
@@ -35,13 +35,7 @@ export interface WaInputMixinInterface {
   minlength?: number;
   maxlength?: number;
   autocapitalize:
-    | "off"
-    | "none"
-    | "on"
-    | "sentences"
-    | "words"
-    | "characters"
-    | "";
+    "off" | "none" | "on" | "sentences" | "words" | "characters" | "";
   autocomplete?: string;
   autofocus: boolean;
   spellcheck: boolean;
@@ -56,14 +50,7 @@ export interface WaInputMixinInterface {
     | "url"
     | "";
   enterkeyhint:
-    | "enter"
-    | "done"
-    | "go"
-    | "next"
-    | "previous"
-    | "search"
-    | "send"
-    | "";
+    "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | "";
   name?: string;
   disabled: boolean;
   validationMessage?: string;
@@ -116,13 +103,7 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
     @property()
     // eslint-disable-next-line lit/no-native-attributes
     public autocapitalize:
-      | "off"
-      | "none"
-      | "on"
-      | "sentences"
-      | "words"
-      | "characters"
-      | "" = "";
+      "off" | "none" | "on" | "sentences" | "words" | "characters" | "" = "";
 
     @property()
     public autocomplete?: string;
@@ -151,14 +132,8 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
     @property()
     // eslint-disable-next-line lit/no-native-attributes
     public enterkeyhint:
-      | "enter"
-      | "done"
-      | "go"
-      | "next"
-      | "previous"
-      | "search"
-      | "send"
-      | "" = "";
+      "enter" | "done" | "go" | "next" | "previous" | "search" | "send" | "" =
+      "";
 
     @property()
     public name?: string;
@@ -339,7 +314,7 @@ export const waInputStyles = css`
     min-height: var(--ha-space-5);
     margin-block-start: 0;
     margin-inline-start: var(--ha-space-3);
-    font-size: var(--ha-font-size-xs);
+    font-size: var(--ha-font-size-s);
     display: flex;
     align-items: center;
     color: var(--ha-color-text-secondary);

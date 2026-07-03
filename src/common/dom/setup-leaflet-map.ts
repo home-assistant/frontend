@@ -3,8 +3,6 @@ import type { Map, TileLayer } from "leaflet";
 // Sets up a Leaflet map on the provided DOM element
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 export type LeafletModuleType = typeof import("leaflet");
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
@@ -43,17 +41,6 @@ export const setupLeafletMap = async (
   const tileLayer = createTileLayer(Leaflet).addTo(map);
 
   return [map, Leaflet, tileLayer];
-};
-
-export const replaceTileLayer = (
-  leaflet: LeafletModuleType,
-  map: Map,
-  tileLayer: TileLayer
-): TileLayer => {
-  map.removeLayer(tileLayer);
-  tileLayer = createTileLayer(leaflet);
-  tileLayer.addTo(map);
-  return tileLayer;
 };
 
 const createTileLayer = (leaflet: LeafletModuleType): TileLayer =>

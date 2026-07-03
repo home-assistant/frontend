@@ -19,6 +19,7 @@ import type {
   HaScannerType,
 } from "../../../../../data/bluetooth";
 import {
+  isScannerStateMismatch,
   subscribeBluetoothConnectionAllocations,
   subscribeBluetoothScannerState,
   subscribeBluetoothScannersDetails,
@@ -285,9 +286,7 @@ export class BluetoothAdapterInfoPage extends LitElement {
       const scannerType: HaScannerType =
         scannerDetails?.scanner_type ?? "unknown";
       const isRemoteScanner = scannerType === "remote";
-      const hasMismatch =
-        scannerState &&
-        scannerState.current_mode !== scannerState.requested_mode;
+      const hasMismatch = scannerState && isScannerStateMismatch(scannerState);
 
       const allocations = scannerDetails
         ? this._connectionAllocationData.find(
@@ -321,26 +320,30 @@ export class BluetoothAdapterInfoPage extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
           <div slot="headline">${deviceName}</div>
           <div slot="supporting-text">${supportingParts.join(" · ")}</div>
-          ${!isRemoteScanner
-            ? html`<ha-icon-button
-                slot="end"
-                .path=${mdiCogOutline}
-                .entry=${entry}
-                @click=${this._openOptionFlow}
-                .label=${this.hass.localize(
-                  "ui.panel.config.bluetooth.option_flow"
-                )}
-              ></ha-icon-button>`
-            : nothing}
+          ${
+            !isRemoteScanner
+              ? html`<ha-icon-button
+                  slot="end"
+                  .path=${mdiCogOutline}
+                  .entry=${entry}
+                  @click=${this._openOptionFlow}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.bluetooth.option_flow"
+                  )}
+                ></ha-icon-button>`
+              : nothing
+          }
           <ha-icon-next slot="end"></ha-icon-next>
         </ha-md-list-item>
-        ${hasMismatch && scannerDetails
-          ? this._renderScannerMismatchWarning(
-              deviceName,
-              scannerState,
-              scannerType
-            )
-          : nothing}
+        ${
+          hasMismatch && scannerDetails
+            ? this._renderScannerMismatchWarning(
+                deviceName,
+                scannerState,
+                scannerType
+              )
+            : nothing
+        }
       `;
     });
   }
@@ -435,6 +438,13 @@ export class BluetoothAdapterInfoPage extends LitElement {
     if (!scannerState) {
       return this.hass.localize(
         "ui.panel.config.bluetooth.scanner_state_unknown"
+      );
+    }
+
+    if (scannerState.requested_mode === "auto") {
+      return this.hass.localize(
+        "ui.panel.config.bluetooth.scanning_mode_auto_with_current",
+        { current: this._formatMode(scannerState.current_mode) }
       );
     }
 

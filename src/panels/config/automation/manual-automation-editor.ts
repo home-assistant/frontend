@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { load } from "js-yaml";
+import { load, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
@@ -72,13 +72,15 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
   protected renderContent() {
     return html`
-      ${this.config.description
-        ? html`<ha-markdown
-            class="description"
-            breaks
-            .content=${this.config.description}
-          ></ha-markdown>`
-        : nothing}
+      ${
+        this.config.description
+          ? html`<ha-markdown
+              class="description"
+              breaks
+              .content=${this.config.description}
+            ></ha-markdown>`
+          : nothing
+      }
       <div class="header">
         <h2 id="triggers-heading" class="name">
           ${this.hass.localize(
@@ -86,13 +88,15 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           )}
         </h2>
       </div>
-      ${!ensureArray(this.config.triggers)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.description"
-            )}
-          </p>`
-        : nothing}
+      ${
+        !ensureArray(this.config.triggers)?.length
+          ? html`<p>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.description"
+              )}
+            </p>`
+          : nothing
+      }
 
       <ha-automation-trigger
         role="region"
@@ -121,14 +125,16 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           >
         </h2>
       </div>
-      ${!ensureArray(this.config.conditions)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.description",
-              { user: this.hass.user?.name || "Alice" }
-            )}
-          </p>`
-        : nothing}
+      ${
+        !ensureArray(this.config.conditions)?.length
+          ? html`<p>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.description",
+                { user: this.hass.user?.name || "Alice" }
+              )}
+            </p>`
+          : nothing
+      }
 
       <ha-automation-condition
         role="region"
@@ -154,13 +160,15 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
           )}
         </h2>
       </div>
-      ${!ensureArray(this.config.actions)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.description"
-            )}
-          </p>`
-        : nothing}
+      ${
+        !ensureArray(this.config.actions)?.length
+          ? html`<p>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.description"
+              )}
+            </p>`
+          : nothing
+      }
 
       <ha-automation-action
         role="region"
@@ -224,7 +232,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
     let loaded: any;
     try {
-      loaded = load(paste);
+      loaded = load(paste, { schema: YAML11_SCHEMA });
     } catch (_err: any) {
       showEditorToast(this, {
         message: this.hass.localize(

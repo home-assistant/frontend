@@ -49,124 +49,128 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
-        ${this._commissionParams
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.matter.open_commissioning_window.success"
-                )}
-                <br />
-                ${this.hass.localize(
-                  "ui.panel.config.matter.open_commissioning_window.scan_code"
-                )}
-              </p>
-              <div class="sharing-code-container">
-                <div class="sharing-code">
-                  <img
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    alt=${domainToName(this.hass.localize, "matter")}
-                    src=${brandsUrl(
-                      {
-                        domain: "matter",
-                        type: "logo",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
-                  />
-                  <ha-qr-code
-                    .data=${this._commissionParams.setup_qr_code}
-                    errorCorrectionLevel="quartile"
-                    scale="6"
-                    margin="1"
-                  ></ha-qr-code>
-                  <span class="code"
-                    >${this._commissionParams.setup_manual_code.substring(
-                      0,
-                      4
-                    )}-${this._commissionParams.setup_manual_code.substring(
-                      4,
-                      7
-                    )}-${this._commissionParams.setup_manual_code.substring(
-                      7
-                    )}</span
-                  >
-                </div>
-              </div>
-            `
-          : this._status === "started"
+        ${
+          this._commissionParams
             ? html`
-                <div class="flex-container">
-                  <ha-spinner></ha-spinner>
-                  <div class="status">
-                    <p>
-                      <b>
-                        ${this.hass.localize(
-                          "ui.panel.config.matter.open_commissioning_window.in_progress"
-                        )}
-                      </b>
-                    </p>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.open_commissioning_window.success"
+                  )}
+                  <br />
+                  ${this.hass.localize(
+                    "ui.panel.config.matter.open_commissioning_window.scan_code"
+                  )}
+                </p>
+                <div class="sharing-code-container">
+                  <div class="sharing-code">
+                    <img
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      alt=${domainToName(this.hass.localize, "matter")}
+                      src=${brandsUrl(
+                        {
+                          domain: "matter",
+                          type: "logo",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
+                    />
+                    <ha-qr-code
+                      .data=${this._commissionParams.setup_qr_code}
+                      errorCorrectionLevel="quartile"
+                      scale="6"
+                      margin="1"
+                    ></ha-qr-code>
+                    <span class="code"
+                      >${this._commissionParams.setup_manual_code.substring(
+                        0,
+                        4
+                      )}-${this._commissionParams.setup_manual_code.substring(
+                        4,
+                        7
+                      )}-${this._commissionParams.setup_manual_code.substring(
+                        7
+                      )}</span
+                    >
                   </div>
                 </div>
               `
-            : this._status === "failed"
+            : this._status === "started"
               ? html`
                   <div class="flex-container">
-                    <ha-svg-icon
-                      .path=${mdiCloseCircle}
-                      class="failed"
-                    ></ha-svg-icon>
+                    <ha-spinner></ha-spinner>
                     <div class="status">
                       <p>
-                        ${this.hass.localize(
-                          "ui.panel.config.matter.open_commissioning_window.failed"
-                        )}
+                        <b>
+                          ${this.hass.localize(
+                            "ui.panel.config.matter.open_commissioning_window.in_progress"
+                          )}
+                        </b>
                       </p>
                     </div>
                   </div>
                 `
-              : html`
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.description",
-                      {
-                        startCommissioning: html`<b
-                          >${this.hass.localize(
-                            "ui.panel.config.matter.open_commissioning_window.start_commissioning"
-                          )}</b
-                        >`,
-                      }
-                    )}
-                  </p>
-                  <p class="note">
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
-                    )}
-                  </p>
-                `}
+              : this._status === "failed"
+                ? html`
+                    <div class="flex-container">
+                      <ha-svg-icon
+                        .path=${mdiCloseCircle}
+                        class="failed"
+                      ></ha-svg-icon>
+                      <div class="status">
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.matter.open_commissioning_window.failed"
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  `
+                : html`
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.description",
+                        {
+                          startCommissioning: html`<b
+                            >${this.hass.localize(
+                              "ui.panel.config.matter.open_commissioning_window.start_commissioning"
+                            )}</b
+                          >`,
+                        }
+                      )}
+                    </p>
+                    <p class="note">
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
+                      )}
+                    </p>
+                  `
+        }
         <ha-dialog-footer slot="footer">
-          ${this._commissionParams
-            ? html`
-                <ha-button slot="primaryAction" @click=${this._copyCode}>
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.open_commissioning_window.copy_code"
-                  )}
-                </ha-button>
-              `
-            : this._status === "started" || this._status === "failed"
+          ${
+            this._commissionParams
               ? html`
-                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                    ${this.hass.localize("ui.common.close")}
+                  <ha-button slot="primaryAction" @click=${this._copyCode}>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.open_commissioning_window.copy_code"
+                    )}
                   </ha-button>
                 `
-              : html`
-                  <ha-button slot="primaryAction" @click=${this._start}>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.start_commissioning"
-                    )}
-                  </ha-button>
-                `}
+              : this._status === "started" || this._status === "failed"
+                ? html`
+                    <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                      ${this.hass.localize("ui.common.close")}
+                    </ha-button>
+                  `
+                : html`
+                    <ha-button slot="primaryAction" @click=${this._start}>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.start_commissioning"
+                      )}
+                    </ha-button>
+                  `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

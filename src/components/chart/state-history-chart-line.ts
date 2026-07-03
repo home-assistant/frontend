@@ -1,18 +1,22 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
 import { styleMap } from "lit/directives/style-map";
-import { getGraphColorByIndex } from "../../common/color/colors";
 import { computeRTL } from "../../common/util/compute_rtl";
 
-import type { LineChartEntity, LineChartState } from "../../data/history";
+import type { LineChartEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
-import type { ECOption } from "../../resources/echarts/echarts";
+import "./ha-chart-tooltip-marker";
+import {
+  CLIMATE_MODE_CONFIGS,
+  generateStateHistoryChartLineData,
+} from "./state-history-chart-line-data";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   getNumberFormatOptions,
@@ -21,22 +25,8 @@ import {
 import { measureTextWidth } from "../../util/text";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import { filterXSS } from "../../common/util/xss";
 import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
-
-const safeParseFloat = (value) => {
-  const parsed = parseFloat(value);
-  return isFinite(parsed) ? parsed : null;
-};
-
-const CLIMATE_MODE_CONFIGS = [
-  { mode: "heat", action: "heating", cssVar: "--state-climate-heat-color" },
-  { mode: "cool", action: "cooling", cssVar: "--state-climate-cool-color" },
-  { mode: "dry", action: "drying", cssVar: "--state-climate-dry-color" },
-  { mode: "fan_only", action: "fan", cssVar: "--state-climate-fan_only-color" },
-] as const;
 
 // Used to recover the underlying entity_id from a legend dataset id.
 // Kept in sync with the suffixes appended at dataset construction below
@@ -107,7 +97,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _datasetToDataIndex: number[] = [];
 
-  @state() private _chartOptions?: ECOption;
+  @state() private _chartOptions?: HaECOption;
 
   private _hiddenStats = new Set<string>();
 
@@ -117,9 +107,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
-  private _previousYAxisLabelValue = 0;
-
-  private _yAxisMaximumFractionDigits = 0;
+  private _yAxisFractionDigits = 1;
 
   protected render() {
     return html`
@@ -142,13 +130,20 @@ export class StateHistoryChartLine extends LitElement {
 
   private _renderTooltip = (params: any) => {
     const time = params[0].axisValue;
-    const title =
-      formatDateTimeWithSeconds(
-        new Date(time),
-        this.hass.locale,
-        this.hass.config
-      ) + "<br>";
+    const title = formatDateTimeWithSeconds(
+      new Date(time),
+      this.hass.locale,
+      this.hass.config
+    );
     const datapoints: Record<string, any>[] = [];
+    // Index the hovered points by series so the per-dataset lookup below is
+    // O(1) instead of scanning `params` for every dataset on each mouse move.
+    const paramsBySeriesIndex = new Map<number, Record<string, any>>();
+    for (const p of params) {
+      if (!paramsBySeriesIndex.has(p.seriesIndex)) {
+        paramsBySeriesIndex.set(p.seriesIndex, p);
+      }
+    }
     this._chartData.forEach((dataset, index) => {
       if (
         dataset.tooltip?.show === false ||
@@ -156,9 +151,7 @@ export class StateHistoryChartLine extends LitElement {
       ) {
         return;
       }
-      const param = params.find(
-        (p: Record<string, any>) => p.seriesIndex === index
-      );
+      const param = paramsBySeriesIndex.get(index);
       if (param) {
         datapoints.push(param);
         return;
@@ -178,52 +171,44 @@ export class StateHistoryChartLine extends LitElement {
         seriesName: dataset.name,
         seriesIndex: index,
         value: lastData,
-        // HTML copied from echarts. May change based on options
-        marker: `<span style="display:inline-block;margin-right:4px;margin-inline-end:4px;margin-inline-start:initial;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
+        color: dataset.color,
       });
     });
     const unit = this.unit
       ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
       : "";
 
-    return (
-      title +
-      datapoints
-        .map((param) => {
-          const entityId = this._entityIds[param.seriesIndex];
-          const stateObj = this.hass.states[entityId];
-          const entry = this.hass.entities[entityId];
-          const stateValue = String(param.value[1]);
-          let value = stateObj
-            ? this.hass.formatEntityState(stateObj, stateValue)
-            : `${formatNumber(
-                stateValue,
-                this.hass.locale,
-                getNumberFormatOptions(undefined, entry)
-              )}${unit}`;
-          const dataIndex = this._datasetToDataIndex[param.seriesIndex];
-          const data = this.data[dataIndex];
-          if (data.statistics && data.statistics.length > 0) {
-            value += "<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-            const source =
-              data.states.length === 0 ||
-              param.value[0] < data.states[0].last_changed
-                ? `${this.hass.localize(
-                    "ui.components.history_charts.source_stats"
-                  )}`
-                : `${this.hass.localize(
-                    "ui.components.history_charts.source_history"
-                  )}`;
-            value += source;
-          }
-
-          if (param.seriesName) {
-            return `${param.marker} ${filterXSS(param.seriesName)}: ${value}`;
-          }
-          return `${param.marker} ${value}`;
-        })
-        .join("<br>")
-    );
+    return html`${title}${datapoints.map((param) => {
+      const entityId = this._entityIds[param.seriesIndex];
+      const stateObj = this.hass.states[entityId];
+      const entry = this.hass.entities[entityId];
+      const stateValue = String(param.value[1]);
+      const value = stateObj
+        ? this.hass.formatEntityState(stateObj, stateValue)
+        : `${formatNumber(
+            stateValue,
+            this.hass.locale,
+            getNumberFormatOptions(undefined, entry)
+          )}${unit}`;
+      const dataIndex = this._datasetToDataIndex[param.seriesIndex];
+      const data = this.data[dataIndex];
+      let statSuffix: TemplateResult | typeof nothing = nothing;
+      if (data.statistics && data.statistics.length > 0) {
+        const source =
+          data.states.length === 0 ||
+          param.value[0] < data.states[0].last_changed
+            ? this.hass.localize("ui.components.history_charts.source_stats")
+            : this.hass.localize("ui.components.history_charts.source_history");
+        // Five non-breaking spaces indent the source label.
+        statSuffix = html`<br />${"\u00a0".repeat(5)}${source}`;
+      }
+      return html`<br /><ha-chart-tooltip-marker
+          .color=${String(param.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${
+          param.seriesName ? html`${param.seriesName}: ` : nothing
+        }${value}${statSuffix}`;
+    })}`;
   };
 
   private _datasetHidden(ev: CustomEvent) {
@@ -430,451 +415,38 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _generateData() {
-    let colorIndex = 0;
-    const computedStyles = getComputedStyle(this);
-    const entityStates = this.data;
-    const datasets: LineSeriesOption[] = [];
-    const entityIds: string[] = [];
-    const datasetToDataIndex: number[] = [];
-    if (entityStates.length === 0) {
+    if (this.data.length === 0) {
       return;
     }
 
     this._chartTime = new Date();
-    const endTime = this.endTime;
-    const names = this.names || {};
-    const colors = this.colors || {};
-    entityStates.forEach((states, dataIdx) => {
-      const domain = states.domain;
-      const name = names[states.entity_id] || states.name;
-      const color = colors[states.entity_id];
-      // array containing [value1, value2, etc]
-      let prevValues: any[] | null = null;
 
-      const data: LineSeriesOption[] = [];
-
-      const pushData = (timestamp: Date, datavalues: any[] | null) => {
-        if (!datavalues) return;
-        if (timestamp > endTime) {
-          // Drop data points that are after the requested endTime. This could happen if
-          // endTime is "now" and client time is not in sync with server time.
-          return;
-        }
-        data.forEach((d, i) => {
-          if (datavalues[i] === null && prevValues && prevValues[i] !== null) {
-            // null data values show up as gaps in the chart.
-            // If the current value for the dataset is null and the previous
-            // value of the data set is not null, then add an 'end' point
-            // to the chart for the previous value. Otherwise the gap will
-            // be too big. It will go from the start of the previous data
-            // value until the start of the next data value.
-            d.data!.push([timestamp, prevValues[i]]);
-          }
-          d.data!.push([timestamp, datavalues[i]]);
-        });
-        prevValues = datavalues;
-      };
-
-      const addDataSet = (
-        id: string,
-        nameY: string,
-        clr?: string,
-        fill = false
-      ) => {
-        if (!clr) {
-          clr = getGraphColorByIndex(colorIndex, computedStyles);
-          colorIndex++;
-        }
-        data.push({
-          id,
-          data: [],
-          type: "line",
-          cursor: "default",
-          name: nameY,
-          color: clr,
-          symbol: "circle",
-          symbolSize: 1,
-          step: "end",
-          sampling: "minmax",
-          animationDurationUpdate: 0,
-          lineStyle: {
-            width: fill ? 0 : 1.5,
-          },
-          areaStyle: fill
-            ? {
-                color: clr + "7F",
-              }
-            : undefined,
-          tooltip: {
-            show: !fill,
-          },
-        });
-        entityIds.push(states.entity_id);
-        datasetToDataIndex.push(dataIdx);
-      };
-
-      if (
-        domain === "thermostat" ||
-        domain === "climate" ||
-        domain === "water_heater"
-      ) {
-        const hasHvacAction = states.states.some(
-          (entityState) => entityState.attributes?.hvac_action
-        );
-
-        const activeModes = CLIMATE_MODE_CONFIGS.map(
-          ({ mode, action, cssVar }) => {
-            const isActive =
-              domain === "climate" && hasHvacAction
-                ? (entityState: LineChartState) =>
-                    CLIMATE_HVAC_ACTION_TO_MODE[
-                      entityState.attributes?.hvac_action
-                    ] === mode
-                : (entityState: LineChartState) => entityState.state === mode;
-            return { action, cssVar, isActive };
-          }
-        ).filter(({ isActive }) => states.states.some(isActive));
-        // We differentiate between thermostats that have a target temperature
-        // range versus ones that have just a target temperature
-
-        // Using step chart by step-before so manually interpolation not needed.
-        const hasTargetRange = states.states.some(
-          (entityState) =>
-            entityState.attributes &&
-            entityState.attributes.target_temp_high !==
-              entityState.attributes.target_temp_low
-        );
-        addDataSet(
-          states.entity_id + "-current_temperature",
-          this.showNames
-            ? this.hass.localize("ui.card.climate.current_temperature", {
-                name: name,
-              })
-            : this.hass.localize(
-                "component.climate.entity_component._.state_attributes.current_temperature.name"
-              )
-        );
-        for (const { action, cssVar } of activeModes) {
-          addDataSet(
-            `${states.entity_id}-${action}`,
-            this.showNames
-              ? this.hass.localize(`ui.card.climate.${action}`, {
-                  name: name,
-                })
-              : this.hass.localize(
-                  `component.climate.entity_component._.state_attributes.hvac_action.state.${action}`
-                ),
-            computedStyles.getPropertyValue(cssVar),
-            true
-          );
-        }
-
-        if (hasTargetRange) {
-          addDataSet(
-            states.entity_id + "-target_temperature_mode",
-            this.showNames
-              ? this.hass.localize("ui.card.climate.target_temperature_mode", {
-                  name: name,
-                  mode: this.hass.localize("ui.card.climate.high"),
-                })
-              : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.target_temp_high.name"
-                )
-          );
-          addDataSet(
-            states.entity_id + "-target_temperature_mode_low",
-            this.showNames
-              ? this.hass.localize("ui.card.climate.target_temperature_mode", {
-                  name: name,
-                  mode: this.hass.localize("ui.card.climate.low"),
-                })
-              : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.target_temp_low.name"
-                )
-          );
-        } else {
-          addDataSet(
-            states.entity_id + "-target_temperature",
-            this.showNames
-              ? this.hass.localize(
-                  "ui.card.climate.target_temperature_entity",
-                  {
-                    name: name,
-                  }
-                )
-              : this.hass.localize(
-                  "component.climate.entity_component._.state_attributes.temperature.name"
-                )
-          );
-        }
-
-        states.states.forEach((entityState) => {
-          if (!entityState.attributes) return;
-          const curTemp = safeParseFloat(
-            entityState.attributes.current_temperature
-          );
-          const series = [curTemp];
-          for (const { isActive } of activeModes) {
-            series.push(isActive(entityState) ? curTemp : null);
-          }
-          if (hasTargetRange) {
-            const targetHigh = safeParseFloat(
-              entityState.attributes.target_temp_high
-            );
-            const targetLow = safeParseFloat(
-              entityState.attributes.target_temp_low
-            );
-            series.push(targetHigh, targetLow);
-            pushData(new Date(entityState.last_changed), series);
-          } else {
-            const target = safeParseFloat(entityState.attributes.temperature);
-            series.push(target);
-            pushData(new Date(entityState.last_changed), series);
-          }
-        });
-      } else if (domain === "humidifier") {
-        const hasAction = states.states.some(
-          (entityState) => entityState.attributes?.action
-        );
-        const hasCurrent = states.states.some(
-          (entityState) => entityState.attributes?.current_humidity
-        );
-
-        const hasHumidifying =
-          hasAction &&
-          states.states.some(
-            (entityState: LineChartState) =>
-              entityState.attributes?.action === "humidifying"
-          );
-        const hasDrying =
-          hasAction &&
-          states.states.some(
-            (entityState: LineChartState) =>
-              entityState.attributes?.action === "drying"
-          );
-
-        addDataSet(
-          states.entity_id + "-target_humidity",
-          this.showNames
-            ? this.hass.localize("ui.card.humidifier.target_humidity_entity", {
-                name: name,
-              })
-            : this.hass.localize(
-                "component.humidifier.entity_component._.state_attributes.humidity.name"
-              )
-        );
-
-        if (hasCurrent) {
-          addDataSet(
-            states.entity_id + "-current_humidity",
-            this.showNames
-              ? this.hass.localize(
-                  "ui.card.humidifier.current_humidity_entity",
-                  {
-                    name: name,
-                  }
-                )
-              : this.hass.localize(
-                  "component.humidifier.entity_component._.state_attributes.current_humidity.name"
-                )
-          );
-        }
-
-        // If action attribute is available, we used it to shade the area below the humidity.
-        // If action attribute is not available, we shade the area when the device is on
-        if (hasHumidifying) {
-          addDataSet(
-            states.entity_id + "-humidifying",
-            this.showNames
-              ? this.hass.localize("ui.card.humidifier.humidifying", {
-                  name: name,
-                })
-              : this.hass.localize(
-                  "component.humidifier.entity_component._.state_attributes.action.state.humidifying"
-                ),
-            computedStyles.getPropertyValue("--state-humidifier-on-color"),
-            true
-          );
-        } else if (hasDrying) {
-          addDataSet(
-            states.entity_id + "-drying",
-            this.showNames
-              ? this.hass.localize("ui.card.humidifier.drying", {
-                  name: name,
-                })
-              : this.hass.localize(
-                  "component.humidifier.entity_component._.state_attributes.action.state.drying"
-                ),
-            computedStyles.getPropertyValue("--state-humidifier-on-color"),
-            true
-          );
-        } else {
-          addDataSet(
-            states.entity_id + "-on",
-            this.showNames
-              ? this.hass.localize("ui.card.humidifier.on_entity", {
-                  name: name,
-                })
-              : this.hass.localize(
-                  "component.humidifier.entity_component._.state.on"
-                ),
-            undefined,
-            true
-          );
-        }
-
-        states.states.forEach((entityState) => {
-          if (!entityState.attributes) return;
-          const target = safeParseFloat(entityState.attributes.humidity);
-          // If the current humidity is not available, then we fill up to the target humidity
-          const current = hasCurrent
-            ? safeParseFloat(entityState.attributes?.current_humidity)
-            : target;
-          const series = [target];
-
-          if (hasCurrent) {
-            series.push(current);
-          }
-
-          if (hasHumidifying) {
-            series.push(
-              entityState.attributes?.action === "humidifying" ? current : null
-            );
-          } else if (hasDrying) {
-            series.push(
-              entityState.attributes?.action === "drying" ? current : null
-            );
-          } else {
-            series.push(entityState.state === "on" ? current : null);
-          }
-          pushData(new Date(entityState.last_changed), series);
-        });
-      } else {
-        addDataSet(states.entity_id, name, color);
-
-        let lastValue: number;
-        let lastDate: Date;
-        let lastNullDate: Date | null = null;
-
-        // Process chart data.
-        // When state is `unknown`, calculate the value and break the line.
-        const processData = (entityState: LineChartState) => {
-          const value = safeParseFloat(entityState.state);
-          const date = new Date(entityState.last_changed);
-          if (value !== null && lastNullDate) {
-            const dateTime = date.getTime();
-            const lastNullDateTime = lastNullDate.getTime();
-            const lastDateTime = lastDate?.getTime();
-            const tmpValue =
-              (value - lastValue) *
-                ((lastNullDateTime - lastDateTime) /
-                  (dateTime - lastDateTime)) +
-              lastValue;
-            pushData(lastNullDate, [tmpValue]);
-            pushData(new Date(lastNullDateTime + 1), [null]);
-            pushData(date, [value]);
-            lastDate = date;
-            lastValue = value;
-            lastNullDate = null;
-          } else if (value !== null && lastNullDate === null) {
-            pushData(date, [value]);
-            lastDate = date;
-            lastValue = value;
-          } else if (
-            value === null &&
-            lastNullDate === null &&
-            lastValue !== undefined
-          ) {
-            lastNullDate = date;
-          }
-        };
-
-        if (states.statistics) {
-          const stopTime =
-            !states.states || states.states.length === 0
-              ? 0
-              : states.states[0].last_changed;
-          for (const statistic of states.statistics) {
-            if (stopTime && statistic.last_changed >= stopTime) {
-              break;
-            }
-            processData(statistic);
-          }
-        }
-        states.states.forEach((entityState) => {
-          processData(entityState);
-        });
-        if (lastNullDate !== null) {
-          pushData(lastNullDate, [null]);
-        }
-      }
-
-      // Add an entry for final values
-      pushData(endTime, prevValues);
-
-      // For sensors, append current state if viewing recent data
-      const now = new Date();
-      // allow 1s of leeway for "now"
-      const isUpToNow = now.getTime() - endTime.getTime() <= 1000;
-      if (domain === "sensor" && isUpToNow && data.length === 1) {
-        const stateObj = this.hass.states[states.entity_id];
-        const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
-        if (currentValue !== null) {
-          data[0].data!.push([now, currentValue]);
-        }
-      }
-
-      // Concat two arrays
-      Array.prototype.push.apply(datasets, data);
+    const data = generateStateHistoryChartLineData({
+      hass: this.hass,
+      data: this.data,
+      endTime: this.endTime,
+      names: this.names,
+      colors: this.colors,
+      showNames: this.showNames,
+      computedStyles: getComputedStyle(this),
+      now: new Date(),
     });
 
-    this._chartData = datasets;
-    this._entityIds = entityIds;
-    this._datasetToDataIndex = datasetToDataIndex;
-    const visualMap: VisualMapComponentOption[] = [];
-    this._chartData.forEach((_, seriesIndex) => {
-      const dataIndex = this._datasetToDataIndex[seriesIndex];
-      const data = this.data[dataIndex];
-      if (!data.statistics || data.statistics.length === 0) {
-        return;
-      }
-      // render stat data with a slightly transparent line
-      const firstStateTS =
-        data.states[0]?.last_changed ?? this.endTime.getTime();
-      visualMap.push({
-        show: false,
-        seriesIndex,
-        dimension: 0,
-        pieces: [
-          {
-            max: firstStateTS - 0.01,
-            colorAlpha: 0.5,
-          },
-          {
-            min: firstStateTS,
-            colorAlpha: 1,
-          },
-        ],
-      });
-    });
-    this._visualMap = visualMap.length > 0 ? visualMap : undefined;
+    if (!data) {
+      return;
+    }
+
+    this._yAxisFractionDigits = data.yAxisFractionDigits;
+    this._chartData = data.datasets;
+    this._entityIds = data.entityIds;
+    this._datasetToDataIndex = data.datasetToDataIndex;
+    this._visualMap = data.visualMap;
   }
 
   private _formatYAxisLabel = (value: number) => {
-    // show the first significant digit for tiny values
-    const maximumFractionDigits = Math.max(
-      1,
-      // use the difference to the previous value to determine the number of significant digits #25526
-      -Math.floor(
-        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-      )
-    );
-    this._yAxisMaximumFractionDigits = Math.max(
-      this._yAxisMaximumFractionDigits,
-      maximumFractionDigits
-    );
     const label = formatNumber(value, this.hass.locale, {
-      maximumFractionDigits: this._yAxisMaximumFractionDigits,
+      minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
+      maximumFractionDigits: this._yAxisFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
@@ -884,7 +456,6 @@ export class StateHistoryChartLine extends LitElement {
         chartIndex: this.chartIndex,
       });
     }
-    this._previousYAxisLabelValue = value;
     return label;
   };
 

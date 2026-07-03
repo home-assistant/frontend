@@ -3,7 +3,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import { setTimeValue } from "../../../data/time";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -48,9 +48,11 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-time-input
-          .value=${isUnavailableState(stateObj.state)
-            ? undefined
-            : stateObj.state}
+          .value=${
+            stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
+              ? undefined
+              : stateObj.state
+          }
           .locale=${this.hass.locale}
           .disabled=${unavailable}
           @value-changed=${this._timeChanged}
@@ -67,7 +69,7 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
   private _timeChanged(ev: ValueChangedEvent<string>): void {
     if (ev.detail.value) {
       const stateObj = this.hass!.states[this._config!.entity];
-      setTimeValue(this.hass!, stateObj.entity_id, ev.detail.value);
+      setTimeValue(this.hass!.callService, stateObj.entity_id, ev.detail.value);
     }
   }
 }

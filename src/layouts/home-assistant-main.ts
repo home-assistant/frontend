@@ -1,3 +1,4 @@
+import { ContextProvider } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,6 +8,7 @@ import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
+import { narrowViewportContext } from "../data/context";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
@@ -36,6 +38,11 @@ export class HomeAssistantMain extends LitElement {
 
   @state() private _drawerOpen = false;
 
+  private _narrowViewportProvider = new ContextProvider(this, {
+    context: narrowViewportContext,
+    initialValue: this.narrow,
+  });
+
   constructor() {
     super();
     listenMediaQuery("(max-width: 870px)", (matches) => {
@@ -64,14 +71,15 @@ export class HomeAssistantMain extends LitElement {
           .route=${this.route}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
-        ${isPanelReady
-          ? html`<partial-panel-resolver
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-              .route=${this.route}
-              slot="appContent"
-            ></partial-panel-resolver>`
-          : nothing}
+        ${
+          isPanelReady
+            ? html`<partial-panel-resolver
+                .hass=${this.hass}
+                .route=${this.route}
+                slot="appContent"
+              ></partial-panel-resolver>`
+            : nothing
+        }
       </ha-drawer>
     `;
   }
@@ -121,6 +129,10 @@ export class HomeAssistantMain extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("narrow")) {
+      this._narrowViewportProvider.setValue(this.narrow);
+    }
+
     if (changedProps.has("route") && this._sidebarNarrow) {
       this._drawerOpen = false;
     }
@@ -153,7 +165,7 @@ export class HomeAssistantMain extends LitElement {
       /* remove the grey tap highlights in iOS on the fullscreen touch targets */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       --ha-sidebar-width: calc(56px + var(--safe-area-inset-left, 0px));
-      --mdc-top-app-bar-width: calc(100% - var(--ha-sidebar-width));
+      --ha-top-app-bar-width: calc(100% - var(--ha-sidebar-width));
       --safe-area-content-inset-left: 0px;
       --safe-area-content-inset-right: var(--safe-area-inset-right);
     }
@@ -162,7 +174,7 @@ export class HomeAssistantMain extends LitElement {
     }
     :host([modal]) {
       --ha-sidebar-width: unset;
-      --mdc-top-app-bar-width: unset;
+      --ha-top-app-bar-width: 100%;
       --safe-area-content-inset-left: var(--safe-area-inset-left);
     }
     partial-panel-resolver,

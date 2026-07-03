@@ -1,5 +1,7 @@
 // @ts-check
 
+import { fileURLToPath } from "node:url";
+
 import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import js from "@eslint/js";
@@ -10,6 +12,10 @@ import { configs as wcConfigs } from "eslint-plugin-wc";
 import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 import html from "@html-eslint/eslint-plugin";
 import importX from "eslint-plugin-import-x";
+
+const rspackConfigPath = fileURLToPath(
+  new URL("./rspack.config.cjs", import.meta.url)
+);
 
 export default tseslint.config(
   js.configs.recommended,
@@ -50,7 +56,7 @@ export default tseslint.config(
     settings: {
       "import-x/resolver": {
         webpack: {
-          config: "./rspack.config.cjs",
+          config: rspackConfigPath,
         },
       },
     },
@@ -226,6 +232,18 @@ export default tseslint.config(
     files: ["src/entrypoints/service-worker.ts"],
     languageOptions: {
       globals: globals.serviceworker,
+    },
+  },
+  {
+    files: ["test/e2e/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+  {
+    files: [".github/scripts/*.mjs"],
+    languageOptions: {
+      globals: globals.node,
     },
   },
   {

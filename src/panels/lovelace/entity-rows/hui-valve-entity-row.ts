@@ -2,7 +2,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -44,7 +44,8 @@ class HuiValveEntityRow extends LitElement implements LovelaceRow {
     const showToggle =
       stateObj.state === "open" ||
       stateObj.state === "closed" ||
-      isUnavailableState(stateObj.state);
+      stateObj.state === UNAVAILABLE ||
+      stateObj.state === UNKNOWN;
 
     return html`
       <hui-generic-entity-row
@@ -52,18 +53,17 @@ class HuiValveEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .catchInteraction=${!showToggle}
       >
-        ${showToggle
-          ? html`
-              <ha-entity-toggle
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-              ></ha-entity-toggle>
-            `
-          : html`
-              <div class="text-content">
-                ${this.hass.formatEntityState(stateObj)}
-              </div>
-            `}
+        ${
+          showToggle
+            ? html`
+                <ha-entity-toggle .stateObj=${stateObj}></ha-entity-toggle>
+              `
+            : html`
+                <div class="text-content">
+                  ${this.hass.formatEntityState(stateObj)}
+                </div>
+              `
+        }
       </hui-generic-entity-row>
     `;
   }

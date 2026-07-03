@@ -7,7 +7,7 @@ import {
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -104,13 +104,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @state() private _selected: string[] = [];
 
   @state()
+  private _filters: DataTableFiltersValues = {};
+
   @storage({
     storage: "sessionStorage",
     key: "backups-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: DataTableFiltersValues = {};
+  private _storageFilters: DataTableFiltersValues = {};
+
+  private _fromUrl = false;
 
   @storage({ key: "backups-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string = "formatted_type";
@@ -131,11 +135,18 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _overflowBackup?: BackupRow;
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
+      this._setFiltersFromUrl();
+    }
+  }
+
   public connectedCallback() {
     super.connectedCallback();
     window.addEventListener("location-changed", this._locationChanged);
     window.addEventListener("popstate", this._popState);
-    this._setFiltersFromUrl();
   }
 
   disconnectedCallback(): void {
@@ -246,15 +257,17 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                   />
                 `;
               })}
-              ${agentsMore
-                ? html`
-                    <span
-                      style="display: flex; align-items: center; font-size: var(--ha-font-size-m);"
-                    >
-                      +${agentsMore}
-                    </span>
-                  `
-                : nothing}
+              ${
+                agentsMore
+                  ? html`
+                      <span
+                        style="display: flex; align-items: center; font-size: var(--ha-font-size-m);"
+                      >
+                        +${agentsMore}
+                      </span>
+                    `
+                  : nothing
+              }
             </div>
           `;
         },
@@ -422,14 +435,16 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         clickable
         id="backup_id"
         has-filters
-        .filters=${Object.values(this._filters).filter((filter) =>
-          Array.isArray(filter)
-            ? filter.length
-            : filter &&
-              Object.values(filter).some((val) =>
-                Array.isArray(val) ? val.length : val
-              )
-        ).length}
+        .filters=${
+          Object.values(this._filters).filter((filter) =>
+            Array.isArray(filter)
+              ? filter.length
+              : filter &&
+                Object.values(filter).some((val) =>
+                  Array.isArray(val) ? val.length : val
+                )
+          ).length
+        }
         selectable
         .selected=${this._selected.length}
         .initialGroupColumn=${this._activeGrouping}
@@ -472,32 +487,33 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         </div>
 
         <div slot="selection-bar">
-          ${!this.narrow
-            ? html`
-                <ha-button
-                  appearance="plain"
-                  @click=${this._deleteSelected}
-                  variant="danger"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                  .path=${mdiDelete}
-                  class="warning"
-                  @click=${this._deleteSelected}
-                ></ha-icon-button>
-              `}
+          ${
+            !this.narrow
+              ? html`
+                  <ha-button
+                    appearance="plain"
+                    @click=${this._deleteSelected}
+                    variant="danger"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.backups.delete_selected"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.backup.backups.delete_selected"
+                    )}
+                    .path=${mdiDelete}
+                    class="warning"
+                    @click=${this._deleteSelected}
+                  ></ha-icon-button>
+                `
+          }
         </div>
 
         <ha-filter-states
-          .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
           .value=${this._filters[TYPE_FILTER]}
           .states=${this._states(this.hass.localize, isHassio)}
@@ -506,7 +522,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           .narrow=${this.narrow}
         ></ha-filter-states>
         <ha-filter-states
-          .hass=${this.hass}
           .label=${this.hass.localize("ui.panel.config.backup.locations")}
           .value=${this._filters[LOCATIONS_FILTER]}
           .states=${this._locations(
@@ -518,28 +533,32 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
           slot="filter-pane"
           .narrow=${this.narrow}
         ></ha-filter-states>
-        ${!this._needsOnboarding
-          ? html`
-              <ha-button
-                slot="fab"
-                size="large"
-                ?disabled=${backupInProgress}
-                @click=${this._newBackup}
-              >
-                ${backupInProgress
-                  ? html`<div slot="start" class="loading">
-                      <ha-spinner .size=${"small"}></ha-spinner>
-                    </div>`
-                  : html`<ha-svg-icon
-                      slot="start"
-                      .path=${mdiPlus}
-                    ></ha-svg-icon>`}
-                ${this.hass.localize(
-                  "ui.panel.config.backup.backups.new_backup"
-                )}
-              </ha-button>
-            `
-          : nothing}
+        ${
+          !this._needsOnboarding
+            ? html`
+                <ha-button
+                  slot="fab"
+                  size="l"
+                  ?disabled=${backupInProgress}
+                  @click=${this._newBackup}
+                >
+                  ${
+                    backupInProgress
+                      ? html`<div slot="start" class="loading">
+                          <ha-spinner .size=${"small"}></ha-spinner>
+                        </div>`
+                      : html`<ha-svg-icon
+                          slot="start"
+                          .path=${mdiPlus}
+                        ></ha-svg-icon>`
+                  }
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.backups.new_backup"
+                  )}
+                </ha-button>
+              `
+            : nothing
+        }
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="overflow-menu"
@@ -568,14 +587,23 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _typeFilterChanged(ev) {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   private _locationsFilterChanged(ev) {
     this._filters = { ...this._filters, [LOCATIONS_FILTER]: ev.detail.value };
+    if (!this._fromUrl) {
+      this._storageFilters = this._filters;
+    }
   }
 
   private _clearFilter() {
     this._filters = {};
+    if (!this._fromUrl) {
+      this._storageFilters = {};
+    }
   }
 
   private _setFiltersFromUrl() {
@@ -586,6 +614,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       return;
     }
 
+    this._fromUrl = true;
     this._filters = {
       [TYPE_FILTER]: type === "all" ? [] : [type],
     };

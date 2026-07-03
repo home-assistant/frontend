@@ -107,6 +107,10 @@ export class HaScriptEditor extends SubscribeMixin(
     currentConfig: () => this.config!,
   });
 
+  public override get isDirtyState(): boolean {
+    return super.isDirtyState || !!this.yamlErrors;
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
@@ -124,6 +128,32 @@ export class HaScriptEditor extends SubscribeMixin(
         this.entityRegCreated = undefined;
       }
     }
+  }
+
+  private _renderDeprecatedMigratedAlert(): TemplateResult | typeof nothing {
+    if (!this.deprecatedConfigMigrated || this.readOnly) {
+      return nothing;
+    }
+    return html`<ha-alert
+      alert-type="warning"
+      .title=${this.hass.localize(
+        "ui.panel.config.script.editor.deprecated_migrated.title"
+      )}
+    >
+      ${this.hass.localize(
+        "ui.panel.config.script.editor.deprecated_migrated.description"
+      )}
+      <ha-button
+        appearance="filled"
+        size="s"
+        variant="warning"
+        slot="action"
+        .disabled=${this.saving}
+        @click=${this._handleSaveScript}
+      >
+        ${this.hass.localize("ui.common.save")}
+      </ha-button>
+    </ha-alert>`;
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -146,65 +176,73 @@ export class HaScriptEditor extends SubscribeMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this.backTapped}
-        .header=${this.config.alias ||
-        this.hass.localize("ui.panel.config.script.editor.default_name")}
+        .header=${
+          this.config.alias ||
+          this.hass.localize("ui.panel.config.script.editor.default_name")
+        }
       >
-        ${this.mode === "gui" && !this.narrow
-          ? html`<ha-icon-button
-                slot="toolbar-icon"
-                .label=${this.hass.localize("ui.common.undo")}
-                .path=${mdiUndo}
-                @click=${this._undo}
-                .disabled=${!this._undoRedoController.canUndo}
-                id="button-undo"
-              >
-              </ha-icon-button>
-              <ha-tooltip placement="bottom" for="button-undo">
-                ${this.hass.localize("ui.common.undo")}
-                <span class="shortcut">
-                  (<span>${shortcutIcon}</span>
-                  <span>+</span>
-                  <span>Z</span>)
-                </span>
-              </ha-tooltip>
-              <ha-icon-button
-                slot="toolbar-icon"
-                .label=${this.hass.localize("ui.common.redo")}
-                .path=${mdiRedo}
-                @click=${this._redo}
-                .disabled=${!this._undoRedoController.canRedo}
-                id="button-redo"
-              >
-              </ha-icon-button>
-              <ha-tooltip placement="bottom" for="button-redo">
-                ${this.hass.localize("ui.common.redo")}
-                <span class="shortcut"
-                  >(
-                  ${isMac
-                    ? html`<span>${shortcutIcon}</span>
-                        <span>+</span>
-                        <span>Shift</span>
-                        <span>+</span>
-                        <span>Z</span>`
-                    : html`<span>${shortcutIcon}</span>
-                        <span>+</span>
-                        <span>Y</span>`})
-                </span>
-              </ha-tooltip>`
-          : nothing}
-        ${this.scriptId && !this.narrow
-          ? html`
-              <ha-button
-                appearance="plain"
-                @click=${this._showTrace}
-                slot="toolbar-icon"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.script.editor.show_trace"
-                )}
-              </ha-button>
-            `
-          : ""}
+        ${
+          this.mode === "gui" && !this.narrow
+            ? html`<ha-icon-button
+                  slot="toolbar-icon"
+                  .label=${this.hass.localize("ui.common.undo")}
+                  .path=${mdiUndo}
+                  @click=${this._undo}
+                  .disabled=${!this._undoRedoController.canUndo}
+                  id="button-undo"
+                >
+                </ha-icon-button>
+                <ha-tooltip placement="bottom" for="button-undo">
+                  ${this.hass.localize("ui.common.undo")}
+                  <span class="shortcut">
+                    (<span>${shortcutIcon}</span>
+                    <span>+</span>
+                    <span>Z</span>)
+                  </span>
+                </ha-tooltip>
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  .label=${this.hass.localize("ui.common.redo")}
+                  .path=${mdiRedo}
+                  @click=${this._redo}
+                  .disabled=${!this._undoRedoController.canRedo}
+                  id="button-redo"
+                >
+                </ha-icon-button>
+                <ha-tooltip placement="bottom" for="button-redo">
+                  ${this.hass.localize("ui.common.redo")}
+                  <span class="shortcut"
+                    >(
+                    ${
+                      isMac
+                        ? html`<span>${shortcutIcon}</span>
+                            <span>+</span>
+                            <span>Shift</span>
+                            <span>+</span>
+                            <span>Z</span>`
+                        : html`<span>${shortcutIcon}</span>
+                            <span>+</span>
+                            <span>Y</span>`
+                    })
+                  </span>
+                </ha-tooltip>`
+            : nothing
+        }
+        ${
+          this.scriptId && !this.narrow
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  @click=${this._showTrace}
+                  slot="toolbar-icon"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.script.editor.show_trace"
+                  )}
+                </ha-button>
+              `
+            : ""
+        }
         <ha-dropdown
           slot="toolbar-icon"
           @wa-select=${this._handleDropdownSelect}
@@ -215,22 +253,24 @@ export class HaScriptEditor extends SubscribeMixin(
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          ${this.mode === "gui" && this.narrow
-            ? html`<ha-dropdown-item
-                  value="undo"
-                  .disabled=${!this._undoRedoController.canUndo}
-                >
-                  ${this.hass.localize("ui.common.undo")}
-                  <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
-                </ha-dropdown-item>
-                <ha-dropdown-item
-                  value="redo"
-                  .disabled=${!this._undoRedoController.canRedo}
-                >
-                  ${this.hass.localize("ui.common.redo")}
-                  <ha-svg-icon slot="icon" .path=${mdiRedo}></ha-svg-icon>
-                </ha-dropdown-item>`
-            : nothing}
+          ${
+            this.mode === "gui" && this.narrow
+              ? html`<ha-dropdown-item
+                    value="undo"
+                    .disabled=${!this._undoRedoController.canUndo}
+                  >
+                    ${this.hass.localize("ui.common.undo")}
+                    <ha-svg-icon slot="icon" .path=${mdiUndo}></ha-svg-icon>
+                  </ha-dropdown-item>
+                  <ha-dropdown-item
+                    value="redo"
+                    .disabled=${!this._undoRedoController.canRedo}
+                  >
+                    ${this.hass.localize("ui.common.redo")}
+                    <ha-svg-icon slot="icon" .path=${mdiRedo}></ha-svg-icon>
+                  </ha-dropdown-item>`
+              : nothing
+          }
 
           <ha-dropdown-item .disabled=${!this.scriptId} value="info">
             ${this.hass.localize("ui.panel.config.script.editor.show_info")}
@@ -259,33 +299,37 @@ export class HaScriptEditor extends SubscribeMixin(
             <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
           </ha-dropdown-item>
 
-          ${this.scriptId && this.narrow
-            ? html`<ha-dropdown-item value="trace">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.show_trace"
-                )}
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiTransitConnection}
-                ></ha-svg-icon>
-              </ha-dropdown-item>`
-            : nothing}
-          ${!useBlueprint && !("fields" in this.config)
-            ? html`
-                <ha-dropdown-item
-                  .disabled=${this.readOnly || this.mode === "yaml"}
-                  value="add_fields"
-                >
+          ${
+            this.scriptId && this.narrow
+              ? html`<ha-dropdown-item value="trace">
                   ${this.hass.localize(
-                    "ui.panel.config.script.editor.field.add_fields"
+                    "ui.panel.config.automation.editor.show_trace"
                   )}
                   <ha-svg-icon
                     slot="icon"
-                    .path=${mdiFormTextbox}
+                    .path=${mdiTransitConnection}
                   ></ha-svg-icon>
-                </ha-dropdown-item>
-              `
-            : nothing}
+                </ha-dropdown-item>`
+              : nothing
+          }
+          ${
+            !useBlueprint && !("fields" in this.config)
+              ? html`
+                  <ha-dropdown-item
+                    .disabled=${this.readOnly || this.mode === "yaml"}
+                    value="add_fields"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.field.add_fields"
+                    )}
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFormTextbox}
+                    ></ha-svg-icon>
+                  </ha-dropdown-item>
+                `
+              : nothing
+          }
 
           <ha-dropdown-item
             value="rename"
@@ -294,26 +338,29 @@ export class HaScriptEditor extends SubscribeMixin(
             ${this.hass.localize("ui.panel.config.script.editor.rename")}
             <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           </ha-dropdown-item>
-          ${!useBlueprint
-            ? html`
-                <ha-dropdown-item
-                  value="change_mode"
-                  .disabled=${this.readOnly || this.mode === "yaml"}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.script.editor.change_mode"
-                  )}
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiDebugStepOver}
-                  ></ha-svg-icon>
-                </ha-dropdown-item>
-              `
-            : nothing}
+          ${
+            !useBlueprint
+              ? html`
+                  <ha-dropdown-item
+                    value="change_mode"
+                    .disabled=${this.readOnly || this.mode === "yaml"}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.change_mode"
+                    )}
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiDebugStepOver}
+                    ></ha-svg-icon>
+                  </ha-dropdown-item>
+                `
+              : nothing
+          }
 
           <ha-dropdown-item
-            .disabled=${!!this.blueprintConfig ||
-            (!this.readOnly && !this.scriptId)}
+            .disabled=${
+              !!this.blueprintConfig || (!this.readOnly && !this.scriptId)
+            }
             value="duplicate"
           >
             ${this.hass.localize(
@@ -327,19 +374,21 @@ export class HaScriptEditor extends SubscribeMixin(
             ></ha-svg-icon>
           </ha-dropdown-item>
 
-          ${useBlueprint
-            ? html`
-                <ha-dropdown-item
-                  value="take_control"
-                  .disabled=${this.readOnly}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.script.editor.take_control"
-                  )}
-                  <ha-svg-icon slot="icon" .path=${mdiFileEdit}></ha-svg-icon>
-                </ha-dropdown-item>
-              `
-            : nothing}
+          ${
+            useBlueprint
+              ? html`
+                  <ha-dropdown-item
+                    value="take_control"
+                    .disabled=${this.readOnly}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.script.editor.take_control"
+                    )}
+                    <ha-svg-icon slot="icon" .path=${mdiFileEdit}></ha-svg-icon>
+                  </ha-dropdown-item>
+                `
+              : nothing
+          }
 
           <ha-dropdown-item value="toggle_yaml_mode">
             ${this.hass.localize(
@@ -365,122 +414,137 @@ export class HaScriptEditor extends SubscribeMixin(
           </ha-dropdown-item>
         </ha-dropdown>
         <div class=${this.mode === "yaml" ? "yaml-mode" : ""}>
-          ${this.mode === "gui"
-            ? html`
-                <div>
-                  ${useBlueprint
-                    ? html`
-                        <blueprint-script-editor
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .isWide=${this.isWide}
-                          .config=${this.config}
-                          .disabled=${this.readOnly}
-                          .saving=${this.saving}
-                          .dirty=${this.dirty}
-                          @value-changed=${this._valueChanged}
-                          @save-script=${this._handleSaveScript}
-                        ></blueprint-script-editor>
-                      `
-                    : html`
-                        <manual-script-editor
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .isWide=${this.isWide}
-                          .config=${this.config}
-                          .disabled=${this.readOnly}
-                          .dirty=${this.dirty}
-                          .saving=${this.saving}
-                          @value-changed=${this._valueChanged}
-                          @editor-save=${this._handleSaveScript}
-                          @save-script=${this._handleSaveScript}
-                        >
-                          <div class="alert-wrapper" slot="alerts">
-                            ${this.errors || stateObj?.state === UNAVAILABLE
-                              ? html`<ha-alert
-                                  alert-type="error"
-                                  .title=${stateObj?.state === UNAVAILABLE
-                                    ? this.hass.localize(
-                                        "ui.panel.config.script.editor.unavailable"
-                                      )
-                                    : undefined}
-                                >
-                                  ${this.errors || this.validationErrors}
-                                  ${stateObj?.state === UNAVAILABLE
-                                    ? html`<ha-svg-icon
-                                        slot="icon"
-                                        .path=${mdiRobotConfused}
-                                      ></ha-svg-icon>`
-                                    : nothing}
-                                </ha-alert>`
-                              : nothing}
-                            ${this.blueprintConfig
-                              ? html`<ha-alert alert-type="info">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.script.editor.confirm_take_control"
-                                  )}
-                                  <div slot="action" style="display: flex;">
-                                    <ha-button
-                                      appearance="plain"
-                                      @click=${this.takeControlSave}
-                                      >${this.hass.localize(
-                                        "ui.common.yes"
-                                      )}</ha-button
-                                    >
-                                    <ha-button
-                                      appearance="plain"
-                                      @click=${this.revertBlueprint}
-                                      >${this.hass.localize(
-                                        "ui.common.no"
-                                      )}</ha-button
-                                    >
-                                  </div>
-                                </ha-alert>`
-                              : this.readOnly
-                                ? html`<ha-alert
-                                    alert-type="warning"
-                                    dismissable
-                                    >${this.hass.localize(
-                                      "ui.panel.config.script.editor.read_only"
-                                    )}
-                                    <ha-button
-                                      appearance="plain"
-                                      slot="action"
-                                      @click=${this._duplicate}
-                                    >
-                                      ${this.hass.localize(
-                                        "ui.panel.config.script.editor.migrate"
-                                      )}
-                                    </ha-button>
-                                  </ha-alert>`
-                                : nothing}
-                          </div>
-                        </manual-script-editor>
-                      `}
-                </div>
-              `
-            : this.mode === "yaml"
-              ? html`<ha-yaml-editor
-                    .defaultValue=${this._preprocessYaml()}
-                    .readOnly=${this.readOnly}
-                    disable-fullscreen
-                    @value-changed=${this._yamlChanged}
-                    @editor-save=${this._handleSaveScript}
-                  ></ha-yaml-editor>
-                  <ha-button
-                    slot="fab"
-                    size="large"
-                    class=${!this.readOnly && this.dirty ? "dirty" : ""}
-                    .disabled=${this.saving}
-                    @click=${this._handleSaveScript}
-                  >
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiContentSave}
-                    ></ha-svg-icon>
-                    ${this.hass.localize("ui.common.save")}
-                  </ha-button>`
-              : nothing}
+          ${
+            this.mode === "gui"
+              ? html`
+                  <div>
+                    ${
+                      useBlueprint
+                        ? html`
+                            <blueprint-script-editor
+                              .hass=${this.hass}
+                              .narrow=${this.narrow}
+                              .isWide=${this.isWide}
+                              .config=${this.config}
+                              .disabled=${this.readOnly}
+                              .saving=${this.saving}
+                              @value-changed=${this._valueChanged}
+                              @save-script=${this._handleSaveScript}
+                            ></blueprint-script-editor>
+                          `
+                        : html`
+                            <manual-script-editor
+                              .hass=${this.hass}
+                              .narrow=${this.narrow}
+                              .isWide=${this.isWide}
+                              .config=${this.config}
+                              .disabled=${this.readOnly}
+                              .saving=${this.saving}
+                              @value-changed=${this._valueChanged}
+                              @editor-save=${this._handleSaveScript}
+                              @save-script=${this._handleSaveScript}
+                            >
+                              <div class="alert-wrapper" slot="alerts">
+                                ${this._renderDeprecatedMigratedAlert()}
+                                ${
+                                  this.errors || stateObj?.state === UNAVAILABLE
+                                    ? html`<ha-alert
+                                        alert-type="error"
+                                        .title=${
+                                          stateObj?.state === UNAVAILABLE
+                                            ? this.hass.localize(
+                                                "ui.panel.config.script.editor.unavailable"
+                                              )
+                                            : undefined
+                                        }
+                                      >
+                                        ${this.errors || this.validationErrors}
+                                        ${
+                                          stateObj?.state === UNAVAILABLE
+                                            ? html`<ha-svg-icon
+                                                slot="icon"
+                                                .path=${mdiRobotConfused}
+                                              ></ha-svg-icon>`
+                                            : nothing
+                                        }
+                                      </ha-alert>`
+                                    : nothing
+                                }
+                                ${
+                                  this.blueprintConfig
+                                    ? html`<ha-alert alert-type="info">
+                                        ${this.hass.localize(
+                                          "ui.panel.config.script.editor.confirm_take_control"
+                                        )}
+                                        <div
+                                          slot="action"
+                                          style="display: flex;"
+                                        >
+                                          <ha-button
+                                            appearance="plain"
+                                            @click=${this.takeControlSave}
+                                            >${this.hass.localize(
+                                              "ui.common.yes"
+                                            )}</ha-button
+                                          >
+                                          <ha-button
+                                            appearance="plain"
+                                            @click=${this.revertBlueprint}
+                                            >${this.hass.localize(
+                                              "ui.common.no"
+                                            )}</ha-button
+                                          >
+                                        </div>
+                                      </ha-alert>`
+                                    : this.readOnly
+                                      ? html`<ha-alert
+                                          alert-type="warning"
+                                          dismissable
+                                          >${this.hass.localize(
+                                            "ui.panel.config.script.editor.read_only"
+                                          )}
+                                          <ha-button
+                                            appearance="plain"
+                                            slot="action"
+                                            @click=${this._duplicate}
+                                          >
+                                            ${this.hass.localize(
+                                              "ui.panel.config.script.editor.migrate"
+                                            )}
+                                          </ha-button>
+                                        </ha-alert>`
+                                      : nothing
+                                }
+                              </div>
+                            </manual-script-editor>
+                          `
+                    }
+                  </div>
+                `
+              : this.mode === "yaml"
+                ? html`${this._renderDeprecatedMigratedAlert()}
+                    <ha-yaml-editor
+                      .defaultValue=${this._preprocessYaml()}
+                      .readOnly=${this.readOnly}
+                      disable-fullscreen
+                      @value-changed=${this._yamlChanged}
+                      @editor-save=${this._handleSaveScript}
+                    ></ha-yaml-editor>
+                    <ha-button
+                      slot="fab"
+                      size="l"
+                      class=${!this.readOnly && this.isDirtyState ? "dirty" : ""}
+                      .disabled=${this.saving}
+                      @click=${this._handleSaveScript}
+                    >
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiContentSave}
+                      ></ha-svg-icon>
+                      ${this.hass.localize("ui.common.save")}
+                    </ha-button>`
+                : nothing
+          }
         </div>
       </hass-subpage>
     `;
@@ -522,7 +586,6 @@ export class HaScriptEditor extends SubscribeMixin(
 
     if (changedProps.has("scriptId") && !this.scriptId && this.hass) {
       const initData = getScriptEditorInitData();
-      this.dirty = !!initData;
       const baseConfig: Partial<ScriptConfig> = {};
       if (!initData || !("use_blueprint" in initData)) {
         baseConfig.sequence = [];
@@ -531,12 +594,15 @@ export class HaScriptEditor extends SubscribeMixin(
         ...baseConfig,
         ...initData,
       } as ScriptConfig;
+      this._initDirtyTracking({ type: "deep" }, baseConfig as ScriptConfig);
+      this._updateDirtyState(this.config);
       this.readOnly = false;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeScriptConfig(c.config);
+        this._initDirtyTracking({ type: "deep" }, this.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry?.find(
@@ -546,7 +612,6 @@ export class HaScriptEditor extends SubscribeMixin(
         this.scriptId = regEntry.unique_id;
       }
       this.currentEntityId = this.entityId;
-      this.dirty = false;
       this.readOnly = true;
     }
   }
@@ -582,7 +647,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
     this.config = ev.detail.value;
     this.errors = undefined;
-    this.dirty = true;
+    this._updateDirtyState(this.config!);
   }
 
   private async _runScript() {
@@ -669,7 +734,7 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     this._manualEditor?.addFields();
-    this.dirty = true;
+    this._updateDirtyState(this.config!);
   }
 
   private _preprocessYaml() {
@@ -678,18 +743,18 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private _yamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    this.dirty = true;
     if (!ev.detail.isValid) {
       this.yamlErrors = ev.detail.errorMsg;
       return;
     }
     this.yamlErrors = undefined;
     this.config = ev.detail.value;
+    this._updateDirtyState(this.config!);
     this.errors = undefined;
   }
 
   protected async confirmUnsavedChanged(): Promise<boolean> {
-    if (!this.dirty) {
+    if (!this.isDirtyState) {
       return true;
     }
 
@@ -700,7 +765,7 @@ export class HaScriptEditor extends SubscribeMixin(
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this.dirty = true;
+          this._updateDirtyState(this.config);
           this.requestUpdate();
 
           const id = this.scriptId || String(Date.now());
@@ -815,7 +880,7 @@ export class HaScriptEditor extends SubscribeMixin(
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this.dirty = true;
+          this._updateDirtyState(this.config);
           this.requestUpdate();
           resolve(true);
         },
@@ -834,7 +899,7 @@ export class HaScriptEditor extends SubscribeMixin(
         config: this.config!,
         updateConfig: (config) => {
           this.config = config;
-          this.dirty = true;
+          this._updateDirtyState(config);
           this.requestUpdate();
           resolve();
         },
@@ -930,7 +995,8 @@ export class HaScriptEditor extends SubscribeMixin(
         }
       }
 
-      this.dirty = false;
+      this._markDirtyStateClean();
+      this.deprecatedConfigMigrated = false;
     } catch (errors: any) {
       this.errors = errors.body?.message || errors.error || errors.body;
       showEditorToast(this, {
@@ -980,7 +1046,7 @@ export class HaScriptEditor extends SubscribeMixin(
   private _applyUndoRedo(config: ScriptConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this.config = config;
-    this.dirty = true;
+    this._updateDirtyState(this.config);
   }
 
   private _undo() {

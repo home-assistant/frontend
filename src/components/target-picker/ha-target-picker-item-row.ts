@@ -145,94 +145,115 @@ export class HaTargetPickerItemRow extends LitElement {
 
     const content = html`
       <div class="icon" slot="start">
-        ${iconPath
-          ? html`<ha-icon .icon=${iconPath}></ha-icon>`
-          : this._iconImg
-            ? html`<img
-                alt=${this._domainName || ""}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                src=${this._iconImg}
-              />`
-            : fallbackIconPath
-              ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
-              : this.type === "entity"
-                ? html`
-                    <ha-state-icon
-                      .stateObj=${stateObject ||
-                      ({
-                        entity_id: this.itemId,
-                        attributes: {},
-                      } as HassEntity)}
-                    >
-                    </ha-state-icon>
-                  `
-                : nothing}
+        ${
+          iconPath
+            ? html`<ha-icon .icon=${iconPath}></ha-icon>`
+            : this._iconImg
+              ? html`<img
+                  alt=${this._domainName || ""}
+                  crossorigin="anonymous"
+                  referrerpolicy="no-referrer"
+                  src=${this._iconImg}
+                />`
+              : fallbackIconPath
+                ? html`<ha-svg-icon .path=${fallbackIconPath}></ha-svg-icon>`
+                : this.type === "entity"
+                  ? html`
+                      <ha-state-icon
+                        .stateObj=${
+                          stateObject ||
+                          ({
+                            entity_id: this.itemId,
+                            attributes: {},
+                          } as HassEntity)
+                        }
+                      >
+                      </ha-state-icon>
+                    `
+                  : nothing
+        }
       </div>
 
       <div slot="headline">${name}</div>
-      ${notFound || (context && !this.hideContext)
-        ? html`<span slot="supporting-text"
-            >${notFound
-              ? this.hass.localize(
-                  `ui.components.target-picker.${this.type}_not_found`
-                )
-              : context}</span
-          >`
-        : nothing}
-      ${stateObject && this.subEntry
-        ? html`<span slot="supporting-text" class="state"
-            >${this.hass.formatEntityState(stateObject)}</span
-          >`
-        : nothing}
-      ${!this.subEntry && entries && showEntities
-        ? html`
-            <div slot="end" class="summary">
-              ${showEntities &&
-              !this.expand &&
-              entries?.referenced_entities.length
-                ? html`<button class="main link" @click=${this._openDetails}>
-                    ${this.hass.localize(
-                      "ui.components.target-picker.entities_count",
-                      {
-                        count: entries?.referenced_entities.length,
-                      }
-                    )}
-                  </button>`
-                : showEntities
-                  ? html`<span class="main">
-                      ${this.hass.localize(
-                        "ui.components.target-picker.entities_count",
-                        {
-                          count: entries?.referenced_entities.length,
-                        }
-                      )}
-                    </span>`
-                  : nothing}
-            </div>
-          `
-        : nothing}
-      ${!this.expand && !this.subEntry
-        ? html`
-            <ha-icon-button
-              .path=${mdiClose}
-              slot="end"
-              @click=${this._removeItem}
-            ></ha-icon-button>
-          `
-        : this.subEntry && this.type === "entity"
+      ${
+        notFound || (context && !this.hideContext)
+          ? html`<span slot="supporting-text"
+              >${
+                notFound
+                  ? this.hass.localize(
+                      `ui.components.target-picker.${this.type}_not_found`
+                    )
+                  : context
+              }</span
+            >`
+          : nothing
+      }
+      ${
+        stateObject && this.subEntry
+          ? html`<span slot="supporting-text" class="state"
+              >${this.hass.formatEntityState(stateObject)}</span
+            >`
+          : nothing
+      }
+      ${
+        !this.subEntry && entries && showEntities
           ? html`
-              <ha-svg-icon
-                .path=${computeRTL(
-                  this.hass.language,
-                  this.hass.translationMetadata.translations
-                )
-                  ? mdiChevronLeft
-                  : mdiChevronRight}
-                slot="end"
-              ></ha-svg-icon>
+              <div slot="end" class="summary">
+                ${
+                  showEntities &&
+                  !this.expand &&
+                  entries?.referenced_entities.length
+                    ? html`<button
+                        class="main link"
+                        @click=${this._openDetails}
+                      >
+                        ${this.hass.localize(
+                          "ui.components.target-picker.entities_count",
+                          {
+                            count: entries?.referenced_entities.length,
+                          }
+                        )}
+                      </button>`
+                    : showEntities
+                      ? html`<span class="main">
+                          ${this.hass.localize(
+                            "ui.components.target-picker.entities_count",
+                            {
+                              count: entries?.referenced_entities.length,
+                            }
+                          )}
+                        </span>`
+                      : nothing
+                }
+              </div>
             `
-          : nothing}
+          : nothing
+      }
+      ${
+        !this.expand && !this.subEntry
+          ? html`
+              <ha-icon-button
+                .path=${mdiClose}
+                slot="end"
+                @click=${this._removeItem}
+              ></ha-icon-button>
+            `
+          : this.subEntry && this.type === "entity"
+            ? html`
+                <ha-svg-icon
+                  .path=${
+                    computeRTL(
+                      this.hass.language,
+                      this.hass.translationMetadata.translations
+                    )
+                      ? mdiChevronLeft
+                      : mdiChevronRight
+                  }
+                  slot="end"
+                ></ha-svg-icon>
+              `
+            : nothing
+      }
     `;
 
     let item: TemplateResult;
@@ -244,11 +265,13 @@ export class HaTargetPickerItemRow extends LitElement {
             error: notFound,
             replaceable,
           })}
-          @click=${replaceable
-            ? this._replaceItem
-            : this.subEntry && this.type === "entity"
-              ? this._openMoreInfo
-              : undefined}
+          @click=${
+            replaceable
+              ? this._replaceItem
+              : this.subEntry && this.type === "entity"
+                ? this._openMoreInfo
+                : undefined
+          }
         >
           ${content}
         </ha-list-item-button>
@@ -267,9 +290,11 @@ export class HaTargetPickerItemRow extends LitElement {
 
     return html`
       ${item}
-      ${this.expand && entries && entries.referenced_entities
-        ? this._renderEntries()
-        : nothing}
+      ${
+        this.expand && entries && entries.referenced_entities
+          ? this._renderEntries()
+          : nothing
+      }
     `;
   }
 
@@ -454,7 +479,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     try {
       const entries = await extractFromTarget(
-        this.hass,
+        this.hass.callWS,
         {
           [`${this.type}_id`]: [this.itemId],
         },

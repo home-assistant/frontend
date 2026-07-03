@@ -4,9 +4,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -20,7 +21,9 @@ import "../panels/config/voice-assistants/expose/expose-assistant-icon";
 
 @customElement("ha-filter-voice-assistants")
 export class HaFilterVoiceAssistants extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   // the list of selected voiceAssistantIds
   @property({ attribute: false }) public value: string[] = [];
@@ -44,44 +47,45 @@ export class HaFilterVoiceAssistants extends LitElement {
         @expanded-changed=${this._expandedChanged}
       >
         <div slot="header" class="header">
-          ${this.hass.localize(
-            "ui.panel.config.dashboard.voice_assistants.main"
-          )}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${this._localize("ui.panel.config.dashboard.voice_assistants.main")}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._shouldRender
-          ? html`<ha-list
-              @selected=${this._assistantsSelected}
-              class="ha-scrollbar"
-              multi
-            >
-              ${repeat(
-                this._voiceAssistantOptions,
-                (voiceAssistantId) => voiceAssistantId,
-                (voiceAssistantId) =>
-                  html`<ha-check-list-item
-                    .value=${voiceAssistantId}
-                    .selected=${(this.value || []).includes(voiceAssistantId)}
-                    hasMeta
-                    graphic="icon"
-                  >
-                    <voice-assistant-brand-icon
-                      slot="graphic"
-                      .voiceAssistantId=${voiceAssistantId}
-                      .hass=${this.hass}
+        ${
+          this._shouldRender
+            ? html`<ha-list
+                @selected=${this._assistantsSelected}
+                class="ha-scrollbar"
+                multi
+              >
+                ${repeat(
+                  this._voiceAssistantOptions,
+                  (voiceAssistantId) => voiceAssistantId,
+                  (voiceAssistantId) =>
+                    html`<ha-check-list-item
+                      .value=${voiceAssistantId}
+                      .selected=${(this.value || []).includes(voiceAssistantId)}
+                      hasMeta
+                      graphic="icon"
                     >
-                    </voice-assistant-brand-icon>
-                    ${voiceAssistants[voiceAssistantId].name}
-                  </ha-check-list-item>`
-              )}
-            </ha-list> `
-          : nothing}
+                      <voice-assistant-brand-icon
+                        slot="graphic"
+                        .voiceAssistantId=${voiceAssistantId}
+                      >
+                      </voice-assistant-brand-icon>
+                      ${voiceAssistants[voiceAssistantId].name}
+                    </ha-check-list-item>`
+                )}
+              </ha-list> `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

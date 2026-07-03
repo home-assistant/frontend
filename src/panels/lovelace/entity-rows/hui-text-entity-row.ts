@@ -3,7 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
-import { isUnavailableState, UNAVAILABLE } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { TextEntity } from "../../../data/text";
 import { setValue } from "../../../data/text";
 import type { HomeAssistant } from "../../../types";
@@ -35,8 +35,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     const stateObj = this.hass.states[this._config.entity] as
-      | TextEntity
-      | undefined;
+      TextEntity | undefined;
 
     if (!stateObj) {
       return html`
@@ -76,7 +75,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
     const newValue = target.value ?? "";
 
     // Filter out invalid text states
-    if (newValue && isUnavailableState(newValue)) {
+    if (newValue && (newValue === UNAVAILABLE || newValue === UNKNOWN)) {
       target.value = stateObj.state;
       return;
     }

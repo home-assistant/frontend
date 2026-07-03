@@ -121,7 +121,6 @@ export class HaIconPicker extends LitElement {
         .label=${this.label}
         .value=${this._value}
         .searchFn=${this._filterIcons}
-        popover-placement="bottom-start"
         @value-changed=${this._valueChanged}
       >
         <slot name="start"></slot>

@@ -1,5 +1,5 @@
 import { mdiDotsVertical } from "@mdi/js";
-import { DEFAULT_SCHEMA, Type } from "js-yaml";
+import { defineScalarTag, YAML11_SCHEMA } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -32,6 +32,7 @@ import {
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
 import type { ObjectSelector, Selector } from "../../../../../data/selector";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
@@ -46,24 +47,23 @@ const SUPPORTED_UI_TYPES = [
   "schema",
 ];
 
-const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
-  new Type("!secret", {
-    kind: "scalar",
-    construct: (data) => `!secret ${data}`,
-  }),
-]);
+const secretTag = defineScalarTag("!secret", {
+  resolve: (data) => `!secret ${data}`,
+});
+
+const ADDON_YAML_SCHEMA = YAML11_SCHEMA.withTags(secretTag);
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("supervisor-app-config")
-class SupervisorAppConfig extends LitElement {
+class SupervisorAppConfig extends DirtyStateProviderMixin<
+  Record<string, unknown>
+>()(LitElement) {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @state() private _configHasChanged = false;
 
   @state() private _valid = true;
 
@@ -274,13 +274,15 @@ class SupervisorAppConfig extends LitElement {
                 value="toggle_yaml"
                 .disabled=${!this._canShowSchema || this.disabled}
               >
-                ${this._yamlMode
-                  ? this.hass.localize(
-                      "ui.panel.config.apps.configuration.options.edit_in_ui"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.apps.configuration.options.edit_in_yaml"
-                    )}
+                ${
+                  this._yamlMode
+                    ? this.hass.localize(
+                        "ui.panel.config.apps.configuration.options.edit_in_ui"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.apps.configuration.options.edit_in_yaml"
+                      )
+                }
               </ha-dropdown-item>
               <ha-dropdown-item
                 value="reset"
@@ -296,64 +298,70 @@ class SupervisorAppConfig extends LitElement {
         </div>
 
         <div class="card-content">
-          ${showForm
-            ? html`<ha-form
-                .hass=${this.hass}
-                .disabled=${this.disabled}
-                .data=${this._options!}
-                @value-changed=${this._configChanged}
-                .computeLabel=${this.computeLabel}
-                .computeHelper=${this.computeHelper}
-                .schema=${this._convertSchema(
-                  this._showOptional
-                    ? this.addon.schema!
-                    : this._filteredSchema(
-                        this.addon.options,
-                        this.addon.schema!
-                      ),
-                  this.hass.language,
-                  this.addon.translations
-                )}
-              ></ha-form>`
-            : html`<ha-yaml-editor
-                @value-changed=${this._configChanged}
-                .yamlSchema=${ADDON_YAML_SCHEMA}
-              ></ha-yaml-editor>`}
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
-          ${!this._yamlMode ||
-          (this._canShowSchema && this.addon.schema) ||
-          this._valid
-            ? ""
-            : html`
-                <ha-alert alert-type="error">
-                  ${this.hass.localize(
-                    "ui.panel.config.apps.configuration.options.invalid_yaml"
+          ${
+            showForm
+              ? html`<ha-form
+                  .hass=${this.hass}
+                  .disabled=${this.disabled}
+                  .data=${this._options!}
+                  @value-changed=${this._configChanged}
+                  .computeLabel=${this.computeLabel}
+                  .computeHelper=${this.computeHelper}
+                  .schema=${this._convertSchema(
+                    this._showOptional
+                      ? this.addon.schema!
+                      : this._filteredSchema(
+                          this.addon.options,
+                          this.addon.schema!
+                        ),
+                    this.hass.language,
+                    this.addon.translations
                   )}
-                </ha-alert>
-              `}
+                ></ha-form>`
+              : html`<ha-yaml-editor
+                  @value-changed=${this._configChanged}
+                  .yamlSchema=${ADDON_YAML_SCHEMA}
+                ></ha-yaml-editor>`
+          }
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : ""
+          }
+          ${
+            !this._yamlMode ||
+            (this._canShowSchema && this.addon.schema) ||
+            this._valid
+              ? ""
+              : html`
+                  <ha-alert alert-type="error">
+                    ${this.hass.localize(
+                      "ui.panel.config.apps.configuration.options.invalid_yaml"
+                    )}
+                  </ha-alert>
+                `
+          }
         </div>
-        ${hasHiddenOptions
-          ? html`<ha-formfield
-              class="show-additional"
-              .label=${this.hass.localize(
-                "ui.panel.config.apps.configuration.options.show_unused_optional"
-              )}
-            >
-              <ha-switch
-                @change=${this._toggleOptional}
-                .checked=${this._showOptional}
+        ${
+          hasHiddenOptions
+            ? html`<ha-formfield
+                class="show-additional"
+                .label=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.options.show_unused_optional"
+                )}
               >
-              </ha-switch>
-            </ha-formfield>`
-          : ""}
+                <ha-switch
+                  @change=${this._toggleOptional}
+                  .checked=${this._showOptional}
+                >
+                </ha-switch>
+              </ha-formfield>`
+            : ""
+        }
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${this.disabled ||
-            !this._configHasChanged ||
-            !this._valid}
+            .disabled=${this.disabled || !this.isDirtyState || !this._valid}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-progress-button>
@@ -377,6 +385,7 @@ class SupervisorAppConfig extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("addon")) {
       this._options = { ...this.addon.options };
+      this._initDirtyTracking({ type: "deep" }, this.addon.options);
     }
     super.updated(changedProperties);
     if (
@@ -415,11 +424,13 @@ class SupervisorAppConfig extends LitElement {
   private _configChanged(ev): void {
     if (this.addon.schema && this._canShowSchema && !this._yamlMode) {
       this._valid = true;
-      this._configHasChanged = true;
       this._options = ev.detail.value;
+      this._updateDirtyState(ev.detail.value);
     } else {
-      this._configHasChanged = true;
       this._valid = ev.detail.isValid;
+      if (ev.detail.isValid) {
+        this._updateDirtyState(ev.detail.value);
+      }
     }
   }
 
@@ -449,8 +460,8 @@ class SupervisorAppConfig extends LitElement {
       options: null,
     };
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
-      this._configHasChanged = false;
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
+      this._markDirtyStateClean();
       const eventdata = {
         success: true,
         response: undefined,
@@ -469,7 +480,7 @@ class SupervisorAppConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    if (this.disabled || !this._configHasChanged || !this._valid) {
+    if (this.disabled || !this.isDirtyState || !this._valid) {
       return;
     }
 
@@ -488,18 +499,18 @@ class SupervisorAppConfig extends LitElement {
 
     try {
       const validation = await validateHassioAddonOption(
-        this.hass,
+        this.hass.callWS,
         this.addon.slug,
         options
       );
       if (!validation.valid) {
         throw Error(validation.message);
       }
-      await setHassioAddonOption(this.hass, this.addon.slug, {
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, {
         options,
       });
 
-      this._configHasChanged = false;
+      this._markDirtyStateClean();
       if (this.addon?.state === "started") {
         await suggestSupervisorAppRestart(this, this.hass, this.addon);
       }

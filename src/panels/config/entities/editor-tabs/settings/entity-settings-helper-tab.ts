@@ -1,17 +1,22 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "@lit/context";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
 import "../../../../../components/ha-button";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../../../../data/context/dirty-state";
 import type { ExtEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { removeEntityRegistryEntry } from "../../../../../data/entity/entity_registry";
 import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
 import "../../../helpers/forms/ha-counter-form";
 import "../../../helpers/forms/ha-input_boolean-form";
@@ -32,6 +37,10 @@ export class EntitySettingsHelperTab extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public entry!: ExtEntityRegistryEntry;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<Helper | null, "helper">;
 
   @state() private _error?: string;
 
@@ -56,13 +65,9 @@ export class EntitySettingsHelperTab extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("entry")) {
       this._error = undefined;
-      if (
-        this.entry.unique_id !==
-        (changedProperties.get("entry") as ExtEntityRegistryEntry)?.unique_id
-      ) {
+      if (this.entry.unique_id !== changedProperties.get("entry")?.unique_id) {
         this._item = undefined;
       }
-
       this._getItem();
     }
   }
@@ -74,36 +79,41 @@ export class EntitySettingsHelperTab extends LitElement {
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`
       <div class="form">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
-        ${this._item === null
-          ? html`<ha-alert alert-type="info"
-              >${this.hass.localize(
-                "ui.dialogs.helper_settings.yaml_not_editable"
-              )}</ha-alert
-            >`
-          : nothing}
-        ${!this._componentLoaded
-          ? this.hass.localize(
-              "ui.dialogs.helper_settings.platform_not_loaded",
-              { platform: this.entry.platform }
-            )
-          : html`
-              <span @value-changed=${this._valueChanged}>
-                ${dynamicElement(`ha-${this.entry.platform}-form`, {
-                  hass: this.hass,
-                  item: this._item,
-                  entry: this.entry,
-                  disabled: this._item === null,
-                })}
-              </span>
-            `}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
+        ${
+          this._item === null
+            ? html`<ha-alert alert-type="info"
+                >${this.hass.localize(
+                  "ui.dialogs.helper_settings.yaml_not_editable"
+                )}</ha-alert
+              >`
+            : nothing
+        }
+        ${
+          !this._componentLoaded
+            ? this.hass.localize(
+                "ui.dialogs.helper_settings.platform_not_loaded",
+                { platform: this.entry.platform }
+              )
+            : html`
+                <span @value-changed=${this._valueChanged}>
+                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                    hass: this.hass,
+                    item: this._item,
+                    entry: this.entry,
+                    disabled: this._item === null,
+                  })}
+                </span>
+              `
+        }
         <entity-registry-settings-editor
           .hass=${this.hass}
           .entry=${this.entry}
           .disabled=${!!this._submitting}
-          @change=${this._entityRegistryChanged}
           hide-name
           hide-icon
         ></entity-registry-settings-editor>
@@ -113,14 +123,19 @@ export class EntitySettingsHelperTab extends LitElement {
           variant="danger"
           appearance="plain"
           @click=${this._confirmDeleteItem}
-          .disabled=${this._submitting ||
-          (!this._item && !stateObj?.attributes.restored)}
+          .disabled=${
+            this._submitting || (!this._item && !stateObj?.attributes.restored)
+          }
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>
         <ha-button
           @click=${this._updateItem}
-          .disabled=${!!this._submitting || !!(this._item && !this._item.name)}
+          .disabled=${
+            !this._dirtyState?.isDirty ||
+            !!this._submitting ||
+            !!(this._item && !this._item.name)
+          }
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
@@ -128,34 +143,36 @@ export class EntitySettingsHelperTab extends LitElement {
     `;
   }
 
-  private _entityRegistryChanged() {
-    this._error = undefined;
-  }
-
-  private _valueChanged(ev: CustomEvent): void {
+  private _valueChanged(ev: ValueChangedEvent<Helper>): void {
     if (this._item === null) {
       return;
     }
     this._error = undefined;
     this._item = ev.detail.value;
+    this._dirtyState?.setState(this._item, "helper");
   }
 
   private async _getItem() {
     const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
-    this._item = items.find((item) => item.id === this.entry.unique_id) || null;
+    const item =
+      items.find((helper) => helper.id === this.entry.unique_id) || null;
+    this._item = item;
+    this._dirtyState?.setState(item, "helper");
   }
 
   private async _updateItem(): Promise<void> {
     this._submitting = true;
+    this._error = undefined;
     try {
       if (this._componentLoaded && this._item) {
         await HELPERS_CRUD[this.entry.platform].update(
-          this.hass!,
+          this.hass,
           this._item.id,
           this._item
         );
       }
       const result = await this._registryEditor!.updateEntry();
+      this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
       }
@@ -223,6 +240,7 @@ export class EntitySettingsHelperTab extends LitElement {
         }
         .form {
           padding: 20px 24px;
+          z-index: 0;
         }
         .buttons {
           box-sizing: border-box;
@@ -230,6 +248,9 @@ export class EntitySettingsHelperTab extends LitElement {
           justify-content: space-between;
           padding: 16px;
           background-color: var(--mdc-theme-surface, #fff);
+          position: sticky;
+          bottom: 0px;
+          z-index: 1;
         }
         .error {
           color: var(--error-color);

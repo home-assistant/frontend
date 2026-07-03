@@ -64,11 +64,7 @@ class HaUserPicker extends LitElement {
     }
 
     return html`
-      <ha-user-badge
-        slot="start"
-        .hass=${this.hass}
-        .user=${user}
-      ></ha-user-badge>
+      <ha-user-badge slot="start" .user=${user}></ha-user-badge>
       <span slot="headline">${user.name}</span>
     `;
   };
@@ -77,28 +73,28 @@ class HaUserPicker extends LitElement {
     const user = item.user;
     if (!user) {
       return html`<ha-combo-box-item type="button" compact>
-        ${item.icon
-          ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-          : item.icon_path
-            ? html`<ha-svg-icon
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>`
-            : nothing}
+        ${
+          item.icon
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+            : item.icon_path
+              ? html`<ha-svg-icon
+                  slot="start"
+                  .path=${item.icon_path}
+                ></ha-svg-icon>`
+              : nothing
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
       </ha-combo-box-item>`;
     }
 
     return html`
       <ha-combo-box-item type="button" compact>
-        <ha-user-badge
-          slot="start"
-          .hass=${this.hass}
-          .user=${item.user}
-        ></ha-user-badge>
+        <ha-user-badge slot="start" .user=${item.user}></ha-user-badge>
         <span slot="headline">${item.primary}</span>
       </ha-combo-box-item>
     `;

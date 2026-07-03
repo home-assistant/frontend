@@ -41,16 +41,18 @@ export class HaAutomationRow extends LitElement {
         role="button"
         @keydown=${this._handleKeydown}
       >
-        ${this.leftChevron
-          ? html`
-              <ha-icon-button
-                class="expand-button"
-                .path=${mdiChevronUp}
-                @click=${this._handleExpand}
-                @keydown=${this._handleExpand}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.leftChevron
+            ? html`
+                <ha-icon-button
+                  class="expand-button"
+                  .path=${mdiChevronUp}
+                  @click=${this._handleExpand}
+                  @keydown=${this._handleExpand}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
         <div class="leading-icon-wrapper">
           <slot name="leading-icon"></slot>
         </div>
@@ -128,7 +130,9 @@ export class HaAutomationRow extends LitElement {
     }
     .row {
       display: flex;
-      padding: 0 0 0 var(--ha-space-3);
+      padding-left: var(--ha-space-3);
+      padding-inline-start: var(--ha-space-3);
+      padding-inline-end: initial;
       min-height: 48px;
       align-items: flex-start;
       cursor: pointer;
@@ -144,6 +148,8 @@ export class HaAutomationRow extends LitElement {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       color: var(--ha-color-on-neutral-quiet);
       margin-left: calc(var(--ha-space-2) * -1);
+      margin-inline-start: calc(var(--ha-space-2) * -1);
+      margin-inline-end: initial;
     }
     :host([building-block]) .leading-icon-wrapper {
       background-color: var(--ha-color-fill-neutral-loud-resting);
@@ -157,11 +163,14 @@ export class HaAutomationRow extends LitElement {
     }
     .leading-icon-wrapper {
       padding-top: var(--ha-space-3);
+      position: relative;
+      z-index: 1;
     }
     ::slotted([slot="leading-icon"]) {
       color: var(--ha-color-on-neutral-quiet);
     }
-    :host([building-block]) ::slotted([slot="leading-icon"]) {
+    :host([building-block]) ::slotted([slot="leading-icon"].action-icon),
+    :host([building-block]) ::slotted(#condition-icon) {
       --mdc-icon-size: var(--ha-space-5);
       color: var(--white-color);
       transform: rotate(-45deg);
@@ -187,7 +196,6 @@ export class HaAutomationRow extends LitElement {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
-      margin: 0 var(--ha-space-3);
     }
     ::slotted([slot="header"]) {
       overflow-wrap: anywhere;

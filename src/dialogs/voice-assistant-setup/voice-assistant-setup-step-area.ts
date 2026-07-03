@@ -31,10 +31,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
             "ui.panel.config.voice_assistants.satellite_wizard.area.secondary"
           )}
         </p>
-        <ha-area-picker
-          .hass=${this.hass}
-          .value=${device.area_id}
-        ></ha-area-picker>
+        <ha-area-picker .value=${device.area_id}></ha-area-picker>
       </div>
       <div class="footer">
         <ha-button @click=${this._setArea}

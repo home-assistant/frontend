@@ -22,6 +22,7 @@ import "../../category/ha-category-picker";
 
 import type { GenDataTaskResult } from "../../../../data/ai_task";
 import type { SceneConfig } from "../../../../data/scene";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
@@ -42,8 +43,16 @@ const SUGGESTION_INCLUDE: MetadataSuggestionInclude = {
   labels: true,
 };
 
+interface SceneSaveState {
+  name?: string;
+  icon?: string;
+  entryUpdates: EntityRegistryUpdate;
+}
+
 @customElement("ha-dialog-scene-save")
-class DialogSceneSave extends LitElement {
+class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -80,6 +89,15 @@ class DialogSceneSave extends LitElement {
       this._entryUpdates.category ? "category" : "",
       this._entryUpdates.labels.length > 0 ? "labels" : "",
     ].filter(Boolean);
+
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        name: this._newName,
+        icon: this._newIcon,
+        entryUpdates: this._entryUpdates,
+      }
+    );
   }
 
   public closeDialog() {
@@ -135,31 +153,34 @@ class DialogSceneSave extends LitElement {
 
       <ha-area-picker
         id="area"
-        .hass=${this.hass}
         .value=${this._entryUpdates.area}
         @value-changed=${this._registryEntryChanged}
       ></ha-area-picker>
 
-      ${this._visibleOptionals.includes("category")
-        ? html` <ha-category-picker
-            id="category"
-            .hass=${this.hass}
-            .scope=${this._params.domain}
-            .label=${this.hass.localize(
-              "ui.components.category-picker.category"
-            )}
-            .value=${this._entryUpdates.category}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-category-picker>`
-        : nothing}
-      ${this._visibleOptionals.includes("labels")
-        ? html` <ha-labels-picker
-            id="labels"
-            .hass=${this.hass}
-            .value=${this._entryUpdates.labels}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-labels-picker>`
-        : nothing}
+      ${
+        this._visibleOptionals.includes("category")
+          ? html` <ha-category-picker
+              id="category"
+              .hass=${this.hass}
+              .scope=${this._params.domain}
+              .label=${this.hass.localize(
+                "ui.components.category-picker.category"
+              )}
+              .value=${this._entryUpdates.category}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-category-picker>`
+          : nothing
+      }
+      ${
+        this._visibleOptionals.includes("labels")
+          ? html` <ha-labels-picker
+              id="labels"
+              .hass=${this.hass}
+              .value=${this._entryUpdates.labels}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-labels-picker>`
+          : nothing
+      }
 
       <ha-chip-set>
         ${this._renderOptionalChip(
@@ -189,41 +210,50 @@ class DialogSceneSave extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${this._params.title || title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${this._params.hideInputs
-          ? nothing
-          : html` <ha-suggest-with-ai-button
-              slot="headerActionItems"
-              .hass=${this.hass}
-              .generateTask=${this._generateTask}
-              @suggestion=${this._handleSuggestion}
-            ></ha-suggest-with-ai-button>`}
-        ${this._error
-          ? html`<ha-alert alert-type="error"
-              >${this.hass.localize(
-                "ui.panel.config.scene.editor.missing_name"
-              )}</ha-alert
-            >`
-          : ""}
-        ${this._params.description
-          ? html`<p>${this._params.description}</p>`
-          : nothing}
+        ${
+          this._params.hideInputs
+            ? nothing
+            : html` <ha-suggest-with-ai-button
+                slot="headerActionItems"
+                .hass=${this.hass}
+                .generateTask=${this._generateTask}
+                @suggestion=${this._handleSuggestion}
+              ></ha-suggest-with-ai-button>`
+        }
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error"
+                >${this.hass.localize(
+                  "ui.panel.config.scene.editor.missing_name"
+                )}</ha-alert
+              >`
+            : ""
+        }
+        ${
+          this._params.description
+            ? html`<p>${this._params.description}</p>`
+            : nothing
+        }
         ${this._renderInputs()}
 
         <ha-dialog-footer slot="footer">
-          ${this._params.onDiscard
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  variant="danger"
-                  appearance="plain"
-                  @click=${this._handleDiscard}
-                >
-                  ${this.hass.localize("ui.common.dont_save")}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._params.onDiscard
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    variant="danger"
+                    appearance="plain"
+                    @click=${this._handleDiscard}
+                  >
+                    ${this.hass.localize("ui.common.dont_save")}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button
             slot="secondaryAction"
             appearance="plain"
@@ -231,7 +261,11 @@ class DialogSceneSave extends LitElement {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!!this._params.config.id && !this.isDirtyState}
+          >
             ${this.hass.localize(
               this._params.config.id && !this._params.onDiscard
                 ? "ui.panel.config.scene.editor.rename"
@@ -249,17 +283,27 @@ class DialogSceneSave extends LitElement {
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
+  private _trackDirtyState() {
+    this._updateDirtyState({
+      name: this._newName,
+      icon: this._newIcon,
+      entryUpdates: this._entryUpdates,
+    });
+  }
+
   private _registryEntryChanged(ev) {
     ev.stopPropagation();
     const id: string = ev.target.id;
     const value = ev.detail.value;
 
     this._entryUpdates = { ...this._entryUpdates, [id]: value };
+    this._trackDirtyState();
   }
 
   private _iconChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._newIcon = ev.detail.value || undefined;
+    this._trackDirtyState();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -268,6 +312,7 @@ class DialogSceneSave extends LitElement {
     if (this._error && this._newName.trim()) {
       this._error = false;
     }
+    this._trackDirtyState();
   }
 
   private _handleDiscard() {
@@ -326,6 +371,7 @@ class DialogSceneSave extends LitElement {
         this._visibleOptionals = [...this._visibleOptionals, "labels"];
       }
     }
+    this._trackDirtyState();
   }
 
   private async _save(): Promise<void> {

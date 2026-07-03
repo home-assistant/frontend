@@ -6,15 +6,9 @@ import { stateColorCss } from "../../common/entity/state_color";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { VacuumEntity } from "../../data/vacuum";
 import { isCleaning } from "../../data/vacuum";
-import type { HomeAssistant } from "../../types";
 
 type VacuumVisualState =
-  | "cleaning"
-  | "docked"
-  | "returning"
-  | "paused"
-  | "error"
-  | "idle";
+  "cleaning" | "docked" | "returning" | "paused" | "error" | "idle";
 
 const computeVisualState = (stateObj: VacuumEntity): VacuumVisualState => {
   if (stateObj.state === UNAVAILABLE) {
@@ -40,8 +34,6 @@ const computeVisualState = (stateObj: VacuumEntity): VacuumVisualState => {
 
 @customElement("ha-state-control-vacuum-status")
 export class HaStateControlVacuumStatus extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: VacuumEntity;
 
   protected render(): TemplateResult {

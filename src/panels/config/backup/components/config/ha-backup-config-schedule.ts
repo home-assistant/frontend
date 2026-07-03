@@ -6,11 +6,12 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-time-input";
 import "../../../../../components/ha-tip";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-row-item";
+import "../../../../../components/list/ha-list-base";
 import type {
   BackupConfig,
   BackupDay,
@@ -116,8 +117,8 @@ class HaBackupConfigSchedule extends LitElement {
     const data = this._getData(this.value);
 
     return html`
-      <ha-md-list>
-        <ha-md-list-item>
+      <ha-list-base>
+        <ha-list-item-base>
           <span slot="headline">
             ${this.hass.localize(
               "ui.panel.config.backup.schedule.schedule"
@@ -140,162 +141,172 @@ class HaBackupConfigSchedule extends LitElement {
               ),
             }))}
           ></ha-select>
-        </ha-md-list-item>
-        ${data.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS
-          ? html`<ha-expansion-panel
-              expanded
-              .header=${this.hass.localize(
-                "ui.panel.config.backup.schedule.custom_schedule"
-              )}
-              outlined
-            >
-              <ha-md-list-item class="days">
-                <span slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.backup_every"
-                  )}
-                </span>
-                <div slot="end">
-                  ${BACKUP_DAYS.map(
-                    (day) => html`
-                      <div>
-                        <ha-checkbox
-                          @change=${this._daysChanged}
-                          .checked=${data.days.includes(day)}
-                          .value=${day}
-                        >
-                          ${this.hass.localize(
-                            `ui.panel.config.backup.overview.settings.weekdays.${day}`
-                          )}
-                        </ha-checkbox>
-                      </div>
-                    `
-                  )}
-                </div>
-              </ha-md-list-item>
-            </ha-expansion-panel>`
-          : nothing}
-        ${data.recurrence === BackupScheduleRecurrence.DAILY ||
-        (data.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS &&
-          data.days.length > 0)
-          ? html`
-              <ha-md-list-item>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.time"
-                  )}</span
-                >
-                <span slot="supporting-text">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.schedule.schedule_time_description",
-                    {
-                      time_range_start: formatTime(
-                        DEFAULT_OPTIMIZED_BACKUP_START_TIME,
-                        this.hass.locale,
-                        this.hass.config
-                      ),
-                      time_range_end: formatTime(
-                        DEFAULT_OPTIMIZED_BACKUP_END_TIME,
-                        this.hass.locale,
-                        this.hass.config
-                      ),
-                    }
-                  )}
-                </span>
-
-                <ha-select
-                  slot="end"
-                  @selected=${this._scheduleTimeChanged}
-                  .value=${data.time_option}
-                  .options=${SCHEDULE_TIME_OPTIONS.map((option) => ({
-                    value: option,
-                    label: this.hass.localize(
-                      `ui.panel.config.backup.schedule.time_options.${option}`
-                    ),
-                  }))}
-                ></ha-select>
-              </ha-md-list-item>
-              ${data.time_option === BackupScheduleTime.CUSTOM
-                ? html`<ha-expansion-panel
-                    expanded
-                    .header=${this.hass.localize(
-                      "ui.panel.config.backup.schedule.custom_time"
+        </ha-list-item-base>
+        ${
+          data.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS
+            ? html`<ha-expansion-panel
+                expanded
+                .header=${this.hass.localize(
+                  "ui.panel.config.backup.schedule.custom_schedule"
+                )}
+                outlined
+              >
+                <ha-row-item class="days">
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.schedule.backup_every"
                     )}
-                    outlined
+                  </span>
+                  <div slot="end">
+                    ${BACKUP_DAYS.map(
+                      (day) => html`
+                        <div>
+                          <ha-checkbox
+                            @change=${this._daysChanged}
+                            .checked=${data.days.includes(day)}
+                            .value=${day}
+                          >
+                            ${this.hass.localize(
+                              `ui.panel.config.backup.overview.settings.weekdays.${day}`
+                            )}
+                          </ha-checkbox>
+                        </div>
+                      `
+                    )}
+                  </div>
+                </ha-row-item>
+              </ha-expansion-panel>`
+            : nothing
+        }
+        ${
+          data.recurrence === BackupScheduleRecurrence.DAILY ||
+          (data.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS &&
+            data.days.length > 0)
+            ? html`
+                <ha-list-item-base>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.schedule.time"
+                    )}</span
                   >
-                    <ha-md-list-item>
-                      <span slot="headline">
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.schedule.custom_time_label"
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.schedule.schedule_time_description",
+                      {
+                        time_range_start: formatTime(
+                          DEFAULT_OPTIMIZED_BACKUP_START_TIME,
+                          this.hass.locale,
+                          this.hass.config
+                        ),
+                        time_range_end: formatTime(
+                          DEFAULT_OPTIMIZED_BACKUP_END_TIME,
+                          this.hass.locale,
+                          this.hass.config
+                        ),
+                      }
+                    )}
+                  </span>
+
+                  <ha-select
+                    slot="end"
+                    @selected=${this._scheduleTimeChanged}
+                    .value=${data.time_option}
+                    .options=${SCHEDULE_TIME_OPTIONS.map((option) => ({
+                      value: option,
+                      label: this.hass.localize(
+                        `ui.panel.config.backup.schedule.time_options.${option}`
+                      ),
+                    }))}
+                  ></ha-select>
+                </ha-list-item-base>
+                ${
+                  data.time_option === BackupScheduleTime.CUSTOM
+                    ? html`<ha-expansion-panel
+                        expanded
+                        .header=${this.hass.localize(
+                          "ui.panel.config.backup.schedule.custom_time"
                         )}
-                      </span>
-                      <span slot="supporting-text">
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.schedule.custom_time_description",
-                          {
-                            time: formatTime(
-                              DEFAULT_OPTIMIZED_BACKUP_START_TIME,
-                              this.hass.locale,
-                              this.hass.config
-                            ),
-                          }
-                        )}
-                      </span>
-                      <ha-time-input
-                        slot="end"
-                        @value-changed=${this._timeChanged}
-                        .value=${data.time ?? undefined}
-                        .locale=${this.hass.locale}
+                        outlined
                       >
-                      </ha-time-input>
-                    </ha-md-list-item>
-                  </ha-expansion-panel>`
-                : nothing}
-            `
-          : nothing}
-        ${this.supervisor
-          ? html`
-              <ha-md-list-item>
-                <span slot="headline">
-                  ${this.hass.localize(
-                    `ui.panel.config.backup.schedule.update_preference.label`
-                  )}
-                </span>
-                <span slot="supporting-text">
-                  ${this.hass.localize(
-                    `ui.panel.config.backup.schedule.update_preference.supporting_text`
-                  )}
-                </span>
-                <ha-select
-                  slot="end"
-                  @selected=${this._updatePreferenceChanged}
-                  .value=${this.supervisorUpdateConfig?.core_backup_before_update?.toString() ||
-                  "false"}
-                  .options=${[
-                    {
-                      value: "false",
-                      label: this.hass.localize(
-                        `ui.panel.config.backup.schedule.update_preference.skip_backups`
-                      ),
-                    },
-                    {
-                      value: "true",
-                      label: this.hass.localize(
-                        `ui.panel.config.backup.schedule.update_preference.backup_before_update`
-                      ),
-                    },
-                  ]}
-                ></ha-select>
-              </ha-md-list-item>
-            `
-          : nothing}
+                        <ha-row-item>
+                          <span slot="headline">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.schedule.custom_time_label"
+                            )}
+                          </span>
+                          <span slot="supporting-text">
+                            ${this.hass.localize(
+                              "ui.panel.config.backup.schedule.custom_time_description",
+                              {
+                                time: formatTime(
+                                  DEFAULT_OPTIMIZED_BACKUP_START_TIME,
+                                  this.hass.locale,
+                                  this.hass.config
+                                ),
+                              }
+                            )}
+                          </span>
+                          <ha-time-input
+                            slot="end"
+                            @value-changed=${this._timeChanged}
+                            .value=${data.time ?? undefined}
+                            .locale=${this.hass.locale}
+                          >
+                          </ha-time-input>
+                        </ha-row-item>
+                      </ha-expansion-panel>`
+                    : nothing
+                }
+              `
+            : nothing
+        }
+        ${
+          this.supervisor
+            ? html`
+                <ha-list-item-base>
+                  <span slot="headline">
+                    ${this.hass.localize(
+                      `ui.panel.config.backup.schedule.update_preference.label`
+                    )}
+                  </span>
+                  <span slot="supporting-text">
+                    ${this.hass.localize(
+                      `ui.panel.config.backup.schedule.update_preference.supporting_text`
+                    )}
+                  </span>
+                  <ha-select
+                    slot="end"
+                    @selected=${this._updatePreferenceChanged}
+                    .value=${
+                      this.supervisorUpdateConfig?.core_backup_before_update?.toString() ||
+                      "false"
+                    }
+                    .options=${[
+                      {
+                        value: "false",
+                        label: this.hass.localize(
+                          `ui.panel.config.backup.schedule.update_preference.skip_backups`
+                        ),
+                      },
+                      {
+                        value: "true",
+                        label: this.hass.localize(
+                          `ui.panel.config.backup.schedule.update_preference.backup_before_update`
+                        ),
+                      },
+                    ]}
+                  ></ha-select>
+                </ha-list-item-base>
+              `
+            : nothing
+        }
 
         <ha-backup-config-retention
           .hass=${this.hass}
           .retention=${data.retention}
           @value-changed=${this._retentionChanged}
         ></ha-backup-config-retention>
-        <ha-tip .hass=${this.hass}
+        <ha-tip
           >${this.hass.localize("ui.panel.config.backup.schedule.tip", {
             backup_create: html`<a
               href=${documentationUrl(
@@ -308,7 +319,7 @@ class HaBackupConfigSchedule extends LitElement {
             >`,
           })}</ha-tip
         >
-      </ha-md-list>
+      </ha-list-base>
     `;
   }
 
@@ -398,13 +409,14 @@ class HaBackupConfigSchedule extends LitElement {
   }
 
   static styles = css`
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
+    ha-row-item::part(headline),
+    ha-row-item::part(supporting-text),
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
     }
     ha-select {
       min-width: 210px;
@@ -430,8 +442,8 @@ class HaBackupConfigSchedule extends LitElement {
       text-align: unset;
       margin: 16px 0;
     }
-    ha-md-list-item.days {
-      --md-item-align-items: flex-start;
+    ha-row-item-base.days::part(end) {
+      align-items: flex-start;
     }
     a {
       color: var(--primary-color);

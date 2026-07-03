@@ -6,22 +6,25 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
+import "../../../../../components/ha-formfield";
 import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
 } from "../../../../../data/hassio/addon";
 import { setHassioAddonOption } from "../../../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../../data/hassio/common";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
+import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
 
 @customElement("supervisor-app-network")
-class SupervisorAppNetwork extends LitElement {
+class SupervisorAppNetwork extends DirtyStateProviderMixin<
+  Record<string, number | null>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
@@ -30,19 +33,19 @@ class SupervisorAppNetwork extends LitElement {
 
   @state() private _showOptional = false;
 
-  @state() private _configHasChanged = false;
-
   @state() private _error?: string;
 
-  @state() private _config?: Record<string, any>;
+  @state() private _config?: Record<string, number | null>;
 
   protected render() {
     if (!this._config) {
       return nothing;
     }
 
-    const hasHiddenOptions = Object.keys(this._config).find(
-      (entry) => this._config![entry] === null
+    const config = this._config;
+
+    const hasHiddenOptions = Object.keys(config).find(
+      (entry) => config[entry] === null
     );
 
     return html`
@@ -58,9 +61,11 @@ class SupervisorAppNetwork extends LitElement {
               "ui.panel.config.apps.configuration.network.introduction"
             )}
           </p>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
 
           <ha-form
             .disabled=${this.disabled}
@@ -71,20 +76,22 @@ class SupervisorAppNetwork extends LitElement {
             .schema=${this._createSchema(this._config, this._showOptional)}
           ></ha-form>
         </div>
-        ${hasHiddenOptions
-          ? html`<ha-formfield
-              class="show-optional"
-              .label=${this.hass.localize(
-                "ui.panel.config.apps.configuration.network.show_disabled"
-              )}
-            >
-              <ha-switch
-                @change=${this._toggleOptional}
-                .checked=${this._showOptional}
+        ${
+          hasHiddenOptions
+            ? html`<ha-formfield
+                class="show-optional"
+                .label=${this.hass.localize(
+                  "ui.panel.config.apps.configuration.network.show_disabled"
+                )}
               >
-              </ha-switch>
-            </ha-formfield>`
-          : nothing}
+                <ha-switch
+                  @change=${this._toggleOptional}
+                  .checked=${this._showOptional}
+                >
+                </ha-switch>
+              </ha-formfield>`
+            : nothing
+        }
         <div class="card-actions">
           <ha-progress-button
             variant="danger"
@@ -98,7 +105,7 @@ class SupervisorAppNetwork extends LitElement {
           </ha-progress-button>
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged || this.disabled}
+            .disabled=${!this.isDirtyState || this.disabled}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-progress-button>
@@ -115,7 +122,10 @@ class SupervisorAppNetwork extends LitElement {
   }
 
   private _createSchema = memoizeOne(
-    (config: Record<string, number>, showOptional: boolean): HaFormSchema[] =>
+    (
+      config: Record<string, number | null>,
+      showOptional: boolean
+    ): HaFormSchema[] =>
       (showOptional
         ? Object.keys(config)
         : Object.keys(config).filter((entry) => config[entry] !== null)
@@ -141,12 +151,14 @@ class SupervisorAppNetwork extends LitElement {
     item.name;
 
   private _setNetworkConfig(): void {
-    this._config = this.addon.network || {};
+    const config = this.addon.network || {};
+    this._config = config;
+    this._initDirtyTracking({ type: "shallow" }, config);
   }
 
-  private async _configChanged(ev: CustomEvent): Promise<void> {
-    this._configHasChanged = true;
+  private _configChanged(ev: CustomEvent): void {
     this._config = ev.detail.value;
+    this._updateDirtyState(ev.detail.value);
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
@@ -160,8 +172,8 @@ class SupervisorAppNetwork extends LitElement {
     };
 
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
-      this._configHasChanged = false;
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
+      this._markDirtyStateClean();
       const eventdata = {
         success: true,
         response: undefined,
@@ -188,14 +200,14 @@ class SupervisorAppNetwork extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
-    if (!this._configHasChanged || this.disabled) {
+    if (!this.isDirtyState || this.disabled) {
       return;
     }
 
     const button = ev.currentTarget as any;
 
     this._error = undefined;
-    const networkconfiguration = {};
+    const networkconfiguration: Record<string, number | null> = {};
     Object.entries(this._config!).forEach(([key, value]) => {
       networkconfiguration[key] = value ?? null;
     });
@@ -205,8 +217,8 @@ class SupervisorAppNetwork extends LitElement {
     };
 
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, data);
-      this._configHasChanged = false;
+      await setHassioAddonOption(this.hass.callWS, this.addon.slug, data);
+      this._markDirtyStateClean();
       const eventdata = {
         success: true,
         response: undefined,

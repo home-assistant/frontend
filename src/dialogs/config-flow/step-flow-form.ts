@@ -35,6 +35,10 @@ class StepFlowForm extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // The integration domain this flow belongs to. Unlike `step.handler`, this is
+  // the domain even for options flows (where the handler is the config entry id).
+  @property({ attribute: false }) public domain?: string;
+
   @state() private _loading = false;
 
   @state() private _stepData?: Record<string, any>;
@@ -88,48 +92,54 @@ class StepFlowForm extends LitElement {
     return html`
       <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
-        ${this._errorMsg
-          ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
-          : nothing}
-        ${step.data_schema.length
-          ? html`<ha-form
-              ${ref(this._formRef)}
-              ?autofocus=${this.autoFocus}
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .data=${stepData}
-              .disabled=${this._loading}
-              @value-changed=${this._stepDataChanged}
-              .schema=${autocompleteLoginFields(
-                this.handleReadOnlyFields(step.data_schema)
-              )}
-              .error=${this._errors}
-              .computeLabel=${this._labelCallback}
-              .computeHelper=${this._helperCallback}
-              .computeError=${this._errorCallback}
-              .localizeValue=${this._localizeValueCallback}
-              .context=${{ handler: step.handler }}
-            ></ha-form>`
-          : nothing}
+        ${
+          this._errorMsg
+            ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
+            : nothing
+        }
+        ${
+          step.data_schema.length
+            ? html`<ha-form
+                ${ref(this._formRef)}
+                ?autofocus=${this.autoFocus}
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .data=${stepData}
+                .disabled=${this._loading}
+                @value-changed=${this._stepDataChanged}
+                .schema=${autocompleteLoginFields(
+                  this.handleReadOnlyFields(step.data_schema)
+                )}
+                .error=${this._errors}
+                .computeLabel=${this._labelCallback}
+                .computeHelper=${this._helperCallback}
+                .computeError=${this._errorCallback}
+                .localizeValue=${this._localizeValueCallback}
+                .context=${{ handler: step.handler, domain: this.domain }}
+              ></ha-form>`
+            : nothing
+        }
       </div>
-      ${step.preview
-        ? html`<div class="preview" @set-flow-errors=${this._setError}>
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_flow.preview"
-              )}:
-            </h3>
-            ${dynamicElement(`flow-preview-${previewModule(step.preview)}`, {
-              hass: this.hass,
-              domain: step.preview,
-              flowType: this.flowConfig.flowType,
-              handler: step.handler,
-              stepId: step.step_id,
-              flowId: step.flow_id,
-              stepData,
-            })}
-          </div>`
-        : nothing}
+      ${
+        step.preview
+          ? html`<div class="preview" @set-flow-errors=${this._setError}>
+              <h3>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.preview"
+                )}:
+              </h3>
+              ${dynamicElement(`flow-preview-${previewModule(step.preview)}`, {
+                hass: this.hass,
+                domain: step.preview,
+                flowType: this.flowConfig.flowType,
+                handler: step.handler,
+                stepId: step.step_id,
+                flowId: step.flow_id,
+                stepData,
+              })}
+            </div>`
+          : nothing
+      }
     `;
   }
 

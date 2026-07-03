@@ -1,5 +1,5 @@
 import { mdiInformationOutline, mdiPlus } from "@mdi/js";
-import { LitElement, css, html, nothing, type TemplateResult } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
   eventOptions,
@@ -40,8 +40,6 @@ export class HaAutomationAddItems extends LitElement {
 
   @property({ attribute: "empty-label" }) public emptyLabel!: string;
 
-  @property({ attribute: false }) public emptyNote?: string | TemplateResult;
-
   @property({ attribute: false }) public target?: Target;
 
   @property({ attribute: false }) public getLabel!: (
@@ -74,25 +72,26 @@ export class HaAutomationAddItems extends LitElement {
       })}
       @scroll=${this._onItemsScroll}
     >
-      ${!this.items && !this.error
-        ? this.selectLabel
-        : this.error
-          ? html`${this.error}
-              <div>${this._renderTarget(this.target)}</div>`
-          : this.items && !this.items.length
-            ? html`${this.emptyLabel}
-              ${this.target
-                ? html`<div>${this._renderTarget(this.target)}</div>`
-                : nothing}
-              ${this.emptyNote
-                ? html`<div class="empty-note">${this.emptyNote}</div>`
-                : nothing}`
-            : repeat(
-                this.items,
-                (_, index) => `item-group-${index}`,
-                (itemGroup) =>
-                  this._renderItemList(itemGroup.title, itemGroup.items)
-              )}
+      ${
+        !this.items && !this.error
+          ? this.selectLabel
+          : this.error
+            ? html`${this.error}
+                <div>${this._renderTarget(this.target)}</div>`
+            : this.items && !this.items.length
+              ? html`${this.emptyLabel}
+                ${
+                  this.target
+                    ? html`<div>${this._renderTarget(this.target)}</div>`
+                    : nothing
+                }`
+              : repeat(
+                  this.items,
+                  (_, index) => `item-group-${index}`,
+                  (itemGroup) =>
+                    this._renderItemList(itemGroup.title, itemGroup.items)
+                )
+      }
     </div>`;
   }
 
@@ -113,35 +112,41 @@ export class HaAutomationAddItems extends LitElement {
                 ${item.name}${this._renderTarget(this.target)}
               </div>
 
-              ${!this.tooltipDescription && item.description
-                ? html`<div slot="supporting-text">${item.description}</div>`
-                : nothing}
-              ${item.icon
-                ? html`<span slot="start">${item.icon}</span>`
-                : item.iconPath
+              ${
+                !this.tooltipDescription && item.description
+                  ? html`<div slot="supporting-text">${item.description}</div>`
+                  : nothing
+              }
+              ${
+                item.icon
+                  ? html`<span slot="start">${item.icon}</span>`
+                  : item.iconPath
+                    ? html`<ha-svg-icon
+                        slot="start"
+                        .path=${item.iconPath}
+                      ></ha-svg-icon>`
+                    : nothing
+              }
+              ${
+                this.tooltipDescription && item.description
                   ? html`<ha-svg-icon
-                      slot="start"
-                      .path=${item.iconPath}
-                    ></ha-svg-icon>`
-                  : nothing}
-              ${this.tooltipDescription && item.description
-                ? html`<ha-svg-icon
-                      tabindex="0"
-                      id=${`description-tooltip-${item.key}`}
-                      slot="end"
-                      .path=${mdiInformationOutline}
-                      @click=${stopPropagation}
-                    ></ha-svg-icon>
-                    <ha-tooltip
-                      slot="end"
-                      .for=${`description-tooltip-${item.key}`}
-                      @wa-show=${stopPropagation}
-                      @wa-hide=${stopPropagation}
-                      @wa-after-hide=${stopPropagation}
-                      @wa-after-show=${stopPropagation}
-                      >${item.description}</ha-tooltip
-                    > `
-                : nothing}
+                        tabindex="0"
+                        id=${`description-tooltip-${item.key}`}
+                        slot="end"
+                        .path=${mdiInformationOutline}
+                        @click=${stopPropagation}
+                      ></ha-svg-icon>
+                      <ha-tooltip
+                        slot="end"
+                        .for=${`description-tooltip-${item.key}`}
+                        @wa-show=${stopPropagation}
+                        @wa-hide=${stopPropagation}
+                        @wa-after-hide=${stopPropagation}
+                        @wa-after-show=${stopPropagation}
+                        >${item.description}</ha-tooltip
+                      > `
+                  : nothing
+              }
               <ha-svg-icon
                 slot="end"
                 class="plus"
@@ -161,7 +166,13 @@ export class HaAutomationAddItems extends LitElement {
 
     return html`<div class="selected-target">
       ${getTargetIcon(
-        this.hass,
+        {
+          entities: this.hass.entities,
+          devices: this.hass.devices,
+          areas: this.hass.areas,
+          floors: this.hass.floors,
+        },
+        this.hass.states,
         target[0],
         target[1],
         this.configEntryLookup,
@@ -213,6 +224,7 @@ export class HaAutomationAddItems extends LitElement {
         display: flex;
         flex-direction: column;
         flex: 1;
+        min-width: 0;
       }
       .items.blank {
         border-radius: var(--ha-border-radius-xl);
@@ -224,17 +236,6 @@ export class HaAutomationAddItems extends LitElement {
           max(var(--safe-area-inset-bottom), var(--ha-space-3));
         line-height: var(--ha-line-height-expanded);
         justify-content: center;
-      }
-
-      .empty-note {
-        color: var(--ha-color-text-secondary);
-        margin-top: var(--ha-space-2);
-        text-align: center;
-      }
-
-      .empty-note a {
-        color: currentColor;
-        text-decoration: underline;
       }
 
       .items.error {

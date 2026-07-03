@@ -24,7 +24,7 @@ jobs:
     if: github.repository == 'home-assistant/frontend' && contains(github.event.pull_request.labels.*.name, 'needs design preview')
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
@@ -45,13 +45,12 @@ jobs:
       - name: Deploy preview to Netlify
         id: deploy
         run: |
-          npx -y netlify-cli@23.7.3 deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
+          npx -y netlify-cli deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
             --json > deploy_output.json
+          echo "netlify_url=$(jq -r '.url // .deploy_url' deploy_output.json)" >> "$GITHUB_OUTPUT"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
 
       - name: Generate summary
-        run: |
-          NETLIFY_LIVE_URL=$(jq -r '.deploy_url' deploy_output.json)
-          echo "$NETLIFY_LIVE_URL" >> "$GITHUB_STEP_SUMMARY"
+        run: echo "${{ steps.deploy.outputs.netlify_url }}" >> "$GITHUB_STEP_SUMMARY"

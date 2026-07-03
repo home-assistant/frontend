@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/chart/ha-chart-base";
+import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import "../../../../components/ha-card";
 import type {
   EnergyData,
@@ -33,7 +34,7 @@ import {
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import type { ECOption } from "../../../../resources/echarts/echarts";
+import type { HaECOption } from "../../../../resources/echarts/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
@@ -63,6 +64,8 @@ export class HuiEnergyWaterGraphCard
   }
 
   @state() private _chartData: BarSeriesOption[] = [];
+
+  @state() private _yAxisFractionDigits = 1;
 
   @state() private _start = startOfToday();
 
@@ -112,18 +115,25 @@ export class HuiEnergyWaterGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html` <div class="card-header">
-              <span>${this._config.title ? this._config.title : nothing}</span>
-              ${this._total
-                ? html`<hui-energy-graph-chip
-                    .tooltip=${this._formatTotal(this._total)}
-                  >
-                    ${formatNumber(this._total, this.hass.locale)} ${this._unit}
-                  </hui-energy-graph-chip>`
-                : nothing}
-            </div>`
-          : nothing}
+        ${
+          this._config.title
+            ? html` <div class="card-header">
+                <span
+                  >${this._config.title ? this._config.title : nothing}</span
+                >
+                ${
+                  this._total
+                    ? html`<hui-energy-graph-chip
+                        .tooltip=${this._formatTotal(this._total)}
+                      >
+                        ${formatNumber(this._total, this.hass.locale)}
+                        ${this._unit}
+                      </hui-energy-graph-chip>`
+                    : nothing
+                }
+              </div>`
+            : nothing
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -139,19 +149,26 @@ export class HuiEnergyWaterGraphCard
               this.hass.config,
               this._unit,
               this._compareStart,
-              this._compareEnd
+              this._compareEnd,
+              this._yAxisFractionDigits
             )}
             chart-type="bar"
           ></ha-chart-base>
-          ${!this._chartData.length
-            ? html`<div class="no-data">
-                ${isToday(this._start)
-                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
-                  : this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.no_data_period"
-                    )}
-              </div>`
-            : ""}
+          ${
+            !this._chartData.length
+              ? html`<div class="no-data">
+                  ${
+                    isToday(this._start)
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data_period"
+                        )
+                  }
+                </div>`
+              : ""
+          }
         </div>
       </ha-card>
     `;
@@ -169,10 +186,11 @@ export class HuiEnergyWaterGraphCard
       end: Date,
       locale: FrontendLocaleData,
       config: HassConfig,
-      unit?: string,
-      compareStart?: Date,
-      compareEnd?: Date
-    ): ECOption =>
+      unit: string | undefined,
+      compareStart: Date | undefined,
+      compareEnd: Date | undefined,
+      yAxisFractionDigits: number
+    ): HaECOption =>
       getCommonOptions(
         start,
         end,
@@ -181,7 +199,9 @@ export class HuiEnergyWaterGraphCard
         unit,
         compareStart,
         compareEnd,
-        this._formatTotal
+        this._formatTotal,
+        false,
+        yAxisFractionDigits
       )
   );
 
@@ -203,6 +223,13 @@ export class HuiEnergyWaterGraphCard
 
     const computedStyles = getComputedStyle(this);
 
+    let yMin = Infinity;
+    let yMax = -Infinity;
+    const trackY = (v: number) => {
+      if (v < yMin) yMin = v;
+      if (v > yMax) yMax = v;
+    };
+
     if (energyData.statsCompare) {
       datasets.push(
         ...this._processDataSet(
@@ -210,6 +237,7 @@ export class HuiEnergyWaterGraphCard
           energyData.statsMetadata,
           waterSources,
           computedStyles,
+          trackY,
           true
         )
       );
@@ -230,11 +258,13 @@ export class HuiEnergyWaterGraphCard
         energyData.stats,
         energyData.statsMetadata,
         waterSources,
-        computedStyles
+        computedStyles,
+        trackY
       )
     );
 
     fillDataGapsAndRoundCaps(datasets);
+    this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, waterSources);
   }
@@ -261,6 +291,7 @@ export class HuiEnergyWaterGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     waterSources: WaterSourceTypeEnergyPreference[],
     computedStyles: CSSStyleDeclaration,
+    trackY: (v: number) => void,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -300,6 +331,7 @@ export class HuiEnergyWaterGraphCard
             point.start,
           ];
           waterConsumptionData.push(dataPoint);
+          trackY(point.change);
           prevStart = point.start;
         }
       }

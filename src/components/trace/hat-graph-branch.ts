@@ -64,13 +64,14 @@ export class HatGraphBranch extends LitElement {
   render() {
     return html`
       <slot name="head"></slot>
-      ${!this.start
-        ? html`
-            <svg id="top" width=${this._totalWidth}>
-              ${this._branches.map((branch) =>
-                branch.start
-                  ? ""
-                  : svg`
+      ${
+        !this.start
+          ? html`
+              <svg id="top" width=${this._totalWidth}>
+                ${this._branches.map((branch) =>
+                  branch.start
+                    ? ""
+                    : svg`
                   <path
                     class=${classMap({
                       track: branch.track,
@@ -80,10 +81,11 @@ export class HatGraphBranch extends LitElement {
                       L ${branch.x} ${BRANCH_HEIGHT}
                       "/>
                 `
-              )}
-            </svg>
-          `
-        : nothing}
+                )}
+              </svg>
+            `
+          : nothing
+      }
       <div id="branches">
         <svg id="lines" width=${this._totalWidth} height=${this._maxHeight}>
           ${this._branches.map((branch) => {
@@ -103,12 +105,13 @@ export class HatGraphBranch extends LitElement {
         <slot @slotchange=${this._updateBranches}></slot>
       </div>
 
-      ${!this.short
-        ? html`
-            <svg id="bottom" width=${this._totalWidth}>
-              ${this._branches.map((branch) => {
-                if (branch.end) return "";
-                return svg`
+      ${
+        !this.short
+          ? html`
+              <svg id="bottom" width=${this._totalWidth}>
+                ${this._branches.map((branch) => {
+                  if (branch.end) return "";
+                  return svg`
                   <path
                     class=${classMap({
                       track: branch.track,
@@ -119,10 +122,11 @@ export class HatGraphBranch extends LitElement {
                       L ${this._totalWidth / 2} ${BRANCH_HEIGHT + SPACING}
                       "/>
                 `;
-              })}
-            </svg>
-          `
-        : nothing}
+                })}
+              </svg>
+            `
+          : nothing
+      }
     `;
   }
 

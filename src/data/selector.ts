@@ -82,6 +82,7 @@ export type Selector =
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
+  | UiTimeFormatSelector
   | BackupLocationSelector;
 
 export interface ActionSelector {
@@ -125,13 +126,12 @@ export interface BooleanSelector {
   boolean: {} | null;
 }
 
-export type AutomationBehaviorTriggerMode = "first" | "last" | "any";
+export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
 
 export type AutomationBehaviorConditionMode = "all" | "any";
 
 export type AutomationBehavior =
-  | AutomationBehaviorTriggerMode
-  | AutomationBehaviorConditionMode;
+  AutomationBehaviorTriggerMode | AutomationBehaviorConditionMode;
 
 export interface AutomationBehaviorSelector {
   automation_behavior: {
@@ -601,6 +601,10 @@ export interface UiStateContentSelector {
   } | null;
 }
 
+export interface UiTimeFormatSelector {
+  ui_time_format: {} | null;
+}
+
 export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
@@ -641,7 +645,7 @@ export const expandLabelTarget = (
     if (
       device.labels.includes(labelId) &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -708,7 +712,7 @@ export const expandAreaTarget = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -768,7 +772,7 @@ export const areaMeetsTargetSelector = (
     if (
       device.area_id === areaId &&
       deviceMeetsTargetSelector(
-        hass,
+        hass.states,
         Object.values(entities),
         device,
         targetSelector,
@@ -798,7 +802,7 @@ export const areaMeetsTargetSelector = (
 };
 
 export const deviceMeetsTargetSelector = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector,
@@ -822,7 +826,7 @@ export const deviceMeetsTargetSelector = (
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
-      const entityState = hass.states[entity.entity_id];
+      const entityState = states[entity.entity_id];
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,

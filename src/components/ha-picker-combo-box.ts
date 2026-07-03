@@ -78,15 +78,22 @@ export const NO_ITEMS_AVAILABLE_ID = "___no_items_available___";
 const PADDING_ID = "___padding___";
 
 export const DEFAULT_ROW_RENDERER_CONTENT = (item: PickerComboBoxItem) =>
-  html` ${item.icon
-      ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-      : item.icon_path
-        ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
-        : nothing}
+  html` ${
+      item.icon
+        ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+        : item.icon_path
+          ? html`<ha-svg-icon
+              slot="start"
+              .path=${item.icon_path}
+            ></ha-svg-icon>`
+          : nothing
+    }
     <span slot="headline">${item.primary}</span>
-    ${item.secondary
-      ? html`<span slot="supporting-text">${item.secondary}</span>`
-      : nothing}`;
+    ${
+      item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing
+    }`;
 
 const DEFAULT_ROW_RENDERER: RenderItemFunction<PickerComboBoxItem> = (item) =>
   html`<ha-combo-box-item type="button" compact>
@@ -166,6 +173,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
   @property({ type: Boolean, reflect: true }) public clearable = false;
+
+  @property({ type: Boolean, attribute: "no-sort" }) public noSort = false;
 
   @query("lit-virtualizer") public virtualizerElement?: LitVirtualizer;
 
@@ -247,20 +256,21 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       >
       </ha-input-search>
       ${this._renderSectionButtons()}
-      ${this.sections?.length
-        ? html`
-            <div class="section-title-wrapper">
-              <div
-                class="section-title ${!this._selectedSection &&
-                this._sectionTitle
-                  ? "show"
-                  : ""}"
-              >
-                ${this._sectionTitle}
+      ${
+        this.sections?.length
+          ? html`
+              <div class="section-title-wrapper">
+                <div
+                  class="section-title ${
+                    !this._selectedSection && this._sectionTitle ? "show" : ""
+                  }"
+                >
+                  ${this._sectionTitle}
+                </div>
               </div>
-            </div>
-          `
-        : nothing}
+            `
+          : nothing
+      }
       <div class="virtualizer-wrapper">
         <lit-virtualizer
           .keyFunction=${this._keyFunction}
@@ -270,14 +280,16 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           .renderItem=${this._renderItem}
           style="min-height: 36px;"
           class=${this._listScrolled ? "scrolled" : ""}
-          .layout=${this.value && this._valuePinned
-            ? {
-                pin: {
-                  index: this._getInitialSelectedIndex(),
-                  block: "center",
-                },
-              }
-            : undefined}
+          .layout=${
+            this.value && this._valuePinned
+              ? {
+                  pin: {
+                    index: this._getInitialSelectedIndex(),
+                    block: "center",
+                  },
+                }
+              : undefined
+          }
           @unpinned=${this._handleUnpinned}
           @scroll=${this._onScrollList}
           @focus=${this._focusList}
@@ -342,7 +354,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   private _getItems = () => {
     let items = [...(this.getItems(this._search, this._selectedSection) || [])];
 
-    if (!this.sections?.length) {
+    if (!this.sections?.length && !this.noSort) {
       items = items.sort((entityA, entityB) => {
         const sortLabelA =
           typeof entityA === "string" ? entityA : entityA.sorting_label;
@@ -411,15 +423,19 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
               .path=${this._search ? mdiMagnify : mdiMinusBoxOutline}
             ></ha-svg-icon>
             <span slot="headline"
-              >${this._search
-                ? typeof this.notFoundLabel === "function"
-                  ? this.notFoundLabel(this._search)
-                  : this.notFoundLabel ||
-                    this.i18n?.localize?.("ui.components.combo-box.no_match") ||
-                    "No matching items found"
-                : this.emptyLabel ||
-                  this.i18n?.localize?.("ui.components.combo-box.no_items") ||
-                  "No items available"}</span
+              >${
+                this._search
+                  ? typeof this.notFoundLabel === "function"
+                    ? this.notFoundLabel(this._search)
+                    : this.notFoundLabel ||
+                      this.i18n?.localize?.(
+                        "ui.components.combo-box.no_match"
+                      ) ||
+                      "No matching items found"
+                  : this.emptyLabel ||
+                    this.i18n?.localize?.("ui.components.combo-box.no_items") ||
+                    "No items available"
+              }</span
             >
           </ha-combo-box-item>
         </div>
@@ -490,7 +506,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
         this._allItems,
         searchString,
-        this.searchKeys || DEFAULT_SEARCH_KEYS,
         (item) => item.id,
         index
       );

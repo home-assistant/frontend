@@ -1,80 +1,40 @@
-import {
-  mdiPause,
-  mdiPlay,
-  mdiPlayPause,
-  mdiPower,
-  mdiPowerOff,
-  mdiPowerOn,
-  mdiRepeat,
-  mdiRepeatOff,
-  mdiRepeatOnce,
-  mdiShuffle,
-  mdiShuffleDisabled,
-  mdiSkipNext,
-  mdiSkipPrevious,
-  mdiStop,
-  mdiVolumeHigh,
-  mdiVolumeMinus,
-  mdiVolumeOff,
-  mdiVolumePlus,
-} from "@mdi/js";
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { apiContext } from "../../../data/context";
 import type {
   ControlButton,
   MediaPlayerEntity,
 } from "../../../data/media-player";
-import {
-  computeMediaControls,
-  MediaPlayerEntityFeature,
-} from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import { hasConfigChanged } from "../common/has-changed";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import {
-  MEDIA_PLAYER_PLAYBACK_CONTROLS,
-  type MediaPlayerPlaybackControl,
-  type LovelaceCardFeatureContext,
-  type MediaPlayerPlaybackCardFeatureConfig,
+  computeMediaPlayerPlaybackButtons,
+  getDefaultMediaPlayerControls,
+} from "./media-player-playback-controls";
+import type {
+  LovelaceCardFeatureContext,
+  MediaPlayerPlaybackCardFeatureConfig,
 } from "./types";
 
-const MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES: Record<
-  MediaPlayerPlaybackControl,
-  MediaPlayerEntityFeature[]
-> = {
-  turn_on: [MediaPlayerEntityFeature.TURN_ON],
-  turn_off: [MediaPlayerEntityFeature.TURN_OFF],
-  media_play: [MediaPlayerEntityFeature.PLAY],
-  media_pause: [MediaPlayerEntityFeature.PAUSE],
-  media_play_pause: [
-    MediaPlayerEntityFeature.PLAY,
-    MediaPlayerEntityFeature.PAUSE,
-  ],
-  media_stop: [MediaPlayerEntityFeature.STOP],
-  media_previous_track: [MediaPlayerEntityFeature.PREVIOUS_TRACK],
-  media_next_track: [MediaPlayerEntityFeature.NEXT_TRACK],
-  volume_down: [MediaPlayerEntityFeature.VOLUME_STEP],
-  volume_up: [MediaPlayerEntityFeature.VOLUME_STEP],
-  volume_mute: [MediaPlayerEntityFeature.VOLUME_MUTE],
-  shuffle: [MediaPlayerEntityFeature.SHUFFLE_SET],
-  repeat: [MediaPlayerEntityFeature.REPEAT_SET],
+const supportsMediaPlayerPlaybackCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "media_player";
 };
-
-export const supportsMediaPlayerPlaybackControl = (
-  stateObj: MediaPlayerEntity,
-  control: MediaPlayerPlaybackControl
-): boolean =>
-  MEDIA_PLAYER_PLAYBACK_CONTROLS_FEATURES[control].some((feature) =>
-    supportsFeature(stateObj, feature)
-  );
 
 export const supportsMediaPlayerPlaybackCardFeature = (
   hass: HomeAssistant,
@@ -84,8 +44,7 @@ export const supportsMediaPlayerPlaybackCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "media_player";
+  return supportsMediaPlayerPlaybackCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-media-player-playback-card-feature")
@@ -93,30 +52,25 @@ class HuiMediaPlayerPlaybackCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
 
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: MediaPlayerEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   @state() private _config?: MediaPlayerPlaybackCardFeatureConfig;
 
   @state() private _narrow?: boolean = false;
-
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id] as
-      | MediaPlayerEntity
-      | undefined;
-  }
-
-  private get _controls(): MediaPlayerPlaybackControl[] {
-    return this._config?.controls?.length
-      ? this._config.controls
-      : [...MEDIA_PLAYER_PLAYBACK_CONTROLS];
-  }
 
   static getStubConfig(): MediaPlayerPlaybackCardFeatureConfig {
     return {
@@ -144,25 +98,18 @@ class HuiMediaPlayerPlaybackCardFeature
     }
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const entityId = this.context?.entity_id;
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
     return (
-      hasConfigChanged(this, changedProps) ||
-      (changedProps.has("hass") &&
-        (!oldHass ||
-          !entityId ||
-          oldHass.states[entityId] !== this.hass!.states[entityId]))
+      hasConfigChanged(this, changedProps) || changedProps.has("_stateObj")
     );
   }
 
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
-      !supportsMediaPlayerPlaybackCardFeature(this.hass, this.context) ||
-      !this._stateObj
+      !this._stateObj ||
+      !supportsMediaPlayerPlaybackCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -175,9 +122,8 @@ class HuiMediaPlayerPlaybackCardFeature
           (button) => html`
             <ha-control-button
               key=${button.action}
-              .label=${this.hass?.localize(
-                `ui.card.media_player.${button.action}`
-              )}
+              .label=${this._localize(`ui.card.media_player.${button.action}`)}
+              .disabled=${button.disabled}
               @click=${this._action}
             >
               <ha-svg-icon .path=${button.icon}></ha-svg-icon>
@@ -193,141 +139,22 @@ class HuiMediaPlayerPlaybackCardFeature
       return;
     }
     const host = (this.getRootNode() as ShadowRoot).host as
-      | HTMLElement
-      | undefined;
+      HTMLElement | undefined;
     const width = host?.clientWidth ?? this.clientWidth ?? 0;
     this._narrow = width < 200;
   }
 
   private _computeButtons(stateObj: MediaPlayerEntity): ControlButton[] {
-    if (this._config?.controls?.length) {
-      return this._filterNarrow(this._computeExplicitButtons(stateObj));
-    }
-    return this._filterNarrow(computeMediaControls(stateObj) ?? []);
-  }
-
-  /**
-   * Controls are explicitly configured: iterate in config order,
-   * show each supported control as its own button.
-   */
-  private _computeExplicitButtons(
-    stateObj: MediaPlayerEntity
-  ): ControlButton[] {
-    const active = stateActive(stateObj);
-    const assumedState = stateObj.attributes.assumed_state === true;
-    const buttons: ControlButton[] = [];
-
-    for (const control of this._controls) {
-      switch (control) {
-        case "turn_off":
-          if (
-            (active || assumedState) &&
-            supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)
-          ) {
-            buttons.push({
-              icon: assumedState ? mdiPowerOff : mdiPower,
-              action: "turn_off",
-            });
-          }
-          break;
-        case "turn_on":
-          if (
-            (!active || assumedState) &&
-            !isUnavailableState(stateObj.state) &&
-            supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
-          ) {
-            buttons.push({
-              icon: assumedState ? mdiPowerOn : mdiPower,
-              action: "turn_on",
-            });
-          }
-          break;
-        case "media_play":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) {
-            buttons.push({ icon: mdiPlay, action: "media_play" });
-          }
-          break;
-        case "media_pause":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)) {
-            buttons.push({ icon: mdiPause, action: "media_pause" });
-          }
-          break;
-        case "media_play_pause":
-          if (
-            supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
-            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-          ) {
-            buttons.push({ icon: mdiPlayPause, action: "media_play_pause" });
-          }
-          break;
-        case "media_stop":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)) {
-            buttons.push({ icon: mdiStop, action: "media_stop" });
-          }
-          break;
-        case "media_previous_track":
-          if (
-            supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
-          ) {
-            buttons.push({
-              icon: mdiSkipPrevious,
-              action: "media_previous_track",
-            });
-          }
-          break;
-        case "media_next_track":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)) {
-            buttons.push({ icon: mdiSkipNext, action: "media_next_track" });
-          }
-          break;
-        case "volume_down":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) {
-            buttons.push({ icon: mdiVolumeMinus, action: "volume_down" });
-          }
-          break;
-        case "volume_up":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP)) {
-            buttons.push({ icon: mdiVolumePlus, action: "volume_up" });
-          }
-          break;
-        case "volume_mute":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_MUTE)) {
-            buttons.push({
-              icon: stateObj.attributes.is_volume_muted
-                ? mdiVolumeOff
-                : mdiVolumeHigh,
-              action: "volume_mute",
-            });
-          }
-          break;
-        case "shuffle":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.SHUFFLE_SET)) {
-            buttons.push({
-              icon:
-                stateObj.attributes.shuffle === true
-                  ? mdiShuffle
-                  : mdiShuffleDisabled,
-              action: "shuffle",
-            });
-          }
-          break;
-        case "repeat":
-          if (supportsFeature(stateObj, MediaPlayerEntityFeature.REPEAT_SET)) {
-            buttons.push({
-              icon:
-                stateObj.attributes.repeat === "all"
-                  ? mdiRepeat
-                  : stateObj.attributes.repeat === "one"
-                    ? mdiRepeatOnce
-                    : mdiRepeatOff,
-              action: "repeat",
-            });
-          }
-          break;
-      }
-    }
-
-    return buttons;
+    const buttons = computeMediaPlayerPlaybackButtons(
+      stateObj,
+      this._config?.controls ?? getDefaultMediaPlayerControls(stateObj)
+    );
+    // Disabled controls are rendered greyed out, or hidden when configured to.
+    return this._filterNarrow(
+      this._config?.hide_disabled_controls
+        ? buttons.filter((button) => !button.disabled)
+        : buttons
+    );
   }
 
   private _filterNarrow(buttons: ControlButton[]): ControlButton[] {
@@ -345,22 +172,8 @@ class HuiMediaPlayerPlaybackCardFeature
     const action = (e.currentTarget as HTMLElement).getAttribute("key");
     if (!action) return;
 
-    if (action === "media_play_pause") {
-      // Resolve play_pause to the appropriate service based on state
-      const service =
-        this._stateObj.state !== "playing"
-          ? "media_play"
-          : supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE)
-            ? "media_pause"
-            : "media_stop";
-      this.hass!.callService("media_player", service, {
-        entity_id: this._stateObj.entity_id,
-      });
-      return;
-    }
-
     if (action === "volume_mute") {
-      this.hass!.callService("media_player", "volume_mute", {
+      this._api.callService("media_player", "volume_mute", {
         entity_id: this._stateObj.entity_id,
         is_volume_muted: !this._stateObj.attributes.is_volume_muted,
       });
@@ -368,7 +181,7 @@ class HuiMediaPlayerPlaybackCardFeature
     }
 
     if (action === "shuffle") {
-      this.hass!.callService("media_player", "shuffle_set", {
+      this._api.callService("media_player", "shuffle_set", {
         entity_id: this._stateObj.entity_id,
         shuffle: !this._stateObj.attributes.shuffle,
       });
@@ -377,14 +190,14 @@ class HuiMediaPlayerPlaybackCardFeature
 
     if (action === "repeat") {
       const repeat = this._stateObj.attributes.repeat ?? "off";
-      this.hass!.callService("media_player", "repeat_set", {
+      this._api.callService("media_player", "repeat_set", {
         entity_id: this._stateObj.entity_id,
         repeat: repeat === "off" ? "one" : repeat === "one" ? "all" : "off",
       });
       return;
     }
 
-    this.hass!.callService("media_player", action, {
+    this._api.callService("media_player", action, {
       entity_id: this._stateObj.entity_id,
     });
   }

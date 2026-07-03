@@ -3,8 +3,10 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import { createDurationData } from "../common/datetime/create_duration_data";
 import durationToSeconds from "../common/datetime/duration_to_seconds";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
 
 export type TimerEntity = HassEntityBase & {
@@ -100,3 +102,11 @@ export const computeDisplayTimer = (
 
   return display;
 };
+
+// Prefill for the duration input: always the configured duration, independent
+// of the live countdown. The field is meant to be edited, not to mirror the
+// remaining time.
+export const timerDurationData = (
+  stateObj: HassEntity
+): HaDurationData | undefined =>
+  createDurationData(stateObj.attributes.duration);

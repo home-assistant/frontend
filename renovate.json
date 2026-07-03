@@ -11,14 +11,62 @@
     "group:recommended",
     "security:minimumReleaseAgeNpm"
   ],
-  "enabledManagers": ["npm", "nvm"],
+  "enabledManagers": ["npm", "nvm", "custom.regex"],
   "postUpdateOptions": ["yarnDedupeHighest"],
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
     "enabled": true,
     "schedule": ["on the 19th day of the month before 4am"]
   },
+  "customDatasources": {
+    "ha-core-python": {
+      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/home-assistant/core/dev/.python-version",
+      "format": "plain"
+    }
+  },
+  "customManagers": [
+    {
+      "description": "Keep PYTHON_VERSION in sync with home-assistant/core (patch + minor)",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/[^/]+\\.ya?ml$/"],
+      "matchStrings": ["PYTHON_VERSION: \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "custom.ha-core-python",
+      "versioningTemplate": "python"
+    },
+    {
+      "description": "Keep devcontainer image and requires-python in sync with home-assistant/core (minor only)",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.devcontainer/Dockerfile$/",
+        "/^pyproject\\.toml$/"
+      ],
+      "matchStrings": [
+        "devcontainers/python:(?<currentValue>[\\d.]+)",
+        "requires-python = \">=(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "python",
+      "datasourceTemplate": "custom.ha-core-python",
+      "versioningTemplate": "python",
+      "extractVersionTemplate": "^(?<version>\\d+\\.\\d+)"
+    },
+    {
+      "description": "Keep actionlint used in CI up to date",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/actionlint\\.yaml$/"],
+      "matchStrings": ["ACTIONLINT_VERSION: (?<currentValue>\\S+)"],
+      "depNameTemplate": "rhysd/actionlint",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    }
+  ],
   "packageRules": [
+    {
+      "description": "Group all Python version updates from home-assistant/core",
+      "matchDepNames": ["python"],
+      "matchDatasources": ["custom.ha-core-python"],
+      "groupName": "Python version"
+    },
     {
       "description": "MDC packages are pinned to the same version as MWC",
       "extends": ["monorepo:material-components-web"],

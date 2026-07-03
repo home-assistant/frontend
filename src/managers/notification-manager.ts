@@ -13,8 +13,7 @@ export interface ShowToastParams {
   // Unique ID for the toast. If a new toast is shown with the same ID as the previous toast, it will be replaced to avoid flickering.
   id?: string;
   message:
-    | string
-    | { translationKey: LocalizeKeys; args?: Record<string, string> };
+    string | { translationKey: LocalizeKeys; args?: Record<string, string> };
   action?: ToastActionParams;
   duration?: number;
   dismissable?: boolean;
@@ -24,8 +23,7 @@ export interface ShowToastParams {
 export interface ToastActionParams {
   action: () => void;
   text:
-    | string
-    | { translationKey: LocalizeKeys; args?: Record<string, string> };
+    string | { translationKey: LocalizeKeys; args?: Record<string, string> };
 }
 
 @customElement("notification-manager")
@@ -83,43 +81,51 @@ class NotificationManager extends LitElement {
     }
     return html`
       <ha-toast
-        .labelText=${typeof this._parameters.message !== "string"
-          ? this.hass.localize(
-              this._parameters.message.translationKey,
-              this._parameters.message.args
-            )
-          : this._parameters.message}
+        .labelText=${
+          typeof this._parameters.message !== "string"
+            ? this.hass.localize(
+                this._parameters.message.translationKey,
+                this._parameters.message.args
+              )
+            : this._parameters.message
+        }
         .timeoutMs=${this._parameters.duration!}
         .bottomOffset=${this._parameters.bottomOffset ?? 0}
         @toast-closed=${this._toastClosed}
       >
-        ${this._parameters?.action
-          ? html`
-              <ha-button
-                appearance="plain"
-                size="small"
-                slot="action"
-                @click=${this._buttonClicked}
-              >
-                ${typeof this._parameters?.action.text !== "string"
-                  ? this.hass.localize(
-                      this._parameters?.action.text.translationKey,
-                      this._parameters?.action.text.args
-                    )
-                  : this._parameters?.action.text}
-              </ha-button>
-            `
-          : nothing}
-        ${this._parameters?.dismissable
-          ? html`
-              <ha-icon-button
-                .label=${this.hass.localize("ui.common.close")}
-                .path=${mdiClose}
-                slot="dismiss"
-                @click=${this._dismissClicked}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this._parameters?.action
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  slot="action"
+                  @click=${this._buttonClicked}
+                >
+                  ${
+                    typeof this._parameters?.action.text !== "string"
+                      ? this.hass.localize(
+                          this._parameters?.action.text.translationKey,
+                          this._parameters?.action.text.args
+                        )
+                      : this._parameters?.action.text
+                  }
+                </ha-button>
+              `
+            : nothing
+        }
+        ${
+          this._parameters?.dismissable
+            ? html`
+                <ha-icon-button
+                  .label=${this.hass.localize("ui.common.close")}
+                  .path=${mdiClose}
+                  slot="dismiss"
+                  @click=${this._dismissClicked}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
       </ha-toast>
     `;
   }

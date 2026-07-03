@@ -1,30 +1,31 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeKeys } from "../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import type {
   AutomationBehavior,
   AutomationBehaviorConditionMode,
   AutomationBehaviorSelector,
   AutomationBehaviorTriggerMode,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-input-helper-text";
-import type { SelectBoxOption } from "../ha-select-box";
 import "../ha-select-box";
+import type { SelectBoxOption } from "../ha-select-box";
 
 const TRIGGER_BEHAVIORS: AutomationBehaviorTriggerMode[] = [
-  "any",
+  "each",
   "first",
-  "last",
+  "all",
 ];
 
 const CONDITION_BEHAVIORS: AutomationBehaviorConditionMode[] = ["any", "all"];
 
 @customElement("ha-selector-automation_behavior")
 export class HaSelectorAutomationBehavior extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public selector!: AutomationBehaviorSelector;
 
@@ -38,6 +39,9 @@ export class HaSelectorAutomationBehavior extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = true;
+
+  @consumeLocalize()
+  protected _localize?: LocalizeFunc;
 
   protected render() {
     const { mode } = this.selector.automation_behavior ?? {};
@@ -60,18 +64,19 @@ export class HaSelectorAutomationBehavior extends LitElement {
 
     return html`
       <ha-select-box
-        .hass=${this.hass}
         .options=${options}
         .value=${this.value ?? ""}
         max_columns="1"
         ?stacked_image=${isTrigger}
         @value-changed=${this._valueChanged}
       ></ha-select-box>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 
@@ -95,8 +100,10 @@ export class HaSelectorAutomationBehavior extends LitElement {
         return translated;
       }
     }
-    return this.hass.localize(
-      `ui.components.selectors.automation_behavior.${mode ?? "trigger"}.options.${behavior}.${field}` as LocalizeKeys
+    return (
+      this._localize?.(
+        `ui.components.selectors.automation_behavior.${mode ?? "trigger"}.options.${behavior}.${field}` as LocalizeKeys
+      ) || behavior
     );
   }
 

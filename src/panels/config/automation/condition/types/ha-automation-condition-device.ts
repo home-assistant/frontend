@@ -105,25 +105,27 @@ export class HaDeviceCondition extends LitElement {
           "ui.panel.config.automation.editor.conditions.type.device.condition"
         )}
       ></ha-device-condition-picker>
-      ${this._capabilities?.extra_fields
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.condition, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
-                this.condition
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
-                this.condition
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.condition, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.condition
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.condition
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
   }
 
@@ -151,7 +153,7 @@ export class HaDeviceCondition extends LitElement {
     const condition = this.condition;
 
     this._capabilities = condition.domain
-      ? await fetchDeviceConditionCapabilities(this.hass, condition)
+      ? await fetchDeviceConditionCapabilities(this.hass.callWS, condition)
       : undefined;
   }
 
@@ -188,6 +190,10 @@ export class HaDeviceCondition extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

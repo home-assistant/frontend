@@ -1,9 +1,7 @@
+import { consume } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type {
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -19,12 +17,12 @@ import {
   type Trigger,
   type TriggerList,
 } from "../../../../data/automation";
-import { subscribeLabFeature } from "../../../../data/labs";
+import { triggerDescriptionsContext } from "../../../../data/context";
 import type { TriggerDescriptions } from "../../../../data/trigger";
-import { isTriggerList, subscribeTriggers } from "../../../../data/trigger";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { isTriggerList } from "../../../../data/trigger";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
+  getAddAutomationElementTargetFromQuery,
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
@@ -35,7 +33,7 @@ import type HaAutomationTriggerRow from "./ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends AutomationSortableListMixin<Trigger>(
-  SubscribeMixin(LitElement)
+  LitElement
 ) {
   @property({ attribute: false }) public triggers!: Trigger[];
 
@@ -45,12 +43,11 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   @property({ type: Boolean, attribute: false }) public editorDirty = false;
 
-  @state() private _triggerDescriptions: TriggerDescriptions = {};
+  @state()
+  @consume({ context: triggerDescriptionsContext, subscribe: true })
+  private _triggerDescriptions: TriggerDescriptions = {};
 
-  // @ts-ignore
-  @state() private _newTriggersAndConditions = false;
-
-  private _unsub?: Promise<UnsubscribeFunc>;
+  private _openedAddDialogFromQuery = false;
 
   protected get items(): Trigger[] {
     return this.triggers;
@@ -62,49 +59,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   protected setHighlightedItems(items: Trigger[]) {
     this.highlightedTriggers = items;
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubscribe();
-  }
-
-  protected hassSubscribe() {
-    return [
-      subscribeLabFeature(
-        this.hass!.connection,
-        "automation",
-        "new_triggers_conditions",
-        (feature) => {
-          this._newTriggersAndConditions = feature.enabled;
-        }
-      ),
-    ];
-  }
-
-  private _subscribeDescriptions() {
-    this._unsubscribe();
-    this._triggerDescriptions = {};
-    this._unsub = subscribeTriggers(this.hass, (descriptions) => {
-      this._triggerDescriptions = {
-        ...this._triggerDescriptions,
-        ...descriptions,
-      };
-    });
-  }
-
-  private _unsubscribe() {
-    if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
-      this._unsub = undefined;
-    }
-  }
-
-  protected willUpdate(changedProperties: PropertyValues): void {
-    super.willUpdate(changedProperties);
-    if (changedProperties.has("_newTriggersAndConditions")) {
-      this._subscribeDescriptions();
-    }
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
@@ -150,24 +104,26 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 .sortSelected=${this.rowSortSelected === idx}
                 @stop-sort-selection=${this.stopSortSelection}
               >
-                ${!this.disabled
-                  ? html`
-                      <div
-                        tabindex="0"
-                        class="handle ${this.rowSortSelected === idx
-                          ? "active"
-                          : ""}"
-                        slot="icons"
-                        @keydown=${this.handleDragKeydown}
-                        @click=${stopPropagation}
-                        .index=${idx}
-                      >
-                        <ha-svg-icon
-                          .path=${mdiDragHorizontalVariant}
-                        ></ha-svg-icon>
-                      </div>
-                    `
-                  : nothing}
+                ${
+                  !this.disabled
+                    ? html`
+                        <div
+                          tabindex="0"
+                          class="handle ${
+                            this.rowSortSelected === idx ? "active" : ""
+                          }"
+                          slot="icons"
+                          @keydown=${this.handleDragKeydown}
+                          @click=${stopPropagation}
+                          .index=${idx}
+                        >
+                          <ha-svg-icon
+                            .path=${mdiDragHorizontalVariant}
+                          ></ha-svg-icon>
+                        </div>
+                      `
+                    : nothing
+                }
               </ha-automation-trigger-row>
             `
           )}
@@ -176,7 +132,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
               .appearance=${this.root ? "accent" : "filled"}
-              .size=${this.root ? "medium" : "small"}
+              .size=${this.root ? "m" : "s"}
             >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.add"
@@ -234,6 +190,34 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+
+    if (!this.hass) {
+      return;
+    }
+
+    const addTriggerTargetFromQuery = getAddAutomationElementTargetFromQuery(
+      this.hass.states,
+      this.hass.devices,
+      this.hass.areas,
+      "trigger"
+    );
+
+    if (changedProps.has("triggers") && addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
+
+    if (
+      !this._openedAddDialogFromQuery &&
+      this.root &&
+      !this.disabled &&
+      this.triggers.length === 0 &&
+      addTriggerTargetFromQuery
+    ) {
+      this._openedAddDialogFromQuery = true;
+      queueMicrotask(() => this._addTriggerDialog());
+    } else if (this._openedAddDialogFromQuery && !addTriggerTargetFromQuery) {
+      this._openedAddDialogFromQuery = false;
+    }
 
     if (
       changedProps.has("triggers") &&

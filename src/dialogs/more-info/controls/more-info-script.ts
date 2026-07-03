@@ -11,7 +11,7 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-markdown";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-service-control";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import {
@@ -79,53 +79,61 @@ class MoreInfoScript extends LitElement {
       <ha-more-info-state-header
         .stateObj=${stateObj}
         .hass=${this.hass}
-        .stateOverride=${current > 0
-          ? isParallel && current > 1
-            ? this.hass.localize("ui.card.script.running_parallel", {
-                active: current,
-              })
-            : this.hass.localize("ui.card.script.running_single")
-          : this.hass.localize("ui.card.script.idle")}
+        .stateOverride=${
+          current > 0
+            ? isParallel && current > 1
+              ? this.hass.localize("ui.card.script.running_parallel", {
+                  active: current,
+                })
+              : this.hass.localize("ui.card.script.running_single")
+            : this.hass.localize("ui.card.script.idle")
+        }
         .changedOverride=${this.stateObj.attributes.last_triggered || 0}
       ></ha-more-info-state-header>
 
-      ${script?.description
-        ? html`<ha-markdown
-            breaks
-            .content=${script.description}
-          ></ha-markdown>`
-        : nothing}
+      ${
+        script?.description
+          ? html`<ha-markdown
+              breaks
+              .content=${script.description}
+            ></ha-markdown>`
+          : nothing
+      }
 
       <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
-        ${hasQueue
-          ? html`
-              ${this.hass.localize("ui.card.script.running_queued", {
-                queued: current - 1,
-              })}
-            `
-          : ""}
+        ${
+          hasQueue
+            ? html`
+                ${this.hass.localize("ui.card.script.running_queued", {
+                  queued: current - 1,
+                })}
+              `
+            : ""
+        }
       </div>
 
-      ${hasFields
-        ? html`
-            <div class="fields">
-              <div class="title">
-                ${this.hass.localize("ui.card.script.run_script")}
+      ${
+        hasFields
+          ? html`
+              <div class="fields">
+                <div class="title">
+                  ${this.hass.localize("ui.card.script.run_script")}
+                </div>
+                <ha-service-control
+                  hide-picker
+                  hide-description
+                  .hass=${this.hass}
+                  .value=${{
+                    ...(this.data ? { data: this.data } : {}),
+                    ...this._scriptData,
+                  }}
+                  .narrow=${this.narrow}
+                  @value-changed=${this._scriptDataChanged}
+                ></ha-service-control>
               </div>
-              <ha-service-control
-                hide-picker
-                hide-description
-                .hass=${this.hass}
-                .value=${{
-                  ...(this.data ? { data: this.data } : {}),
-                  ...this._scriptData,
-                }}
-                .narrow=${this.narrow}
-                @value-changed=${this._scriptDataChanged}
-              ></ha-service-control>
-            </div>
-          `
-        : nothing}
+            `
+          : nothing
+      }
 
       <ha-control-button-group>
         <ha-control-button
@@ -134,14 +142,16 @@ class MoreInfoScript extends LitElement {
           class="cancel-button"
         >
           <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-          ${(isQueued || isParallel) && current > 1
-            ? this.hass.localize("ui.card.script.cancel_all")
-            : this.hass.localize("ui.card.script.cancel")}
+          ${
+            (isQueued || isParallel) && current > 1
+              ? this.hass.localize("ui.card.script.cancel_all")
+              : this.hass.localize("ui.card.script.cancel")
+          }
         </ha-control-button>
         <ha-control-button
           class="run-button"
           @click=${this._runScript}
-          .disabled=${isUnavailableState(stateObj.state) || !this._canRun()}
+          .disabled=${stateObj.state === UNAVAILABLE || !this._canRun()}
         >
           <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
           ${this.hass!.localize("ui.card.script.run")}
@@ -155,8 +165,7 @@ class MoreInfoScript extends LitElement {
 
     if (changedProperties.has("stateObj")) {
       const oldState = changedProperties.get("stateObj") as
-        | HassEntity
-        | undefined;
+        HassEntity | undefined;
       const newState = this.stateObj;
 
       if (

@@ -128,41 +128,44 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                   })}"
                   .sortableData=${cardPath}
                 >
-                  ${editMode
-                    ? html`
-                        <hui-card-edit-mode
-                          .hass=${this.hass}
-                          .lovelace=${this.lovelace!}
-                          .path=${cardPath}
-                          .hiddenOverlay=${this._dragging}
-                          .noEdit=${this.importOnly}
-                          .noDuplicate=${this.importOnly}
-                        >
-                          ${card}
-                        </hui-card-edit-mode>
-                      `
-                    : card}
+                  ${
+                    editMode
+                      ? html`
+                          <hui-card-edit-mode
+                            .lovelace=${this.lovelace!}
+                            .path=${cardPath}
+                            .hiddenOverlay=${this._dragging}
+                            .noEdit=${this.importOnly}
+                            .noDuplicate=${this.importOnly}
+                          >
+                            ${card}
+                          </hui-card-edit-mode>
+                        `
+                      : card
+                  }
                 </div>
               `;
             }
           )}
-          ${editMode && !this.importOnly
-            ? html`
-                <button
-                  class="add"
-                  @click=${this._addCard}
-                  aria-label=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_card"
-                  )}
-                  .title=${this.hass.localize(
-                    "ui.panel.lovelace.editor.section.add_card"
-                  )}
-                >
-                  <ha-ripple></ha-ripple>
-                  <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                </button>
-              `
-            : nothing}
+          ${
+            editMode && !this.importOnly
+              ? html`
+                  <button
+                    class="add"
+                    @click=${this._addCard}
+                    aria-label=${this.hass.localize(
+                      "ui.panel.lovelace.editor.section.add_card"
+                    )}
+                    .title=${this.hass.localize(
+                      "ui.panel.lovelace.editor.section.add_card"
+                    )}
+                  >
+                    <ha-ripple></ha-ripple>
+                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                  </button>
+                `
+              : nothing
+          }
         </div>
       </ha-sortable>
     `;

@@ -22,6 +22,7 @@ import {
   SupervisorMountUsage,
   updateSupervisorMount,
 } from "../../../data/supervisor/mounts";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -152,7 +153,9 @@ const mountSchema = memoizeOne(
 );
 
 @customElement("dialog-mount-view")
-class ViewMountDialog extends LitElement {
+class ViewMountDialog extends DirtyStateProviderMixin<
+  Partial<SupervisorMountRequestParams>
+>()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _data?: SupervisorMountRequestParams;
@@ -187,6 +190,7 @@ class ViewMountDialog extends LitElement {
     ) {
       this._showCIFSVersion = true;
     }
+    this._initDirtyTracking({ type: "deep" }, this._data ?? {});
   }
 
   public closeDialog(): void {
@@ -212,14 +216,16 @@ class ViewMountDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._existing
-          ? this.hass.localize(
-              "ui.panel.config.storage.network_mounts.update_title"
-            )
-          : this.hass.localize(
-              "ui.panel.config.storage.network_mounts.add_title"
-            )}
-        prevent-scrim-close
+        header-title=${
+          this._existing
+            ? this.hass.localize(
+                "ui.panel.config.storage.network_mounts.update_title"
+              )
+            : this.hass.localize(
+                "ui.panel.config.storage.network_mounts.add_title"
+              )
+        }
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <a
@@ -238,9 +244,11 @@ class ViewMountDialog extends LitElement {
         >
           <ha-icon-button .path=${mdiHelpCircleOutline}></ha-icon-button>
         </a>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-form
           autofocus
           .data=${this._data}
@@ -260,16 +268,18 @@ class ViewMountDialog extends LitElement {
         ></ha-form>
 
         <ha-dialog-footer slot="footer">
-          ${this._existing
-            ? html`<ha-button
-                @click=${this._deleteMount}
-                variant="danger"
-                slot="secondaryAction"
-                appearance="plain"
-              >
-                ${this.hass.localize("ui.common.delete")}
-              </ha-button>`
-            : nothing}
+          ${
+            this._existing
+              ? html`<ha-button
+                  @click=${this._deleteMount}
+                  variant="danger"
+                  slot="secondaryAction"
+                  appearance="plain"
+                >
+                  ${this.hass.localize("ui.common.delete")}
+                </ha-button>`
+              : nothing
+          }
           <ha-button
             slot="secondaryAction"
             appearance="plain"
@@ -280,15 +290,18 @@ class ViewMountDialog extends LitElement {
           <ha-progress-button
             slot="primaryAction"
             .progress=${!!this._waiting}
+            .disabled=${!this.isDirtyState}
             @click=${this._connectMount}
           >
-            ${this._existing
-              ? this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.update"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.storage.network_mounts.connect"
-                )}
+            ${
+              this._existing
+                ? this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.update"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.connect"
+                  )
+            }
           </ha-progress-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -340,6 +353,7 @@ class ViewMountDialog extends LitElement {
     ) {
       this._validationWarning.version = "not_recomeded_cifs_version";
     }
+    this._updateDirtyState(this._data ?? {});
   }
 
   private async _connectMount(ev) {
@@ -368,6 +382,7 @@ class ViewMountDialog extends LitElement {
     if (this._reloadMounts) {
       this._reloadMounts();
     }
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

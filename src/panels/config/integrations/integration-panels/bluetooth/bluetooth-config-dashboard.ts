@@ -23,6 +23,7 @@ import type {
   BluetoothScannerState,
 } from "../../../../../data/bluetooth";
 import {
+  isScannerStateMismatch,
   subscribeBluetoothAdvertisements,
   subscribeBluetoothConnectionAllocations,
   subscribeBluetoothScannerState,
@@ -144,7 +145,7 @@ export class BluetoothConfigDashboard extends LitElement {
       0
     );
     const hasMismatch = Object.values(this._scannerStates).some(
-      (s) => s.current_mode !== s.requested_mode
+      isScannerStateMismatch
     );
     const isOffline = adapterCount === 0;
     const status = isOffline ? "offline" : hasMismatch ? "warning" : "online";

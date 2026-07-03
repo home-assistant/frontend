@@ -11,10 +11,10 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HomeAssistant } from "../../types";
-import type { ECOption } from "../../resources/echarts/echarts";
+import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
-import { filterXSS } from "../../common/util/xss";
 import "./ha-chart-base";
+import "./ha-chart-tooltip-marker";
 import { NODE_SIZE } from "../trace/hat-graph-const";
 import "../ha-alert";
 
@@ -71,7 +71,7 @@ export class HaSankeyChart extends LitElement {
   });
 
   render() {
-    const options = {
+    const options: HaECOption = {
       grid: {
         top: 0,
         bottom: 0,
@@ -83,7 +83,7 @@ export class HaSankeyChart extends LitElement {
         formatter: this._renderTooltip,
         appendTo: document.body,
       },
-    } as ECOption;
+    };
 
     return html`<ha-chart-base
       .hass=${this.hass}
@@ -101,14 +101,22 @@ export class HaSankeyChart extends LitElement {
     const value = this.valueFormatter
       ? this.valueFormatter(data.value)
       : data.value;
+    // Keep numbers and units left-to-right, even in RTL locales.
+    const formattedValue = html`<div style="direction:ltr; display: inline;">
+      ${value}
+    </div>`;
     if (data.id) {
       const node = this.data.nodes.find((n) => n.id === data.id);
-      return `${params.marker} ${filterXSS(node?.label ?? data.id)}<br>${value}`;
+      return html`<ha-chart-tooltip-marker
+          .color=${String(params.color ?? "")}
+        ></ha-chart-tooltip-marker>
+        ${node?.label ?? data.id}<br />${formattedValue}`;
     }
     if (data.source && data.target) {
       const source = this.data.nodes.find((n) => n.id === data.source);
       const target = this.data.nodes.find((n) => n.id === data.target);
-      return `${filterXSS(source?.label ?? data.source)} → ${filterXSS(target?.label ?? data.target)}<br>${value}`;
+      return html`${source?.label ?? data.source} →
+        ${target?.label ?? data.target}<br />${formattedValue}`;
     }
     return null;
   };

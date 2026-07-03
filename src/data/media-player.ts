@@ -15,7 +15,7 @@ import {
   mdiPlaylistMusic,
   mdiPlayPause,
   mdiPodcast,
-  mdiPower,
+  mdiPowerStandby,
   mdiPowerOff,
   mdiPowerOn,
   mdiRepeat,
@@ -38,7 +38,7 @@ import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
 import type { HomeAssistant, TranslationDict } from "../types";
-import { isUnavailableState } from "./entity/entity";
+import { UNAVAILABLE } from "./entity/entity";
 import { isTTSMediaSource } from "./tts";
 
 interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
@@ -82,7 +82,7 @@ export interface MediaPlayerEntity extends HassEntityBase {
     | "buffering";
 }
 
-export const enum MediaPlayerEntityFeature {
+export enum MediaPlayerEntityFeature {
   PAUSE = 1,
   SEEK = 2,
   VOLUME_SET = 4,
@@ -194,6 +194,7 @@ export interface ControlButton {
   icon: string;
   // Used as key for action as well as tooltip and aria-label translation key
   action: keyof TranslationDict["ui"]["card"]["media_player"];
+  disabled?: boolean;
 }
 
 export interface MediaPlayerItem {
@@ -284,7 +285,8 @@ export const computeMediaControls = (
 
   const state = stateObj.state;
 
-  if (isUnavailableState(state)) {
+  // We only filter out `unavailable`, not `unknown`
+  if (state === UNAVAILABLE) {
     return undefined;
   }
 
@@ -294,7 +296,7 @@ export const computeMediaControls = (
     return supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON)
       ? [
           {
-            icon: mdiPower,
+            icon: mdiPowerStandby,
             action: "turn_on",
           },
         ]
@@ -315,7 +317,7 @@ export const computeMediaControls = (
 
   if (supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF)) {
     buttons.push({
-      icon: assumedState ? mdiPowerOff : mdiPower,
+      icon: assumedState ? mdiPowerOff : mdiPowerStandby,
       action: "turn_off",
     });
   }
@@ -479,7 +481,7 @@ export const setMediaPlayerVolume = (
   hass.callService("media_player", "volume_set", { entity_id, volume_level });
 
 export const handleMediaControlClick = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   stateObj: MediaPlayerEntity,
   action: string
 ) =>
@@ -507,7 +509,7 @@ export const handleMediaControlClick = (
   );
 
 export const mediaPlayerPlayMedia = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entity_id: string,
   media_content_id: string,
   media_content_type: string,

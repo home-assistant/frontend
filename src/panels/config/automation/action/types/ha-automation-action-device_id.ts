@@ -104,25 +104,27 @@ export class HaDeviceAction extends LitElement {
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields?.length
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.action, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass,
-                this.action
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass,
-                this.action
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields?.length
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.action, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
   }
 
@@ -149,7 +151,7 @@ export class HaDeviceAction extends LitElement {
 
   private async _getCapabilities() {
     this._capabilities = this.action.domain
-      ? await fetchDeviceActionCapabilities(this.hass, this.action)
+      ? await fetchDeviceActionCapabilities(this.hass.callWS, this.action)
       : undefined;
   }
 
@@ -186,6 +188,10 @@ export class HaDeviceAction extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
     ha-device-picker {
       display: block;
       margin-bottom: 24px;

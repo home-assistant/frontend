@@ -56,9 +56,9 @@ export class StorageBreakdownChart extends LitElement {
           <span class="description">${description}</span>
         </div>
         <ha-icon-button
-          .path=${this._chartType === "sunburst"
-            ? mdiViewArray
-            : mdiChartDonutVariant}
+          .path=${
+            this._chartType === "sunburst" ? mdiViewArray : mdiChartDonutVariant
+          }
           .label=${this.hass.localize(
             "ui.panel.config.storage.change_chart_type"
           )}
@@ -68,30 +68,33 @@ export class StorageBreakdownChart extends LitElement {
       </div>
 
       <div class="chart-container ${this._chartType}">
-        ${showBarChart
-          ? html`<ha-segmented-bar
-              .heading=${""}
-              .segments=${this._computeSegments(
-                this.storageInfo,
-                usedSpaceGB,
-                freeSpaceGB
-              )}
-            ></ha-segmented-bar>`
-          : html`<ha-sunburst-chart
-              .hass=${this.hass}
-              .data=${this._transformToSunburstData(this.storageInfo!)}
-              .valueFormatter=${this._formatBytes}
-            ></ha-sunburst-chart>`}
+        ${
+          showBarChart
+            ? html`<ha-segmented-bar
+                .heading=${""}
+                .segments=${this._computeSegments(
+                  this.storageInfo,
+                  usedSpaceGB,
+                  freeSpaceGB
+                )}
+              ></ha-segmented-bar>`
+            : html`<ha-sunburst-chart
+                .data=${this._transformToSunburstData(this.storageInfo!)}
+                .valueFormatter=${this._formatBytes}
+              ></ha-sunburst-chart>`
+        }
       </div>
 
-      ${!this.storageInfo || this.storageInfo === null
-        ? html`<ha-alert alert-type="info">
-            <ha-spinner slot="icon"></ha-spinner>
-            ${this.hass.localize(
-              "ui.panel.config.storage.loading_detailed"
-            )}</ha-alert
-          >`
-        : nothing}
+      ${
+        !this.storageInfo || this.storageInfo === null
+          ? html`<ha-alert alert-type="info">
+              <ha-spinner slot="icon"></ha-spinner>
+              ${this.hass.localize(
+                "ui.panel.config.storage.loading_detailed"
+              )}</ha-alert
+            >`
+          : nothing
+      }
     `;
   }
 
@@ -139,11 +142,13 @@ export class StorageBreakdownChart extends LitElement {
             segments.push({
               value: space,
               color: getGraphColorByIndex(index, computedStyles),
-              label: html`${this.hass.localize(
-                  `ui.panel.config.storage.segments.${child.id}`
-                ) ||
-                child.label ||
-                child.id}
+              label: html`${
+                  this.hass.localize(
+                    `ui.panel.config.storage.segments.${child.id}`
+                  ) ||
+                  child.label ||
+                  child.id
+                }
                 <span style="color: var(--secondary-text-color)"
                   >${roundWithOneDecimal(space)} GB</span
                 >`,

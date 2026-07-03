@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -21,10 +22,9 @@ import {
   CONDITION_BUILDING_BLOCKS,
   getConditionDomain,
   getConditionObjectId,
-  subscribeConditions,
 } from "../../../../../data/condition";
+import { conditionDescriptionsContext } from "../../../../../data/context";
 import { domainToName } from "../../../../../data/integration";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
@@ -42,10 +42,7 @@ import "../../condition/types/ha-automation-condition-zone";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
-export class HaConditionAction
-  extends SubscribeMixin(LitElement)
-  implements ActionElement
-{
+export class HaConditionAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public disabled = false;
@@ -58,28 +55,15 @@ export class HaConditionAction
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
-  @state() private _conditionDescriptions: ConditionDescriptions = {};
+  @state()
+  @consume({ context: conditionDescriptionsContext, subscribe: true })
+  private _conditionDescriptions: ConditionDescriptions = {};
 
   @query("ha-automation-condition-editor")
   private _conditionEditor?: HaAutomationConditionEditor;
 
   public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
     return { condition: "state" };
-  }
-
-  protected hassSubscribe() {
-    return [
-      subscribeConditions(this.hass, (conditions) =>
-        this._addConditions(conditions)
-      ),
-    ];
-  }
-
-  private _addConditions(conditions: ConditionDescriptions) {
-    this._conditionDescriptions = {
-      ...this._conditionDescriptions,
-      ...conditions,
-    };
   }
 
   protected render() {
@@ -93,44 +77,48 @@ export class HaConditionAction
         : this.action.condition;
 
     return html`
-      ${this.inSidebar || (!this.inSidebar && !this.indent)
-        ? html`
-            <ha-generic-picker
-              .hass=${this.hass}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.type_select"
-              )}
-              .disabled=${this.disabled}
-              .value=${value}
-              .getItems=${this._processedTypes(
-                this._conditionDescriptions,
-                this.hass.localize
-              )}
-              .rowRenderer=${this._rowRenderer}
-              .valueRenderer=${this._valueRenderer}
-              @value-changed=${this._typeChanged}
-            ></ha-generic-picker>
-          `
-        : nothing}
-      ${(this.indent && buildingBlock) ||
-      (this.inSidebar && !buildingBlock) ||
-      (!this.indent && !this.inSidebar)
-        ? html`
-            <ha-automation-condition-editor
-              .condition=${this.action}
-              .description=${this._conditionDescriptions[this.action.condition]}
-              .disabled=${this.disabled}
-              .hass=${this.hass}
-              @value-changed=${this._conditionChanged}
-              .narrow=${this.narrow}
-              .uiSupported=${this._uiSupported(
-                this._getType(this.action, this._conditionDescriptions)
-              )}
-              .indent=${this.indent}
-              action
-            ></ha-automation-condition-editor>
-          `
-        : nothing}
+      ${
+        this.inSidebar || (!this.inSidebar && !this.indent)
+          ? html`
+              <ha-generic-picker
+                .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.type_select"
+                )}
+                .disabled=${this.disabled}
+                .value=${value}
+                .getItems=${this._processedTypes(
+                  this._conditionDescriptions,
+                  this.hass.localize
+                )}
+                .rowRenderer=${this._rowRenderer}
+                .valueRenderer=${this._valueRenderer}
+                @value-changed=${this._typeChanged}
+              ></ha-generic-picker>
+            `
+          : nothing
+      }
+      ${
+        (this.indent && buildingBlock) ||
+        (this.inSidebar && !buildingBlock) ||
+        (!this.indent && !this.inSidebar)
+          ? html`
+              <ha-automation-condition-editor
+                .condition=${this.action}
+                .description=${this._conditionDescriptions[this.action.condition]}
+                .disabled=${this.disabled}
+                .hass=${this.hass}
+                @value-changed=${this._conditionChanged}
+                .narrow=${this.narrow}
+                .uiSupported=${this._uiSupported(
+                  this._getType(this.action, this._conditionDescriptions)
+                )}
+                .indent=${this.indent}
+                action
+              ></ha-automation-condition-editor>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -170,9 +158,11 @@ export class HaConditionAction
         .condition=${item.search_labels!.condition || undefined}
       ></ha-condition-icon>
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 

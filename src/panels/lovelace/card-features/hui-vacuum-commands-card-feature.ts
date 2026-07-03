@@ -7,14 +7,21 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
+import { apiContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { VacuumEntity } from "../../../data/vacuum";
 import {
@@ -24,7 +31,7 @@ import {
   canStop,
   isCleaning,
 } from "../../../data/vacuum";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -51,6 +58,12 @@ export const VACUUM_COMMANDS_FEATURES: Record<
   locate: [VacuumEntityFeature.LOCATE],
   return_home: [VacuumEntityFeature.RETURN_HOME],
 };
+
+export const VACUUM_DEFAULT_COMMANDS: VacuumCommand[] = [
+  "start_pause",
+  "stop",
+  "return_home",
+];
 
 export const supportsVacuumCommand = (
   stateObj: HassEntity,
@@ -119,6 +132,14 @@ export const VACUUM_COMMANDS_BUTTONS: Record<
   }),
 };
 
+const supportsVacuumCommandsCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "vacuum" &&
+    VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c))
+  );
+};
+
 export const supportsVacuumCommandsCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -127,11 +148,7 @@ export const supportsVacuumCommandsCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "vacuum" &&
-    VACUUM_COMMANDS.some((c) => supportsVacuumCommand(stateObj, c))
-  );
+  return supportsVacuumCommandsCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-vacuum-commands-card-feature")
@@ -139,35 +156,25 @@ class HuiVacuumCommandCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: VacuumEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @state() private _config?: VacuumCommandsCardFeatureConfig;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as
-      | VacuumEntity
-      | undefined;
-  }
-
-  static getStubConfig(
-    hass: HomeAssistant,
-    context: LovelaceCardFeatureContext
-  ): VacuumCommandsCardFeatureConfig {
-    const stateObj = context.entity_id
-      ? hass.states[context.entity_id]
-      : undefined;
+  static getStubConfig(): VacuumCommandsCardFeatureConfig {
     return {
       type: "vacuum-commands",
-      commands: stateObj
-        ? VACUUM_COMMANDS.filter((c) =>
-            supportsVacuumCommand(stateObj, c)
-          ).slice(0, 3)
-        : [],
     };
   }
 
@@ -186,7 +193,7 @@ class HuiVacuumCommandCardFeature
   private _onCommandTap(ev): void {
     ev.stopPropagation();
     const entry = (ev.target! as any).entry as VacuumButton;
-    this.hass!.callService("vacuum", entry.serviceName, {
+    this._api.callService("vacuum", entry.serviceName, {
       entity_id: this._stateObj!.entity_id,
     });
   }
@@ -194,38 +201,37 @@ class HuiVacuumCommandCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsVacuumCommandsCardFeature(this.hass, this.context)
+      !supportsVacuumCommandsCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
 
     const stateObj = this._stateObj as VacuumEntity;
 
+    const commands = this._config.commands ?? VACUUM_DEFAULT_COMMANDS;
+
     return html`
       <ha-control-button-group>
-        ${VACUUM_COMMANDS.filter(
-          (command) =>
-            supportsVacuumCommand(stateObj, command) &&
-            this._config?.commands?.includes(command)
-        ).map((command) => {
-          const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
-          return html`
-            <ha-control-button
-              .entry=${button}
-              .label=${this.hass!.localize(
-                // @ts-ignore
-                `ui.dialogs.more_info_control.vacuum.${button.translationKey}`
-              )}
-              @click=${this._onCommandTap}
-              .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
-            >
-              <ha-svg-icon .path=${button.icon}></ha-svg-icon>
-            </ha-control-button>
-          `;
-        })}
+        ${commands
+          .filter((command) => supportsVacuumCommand(stateObj, command))
+          .map((command) => {
+            const button = VACUUM_COMMANDS_BUTTONS[command](stateObj);
+            return html`
+              <ha-control-button
+                .entry=${button}
+                .label=${this._localize(
+                  // @ts-ignore
+                  `ui.dialogs.more_info_control.vacuum.${button.translationKey}`
+                )}
+                @click=${this._onCommandTap}
+                .disabled=${button.disabled || stateObj.state === UNAVAILABLE}
+              >
+                <ha-svg-icon .path=${button.icon}></ha-svg-icon>
+              </ha-control-button>
+            `;
+          })}
       </ha-control-button-group>
     `;
   }

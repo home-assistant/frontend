@@ -33,10 +33,7 @@ export interface ShowDemoMessage extends BaseCastMessage {
 }
 
 export type HassMessage =
-  | ShowDemoMessage
-  | GetStatusMessage
-  | ConnectMessage
-  | ShowLovelaceViewMessage;
+  ShowDemoMessage | GetStatusMessage | ConnectMessage | ShowLovelaceViewMessage;
 
 export const castSendAuth = (cast: CastManager, auth: Auth) =>
   cast.sendMessage({

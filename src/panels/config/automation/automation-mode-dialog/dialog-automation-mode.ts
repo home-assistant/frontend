@@ -18,13 +18,22 @@ import {
 } from "../../../../data/automation";
 import { MODES, isMaxMode } from "../../../../data/script";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import type { AutomationModeDialog } from "./show-dialog-automation-mode";
 
+interface AutomationModeState {
+  mode: (typeof MODES)[number];
+  max?: number;
+}
+
 @customElement("ha-dialog-automation-mode")
-class DialogAutomationMode extends LitElement implements HassDialog {
+class DialogAutomationMode
+  extends DirtyStateProviderMixin<AutomationModeState>()(LitElement)
+  implements HassDialog
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _open = false;
@@ -42,6 +51,10 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     this._newMax = isMaxMode(this._newMode)
       ? params.config.max || AUTOMATION_DEFAULT_MAX
       : undefined;
+    this._initDirtyTracking(
+      { type: "shallow" },
+      { mode: this._newMode, max: this._newMax }
+    );
   }
 
   public closeDialog(): boolean {
@@ -70,6 +83,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       <ha-dialog
         .open=${this._open}
         header-title=${title}
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-icon-button
@@ -95,26 +109,27 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           .value=${this._newMode}
           @value-changed=${this._modeChanged}
           .maxColumns=${1}
-          .hass=${this.hass}
         ></ha-select-box>
 
-        ${isMaxMode(this._newMode)
-          ? html`
-              <div class="max-value">
-                <wa-divider></wa-divider>
-                <ha-input
-                  .label=${this.hass.localize(
-                    `ui.panel.config.automation.editor.max.${this._newMode}`
-                  )}
-                  type="number"
-                  name="max"
-                  .value=${this._newMax?.toString() ?? ""}
-                  @input=${this._valueChanged}
-                >
-                </ha-input>
-              </div>
-            `
-          : nothing}
+        ${
+          isMaxMode(this._newMode)
+            ? html`
+                <div class="max-value">
+                  <wa-divider></wa-divider>
+                  <ha-input
+                    .label=${this.hass.localize(
+                      `ui.panel.config.automation.editor.max.${this._newMode}`
+                    )}
+                    type="number"
+                    name="max"
+                    .value=${this._newMax?.toString() ?? ""}
+                    @input=${this._valueChanged}
+                  >
+                  </ha-input>
+                </div>
+              `
+            : nothing
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -124,7 +139,11 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this._save}>
+          <ha-button
+            slot="primaryAction"
+            @click=${this._save}
+            .disabled=${!this.isDirtyState}
+          >
             ${this.hass.localize(
               "ui.panel.config.automation.editor.change_mode"
             )}
@@ -142,6 +161,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     } else if (!this._newMax) {
       this._newMax = AUTOMATION_DEFAULT_MAX;
     }
+    this._updateDirtyState({ mode: this._newMode, max: this._newMax });
   }
 
   private _valueChanged(ev: InputEvent) {
@@ -149,6 +169,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     const target = ev.target as HaInput;
     if (target.name === "max") {
       this._newMax = Number(target.value);
+      this._updateDirtyState({ mode: this._newMode, max: this._newMax });
     }
   }
 

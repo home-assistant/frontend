@@ -126,17 +126,20 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         })
       : undefined;
     return html`
-      ${this._error
-        ? html`
-            <ha-alert
-              .alertType=${(this._errorLevel?.toLowerCase() as
-                | "error"
-                | "warning") || "error"}
-            >
-              ${this._error}
-            </ha-alert>
-          `
-        : nothing}
+      ${
+        this._error
+          ? html`
+              <ha-alert
+                .alertType=${
+                  (this._errorLevel?.toLowerCase() as "error" | "warning") ||
+                  "error"
+                }
+              >
+                ${this._error}
+              </ha-alert>
+            `
+          : nothing
+      }
       <ha-card
         .header=${!this._config.text_only ? this._config.title : undefined}
         class=${classMap({
@@ -149,15 +152,17 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         @action=${safeHandleAction}
         .actionHandler=${safeActionHandler}
       >
-        ${this._interactive
-          ? html`<div
-              class="background"
-              @focus=${this._handleFocus}
-              @blur=${this._handleBlur}
-            >
-              <ha-ripple></ha-ripple>
-            </div>`
-          : nothing}
+        ${
+          this._interactive
+            ? html`<div
+                class="background"
+                @focus=${this._handleFocus}
+                @blur=${this._handleBlur}
+              >
+                <ha-ripple></ha-ripple>
+              </div>`
+            : nothing
+        }
         <ha-markdown
           cache
           breaks
@@ -187,8 +192,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | MarkdownCardConfig
-      | undefined;
+      MarkdownCardConfig | undefined;
 
     if (
       !oldHass ||

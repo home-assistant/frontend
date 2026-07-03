@@ -1,13 +1,21 @@
+import { consume, type ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
 import "../../components/ha-control-slider";
+import {
+  apiContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../data/fan";
@@ -19,11 +27,24 @@ import {
   fanPercentageToSpeed,
   fanSpeedToPercentage,
 } from "../../data/fan";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-fan-speed")
 export class HaStateControlFanSpeed extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public stateObj!: FanEntity;
 
@@ -41,26 +62,26 @@ export class HaStateControlFanSpeed extends LitElement {
     }
   }
 
-  private _speedValueChanged(ev: CustomEvent) {
-    const speed = (ev.detail as any).value as FanSpeed;
+  private _speedValueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const speed = ev.detail.value as FanSpeed;
 
     this.speedValue = speed;
 
     const percentage = fanSpeedToPercentage(this.stateObj, speed);
 
-    this.hass.callService("fan", "set_percentage", {
+    this._api.callService("fan", "set_percentage", {
       entity_id: this.stateObj!.entity_id,
       percentage: percentage,
     });
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
 
     this.sliderValue = value;
 
-    this.hass.callService("fan", "set_percentage", {
+    this._api.callService("fan", "set_percentage", {
       entity_id: this.stateObj!.entity_id,
       percentage: value,
     });
@@ -68,9 +89,9 @@ export class HaStateControlFanSpeed extends LitElement {
 
   private _localizeSpeed(speed: FanSpeed) {
     if (speed === "on" || speed === "off") {
-      return this.hass.formatEntityState(this.stateObj, speed);
+      return this._formatters.formatEntityState(this.stateObj, speed);
     }
-    return this.hass.localize(`ui.card.fan.speed.${speed}`) || speed;
+    return this._i18n.localize(`ui.card.fan.speed.${speed}`) || speed;
   }
 
   protected render() {
@@ -94,9 +115,9 @@ export class HaStateControlFanSpeed extends LitElement {
           .value=${this.speedValue}
           @value-changed=${this._speedValueChanged}
           .label=${computeAttributeNameDisplay(
-            this.hass.localize,
+            this._i18n.localize,
             this.stateObj,
-            this.hass.entities,
+            this._entities,
             "percentage"
           )}
           style=${styleMap({
@@ -119,9 +140,9 @@ export class HaStateControlFanSpeed extends LitElement {
         .step=${this.stateObj.attributes.percentage_step ?? 1}
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
-          this.hass.localize,
+          this._i18n.localize,
           this.stateObj,
-          this.hass.entities,
+          this._entities,
           "percentage"
         )}
         style=${styleMap({
@@ -130,7 +151,7 @@ export class HaStateControlFanSpeed extends LitElement {
         })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
-        .locale=${this.hass.locale}
+        .locale=${this._i18n.locale}
       >
       </ha-control-slider>
     `;

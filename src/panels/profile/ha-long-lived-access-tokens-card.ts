@@ -54,36 +54,38 @@ class HaLongLivedTokens extends LitElement {
               "ui.panel.profile.long_lived_access_tokens.learn_auth_requests"
             )}
           </a>
-          ${!accessTokens.length
-            ? html`<p>
-                ${this.hass.localize(
-                  "ui.panel.profile.long_lived_access_tokens.empty_state"
-                )}
-              </p>`
-            : accessTokens.map(
-                (token) =>
-                  html`<ha-settings-row two-line>
-                    <span slot="heading">${token.client_name}</span>
-                    <div slot="description">
-                      ${this.hass.localize(
-                        "ui.panel.profile.long_lived_access_tokens.created",
-                        {
-                          date: relativeTime(
-                            new Date(token.created_at),
-                            this.hass.locale
-                          ),
-                        }
-                      )}
-                    </div>
-                    <ha-icon-button
-                      .token=${token}
-                      .disabled=${token.is_current}
-                      .label=${this.hass.localize("ui.common.delete")}
-                      .path=${mdiDelete}
-                      @click=${this._deleteToken}
-                    ></ha-icon-button>
-                  </ha-settings-row>`
-              )}
+          ${
+            !accessTokens.length
+              ? html`<p>
+                  ${this.hass.localize(
+                    "ui.panel.profile.long_lived_access_tokens.empty_state"
+                  )}
+                </p>`
+              : accessTokens.map(
+                  (token) =>
+                    html`<ha-settings-row two-line>
+                      <span slot="heading">${token.client_name}</span>
+                      <div slot="description">
+                        ${this.hass.localize(
+                          "ui.panel.profile.long_lived_access_tokens.created",
+                          {
+                            date: relativeTime(
+                              new Date(token.created_at),
+                              this.hass.locale
+                            ),
+                          }
+                        )}
+                      </div>
+                      <ha-icon-button
+                        .token=${token}
+                        .disabled=${token.is_current}
+                        .label=${this.hass.localize("ui.common.delete")}
+                        .path=${mdiDelete}
+                        @click=${this._deleteToken}
+                      ></ha-icon-button>
+                    </ha-settings-row>`
+                )
+          }
         </div>
 
         <div class="card-actions">

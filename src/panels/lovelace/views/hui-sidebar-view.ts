@@ -77,8 +77,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
-      | Lovelace
-      | undefined;
+      Lovelace | undefined;
 
     if (
       (!changedProperties.has("cards") &&
@@ -92,7 +91,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       <hui-view-badges
-        .hass=${this.hass}
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
@@ -101,14 +99,16 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       <div
         class="container ${this.lovelace?.editMode ? "edit-mode" : ""}"
       ></div>
-      ${this.lovelace?.editMode
-        ? html`
-            <ha-button size="large" @click=${this._addCard}>
-              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
-            </ha-button>
-          `
-        : ""}
+      ${
+        this.lovelace?.editMode
+          ? html`
+              <ha-button size="l" @click=${this._addCard}>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+              </ha-button>
+            `
+          : ""
+      }
     `;
   }
 

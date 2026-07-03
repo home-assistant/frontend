@@ -20,6 +20,10 @@ import type {
   LocalizeKeys,
 } from "../../../../common/translations/localize";
 import { computeRTL } from "../../../../common/util/compute_rtl";
+import {
+  sortRelatedFirst,
+  type RelatedIdSets,
+} from "../../../../common/search/related-context";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/chips/ha-filter-chip";
 import "../../../../components/entity/state-badge";
@@ -40,7 +44,7 @@ import {
 } from "../../../../data/area_floor_picker";
 import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import { labelsContext } from "../../../../data/context";
+import { labelsContext, relatedContext } from "../../../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
@@ -113,9 +117,6 @@ export class HaAutomationAddSearch extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean, attribute: "new-triggers-and-conditions" })
-  public newTriggersAndConditions = false;
-
   @property({ attribute: false })
   public convertToItem!: (
     key: string,
@@ -125,9 +126,11 @@ export class HaAutomationAddSearch extends LitElement {
   ) => AddAutomationElementListItem;
 
   @property({ attribute: "add-element-type" }) public addElementType!:
-    | "trigger"
-    | "condition"
-    | "action";
+    "trigger" | "condition" | "action";
+
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
 
   @state() private _searchSectionTitle?: string;
 
@@ -141,11 +144,19 @@ export class HaAutomationAddSearch extends LitElement {
 
   @query("lit-virtualizer") private _virtualizerElement?: LitVirtualizer;
 
-  private _getDevicesMemoized = memoizeOne(getDevices);
+  private _getDevicesMemoized = memoizeOne(
+    (
+      hass: HomeAssistant,
+      configEntryLookup: Record<string, ConfigEntry>,
+      idPrefix: string
+    ) => getDevices(hass, configEntryLookup, { idPrefix })
+  );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getEntitiesMemoized = memoizeOne(getEntities);
+  private _getEntitiesMemoized = memoizeOne(
+    (hass: HomeAssistant, idPrefix: string) => getEntities(hass, { idPrefix })
+  );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
@@ -193,8 +204,8 @@ export class HaAutomationAddSearch extends LitElement {
       this.filter,
       this.configEntryLookup,
       this.items,
-      this.newTriggersAndConditions,
-      this._selectedSearchSection
+      this._selectedSearchSection,
+      this._relatedIdSets
     );
 
     let emptySearchTranslation: string | undefined;
@@ -209,53 +220,51 @@ export class HaAutomationAddSearch extends LitElement {
 
     return html`
       ${this._renderSections()}
-      ${emptySearchTranslation
-        ? html`<div class="empty-search">
-            ${this.hass.localize(emptySearchTranslation as LocalizeKeys, {
-              term: html`<b>‘${this.filter}’</b>`,
-            })}
-          </div>`
-        : html`
-            <div class="search-results">
-              <div class="section-title-wrapper">
-                ${!this._selectedSearchSection && this._searchSectionTitle
-                  ? html`<ha-section-title>
-                      ${this._searchSectionTitle}
-                    </ha-section-title>`
-                  : nothing}
+      ${
+        emptySearchTranslation
+          ? html`<div class="empty-search">
+              ${this.hass.localize(emptySearchTranslation as LocalizeKeys, {
+                term: html`<b>‘${this.filter}’</b>`,
+              })}
+            </div>`
+          : html`
+              <div class="search-results">
+                <div class="section-title-wrapper">
+                  ${
+                    !this._selectedSearchSection && this._searchSectionTitle
+                      ? html`<ha-section-title>
+                          ${this._searchSectionTitle}
+                        </ha-section-title>`
+                      : nothing
+                  }
+                </div>
+                <lit-virtualizer
+                  .keyFunction=${this._keyFunction}
+                  tabindex="0"
+                  scroller
+                  .items=${items}
+                  .renderItem=${this._renderSearchResultRow}
+                  style="min-height: 36px;"
+                  class=${this._searchListScrolled ? "scrolled" : ""}
+                  @scroll=${this._onScrollSearchList}
+                  @focus=${this._focusSearchList}
+                  @visibilityChanged=${this._visibilityChanged}
+                >
+                </lit-virtualizer>
               </div>
-              <lit-virtualizer
-                .keyFunction=${this._keyFunction}
-                tabindex="0"
-                scroller
-                .items=${items}
-                .renderItem=${this._renderSearchResultRow}
-                style="min-height: 36px;"
-                class=${this._searchListScrolled ? "scrolled" : ""}
-                @scroll=${this._onScrollSearchList}
-                @focus=${this._focusSearchList}
-                @visibilityChanged=${this._visibilityChanged}
-              >
-              </lit-virtualizer>
-            </div>
-          `}
+            `
+      }
     `;
   }
 
   private _renderSections() {
-    if (this.addElementType === "trigger" && !this.newTriggersAndConditions) {
-      return nothing;
-    }
-
     const searchSections: ("separator" | SearchSection)[] = ["item"];
 
     if (this.addElementType !== "trigger") {
       searchSections.push("block");
     }
 
-    if (this.newTriggersAndConditions) {
-      searchSections.push(...TARGET_SEARCH_SECTIONS);
-    }
+    searchSections.push(...TARGET_SEARCH_SECTIONS);
     return html`
       <ha-chip-set class="sections">
         ${searchSections.map((section) =>
@@ -318,91 +327,105 @@ export class HaAutomationAddSearch extends LitElement {
         tabindex="-1"
         .type=${type === "empty" ? "text" : "button"}
         class=${type === "empty" ? "empty" : ""}
-        style=${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? "--md-list-item-leading-space: var(--ha-space-12);"
-          : ""}
+        style=${
+          (item as FloorComboBoxItem).type === "area" && hasFloor
+            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            : ""
+        }
         .value=${item}
         @click=${this._selectSearchResult}
       >
-        ${(item as FloorComboBoxItem).type === "area" && hasFloor
-          ? html`
-              <ha-tree-indicator
-                style=${styleMap({
-                  width: "var(--ha-space-12)",
-                  position: "absolute",
-                  top: "0",
-                  left: rtl ? undefined : "var(--ha-space-1)",
-                  right: rtl ? "var(--ha-space-1)" : undefined,
-                  transform: rtl ? "scaleX(-1)" : "",
-                })}
-                .end=${(
-                  item as FloorComboBoxItem & { last?: boolean | undefined }
-                ).last}
-                slot="start"
-              ></ha-tree-indicator>
-            `
-          : nothing}
-        ${(item as AutomationItemComboBoxItem).renderedIcon
-          ? html`<div slot="start">
-              ${(item as AutomationItemComboBoxItem).renderedIcon}
-            </div>`
-          : item.icon
-            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-            : item.icon_path || type === "area"
-              ? html`<ha-svg-icon
+        ${
+          (item as FloorComboBoxItem).type === "area" && hasFloor
+            ? html`
+                <ha-tree-indicator
+                  style=${styleMap({
+                    width: "var(--ha-space-12)",
+                    position: "absolute",
+                    top: "0",
+                    left: rtl ? undefined : "var(--ha-space-1)",
+                    right: rtl ? "var(--ha-space-1)" : undefined,
+                    transform: rtl ? "scaleX(-1)" : "",
+                  })}
+                  .end=${
+                    (item as FloorComboBoxItem & { last?: boolean | undefined })
+                      .last
+                  }
                   slot="start"
-                  .path=${item.icon_path || mdiTextureBox}
-                ></ha-svg-icon>`
-              : type === "entity" && (item as EntityComboBoxItem).stateObj
-                ? html`
-                    <state-badge
-                      slot="start"
-                      .stateObj=${(item as EntityComboBoxItem).stateObj}
-                      .hass=${this.hass}
-                    ></state-badge>
-                  `
-                : type === "device" && (item as DevicePickerItem).domain
+                ></ha-tree-indicator>
+              `
+            : nothing
+        }
+        ${
+          (item as AutomationItemComboBoxItem).renderedIcon
+            ? html`<div slot="start">
+                ${(item as AutomationItemComboBoxItem).renderedIcon}
+              </div>`
+            : item.icon
+              ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+              : item.icon_path || type === "area"
+                ? html`<ha-svg-icon
+                    slot="start"
+                    .path=${item.icon_path || mdiTextureBox}
+                  ></ha-svg-icon>`
+                : type === "entity" && (item as EntityComboBoxItem).stateObj
                   ? html`
-                      <ha-domain-icon
+                      <state-badge
                         slot="start"
-                        .domain=${(item as DevicePickerItem).domain!}
-                        brand-fallback
-                      ></ha-domain-icon>
+                        .stateObj=${(item as EntityComboBoxItem).stateObj}
+                      ></state-badge>
                     `
-                  : type === "floor"
-                    ? html`<ha-floor-icon
-                        slot="start"
-                        .floor=${(item as FloorComboBoxItem).floor!}
-                      ></ha-floor-icon>`
-                    : nothing}
+                  : type === "device" && (item as DevicePickerItem).domain
+                    ? html`
+                        <ha-domain-icon
+                          slot="start"
+                          .domain=${(item as DevicePickerItem).domain!}
+                          brand-fallback
+                        ></ha-domain-icon>
+                      `
+                    : type === "floor"
+                      ? html`<ha-floor-icon
+                          slot="start"
+                          .floor=${(item as FloorComboBoxItem).floor!}
+                        ></ha-floor-icon>`
+                      : nothing
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${(item as EntityComboBoxItem).stateObj && showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${(item as EntityComboBoxItem).stateObj?.entity_id}
-              </span>
-            `
-          : nothing}
-        ${(item as EntityComboBoxItem).domain_name &&
-        (type !== "entity" || !showEntityId)
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${(item as EntityComboBoxItem).domain_name}
-              </div>
-            `
-          : nothing}
-        ${type === "item"
-          ? html`<ha-svg-icon
-              class="plus"
-              slot="end"
-              .path=${mdiPlus}
-            ></ha-svg-icon>`
-          : this.narrow
-            ? html`<ha-icon-next slot="end"></ha-icon-next>`
-            : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          (item as EntityComboBoxItem).stateObj && showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${(item as EntityComboBoxItem).stateObj?.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          (item as EntityComboBoxItem).domain_name &&
+          (type !== "entity" || !showEntityId)
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${(item as EntityComboBoxItem).domain_name}
+                </div>
+              `
+            : nothing
+        }
+        ${
+          type === "item"
+            ? html`<ha-svg-icon
+                class="plus"
+                slot="end"
+                .path=${mdiPlus}
+              ></ha-svg-icon>`
+            : this.narrow
+              ? html`<ha-icon-next slot="end"></ha-icon-next>`
+              : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -486,14 +509,11 @@ export class HaAutomationAddSearch extends LitElement {
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
       automationItems: AddAutomationElementListItem[],
-      newTriggersAndConditions: boolean,
-      selectedSection?: SearchSection
+      selectedSection?: SearchSection,
+      relatedIdSets?: RelatedIdSets
     ) => {
       const resultItems: (
-        | string
-        | FloorComboBoxItem
-        | EntityComboBoxItem
-        | PickerComboBoxItem
+        string | FloorComboBoxItem | EntityComboBoxItem | PickerComboBoxItem
       )[] = [];
 
       if (!selectedSection || selectedSection === "item") {
@@ -553,162 +573,185 @@ export class HaAutomationAddSearch extends LitElement {
         resultItems.push(...blocks);
       }
 
-      if (newTriggersAndConditions) {
-        if (!selectedSection || selectedSection === "entity") {
-          let entityItems = this._getEntitiesMemoized(
-            this.hass,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            `entity${TARGET_SEPARATOR}`
-          );
+      if (!selectedSection || selectedSection === "entity") {
+        let entityItems = this._getEntitiesMemoized(
+          this.hass,
+          `entity${TARGET_SEPARATOR}`
+        );
 
-          if (searchTerm) {
-            entityItems = this._filterGroup(
+        if (relatedIdSets?.entities.size) {
+          entityItems = entityItems.map((item) => ({
+            ...item,
+            isRelated: relatedIdSets.entities.has(
+              (item as EntityComboBoxItem).stateObj?.entity_id || ""
+            ),
+          })) as EntityComboBoxItem[];
+        }
+
+        if (searchTerm) {
+          entityItems = sortRelatedFirst(
+            this._filterGroup(
               "entity",
               entityItems,
               searchTerm,
               entityComboBoxKeys
-            ) as EntityComboBoxItem[];
-          }
-
-          if (!selectedSection && entityItems.length) {
-            // show group title
-            resultItems.push(
-              localize("ui.components.target-picker.type.entities")
-            );
-          }
-
-          resultItems.push(...entityItems);
+            )
+          ) as EntityComboBoxItem[];
+        } else if (relatedIdSets?.entities.size) {
+          entityItems = sortRelatedFirst(entityItems) as EntityComboBoxItem[];
         }
 
-        if (!selectedSection || selectedSection === "device") {
-          let deviceItems = this._getDevicesMemoized(
-            this.hass,
-            configEntryLookup,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            `device${TARGET_SEPARATOR}`
+        if (!selectedSection && entityItems.length) {
+          // show group title
+          resultItems.push(
+            localize("ui.components.target-picker.type.entities")
           );
+        }
 
-          if (searchTerm) {
-            deviceItems = this._filterGroup(
+        resultItems.push(...entityItems);
+      }
+
+      if (!selectedSection || selectedSection === "device") {
+        let deviceItems = this._getDevicesMemoized(
+          this.hass,
+          configEntryLookup,
+          `device${TARGET_SEPARATOR}`
+        );
+
+        if (relatedIdSets?.devices.size) {
+          deviceItems = deviceItems.map((item) => ({
+            ...item,
+            isRelated: relatedIdSets.devices.has(
+              item.id.split(TARGET_SEPARATOR)[1] || ""
+            ),
+          }));
+        }
+
+        if (searchTerm) {
+          deviceItems = sortRelatedFirst(
+            this._filterGroup(
               "device",
               deviceItems,
               searchTerm,
               deviceComboBoxKeys
-            );
-          }
-
-          if (!selectedSection && deviceItems.length) {
-            // show group title
-            resultItems.push(
-              localize("ui.components.target-picker.type.devices")
-            );
-          }
-
-          resultItems.push(...deviceItems);
+            )
+          );
+        } else if (relatedIdSets?.devices.size) {
+          deviceItems = sortRelatedFirst(deviceItems);
         }
 
-        if (!selectedSection || selectedSection === "area") {
-          let areasAndFloors = this._getAreasAndFloorsMemoized(
-            this.hass.states,
-            this.hass.floors,
-            this.hass.areas,
-            this.hass.devices,
-            this.hass.entities,
-            memoizeOne((value: AreaFloorValue): string =>
-              [value.type, value.id].join(TARGET_SEPARATOR)
-            ),
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+        if (!selectedSection && deviceItems.length) {
+          // show group title
+          resultItems.push(
+            localize("ui.components.target-picker.type.devices")
           );
+        }
 
-          if (searchTerm) {
-            areasAndFloors = this._filterGroup(
+        resultItems.push(...deviceItems);
+      }
+
+      if (!selectedSection || selectedSection === "area") {
+        let areasAndFloors = this._getAreasAndFloorsMemoized(
+          this.hass.states,
+          this.hass.floors,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          memoizeOne((value: AreaFloorValue): string =>
+            [value.type, value.id].join(TARGET_SEPARATOR)
+          ),
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        );
+
+        if (relatedIdSets?.areas.size) {
+          areasAndFloors = areasAndFloors.map((item) => ({
+            ...item,
+            isRelated:
+              item.type === "area"
+                ? relatedIdSets.areas.has(
+                    item.id.split(TARGET_SEPARATOR)[1] || ""
+                  )
+                : false,
+          })) as FloorComboBoxItem[];
+        }
+
+        if (searchTerm) {
+          areasAndFloors = sortRelatedFirst(
+            this._filterGroup(
               "area",
               areasAndFloors,
               searchTerm,
               areaFloorComboBoxKeys,
               false
-            ) as FloorComboBoxItem[];
-          }
+            )
+          ) as FloorComboBoxItem[];
+        } else if (relatedIdSets?.areas.size) {
+          areasAndFloors = sortRelatedFirst(
+            areasAndFloors
+          ) as FloorComboBoxItem[];
+        }
 
-          if (!selectedSection && areasAndFloors.length) {
-            // show group title
-            resultItems.push(
-              localize("ui.components.target-picker.type.areas")
-            );
-          }
+        if (!selectedSection && areasAndFloors.length) {
+          // show group title
+          resultItems.push(localize("ui.components.target-picker.type.areas"));
+        }
 
-          resultItems.push(
-            ...areasAndFloors.map((item, index) => {
-              const nextItem = areasAndFloors[index + 1];
+        resultItems.push(
+          ...areasAndFloors.map((item, index) => {
+            const nextItem = areasAndFloors[index + 1];
 
-              if (
-                !nextItem ||
-                (item.type === "area" && nextItem.type === "floor")
-              ) {
-                return {
-                  ...item,
-                  last: true,
-                };
-              }
+            if (
+              !nextItem ||
+              (item.type === "area" && nextItem.type === "floor")
+            ) {
+              return {
+                ...item,
+                last: true,
+              };
+            }
 
-              return item;
-            })
+            return item;
+          })
+        );
+      }
+
+      if (!selectedSection || selectedSection === "label") {
+        let labels = this._getLabelsMemoized(
+          this.hass.states,
+          this.hass.areas,
+          this.hass.devices,
+          this.hass.entities,
+          this._labelRegistry,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          `label${TARGET_SEPARATOR}`
+        );
+
+        if (searchTerm) {
+          labels = this._filterGroup(
+            "label",
+            labels,
+            searchTerm,
+            labelComboBoxKeys
           );
         }
 
-        if (!selectedSection || selectedSection === "label") {
-          let labels = this._getLabelsMemoized(
-            this.hass.states,
-            this.hass.areas,
-            this.hass.devices,
-            this.hass.entities,
-            this._labelRegistry,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            `label${TARGET_SEPARATOR}`
-          );
-
-          if (searchTerm) {
-            labels = this._filterGroup(
-              "label",
-              labels,
-              searchTerm,
-              labelComboBoxKeys
-            );
-          }
-
-          if (!selectedSection && labels.length) {
-            // show group title
-            resultItems.push(
-              localize("ui.components.target-picker.type.labels")
-            );
-          }
-
-          resultItems.push(...labels);
+        if (!selectedSection && labels.length) {
+          // show group title
+          resultItems.push(localize("ui.components.target-picker.type.labels"));
         }
+
+        resultItems.push(...labels);
       }
 
       return resultItems;
@@ -733,7 +776,6 @@ export class HaAutomationAddSearch extends LitElement {
       return multiTermSortedSearch<PickerComboBoxItem>(
         items,
         searchTerm,
-        searchKeys,
         (item) => item.id,
         fuseIndex
       );
@@ -1089,8 +1131,6 @@ declare global {
 
   interface HASSDomEvents {
     "search-element-picked":
-      | PickerComboBoxItem
-      | FloorComboBoxItem
-      | EntityComboBoxItem;
+      PickerComboBoxItem | FloorComboBoxItem | EntityComboBoxItem;
   }
 }

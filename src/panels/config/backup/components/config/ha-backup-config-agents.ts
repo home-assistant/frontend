@@ -7,10 +7,10 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type {
   BackupAgent,
   BackupAgentsConfig,
@@ -179,87 +179,98 @@ class HaBackupConfigAgents extends LitElement {
     const allAgents = [...availableAgents, ...unavailableAgents];
 
     return html`
-      ${allAgents.length > 0
-        ? html`
-            <ha-md-list>
-              ${availableAgents.map((agent) => {
-                const agentId = agent.agent_id;
-                const name = computeBackupAgentName(
-                  this.hass.localize,
-                  agentId,
-                  allAgents
-                );
-                const description = this._description(agentId);
-                const noCloudSubscription =
-                  agentId === CLOUD_AGENT &&
-                  this.cloudStatus?.logged_in &&
-                  !this.cloudStatus.active_subscription;
+      ${
+        allAgents.length > 0
+          ? html`
+              <ha-list-base>
+                ${availableAgents.map((agent) => {
+                  const agentId = agent.agent_id;
+                  const name = computeBackupAgentName(
+                    this.hass.localize,
+                    agentId,
+                    allAgents
+                  );
+                  const description = this._description(agentId);
+                  const noCloudSubscription =
+                    agentId === CLOUD_AGENT &&
+                    this.cloudStatus?.logged_in &&
+                    !this.cloudStatus.active_subscription;
 
-                return html`
-                  <ha-md-list-item>
-                    ${this._renderAgentIcon(agentId)}
-                    <div slot="headline" class="name">${name}</div>
-                    ${description
-                      ? html`<div slot="supporting-text">${description}</div>`
-                      : nothing}
-                    ${this.showSettings
-                      ? html`
-                          <ha-icon-button
-                            id=${agentId}
-                            slot="end"
-                            path=${mdiCog}
-                            @click=${this._showAgentSettings}
-                          ></ha-icon-button>
-                        `
-                      : nothing}
-                    <ha-switch
-                      slot="end"
-                      id=${agentId}
-                      .checked=${this._value.includes(agentId)}
-                      .disabled=${noCloudSubscription &&
-                      !this._value.includes(agentId)}
-                      @change=${this._agentToggled}
-                    ></ha-switch>
-                  </ha-md-list-item>
-                `;
-              })}
-              ${unavailableAgents.length > 0 && this.showSettings
-                ? html`
-                    <p class="heading">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.agents.unavailable_agents"
-                      )}
-                    </p>
-                    ${unavailableAgents.map((agent) => {
-                      const agentId = agent.agent_id;
-                      const name = computeBackupAgentName(
-                        this.hass.localize,
-                        agentId,
-                        allAgents
-                      );
+                  return html`
+                    <ha-list-item-base>
+                      ${this._renderAgentIcon(agentId)}
+                      <div slot="headline" class="name">${name}</div>
+                      ${
+                        description
+                          ? html`<div slot="supporting-text">
+                              ${description}
+                            </div>`
+                          : nothing
+                      }
+                      ${
+                        this.showSettings
+                          ? html`
+                              <ha-icon-button
+                                id=${agentId}
+                                slot="end"
+                                path=${mdiCog}
+                                @click=${this._showAgentSettings}
+                              ></ha-icon-button>
+                            `
+                          : nothing
+                      }
+                      <ha-switch
+                        slot="end"
+                        id=${agentId}
+                        .checked=${this._value.includes(agentId)}
+                        .disabled=${
+                          noCloudSubscription && !this._value.includes(agentId)
+                        }
+                        @change=${this._agentToggled}
+                      ></ha-switch>
+                    </ha-list-item-base>
+                  `;
+                })}
+                ${
+                  unavailableAgents.length > 0 && this.showSettings
+                    ? html`
+                        <p class="heading">
+                          ${this.hass.localize(
+                            "ui.panel.config.backup.agents.unavailable_agents"
+                          )}
+                        </p>
+                        ${unavailableAgents.map((agent) => {
+                          const agentId = agent.agent_id;
+                          const name = computeBackupAgentName(
+                            this.hass.localize,
+                            agentId,
+                            allAgents
+                          );
 
-                      return html`
-                        <ha-md-list-item>
-                          ${this._renderAgentIcon(agentId)}
-                          <div slot="headline" class="name">${name}</div>
-                          <ha-icon-button
-                            id=${agentId}
-                            slot="end"
-                            path=${mdiDelete}
-                            @click=${this._deleteAgent}
-                          ></ha-icon-button>
-                        </ha-md-list-item>
-                      `;
-                    })}
-                  `
-                : nothing}
-            </ha-md-list>
-          `
-        : html`
-            <p>
-              ${this.hass.localize("ui.panel.config.backup.agents.no_agents")}
-            </p>
-          `}
+                          return html`
+                            <ha-list-item-base>
+                              ${this._renderAgentIcon(agentId)}
+                              <div slot="headline" class="name">${name}</div>
+                              <ha-icon-button
+                                id=${agentId}
+                                slot="end"
+                                path=${mdiDelete}
+                                @click=${this._deleteAgent}
+                              ></ha-icon-button>
+                            </ha-list-item-base>
+                          `;
+                        })}
+                      `
+                    : nothing
+                }
+              </ha-list-base>
+            `
+          : html`
+              <p>
+                ${this.hass.localize("ui.panel.config.backup.agents.no_agents")}
+              </p>
+            `
+      }
     `;
   }
 
@@ -293,30 +304,25 @@ class HaBackupConfigAgents extends LitElement {
   }
 
   static styles = css`
-    ha-md-list {
-      background: none;
-      --md-list-item-leading-space: 0;
-      --md-list-item-trailing-space: 0;
+    ha-list-base {
+      --ha-row-item-padding-inline: 0;
     }
-    ha-md-list-item {
-      --md-item-overflow: visible;
-    }
-    ha-md-list-item .name {
+    ha-list-item-base .name {
       word-break: break-word;
     }
-    ha-md-list-item img {
+    ha-list-item-base img {
       width: 48px;
     }
-    ha-md-list-item ha-svg-icon[slot="start"] {
+    ha-list-item-base ha-svg-icon[slot="start"] {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
     }
-    ha-md-list-item [slot="supporting-text"] {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: wrap;
+    }
+    ha-list-item-base::part(end) {
       gap: var(--ha-space-2);
-      line-height: var(--ha-line-height-condensed);
     }
     .unencrypted-warning {
       display: flex;
@@ -338,7 +344,7 @@ class HaBackupConfigAgents extends LitElement {
       .separator {
         display: none;
       }
-      ha-md-list-item [slot="supporting-text"] {
+      ha-list-item-base [slot="supporting-text"] {
         display: flex;
         align-items: flex-start;
         flex-direction: column;

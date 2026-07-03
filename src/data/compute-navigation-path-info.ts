@@ -57,8 +57,8 @@ export const CONFIG_SUB_ROUTES: Record<
     translationKey: "ui.components.navigation-picker.route.scripts",
     iconPath: mdiScriptText,
   },
-  "developer-tools": {
-    translationKey: "ui.components.navigation-picker.route.developer_tools",
+  tools: {
+    translationKey: "ui.components.navigation-picker.route.tools",
     iconPath: mdiHammer,
   },
   integrations: {

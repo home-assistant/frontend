@@ -108,14 +108,16 @@ export class CloudLoginPanel extends LitElement {
               </p>
             </div>
 
-            ${this.flashMessage
-              ? html`<ha-alert
-                  dismissable
-                  @alert-dismissed-clicked=${this._dismissFlash}
-                >
-                  ${this.flashMessage}
-                </ha-alert>`
-              : ""}
+            ${
+              this.flashMessage
+                ? html`<ha-alert
+                    dismissable
+                    @alert-dismissed-clicked=${this._dismissFlash}
+                  >
+                    ${this.flashMessage}
+                  </ha-alert>`
+                : ""
+            }
 
             <cloud-login
               .hass=${this.hass}

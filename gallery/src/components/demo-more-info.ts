@@ -22,13 +22,15 @@ class DemoMoreInfo extends LitElement {
       <div class="root">
         <div id="card">
           <ha-card>
-            ${!computeShowNewMoreInfo(state)
-              ? html`<state-card-content
-                  .stateObj=${state}
-                  .hass=${this.hass}
-                  in-dialog
-                ></state-card-content>`
-              : nothing}
+            ${
+              !computeShowNewMoreInfo(state)
+                ? html`<state-card-content
+                    .stateObj=${state}
+                    .hass=${this.hass}
+                    in-dialog
+                  ></state-card-content>`
+                : nothing
+            }
 
             <more-info-content
               .hass=${this.hass}

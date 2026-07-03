@@ -2,17 +2,20 @@ import { mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+  type HASSDomEvent,
+} from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-sortable";
 import "./ha-entity-picker";
+import type { HaEntityPicker } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Array }) public value?: string[];
 
   @property({ type: Boolean }) public disabled = false;
@@ -82,10 +85,6 @@ class HaEntitiesPicker extends LitElement {
   public reorder = false;
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const currentEntities = this._currentEntities;
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -100,7 +99,6 @@ class HaEntitiesPicker extends LitElement {
               <div class="entity">
                 <ha-entity-picker
                   .curValue=${entityId}
-                  .hass=${this.hass}
                   .includeDomains=${this.includeDomains}
                   .excludeDomains=${this.excludeDomains}
                   .includeEntities=${this.includeEntities}
@@ -113,14 +111,16 @@ class HaEntitiesPicker extends LitElement {
                   .createDomains=${this.createDomains}
                   @value-changed=${this._entityChanged}
                 ></ha-entity-picker>
-                ${this.reorder
-                  ? html`
-                      <ha-svg-icon
-                        class="entity-handle"
-                        .path=${mdiDragHorizontalVariant}
-                      ></ha-svg-icon>
-                    `
-                  : nothing}
+                ${
+                  this.reorder
+                    ? html`
+                        <ha-svg-icon
+                          class="entity-handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
+                      `
+                    : nothing
+                }
               </div>
             `
           )}
@@ -128,7 +128,6 @@ class HaEntitiesPicker extends LitElement {
       </ha-sortable>
       <div>
         <ha-entity-picker
-          .hass=${this.hass}
           .includeDomains=${this.includeDomains}
           .excludeDomains=${this.excludeDomains}
           .includeEntities=${this.includeEntities}
@@ -151,7 +150,7 @@ class HaEntitiesPicker extends LitElement {
     `;
   }
 
-  private _entityMoved(e: CustomEvent) {
+  private _entityMoved(e: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     e.stopPropagation();
     const { oldIndex, newIndex } = e.detail;
     const currentEntities = this._currentEntities;
@@ -178,7 +177,7 @@ class HaEntitiesPicker extends LitElement {
     return this.value || [];
   }
 
-  private async _updateEntities(entities) {
+  private async _updateEntities(entities: string[]) {
     this.value = entities;
 
     fireEvent(this, "value-changed", {
@@ -186,9 +185,12 @@ class HaEntitiesPicker extends LitElement {
     });
   }
 
-  private _entityChanged(event: ValueChangedEvent<string>) {
+  private _entityChanged(
+    event: ValueChangedEvent<string> &
+      HASSDomCurrentTargetEvent<HaEntityPicker & { curValue: string }>
+  ) {
     event.stopPropagation();
-    const curValue = (event.currentTarget as any).curValue;
+    const curValue = event.currentTarget.curValue;
     const newValue = event.detail.value;
     if (
       newValue === curValue ||
@@ -206,13 +208,15 @@ class HaEntitiesPicker extends LitElement {
     );
   }
 
-  private async _addEntity(event: ValueChangedEvent<string>) {
+  private _addEntity(
+    event: ValueChangedEvent<string> & HASSDomCurrentTargetEvent<HaEntityPicker>
+  ) {
     event.stopPropagation();
     const toAdd = event.detail.value;
     if (!toAdd) {
       return;
     }
-    (event.currentTarget as any).value = "";
+    event.currentTarget.value = "";
     if (!toAdd) {
       return;
     }
@@ -239,6 +243,7 @@ class HaEntitiesPicker extends LitElement {
     }
     .entity ha-entity-picker {
       flex: 1;
+      min-width: var(--ha-entities-picker-entity-min-width, auto);
     }
     .entity-handle {
       padding: 8px;

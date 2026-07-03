@@ -6,13 +6,16 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import type { LovelaceStrategyConfig } from "../../../../data/lovelace/config/strategy";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../../lovelace/editor/dashboard-strategy-editor/hui-dashboard-strategy-element-editor";
 import type { LovelaceDashboardConfigureStrategyDialogParams } from "./show-dialog-lovelace-dashboard-configure-strategy";
 
 @customElement("dialog-lovelace-dashboard-configure-strategy")
-export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
+export class DialogLovelaceDashboardConfigureStrategy extends DirtyStateProviderMixin<LovelaceStrategyConfig>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: LovelaceDashboardConfigureStrategyDialogParams;
@@ -29,6 +32,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
     this._params = params;
     this._data = params.config.strategy;
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, this._data);
   }
 
   public closeDialog(): void {
@@ -49,7 +53,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         header-title=${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
         )}
@@ -80,6 +84,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
 
   private _handleConfigChanged(ev: CustomEvent): void {
     this._data = ev.detail.config;
+    this._updateDirtyState(this._data!);
   }
 
   private async _save() {
@@ -92,6 +97,7 @@ export class DialogLovelaceDashboardConfigureStrategy extends LitElement {
       strategy: this._data,
     });
     this._submitting = false;
+    this._markDirtyStateClean();
     this.closeDialog();
   }
 

@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE_STATES } from "../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { HomeAssistant } from "../../types";
 import { stringCompare } from "../string/compare";
 import { computeDomain } from "./compute_domain";
@@ -22,16 +22,13 @@ export const FIXED_DOMAIN_STATES = {
   assist_satellite: ["idle", "listening", "responding", "processing"],
   automation: ["on", "off"],
   binary_sensor: ["on", "off"],
-  button: [],
   calendar: ["on", "off"],
   camera: ["idle", "recording", "streaming"],
   cover: ["closed", "closing", "open", "opening"],
   device_tracker: ["home", "not_home"],
   fan: ["on", "off"],
   humidifier: ["on", "off"],
-  infrared: [],
   input_boolean: ["on", "off"],
-  input_button: [],
   lawn_mower: ["error", "paused", "mowing", "returning", "docked"],
   light: ["on", "off"],
   lock: [
@@ -56,7 +53,6 @@ export const FIXED_DOMAIN_STATES = {
   plant: ["ok", "problem"],
   radio_frequency: [],
   remote: ["on", "off"],
-  scene: [],
   schedule: ["on", "off"],
   script: ["on", "off"],
   siren: ["on", "off"],
@@ -253,7 +249,7 @@ export const getStatesDomain = (
 
   if (!attribute) {
     // All entities can have unavailable states
-    result.push(...UNAVAILABLE_STATES);
+    result.push(UNAVAILABLE, UNKNOWN);
   }
 
   if (!attribute && domain in FIXED_DOMAIN_STATES) {
@@ -290,6 +286,81 @@ export const getStatesDomain = (
   return result;
 };
 
+// Maps a value attribute (or the main state, keyed `_`) to the attribute listing
+// its options. Naming is irregular per domain, so it's mapped explicitly.
+export const DOMAIN_OPTIONS_ATTRIBUTES: Record<
+  string,
+  Record<string, string>
+> = {
+  climate: {
+    _: "hvac_modes",
+    fan_mode: "fan_modes",
+    preset_mode: "preset_modes",
+    swing_mode: "swing_modes",
+    swing_horizontal_mode: "swing_horizontal_modes",
+  },
+  event: {
+    event_type: "event_types",
+  },
+  fan: {
+    preset_mode: "preset_modes",
+  },
+  humidifier: {
+    mode: "available_modes",
+  },
+  input_select: {
+    _: "options",
+  },
+  select: {
+    _: "options",
+  },
+  light: {
+    effect: "effect_list",
+    color_mode: "supported_color_modes",
+  },
+  media_player: {
+    sound_mode: "sound_mode_list",
+    source: "source_list",
+  },
+  remote: {
+    current_activity: "activity_list",
+  },
+  sensor: {
+    _: "options",
+  },
+  vacuum: {
+    fan_speed: "fan_speed_list",
+  },
+  water_heater: {
+    _: "operation_list",
+    operation_mode: "operation_list",
+  },
+};
+
+const DOMAIN_VALUE_ATTRIBUTES: Record<
+  string,
+  Record<string, string>
+> = Object.fromEntries(
+  Object.entries(DOMAIN_OPTIONS_ATTRIBUTES).map(([domain, mapping]) => [
+    domain,
+    Object.fromEntries(
+      Object.entries(mapping).map(([value, list]) => [list, value])
+    ),
+  ])
+);
+
+// value attribute (or main state) → its options-list attribute
+export const getOptionsAttribute = (
+  domain: string,
+  attribute?: string
+): string | undefined => DOMAIN_OPTIONS_ATTRIBUTES[domain]?.[attribute ?? "_"];
+
+// options-list attribute → its value attribute (`_` = main state)
+export const getValueAttribute = (
+  domain: string,
+  optionsAttribute: string
+): string | undefined => DOMAIN_VALUE_ATTRIBUTES[domain]?.[optionsAttribute];
+
 export const getStates = (
   hass: HomeAssistant,
   state: HassEntity,
@@ -302,78 +373,15 @@ export const getStates = (
   result.push(...getStatesDomain(hass, domain, attribute));
 
   // Dynamic values based on the entities
-  switch (domain) {
-    case "climate":
-      if (!attribute) {
-        result.push(...state.attributes.hvac_modes);
-      } else if (attribute === "fan_mode") {
-        result.push(...state.attributes.fan_modes);
-      } else if (attribute === "preset_mode") {
-        result.push(...state.attributes.preset_modes);
-      } else if (attribute === "swing_mode") {
-        result.push(...state.attributes.swing_modes);
-      } else if (attribute === "swing_horizontal_mode") {
-        result.push(...state.attributes.swing_horizontal_modes);
-      }
-      break;
-    case "event":
-      if (attribute === "event_type") {
-        result.push(...state.attributes.event_types);
-      }
-      break;
-    case "fan":
-      if (attribute === "preset_mode") {
-        result.push(...state.attributes.preset_modes);
-      }
-      break;
-    case "humidifier":
-      if (attribute === "mode") {
-        result.push(...state.attributes.available_modes);
-      }
-      break;
-    case "input_select":
-    case "select":
-      if (!attribute) {
-        result.push(...state.attributes.options);
-      }
-      break;
-    case "light":
-      if (attribute === "effect" && state.attributes.effect_list) {
-        result.push(...state.attributes.effect_list);
-      } else if (
-        attribute === "color_mode" &&
-        state.attributes.supported_color_modes
-      ) {
-        result.push(...state.attributes.supported_color_modes);
-      }
-      break;
-    case "media_player":
-      if (attribute === "sound_mode") {
-        result.push(...state.attributes.sound_mode_list);
-      } else if (attribute === "source") {
-        result.push(...state.attributes.source_list);
-      }
-      break;
-    case "remote":
-      if (attribute === "current_activity") {
-        result.push(...state.attributes.activity_list);
-      }
-      break;
-    case "sensor":
-      if (!attribute && state.attributes.device_class === "enum") {
-        result.push(...state.attributes.options);
-      }
-      break;
-    case "vacuum":
-      if (attribute === "fan_speed") {
-        result.push(...state.attributes.fan_speed_list);
-      }
-      break;
-    case "water_heater":
-      if (!attribute || attribute === "operation_mode") {
-        result.push(...state.attributes.operation_list);
-      }
-      break;
+  const optionsAttribute = getOptionsAttribute(domain, attribute);
+  if (optionsAttribute) {
+    const options = state.attributes[optionsAttribute];
+    // Sensors only expose their options when their device class is `enum`.
+    const enumSensor =
+      domain !== "sensor" || state.attributes.device_class === "enum";
+    if (enumSensor && Array.isArray(options)) {
+      result.push(...options);
+    }
   }
 
   return [...new Set(result)];

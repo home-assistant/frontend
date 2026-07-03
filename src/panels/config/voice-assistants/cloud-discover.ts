@@ -49,13 +49,9 @@ export class CloudDiscover extends LitElement {
               <div class="logos">
                 <voice-assistant-brand-icon
                   .voiceAssistantId=${"cloud.google_assistant"}
-                  .hass=${this.hass}
                 >
                 </voice-assistant-brand-icon>
-                <voice-assistant-brand-icon
-                  .voiceAssistantId=${"cloud.alexa"}
-                  .hass=${this.hass}
-                >
+                <voice-assistant-brand-icon .voiceAssistantId=${"cloud.alexa"}>
                 </voice-assistant-brand-icon>
               </div>
               <h2>
@@ -73,7 +69,7 @@ export class CloudDiscover extends LitElement {
           <div class="more">
             <ha-button
               appearance="plain"
-              size="small"
+              size="s"
               href="https://www.nabucasa.com"
               target="_blank"
               rel="noreferrer"
@@ -85,22 +81,24 @@ export class CloudDiscover extends LitElement {
             </ha-button>
           </div>
         </div>
-        ${isComponentLoaded(this.hass.config, "cloud")
-          ? html`
-              <div class="card-actions">
-                <ha-button appearance="plain" href="/config/cloud/login">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                  )}
-                </ha-button>
-                <ha-button href="/config/cloud/register" appearance="filled">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : nothing}
+        ${
+          isComponentLoaded(this.hass.config, "cloud")
+            ? html`
+                <div class="card-actions">
+                  <ha-button appearance="plain" href="/config/cloud/login">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                    )}
+                  </ha-button>
+                  <ha-button href="/config/cloud/register" appearance="filled">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : nothing
+        }
       </ha-card>
     `;
   }

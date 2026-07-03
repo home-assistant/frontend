@@ -7,8 +7,8 @@ import { customElement, property } from "lit/decorators";
 export class HaProgressRing extends ProgressRing {
   @property() public size?: "tiny" | "small" | "medium" | "large";
 
-  public updated(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
 
     if (changedProps.has("size")) {
       switch (this.size) {

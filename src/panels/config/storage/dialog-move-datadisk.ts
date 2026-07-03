@@ -24,10 +24,15 @@ import {
   moveDatadisk,
 } from "../../../data/hassio/host";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
 import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
+
+interface MoveDatadiskFormState {
+  selectedDevice: string | undefined;
+}
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
   // Assume a speed of 30 MB/s.
@@ -37,7 +42,9 @@ const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
 });
 
 @customElement("dialog-move-datadisk")
-class MoveDatadiskDialog extends LitElement {
+class MoveDatadiskDialog extends DirtyStateProviderMixin<MoveDatadiskFormState>()(
+  LitElement
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _hostInfo?: HassioHostInfo;
@@ -57,6 +64,12 @@ class MoveDatadiskDialog extends LitElement {
   ): Promise<Promise<void>> {
     this._hostInfo = dialogParams.hostInfo;
     this._open = true;
+    this._initDirtyTracking(
+      { type: "deep" },
+      {
+        selectedDevice: this._selectedDevice,
+      }
+    );
 
     try {
       this._osInfo = await fetchHassioHassOsInfo(this.hass);
@@ -110,77 +123,85 @@ class MoveDatadiskDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._moving
-          ? this.hass.localize("ui.panel.config.storage.datadisk.moving")
-          : this.hass.localize("ui.panel.config.storage.datadisk.title")}
+        header-title=${
+          this._moving
+            ? this.hass.localize("ui.panel.config.storage.datadisk.moving")
+            : this.hass.localize("ui.panel.config.storage.datadisk.title")
+        }
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${this._moving
-          ? html`
-              <ha-spinner aria-label="Moving" size="large"></ha-spinner>
-              <p class="progress-text">
-                ${this.hass.localize(
-                  "ui.panel.config.storage.datadisk.moving_desc"
-                )}
-              </p>
-            `
-          : html`
-              ${this.hass.localize(
-                "ui.panel.config.storage.datadisk.description",
-                {
-                  current_path: this._osInfo.data_disk,
-                  time: calculateMoveTime(this._hostInfo),
-                }
-              )}
-              <br /><br />
-
-              <ha-select
-                autofocus
-                .label=${this.hass.localize(
-                  "ui.panel.config.storage.datadisk.select_device"
-                )}
-                @selected=${this._selectDevice}
-                .options=${this._disks.map((disk) => ({
-                  value: disk.id,
-                  label: `${disk.vendor} ${disk.model}`,
-                  secondary: this.hass.localize(
-                    "ui.panel.config.storage.datadisk.extra_information",
-                    {
-                      size: bytesToString(disk.size),
-                      serial: disk.serial,
-                    }
-                  ),
-                }))}
-              ></ha-select>
-            `}
-        ${this._moving
-          ? nothing
-          : html`
-              <ha-dialog-footer slot="footer">
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this.closeDialog}
-                >
+        ${
+          this._moving
+            ? html`
+                <ha-spinner aria-label="Moving" size="large"></ha-spinner>
+                <p class="progress-text">
                   ${this.hass.localize(
-                    "ui.panel.config.storage.datadisk.cancel"
+                    "ui.panel.config.storage.datadisk.moving_desc"
                   )}
-                </ha-button>
-                <ha-button
-                  .disabled=${!this._selectedDevice}
-                  slot="primaryAction"
-                  @click=${this._moveDatadisk}
-                >
-                  ${this.hass.localize("ui.panel.config.storage.datadisk.move")}
-                </ha-button>
-              </ha-dialog-footer>
-            `}
+                </p>
+              `
+            : html`
+                ${this.hass.localize(
+                  "ui.panel.config.storage.datadisk.description",
+                  {
+                    current_path: this._osInfo.data_disk,
+                    time: calculateMoveTime(this._hostInfo),
+                  }
+                )}
+                <br /><br />
+
+                <ha-select
+                  autofocus
+                  .label=${this.hass.localize(
+                    "ui.panel.config.storage.datadisk.select_device"
+                  )}
+                  @selected=${this._selectDevice}
+                  .options=${this._disks.map((disk) => ({
+                    value: disk.id,
+                    label: `${disk.vendor} ${disk.model}`,
+                    secondary: this.hass.localize(
+                      "ui.panel.config.storage.datadisk.extra_information",
+                      {
+                        size: bytesToString(disk.size),
+                        serial: disk.serial,
+                      }
+                    ),
+                  }))}
+                ></ha-select>
+              `
+        }
+        ${
+          this._moving
+            ? nothing
+            : html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.storage.datadisk.cancel"
+                    )}
+                  </ha-button>
+                  <ha-button
+                    .disabled=${!this._selectedDevice}
+                    slot="primaryAction"
+                    @click=${this._moveDatadisk}
+                  >
+                    ${this.hass.localize("ui.panel.config.storage.datadisk.move")}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+        }
       </ha-dialog>
     `;
   }
 
   private _selectDevice(ev: HaSelectSelectEvent): void {
     this._selectedDevice = ev.detail.value;
+    this._updateDirtyState({ selectedDevice: this._selectedDevice });
   }
 
   private async _moveDatadisk() {

@@ -13,6 +13,7 @@ import type { HaFormSchema } from "../../../components/ha-form/types";
 import type { HomeFrontendSystemData } from "../../../data/frontend";
 import type { ShortcutItem } from "../../../data/home_shortcuts";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import "../components/home-favorites-editor";
@@ -37,7 +38,7 @@ const WELCOME_SCHEMA: HaFormSchema[] = [
 
 @customElement("dialog-edit-home")
 export class DialogEditHome
-  extends LitElement
+  extends DirtyStateProviderMixin<EditorState>()(LitElement)
   implements HassDialog<EditHomeDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -60,6 +61,7 @@ export class DialogEditHome
       show_welcome_message: !params.config.hide_welcome_message,
       shortcuts: params.config.shortcuts ? [...params.config.shortcuts] : [],
     };
+    this._initDirtyTracking({ type: "shallow" }, this._state);
     this._open = true;
   }
 
@@ -87,7 +89,7 @@ export class DialogEditHome
         .headerSubtitle=${this.hass.localize(
           "ui.panel.home.editor.description"
         )}
-        prevent-scrim-close
+        .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-alert alert-type="info">
@@ -178,7 +180,7 @@ export class DialogEditHome
           <ha-button
             slot="primaryAction"
             @click=${this._save}
-            .disabled=${this._submitting}
+            .disabled=${this._submitting || !this.isDirtyState}
           >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
@@ -222,6 +224,7 @@ export class DialogEditHome
       ...this._state!,
       favorite_entities: ev.detail.value,
     };
+    this._updateDirtyState(this._state);
   }
 
   private _welcomeChanged(
@@ -231,6 +234,7 @@ export class DialogEditHome
       ...this._state!,
       show_welcome_message: ev.detail.value.show_welcome_message,
     };
+    this._updateDirtyState(this._state);
   }
 
   private _suggestedChanged(
@@ -240,6 +244,7 @@ export class DialogEditHome
       ...this._state!,
       show_suggested_entities: ev.detail.value.show_suggested_entities,
     };
+    this._updateDirtyState(this._state);
   }
 
   private _shortcutsChanged(ev: ValueChangedEvent<ShortcutItem[]>): void {
@@ -247,6 +252,7 @@ export class DialogEditHome
       ...this._state!,
       shortcuts: ev.detail.value,
     };
+    this._updateDirtyState(this._state);
   }
 
   private async _save(): Promise<void> {
@@ -270,6 +276,7 @@ export class DialogEditHome
 
     try {
       await this._params.saveConfig(config);
+      this._markDirtyStateClean();
       this.closeDialog();
     } finally {
       this._submitting = false;

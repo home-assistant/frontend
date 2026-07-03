@@ -4,10 +4,12 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { blankBeforePercent } from "../../../../../common/translations/blank_before_percent";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/progress/ha-progress-ring";
 import { reinterviewZwaveNode } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -21,7 +23,11 @@ class DialogZWaveJSReinterviewNode extends LitElement {
 
   @state() private _status?: string;
 
+  // Completed interview stages for rendering checklists
+  // Can be removed once min schema is bumped to 50
   @state() private _stages?: string[];
+
+  @state() private _progress?: number;
 
   @state() private _open = false;
 
@@ -31,6 +37,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     params: ZWaveJSReinterviewNodeDialogParams
   ): Promise<void> {
     this._stages = undefined;
+    this._progress = undefined;
     this.device_id = params.device_id;
     this._open = true;
   }
@@ -48,111 +55,139 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         )}
         @closed=${this._dialogClosed}
       >
-        ${!this._status
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.reinterview_node.introduction"
-                )}
-              </p>
-              <p>
-                <em>
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.reinterview_node.battery_device_warning"
-                  )}
-                </em>
-              </p>
-            `
-          : ``}
-        ${this._status === "started"
-          ? html`
-              <div class="flex-container">
-                <ha-spinner></ha-spinner>
-                <div class="status">
-                  <p>
-                    <b>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.reinterview_node.in_progress"
-                      )}
-                    </b>
-                  </p>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.reinterview_node.run_in_background"
-                    )}
-                  </p>
-                </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "failed"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCloseCircle}
-                  class="failed"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.reinterview_node.interview_failed"
-                    )}
-                  </p>
-                </div>
-              </div>
-            `
-          : ``}
-        ${this._status === "finished"
-          ? html`
-              <div class="flex-container">
-                <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
-                ></ha-svg-icon>
-                <div class="status">
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.reinterview_node.interview_complete"
-                    )}
-                  </p>
-                </div>
-              </div>
-            `
-          : ``}
-        ${this._stages
-          ? html`
-              <div class="stages">
-                ${this._stages.map(
-                  (stage) => html`
-                    <span class="stage">
-                      <ha-svg-icon
-                        .path=${mdiCheckCircle}
-                        class="success"
-                      ></ha-svg-icon>
-                      ${stage}
-                    </span>
-                  `
-                )}
-              </div>
-            `
-          : ""}
-        <ha-dialog-footer slot="footer">
-          ${!this._status
+        ${
+          !this._status
             ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._startReinterview}
-                >
+                <p>
                   ${this.hass.localize(
-                    "ui.panel.config.zwave_js.reinterview_node.start_reinterview"
+                    "ui.panel.config.zwave_js.reinterview_node.introduction"
                   )}
-                </ha-button>
+                </p>
+                <p>
+                  <em>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.reinterview_node.battery_device_warning"
+                    )}
+                  </em>
+                </p>
               `
-            : html`
-                <ha-button slot="primaryAction" @click=${this.closeDialog}>
-                  ${this.hass.localize("ui.common.close")}
-                </ha-button>
-              `}
+            : ``
+        }
+        ${
+          this._status === "started"
+            ? html`
+                <div class="flex-container">
+                  ${
+                    this._progress !== undefined
+                      ? html`
+                          <ha-progress-ring
+                            size="large"
+                            .value=${this._progress}
+                            aria-label=${this.hass.localize(
+                              "ui.panel.config.zwave_js.reinterview_node.in_progress"
+                            )}
+                          >
+                            ${Math.round(this._progress)}${blankBeforePercent(
+                              this.hass.locale
+                            )}%
+                          </ha-progress-ring>
+                        `
+                      : html`<ha-spinner></ha-spinner>`
+                  }
+                  <div class="status">
+                    <p>
+                      <b>
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.reinterview_node.in_progress"
+                        )}
+                      </b>
+                    </p>
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.reinterview_node.run_in_background"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              `
+            : ``
+        }
+        ${
+          this._status === "failed"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCloseCircle}
+                    class="failed"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.reinterview_node.interview_failed"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              `
+            : ``
+        }
+        ${
+          this._status === "finished"
+            ? html`
+                <div class="flex-container">
+                  <ha-svg-icon
+                    .path=${mdiCheckCircle}
+                    class="success"
+                  ></ha-svg-icon>
+                  <div class="status">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.reinterview_node.interview_complete"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              `
+            : ``
+        }
+        ${
+          this._progress === undefined && this._stages
+            ? html`
+                <div class="stages">
+                  ${this._stages.map(
+                    (stage) => html`
+                      <span class="stage">
+                        <ha-svg-icon
+                          .path=${mdiCheckCircle}
+                          class="success"
+                        ></ha-svg-icon>
+                        ${stage}
+                      </span>
+                    `
+                  )}
+                </div>
+              `
+            : ""
+        }
+        <ha-dialog-footer slot="footer">
+          ${
+            !this._status
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._startReinterview}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.reinterview_node.start_reinterview"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    ${this.hass.localize("ui.common.close")}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -173,7 +208,16 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     if (message.event === "interview started") {
       this._status = "started";
     }
-    if (message.event === "interview stage completed") {
+    if (message.event === "interview progress") {
+      this._status = "started";
+      this._progress = message.progress;
+    }
+    // If upstream supports granular progress reporting,
+    // ignore the legacy per-stage events that drive the stage checklist.
+    if (
+      message.event === "interview stage completed" &&
+      this._progress === undefined
+    ) {
       if (this._stages === undefined) {
         this._stages = [message.stage];
       } else {
@@ -205,6 +249,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     this.device_id = undefined;
     this._status = undefined;
     this._stages = undefined;
+    this._progress = undefined;
 
     this._unsubscribe();
 
@@ -246,6 +291,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         }
 
         .flex-container ha-spinner,
+        .flex-container ha-progress-ring,
         .flex-container ha-svg-icon {
           margin-right: 20px;
           margin-inline-end: 20px;

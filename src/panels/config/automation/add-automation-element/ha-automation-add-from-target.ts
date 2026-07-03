@@ -63,6 +63,7 @@ import {
 } from "../../../../data/target";
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
+import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 
 interface Level1Entries {
   open: boolean;
@@ -93,6 +94,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @property({ attribute: false }) public manifests?: DomainManifestLookup;
 
+  // Section title + group rows (Time, Location) for the targetless element
+  // groups. Picking a row drills into that group's items, just like selecting
+  // the matching group in the "by type" tab.
+  @property({ attribute: false }) public timeLocationLabel?: string;
+
+  @property({ attribute: false })
+  public timeLocationGroups?: AddAutomationElementListItem[];
+
+  @property({ attribute: false }) public selectedGroup?: string;
+
   // #endregion properties
 
   // #region context
@@ -115,8 +126,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @state()
   private _floorAreas: (
-    | FloorNestedComboBoxItem
-    | UnassignedAreasFloorComboBoxItem
+    FloorNestedComboBoxItem | UnassignedAreasFloorComboBoxItem
   )[] = [];
 
   @state() private _entries: Record<string, Level1Entries> = {};
@@ -178,24 +188,40 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     return html`
-      ${this.narrow && this.value
-        ? this._renderNarrow(this._entries, this.value)
-        : html`
-            ${this._renderFloors(this.narrow, this._entries, this.value)}
-            ${this._renderUnassigned(this.narrow, this._entries, this.value)}
-            ${this._renderLabels(this.narrow, this.value)}
-          `}
-      ${this.narrow && this._showShowMoreButton && !this._fullHeight
-        ? html`
-            <div class="targets-show-more">
-              <ha-button appearance="filled" @click=${this._expandHeight}>
-                ${this._i18n.localize(
-                  "ui.panel.config.automation.editor.show_more"
-                )}
-              </ha-button>
-            </div>
-          `
-        : nothing}
+      ${
+        this.narrow && this.value
+          ? this._renderNarrow(this._entries, this.value)
+          : html`
+              ${this._renderFloors(this.narrow, this._entries, this.value)}
+              ${this._renderTimeLocation(
+                this.narrow,
+                this.timeLocationLabel,
+                this.timeLocationGroups,
+                this.selectedGroup
+              )}
+              ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+              ${this._renderLabels(
+                this.narrow,
+                this.states,
+                this._registries,
+                this._labelRegistry,
+                this.value
+              )}
+            `
+      }
+      ${
+        this.narrow && this._showShowMoreButton && !this._fullHeight
+          ? html`
+              <div class="targets-show-more">
+                <ha-button appearance="filled" @click=${this._expandHeight}>
+                  ${this._i18n.localize(
+                    "ui.panel.config.automation.editor.show_more"
+                  )}
+                </ha-button>
+              </div>
+            `
+          : nothing
+      }
     `;
   }
 
@@ -328,29 +354,81 @@ export default class HaAutomationAddFromTarget extends LitElement {
             "ui.panel.config.automation.editor.home"
           )}</ha-section-title
         >
-        ${emptyFloors
-          ? html`<ha-row-item>
-              <div slot="headline">
-                ${this._i18n.localize("ui.components.area-picker.no_areas")}
-              </div>
-            </ha-row-item>`
-          : html`${narrow
-              ? html`<ha-list-base>${floorAreas}</ha-list-base>`
-              : html`<wa-tree
-                  @wa-selection-change=${this._handleSelectionChange}
-                  >${floorAreas}</wa-tree
-                >`}`}`;
+        ${
+          emptyFloors
+            ? html`<ha-row-item>
+                <div slot="headline">
+                  ${this._i18n.localize("ui.components.area-picker.no_areas")}
+                </div>
+              </ha-row-item>`
+            : html`${
+                narrow
+                  ? html`<ha-list-base>${floorAreas}</ha-list-base>`
+                  : html`<wa-tree
+                      @wa-selection-change=${this._handleSelectionChange}
+                      >${floorAreas}</wa-tree
+                    >`
+              }`
+        }`;
+    }
+  );
+
+  private _renderTimeLocation = memoizeOne(
+    (
+      narrow: boolean,
+      label?: string,
+      groups?: AddAutomationElementListItem[],
+      selectedGroup?: string
+    ) => {
+      if (!label || !groups?.length) {
+        return nothing;
+      }
+
+      return html`<ha-section-title>${label}</ha-section-title>
+        <ha-list-base>
+          ${groups.map(
+            (group) =>
+              html`<ha-list-item-button
+                .value=${group.key}
+                @click=${this._selectTimeLocationGroup}
+                class=${group.key === selectedGroup ? "selected" : ""}
+              >
+                ${
+                  group.icon
+                    ? html`<span slot="start">${group.icon}</span>`
+                    : group.iconPath
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${group.iconPath}
+                        ></ha-svg-icon>`
+                      : nothing
+                }
+                <div slot="headline">${group.name}</div>
+                ${
+                  narrow
+                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                    : nothing
+                }
+              </ha-list-item-button>`
+          )}
+        </ha-list-base>`;
     }
   );
 
   private _renderLabels = memoizeOne(
-    (narrow: boolean, value?: SingleHassServiceTarget) => {
+    (
+      narrow: boolean,
+      states: ContextType<typeof statesContext>,
+      registries: ContextType<typeof registriesContext>,
+      labelRegistry: LabelRegistryEntry[],
+      value?: SingleHassServiceTarget
+    ) => {
       const labels = this._getLabelsMemoized(
-        this.states,
-        this._registries.areas,
-        this._registries.devices,
-        this._registries.entities,
-        this._labelRegistry,
+        states,
+        registries.areas,
+        registries.devices,
+        registries.entities,
+        labelRegistry,
         undefined,
         undefined,
         undefined,
@@ -375,21 +453,27 @@ export default class HaAutomationAddFromTarget extends LitElement {
               html`<ha-list-item-button
                 .target=${label.id}
                 @click=${this._selectItem}
-                class=${this._getSelectedTargetId(value) === label.id
-                  ? "selected"
-                  : ""}
-                >${label.icon
-                  ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
-                  : label.icon_path
-                    ? html`<ha-svg-icon
-                        slot="start"
-                        .path=${label.icon_path}
-                      ></ha-svg-icon>`
-                    : nothing}
+                class=${
+                  this._getSelectedTargetId(value) === label.id
+                    ? "selected"
+                    : ""
+                }
+                >${
+                  label.icon
+                    ? html`<ha-icon slot="start" .icon=${label.icon}></ha-icon>`
+                    : label.icon_path
+                      ? html`<ha-svg-icon
+                          slot="start"
+                          .path=${label.icon_path}
+                        ></ha-svg-icon>`
+                      : nothing
+                }
                 <div slot="headline">${label.primary}</div>
-                ${narrow
-                  ? html`<ha-icon-next slot="end"></ha-icon-next> `
-                  : nothing}
+                ${
+                  narrow
+                    ? html`<ha-icon-next slot="end"></ha-icon-next> `
+                    : nothing
+                }
               </ha-list-item-button>`
           )}
         </ha-list-base>`;
@@ -510,11 +594,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
           >${this._i18n.localize(
             "ui.panel.config.automation.editor.unassigned"
           )}</ha-section-title
-        >${narrow
-          ? html`<ha-list-base>${items}</ha-list-base>`
-          : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-              ${items}
-            </wa-tree>`} `;
+        >${
+          narrow
+            ? html`<ha-list-base>${items}</ha-list-base>`
+            : html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
+                ${items}
+              </wa-tree>`
+        } `;
     }
   );
 
@@ -1157,8 +1243,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _handleSelectionChange(ev: WaSelectionChangeEvent) {
     const treeItem = ev.detail.selection[0] as unknown as
-      | { target?: string }
-      | undefined;
+      { target?: string } | undefined;
 
     if (treeItem?.target) {
       this._valueChanged(treeItem.target);
@@ -1170,6 +1255,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     if (target) {
       this._valueChanged(target);
+    }
+  }
+
+  private _selectTimeLocationGroup(ev: CustomEvent) {
+    const value = (ev.currentTarget as any).value;
+    if (value) {
+      fireEvent(this, "time-location-group-selected", { value });
     }
   }
 
@@ -1511,5 +1603,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-add-from-target": HaAutomationAddFromTarget;
+  }
+  interface HASSDomEvents {
+    "time-location-group-selected": { value: string };
   }
 }

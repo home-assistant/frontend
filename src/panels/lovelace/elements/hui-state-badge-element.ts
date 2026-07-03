@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-state-label-badge";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -36,7 +36,7 @@ export class HuiStateBadgeElement
     const includeDomains = ["light", "switch", "sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
-      !isUnavailableState(stateObj.state);
+      stateObj.state !== UNAVAILABLE && stateObj.state !== UNKNOWN;
     const foundEntities = findEntities(
       hass,
       maxEntities,
@@ -86,18 +86,21 @@ export class HuiStateBadgeElement
 
     return html`
       <ha-state-label-badge
-        .hass=${this.hass}
         .state=${stateObj}
-        .name=${this._config.name === undefined
-          ? computeStateName(stateObj)
-          : this._config.name === null
-            ? ""
-            : this._config.name}
-        .title=${this._config.title === undefined
-          ? computeStateName(stateObj)
-          : this._config.title === null
-            ? ""
-            : this._config.title}
+        .name=${
+          this._config.name === undefined
+            ? computeStateName(stateObj)
+            : this._config.name === null
+              ? ""
+              : this._config.name
+        }
+        .title=${
+          this._config.title === undefined
+            ? computeStateName(stateObj)
+            : this._config.title === null
+              ? ""
+              : this._config.title
+        }
         show-name
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

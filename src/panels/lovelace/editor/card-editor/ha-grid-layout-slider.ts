@@ -328,9 +328,11 @@ export class HaGridLayoutSlider extends LitElement {
                 ></div>
               `;
             })}
-          ${this.value !== undefined
-            ? html`<div class="handle"></div>`
-            : nothing}
+          ${
+            this.value !== undefined
+              ? html`<div class="handle"></div>`
+              : nothing
+          }
           ${this._renderTooltip()}
         </div>
       </div>

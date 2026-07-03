@@ -69,7 +69,7 @@ export class HuiAreaControlsCardFeatureEditor
         return [];
       }
       const controlEntities = getAreaControlEntities(
-        AREA_CONTROL_DOMAINS as unknown as AreaControlDomain[],
+        AREA_CONTROL_DOMAINS,
         areaId,
         excludeEntities,
         this.hass!
@@ -121,55 +121,59 @@ export class HuiAreaControlsCardFeatureEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      ${data.customize_controls
-        ? html`
-            ${value.length
-              ? html`
-                  <ha-sortable
-                    no-style
-                    @item-moved=${this._itemMoved}
-                    handle-selector="button.primary.action"
-                  >
-                    <ha-chip-set>
-                      ${repeat(
-                        value,
-                        (item) =>
-                          typeof item === "string" ? item : item.entity_id,
-                        (item, idx) => {
-                          const label = this._getItemLabel(item);
-                          return html`
-                            <ha-input-chip
-                              .idx=${idx}
-                              @remove=${this._removeItem}
-                              .label=${label}
-                              selected
-                            >
-                              <ha-svg-icon
-                                slot="icon"
-                                .path=${mdiDragHorizontalVariant}
-                              ></ha-svg-icon>
-                              ${label}
-                            </ha-input-chip>
-                          `;
-                        }
-                      )}
-                    </ha-chip-set>
-                  </ha-sortable>
-                `
-              : nothing}
-            <ha-area-controls-picker
-              .hass=${this.hass}
-              .areaId=${this.context.area_id}
-              .excludeEntities=${this.context.exclude_entities}
-              .excludeValues=${excludeValues}
-              .value=${""}
-              .addButtonLabel=${this.hass.localize(
-                "ui.panel.lovelace.editor.features.types.area-controls.controls"
-              )}
-              @value-changed=${this._controlChanged}
-            ></ha-area-controls-picker>
-          `
-        : nothing}
+      ${
+        data.customize_controls
+          ? html`
+              ${
+                value.length
+                  ? html`
+                      <ha-sortable
+                        no-style
+                        @item-moved=${this._itemMoved}
+                        handle-selector="button.primary.action"
+                      >
+                        <ha-chip-set>
+                          ${repeat(
+                            value,
+                            (item) =>
+                              typeof item === "string" ? item : item.entity_id,
+                            (item, idx) => {
+                              const label = this._getItemLabel(item);
+                              return html`
+                                <ha-input-chip
+                                  .idx=${idx}
+                                  @remove=${this._removeItem}
+                                  .label=${label}
+                                  selected
+                                >
+                                  <ha-svg-icon
+                                    slot="icon"
+                                    .path=${mdiDragHorizontalVariant}
+                                  ></ha-svg-icon>
+                                  ${label}
+                                </ha-input-chip>
+                              `;
+                            }
+                          )}
+                        </ha-chip-set>
+                      </ha-sortable>
+                    `
+                  : nothing
+              }
+              <ha-area-controls-picker
+                .hass=${this.hass}
+                .areaId=${this.context.area_id}
+                .excludeEntities=${this.context.exclude_entities}
+                .excludeValues=${excludeValues}
+                .value=${""}
+                .addButtonLabel=${this.hass.localize(
+                  "ui.panel.lovelace.editor.features.types.area-controls.controls"
+                )}
+                @value-changed=${this._controlChanged}
+              ></ha-area-controls-picker>
+            `
+          : nothing
+      }
     `;
   }
 

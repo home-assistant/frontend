@@ -7,6 +7,14 @@ import { parseAnimationDuration } from "../../../common/util/parse-animation-dur
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
 
+export interface HuiGraphGradient {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  stops: { offset: number; color: string }[];
+}
+
 @customElement("hui-graph-base")
 export class HuiGraphBase extends LitElement {
   @property({ attribute: false }) public coordinates?: number[][];
@@ -15,6 +23,8 @@ export class HuiGraphBase extends LitElement {
   public yAxisOrigin?: number;
 
   @property({ type: Boolean, reflect: true }) public loading = false;
+
+  @property({ attribute: false }) public gradient?: HuiGraphGradient;
 
   private _uniqueId = `graph-${Math.random().toString(36).substring(2, 9)}`;
 
@@ -47,7 +57,13 @@ export class HuiGraphBase extends LitElement {
 
     const showShimmer = this.loading && !this._reducedMotion;
     const shimmerId = `${this._uniqueId}-shimmer`;
-    const fillRect = showShimmer ? `url(#${shimmerId})` : "var(--accent-color)";
+    const gradientId = `${this._uniqueId}-gradient`;
+    const gradient = this.gradient;
+    const fillRect = showShimmer
+      ? `url(#${shimmerId})`
+      : gradient
+        ? `url(#${gradientId})`
+        : "var(--accent-color)";
 
     return html`
       ${svg`<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
@@ -62,7 +78,21 @@ export class HuiGraphBase extends LitElement {
                   <animate attributeName="x2" values="-30%;140%" dur="1.8s" repeatCount="indefinite" />
                 </linearGradient>
               </defs>`
-            : nothing
+            : gradient
+              ? svg`<defs>
+                  <linearGradient
+                    id=${gradientId}
+                    gradientUnits="userSpaceOnUse"
+                    x1=${gradient.x1} y1=${gradient.y1}
+                    x2=${gradient.x2} y2=${gradient.y2}
+                  >
+                    ${gradient.stops.map(
+                      (s) =>
+                        svg`<stop offset=${s.offset} style="stop-color: ${s.color}"></stop>`
+                    )}
+                  </linearGradient>
+                </defs>`
+              : nothing
         }
         <g>
           <mask id="${this._uniqueId}-fill">

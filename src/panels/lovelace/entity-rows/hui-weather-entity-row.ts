@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
 import {
@@ -136,13 +136,15 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
             : undefined
         )}
       >
-        ${weatherStateIcon ||
-        html`
-          <ha-state-icon
-            class="weather-icon"
-            .stateObj=${stateObj}
-          ></ha-state-icon>
-        `}
+        ${
+          weatherStateIcon ||
+          html`
+            <ha-state-icon
+              class="weather-icon"
+              .stateObj=${stateObj}
+            ></ha-state-icon>
+          `
+        }
       </div>
       <div
         class="info ${classMap({
@@ -156,31 +158,33 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         ${name}
-        ${hasSecondary
-          ? html`
-              <div class="secondary">
-                ${this._config.secondary_info === "entity-id"
-                  ? stateObj.entity_id
-                  : this._config.secondary_info === "last-changed"
-                    ? html`
-                        <ha-relative-time
-                          .hass=${this.hass}
-                          .datetime=${stateObj.last_changed}
-                          capitalize
-                        ></ha-relative-time>
-                      `
-                    : this._config.secondary_info === "last-updated"
-                      ? html`
-                          <ha-relative-time
-                            .hass=${this.hass}
-                            .datetime=${stateObj.last_updated}
-                            capitalize
-                          ></ha-relative-time>
-                        `
-                      : ""}
-              </div>
-            `
-          : ""}
+        ${
+          hasSecondary
+            ? html`
+                <div class="secondary">
+                  ${
+                    this._config.secondary_info === "entity-id"
+                      ? stateObj.entity_id
+                      : this._config.secondary_info === "last-changed"
+                        ? html`
+                            <ha-relative-time
+                              .datetime=${stateObj.last_changed}
+                              capitalize
+                            ></ha-relative-time>
+                          `
+                        : this._config.secondary_info === "last-updated"
+                          ? html`
+                              <ha-relative-time
+                                .datetime=${stateObj.last_updated}
+                                capitalize
+                              ></ha-relative-time>
+                            `
+                          : ""
+                  }
+                </div>
+              `
+            : ""
+        }
       </div>
       <div
         class="attributes ${classMap({
@@ -193,11 +197,14 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
       >
         <div>
-          ${isUnavailableState(stateObj.state) ||
-          stateObj.attributes.temperature === undefined ||
-          stateObj.attributes.temperature === null
-            ? this.hass.formatEntityState(stateObj)
-            : this.hass.formatEntityAttributeValue(stateObj, "temperature")}
+          ${
+            stateObj.state === UNAVAILABLE ||
+            stateObj.state === UNKNOWN ||
+            stateObj.attributes.temperature === undefined ||
+            stateObj.attributes.temperature === null
+              ? this.hass.formatEntityState(stateObj)
+              : this.hass.formatEntityAttributeValue(stateObj, "temperature")
+          }
         </div>
         <div class="secondary">
           ${getSecondaryWeatherAttribute(this.hass!, stateObj, forecast!)}

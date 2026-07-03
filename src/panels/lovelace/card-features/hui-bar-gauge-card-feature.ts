@@ -1,5 +1,7 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, LitElement, nothing, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
 import type { HomeAssistant } from "../../../types";
@@ -9,6 +11,11 @@ import type {
   BarGaugeCardFeatureConfig,
 } from "./types";
 
+const supportsBarGaugeCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
+};
+
 export const supportsBarGaugeCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -17,15 +24,16 @@ export const supportsBarGaugeCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "sensor" && isNumericFromAttributes(stateObj.attributes);
+  return supportsBarGaugeCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-bar-gauge-card-feature")
 class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
 
   @state() private _config?: BarGaugeCardFeatureConfig;
 
@@ -50,15 +58,13 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
   render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
-      !this.context.entity_id ||
-      !this.hass.states[this.context.entity_id] ||
-      !supportsBarGaugeCardFeature(this.hass, this.context)
+      !this._stateObj ||
+      !supportsBarGaugeCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
-    const stateObj = this.hass.states[this.context.entity_id];
+    const stateObj = this._stateObj;
     const min = this._config.min ?? 0;
     const max = this._config.max ?? 100;
     const value = parseFloat(stateObj.state);

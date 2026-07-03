@@ -1,4 +1,5 @@
 import { mdiDevices } from "@mdi/js";
+import { consume } from "@lit/context";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -47,7 +48,9 @@ import {
   type ActionCommandComboBoxItem,
   type NavigationComboBoxItem,
 } from "../../data/quick_bar";
-import type { RelatedResult } from "../../data/search";
+import type { RelatedIdSets } from "../../common/search/related-context";
+import { sortRelatedFirst } from "../../common/search/related-context";
+import { relatedContext } from "../../data/context";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
@@ -70,6 +73,10 @@ const SEPARATOR = "________";
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state()
+  @consume({ context: relatedContext, subscribe: true })
+  private _relatedIdSets?: RelatedIdSets;
+
   @state() private _open = false;
 
   @state() private _loading = true;
@@ -79,8 +86,6 @@ export class QuickBar extends LitElement {
   @state() private _selectedSection?: QuickBarSection;
 
   @state() private _opened = false;
-
-  @state() private _relatedResult?: RelatedResult;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
@@ -107,8 +112,6 @@ export class QuickBar extends LitElement {
     this._initialize();
     this._selectedSection = effectiveQuickBarMode(this.hass.user, params.mode);
     this._showHint = params.showHint ?? false;
-
-    this._relatedResult = params.contextItem ? params.related : undefined;
 
     this._open = true;
   }
@@ -249,36 +252,40 @@ export class QuickBar extends LitElement {
         @wa-after-show=${this._dialogOpened}
         @closed=${this._dialogClosed}
       >
-        ${!this._loading && this._opened
-          ? html`<ha-picker-combo-box
-              id="combo-box"
-              @index-selected=${this._handleItemSelected}
-              .notFoundLabel=${this.hass.localize(
-                "ui.dialogs.quick-bar.nothing_found"
-              )}
-              .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
-              .getItems=${this._getItems}
-              .rowRenderer=${this._renderRow}
-              mode="dialog"
-              .sections=${sections}
-              .selectedSection=${this._selectedSection}
-              .sectionTitleFunction=${this._sectionTitleFunction}
-              clearable
-            ></ha-picker-combo-box>`
-          : nothing}
-        ${this._showHint
-          ? html`<ha-tip slot="footer" .hass=${this.hass}
-              >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
-                keyboard_shortcut: html`<button
-                  class="link"
-                  @click=${this._openShortcutDialog}
-                >
-                  ${this.hass.localize("ui.tips.keyboard_shortcut")}
-                </button>`,
-                modifier: isMac ? "⌘" : "Ctrl",
-              })}</ha-tip
-            >`
-          : nothing}
+        ${
+          !this._loading && this._opened
+            ? html`<ha-picker-combo-box
+                id="combo-box"
+                @index-selected=${this._handleItemSelected}
+                .notFoundLabel=${this.hass.localize(
+                  "ui.dialogs.quick-bar.nothing_found"
+                )}
+                .label=${this.hass.localize("ui.dialogs.quick-bar.title")}
+                .getItems=${this._getItems}
+                .rowRenderer=${this._renderRow}
+                mode="dialog"
+                .sections=${sections}
+                .selectedSection=${this._selectedSection}
+                .sectionTitleFunction=${this._sectionTitleFunction}
+                clearable
+              ></ha-picker-combo-box>`
+            : nothing
+        }
+        ${
+          this._showHint
+            ? html`<ha-tip slot="footer"
+                >${this.hass.localize("ui.tips.key_shortcut_quick_search", {
+                  keyboard_shortcut: html`<button
+                    class="link"
+                    @click=${this._openShortcutDialog}
+                  >
+                    ${this.hass.localize("ui.tips.keyboard_shortcut")}
+                  </button>`,
+                  modifier: isMac ? "⌘" : "Ctrl",
+                })}</ha-tip
+              >`
+            : nothing
+        }
       </ha-adaptive-dialog>
     `;
   }
@@ -302,78 +309,87 @@ export class QuickBar extends LitElement {
         type="button"
         style="--mdc-icon-size: 24px;"
       >
-        ${"stateObj" in item && item.stateObj
-          ? html`
-              <state-badge
-                slot="start"
-                .stateObj=${(item as EntityComboBoxItem).stateObj}
-                .hass=${this.hass}
-              ></state-badge>
-            `
-          : "domain" in item && item.domain
+        ${
+          "stateObj" in item && item.stateObj
             ? html`
-                <ha-domain-icon
+                <state-badge
                   slot="start"
-                  style="margin: var(--ha-space-1);"
-                  .domain=${item.domain}
-                  brand-fallback
-                ></ha-domain-icon>
+                  .stateObj=${(item as EntityComboBoxItem).stateObj}
+                ></state-badge>
               `
-            : "image" in item && item.image
+            : "domain" in item && item.domain
               ? html`
-                  <img
+                  <ha-domain-icon
                     slot="start"
-                    alt=${item.primary ?? "Unknown"}
-                    .src=${item.image}
-                    style=${"iconColor" in item && item.iconColor
-                      ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
-                      : ""}
-                  />
-                `
-              : item.icon
-                ? html`<ha-icon
                     style="margin: var(--ha-space-1);"
-                    slot="start"
-                    .icon=${item.icon}
-                  ></ha-icon>`
-                : "iconColor" in item && item.iconColor
-                  ? html`
-                      <div
-                        slot="start"
-                        style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
-                      >
+                    .domain=${item.domain}
+                    brand-fallback
+                  ></ha-domain-icon>
+                `
+              : "image" in item && item.image
+                ? html`
+                    <img
+                      slot="start"
+                      alt=${item.primary ?? "Unknown"}
+                      .src=${item.image}
+                      style=${
+                        "iconColor" in item && item.iconColor
+                          ? `background-color: ${item.iconColor}; padding: 4px; border-radius: var(--ha-border-radius-circle); width: 24px; height: 24px`
+                          : ""
+                      }
+                    />
+                  `
+                : item.icon
+                  ? html`<ha-icon
+                      style="margin: var(--ha-space-1);"
+                      slot="start"
+                      .icon=${item.icon}
+                    ></ha-icon>`
+                  : "iconColor" in item && item.iconColor
+                    ? html`
+                        <div
+                          slot="start"
+                          style=${`padding: 4px; border-radius: var(--ha-border-radius-circle); background-color: ${item.iconColor};`}
+                        >
+                          <ha-svg-icon
+                            style="color: var(--white-color); --mdc-icon-size: 24px;"
+                            .path=${iconPath}
+                          ></ha-svg-icon>
+                        </div>
+                      `
+                    : html`
                         <ha-svg-icon
-                          style="color: var(--white-color); --mdc-icon-size: 24px;"
+                          style="margin: var(--ha-space-1);"
+                          slot="start"
                           .path=${iconPath}
                         ></ha-svg-icon>
-                      </div>
-                    `
-                  : html`
-                      <ha-svg-icon
-                        style="margin: var(--ha-space-1);"
-                        slot="start"
-                        .path=${iconPath}
-                      ></ha-svg-icon>
-                    `}
+                      `
+        }
         <span slot="headline">${item.primary}</span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${"stateObj" in item && !!this._showEntityId
-          ? html`
-              <span slot="supporting-text" class="code">
-                ${item.stateObj?.entity_id}
-              </span>
-            `
-          : nothing}
-        ${"domain_name" in item &&
-        (!("stateObj" in item) || !this._showEntityId)
-          ? html`
-              <div slot="trailing-supporting-text" class="domain">
-                ${(item as EntityComboBoxItem).domain_name}
-              </div>
-            `
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          "stateObj" in item && !!this._showEntityId
+            ? html`
+                <span slot="supporting-text" class="code">
+                  ${item.stateObj?.entity_id}
+                </span>
+              `
+            : nothing
+        }
+        ${
+          "domain_name" in item &&
+          (!("stateObj" in item) || !this._showEntityId)
+            ? html`
+                <div slot="trailing-supporting-text" class="domain">
+                  ${(item as EntityComboBoxItem).domain_name}
+                </div>
+              `
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };
@@ -432,7 +448,7 @@ export class QuickBar extends LitElement {
     this._selectedSection = section as QuickBarSection | undefined;
     return this._getItemsMemoized(
       this._configEntryLookup,
-      this._relatedResult,
+      this._relatedIdSets,
       searchString,
       this._selectedSection
     );
@@ -441,12 +457,11 @@ export class QuickBar extends LitElement {
   private _getItemsMemoized = memoizeOne(
     (
       configEntryLookup: Record<string, ConfigEntry>,
-      relatedResult: RelatedResult | undefined,
+      relatedIdSets: RelatedIdSets | undefined,
       filter?: string,
       section?: QuickBarSection
     ) => {
       const items: (string | PickerComboBoxItem)[] = [];
-      const relatedIdSets = this._getRelatedIdSets(relatedResult);
 
       if (!section || section === "navigate") {
         let navigateItems = this._generateNavigationCommandsMemoized(
@@ -459,8 +474,7 @@ export class QuickBar extends LitElement {
           navigateItems = this._filterGroup(
             "navigate",
             navigateItems,
-            filter,
-            navigateComboBoxKeys
+            filter
           ) as NavigationComboBoxItem[];
         }
 
@@ -481,8 +495,7 @@ export class QuickBar extends LitElement {
           commandItems = this._filterGroup(
             "command",
             commandItems,
-            filter,
-            commandComboBoxKeys
+            filter
           ) as ActionCommandComboBoxItem[];
         }
 
@@ -498,7 +511,7 @@ export class QuickBar extends LitElement {
         let entityItems = this._getEntitiesMemoized(this.hass);
 
         // Mark related items
-        if (relatedIdSets.entities.size > 0) {
+        if (relatedIdSets?.entities.size) {
           entityItems = entityItems.map((item) => ({
             ...item,
             isRelated: relatedIdSets.entities.has(
@@ -508,12 +521,11 @@ export class QuickBar extends LitElement {
         }
 
         if (filter) {
-          entityItems = this._sortRelatedFirst(
+          entityItems = sortRelatedFirst(
             this._filterGroup(
               "entity",
               entityItems,
-              filter,
-              entityComboBoxKeys
+              filter
             ) as EntityComboBoxItem[]
           );
         } else {
@@ -537,7 +549,7 @@ export class QuickBar extends LitElement {
         );
 
         // Mark related items
-        if (relatedIdSets.devices.size > 0) {
+        if (relatedIdSets?.devices.size) {
           deviceItems = deviceItems.map((item) => {
             const deviceId = item.id.split(SEPARATOR)[1];
             return {
@@ -548,8 +560,8 @@ export class QuickBar extends LitElement {
         }
 
         if (filter) {
-          deviceItems = this._sortRelatedFirst(
-            this._filterGroup("device", deviceItems, filter, deviceComboBoxKeys)
+          deviceItems = sortRelatedFirst(
+            this._filterGroup("device", deviceItems, filter)
           );
         } else {
           deviceItems = this._sortRelatedByLabel(deviceItems);
@@ -569,7 +581,7 @@ export class QuickBar extends LitElement {
         let areaItems = this._getAreasMemoized(this.hass);
 
         // Mark related items
-        if (relatedIdSets.areas.size > 0) {
+        if (relatedIdSets?.areas.size) {
           areaItems = areaItems.map((item) => {
             const areaId = item.id.split(SEPARATOR)[1];
             return {
@@ -580,8 +592,8 @@ export class QuickBar extends LitElement {
         }
 
         if (filter) {
-          areaItems = this._sortRelatedFirst(
-            this._filterGroup("area", areaItems, filter, areaComboBoxKeys)
+          areaItems = sortRelatedFirst(
+            this._filterGroup("area", areaItems, filter)
           );
         } else {
           areaItems = this._sortRelatedByLabel(areaItems);
@@ -601,41 +613,13 @@ export class QuickBar extends LitElement {
     }
   );
 
-  private _getRelatedIdSets = memoizeOne((related?: RelatedResult) => ({
-    entities: new Set(related?.entity || []),
-    devices: new Set(related?.device || []),
-    areas: new Set(related?.area || []),
-  }));
-
   private _getEntitiesMemoized = memoizeOne((hass: HomeAssistant) =>
-    getEntities(
-      hass,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `entity${SEPARATOR}`
-    )
+    getEntities(hass, { idPrefix: `entity${SEPARATOR}` })
   );
 
   private _getDevicesMemoized = memoizeOne(
     (hass: HomeAssistant, configEntryLookup: Record<string, ConfigEntry>) =>
-      getDevices(
-        hass,
-        configEntryLookup,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        `device${SEPARATOR}`
-      )
+      getDevices(hass, configEntryLookup, { idPrefix: `device${SEPARATOR}` })
   );
 
   private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>
@@ -645,13 +629,9 @@ export class QuickBar extends LitElement {
       hass.devices,
       hass.entities,
       hass.states,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      `area${SEPARATOR}`
+      {
+        idPrefix: `area${SEPARATOR}`,
+      }
     )
   );
 
@@ -691,24 +671,25 @@ export class QuickBar extends LitElement {
   private _filterGroup(
     type: QuickBarSection,
     items: PickerComboBoxItem[],
-    searchTerm: string,
-    weightedKeys: FuseWeightedKey[]
+    searchTerm: string
   ) {
     const fuseIndex = this._fuseIndexes[type](items);
 
     return multiTermSortedSearch(
       items,
       searchTerm,
-      weightedKeys,
       (item: PickerComboBoxItem) => item.id,
       fuseIndex
     );
   }
 
-  private _sortBySortingLabel = (entityA, entityB) =>
+  private _sortBySortingLabel = (
+    entityA: PickerComboBoxItem,
+    entityB: PickerComboBoxItem
+  ) =>
     caseInsensitiveStringCompare(
-      (entityA as PickerComboBoxItem).sorting_label!,
-      (entityB as PickerComboBoxItem).sorting_label!,
+      entityA.sorting_label!,
+      entityB.sorting_label!,
       this.hass.locale.language
     );
 
@@ -717,16 +698,6 @@ export class QuickBar extends LitElement {
       if (a.isRelated && !b.isRelated) return -1;
       if (!a.isRelated && b.isRelated) return 1;
       return this._sortBySortingLabel(a, b);
-    });
-
-  private _sortRelatedFirst = (items: PickerComboBoxItem[]) =>
-    [...items].sort((a, b) => {
-      const aRelated = Boolean(a.isRelated);
-      const bRelated = Boolean(b.isRelated);
-      if (aRelated === bRelated) {
-        return 0;
-      }
-      return aRelated ? -1 : 1;
     });
 
   // #endregion data

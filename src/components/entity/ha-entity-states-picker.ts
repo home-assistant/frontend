@@ -77,33 +77,37 @@ export class HaEntityStatesPicker extends LitElement {
               .label=${this.label}
               .value=${state}
               .disabled=${this.disabled}
-              .helper=${this.disabled && index === value.length - 1
-                ? this.helper
-                : undefined}
+              .helper=${
+                this.disabled && index === value.length - 1
+                  ? this.helper
+                  : undefined
+              }
               @value-changed=${this._valueChanged}
             ></ha-entity-state-picker>
           </div>
         `
       )}
       <div>
-        ${(this.disabled && value.length) || hideValue
-          ? nothing
-          : keyed(
-              value.length,
-              html`<ha-entity-state-picker
-                .hass=${this.hass}
-                .entityId=${this.entityId}
-                .attribute=${this.attribute}
-                .extraOptions=${this.extraOptions}
-                .hideStates=${hide}
-                .allowCustomValue=${this.allowCustomValue}
-                .label=${this.label}
-                .helper=${this.helper}
-                .disabled=${this.disabled}
-                .required=${this.required && !value.length}
-                @value-changed=${this._addValue}
-              ></ha-entity-state-picker>`
-            )}
+        ${
+          (this.disabled && value.length) || hideValue
+            ? nothing
+            : keyed(
+                value.length,
+                html`<ha-entity-state-picker
+                  .hass=${this.hass}
+                  .entityId=${this.entityId}
+                  .attribute=${this.attribute}
+                  .extraOptions=${this.extraOptions}
+                  .hideStates=${hide}
+                  .allowCustomValue=${this.allowCustomValue}
+                  .label=${this.label}
+                  .helper=${this.helper}
+                  .disabled=${this.disabled}
+                  .required=${this.required && !value.length}
+                  @value-changed=${this._addValue}
+                ></ha-entity-state-picker>`
+              )
+        }
       </div>
     `;
   }

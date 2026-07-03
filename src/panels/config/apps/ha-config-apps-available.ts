@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
+import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
@@ -23,8 +24,14 @@ import type {
   StoreAddon,
   SupervisorStore,
 } from "../../../data/supervisor/store";
-import { fetchSupervisorStore } from "../../../data/supervisor/store";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  addStoreRepository,
+  fetchSupervisorStore,
+} from "../../../data/supervisor/store";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
@@ -82,7 +89,15 @@ export class HaConfigAppsAvailable extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this._loadData();
+    const repositoryUrl = extractSearchParam("repository_url");
+    if (repositoryUrl) {
+      navigate("/config/apps/available", { replace: true });
+    }
+    this._loadData().then(() => {
+      if (repositoryUrl) {
+        this._addRepository(repositoryUrl);
+      }
+    });
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
@@ -139,19 +154,21 @@ export class HaConfigAppsAvailable extends LitElement {
             ${this.hass.localize("ui.panel.config.apps.store.registries")}
           </ha-dropdown-item>
         </ha-dropdown>
-        ${repos.length === 0
-          ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
-          : html`
-              <div class="search">
-                <ha-input-search
-                  appearance="outlined"
-                  .value=${this._filter}
-                  @input=${this._filterChanged}
-                ></ha-input-search>
-              </div>
+        ${
+          repos.length === 0
+            ? html`<hass-loading-screen no-toolbar></hass-loading-screen>`
+            : html`
+                <div class="search">
+                  <ha-input-search
+                    appearance="outlined"
+                    .value=${this._filter}
+                    @input=${this._filterChanged}
+                  ></ha-input-search>
+                </div>
 
-              ${repos}
-            `}
+                ${repos}
+              `
+        }
       </hass-subpage>
     `;
   }
@@ -224,6 +241,40 @@ export class HaConfigAppsAvailable extends LitElement {
 
   private _manageRegistries() {
     navigate("/config/apps/registries");
+  }
+
+  private async _addRepository(repositoryUrl: string): Promise<void> {
+    if (
+      !this._store ||
+      this._store.repositories.some((repo) => repo.source === repositoryUrl)
+    ) {
+      return;
+    }
+
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.apps.my.add_repository_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.apps.my.add_repository_store_description",
+          { repository: repositoryUrl }
+        ),
+        confirmText: this.hass.localize("ui.common.add"),
+        dismissText: this.hass.localize("ui.common.cancel"),
+      }))
+    ) {
+      return;
+    }
+
+    try {
+      await addStoreRepository(this.hass, repositoryUrl);
+      await this._loadData();
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: extractApiErrorMessage(err),
+      });
+    }
   }
 
   private async _loadData(): Promise<void> {

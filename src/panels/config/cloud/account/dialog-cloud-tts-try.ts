@@ -106,11 +106,13 @@ export class DialogTryTts extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.message"
             )}
-            .value=${this._message ||
-            this.hass.localize(
-              "ui.panel.config.cloud.account.tts.dialog.example_message",
-              { name: this.hass.user!.name }
-            )}
+            .value=${
+              this._message ||
+              this.hass.localize(
+                "ui.panel.config.cloud.account.tts.dialog.example_message",
+                { name: this.hass.user!.name }
+              )
+            }
           >
           </ha-textarea>
 
@@ -167,14 +169,15 @@ export class DialogTryTts extends LitElement {
     }
     this._message = message;
 
-    if (this._target === "browser") {
+    const target = this._target || "browser";
+    if (target === "browser") {
       // We create the audio element here + do a play, because iOS requires it to be done by user action
       const audio = new Audio();
       audio.play();
       this._playBrowser(message, audio);
     } else {
       this.hass.callService("tts", "cloud_say", {
-        entity_id: this._target,
+        entity_id: target,
         message,
       });
     }

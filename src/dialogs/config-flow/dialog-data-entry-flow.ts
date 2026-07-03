@@ -353,116 +353,131 @@ class DataEntryFlowDialog extends LitElement {
           ${dialogTitle}
         </div>
 
-        ${dialogSubtitle
-          ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
-          : nothing}
-        ${showDocumentationLink && !this._loading && this._step
-          ? html`
-              <a
-                slot="headerActionItems"
-                class="help"
-                href=${this._params.manifest!.is_built_in
-                  ? documentationUrl(
-                      this.hass,
-                      `/integrations/${this._params.manifest!.domain}`
-                    )
-                  : this._params.manifest!.documentation}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                <ha-icon-button
-                  .label=${this.hass.localize("ui.common.help")}
-                  .path=${mdiHelpCircleOutline}
-                >
-                </ha-icon-button
-              ></a>
-            `
-          : nothing}
-        <div>
-          ${this._loading || this._step === null
+        ${
+          dialogSubtitle
+            ? html` <div slot="headerSubtitle">${dialogSubtitle}</div>`
+            : nothing
+        }
+        ${
+          showDocumentationLink && !this._loading && this._step
             ? html`
-                <step-flow-loading
-                  .flowConfig=${this._params.flowConfig}
-                  .hass=${this.hass}
-                  .loadingReason=${this._loading!}
-                  .handler=${this._handler}
-                  .step=${this._step}
-                ></step-flow-loading>
+                <a
+                  slot="headerActionItems"
+                  class="help"
+                  href=${
+                    this._params.manifest!.is_built_in
+                      ? documentationUrl(
+                          this.hass,
+                          `/integrations/${this._params.manifest!.domain}`
+                        )
+                      : this._params.manifest!.documentation
+                  }
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.help")}
+                    .path=${mdiHelpCircleOutline}
+                  >
+                  </ha-icon-button
+                ></a>
               `
-            : this._step === undefined
-              ? // When we are going to next step, we render 1 round of empty
-                // to reset the element.
-                nothing
-              : html`
-                  ${this._step.type === "form"
-                    ? html`
-                        <step-flow-form
-                          ${ref(this._formStepRef)}
-                          autofocus
-                          narrow
-                          .flowConfig=${this._params.flowConfig}
-                          .step=${this._step}
-                          .hass=${this.hass}
-                          @flow-step-footer-state-changed=${this
-                            ._handleFooterStateChanged}
-                        ></step-flow-form>
-                      `
-                    : this._step.type === "external"
-                      ? html`
-                          <step-flow-external
-                            .flowConfig=${this._params.flowConfig}
-                            .step=${this._step}
-                            .hass=${this.hass}
-                          ></step-flow-external>
-                        `
-                      : this._step.type === "abort"
+            : nothing
+        }
+        <div>
+          ${
+            this._loading || this._step === null
+              ? html`
+                  <step-flow-loading
+                    .flowConfig=${this._params.flowConfig}
+                    .hass=${this.hass}
+                    .loadingReason=${this._loading!}
+                    .handler=${this._handler}
+                    .step=${this._step}
+                  ></step-flow-loading>
+                `
+              : this._step === undefined
+                ? // When we are going to next step, we render 1 round of empty
+                  // to reset the element.
+                  nothing
+                : html`
+                    ${
+                      this._step.type === "form"
                         ? html`
-                            <step-flow-abort
-                              ${ref(this._abortStepRef)}
-                              .params=${this._params}
+                            <step-flow-form
+                              ${ref(this._formStepRef)}
+                              autofocus
+                              narrow
+                              .flowConfig=${this._params.flowConfig}
                               .step=${this._step}
                               .hass=${this.hass}
-                              .handler=${this._step.handler}
-                              .domain=${this._params.domain ??
-                              this._step.handler}
-                            ></step-flow-abort>
+                              .domain=${this._params.domain ?? this._step.handler}
+                              @flow-step-footer-state-changed=${
+                                this._handleFooterStateChanged
+                              }
+                            ></step-flow-form>
                           `
-                        : this._step.type === "progress"
+                        : this._step.type === "external"
                           ? html`
-                              <step-flow-progress
+                              <step-flow-external
                                 .flowConfig=${this._params.flowConfig}
                                 .step=${this._step}
                                 .hass=${this.hass}
-                                .progress=${this._progress}
-                              ></step-flow-progress>
+                              ></step-flow-external>
                             `
-                          : this._step.type === "menu"
+                          : this._step.type === "abort"
                             ? html`
-                                <step-flow-menu
-                                  .flowConfig=${this._params.flowConfig}
+                                <step-flow-abort
+                                  ${ref(this._abortStepRef)}
+                                  .params=${this._params}
                                   .step=${this._step}
                                   .hass=${this.hass}
-                                ></step-flow-menu>
+                                  .handler=${this._step.handler}
+                                  .domain=${
+                                    this._params.domain ?? this._step.handler
+                                  }
+                                ></step-flow-abort>
                               `
-                            : html`
-                                <step-flow-create-entry
-                                  ${ref(this._createEntryStepRef)}
-                                  .flowConfig=${this._params.flowConfig}
-                                  .step=${this._step}
-                                  .hass=${this.hass}
-                                  .navigateToResult=${this._params
-                                    .navigateToResult ?? false}
-                                  @flow-step-footer-state-changed=${this
-                                    ._handleFooterStateChanged}
-                                  .devices=${this._devices(
-                                    this._params.flowConfig.showDevices,
-                                    Object.values(this.hass.devices),
-                                    this._step.result?.entry_id,
-                                    this._params.carryOverDevices
-                                  )}
-                                ></step-flow-create-entry>
-                              `}
-                `}
+                            : this._step.type === "progress"
+                              ? html`
+                                  <step-flow-progress
+                                    .flowConfig=${this._params.flowConfig}
+                                    .step=${this._step}
+                                    .hass=${this.hass}
+                                    .progress=${this._progress}
+                                  ></step-flow-progress>
+                                `
+                              : this._step.type === "menu"
+                                ? html`
+                                    <step-flow-menu
+                                      .flowConfig=${this._params.flowConfig}
+                                      .step=${this._step}
+                                      .hass=${this.hass}
+                                    ></step-flow-menu>
+                                  `
+                                : html`
+                                    <step-flow-create-entry
+                                      ${ref(this._createEntryStepRef)}
+                                      .flowConfig=${this._params.flowConfig}
+                                      .step=${this._step}
+                                      .hass=${this.hass}
+                                      .navigateToResult=${
+                                        this._params.navigateToResult ?? false
+                                      }
+                                      @flow-step-footer-state-changed=${
+                                        this._handleFooterStateChanged
+                                      }
+                                      .devices=${this._devices(
+                                        this._params.flowConfig.showDevices,
+                                        Object.values(this.hass.devices),
+                                        this._step.result?.entry_id,
+                                        this._params.carryOverDevices
+                                      )}
+                                    ></step-flow-create-entry>
+                                  `
+                    }
+                  `
+          }
         </div>
         ${this._renderFooter()}
       </ha-dialog>

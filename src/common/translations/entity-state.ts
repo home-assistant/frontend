@@ -46,8 +46,7 @@ export const computeFormatFunctions = async (
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"],
-  sensorNumericDeviceClasses: string[]
+  floors: HomeAssistant["floors"]
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
   formatEntityStateToParts: FormatEntityStateToPartsFunc;
@@ -66,25 +65,9 @@ export const computeFormatFunctions = async (
 
   return {
     formatEntityState: (stateObj, state) =>
-      computeStateDisplay(
-        localize,
-        stateObj,
-        locale,
-        sensorNumericDeviceClasses,
-        config,
-        entities,
-        state
-      ),
+      computeStateDisplay(localize, stateObj, locale, config, entities, state),
     formatEntityStateToParts: (stateObj, state) =>
-      computeStateToParts(
-        localize,
-        stateObj,
-        locale,
-        sensorNumericDeviceClasses,
-        config,
-        entities,
-        state
-      ),
+      computeStateToParts(localize, stateObj, locale, config, entities, state),
     formatEntityAttributeValue: (stateObj, attribute, value) =>
       computeAttributeValueDisplay(
         localize,

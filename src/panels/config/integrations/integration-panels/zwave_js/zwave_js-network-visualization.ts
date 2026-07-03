@@ -9,6 +9,7 @@ import { getDeviceArea } from "../../../../../common/entity/context/get_device_c
 import { navigate } from "../../../../../common/navigate";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/chart/ha-network-graph";
+import "../../../../../components/chart/ha-chart-tooltip-marker";
 import type {
   NetworkData,
   NetworkLink,
@@ -81,12 +82,15 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.navigation.visualization"
         )}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
-        ${this.narrow
-          ? html`<div slot="header">${this._renderInputSearch()}</div>`
-          : nothing}
+        ${
+          this.narrow
+            ? html`<div slot="header">${this._renderInputSearch()}</div>`
+            : nothing
+        }
         <ha-network-graph
           .hass=${this.hass}
           .searchFilter=${this._searchFilter}
@@ -150,7 +154,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     this._searchFilter = (ev.target as HaInputSearch).value ?? "";
   }
 
-  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+  private _tooltipFormatter = (params: TopLevelFormatterParams) => {
     const { dataType, data } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
@@ -160,39 +164,76 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         sourceDevice?.name_by_user ?? sourceDevice?.name ?? source;
       const targetName =
         targetDevice?.name_by_user ?? targetDevice?.name ?? target;
-      let tip = `${sourceName} → ${targetName}`;
       const route =
         this._nodeStatistics[source]?.lwr || this._nodeStatistics[source]?.nlwr;
-      if (route?.protocol_data_rate) {
-        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.data_rate")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}`)}`;
-      }
-      if (value) {
-        tip += `<br><b>RSSI:</b> ${value}`;
-      }
-      return tip;
+      return html`${sourceName} →
+      ${targetName}${
+        route?.protocol_data_rate
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.data_rate"
+                )}:</b
+              >
+              ${this.hass.localize(
+                `ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}` as any
+              )}`
+          : nothing
+      }${value ? html`<br /><b>RSSI:</b> ${value}` : nothing}`;
     }
     const { id, name } = data as any;
     const device = this._devices[id] as DeviceRegistryEntry | undefined;
     const nodeStatus = this._nodeStatuses[id];
-    let tip = `${(params as any).marker} ${name}`;
-    tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.node_id")}:</b> ${id}`;
-    if (device) {
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.manufacturer")}:</b> ${device.manufacturer || "-"}`;
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.model")}:</b> ${device.model || "-"}`;
-    }
-    if (nodeStatus) {
-      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.status")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.node_status.${nodeStatus.status}`)}`;
-      if (nodeStatus.zwave_plus_version) {
-        tip += `<br><b>Z-Wave Plus:</b> ${this.hass.localize("ui.panel.config.zwave_js.visualization.version")} ${nodeStatus.zwave_plus_version}`;
-      }
-    }
-    if (device) {
-      const area = getDeviceArea(device, this.hass.areas);
-      if (area) {
-        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.area")}:</b> ${area.name}`;
-      }
-    }
-    return tip;
+    const area = device ? getDeviceArea(device, this.hass.areas) : undefined;
+    return html`<ha-chart-tooltip-marker
+        .color=${String((params as CallbackDataParams).color ?? "")}
+      ></ha-chart-tooltip-marker>
+      ${name}<br /><b
+        >${this.hass.localize(
+          "ui.panel.config.zwave_js.visualization.node_id"
+        )}:</b
+      >
+      ${id}${
+        device
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.manufacturer"
+                )}:</b
+              >
+              ${device.manufacturer || "-"}<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.model"
+                )}:</b
+              >
+              ${device.model || "-"}`
+          : nothing
+      }${
+        nodeStatus
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.status"
+                )}:</b
+              >
+              ${this.hass.localize(
+                `ui.panel.config.zwave_js.node_status.${nodeStatus.status}` as any
+              )}${
+                nodeStatus.zwave_plus_version
+                  ? html`<br /><b>Z-Wave Plus:</b> ${this.hass.localize(
+                        "ui.panel.config.zwave_js.visualization.version"
+                      )}
+                      ${nodeStatus.zwave_plus_version}`
+                  : nothing
+              }`
+          : nothing
+      }${
+        area
+          ? html`<br /><b
+                >${this.hass.localize(
+                  "ui.panel.config.zwave_js.visualization.area"
+                )}:</b
+              >
+              ${area.name}`
+          : nothing
+      }`;
   };
 
   private _getNetworkData = memoizeOne(
@@ -252,8 +293,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           controllerNode = node.node_id;
         }
         const device = this._devices[node.node_id] as
-          | DeviceRegistryEntry
-          | undefined;
+          DeviceRegistryEntry | undefined;
         const area = device
           ? getDeviceArea(device, this.hass.areas)
           : undefined;

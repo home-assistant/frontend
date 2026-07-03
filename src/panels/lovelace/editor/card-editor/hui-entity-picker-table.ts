@@ -134,7 +134,6 @@ export class HuiEntityPickerTable extends LitElement {
           template: (entity) => html`
             <state-badge
               @click=${this._handleEntityClicked}
-              .hass=${this.hass!}
               .stateObj=${entity.stateObj}
             ></state-badge>
           `,
@@ -160,16 +159,20 @@ export class HuiEntityPickerTable extends LitElement {
             return html`
               <div @click=${this._handleEntityClicked} style="cursor: pointer;">
                 ${primary}
-                ${secondary
-                  ? html`<div class="secondary">${secondary}</div>`
-                  : nothing}
-                ${narrow && showEntityId
-                  ? html`
-                      <div class="secondary" style=${ENTITY_ID_STYLE}>
-                        ${entity.entity_id}
-                      </div>
-                    `
-                  : nothing}
+                ${
+                  secondary
+                    ? html`<div class="secondary">${secondary}</div>`
+                    : nothing
+                }
+                ${
+                  narrow && showEntityId
+                    ? html`
+                        <div class="secondary" style=${ENTITY_ID_STYLE}>
+                          ${entity.entity_id}
+                        </div>
+                      `
+                    : nothing
+                }
               </div>
             `;
           },
@@ -219,7 +222,6 @@ export class HuiEntityPickerTable extends LitElement {
         hidden: narrow,
         template: (entity) => html`
           <ha-relative-time
-            .hass=${this.hass!}
             .datetime=${entity.last_changed}
             capitalize
           ></ha-relative-time>
@@ -261,5 +263,8 @@ export class HuiEntityPickerTable extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-entity-picker-table": HuiEntityPickerTable;
+  }
+  interface HASSDomEvents {
+    "selected-changed": { selectedEntities: string[] };
   }
 }

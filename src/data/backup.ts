@@ -181,7 +181,7 @@ export interface RestoreBackupParams {
   restore_homeassistant?: boolean;
 }
 
-export const fetchBackupConfig = (hass: HomeAssistant) =>
+export const fetchBackupConfig = (hass: Pick<HomeAssistant, "callWS">) =>
   hass.callWS<{ config: BackupConfig }>({ type: "backup/config/info" });
 
 export const updateBackupConfig = (
@@ -485,6 +485,12 @@ export const getFormattedBackupTime = memoizeOne(
 );
 
 export const SUPPORTED_UPLOAD_FORMAT = "application/x-tar";
+
+// Browsers report the MIME type of a .tar inconsistently (Firefox on Windows
+// gives an empty or different type), so accept it by extension as well.
+export const isSupportedBackupFile = (file: File): boolean =>
+  file.type === SUPPORTED_UPLOAD_FORMAT ||
+  file.name.toLowerCase().endsWith(".tar");
 
 export interface BackupUploadFileFormData {
   file?: File;

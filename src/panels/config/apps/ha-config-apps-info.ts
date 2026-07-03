@@ -2,7 +2,6 @@ import { mdiOpenInNew, mdiPuzzle } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
@@ -58,14 +57,9 @@ class HaConfigAppsInfo extends LitElement {
               </h2>
               <p>
                 ${this.hass.localize(
-                  "ui.panel.config.apps.info.why_not_available_description"
-                )}
-              </p>
-              <ha-alert alert-type="info">
-                ${this.hass.localize(
                   "ui.panel.config.apps.info.installation_hint"
                 )}
-              </ha-alert>
+              </p>
             </div>
             <div class="card-actions">
               <ha-button
@@ -144,14 +138,9 @@ class HaConfigAppsInfo extends LitElement {
         }
 
         p {
-          margin: 0 0 var(--ha-space-3);
+          margin: 0;
           line-height: var(--ha-line-height-normal);
           color: var(--secondary-text-color);
-        }
-
-        ha-alert {
-          display: block;
-          margin-top: var(--ha-space-2);
         }
 
         .card-actions {

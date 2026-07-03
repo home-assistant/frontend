@@ -1,6 +1,7 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAppleKeyboardCommand,
+  mdiCommentEditOutline,
   mdiContentCopy,
   mdiContentCut,
   mdiContentPaste,
@@ -34,6 +35,7 @@ import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
+import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
 import "./ha-automation-sidebar-card";
 
@@ -123,9 +125,11 @@ export default class HaAutomationSidebarCondition extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle"
-        >${subtitle}${rowDisabled
-          ? ` (${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
-          : ""}</span
+        >${subtitle}${
+          rowDisabled
+            ? ` (${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")})`
+            : ""
+        }</span
       >
       <ha-dropdown-item slot="menu-items" value="test">
         <ha-svg-icon slot="icon" .path=${mdiFlask}></ha-svg-icon>
@@ -145,6 +149,19 @@ export default class HaAutomationSidebarCondition extends LitElement {
         <div class="overflow-label">
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.rename"
+          )}
+          <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
+        </div>
+      </ha-dropdown-item>
+      <ha-dropdown-item
+        slot="menu-items"
+        value="edit_note"
+        .disabled=${this.disabled}
+      >
+        <ha-svg-icon slot="icon" .path=${mdiCommentEditOutline}></ha-svg-icon>
+        <div class="overflow-label">
+          ${this.hass.localize(
+            `ui.panel.config.automation.editor.note.${this.config.config.note ? "edit" : "add"}`
           )}
           <span class="shortcut-placeholder ${isMac ? "mac" : ""}"></span>
         </div>
@@ -175,21 +192,25 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.copy"
           )}
-          ${!this.narrow
-            ? html`<span class="shortcut">
-                <span
-                  >${isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )}</span
-                >
-                <span>+</span>
-                <span>C</span>
-              </span>`
-            : nothing}
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${
+                      isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )
+                    }</span
+                  >
+                  <span>+</span>
+                  <span>C</span>
+                </span>`
+              : nothing
+          }
         </div>
       </ha-dropdown-item>
 
@@ -203,54 +224,64 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.triggers.cut"
           )}
-          ${!this.narrow
-            ? html`<span class="shortcut">
-                <span
-                  >${isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )}</span
-                >
-                <span>+</span>
-                <span>X</span>
-              </span>`
-            : nothing}
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${
+                      isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )
+                    }</span
+                  >
+                  <span>+</span>
+                  <span>X</span>
+                </span>`
+              : nothing
+          }
         </div>
       </ha-dropdown-item>
-      ${this.config.pasteAvailable()
-        ? html`
-            <ha-dropdown-item
-              slot="menu-items"
-              value="paste"
-              .disabled=${this.disabled}
-            >
-              <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
-              <div class="overflow-label">
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.paste"
-                )}
-                ${!this.narrow
-                  ? html`<span class="shortcut">
-                      <span
-                        >${isMac
-                          ? html`<ha-svg-icon
-                              .path=${mdiAppleKeyboardCommand}
-                            ></ha-svg-icon>`
-                          : this.hass.localize(
-                              "ui.panel.config.automation.editor.ctrl"
-                            )}</span
-                      >
-                      <span>+</span>
-                      <span>V</span>
-                    </span>`
-                  : nothing}
-              </div>
-            </ha-dropdown-item>
-          `
-        : nothing}
+      ${
+        this.config.pasteAvailable()
+          ? html`
+              <ha-dropdown-item
+                slot="menu-items"
+                value="paste"
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiContentPaste}></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.paste"
+                  )}
+                  ${
+                    !this.narrow
+                      ? html`<span class="shortcut">
+                          <span
+                            >${
+                              isMac
+                                ? html`<ha-svg-icon
+                                    .path=${mdiAppleKeyboardCommand}
+                                  ></ha-svg-icon>`
+                                : this.hass.localize(
+                                    "ui.panel.config.automation.editor.ctrl"
+                                  )
+                            }</span
+                          >
+                          <span>+</span>
+                          <span>V</span>
+                        </span>`
+                      : nothing
+                  }
+                </div>
+              </ha-dropdown-item>
+            `
+          : nothing
+      }
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
@@ -293,45 +324,59 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.delete"
           )}
-          ${!this.narrow
-            ? html`<span class="shortcut">
-                <span
-                  >${isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )}</span
-                >
-                <span>+</span>
-                <span
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.del"
-                  )}</span
-                >
-              </span>`
-            : nothing}
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${
+                      isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )
+                    }</span
+                  >
+                  <span>+</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.del"
+                    )}</span
+                  >
+                </span>`
+              : nothing
+          }
         </div>
       </ha-dropdown-item>
-      ${description && !this.yamlMode
-        ? html`<div class="description">${description}</div>`
-        : keyed(
-            this.sidebarKey,
-            html`<ha-automation-condition-editor
-              class="sidebar-editor"
-              .hass=${this.hass}
-              .condition=${this.config.config}
-              .description=${this.config.description}
-              .yamlMode=${this.yamlMode}
-              .uiSupported=${this.config.uiSupported}
-              @value-changed=${this._valueChangedSidebar}
-              @yaml-changed=${this._yamlChangedSidebar}
-              .disabled=${this.disabled}
-              @ui-mode-not-available=${this._handleUiModeNotAvailable}
-              sidebar
-            ></ha-automation-condition-editor>`
-          )}
+      ${
+        description && !this.yamlMode
+          ? html`<div class="description">${description}</div>`
+          : keyed(
+              this.sidebarKey,
+              html`<ha-automation-condition-editor
+                class="sidebar-editor"
+                .hass=${this.hass}
+                .condition=${this.config.config}
+                .description=${this.config.description}
+                .yamlMode=${this.yamlMode}
+                .uiSupported=${this.config.uiSupported}
+                @value-changed=${this._valueChangedSidebar}
+                @yaml-changed=${this._yamlChangedSidebar}
+                .disabled=${this.disabled}
+                @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                sidebar
+              ></ha-automation-condition-editor>`
+            )
+      }
+      ${
+        this.config.config.note?.trim() && !this.yamlMode
+          ? html`<ha-automation-note
+              @edit-note=${this.config.editNote}
+              .note=${this.config.config.note}
+            ></ha-automation-note>`
+          : nothing
+      }
       <div class="testing-wrapper">
         <div
           class="testing ${classMap({
@@ -341,13 +386,15 @@ export default class HaAutomationSidebarCondition extends LitElement {
             narrow: this.narrow,
           })}"
         >
-          ${this._testingResult === undefined
-            ? nothing
-            : this.hass.localize(
-                `ui.panel.config.automation.editor.conditions.testing_${
-                  this._testingResult ? "pass" : "error"
-                }`
-              )}
+          ${
+            this._testingResult === undefined
+              ? nothing
+              : this.hass.localize(
+                  `ui.panel.config.automation.editor.conditions.testing_${
+                    this._testingResult ? "pass" : "error"
+                  }`
+                )
+          }
         </div>
       </div>
     </ha-automation-sidebar-card>`;
@@ -395,6 +442,9 @@ export default class HaAutomationSidebarCondition extends LitElement {
     switch (action) {
       case "rename":
         this.config.rename();
+        break;
+      case "edit_note":
+        this.config.editNote();
         break;
       case "test":
         this.config.test();

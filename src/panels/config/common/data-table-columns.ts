@@ -7,7 +7,7 @@ import type { DataTableColumnData } from "../../../components/data-table/ha-data
 import { slugify } from "../../../common/string/slugify";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
-import { isUnavailableState } from "../../../data/entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import "../../../components/ha-tooltip";
 import "../../../components/ha-svg-icon";
 
@@ -92,21 +92,23 @@ export function getEditableTableColumn<T>(
     minWidth: "88px",
     maxWidth: "88px",
     template: (entry: any) => html`
-      ${!entry.editable
-        ? html`
-            <ha-svg-icon
-              .id="icon-edit-${slugify(entry.entity_id)}"
-              .path=${mdiPencilOff}
-              style="color: var(--secondary-text-color)"
-            ></ha-svg-icon>
-            <ha-tooltip
-              .for="icon-edit-${slugify(entry.entity_id)}"
-              placement="left"
-            >
-              ${tooltip}
-            </ha-tooltip>
-          `
-        : nothing}
+      ${
+        !entry.editable
+          ? html`
+              <ha-svg-icon
+                .id="icon-edit-${slugify(entry.entity_id)}"
+                .path=${mdiPencilOff}
+                style="color: var(--secondary-text-color)"
+              ></ha-svg-icon>
+              <ha-tooltip
+                .for="icon-edit-${slugify(entry.entity_id)}"
+                placement="left"
+              >
+                ${tooltip}
+              </ha-tooltip>
+            `
+          : nothing
+      }
     `,
   };
 }
@@ -146,7 +148,11 @@ export const renderRelativeTimeColumn = (
   localize: LocalizeFunc,
   hass: HomeAssistant
 ) => {
-  if (!valueRelativeTime || isUnavailableState(valueRelativeTime)) {
+  if (
+    !valueRelativeTime ||
+    valueRelativeTime === UNAVAILABLE ||
+    valueRelativeTime === UNKNOWN
+  ) {
     return localize("ui.components.relative_time.never");
   }
   const date = new Date(valueRelativeTime);
@@ -159,12 +165,14 @@ export const renderRelativeTimeColumn = (
   );
   const elementId = valueName + "-" + slugify(entity_id);
   return html`
-    ${dayDifference > 3
-      ? formattedTime
-      : html`
-          <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
-          <span id=${elementId}>${relativeTime(date, hass.locale)}</span>
-        `}
+    ${
+      dayDifference > 3
+        ? formattedTime
+        : html`
+            <ha-tooltip for=${elementId}>${formattedTime}</ha-tooltip>
+            <span id=${elementId}>${relativeTime(date, hass.locale)}</span>
+          `
+    }
   `;
 };
 
@@ -195,10 +203,12 @@ export function getModifiedAtTableColumn<T>(
 }
 
 const renderDateTimeColumn = (valueDateTime: number, hass: HomeAssistant) =>
-  html`${valueDateTime
-    ? formatShortDateTimeWithConditionalYear(
-        new Date(valueDateTime * 1000),
-        hass.locale,
-        hass.config
-      )
-    : nothing}`;
+  html`${
+    valueDateTime
+      ? formatShortDateTimeWithConditionalYear(
+          new Date(valueDateTime * 1000),
+          hass.locale,
+          hass.config
+        )
+      : nothing
+  }`;

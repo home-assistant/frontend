@@ -21,10 +21,7 @@ export type SystemCheckValueObject =
   | SystemCheckValuePendingObject;
 
 export type SystemCheckValue =
-  | string
-  | number
-  | boolean
-  | SystemCheckValueObject;
+  string | number | boolean | SystemCheckValueObject;
 
 export type SystemHealthInfo = Partial<{
   homeassistant: {

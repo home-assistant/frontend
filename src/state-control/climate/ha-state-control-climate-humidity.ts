@@ -1,12 +1,17 @@
+import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { domainStateColorProperties } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
@@ -14,9 +19,9 @@ import "../../components/ha-outlined-icon-button";
 import "../../components/ha-svg-icon";
 import type { ClimateEntity } from "../../data/climate";
 import { ClimateEntityFeature } from "../../data/climate";
+import { apiContext, formattersContext } from "../../data/context";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import { computeCssVariable } from "../../resources/css-variables";
-import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,
@@ -24,9 +29,19 @@ import {
 
 @customElement("ha-state-control-climate-humidity")
 export class HaStateControlClimateHumidity extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: ClimateEntity;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: "show-current", type: Boolean })
   public showCurrent = false;
@@ -57,23 +72,23 @@ export class HaStateControlClimateHumidity extends LitElement {
     return this.stateObj.attributes.max_humidity ?? 100;
   }
 
-  private _valueChanged(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanged(ev: HASSDomEvent<HASSDomEvents["value-changed"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this._targetHumidity = value;
     this._callService();
   }
 
-  private _valueChanging(ev: CustomEvent) {
-    const value = (ev.detail as any).value;
-    if (isNaN(value)) return;
+  private _valueChanging(ev: HASSDomEvent<HASSDomEvents["value-changing"]>) {
+    const { value } = ev.detail;
+    if (typeof value !== "number" || isNaN(value)) return;
     this._targetHumidity = value;
   }
 
   private _debouncedCallService = debounce(() => this._callService(), 1000);
 
   private _callService() {
-    this.hass.callService("climate", "set_humidity", {
+    this._api.callService("climate", "set_humidity", {
       entity_id: this.stateObj!.entity_id,
       humidity: this._targetHumidity,
     });
@@ -94,21 +109,21 @@ export class HaStateControlClimateHumidity extends LitElement {
     if (this.stateObj.state === UNAVAILABLE) {
       return html`
         <p class="label disabled">
-          ${this.hass.formatEntityState(this.stateObj, UNAVAILABLE)}
+          ${this._formatters.formatEntityState(this.stateObj, UNAVAILABLE)}
         </p>
       `;
     }
 
     if (!this._targetHumidity) {
       return html`
-        <p class="label">${this.hass.formatEntityState(this.stateObj)}</p>
+        <p class="label">
+          ${this._formatters.formatEntityState(this.stateObj)}
+        </p>
       `;
     }
 
     return html`
-      <p class="label">
-        ${this.hass.localize("ui.card.climate.humidity_target")}
-      </p>
+      <p class="label">${this._localize("ui.card.climate.humidity_target")}</p>
     `;
   }
 
@@ -141,7 +156,6 @@ export class HaStateControlClimateHumidity extends LitElement {
         .value=${humidity}
         unit="%"
         unit-position="bottom"
-        .hass=${this.hass}
         .formatOptions=${formatOptions}
       ></ha-big-number>
     `;
@@ -156,7 +170,7 @@ export class HaStateControlClimateHumidity extends LitElement {
       <p class="label">
         <ha-svg-icon .path=${mdiWaterPercent}></ha-svg-icon>
         <span>
-          ${this.hass.formatEntityAttributeValue(
+          ${this._formatters.formatEntityAttributeValue(
             this.stateObj,
             "current_humidity",
             humidity

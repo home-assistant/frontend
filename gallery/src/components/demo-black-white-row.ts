@@ -1,25 +1,83 @@
-import type { TemplateResult, PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, css, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-button";
 import type { HaButton } from "../../../src/components/ha-button";
+import type { ThemeSettings } from "../../../src/types";
+import {
+  applyFlippedGalleryTheme,
+  effectiveGalleryDarkMode,
+  loadGalleryThemeSettings,
+} from "../common/theme";
+
+const mql = matchMedia("(prefers-color-scheme: dark)");
 
 @customElement("demo-black-white-row")
 class DemoBlackWhiteRow extends LitElement {
   // eslint-disable-next-line lit/no-native-attributes
   @property() title!: string;
 
-  @property() value?: any;
+  @property({ attribute: false }) value?: unknown;
 
   @property({ type: Boolean }) public disabled = false;
 
+  @state() private _themeSettings = loadGalleryThemeSettings();
+
+  @state() private _systemDark = mql.matches;
+
+  @query(".flipped") private _flipped?: HTMLElement;
+
+  connectedCallback() {
+    super.connectedCallback();
+    mql.addEventListener("change", this._systemDarkChanged);
+    window.addEventListener(
+      "theme-settings-changed",
+      this._themeSettingsChanged as EventListener
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    mql.removeEventListener("change", this._systemDarkChanged);
+    window.removeEventListener(
+      "theme-settings-changed",
+      this._themeSettingsChanged as EventListener
+    );
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    this._applyFlippedTheme();
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
+    if (
+      changedProperties.has("_themeSettings") ||
+      changedProperties.has("_systemDark")
+    ) {
+      this._applyFlippedTheme();
+    }
+  }
+
   protected render(): TemplateResult {
+    const currentLabel = effectiveGalleryDarkMode(
+      this._themeSettings,
+      this._systemDark
+    )
+      ? "Dark mode"
+      : "Light mode";
+    const flippedLabel =
+      currentLabel === "Dark mode" ? "Light mode" : "Dark mode";
+
     return html`
       <div class="row">
-        <div class="content light">
+        <section class="content current" aria-label=${currentLabel}>
+          <h2>${currentLabel}</h2>
           <ha-card .header=${this.title}>
             <div class="card-content">
               <slot name="light"></slot>
@@ -30,8 +88,9 @@ class DemoBlackWhiteRow extends LitElement {
               </ha-button>
             </div>
           </ha-card>
-        </div>
-        <div class="content dark">
+        </section>
+        <section class="content flipped" aria-label=${flippedLabel}>
+          <h2>${flippedLabel}</h2>
           <ha-card .header=${this.title}>
             <div class="card-content">
               <slot name="dark"></slot>
@@ -42,68 +101,89 @@ class DemoBlackWhiteRow extends LitElement {
               </ha-button>
             </div>
           </ha-card>
-          ${this.value
-            ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
-            : nothing}
-        </div>
+          ${
+            this.value
+              ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
+              : nothing
+          }
+        </section>
       </div>
     `;
   }
 
-  firstUpdated(changedProps: PropertyValues<this>) {
-    super.firstUpdated(changedProps);
-    applyThemesOnElement(
-      this.shadowRoot!.querySelector(".dark"),
-      {
-        default_theme: "default",
-        default_dark_theme: "default",
-        themes: {},
-        darkMode: true,
-        theme: "default",
-      },
-      undefined,
-      undefined,
-      true
-    );
-  }
+  handleSubmit(ev: Event) {
+    const content = (ev.target as HaButton).closest(".content");
+    if (!content) {
+      return;
+    }
 
-  handleSubmit(ev) {
-    const content = (ev.target as HaButton).closest(".content")!;
     fireEvent(this, "submitted" as any, {
-      slot: content.classList.contains("light") ? "light" : "dark",
+      slot: content.classList.contains("current") ? "light" : "dark",
     });
   }
 
+  private _themeSettingsChanged = (
+    ev: HASSDomEvent<Partial<ThemeSettings>>
+  ) => {
+    this._themeSettings = {
+      ...this._themeSettings,
+      ...ev.detail,
+      theme: "default",
+    };
+  };
+
+  private _systemDarkChanged = (ev: MediaQueryListEvent) => {
+    this._systemDark = ev.matches;
+  };
+
+  private _applyFlippedTheme() {
+    if (!this._flipped) {
+      return;
+    }
+
+    applyFlippedGalleryTheme(
+      this._flipped,
+      this._themeSettings,
+      this._systemDark
+    );
+  }
+
   static styles = css`
+    :host {
+      display: block;
+      flex: 1;
+      min-block-size: 100%;
+    }
     .row {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      inline-size: 100%;
+      min-block-size: 100%;
     }
     .content {
-      padding: 50px 0;
+      box-sizing: border-box;
+      min-inline-size: 0;
+      padding: var(--ha-space-8);
       background-color: var(--primary-background-color);
-    }
-    .light {
-      flex: 1;
-      padding-left: 50px;
-      padding-right: 50px;
-      box-sizing: border-box;
-    }
-    .light ha-card {
-      margin-left: auto;
-    }
-    .dark {
+      color: var(--primary-text-color);
       display: flex;
-      flex: 1;
-      padding-left: 50px;
-      box-sizing: border-box;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: var(--ha-space-4);
     }
     ha-card {
-      width: 400px;
+      width: 100%;
+    }
+    h2 {
+      margin: 0;
+      color: var(--primary-text-color);
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-normal);
     }
     pre {
-      width: 300px;
-      margin: 0 16px 0;
+      box-sizing: border-box;
+      width: 100%;
+      margin: 0;
       overflow: auto;
       color: var(--primary-text-color);
     }
@@ -112,27 +192,18 @@ class DemoBlackWhiteRow extends LitElement {
       flex-direction: row-reverse;
       border-top: none;
     }
-    @media only screen and (max-width: 1500px) {
-      .light {
-        flex: initial;
-      }
-    }
     @media only screen and (max-width: 1000px) {
-      .light,
-      .dark {
+      .row {
+        grid-template-columns: 1fr;
+      }
+      .content {
         padding: 16px;
       }
-      .row,
-      .dark {
-        flex-direction: column;
-      }
       ha-card {
-        margin: 0 auto;
         width: 100%;
-        max-width: 400px;
       }
       pre {
-        margin: 16px auto;
+        margin: 0;
       }
     }
   `;

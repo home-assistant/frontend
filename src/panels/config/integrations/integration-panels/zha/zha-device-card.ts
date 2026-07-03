@@ -91,7 +91,6 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
                     <state-badge
                       @click=${this._openMoreInfo}
                       .title=${entity.stateName!}
-                      .hass=${this.hass}
                       .stateObj=${this.hass!.states[entity.entity_id]}
                       slot="item-icon"
                     ></state-badge>
@@ -107,7 +106,6 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
             )}
           ></ha-input>
           <ha-area-picker
-            .hass=${this.hass}
             .device=${this.device.device_reg_id}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>

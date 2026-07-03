@@ -1,5 +1,10 @@
 import { consume } from "@lit/context";
-import type { CSSResult, LitElement, TemplateResult } from "lit";
+import type {
+  CSSResult,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
@@ -7,13 +12,15 @@ import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
-import { fullEntitiesContext } from "../../../data/context";
+import type { AutomationMigrationReport } from "../../../data/automation";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import type { Constructor, HomeAssistant, Route } from "../../../types";
 import type { EntityRegistryUpdate } from "./automation-save-dialog/show-dialog-automation-save";
 
@@ -73,7 +80,7 @@ export const automationScriptEditorStyles: CSSResult = css`
 
 export interface EditorDomainHooks<TConfig> {
   fetchFileConfig(hass: HomeAssistant, id: string): Promise<TConfig>;
-  normalizeConfig(raw: TConfig): TConfig;
+  normalizeConfig(raw: TConfig, report?: AutomationMigrationReport): TConfig;
   checkValidation(): Promise<void>;
   domain: "automation" | "script";
 }
@@ -81,7 +88,9 @@ export interface EditorDomainHooks<TConfig> {
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
-  class AutomationScriptEditorClass extends superClass {
+  class AutomationScriptEditorClass extends DirtyStateProviderMixin<TConfig>()(
+    superClass
+  ) {
     @property({ attribute: false }) public hass!: HomeAssistant;
 
     @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -96,8 +105,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @consume({ context: fullEntitiesContext, subscribe: true })
     entityRegistry?: EntityRegistryEntry[];
 
-    @state() protected dirty = false;
-
     @state() protected errors?: string;
 
     @state() protected yamlErrors?: string;
@@ -109,6 +116,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @state() protected readOnly = false;
 
     @state() protected saving = false;
+
+    @state() protected deprecatedConfigMigrated = false;
 
     @state() protected validationErrors?: (string | TemplateResult)[];
 
@@ -135,6 +144,41 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected entityRegCreated?: (
       value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
     ) => void;
+
+    private _relatedContextAreaId?: string;
+
+    protected willUpdate(changedProps: PropertyValues): void {
+      super.willUpdate(changedProps);
+      if (
+        changedProps.has("currentEntityId") ||
+        changedProps.has("entityRegistry")
+      ) {
+        this._setRelatedContext();
+      }
+    }
+
+    private _setRelatedContext(): void {
+      const areaId = this.currentEntityId
+        ? this.entityRegistry?.find(
+            ({ entity_id }) => entity_id === this.currentEntityId
+          )?.area_id || undefined
+        : undefined;
+
+      if (areaId === this._relatedContextAreaId) {
+        return;
+      }
+
+      this._relatedContextAreaId = areaId;
+      fireRelatedContext(
+        this,
+        areaId
+          ? {
+              itemType: "area",
+              itemId: areaId,
+            }
+          : undefined
+      );
+    }
 
     protected renderLoading(): TemplateResult {
       return html`
@@ -175,7 +219,9 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
 
     protected takeControlSave() {
       this.readOnly = false;
-      this.dirty = true;
+      // Force dirty: set baseline to null so current config always differs
+      this._initDirtyTracking({ type: "deep" }, null as unknown as TConfig);
+      this._updateDirtyState(this.config!);
       this.blueprintConfig = undefined;
     }
 
@@ -195,10 +241,6 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
     };
 
-    protected get isDirty() {
-      return this.dirty;
-    }
-
     protected async promptDiscardChanges() {
       return this.confirmUnsavedChanged();
     }
@@ -217,9 +259,14 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       const domain = hooks.domain;
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
-        this.dirty = false;
         this.readOnly = false;
-        this.config = hooks.normalizeConfig(config);
+        const report: AutomationMigrationReport = { deprecated: false };
+        this.config = hooks.normalizeConfig(config, report);
+        // The config is loaded as its migrated (clean) version, so it never
+        // looks dirty. Surface an alert offering to save when deprecated
+        // options were migrated.
+        this.deprecatedConfigMigrated = report.deprecated;
+        this._initDirtyTracking({ type: "deep" }, this.config);
         hooks.checkValidation();
       } catch (err: any) {
         if (err.status_code !== 404) {

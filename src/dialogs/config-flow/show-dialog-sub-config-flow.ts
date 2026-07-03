@@ -174,15 +174,17 @@ export const showSubConfigFlowDialog = (
             "ui.panel.config.integrations.config_flow.external_step.description"
           )}
         </p>
-        ${description
-          ? html`
-              <ha-markdown
-                allowsvg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : ""}
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  allowsvg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : ""
+        }
       `;
     },
 
@@ -195,15 +197,17 @@ export const showSubConfigFlowDialog = (
       );
 
       return html`
-        ${description
-          ? html`
-              <ha-markdown
-                allowsvg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : nothing}
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  allowsvg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : nothing
+        }
       `;
     },
 
