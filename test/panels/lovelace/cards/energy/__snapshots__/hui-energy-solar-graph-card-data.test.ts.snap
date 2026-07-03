@@ -6434,7 +6434,7 @@ exports[`generateEnergySolarGraphData > matches snapshot with hourly forecast da
   "end": 2024-01-03T00:00:00.000Z,
   "start": 2024-01-01T00:00:00.000Z,
   "total": 45.402,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
