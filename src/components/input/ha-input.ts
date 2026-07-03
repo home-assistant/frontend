@@ -228,13 +228,17 @@ export class HaInput extends WaInputMixin(LitElement) {
         @wa-invalid=${this._handleInvalid}
         exportparts="base:wa-base, hint:wa-hint, input:wa-input"
       >
-        ${this.label || hasLabelSlot
-          ? html`<slot name="label" slot="label"
-              >${this.label
-                ? this._renderLabel(this.label, this.required)
-                : nothing}</slot
-            >`
-          : nothing}
+        ${
+          this.label || hasLabelSlot
+            ? html`<slot name="label" slot="label"
+                >${
+                  this.label
+                    ? this._renderLabel(this.label, this.required)
+                    : nothing
+                }</slot
+              >`
+            : nothing
+        }
         <slot name="start" slot="start" @slotchange=${this._syncStartSlotWidth}>
           ${this.renderStartDefault()}
         </slot>
@@ -242,8 +246,9 @@ export class HaInput extends WaInputMixin(LitElement) {
         <slot name="clear-button" slot="clear-button">
           <ha-icon-button
             @click=${this._handleClearClick}
-            .label=${this.i18n?.localize?.("ui.components.input.clear") ||
-            "Clear"}
+            .label=${
+              this.i18n?.localize?.("ui.components.input.clear") || "Clear"
+            }
             .path=${mdiClose}
           ></ha-icon-button>
         </slot>
@@ -251,9 +256,11 @@ export class HaInput extends WaInputMixin(LitElement) {
           <ha-icon-button
             @keydown=${stopPropagation}
             @click=${this._handlePasswordToggle}
-            .label=${this.i18n?.localize?.(
-              `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
-            ) || (this.passwordVisible ? "Hide password" : "Show password")}
+            .label=${
+              this.i18n?.localize?.(
+                `ui.components.input.${this.passwordVisible ? "hide_password" : "show_password"}`
+              ) || (this.passwordVisible ? "Hide password" : "Show password")
+            }
             .path=${this.passwordVisible ? mdiEyeOff : mdiEye}
           ></ha-icon-button>
         </slot>
@@ -265,10 +272,12 @@ export class HaInput extends WaInputMixin(LitElement) {
           role=${ifDefined(this.invalid || this._invalid ? "alert" : undefined)}
           aria-live="polite"
         >
-          ${this._invalid || this.invalid
-            ? this.validationMessage || this._input?.validationMessage
-            : this.hint ||
-              (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)}
+          ${
+            this._invalid || this.invalid
+              ? this.validationMessage || this._input?.validationMessage
+              : this.hint ||
+                (hasHintSlot ? html`<slot name="hint"></slot>` : nothing)
+          }
         </div>
       </wa-input>
     `;

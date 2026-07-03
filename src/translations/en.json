@@ -1459,7 +1459,7 @@
           "automations": "[%key:ui::panel::config::automation::caption%]",
           "scenes": "[%key:ui::panel::config::scene::caption%]",
           "scripts": "[%key:ui::panel::config::script::caption%]",
-          "developer_tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+          "tools": "[%key:ui::panel::config::dashboard::tools::main%]",
           "integrations": "[%key:ui::panel::config::integrations::caption%]",
           "devices": "[%key:ui::panel::config::devices::caption%]",
           "entities": "[%key:ui::panel::config::entities::caption%]"
@@ -1485,45 +1485,45 @@
         "navigate_title": "Navigate",
         "commands": {
           "reload": {
-            "all": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::all%]",
-            "reload": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::reload%]",
-            "core": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::core%]",
-            "group": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::group%]",
-            "automation": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::automation%]",
-            "script": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::script%]",
-            "scene": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::scene%]",
-            "person": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::person%]",
-            "zone": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::zone%]",
-            "input_boolean": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
-            "input_button": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_button%]",
-            "input_text": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_text%]",
-            "input_number": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_number%]",
-            "input_datetime": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
-            "input_select": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::input_select%]",
-            "template": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::template%]",
-            "universal": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::universal%]",
-            "rest": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::rest%]",
-            "command_line": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::command_line%]",
-            "filter": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::filter%]",
-            "statistics": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::statistics%]",
-            "generic": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::generic%]",
-            "generic_thermostat": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::generic_thermostat%]",
-            "homekit": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::homekit%]",
-            "min_max": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::min_max%]",
-            "history_stats": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::history_stats%]",
-            "trend": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::trend%]",
-            "ping": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::ping%]",
-            "filesize": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::filesize%]",
-            "telegram": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::telegram%]",
-            "smtp": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::smtp%]",
-            "mqtt": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::mqtt%]",
-            "rpi_gpio": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::rpi_gpio%]",
-            "themes": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::reloading::themes%]"
+            "all": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::all%]",
+            "reload": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::reload%]",
+            "core": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::core%]",
+            "group": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::group%]",
+            "automation": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::automation%]",
+            "script": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::script%]",
+            "scene": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::scene%]",
+            "person": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::person%]",
+            "zone": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::zone%]",
+            "input_boolean": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::input_boolean%]",
+            "input_button": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::input_button%]",
+            "input_text": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::input_text%]",
+            "input_number": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::input_number%]",
+            "input_datetime": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::input_datetime%]",
+            "input_select": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::input_select%]",
+            "template": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::template%]",
+            "universal": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::universal%]",
+            "rest": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::rest%]",
+            "command_line": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::command_line%]",
+            "filter": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::filter%]",
+            "statistics": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::statistics%]",
+            "generic": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::generic%]",
+            "generic_thermostat": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::generic_thermostat%]",
+            "homekit": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::homekit%]",
+            "min_max": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::min_max%]",
+            "history_stats": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::history_stats%]",
+            "trend": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::trend%]",
+            "ping": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::ping%]",
+            "filesize": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::filesize%]",
+            "telegram": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::telegram%]",
+            "smtp": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::smtp%]",
+            "mqtt": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::mqtt%]",
+            "rpi_gpio": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::rpi_gpio%]",
+            "themes": "[%key:ui::panel::config::tools::tabs::yaml::section::reloading::themes%]"
           },
           "home_assistant_control": {
             "perform_action": "{action} Home Assistant",
-            "restart": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::restart%]",
-            "stop": "[%key:ui::panel::config::developer-tools::tabs::yaml::section::server_management::stop%]"
+            "restart": "[%key:ui::panel::config::tools::tabs::yaml::section::server_management::restart%]",
+            "stop": "[%key:ui::panel::config::tools::tabs::yaml::section::server_management::stop%]"
           },
           "types": {
             "reload": "Reload",
@@ -1559,14 +1559,14 @@
             "analytics": "[%key:ui::panel::config::analytics::caption%]",
             "system_health": "[%key:ui::panel::config::system_health::caption%]",
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
-            "server_control": "[%key:ui::panel::config::developer-tools::tabs::yaml::title%]",
+            "server_control": "[%key:ui::panel::config::tools::tabs::yaml::title%]",
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
             "apps": "Apps",
             "app_store": "App store",
             "app_info": "{app} info",
             "shortcuts": "[%key:ui::panel::config::info::shortcuts%]",
             "labs": "[%key:ui::panel::config::labs::caption%]",
-            "developer-tools": "[%key:ui::panel::config::dashboard::developer_tools::main%]",
+            "tools": "[%key:ui::panel::config::dashboard::tools::main%]",
             "matter": "[%key:ui::panel::config::dashboard::matter::main%]",
             "zha": "[%key:ui::panel::config::dashboard::zha::main%]",
             "zwave_js": "[%key:ui::panel::config::dashboard::zwave_js::main%]",
@@ -2154,12 +2154,12 @@
           "data": "Additional data"
         },
         "template": {
-          "time": "[%key:ui::panel::config::developer-tools::tabs::templates::time%]",
-          "all_listeners": "[%key:ui::panel::config::developer-tools::tabs::templates::all_listeners%]",
-          "no_listeners": "[%key:ui::panel::config::developer-tools::tabs::templates::no_listeners%]",
-          "listeners": "[%key:ui::panel::config::developer-tools::tabs::templates::listeners%]",
-          "entity": "[%key:ui::panel::config::developer-tools::tabs::templates::entity%]",
-          "domain": "[%key:ui::panel::config::developer-tools::tabs::templates::domain%]"
+          "time": "[%key:ui::panel::config::tools::tabs::templates::time%]",
+          "all_listeners": "[%key:ui::panel::config::tools::tabs::templates::all_listeners%]",
+          "no_listeners": "[%key:ui::panel::config::tools::tabs::templates::no_listeners%]",
+          "listeners": "[%key:ui::panel::config::tools::tabs::templates::listeners%]",
+          "entity": "[%key:ui::panel::config::tools::tabs::templates::entity%]",
+          "domain": "[%key:ui::panel::config::tools::tabs::templates::domain%]"
         }
       },
       "options_flow": {
@@ -2638,9 +2638,9 @@
             "main": "System",
             "secondary": "Create backups, check logs, or reboot your system"
           },
-          "developer_tools": {
-            "main": "Developer tools",
-            "secondary": "Tools to inspect and debug your system"
+          "tools": {
+            "main": "Tools",
+            "secondary": "Inspect and debug your system"
           },
           "about": {
             "main": "About",
@@ -3786,7 +3786,7 @@
             "companion_apps": "Companion apps"
           }
         },
-        "developer-tools": {
+        "tools": {
           "tabs": {
             "assist": {
               "tab": "Assist",
@@ -3904,7 +3904,9 @@
             },
             "templates": {
               "title": "Template",
-              "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+              "description": "Templates let you generate dynamic content from your Home Assistant data, such as a notification that lists which lights are on, or a sensor whose value is calculated from several other entities.",
+              "engine_info": "Home Assistant uses the Jinja templating engine, extended with functions for working with your entities, areas, devices, and more. Write a template in the editor below and its result updates live as your states change.",
+              "learn_more": "Learn more",
               "about": "About templates",
               "editor": "Template editor",
               "result": "Result",
@@ -3912,8 +3914,14 @@
               "confirm_reset": "Do you want to reset your current template back to the demo template?",
               "confirm_clear": "Do you want to clear your current template?",
               "result_type": "Result type",
-              "jinja_documentation": "Jinja2 template documentation",
-              "template_extensions": "Home Assistant template extensions",
+              "docs_introduction": "Introduction to templating",
+              "docs_introduction_description": "Start here for a step-by-step guide.",
+              "docs_states": "Working with states",
+              "docs_states_description": "Read entity states and attributes in templates.",
+              "docs_debugging": "Debugging templates",
+              "docs_debugging_description": "Find and fix problems in your templates.",
+              "docs_functions": "Template functions reference",
+              "docs_functions_description": "Search every available function, filter, and test.",
               "unknown_error_template": "Unknown error rendering template",
               "time": "This template updates at the start of each minute.",
               "all_listeners": "This template listens for all state changed events.",
@@ -4515,6 +4523,13 @@
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
           "download_logs": "Download logs",
+          "log_file_disabled_title": "Log file disabled",
+          "log_file_disabled": {
+            "environment": "Home Assistant is not writing a log file because HA_DISABLE_LOG_FILE is set. Raw log view and log download are unavailable."
+          },
+          "log_file_disabled_debug_download": {
+            "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
+          },
           "scroll_down_button": "New logs - Click to scroll",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
@@ -4812,7 +4827,7 @@
               "run_text_pipeline": "Run text pipeline",
               "run_audio_pipeline": "Run audio pipeline",
               "run_audio_with_wake": "Run audio pipeline with wake word detection",
-              "response": "[%key:ui::panel::config::developer-tools::tabs::actions::response%]",
+              "response": "[%key:ui::panel::config::tools::tabs::actions::response%]",
               "send": "Send",
               "continue_listening": "Continue listening for wake word",
               "continue_talking": "Continue talking",
@@ -5033,6 +5048,10 @@
             "disabled": "Automation is disabled",
             "read_only": "This automation cannot be edited from the UI, because it is not stored in the automations.yaml file, or doesn't have an ID.",
             "unavailable": "Automation is unavailable",
+            "deprecated_migrated": {
+              "title": "Deprecated options updated",
+              "description": "This automation used deprecated options that have been automatically updated to their new equivalents. Save the automation to apply the changes."
+            },
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "take_control": "Take control",
@@ -5109,7 +5128,7 @@
             "type_script_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::script%]",
             "type_scene_plural": "scenes",
             "new_automation_setup_failed_title": "New {type} setup timed out",
-            "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "new_automation_setup_failed_text": "Your new {type} was saved, but waiting for it to set up has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in the Tools panel. Your {type} will not be visible until this is corrected and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
             "new_automation_setup_keep_waiting": "You may continue to wait for a response from the server, in case it is just taking an unusually long time to process this {type}.",
             "new_automation_setup_timedout_success": "The server has responded and this has now set up successfully. You may now close this dialog.",
             "item_pasted": "{item} pasted",
@@ -6138,6 +6157,10 @@
             "confirm_take_control": "You are viewing a preview of the script config, do you want to take control?",
             "read_only": "This script cannot be edited from the UI, because it is not stored in the ''scripts.yaml'' file.",
             "unavailable": "Script is unavailable",
+            "deprecated_migrated": {
+              "title": "[%key:ui::panel::config::automation::editor::deprecated_migrated::title%]",
+              "description": "This script used deprecated options that have been automatically updated to their new equivalents. Save the script to apply the changes."
+            },
             "migrate": "Migrate",
             "duplicate": "[%key:ui::common::duplicate%]",
             "field": {

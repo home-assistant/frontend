@@ -30,13 +30,15 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
   protected render() {
     return html`
-      ${this.config.description
-        ? html`<ha-markdown
-            class="description"
-            breaks
-            .content=${this.config.description}
-          ></ha-markdown>`
-        : nothing}
+      ${
+        this.config.description
+          ? html`<ha-markdown
+              class="description"
+              breaks
+              .content=${this.config.description}
+            ></ha-markdown>`
+          : nothing
+      }
       ${this.renderCard()}
 
       <ha-button

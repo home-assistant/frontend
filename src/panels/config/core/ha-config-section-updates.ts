@@ -155,9 +155,9 @@ class HaConfigSectionUpdates extends LitElement {
 
     return html`
       <hass-subpage
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config/system"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config/system"
+        }
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.updates.caption")}
@@ -184,25 +184,29 @@ class HaConfigSectionUpdates extends LitElement {
             >
               ${this.hass.localize("ui.panel.config.updates.show_skipped")}
             </ha-dropdown-item>
-            ${this._supervisorInfo
-              ? html`
-                  <wa-divider></wa-divider>
-                  <ha-dropdown-item
-                    value="toggle_beta"
-                    .disabled=${this._supervisorInfo.channel === "dev"}
-                  >
-                    <ha-svg-icon
-                      .path=${this._supervisorInfo.channel === "stable"
-                        ? mdiLocationEnter
-                        : mdiLocationExit}
-                      slot="icon"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
-                    )}
-                  </ha-dropdown-item>
-                `
-              : nothing}
+            ${
+              this._supervisorInfo
+                ? html`
+                    <wa-divider></wa-divider>
+                    <ha-dropdown-item
+                      value="toggle_beta"
+                      .disabled=${this._supervisorInfo.channel === "dev"}
+                    >
+                      <ha-svg-icon
+                        .path=${
+                          this._supervisorInfo.channel === "stable"
+                            ? mdiLocationEnter
+                            : mdiLocationExit
+                        }
+                        slot="icon"
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        `ui.panel.config.updates.${this._supervisorInfo.channel === "stable" ? "join" : "leave"}_beta`
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
           </ha-dropdown>
         </div>
         <div class="content">
@@ -214,23 +218,25 @@ class HaConfigSectionUpdates extends LitElement {
                     <div class="title" role="heading" aria-level="2">
                       ${group.title}
                     </div>
-                    ${group.showUpdateAll
-                      ? html`
-                          <ha-button
-                            appearance="plain"
-                            size="s"
-                            .group=${group}
-                            .disabled=${group.entities.every((entity) =>
-                              updateIsInstalling(entity)
-                            )}
-                            @click=${this._updateAll}
-                          >
-                            ${this.hass.localize(
-                              "ui.panel.config.updates.update_all"
-                            )}
-                          </ha-button>
-                        `
-                      : nothing}
+                    ${
+                      group.showUpdateAll
+                        ? html`
+                            <ha-button
+                              appearance="plain"
+                              size="s"
+                              .group=${group}
+                              .disabled=${group.entities.every((entity) =>
+                                updateIsInstalling(entity)
+                              )}
+                              @click=${this._updateAll}
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.updates.update_all"
+                              )}
+                            </ha-button>
+                          `
+                        : nothing
+                    }
                   </div>
                   <ha-config-updates
                     .narrow=${this.narrow}
@@ -241,61 +247,67 @@ class HaConfigSectionUpdates extends LitElement {
               </ha-card>
             `
           )}
-          ${skippedUpdates.length
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <div class="card-header">
-                      <div class="title" role="heading" aria-level="2">
-                        ${this.hass.localize(
-                          "ui.panel.config.updates.title_skipped",
-                          {
-                            count: skippedUpdates.length,
-                          }
-                        )}
+          ${
+            skippedUpdates.length
+              ? html`
+                  <ha-card outlined>
+                    <div class="card-content">
+                      <div class="card-header">
+                        <div class="title" role="heading" aria-level="2">
+                          ${this.hass.localize(
+                            "ui.panel.config.updates.title_skipped",
+                            {
+                              count: skippedUpdates.length,
+                            }
+                          )}
+                        </div>
                       </div>
+                      <ha-config-updates
+                        .narrow=${this.narrow}
+                        .updateEntities=${skippedUpdates}
+                        showAll
+                      ></ha-config-updates>
                     </div>
-                    <ha-config-updates
-                      .narrow=${this.narrow}
-                      .updateEntities=${skippedUpdates}
-                      showAll
-                    ></ha-config-updates>
-                  </div>
-                </ha-card>
-              `
-            : nothing}
-          ${notInstallableUpdates.length
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <div class="card-header">
-                      <div class="title" role="heading" aria-level="2">
-                        ${this.hass.localize(
-                          "ui.panel.config.updates.title_not_installable",
-                          {
-                            count: notInstallableUpdates.length,
-                          }
-                        )}
+                  </ha-card>
+                `
+              : nothing
+          }
+          ${
+            notInstallableUpdates.length
+              ? html`
+                  <ha-card outlined>
+                    <div class="card-content">
+                      <div class="card-header">
+                        <div class="title" role="heading" aria-level="2">
+                          ${this.hass.localize(
+                            "ui.panel.config.updates.title_not_installable",
+                            {
+                              count: notInstallableUpdates.length,
+                            }
+                          )}
+                        </div>
                       </div>
+                      <ha-config-updates
+                        .narrow=${this.narrow}
+                        .updateEntities=${notInstallableUpdates}
+                        showAll
+                      ></ha-config-updates>
                     </div>
-                    <ha-config-updates
-                      .narrow=${this.narrow}
-                      .updateEntities=${notInstallableUpdates}
-                      showAll
-                    ></ha-config-updates>
-                  </div>
-                </ha-card>
-              `
-            : nothing}
-          ${groups.length + notInstallableUpdates.length + skippedUpdates.length
-            ? nothing
-            : html`
-                <ha-card outlined>
-                  <div class="no-updates">
-                    ${this.hass.localize("ui.panel.config.updates.no_updates")}
-                  </div>
-                </ha-card>
-              `}
+                  </ha-card>
+                `
+              : nothing
+          }
+          ${
+            groups.length + notInstallableUpdates.length + skippedUpdates.length
+              ? nothing
+              : html`
+                  <ha-card outlined>
+                    <div class="no-updates">
+                      ${this.hass.localize("ui.panel.config.updates.no_updates")}
+                    </div>
+                  </ha-card>
+                `
+          }
         </div>
       </hass-subpage>
     `;

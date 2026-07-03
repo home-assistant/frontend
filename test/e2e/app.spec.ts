@@ -99,7 +99,7 @@ test.describe("App shell", () => {
     await goToPanel(page, "/lovelace");
 
     // Regular panels use #sidebar-panel-{urlPath} inside ha-sidebar's shadow root
-    for (const urlPath of ["lovelace", "energy", "history"]) {
+    for (const urlPath of ["lovelace", "map", "energy", "history"]) {
       // eslint-disable-next-line no-await-in-loop
       await expect(
         page.locator(
@@ -113,6 +113,71 @@ test.describe("App shell", () => {
         `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
       )
     ).toBeAttached();
+  });
+
+  test("sidebar navigation changes the active panel", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    const historyLink = sidebar.locator("#sidebar-panel-history");
+    if (!(await historyLink.isVisible().catch(() => false))) {
+      await page.locator("ha-test >> home-assistant-main").evaluate((el) => {
+        el.dispatchEvent(
+          new CustomEvent("hass-toggle-menu", {
+            detail: { open: true },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      });
+    }
+
+    await expect(historyLink).toBeVisible({ timeout: SHELL_TIMEOUT });
+    await historyLink.click();
+
+    await expect(page).toHaveURL(/\/#\/history$/, { timeout: SHELL_TIMEOUT });
+    await expect(
+      page.locator("ha-panel-history, history-panel").first()
+    ).toBeAttached({ timeout: PANEL_TIMEOUT });
+  });
+
+  test("sidebar renders notification badge", async ({ page }) => {
+    await goToPanel(page, "/lovelace");
+
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    const notificationsLink = sidebar.locator("#sidebar-notifications");
+    await expect(notificationsLink).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(notificationsLink.locator(".badge").first()).toHaveText("1", {
+      timeout: SHELL_TIMEOUT,
+    });
+  });
+
+  test("sidebar marks the active panel as selected", async ({ page }) => {
+    const sidebar = page.locator(
+      "ha-test >> home-assistant-main >> ha-sidebar"
+    );
+    const lovelaceLink = sidebar.locator("#sidebar-panel-lovelace");
+    const historyLink = sidebar.locator("#sidebar-panel-history");
+
+    await goToPanel(page, "/lovelace");
+    await expect(lovelaceLink).toHaveClass(/selected/, {
+      timeout: SHELL_TIMEOUT,
+    });
+    await expect(historyLink).not.toHaveClass(/selected/);
+
+    await goToPanel(page, "/history");
+    await expect(historyLink).toHaveClass(/selected/, {
+      timeout: SHELL_TIMEOUT,
+    });
+    await expect(lovelaceLink).not.toHaveClass(/selected/);
   });
 
   test("non-admin user does NOT see config panel in sidebar", async ({
@@ -158,6 +223,15 @@ test.describe("Panel navigation", () => {
     });
   });
 
+  test("navigates to map panel", async ({ page }) => {
+    await goToPanel(page, "/map");
+    await expect(
+      page.locator("ha-panel-lovelace, hui-root").first()
+    ).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
   test("navigates to history panel", async ({ page }) => {
     await goToPanel(page, "/history");
     await expect(
@@ -167,20 +241,85 @@ test.describe("Panel navigation", () => {
     });
   });
 
-  test("navigates to developer-tools panel", async ({ page }) => {
-    // Since 2026.2 developer-tools is part of the config panel
-    await goToPanel(page, "/config/developer-tools");
-    await expect(
-      page.locator("ha-panel-config, developer-tools-main").first()
-    ).toBeAttached({ timeout: PANEL_TIMEOUT });
-  });
-
   test("navigates to profile panel", async ({ page }) => {
     await goToPanel(page, "/profile");
     await expect(
       page.locator("ha-panel-profile, ha-config-user-profile").first()
     ).toBeAttached({ timeout: PANEL_TIMEOUT });
   });
+});
+
+// ---------------------------------------------------------------------------
+// Tools panel (formerly Developer tools)
+// ---------------------------------------------------------------------------
+
+/**
+ * Every tool sub-page reachable under /config/tools, mapped to the custom
+ * element tools-router mounts for it (see tools-router.ts). Asserting on the
+ * specific element proves the route actually rendered its tool, not just the
+ * shared ha-panel-tools shell.
+ */
+const TOOLS_SUBPAGES: { route: string; element: string }[] = [
+  { route: "yaml", element: "tools-yaml-config" },
+  { route: "state", element: "tools-state" },
+  { route: "action", element: "tools-action" },
+  { route: "template", element: "tools-template" },
+  { route: "event", element: "tools-event" },
+  { route: "statistics", element: "tools-statistics" },
+  { route: "assist", element: "tools-assist" },
+  { route: "debug", element: "tools-debug" },
+];
+
+test.describe("Tools panel", () => {
+  test("base path renders the tools panel", async ({ page }) => {
+    await goToPanel(page, "/config/tools");
+    await expect(page.locator("ha-panel-tools")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+
+  for (const { route, element } of TOOLS_SUBPAGES) {
+    test(`renders the ${route} sub-page`, async ({ page }) => {
+      await goToPanel(page, `/config/tools/${route}`);
+      await expect(page.locator(element)).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
+
+  test("service is an alias for the action tool", async ({ page }) => {
+    await goToPanel(page, "/config/tools/service");
+    await expect(page.locator("tools-action")).toBeAttached({
+      timeout: PANEL_TIMEOUT,
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Tools redirects (old developer-tools URLs)
+// ---------------------------------------------------------------------------
+
+test.describe("Tools redirects", () => {
+  // The panel moved from top-level /developer-tools (pre-2026.2) to
+  // /config/developer-tools (2026.2), then was renamed to /config/tools
+  // (2026.8). Both old locations must redirect to the new one, and deep links
+  // must keep their sub-page. See the updateRoute() redirect in
+  // src/layouts/home-assistant.ts.
+  for (const oldBase of ["/developer-tools", "/config/developer-tools"]) {
+    test(`redirects ${oldBase} to the tools panel`, async ({ page }) => {
+      await goToPanel(page, oldBase);
+      await expect(page.locator("ha-panel-tools")).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+
+    test(`redirects ${oldBase}/state to the state tool`, async ({ page }) => {
+      await goToPanel(page, `${oldBase}/state`);
+      await expect(page.locator("tools-state")).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
 });
 
 // ---------------------------------------------------------------------------

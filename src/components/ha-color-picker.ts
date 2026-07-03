@@ -217,9 +217,11 @@ export class HaColorPicker extends LitElement {
     <ha-combo-box-item type="button" compact>
       ${this._renderItemIcon(item)}
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 
@@ -236,8 +238,10 @@ export class HaColorPicker extends LitElement {
       return html`
         <ha-svg-icon slot="start" .path=${mdiPalette}></ha-svg-icon>
         <span slot="headline">
-          ${this._i18n?.localize?.("ui.components.color-picker.state") ||
-          "State"}
+          ${
+            this._i18n?.localize?.("ui.components.color-picker.state") ||
+            "State"
+          }
         </span>
       `;
     }

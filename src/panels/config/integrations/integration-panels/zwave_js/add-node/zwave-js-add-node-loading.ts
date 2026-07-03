@@ -22,15 +22,17 @@ export class ZWaveJsAddNodeLoading extends WakeLockMixin(LitElement) {
     return html`
       <ha-fade-in .delay=${this.delay}>
         <div class="loading">
-          ${this.progress !== undefined
-            ? html`
-                <ha-progress-ring size="large" .value=${this.progress}>
-                  ${Math.round(this.progress)}${blankBeforePercent(
-                    this.hass.locale
-                  )}%
-                </ha-progress-ring>
-              `
-            : html`<ha-spinner size="large"></ha-spinner>`}
+          ${
+            this.progress !== undefined
+              ? html`
+                  <ha-progress-ring size="large" .value=${this.progress}>
+                    ${Math.round(this.progress)}${blankBeforePercent(
+                      this.hass.locale
+                    )}%
+                  </ha-progress-ring>
+                `
+              : html`<ha-spinner size="large"></ha-spinner>`
+          }
         </div>
         ${this.description ? html`<p>${this.description}</p>` : nothing}
       </ha-fade-in>

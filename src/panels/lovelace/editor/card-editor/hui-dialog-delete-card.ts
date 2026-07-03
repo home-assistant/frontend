@@ -56,17 +56,19 @@ export class HuiDialogDeleteCard extends LitElement {
         @closed=${this._dialogClosed}
       >
         <div>
-          ${this._cardConfig
-            ? html`
-                <div class="element-preview">
-                  <hui-card
-                    .hass=${this.hass}
-                    .config=${this._cardConfig}
-                    preview
-                  ></hui-card>
-                </div>
-              `
-            : ""}
+          ${
+            this._cardConfig
+              ? html`
+                  <div class="element-preview">
+                    <hui-card
+                      .hass=${this.hass}
+                      .config=${this._cardConfig}
+                      preview
+                    ></hui-card>
+                  </div>
+                `
+              : ""
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button

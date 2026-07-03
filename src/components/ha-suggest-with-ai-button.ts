@@ -95,11 +95,13 @@ export class HaSuggestWithAIButton extends LitElement {
         @click=${this._suggest}
         .label=${label}
         ?active=${this._state.status === "suggesting"}
-        class=${this._state.status === "error"
-          ? "error"
-          : this._state.status === "done"
-            ? "done"
-            : ""}
+        class=${
+          this._state.status === "error"
+            ? "error"
+            : this._state.status === "done"
+              ? "done"
+              : ""
+        }
         style=${this._minWidth ? `min-width: ${this._minWidth}` : ""}
       >
         <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>

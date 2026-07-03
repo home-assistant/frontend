@@ -47,35 +47,45 @@ class HaProfileSectionBrowser extends LitElement {
               ${this.hass.localize("ui.panel.profile.client_settings_detail")}
             </div>
             <ha-md-list>
-              ${this.hass.dockedSidebar !== "auto" || !this.narrow
-                ? html`
-                    <ha-force-narrow-row
-                      .hass=${this.hass}
-                    ></ha-force-narrow-row>
-                  `
-                : ""}
-              ${"vibrate" in navigator
-                ? html`
-                    <ha-set-vibrate-row .hass=${this.hass}></ha-set-vibrate-row>
-                  `
-                : ""}
-              ${!isExternal &&
-              isComponentLoaded(this.hass.config, "html5.notify")
-                ? html`
-                    <ha-push-notifications-row
-                      .hass=${this.hass}
-                    ></ha-push-notifications-row>
-                  `
-                : ""}
+              ${
+                this.hass.dockedSidebar !== "auto" || !this.narrow
+                  ? html`
+                      <ha-force-narrow-row
+                        .hass=${this.hass}
+                      ></ha-force-narrow-row>
+                    `
+                  : ""
+              }
+              ${
+                "vibrate" in navigator
+                  ? html`
+                      <ha-set-vibrate-row
+                        .hass=${this.hass}
+                      ></ha-set-vibrate-row>
+                    `
+                  : ""
+              }
+              ${
+                !isExternal &&
+                isComponentLoaded(this.hass.config, "html5.notify")
+                  ? html`
+                      <ha-push-notifications-row
+                        .hass=${this.hass}
+                      ></ha-push-notifications-row>
+                    `
+                  : ""
+              }
               <ha-set-suspend-row .hass=${this.hass}></ha-set-suspend-row>
-              ${!isMobileClient
-                ? html`
-                    <ha-enable-shortcuts-row
-                      id="shortcuts"
-                      .hass=${this.hass}
-                    ></ha-enable-shortcuts-row>
-                  `
-                : ""}
+              ${
+                !isMobileClient
+                  ? html`
+                      <ha-enable-shortcuts-row
+                        id="shortcuts"
+                        .hass=${this.hass}
+                      ></ha-enable-shortcuts-row>
+                    `
+                  : ""
+              }
             </ha-md-list>
           </ha-card>
         </div>

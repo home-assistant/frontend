@@ -30,8 +30,9 @@ export class HaDisabledConfigEntryCard extends LitElement {
           {
             cause:
               this.hass.localize(
-                `ui.panel.config.integrations.config_entry.disable.disabled_by.${this
-                  .entry.disabled_by!}`
+                `ui.panel.config.integrations.config_entry.disable.disabled_by.${
+                  this.entry.disabled_by!
+                }`
               ) || this.entry.disabled_by,
           }
         )}

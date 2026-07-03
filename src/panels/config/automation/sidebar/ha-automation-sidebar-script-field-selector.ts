@@ -93,25 +93,29 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.automation.editor.actions.delete"
           )}
-          ${!this.narrow
-            ? html`<span class="shortcut">
-                <span
-                  >${isMac
-                    ? html`<ha-svg-icon
-                        .path=${mdiAppleKeyboardCommand}
-                      ></ha-svg-icon>`
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.ctrl"
-                      )}</span
-                >
-                <span>+</span>
-                <span
-                  >${this.hass.localize(
-                    "ui.panel.config.automation.editor.del"
-                  )}</span
-                >
-              </span>`
-            : nothing}
+          ${
+            !this.narrow
+              ? html`<span class="shortcut">
+                  <span
+                    >${
+                      isMac
+                        ? html`<ha-svg-icon
+                            .path=${mdiAppleKeyboardCommand}
+                          ></ha-svg-icon>`
+                        : this.hass.localize(
+                            "ui.panel.config.automation.editor.ctrl"
+                          )
+                    }</span
+                  >
+                  <span>+</span>
+                  <span
+                    >${this.hass.localize(
+                      "ui.panel.config.automation.editor.del"
+                    )}</span
+                  >
+                </span>`
+              : nothing
+          }
         </div>
       </ha-dropdown-item>
       ${keyed(

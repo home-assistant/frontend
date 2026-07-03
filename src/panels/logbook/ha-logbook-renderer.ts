@@ -30,6 +30,8 @@ class HaLogbookRenderer extends LitElement {
   @property({ attribute: false }) public userIdToName: Record<string, string> =
     {};
 
+  @property({ attribute: false }) public systemUserIds = new Set<string>();
+
   @property({ attribute: false }) public traceContexts: TraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
@@ -96,16 +98,18 @@ class HaLogbookRenderer extends LitElement {
         @scroll=${this._saveScrollPos}
         @logbook-toggle-time=${this._handleToggleTime}
       >
-        ${this.virtualize
-          ? html`<lit-virtualizer
-              @visibilityChanged=${this._visibilityChanged}
-              scroller
-              class="ha-scrollbar"
-              .items=${this.entries}
-              .renderItem=${this._getRenderRow(this._showRelative) as any}
-            >
-            </lit-virtualizer>`
-          : this.entries.map((item, index) => this._renderItem(item, index))}
+        ${
+          this.virtualize
+            ? html`<lit-virtualizer
+                @visibilityChanged=${this._visibilityChanged}
+                scroller
+                class="ha-scrollbar"
+                .items=${this.entries}
+                .renderItem=${this._getRenderRow(this._showRelative) as any}
+              >
+              </lit-virtualizer>`
+            : this.entries.map((item, index) => this._renderItem(item, index))
+        }
       </div>
     `;
   }
@@ -125,15 +129,18 @@ class HaLogbookRenderer extends LitElement {
     // the row share a single wrapper.
     return html`
       <div class="entry-container">
-        ${firstOfDay
-          ? html`<h4 class="date">
-              ${this._formatDateHeader(new Date(item.when * 1000))}
-            </h4>`
-          : nothing}
+        ${
+          firstOfDay
+            ? html`<h4 class="date">
+                ${this._formatDateHeader(new Date(item.when * 1000))}
+              </h4>`
+            : nothing
+        }
         <ha-logbook-entry
           .hass=${this.hass}
           .item=${item}
           .userIdToName=${this.userIdToName}
+          .systemUserIds=${this.systemUserIds}
           .traceContexts=${this.traceContexts}
           .narrow=${this.narrow}
           .noIcon=${this.noIcon}

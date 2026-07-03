@@ -121,23 +121,25 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
-          ${this._allowChangeName
-            ? html`<ha-input
-                class="name"
-                name="name"
-                .label=${this.hass.localize(
-                  "ui.panel.config.users.editor.name"
-                )}
-                .value=${this._name}
-                required
-                .validationMessage=${this.hass.localize(
-                  "ui.common.error_required"
-                )}
-                @input=${this._handleValueChanged}
-                @blur=${this._maybePopulateUsername}
-                autofocus
-              ></ha-input>`
-            : ""}
+          ${
+            this._allowChangeName
+              ? html`<ha-input
+                  class="name"
+                  name="name"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.users.editor.name"
+                  )}
+                  .value=${this._name}
+                  required
+                  .validationMessage=${this.hass.localize(
+                    "ui.common.error_required"
+                  )}
+                  @input=${this._handleValueChanged}
+                  @blur=${this._maybePopulateUsername}
+                  autofocus
+                ></ha-input>`
+              : ""
+          }
           <ha-input
             class="username"
             name="username"
@@ -174,9 +176,11 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
             .value=${this._passwordConfirm}
             @input=${this._handleValueChanged}
             required
-            .invalid=${this._password !== "" &&
-            this._passwordConfirm !== "" &&
-            this._passwordConfirm !== this._password}
+            .invalid=${
+              this._password !== "" &&
+              this._passwordConfirm !== "" &&
+              this._passwordConfirm !== this._password
+            }
             .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
             )}
@@ -213,15 +217,17 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
               @change=${this._adminChanged}
             ></ha-switch>
           </ha-row-item>
-          ${!this._isAdmin
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.panel.config.users.users_privileges_note"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
+          ${
+            !this._isAdmin
+              ? html`
+                  <ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.panel.config.users.users_privileges_note"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -234,10 +240,12 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${!this._name ||
-            !this._username ||
-            !this._password ||
-            this._password !== this._passwordConfirm}
+            .disabled=${
+              !this._name ||
+              !this._username ||
+              !this._password ||
+              this._password !== this._passwordConfirm
+            }
             @click=${this._createUser}
             .loading=${this._loading}
           >

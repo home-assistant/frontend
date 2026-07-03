@@ -73,97 +73,111 @@ export class HaThemeSettings extends LitElement {
 
     return html`
       <ha-list-base>
-        ${this.showThemePicker
-          ? html`
-              <ha-list-item-base>
-                ${this.heading
-                  ? html`<span slot="headline">${this.heading}</span>`
-                  : nothing}
-                ${this.description
-                  ? html`<span slot="supporting-text"
-                      >${this.description}</span
-                    >`
-                  : nothing}
-                <ha-theme-picker
-                  slot="end"
-                  .label=${this.labels?.theme}
-                  .noThemeLabel=${this.labels?.noTheme}
-                  .value=${themeSettings?.theme || undefined}
-                  .disabled=${this.themePickerDisabled}
-                  ?include-default=${this.includeDefault}
-                  @value-changed=${this._handleThemeSelection}
-                ></ha-theme-picker>
-              </ha-list-item-base>
-            `
-          : nothing}
-        ${showDarkMode
-          ? html`
-              <ha-list-item-base>
-                <span slot="headline"
-                  >${this.labels?.mode ?? "Theme mode"}</span
-                >
-                <ha-radio-group
-                  slot="end"
-                  @change=${this._handleDarkMode}
-                  name="dark_mode"
-                  .value=${themeSettings?.dark === undefined
-                    ? "auto"
-                    : themeSettings.dark
-                      ? "dark"
-                      : "light"}
-                  orientation="horizontal"
-                >
-                  <ha-radio-option value="auto">
-                    ${this.labels?.autoMode ?? "Auto"}
-                  </ha-radio-option>
-                  <ha-radio-option value="light">
-                    ${this.labels?.lightMode ?? "Light"}
-                  </ha-radio-option>
-                  <ha-radio-option value="dark">
-                    ${this.labels?.darkMode ?? "Dark"}
-                  </ha-radio-option>
-                </ha-radio-group>
-              </ha-list-item-base>
-            `
-          : nothing}
-        ${curTheme === HOME_ASSISTANT_THEME
-          ? html`
-              <ha-list-item-base>
-                <span slot="headline"
-                  >${this.labels?.colors ?? "Custom colors"}</span
-                >
-                <div slot="end" class="color-pickers">
-                  <ha-input
-                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
-                    type="color"
-                    .label=${this.labels?.primaryColor ?? "Primary color"}
-                    .name=${"primaryColor"}
-                    @change=${this._handleColorChange}
-                  ></ha-input>
-                  <ha-input
-                    .value=${themeSettings?.accentColor || DefaultAccentColor}
-                    type="color"
-                    .label=${this.labels?.accentColor ?? "Accent color"}
-                    .name=${"accentColor"}
-                    @change=${this._handleColorChange}
-                  ></ha-input>
-                </div>
-              </ha-list-item-base>
-              ${themeSettings?.primaryColor || themeSettings?.accentColor
-                ? html`
-                    <div class="reset-row">
-                      <ha-button
-                        appearance="plain"
-                        size="s"
-                        @click=${this._resetColors}
-                      >
-                        ${this.labels?.reset ?? "Reset"}
-                      </ha-button>
-                    </div>
-                  `
-                : nothing}
-            `
-          : nothing}
+        ${
+          this.showThemePicker
+            ? html`
+                <ha-list-item-base>
+                  ${
+                    this.heading
+                      ? html`<span slot="headline">${this.heading}</span>`
+                      : nothing
+                  }
+                  ${
+                    this.description
+                      ? html`<span slot="supporting-text"
+                          >${this.description}</span
+                        >`
+                      : nothing
+                  }
+                  <ha-theme-picker
+                    slot="end"
+                    .label=${this.labels?.theme}
+                    .noThemeLabel=${this.labels?.noTheme}
+                    .value=${themeSettings?.theme || undefined}
+                    .disabled=${this.themePickerDisabled}
+                    ?include-default=${this.includeDefault}
+                    @value-changed=${this._handleThemeSelection}
+                  ></ha-theme-picker>
+                </ha-list-item-base>
+              `
+            : nothing
+        }
+        ${
+          showDarkMode
+            ? html`
+                <ha-list-item-base>
+                  <span slot="headline"
+                    >${this.labels?.mode ?? "Theme mode"}</span
+                  >
+                  <ha-radio-group
+                    slot="end"
+                    @change=${this._handleDarkMode}
+                    name="dark_mode"
+                    .value=${
+                      themeSettings?.dark === undefined
+                        ? "auto"
+                        : themeSettings.dark
+                          ? "dark"
+                          : "light"
+                    }
+                    orientation="horizontal"
+                  >
+                    <ha-radio-option value="auto">
+                      ${this.labels?.autoMode ?? "Auto"}
+                    </ha-radio-option>
+                    <ha-radio-option value="light">
+                      ${this.labels?.lightMode ?? "Light"}
+                    </ha-radio-option>
+                    <ha-radio-option value="dark">
+                      ${this.labels?.darkMode ?? "Dark"}
+                    </ha-radio-option>
+                  </ha-radio-group>
+                </ha-list-item-base>
+              `
+            : nothing
+        }
+        ${
+          curTheme === HOME_ASSISTANT_THEME
+            ? html`
+                <ha-list-item-base>
+                  <span slot="headline"
+                    >${this.labels?.colors ?? "Custom colors"}</span
+                  >
+                  <div slot="end" class="color-pickers">
+                    <ha-input
+                      .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
+                      type="color"
+                      .label=${this.labels?.primaryColor ?? "Primary color"}
+                      .name=${"primaryColor"}
+                      @change=${this._handleColorChange}
+                    ></ha-input>
+                    <ha-input
+                      .value=${themeSettings?.accentColor || DefaultAccentColor}
+                      type="color"
+                      .label=${this.labels?.accentColor ?? "Accent color"}
+                      .name=${"accentColor"}
+                      @change=${this._handleColorChange}
+                    ></ha-input>
+                  </div>
+                </ha-list-item-base>
+                ${
+                  themeSettings?.primaryColor || themeSettings?.accentColor
+                    ? html`
+                        <div class="reset-row">
+                          <ha-button
+                            appearance="plain"
+                            size="s"
+                            @click=${this._resetColors}
+                          >
+                            ${this.labels?.reset ?? "Reset"}
+                          </ha-button>
+                        </div>
+                      `
+                    : nothing
+                }
+              `
+            : nothing
+        }
       </ha-list-base>
     `;
   }

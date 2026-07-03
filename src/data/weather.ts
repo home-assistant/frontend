@@ -318,11 +318,16 @@ export const getSecondaryWeatherAttribute = (
   const roundedValue = round(value, 1);
 
   return html`
-    ${weatherAttrIcon
-      ? html`
-          <ha-svg-icon class="attr-icon" .path=${weatherAttrIcon}></ha-svg-icon>
-        `
-      : hass.localize(`ui.card.weather.attributes.${attribute}`)}
+    ${
+      weatherAttrIcon
+        ? html`
+            <ha-svg-icon
+              class="attr-icon"
+              .path=${weatherAttrIcon}
+            ></ha-svg-icon>
+          `
+        : hass.localize(`ui.card.weather.attributes.${attribute}`)
+    }
     ${hass.formatEntityAttributeValue(stateObj, attribute, roundedValue)}
   `;
 };
@@ -370,13 +375,17 @@ const getWeatherExtrema = (
   }
 
   return html`
-    ${tempHigh
-      ? formatEntityAttributeValue(stateObj, "temperature", tempHigh)
-      : ""}
+    ${
+      tempHigh
+        ? formatEntityAttributeValue(stateObj, "temperature", tempHigh)
+        : ""
+    }
     ${tempLow && tempHigh ? " / " : ""}
-    ${tempLow
-      ? formatEntityAttributeValue(stateObj, "temperature", tempLow)
-      : ""}
+    ${
+      tempLow
+        ? formatEntityAttributeValue(stateObj, "temperature", tempLow)
+        : ""
+    }
   `;
 };
 

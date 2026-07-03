@@ -50,8 +50,10 @@ export class DialogPickConfigEntry extends LitElement {
                 type="button"
                 @click=${this._itemPicked}
                 .entry=${entry}
-                .disabled=${!ERROR_STATES.includes(entry.state) &&
-                !RECOVERABLE_STATES.includes(entry.state)}
+                .disabled=${
+                  !ERROR_STATES.includes(entry.state) &&
+                  !RECOVERABLE_STATES.includes(entry.state)
+                }
                 >${entry.title}</ha-md-list-item
               >`
           )}

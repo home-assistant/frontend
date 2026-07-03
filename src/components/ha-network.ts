@@ -59,11 +59,13 @@ export class HaNetwork extends LitElement {
       <ha-checkbox
         @change=${this._handleAutoConfigureCheckboxClick}
         .checked=${!configured_adapters.length}
-        .hint=${!configured_adapters.length
-          ? this._localize(
-              "ui.panel.config.network.adapter.auto_configure_manual_hint"
-            )
-          : ""}
+        .hint=${
+          !configured_adapters.length
+            ? this._localize(
+                "ui.panel.config.network.adapter.auto_configure_manual_hint"
+              )
+            : ""
+        }
       >
         ${this._localize("ui.panel.config.network.adapter.auto_configure")}
         <div class="description">
@@ -71,27 +73,31 @@ export class HaNetwork extends LitElement {
           ${format_auto_detected_interfaces(this.networkConfig.adapters)}
         </div>
       </ha-checkbox>
-      ${configured_adapters.length || this._expanded
-        ? this.networkConfig.adapters.map(
-            (adapter) =>
-              html`<ha-checkbox
-                id=${adapter.name}
-                @change=${this._handleAdapterCheckboxClick}
-                .checked=${configured_adapters.includes(adapter.name)}
-                .adapter=${adapter.name}
-              >
-                ${this._localize("ui.panel.config.network.adapter.adapter")}:
-                ${adapter.name}
-                ${adapter.default
-                  ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>
-                      (${this._localize("ui.common.default")})`
-                  : nothing}
-                <div class="description">
-                  ${format_addresses([...adapter.ipv4, ...adapter.ipv6])}
-                </div>
-              </ha-checkbox>`
-          )
-        : nothing}
+      ${
+        configured_adapters.length || this._expanded
+          ? this.networkConfig.adapters.map(
+              (adapter) =>
+                html`<ha-checkbox
+                  id=${adapter.name}
+                  @change=${this._handleAdapterCheckboxClick}
+                  .checked=${configured_adapters.includes(adapter.name)}
+                  .adapter=${adapter.name}
+                >
+                  ${this._localize("ui.panel.config.network.adapter.adapter")}:
+                  ${adapter.name}
+                  ${
+                    adapter.default
+                      ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>
+                          (${this._localize("ui.common.default")})`
+                      : nothing
+                  }
+                  <div class="description">
+                    ${format_addresses([...adapter.ipv4, ...adapter.ipv6])}
+                  </div>
+                </ha-checkbox>`
+            )
+          : nothing
+      }
     `;
   }
 

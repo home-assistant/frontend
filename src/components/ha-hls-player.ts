@@ -111,29 +111,33 @@ class HaHLSPlayer extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this._error
-        ? html`<ha-alert
-            alert-type="error"
-            class=${this._errorIsFatal ? "fatal" : "retry"}
-          >
-            ${this._error}
-          </ha-alert>`
-        : ""}
-      ${!this._errorIsFatal
-        ? html`<video
-            .poster=${this.posterUrl}
-            ?autoplay=${this.autoPlay}
-            .muted=${this.muted}
-            ?playsinline=${this.playsInline}
-            ?controls=${this.controls}
-            @loadeddata=${this._loadedData}
-            style=${styleMap({
-              height: this.aspectRatio == null ? "100%" : "auto",
-              aspectRatio: this.aspectRatio,
-              objectFit: this.fitMode,
-            })}
-          ></video>`
-        : ""}
+      ${
+        this._error
+          ? html`<ha-alert
+              alert-type="error"
+              class=${this._errorIsFatal ? "fatal" : "retry"}
+            >
+              ${this._error}
+            </ha-alert>`
+          : ""
+      }
+      ${
+        !this._errorIsFatal
+          ? html`<video
+              .poster=${this.posterUrl}
+              ?autoplay=${this.autoPlay}
+              .muted=${this.muted}
+              ?playsinline=${this.playsInline}
+              ?controls=${this.controls}
+              @loadeddata=${this._loadedData}
+              style=${styleMap({
+                height: this.aspectRatio == null ? "100%" : "auto",
+                aspectRatio: this.aspectRatio,
+                objectFit: this.fitMode,
+              })}
+            ></video>`
+          : ""
+      }
     `;
   }
 

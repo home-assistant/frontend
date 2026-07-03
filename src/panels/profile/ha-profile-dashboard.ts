@@ -84,13 +84,15 @@ class HaProfileDashboard extends LitElement {
                 </div>
                 <div class="details">
                   ${this.hass.user!.name}
-                  ${this.hass.user!.is_owner
-                    ? html`<br /><small
-                          >${this.hass.localize(
-                            "ui.panel.profile.is_owner"
-                          )}</small
-                        >`
-                    : ""}
+                  ${
+                    this.hass.user!.is_owner
+                      ? html`<br /><small
+                            >${this.hass.localize(
+                              "ui.panel.profile.is_owner"
+                            )}</small
+                          >`
+                      : ""
+                  }
                 </div>
                 <ha-button
                   variant="danger"

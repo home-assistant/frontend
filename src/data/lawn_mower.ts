@@ -5,11 +5,7 @@ import type {
 import { UNAVAILABLE } from "./entity/entity";
 
 export type LawnMowerEntityState =
-  | "paused"
-  | "mowing"
-  | "returning"
-  | "docked"
-  | "error";
+  "paused" | "mowing" | "returning" | "docked" | "error";
 
 export enum LawnMowerEntityFeature {
   START_MOWING = 1,

@@ -70,11 +70,13 @@ export class HaSelectorAutomationBehavior extends LitElement {
         ?stacked_image=${isTrigger}
         @value-changed=${this._valueChanged}
       ></ha-select-box>
-      ${this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 

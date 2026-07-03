@@ -37,17 +37,19 @@ class HaProfileSectionSecurity extends LitElement {
         .header=${this.hass.localize("ui.panel.profile.tabs.security")}
       >
         <div class="container">
-          ${this.hass.user!.credentials.some(
-            (cred) => cred.auth_provider_type === "homeassistant"
-          )
-            ? html`
-                <ha-change-password-card
-                  .refreshTokens=${this._refreshTokens}
-                  @hass-refresh-tokens=${this._refreshRefreshTokens}
-                  .hass=${this.hass}
-                ></ha-change-password-card>
-              `
-            : ""}
+          ${
+            this.hass.user!.credentials.some(
+              (cred) => cred.auth_provider_type === "homeassistant"
+            )
+              ? html`
+                  <ha-change-password-card
+                    .refreshTokens=${this._refreshTokens}
+                    @hass-refresh-tokens=${this._refreshRefreshTokens}
+                    .hass=${this.hass}
+                  ></ha-change-password-card>
+                `
+              : ""
+          }
           <ha-mfa-modules-card
             .hass=${this.hass}
             .mfaModules=${this.hass.user!.mfa_modules}

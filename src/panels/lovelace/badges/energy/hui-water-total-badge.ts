@@ -69,8 +69,7 @@ export class HuiWaterTotalBadge
 
     if (changedProps.has("_states")) {
       const oldStates = changedProps.get("_states") as
-        | ContextType<typeof statesContext>
-        | undefined;
+        ContextType<typeof statesContext> | undefined;
       if (!oldStates || !this._entities.size) {
         return true;
       }

@@ -75,18 +75,23 @@ export class HaFormExpandable extends LitElement implements HaFormElement {
   protected render() {
     return html`
       <ha-expansion-panel outlined .expanded=${Boolean(this.schema.expanded)}>
-        ${this.schema.icon
-          ? html`
-              <ha-icon slot="leading-icon" .icon=${this.schema.icon}></ha-icon>
-            `
-          : this.schema.iconPath
+        ${
+          this.schema.icon
             ? html`
-                <ha-svg-icon
+                <ha-icon
                   slot="leading-icon"
-                  .path=${this.schema.iconPath}
-                ></ha-svg-icon>
+                  .icon=${this.schema.icon}
+                ></ha-icon>
               `
-            : nothing}
+            : this.schema.iconPath
+              ? html`
+                  <ha-svg-icon
+                    slot="leading-icon"
+                    .path=${this.schema.iconPath}
+                  ></ha-svg-icon>
+                `
+              : nothing
+        }
         <div
           slot="header"
           role="heading"

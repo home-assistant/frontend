@@ -193,60 +193,68 @@ class DialogGenerateBackup
         @closed=${this._dialogClosed}
       >
         <ha-dialog-header slot="header">
-          ${isFirstStep
-            ? html`
-                <ha-icon-button
-                  slot="navigationIcon"
-                  data-dialog="close"
-                  .label=${this.hass.localize("ui.common.close")}
-                  .path=${mdiClose}
-                ></ha-icon-button>
-              `
-            : html`
-                <ha-icon-button-prev
-                  slot="navigationIcon"
-                  @click=${this._previousStep}
-                ></ha-icon-button-prev>
-              `}
+          ${
+            isFirstStep
+              ? html`
+                  <ha-icon-button
+                    slot="navigationIcon"
+                    data-dialog="close"
+                    .label=${this.hass.localize("ui.common.close")}
+                    .path=${mdiClose}
+                  ></ha-icon-button>
+                `
+              : html`
+                  <ha-icon-button-prev
+                    slot="navigationIcon"
+                    @click=${this._previousStep}
+                  ></ha-icon-button-prev>
+                `
+          }
           <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
         </ha-dialog-header>
         <div class="content">
           ${this._step === "data" ? this._renderData() : this._renderSync()}
         </div>
         <ha-dialog-footer slot="footer">
-          ${isFirstStep
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  @click=${this.closeDialog}
-                  appearance="plain"
-                >
-                  ${this.hass.localize("ui.common.cancel")}
-                </ha-button>
-              `
-            : nothing}
-          ${isLastStep
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._submit}
-                  .disabled=${this._formData.agents_mode === "custom" &&
-                  !selectedAgents.length}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.dialogs.generate.actions.create"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._nextStep}
-                  .disabled=${this._step === "data" && this._noDataSelected}
-                >
-                  ${this.hass.localize("ui.common.next")}
-                </ha-button>
-              `}
+          ${
+            isFirstStep
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    @click=${this.closeDialog}
+                    appearance="plain"
+                  >
+                    ${this.hass.localize("ui.common.cancel")}
+                  </ha-button>
+                `
+              : nothing
+          }
+          ${
+            isLastStep
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._submit}
+                    .disabled=${
+                      this._formData.agents_mode === "custom" &&
+                      !selectedAgents.length
+                    }
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.dialogs.generate.actions.create"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._nextStep}
+                    .disabled=${this._step === "data" && this._noDataSelected}
+                  >
+                    ${this.hass.localize("ui.common.next")}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;
@@ -340,39 +348,43 @@ class DialogGenerateBackup
           ]}
         ></ha-select>
       </ha-row-item>
-      ${disabledAgentIds.length
-        ? html`
-            <ha-alert
-              alert-type="info"
-              .title=${this.hass.localize(
-                "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.title"
-              )}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.description"
-              )}
-            </ha-alert>
-          `
-        : nothing}
-      ${this._formData.agents_mode === "custom"
-        ? html`
-            <ha-expansion-panel
-              .header=${this.hass.localize(
-                "ui.panel.config.backup.dialogs.generate.sync.locations"
-              )}
-              outlined
-              expanded
-            >
-              <ha-backup-agents-picker
-                .hass=${this.hass}
-                .value=${this._formData.agent_ids}
-                @value-changed=${this._agentsChanged}
-                .agents=${this._agents}
-                .disabledAgentIds=${disabledAgentIds}
-              ></ha-backup-agents-picker>
-            </ha-expansion-panel>
-          `
-        : nothing}
+      ${
+        disabledAgentIds.length
+          ? html`
+              <ha-alert
+                alert-type="info"
+                .title=${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.title"
+                )}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.generate.sync.ha_cloud_alert.description"
+                )}
+              </ha-alert>
+            `
+          : nothing
+      }
+      ${
+        this._formData.agents_mode === "custom"
+          ? html`
+              <ha-expansion-panel
+                .header=${this.hass.localize(
+                  "ui.panel.config.backup.dialogs.generate.sync.locations"
+                )}
+                outlined
+                expanded
+              >
+                <ha-backup-agents-picker
+                  .hass=${this.hass}
+                  .value=${this._formData.agent_ids}
+                  @value-changed=${this._agentsChanged}
+                  .agents=${this._agents}
+                  .disabledAgentIds=${disabledAgentIds}
+                ></ha-backup-agents-picker>
+              </ha-expansion-panel>
+            `
+          : nothing
+      }
     `;
   }
 

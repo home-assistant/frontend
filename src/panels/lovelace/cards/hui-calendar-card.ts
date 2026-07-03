@@ -210,9 +210,11 @@ export class HuiCalendarCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html`<div class="header">${this._config.title}</div>`
-          : nothing}
+        ${
+          this._config.title
+            ? html`<div class="header">${this._config.title}</div>`
+            : nothing
+        }
         <ha-full-calendar
           class=${classMap({
             "is-grid": this.layout === "grid",
@@ -229,11 +231,13 @@ export class HuiCalendarCard
           .error=${this._error}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
-        ${loading
-          ? html`<div class="loading">
-              <ha-spinner></ha-spinner>
-            </div>`
-          : nothing}
+        ${
+          loading
+            ? html`<div class="loading">
+                <ha-spinner></ha-spinner>
+              </div>`
+            : nothing
+        }
       </ha-card>
     `;
   }
@@ -263,8 +267,7 @@ export class HuiCalendarCard
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | CalendarCardConfig
-      | undefined;
+      CalendarCardConfig | undefined;
 
     if (
       !oldHass ||

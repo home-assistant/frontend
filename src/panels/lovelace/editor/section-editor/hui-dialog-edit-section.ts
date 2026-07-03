@@ -203,25 +203,27 @@ export class HuiDialogEditSection
               )}
             </ha-dropdown-item>
           </ha-dropdown>
-          ${!this._yamlMode
-            ? html`
-                <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
-                  ${TABS.map(
-                    (tab) => html`
-                      <ha-tab-group-tab
-                        slot="nav"
-                        .panel=${tab}
-                        .active=${this._currTab === tab}
-                      >
-                        ${this.hass!.localize(
-                          `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
-                        )}
-                      </ha-tab-group-tab>
-                    `
-                  )}
-                </ha-tab-group>
-              `
-            : nothing}
+          ${
+            !this._yamlMode
+              ? html`
+                  <ha-tab-group @wa-tab-show=${this._handleTabChanged}>
+                    ${TABS.map(
+                      (tab) => html`
+                        <ha-tab-group-tab
+                          slot="nav"
+                          .panel=${tab}
+                          .active=${this._currTab === tab}
+                        >
+                          ${this.hass!.localize(
+                            `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
+                          )}
+                        </ha-tab-group-tab>
+                      `
+                    )}
+                  </ha-tab-group>
+                `
+              : nothing
+          }
         </ha-dialog-header>
         ${content}
         <ha-dialog-footer slot="footer">

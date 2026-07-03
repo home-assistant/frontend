@@ -39,51 +39,63 @@ export class MoreInfoInfo extends LitElement {
 
     return html`
       <div class="container" data-domain=${domain}>
-        ${!stateObj
-          ? html`<ha-alert alert-type="warning">
-              ${this.entry?.disabled_by
-                ? this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.entity_disabled"
-                  )
-                : this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.unavailable"
-                  )}
-            </ha-alert>`
-          : nothing}
-        ${stateObj?.attributes.restored && entityRegObj
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.dialogs.more_info_control.restored.no_longer_provided",
-                {
-                  integration: entityRegObj.platform,
+        ${
+          !stateObj
+            ? html`<ha-alert alert-type="warning">
+                ${
+                  this.entry?.disabled_by
+                    ? this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.entity_disabled"
+                      )
+                    : this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.unavailable"
+                      )
                 }
-              )}
-            </ha-alert>`
-          : nothing}
+              </ha-alert>`
+            : nothing
+        }
+        ${
+          stateObj?.attributes.restored && entityRegObj
+            ? html`<ha-alert alert-type="warning">
+                ${this.hass.localize(
+                  "ui.dialogs.more_info_control.restored.no_longer_provided",
+                  {
+                    integration: entityRegObj.platform,
+                  }
+                )}
+              </ha-alert>`
+            : nothing
+        }
         <div class="content">
-          ${DOMAINS_NO_INFO.includes(domain) || isNewMoreInfo
-            ? ""
-            : html`
-                <state-card-content
-                  in-dialog
-                  .stateObj=${stateObj}
+          ${
+            DOMAINS_NO_INFO.includes(domain) || isNewMoreInfo
+              ? ""
+              : html`
+                  <state-card-content
+                    in-dialog
+                    .stateObj=${stateObj}
+                    .hass=${this.hass}
+                  ></state-card-content>
+                `
+          }
+          ${
+            DOMAINS_WITH_MORE_INFO.includes(domain) ||
+            !computeShowHistoryComponent(this.hass, entityId)
+              ? ""
+              : html`<ha-more-info-history
                   .hass=${this.hass}
-                ></state-card-content>
-              `}
-          ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
-          !computeShowHistoryComponent(this.hass, entityId)
-            ? ""
-            : html`<ha-more-info-history
-                .hass=${this.hass}
-                .entityId=${this.entityId}
-              ></ha-more-info-history>`}
-          ${DOMAINS_WITH_MORE_INFO.includes(domain) ||
-          !computeShowLogBookComponent(this.hass, entityId)
-            ? ""
-            : html`<ha-more-info-logbook
-                .hass=${this.hass}
-                .entityId=${this.entityId}
-              ></ha-more-info-logbook>`}
+                  .entityId=${this.entityId}
+                ></ha-more-info-history>`
+          }
+          ${
+            DOMAINS_WITH_MORE_INFO.includes(domain) ||
+            !computeShowLogBookComponent(this.hass, entityId)
+              ? ""
+              : html`<ha-more-info-logbook
+                  .hass=${this.hass}
+                  .entityId=${this.entityId}
+                ></ha-more-info-logbook>`
+          }
           <more-info-content
             ?full-height=${isFullHeight}
             .stateObj=${stateObj}

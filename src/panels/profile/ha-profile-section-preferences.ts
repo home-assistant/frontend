@@ -104,14 +104,16 @@ class HaProfileSectionPreferences extends LitElement {
                   )}
                 </ha-button>
               </ha-md-list-item>
-              ${this.hass.user!.is_admin
-                ? html`
-                    <ha-entity-id-picker-row
-                      .hass=${this.hass}
-                      .coreUserData=${this._coreUserData}
-                    ></ha-entity-id-picker-row>
-                  `
-                : ""}
+              ${
+                this.hass.user!.is_admin
+                  ? html`
+                      <ha-entity-id-picker-row
+                        .hass=${this.hass}
+                        .coreUserData=${this._coreUserData}
+                      ></ha-entity-id-picker-row>
+                    `
+                  : ""
+              }
             </ha-md-list>
           </ha-card>
         </div>

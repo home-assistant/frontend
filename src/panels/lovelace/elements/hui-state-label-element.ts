@@ -106,9 +106,11 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
       >
-        ${this._config.prefix}${!this._config.attribute
-          ? this.hass.formatEntityState(stateObj)
-          : stateObj.attributes[this._config.attribute]}${this._config.suffix}
+        ${this._config.prefix}${
+          !this._config.attribute
+            ? this.hass.formatEntityState(stateObj)
+            : stateObj.attributes[this._config.attribute]
+        }${this._config.suffix}
       </div>
     `;
   }

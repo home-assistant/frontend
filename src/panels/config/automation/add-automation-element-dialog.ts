@@ -627,29 +627,33 @@ class DialogAddAutomationElement
     return html`
       <div slot="header">
         ${this._renderHeader()}
-        ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
-          ? html`
-              <ha-input-search
-                appearance="outlined"
-                ?autofocus=${!this._narrow}
-                .value=${this._filter}
-                @input=${this._handleFilterInput}
-              ></ha-input-search>
-            `
-          : nothing}
-        ${!this._filter &&
-        tabButtons.length > 1 &&
-        (!this._narrow || (!this._selectedGroup && !this._selectedTarget))
-          ? html`<ha-button-toggle-group
-              variant="neutral"
-              active-variant="brand"
-              .buttons=${tabButtons}
-              .active=${this._tab}
-              size="s"
-              full-width
-              @value-changed=${this._switchTab}
-            ></ha-button-toggle-group>`
-          : nothing}
+        ${
+          !this._narrow || (!this._selectedGroup && !this._selectedTarget)
+            ? html`
+                <ha-input-search
+                  appearance="outlined"
+                  ?autofocus=${!this._narrow}
+                  .value=${this._filter}
+                  @input=${this._handleFilterInput}
+                ></ha-input-search>
+              `
+            : nothing
+        }
+        ${
+          !this._filter &&
+          tabButtons.length > 1 &&
+          (!this._narrow || (!this._selectedGroup && !this._selectedTarget))
+            ? html`<ha-button-toggle-group
+                variant="neutral"
+                active-variant="brand"
+                .buttons=${tabButtons}
+                .active=${this._tab}
+                size="s"
+                full-width
+                @value-changed=${this._switchTab}
+              ></ha-button-toggle-group>`
+            : nothing
+        }
       </div>
       <div
         class=${classMap({
@@ -665,185 +669,215 @@ class DialogAddAutomationElement
               )),
         })}
       >
-        ${this._filter
-          ? html`<ha-automation-add-search
-              .hass=${this.hass}
-              .filter=${this._filter}
-              .configEntryLookup=${this._configEntryLookup}
-              .manifests=${this._manifests}
-              .narrow=${this._narrow}
-              .addElementType=${this._params!.type}
-              .items=${this._items(
-                automationElementType,
-                this.hass.localize,
-                this.hass.services,
-                this._manifests
-              )}
-              .convertToItem=${this._convertToItem}
-              @search-element-picked=${this._searchItemSelected}
-            >
-            </ha-automation-add-search>`
-          : this._tab === "targets"
-            ? html`<ha-automation-add-from-target
+        ${
+          this._filter
+            ? html`<ha-automation-add-search
                 .hass=${this.hass}
-                .value=${this._selectedTarget}
-                @value-changed=${this._handleTargetSelected}
-                @time-location-group-selected=${this
-                  ._handleTimeLocationGroupSelected}
+                .filter=${this._filter}
+                .configEntryLookup=${this._configEntryLookup}
+                .manifests=${this._manifests}
                 .narrow=${this._narrow}
-                .timeLocationLabel=${this._getTimeLocationLabel(
-                  automationElementType
-                )}
-                .timeLocationGroups=${this._getTimeLocationGroups(
+                .addElementType=${this._params!.type}
+                .items=${this._items(
                   automationElementType,
                   this.hass.localize,
-                  automationElementType === "condition"
-                    ? this._conditionDescriptions
-                    : this._triggerDescriptions
+                  this.hass.services,
+                  this._manifests
                 )}
-                .selectedGroup=${this._selectedGroup}
-                class=${classMap({
-                  "ha-scrollbar": true,
-                  hidden:
-                    !!this._getAddFromTargetHidden(
-                      this._narrow,
-                      this._selectedTarget
-                    ) ||
-                    (this._narrow && !!this._selectedGroup),
-                })}
-                .manifests=${this._manifests}
-              ></ha-automation-add-from-target>`
-            : html`
-                <ha-list-base
+                .convertToItem=${this._convertToItem}
+                @search-element-picked=${this._searchItemSelected}
+              >
+              </ha-automation-add-search>`
+            : this._tab === "targets"
+              ? html`<ha-automation-add-from-target
+                  .hass=${this.hass}
+                  .value=${this._selectedTarget}
+                  @value-changed=${this._handleTargetSelected}
+                  @time-location-group-selected=${
+                    this._handleTimeLocationGroupSelected
+                  }
+                  .narrow=${this._narrow}
+                  .timeLocationLabel=${this._getTimeLocationLabel(
+                    automationElementType
+                  )}
+                  .timeLocationGroups=${this._getTimeLocationGroups(
+                    automationElementType,
+                    this.hass.localize,
+                    automationElementType === "condition"
+                      ? this._conditionDescriptions
+                      : this._triggerDescriptions
+                  )}
+                  .selectedGroup=${this._selectedGroup}
                   class=${classMap({
-                    groups: true,
-                    hidden: hideCollections,
                     "ha-scrollbar": true,
+                    hidden:
+                      !!this._getAddFromTargetHidden(
+                        this._narrow,
+                        this._selectedTarget
+                      ) ||
+                      (this._narrow && !!this._selectedGroup),
                   })}
-                >
-                  ${this._params!.clipboardItem
-                    ? html`<ha-list-item-button
-                          class="paste"
-                          @click=${this._paste}
-                        >
-                          <div slot="headline" class="label">
-                            ${this.hass.localize(
-                              `ui.panel.config.automation.editor.${automationElementType}s.paste`
-                            )}
-                          </div>
-                          <div slot="supporting-text">
-                            ${this.hass.localize(
-                              // @ts-ignore
-                              `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
-                            )}
-                          </div>
-                          ${!this._narrow
-                            ? html`<span slot="end" class="shortcut">
-                                <span
-                                  >${isMac
+                  .manifests=${this._manifests}
+                ></ha-automation-add-from-target>`
+              : html`
+                  <ha-list-base
+                    class=${classMap({
+                      groups: true,
+                      hidden: hideCollections,
+                      "ha-scrollbar": true,
+                    })}
+                  >
+                    ${
+                      this._params!.clipboardItem
+                        ? html`<ha-list-item-button
+                              class="paste"
+                              @click=${this._paste}
+                            >
+                              <div slot="headline" class="label">
+                                ${this.hass.localize(
+                                  `ui.panel.config.automation.editor.${automationElementType}s.paste`
+                                )}
+                              </div>
+                              <div slot="supporting-text">
+                                ${this.hass.localize(
+                                  // @ts-ignore
+                                  `ui.panel.config.automation.editor.${automationElementType}s.type.${this._params.clipboardItem}.label`
+                                )}
+                              </div>
+                              ${
+                                !this._narrow
+                                  ? html`<span slot="end" class="shortcut">
+                                      <span
+                                        >${
+                                          isMac
+                                            ? html`<ha-svg-icon
+                                                slot="start"
+                                                .path=${mdiAppleKeyboardCommand}
+                                              ></ha-svg-icon>`
+                                            : this.hass.localize(
+                                                "ui.panel.config.automation.editor.ctrl"
+                                              )
+                                        }</span
+                                      >
+                                      <span>+</span>
+                                      <span>V</span>
+                                    </span>`
+                                  : nothing
+                              }
+                              <ha-svg-icon
+                                slot="start"
+                                .path=${mdiContentPaste}
+                              ></ha-svg-icon
+                              ><ha-svg-icon
+                                class="plus"
+                                slot="end"
+                                .path=${mdiPlus}
+                              ></ha-svg-icon>
+                            </ha-list-item-button>
+                            <wa-divider></wa-divider>`
+                        : nothing
+                    }
+                    ${collections.map(
+                      (collection) => html`
+                        ${
+                          collection.titleKey && collection.groups.length
+                            ? html`<ha-section-title>
+                                ${this.hass.localize(collection.titleKey)}
+                              </ha-section-title>`
+                            : nothing
+                        }
+                        ${repeat(
+                          collection.groups,
+                          (item) => item.key,
+                          (item) => html`
+                            <ha-list-item-button
+                              .value=${item.key}
+                              .index=${collection.collectionIndex}
+                              @click=${this._groupSelected}
+                              class=${
+                                item.key === this._selectedGroup
+                                  ? "selected"
+                                  : ""
+                              }
+                            >
+                              <div slot="headline">${item.name}</div>
+                              ${
+                                item.icon
+                                  ? html`<span slot="start">${item.icon}</span>`
+                                  : item.iconPath
                                     ? html`<ha-svg-icon
                                         slot="start"
-                                        .path=${mdiAppleKeyboardCommand}
+                                        .path=${item.iconPath}
                                       ></ha-svg-icon>`
-                                    : this.hass.localize(
-                                        "ui.panel.config.automation.editor.ctrl"
-                                      )}</span
-                                >
-                                <span>+</span>
-                                <span>V</span>
-                              </span>`
-                            : nothing}
-                          <ha-svg-icon
-                            slot="start"
-                            .path=${mdiContentPaste}
-                          ></ha-svg-icon
-                          ><ha-svg-icon
-                            class="plus"
-                            slot="end"
-                            .path=${mdiPlus}
-                          ></ha-svg-icon>
-                        </ha-list-item-button>
-                        <wa-divider></wa-divider>`
-                    : nothing}
-                  ${collections.map(
-                    (collection) => html`
-                      ${collection.titleKey && collection.groups.length
-                        ? html`<ha-section-title>
-                            ${this.hass.localize(collection.titleKey)}
-                          </ha-section-title>`
-                        : nothing}
-                      ${repeat(
-                        collection.groups,
-                        (item) => item.key,
-                        (item) => html`
-                          <ha-list-item-button
-                            .value=${item.key}
-                            .index=${collection.collectionIndex}
-                            @click=${this._groupSelected}
-                            class=${item.key === this._selectedGroup
-                              ? "selected"
-                              : ""}
-                          >
-                            <div slot="headline">${item.name}</div>
-                            ${item.icon
-                              ? html`<span slot="start">${item.icon}</span>`
-                              : item.iconPath
-                                ? html`<ha-svg-icon
-                                    slot="start"
-                                    .path=${item.iconPath}
-                                  ></ha-svg-icon>`
-                                : nothing}
-                            ${this._narrow
-                              ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                              : nothing}
-                          </ha-list-item-button>
-                        `
-                      )}
-                    `
+                                    : nothing
+                              }
+                              ${
+                                this._narrow
+                                  ? html`<ha-icon-next
+                                      slot="end"
+                                    ></ha-icon-next>`
+                                  : nothing
+                              }
+                            </ha-list-item-button>
+                          `
+                        )}
+                      `
+                    )}
+                  </ha-list-base>
+                `
+        }
+        ${
+          !this._filter
+            ? html`
+                <ha-automation-add-items
+                  .hass=${this.hass}
+                  .items=${this._getItems()}
+                  .scrollable=${!this._narrow}
+                  .error=${
+                    this._tab === "targets" && this._loadItemsError
+                      ? this.hass.localize(
+                          "ui.panel.config.automation.editor.load_target_items_failed"
+                        )
+                      : undefined
+                  }
+                  .selectLabel=${this.hass.localize(
+                    `ui.panel.config.automation.editor.${this._tab === "groups" || this._selectedGroup ? `${automationElementType}s.select` : "select_target"}` as LocalizeKeys
                   )}
-                </ha-list-base>
-              `}
-        ${!this._filter
-          ? html`
-              <ha-automation-add-items
-                .hass=${this.hass}
-                .items=${this._getItems()}
-                .scrollable=${!this._narrow}
-                .error=${this._tab === "targets" && this._loadItemsError
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.load_target_items_failed"
-                    )
-                  : undefined}
-                .selectLabel=${this.hass.localize(
-                  `ui.panel.config.automation.editor.${this._tab === "groups" || this._selectedGroup ? `${automationElementType}s.select` : "select_target"}` as LocalizeKeys
-                )}
-                .emptyLabel=${this.hass.localize(
-                  `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
-                )}
-                .tooltipDescription=${this._tab === "targets" &&
-                !this._selectedGroup}
-                .target=${(this._tab === "targets" &&
-                  this._selectedTarget &&
-                  ([
-                    ...this._extractTypeAndIdFromTarget(this._selectedTarget),
-                    this._getSelectedTargetLabel(this._selectedTarget),
-                  ] as [string, string | undefined, string | undefined])) ||
-                undefined}
-                .getLabel=${this._getLabel}
-                .configEntryLookup=${this._configEntryLookup}
-                class=${this._narrow &&
-                !this._selectedGroup &&
-                (!this._selectedTarget ||
-                  (this._selectedTarget &&
-                    !Object.values(this._selectedTarget)[0])) &&
-                this._tab !== "blocks"
-                  ? "hidden"
-                  : ""}
-                @value-changed=${this._selected}
-              >
-              </ha-automation-add-items>
-            `
-          : nothing}
+                  .emptyLabel=${this.hass.localize(
+                    `ui.panel.config.automation.editor.${automationElementType}s.no_items_for_target`
+                  )}
+                  .tooltipDescription=${
+                    this._tab === "targets" && !this._selectedGroup
+                  }
+                  .target=${
+                    (this._tab === "targets" &&
+                      this._selectedTarget &&
+                      ([
+                        ...this._extractTypeAndIdFromTarget(
+                          this._selectedTarget
+                        ),
+                        this._getSelectedTargetLabel(this._selectedTarget),
+                      ] as [string, string | undefined, string | undefined])) ||
+                    undefined
+                  }
+                  .getLabel=${this._getLabel}
+                  .configEntryLookup=${this._configEntryLookup}
+                  class=${
+                    this._narrow &&
+                    !this._selectedGroup &&
+                    (!this._selectedTarget ||
+                      (this._selectedTarget &&
+                        !Object.values(this._selectedTarget)[0])) &&
+                    this._tab !== "blocks"
+                      ? "hidden"
+                      : ""
+                  }
+                  @value-changed=${this._selected}
+                >
+                </ha-automation-add-items>
+              `
+            : nothing
+        }
       </div>
     `;
   }
@@ -856,32 +890,36 @@ class DialogAddAutomationElement
         <span slot="title">${this._getDialogTitle()}</span>
 
         ${this._renderDialogSubtitle()}
-        ${!this._narrow || (!this._selectedGroup && !this._selectedTarget)
-          ? html`
-              <ha-icon-button
-                .path=${mdiHelpCircleOutline}
-                .label=${this.hass.localize(
-                  `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
-                )}
-                slot="actionItems"
-                href=${docUrl}
-                target="_blank"
-                rel="noreferrer"
-              ></ha-icon-button>
-            `
-          : nothing}
-        ${this._narrow &&
-        (this._selectedGroup || this._selectedTarget) &&
-        !this._openedFromQuery
-          ? html`<ha-icon-button-prev
-              slot="navigationIcon"
-              @click=${this._back}
-            ></ha-icon-button-prev>`
-          : html`<ha-icon-button
-              .path=${mdiClose}
-              @click=${this._close}
-              slot="navigationIcon"
-            ></ha-icon-button>`}
+        ${
+          !this._narrow || (!this._selectedGroup && !this._selectedTarget)
+            ? html`
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  .label=${this.hass.localize(
+                    `ui.panel.config.automation.editor.${this._params!.type}s.learn_more`
+                  )}
+                  slot="actionItems"
+                  href=${docUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                ></ha-icon-button>
+              `
+            : nothing
+        }
+        ${
+          this._narrow &&
+          (this._selectedGroup || this._selectedTarget) &&
+          !this._openedFromQuery
+            ? html`<ha-icon-button-prev
+                slot="navigationIcon"
+                @click=${this._back}
+              ></ha-icon-button-prev>`
+            : html`<ha-icon-button
+                .path=${mdiClose}
+                @click=${this._close}
+                slot="navigationIcon"
+              ></ha-icon-button>`
+        }
       </ha-dialog-header>
     `;
   }

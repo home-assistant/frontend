@@ -22,6 +22,7 @@ import { hasTemplate } from "../common/string/has-template";
 import { createSearchParam } from "../common/url/search-params";
 import type { HomeAssistant } from "../types";
 import type {
+  AutomationMigrationReport,
   Condition,
   ShorthandAndCondition,
   ShorthandNotCondition,
@@ -452,14 +453,15 @@ export const requiredScriptFieldsFilled = (
   requiredScriptFieldsFilledForServices(hass.services, entityId, data);
 
 export const migrateAutomationAction = (
-  action: Action | Action[]
+  action: Action | Action[],
+  report?: AutomationMigrationReport
 ): Action | Action[] => {
   if (!action) {
     return action;
   }
 
   if (Array.isArray(action)) {
-    return action.map(migrateAutomationAction) as Action[];
+    return action.map((a) => migrateAutomationAction(a, report)) as Action[];
   }
 
   if (typeof action === "object" && action !== null && "service" in action) {
@@ -506,7 +508,7 @@ export const migrateAutomationAction = (
   if (typeof action === "object" && action !== null && "sequence" in action) {
     delete (action as SequenceAction).metadata;
     for (const sequenceAction of (action as SequenceAction).sequence) {
-      migrateAutomationAction(sequenceAction);
+      migrateAutomationAction(sequenceAction, report);
     }
   }
 
@@ -514,45 +516,48 @@ export const migrateAutomationAction = (
 
   if (actionType === "parallel") {
     const _action = action as ParallelAction;
-    migrateAutomationAction(_action.parallel);
+    migrateAutomationAction(_action.parallel, report);
   }
 
   if (actionType === "choose") {
     const _action = action as ChooseAction;
     if (Array.isArray(_action.choose)) {
       for (const choice of _action.choose) {
-        migrateAutomationAction(choice.sequence);
+        migrateAutomationAction(choice.sequence, report);
       }
     } else if (_action.choose) {
-      migrateAutomationAction(_action.choose.sequence);
+      migrateAutomationAction(_action.choose.sequence, report);
     }
     if (_action.default) {
-      migrateAutomationAction(_action.default);
+      migrateAutomationAction(_action.default, report);
     }
   }
 
   if (actionType === "repeat") {
     const _action = action as RepeatAction;
-    migrateAutomationAction(_action.repeat.sequence);
+    migrateAutomationAction(_action.repeat.sequence, report);
   }
 
   if (actionType === "if") {
     const _action = action as IfAction;
-    migrateAutomationAction(_action.then);
+    migrateAutomationAction(_action.then, report);
     if (_action.else) {
-      migrateAutomationAction(_action.else);
+      migrateAutomationAction(_action.else, report);
     }
   }
 
   if (actionType === "wait_for_trigger") {
     const _action = action as WaitForTriggerAction;
-    migrateAutomationTrigger(_action.wait_for_trigger);
+    migrateAutomationTrigger(_action.wait_for_trigger, report);
   }
 
   return action;
 };
 
-export const normalizeScriptConfig = (config: ScriptConfig): ScriptConfig => {
+export const normalizeScriptConfig = (
+  config: ScriptConfig,
+  report?: AutomationMigrationReport
+): ScriptConfig => {
   // Normalize data: ensure sequence is a list
   // Happens when people copy paste their scripts into the config
   const value = config.sequence;
@@ -560,7 +565,7 @@ export const normalizeScriptConfig = (config: ScriptConfig): ScriptConfig => {
     config.sequence = [value];
   }
   if (config.sequence) {
-    config.sequence = migrateAutomationAction(config.sequence);
+    config.sequence = migrateAutomationAction(config.sequence, report);
   }
   return config;
 };

@@ -154,61 +154,67 @@ export class HaForm extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <div class="root" part="root">
-        ${this.error && this.error.base
-          ? html`
-              <ha-alert alert-type="error">
-                ${this._computeError(this.error.base, this.schema)}
-              </ha-alert>
-            `
-          : ""}
+        ${
+          this.error && this.error.base
+            ? html`
+                <ha-alert alert-type="error">
+                  ${this._computeError(this.error.base, this.schema)}
+                </ha-alert>
+              `
+            : ""
+        }
         ${this.schema.map((item) => {
           const error = getError(this.error, item);
           const warning = getWarning(this.warning, item);
 
           return html`
-            ${error
-              ? html`
-                  <ha-alert own-margin alert-type="error">
-                    ${this._computeError(error, item)}
-                  </ha-alert>
-                `
-              : warning
+            ${
+              error
                 ? html`
-                    <ha-alert own-margin alert-type="warning">
-                      ${this._computeWarning(warning, item)}
+                    <ha-alert own-margin alert-type="error">
+                      ${this._computeError(error, item)}
                     </ha-alert>
                   `
-                : ""}
-            ${"selector" in item
-              ? html`<ha-selector
-                  .schema=${item}
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .name=${item.name}
-                  .selector=${item.selector}
-                  .value=${getValue(this.data, item)}
-                  .label=${this._computeLabel(item, this.data)}
-                  .disabled=${item.disabled || this.disabled || false}
-                  .placeholder=${item.required ? undefined : item.default}
-                  .helper=${this._computeHelper(item)}
-                  .localizeValue=${this.localizeValue}
-                  .required=${item.required || false}
-                  .context=${this._generateContext(item)}
-                ></ha-selector>`
-              : dynamicElement(this.fieldElementName(item.type), {
-                  schema: item,
-                  data: getValue(this.data, item),
-                  label: this._computeLabel(item, this.data),
-                  helper: this._computeHelper(item),
-                  disabled: this.disabled || item.disabled || false,
-                  hass: this.hass,
-                  localize: this.hass?.localize,
-                  computeLabel: this.computeLabel,
-                  computeHelper: this.computeHelper,
-                  localizeValue: this.localizeValue,
-                  context: this._generateContext(item),
-                  ...this.getFormProperties(),
-                })}
+                : warning
+                  ? html`
+                      <ha-alert own-margin alert-type="warning">
+                        ${this._computeWarning(warning, item)}
+                      </ha-alert>
+                    `
+                  : ""
+            }
+            ${
+              "selector" in item
+                ? html`<ha-selector
+                    .schema=${item}
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .name=${item.name}
+                    .selector=${item.selector}
+                    .value=${getValue(this.data, item)}
+                    .label=${this._computeLabel(item, this.data)}
+                    .disabled=${item.disabled || this.disabled || false}
+                    .placeholder=${item.required ? undefined : item.default}
+                    .helper=${this._computeHelper(item)}
+                    .localizeValue=${this.localizeValue}
+                    .required=${item.required || false}
+                    .context=${this._generateContext(item)}
+                  ></ha-selector>`
+                : dynamicElement(this.fieldElementName(item.type), {
+                    schema: item,
+                    data: getValue(this.data, item),
+                    label: this._computeLabel(item, this.data),
+                    helper: this._computeHelper(item),
+                    disabled: this.disabled || item.disabled || false,
+                    hass: this.hass,
+                    localize: this.hass?.localize,
+                    computeLabel: this.computeLabel,
+                    computeHelper: this.computeHelper,
+                    localizeValue: this.localizeValue,
+                    context: this._generateContext(item),
+                    ...this.getFormProperties(),
+                  })
+            }
           `;
         })}
       </div>

@@ -65,17 +65,19 @@ class ConfirmEventDialogBox extends LitElement {
           >
             ${this._params.confirmText}
           </ha-button>
-          ${this._params.confirmFutureText
-            ? html`
-                <ha-button
-                  @click=${this._confirmFuture}
-                  slot="primaryAction"
-                  variant="danger"
-                >
-                  ${this._params.confirmFutureText}
-                </ha-button>
-              `
-            : ""}
+          ${
+            this._params.confirmFutureText
+              ? html`
+                  <ha-button
+                    @click=${this._confirmFuture}
+                    slot="primaryAction"
+                    variant="danger"
+                  >
+                    ${this._params.confirmFutureText}
+                  </ha-button>
+                `
+              : ""
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

@@ -1,9 +1,21 @@
+import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing, unsafeCSS } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  UnsubscribeFunc,
+  HassEntity,
+} from "home-assistant-js-websocket";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import { apiContext, connectionContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   computeDefaultFavoriteColors,
@@ -11,7 +23,11 @@ import {
   type LightColor,
   lightSupportsFavoriteColors,
 } from "../../../data/light";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConnection,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -29,6 +45,13 @@ import { getMoreInfoHintCardFeatureEditor } from "./get-more-info-hint-card-feat
 const PILL_GAP = 8;
 const PILL_MIN_SIZE = 32;
 
+const supportsLightColorFavoritesCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return domain === "light" && lightSupportsFavoriteColors(stateObj);
+};
+
 export const supportsLightColorFavoritesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -37,8 +60,7 @@ export const supportsLightColorFavoritesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return domain === "light" && lightSupportsFavoriteColors(stateObj);
+  return supportsLightColorFavoritesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-light-color-favorites-card-feature")
@@ -46,9 +68,26 @@ class HuiLightColorFavoritesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: LightEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
 
   @state() private _config?: LightColorFavoritesCardFeatureConfig;
 
@@ -86,11 +125,11 @@ class HuiLightColorFavoritesCardFeature
   }
 
   private _subscribeEntityEntry() {
-    if (this.hass && this.context?.entity_id) {
+    if (this._connection && this.context?.entity_id) {
       const id = this.context.entity_id;
       try {
         this._unsubEntityRegistry = subscribeEntityRegistry(
-          this.hass!.connection,
+          this._connection,
           (entries) => {
             const entry = entries.find((e) => e.entity_id === id);
             if (entry) {
@@ -108,15 +147,8 @@ class HuiLightColorFavoritesCardFeature
     return this._resizeController.value ?? 0;
   }
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id] as LightEntity | undefined;
-  }
-
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("context")) {
+    if (changedProps.has("context") || changedProps.has("_connection")) {
       this._unsubscribeEntityRegistry();
       this._subscribeEntityEntry();
     }
@@ -150,10 +182,9 @@ class HuiLightColorFavoritesCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsLightColorFavoritesCardFeature(this.hass, this.context)
+      !supportsLightColorFavoritesCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -165,7 +196,7 @@ class HuiLightColorFavoritesCardFeature
         ${visibleColors.map(
           (color, index) => html`
             <ha-favorite-color-button
-              .label=${this.hass!.localize(
+              .label=${this._localize(
                 `ui.dialogs.more_info_control.light.favorite_color.set`,
                 { number: index }
               )}
@@ -189,7 +220,7 @@ class HuiLightColorFavoritesCardFeature
     const index = (ev.target! as any).index!;
 
     const favorite = this._favoriteColors[index];
-    this.hass!.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this._stateObj!.entity_id,
       ...favorite,
     });

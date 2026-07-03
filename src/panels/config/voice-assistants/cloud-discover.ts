@@ -81,22 +81,24 @@ export class CloudDiscover extends LitElement {
             </ha-button>
           </div>
         </div>
-        ${isComponentLoaded(this.hass.config, "cloud")
-          ? html`
-              <div class="card-actions">
-                <ha-button appearance="plain" href="/config/cloud/login">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                  )}
-                </ha-button>
-                <ha-button href="/config/cloud/register" appearance="filled">
-                  ${this.hass.localize(
-                    "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
-                  )}
-                </ha-button>
-              </div>
-            `
-          : nothing}
+        ${
+          isComponentLoaded(this.hass.config, "cloud")
+            ? html`
+                <div class="card-actions">
+                  <ha-button appearance="plain" href="/config/cloud/login">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                    )}
+                  </ha-button>
+                  <ha-button href="/config/cloud/register" appearance="filled">
+                    ${this.hass.localize(
+                      "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : nothing
+        }
       </ha-card>
     `;
   }

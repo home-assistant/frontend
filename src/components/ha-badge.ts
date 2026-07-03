@@ -27,12 +27,14 @@ export class HaBadge extends LitElement {
       >
         <ha-ripple .disabled=${this.type !== "button"}></ha-ripple>
         <slot name="icon"></slot>
-        ${this.iconOnly
-          ? nothing
-          : html`<span class="info">
-              ${label ? html`<span class="label">${label}</span>` : nothing}
-              <span class="content"><slot></slot></span>
-            </span>`}
+        ${
+          this.iconOnly
+            ? nothing
+            : html`<span class="info">
+                ${label ? html`<span class="label">${label}</span>` : nothing}
+                <span class="content"><slot></slot></span>
+              </span>`
+        }
       </div>
     `;
   }

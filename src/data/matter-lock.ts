@@ -14,11 +14,7 @@ export interface MatterLockInfo {
 }
 
 export type MatterLockCredentialType =
-  | "pin"
-  | "rfid"
-  | "fingerprint"
-  | "finger_vein"
-  | "face";
+  "pin" | "rfid" | "fingerprint" | "finger_vein" | "face";
 
 export type MatterLockUserType =
   | "unrestricted_user"
@@ -33,9 +29,7 @@ export type MatterLockUserType =
   | "remote_only_user";
 
 export type MatterLockUserStatus =
-  | "available"
-  | "occupied_enabled"
-  | "occupied_disabled";
+  "available" | "occupied_enabled" | "occupied_disabled";
 
 export type MatterLockCredentialRule = "single" | "dual" | "tri";
 

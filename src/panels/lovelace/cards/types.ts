@@ -38,11 +38,7 @@ import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
-  | "arm_away"
-  | "arm_home"
-  | "arm_night"
-  | "arm_vacation"
-  | "arm_custom_bypass";
+  "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;

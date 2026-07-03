@@ -84,12 +84,7 @@ declare interface NameAndEntity<EntityType extends HassEntity> {
 }
 
 type AreaQuickLinkKey =
-  | "devices"
-  | "entities"
-  | "helpers"
-  | "automations"
-  | "scenes"
-  | "scripts";
+  "devices" | "entities" | "helpers" | "automations" | "scenes" | "scripts";
 
 const NAVIGATION_ACTIONS: {
   value: string;
@@ -339,31 +334,35 @@ class HaConfigAreaPage extends LitElement {
     );
 
     const infoColumn = html`
-      ${area.picture
-        ? html`<div class="img-container">
-            <img alt=${area.name} src=${area.picture} />
-            <ha-icon-button
-              .path=${mdiPencil}
-              .entry=${area}
-              @click=${this._showSettings}
-              .label=${this.hass.localize(
-                "ui.panel.config.areas.edit_settings"
-              )}
-              class="img-edit-btn"
-            ></ha-icon-button>
-          </div>`
-        : nothing}
+      ${
+        area.picture
+          ? html`<div class="img-container">
+              <img alt=${area.name} src=${area.picture} />
+              <ha-icon-button
+                .path=${mdiPencil}
+                .entry=${area}
+                @click=${this._showSettings}
+                .label=${this.hass.localize(
+                  "ui.panel.config.areas.edit_settings"
+                )}
+                class="img-edit-btn"
+              ></ha-icon-button>
+            </div>`
+          : nothing
+      }
       <div class="action-buttons">
-        ${area.picture
-          ? nothing
-          : html`<ha-button
-              appearance="filled"
-              .entry=${area}
-              @click=${this._showSettings}
-            >
-              <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
-              ${this.hass.localize("ui.panel.config.areas.add_picture")}
-            </ha-button>`}
+        ${
+          area.picture
+            ? nothing
+            : html`<ha-button
+                appearance="filled"
+                .entry=${area}
+                @click=${this._showSettings}
+              >
+                <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
+                ${this.hass.localize("ui.panel.config.areas.add_picture")}
+              </ha-button>`
+        }
         <ha-button
           appearance="filled"
           variant="brand"
@@ -376,24 +375,26 @@ class HaConfigAreaPage extends LitElement {
       <ha-card
         outlined
         .header=${this.hass.localize("ui.panel.config.devices.caption")}
-        >${devices.length
-          ? html`<ha-list>
-              ${devices.map(
-                (device) => html`
-                  <a href="/config/devices/device/${device.id}">
-                    <ha-list-item hasMeta>
-                      <span>${device.name}</span>
-                      <ha-icon-next slot="meta"></ha-icon-next>
-                    </ha-list-item>
-                  </a>
-                `
-              )}
-            </ha-list>`
-          : html`
-              <div class="no-entries">
-                ${this.hass.localize("ui.panel.config.devices.no_devices")}
-              </div>
-            `}
+        >${
+          devices.length
+            ? html`<ha-list>
+                ${devices.map(
+                  (device) => html`
+                    <a href="/config/devices/device/${device.id}">
+                      <ha-list-item hasMeta>
+                        <span>${device.name}</span>
+                        <ha-icon-next slot="meta"></ha-icon-next>
+                      </ha-list-item>
+                    </a>
+                  `
+                )}
+              </ha-list>`
+            : html`
+                <div class="no-entries">
+                  ${this.hass.localize("ui.panel.config.devices.no_devices")}
+                </div>
+              `
+        }
       </ha-card>
       <ha-card
         outlined
@@ -401,202 +402,230 @@ class HaConfigAreaPage extends LitElement {
           "ui.panel.config.areas.editor.linked_entities_caption"
         )}
       >
-        ${nonAutomatedEntities.length
-          ? html`<ha-list>
-              ${nonAutomatedEntities.map(
-                (entity) => html`
-                  <ha-list-item
-                    @click=${this._openEntity}
-                    .entity=${entity}
-                    hasMeta
-                  >
-                    <span>${entity.name}</span>
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                `
-              )}</ha-list
-            >`
-          : html`
-              <div class="no-entries">
-                ${this.hass.localize(
-                  "ui.panel.config.areas.editor.no_linked_entities"
-                )}
-              </div>
-            `}
+        ${
+          nonAutomatedEntities.length
+            ? html`<ha-list>
+                ${nonAutomatedEntities.map(
+                  (entity) => html`
+                    <ha-list-item
+                      @click=${this._openEntity}
+                      .entity=${entity}
+                      hasMeta
+                    >
+                      <span>${entity.name}</span>
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  `
+                )}</ha-list
+              >`
+            : html`
+                <div class="no-entries">
+                  ${this.hass.localize(
+                    "ui.panel.config.areas.editor.no_linked_entities"
+                  )}
+                </div>
+              `
+        }
       </ha-card>
     `;
 
     const relatedColumn = html`
-      ${isComponentLoaded(this.hass.config, "automation")
-        ? html`
-            <ha-card
-              outlined
-              .header=${this.hass.localize(
-                "ui.panel.config.devices.automation.automations_heading"
-              )}
-            >
-              ${groupedAutomations?.length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.assigned_to_area"
-                      )}:
-                    </h3>
-                    <ha-list>
-                      ${groupedAutomations.map((automation) =>
-                        this._renderAutomation(
-                          automation.name,
-                          automation.entity
-                        )
-                      )}</ha-list
-                    >`
-                : ""}
-              ${relatedAutomations?.length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.targeting_area"
-                      )}:
-                    </h3>
-                    <ha-list>
-                      ${relatedAutomations.map((automation) =>
-                        this._renderAutomation(
-                          automation.name,
-                          automation.entity
-                        )
-                      )}</ha-list
-                    >`
-                : ""}
-              ${!groupedAutomations?.length && !relatedAutomations?.length
-                ? html`
-                    <div class="no-entries">
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.automation.no_automations"
-                      )}
-                    </div>
-                  `
-                : ""}
-            </ha-card>
-          `
-        : ""}
-      ${isComponentLoaded(this.hass.config, "scene")
-        ? html`
-            <ha-card
-              outlined
-              .header=${this.hass.localize(
-                "ui.panel.config.devices.scene.scenes_heading"
-              )}
-            >
-              ${groupedScenes?.length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.assigned_to_area"
-                      )}:
-                    </h3>
-                    <ha-list>
-                      ${groupedScenes.map((scene) =>
-                        this._renderScene(scene.name, scene.entity)
-                      )}</ha-list
-                    >`
-                : ""}
-              ${relatedScenes?.length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.targeting_area"
-                      )}:
-                    </h3>
-                    <ha-list>
-                      ${relatedScenes.map((scene) =>
-                        this._renderScene(scene.name, scene.entity)
-                      )}</ha-list
-                    >`
-                : ""}
-              ${!groupedScenes?.length && !relatedScenes?.length
-                ? html`
-                    <div class="no-entries">
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.scene.no_scenes"
-                      )}
-                    </div>
-                  `
-                : ""}
-            </ha-card>
-          `
-        : ""}
-      ${isComponentLoaded(this.hass.config, "script")
-        ? html`
-            <ha-card
-              outlined
-              .header=${this.hass.localize(
-                "ui.panel.config.devices.script.scripts_heading"
-              )}
-            >
-              ${groupedScripts?.length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.assigned_to_area"
-                      )}:
-                    </h3>
-                    ${groupedScripts.map((script) =>
-                      this._renderScript(script.name, script.entity)
-                    )}`
-                : ""}
-              ${relatedScripts?.length
-                ? html`<h3>
-                      ${this.hass.localize(
-                        "ui.panel.config.areas.targeting_area"
-                      )}:
-                    </h3>
-                    ${relatedScripts.map((script) =>
-                      this._renderScript(script.name, script.entity)
-                    )}`
-                : ""}
-              ${!groupedScripts?.length && !relatedScripts?.length
-                ? html`
-                    <div class="no-entries">
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.script.no_scripts"
-                      )}
-                    </div>
-                  `
-                : ""}
-            </ha-card>
-          `
-        : ""}
+      ${
+        isComponentLoaded(this.hass.config, "automation")
+          ? html`
+              <ha-card
+                outlined
+                .header=${this.hass.localize(
+                  "ui.panel.config.devices.automation.automations_heading"
+                )}
+              >
+                ${
+                  groupedAutomations?.length
+                    ? html`<h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.areas.assigned_to_area"
+                          )}:
+                        </h3>
+                        <ha-list>
+                          ${groupedAutomations.map((automation) =>
+                            this._renderAutomation(
+                              automation.name,
+                              automation.entity
+                            )
+                          )}</ha-list
+                        >`
+                    : ""
+                }
+                ${
+                  relatedAutomations?.length
+                    ? html`<h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.areas.targeting_area"
+                          )}:
+                        </h3>
+                        <ha-list>
+                          ${relatedAutomations.map((automation) =>
+                            this._renderAutomation(
+                              automation.name,
+                              automation.entity
+                            )
+                          )}</ha-list
+                        >`
+                    : ""
+                }
+                ${
+                  !groupedAutomations?.length && !relatedAutomations?.length
+                    ? html`
+                        <div class="no-entries">
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.automation.no_automations"
+                          )}
+                        </div>
+                      `
+                    : ""
+                }
+              </ha-card>
+            `
+          : ""
+      }
+      ${
+        isComponentLoaded(this.hass.config, "scene")
+          ? html`
+              <ha-card
+                outlined
+                .header=${this.hass.localize(
+                  "ui.panel.config.devices.scene.scenes_heading"
+                )}
+              >
+                ${
+                  groupedScenes?.length
+                    ? html`<h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.areas.assigned_to_area"
+                          )}:
+                        </h3>
+                        <ha-list>
+                          ${groupedScenes.map((scene) =>
+                            this._renderScene(scene.name, scene.entity)
+                          )}</ha-list
+                        >`
+                    : ""
+                }
+                ${
+                  relatedScenes?.length
+                    ? html`<h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.areas.targeting_area"
+                          )}:
+                        </h3>
+                        <ha-list>
+                          ${relatedScenes.map((scene) =>
+                            this._renderScene(scene.name, scene.entity)
+                          )}</ha-list
+                        >`
+                    : ""
+                }
+                ${
+                  !groupedScenes?.length && !relatedScenes?.length
+                    ? html`
+                        <div class="no-entries">
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.scene.no_scenes"
+                          )}
+                        </div>
+                      `
+                    : ""
+                }
+              </ha-card>
+            `
+          : ""
+      }
+      ${
+        isComponentLoaded(this.hass.config, "script")
+          ? html`
+              <ha-card
+                outlined
+                .header=${this.hass.localize(
+                  "ui.panel.config.devices.script.scripts_heading"
+                )}
+              >
+                ${
+                  groupedScripts?.length
+                    ? html`<h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.areas.assigned_to_area"
+                          )}:
+                        </h3>
+                        ${groupedScripts.map((script) =>
+                          this._renderScript(script.name, script.entity)
+                        )}`
+                    : ""
+                }
+                ${
+                  relatedScripts?.length
+                    ? html`<h3>
+                          ${this.hass.localize(
+                            "ui.panel.config.areas.targeting_area"
+                          )}:
+                        </h3>
+                        ${relatedScripts.map((script) =>
+                          this._renderScript(script.name, script.entity)
+                        )}`
+                    : ""
+                }
+                ${
+                  !groupedScripts?.length && !relatedScripts?.length
+                    ? html`
+                        <div class="no-entries">
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.script.no_scripts"
+                          )}
+                        </div>
+                      `
+                    : ""
+                }
+              </ha-card>
+            `
+          : ""
+      }
     `;
 
     const logbookColumn = html`
-      ${isComponentLoaded(this.hass.config, "logbook")
-        ? html`
-            <ha-card outlined>
-              <div class="card-header logbook-header">
-                <span>${this.hass.localize("panel.logbook")}</span>
-                <a
-                  href="/logbook?${createSearchParam({
-                    area_id: this.areaId,
-                    start_date: startOfYesterday().toISOString(),
-                    back: "1",
-                  })}"
-                >
-                  <ha-icon-button
-                    .path=${mdiChevronRight}
-                    .label=${this.hass.localize(
-                      "ui.dialogs.more_info_control.show_more"
-                    )}
-                  ></ha-icon-button>
-                </a>
-              </div>
-              <ha-logbook
-                .hass=${this.hass}
-                .time=${this._logbookTime}
-                .entityIds=${this._allEntities(memberships)}
-                .deviceIds=${this._allDeviceIds(memberships.devices)}
-                name-detail="device"
-                virtualize
-                narrow
-                no-icon
-              ></ha-logbook>
-            </ha-card>
-          `
-        : ""}
+      ${
+        isComponentLoaded(this.hass.config, "logbook")
+          ? html`
+              <ha-card outlined>
+                <div class="card-header logbook-header">
+                  <span>${this.hass.localize("panel.logbook")}</span>
+                  <a
+                    href="/logbook?${createSearchParam({
+                      area_id: this.areaId,
+                      start_date: startOfYesterday().toISOString(),
+                      back: "1",
+                    })}"
+                  >
+                    <ha-icon-button
+                      .path=${mdiChevronRight}
+                      .label=${this.hass.localize(
+                        "ui.dialogs.more_info_control.show_more"
+                      )}
+                    ></ha-icon-button>
+                  </a>
+                </div>
+                <ha-logbook
+                  .hass=${this.hass}
+                  .time=${this._logbookTime}
+                  .entityIds=${this._allEntities(memberships)}
+                  .deviceIds=${this._allDeviceIds(memberships.devices)}
+                  name-detail="device"
+                  virtualize
+                  narrow
+                  no-icon
+                ></ha-logbook>
+              </ha-card>
+            `
+          : ""
+      }
     `;
 
     // In 2 columns the logbook goes on the right, under the shorter
@@ -615,12 +644,14 @@ class HaConfigAreaPage extends LitElement {
       <hass-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${html`${area.icon
-          ? html`<ha-icon
-              .icon=${area.icon}
-              style="margin-inline-end: 8px;"
-            ></ha-icon>`
-          : nothing}${area.name}`}
+        .header=${html`${
+          area.icon
+            ? html`<ha-icon
+                .icon=${area.icon}
+                style="margin-inline-end: 8px;"
+              ></ha-icon>`
+            : nothing
+        }${area.name}`}
       >
         <ha-dropdown slot="toolbar-icon" @wa-select=${this._handleMenuAction}>
           <ha-icon-button

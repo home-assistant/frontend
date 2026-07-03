@@ -72,44 +72,60 @@ export class HaDeviceEntitiesCard extends LitElement {
 
     return html`
       <ha-card outlined .header=${this.header}>
-        ${enabledEntities.length
-          ? html`
-              <div id="entities" class="move-up">
-                <ha-list>
-                  ${this._renderEntities(mainEntities)}
-                  ${mainEntities.length && additionalEntities.length
-                    ? html`<div class="divider" role="separator"></div>`
-                    : nothing}
-                  ${this._renderEntities(additionalEntities)}
-                </ha-list>
-              </div>
-            `
-          : nothing}
-        ${disabledEntities.length
-          ? html`<div class=${classMap({ "move-up": !enabledEntities.length })}>
-              ${!this.showHidden
-                ? html`
-                    <button class="show-more" @click=${this._toggleShowHidden}>
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.entities.disabled_entities",
-                        { count: disabledEntities.length }
-                      )}
-                    </button>
-                  `
-                : html`
-                    <ha-list>
-                      ${disabledEntities.map((entry) =>
-                        this._renderUnavailableEntity(entry)
-                      )}
-                    </ha-list>
-                    <button class="show-more" @click=${this._toggleShowHidden}>
-                      ${this.hass.localize(
-                        "ui.panel.config.devices.entities.show_less"
-                      )}
-                    </button>
-                  `}
-            </div>`
-          : nothing}
+        ${
+          enabledEntities.length
+            ? html`
+                <div id="entities" class="move-up">
+                  <ha-list>
+                    ${this._renderEntities(mainEntities)}
+                    ${
+                      mainEntities.length && additionalEntities.length
+                        ? html`<div class="divider" role="separator"></div>`
+                        : nothing
+                    }
+                    ${this._renderEntities(additionalEntities)}
+                  </ha-list>
+                </div>
+              `
+            : nothing
+        }
+        ${
+          disabledEntities.length
+            ? html`<div
+                class=${classMap({ "move-up": !enabledEntities.length })}
+              >
+                ${
+                  !this.showHidden
+                    ? html`
+                        <button
+                          class="show-more"
+                          @click=${this._toggleShowHidden}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.entities.disabled_entities",
+                            { count: disabledEntities.length }
+                          )}
+                        </button>
+                      `
+                    : html`
+                        <ha-list>
+                          ${disabledEntities.map((entry) =>
+                            this._renderUnavailableEntity(entry)
+                          )}
+                        </ha-list>
+                        <button
+                          class="show-more"
+                          @click=${this._toggleShowHidden}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.entities.show_less"
+                          )}
+                        </button>
+                      `
+                }
+              </div>`
+            : nothing
+        }
         <div class="card-actions">
           <ha-button appearance="plain" @click=${this._addToLovelaceView}>
             ${this.hass.localize(

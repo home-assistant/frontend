@@ -85,8 +85,9 @@ export class HaSTTPicker extends LitElement {
 
     return html`
       <ha-select
-        .label=${this.label ||
-        this.hass!.localize("ui.components.stt-picker.stt")}
+        .label=${
+          this.label || this.hass!.localize("ui.components.stt-picker.stt")
+        }
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}

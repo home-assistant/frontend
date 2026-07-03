@@ -87,8 +87,7 @@ export class HaCameraStream extends LitElement {
         this.stateObj.entity_id;
 
     const oldConfig = changedProps.get("_config") as
-      | ContextType<typeof configContext>
-      | undefined;
+      ContextType<typeof configContext> | undefined;
     const backendStarted =
       changedProps.has("_config") &&
       this._config &&

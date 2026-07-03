@@ -25,27 +25,33 @@ class HaHumidifierState extends LitElement {
       this.stateObj.state === UNAVAILABLE || this.stateObj.state === UNKNOWN;
 
     return html`<div class="target">
-        ${!noValue
-          ? html`<span class="state-label">
-                ${this._localizeState()}
-                ${this.stateObj.attributes.mode
-                  ? html`-
-                    ${this._formatters!.formatEntityAttributeValue(
-                      this.stateObj,
-                      "mode"
-                    )}`
-                  : ""}
-              </span>
-              <div class="unit">${this._computeTarget()}</div>`
-          : this._localizeState()}
+        ${
+          !noValue
+            ? html`<span class="state-label">
+                  ${this._localizeState()}
+                  ${
+                    this.stateObj.attributes.mode
+                      ? html`-
+                        ${this._formatters!.formatEntityAttributeValue(
+                          this.stateObj,
+                          "mode"
+                        )}`
+                      : ""
+                  }
+                </span>
+                <div class="unit">${this._computeTarget()}</div>`
+            : this._localizeState()
+        }
       </div>
 
-      ${currentStatus && !noValue
-        ? html`<div class="current">
-            ${this._localize("ui.card.humidifier.currently")}:
-            <div class="unit">${currentStatus}</div>
-          </div>`
-        : ""}`;
+      ${
+        currentStatus && !noValue
+          ? html`<div class="current">
+              ${this._localize("ui.card.humidifier.currently")}:
+              <div class="unit">${currentStatus}</div>
+            </div>`
+          : ""
+      }`;
   }
 
   private _computeCurrentStatus(): string | undefined {

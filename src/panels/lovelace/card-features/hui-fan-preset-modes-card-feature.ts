@@ -1,4 +1,5 @@
 import { mdiTuneVariant } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -12,6 +13,13 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
+const supportsFanPresetModesCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "fan" && supportsFeature(stateObj, FanEntityFeature.PRESET_MODE)
+  );
+};
+
 export const supportsFanPresetModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -20,10 +28,7 @@ export const supportsFanPresetModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "fan" && supportsFeature(stateObj, FanEntityFeature.PRESET_MODE)
-  );
+  return supportsFanPresetModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-fan-preset-modes-card-feature")
@@ -62,9 +67,8 @@ class HuiFanPresetModesCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsFanPresetModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsFanPresetModesCardFeatureFromState(this._stateObj)
     );
   }
 }

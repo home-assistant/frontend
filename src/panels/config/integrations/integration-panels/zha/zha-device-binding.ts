@@ -58,8 +58,10 @@ export class ZHADeviceBindingControl extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             @click=${this._onUnbindDevicesClick}
-            .disabled=${!(this._deviceToBind && this.device) ||
-            this._bindingOperationInProgress}
+            .disabled=${
+              !(this._deviceToBind && this.device) ||
+              this._bindingOperationInProgress
+            }
             variant="danger"
             appearance="plain"
           >
@@ -67,8 +69,10 @@ export class ZHADeviceBindingControl extends LitElement {
           </ha-progress-button>
           <ha-progress-button
             @click=${this._onBindDevicesClick}
-            .disabled=${!(this._deviceToBind && this.device) ||
-            this._bindingOperationInProgress}
+            .disabled=${
+              !(this._deviceToBind && this.device) ||
+              this._bindingOperationInProgress
+            }
           >
             ${this.hass!.localize("ui.panel.config.zha.device_binding.bind")}
           </ha-progress-button>

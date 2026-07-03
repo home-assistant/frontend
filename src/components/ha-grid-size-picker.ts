@@ -91,22 +91,24 @@ export class HaGridSizeEditor extends LitElement {
           .disabled=${disabledRows}
           tooltip-mode=${disabledRows ? "never" : "always"}
         ></ha-grid-layout-slider>
-        ${!this.isDefault
-          ? html`
-              <ha-icon-button
-                @click=${this._reset}
-                class="reset"
-                .path=${mdiRestore}
-                label=${this._localize(
-                  "ui.components.grid-size-picker.reset_default"
-                )}
-                title=${this._localize(
-                  "ui.components.grid-size-picker.reset_default"
-                )}
-              >
-              </ha-icon-button>
-            `
-          : nothing}
+        ${
+          !this.isDefault
+            ? html`
+                <ha-icon-button
+                  @click=${this._reset}
+                  class="reset"
+                  .path=${mdiRestore}
+                  label=${this._localize(
+                    "ui.components.grid-size-picker.reset_default"
+                  )}
+                  title=${this._localize(
+                    "ui.components.grid-size-picker.reset_default"
+                  )}
+                >
+                </ha-icon-button>
+              `
+            : nothing
+        }
         <div class="preview">
           <table>
             ${Array(this.rows)

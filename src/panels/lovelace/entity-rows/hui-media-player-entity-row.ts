@@ -105,82 +105,94 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     const assumedState = stateObj.attributes.assumed_state === true;
 
     const buttons = html`
-      ${!this._narrow &&
-      (entityState === "playing" || assumedState) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
-        ? html`
-            <ha-icon-button
-              .path=${mdiSkipPrevious}
-              .label=${this.hass.localize(
-                "ui.card.media_player.media_previous_track"
-              )}
-              @click=${this._previousTrack}
-            ></ha-icon-button>
-          `
-        : ""}
-      ${!assumedState &&
-      ((entityState === "playing" &&
-        (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
-          supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
-        ((entityState === "paused" || entityState === "idle") &&
-          supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
-        (entityState === "on" &&
-          (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
-            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
-        ? html`
-            <ha-icon-button
-              .path=${controlButton.icon}
-              .label=${this.hass.localize(
-                `ui.card.media_player.${controlButton.action}`
-              )}
-              @click=${this._playPauseStop}
-            ></ha-icon-button>
-          `
-        : ""}
-      ${assumedState && supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)
-        ? html`
-            <ha-icon-button
-              .path=${mdiPlay}
-              .label=${this.hass.localize(`ui.card.media_player.media_play`)}
-              @click=${this._play}
-            ></ha-icon-button>
-          `
-        : ""}
-      ${assumedState &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-        ? html`
-            <ha-icon-button
-              .path=${mdiPause}
-              .label=${this.hass.localize(`ui.card.media_player.media_pause`)}
-              @click=${this._pause}
-            ></ha-icon-button>
-          `
-        : ""}
-      ${assumedState &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.STOP) &&
-      !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
-        ? html`
-            <ha-icon-button
-              .path=${mdiStop}
-              .label=${this.hass.localize(`ui.card.media_player.media_stop`)}
-              @click=${this._stop}
-            ></ha-icon-button>
-          `
-        : ""}
-      ${(entityState === "playing" ||
-        (assumedState &&
-          !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET))) &&
-      supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
-        ? html`
-            <ha-icon-button
-              .path=${mdiSkipNext}
-              .label=${this.hass.localize(
-                "ui.card.media_player.media_next_track"
-              )}
-              @click=${this._nextTrack}
-            ></ha-icon-button>
-          `
-        : ""}
+      ${
+        !this._narrow &&
+        (entityState === "playing" || assumedState) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
+          ? html`
+              <ha-icon-button
+                .path=${mdiSkipPrevious}
+                .label=${this.hass.localize(
+                  "ui.card.media_player.media_previous_track"
+                )}
+                @click=${this._previousTrack}
+              ></ha-icon-button>
+            `
+          : ""
+      }
+      ${
+        !assumedState &&
+        ((entityState === "playing" &&
+          (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+            supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
+          ((entityState === "paused" || entityState === "idle") &&
+            supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
+          (entityState === "on" &&
+            (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+              supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
+          ? html`
+              <ha-icon-button
+                .path=${controlButton.icon}
+                .label=${this.hass.localize(
+                  `ui.card.media_player.${controlButton.action}`
+                )}
+                @click=${this._playPauseStop}
+              ></ha-icon-button>
+            `
+          : ""
+      }
+      ${
+        assumedState && supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)
+          ? html`
+              <ha-icon-button
+                .path=${mdiPlay}
+                .label=${this.hass.localize(`ui.card.media_player.media_play`)}
+                @click=${this._play}
+              ></ha-icon-button>
+            `
+          : ""
+      }
+      ${
+        assumedState &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
+          ? html`
+              <ha-icon-button
+                .path=${mdiPause}
+                .label=${this.hass.localize(`ui.card.media_player.media_pause`)}
+                @click=${this._pause}
+              ></ha-icon-button>
+            `
+          : ""
+      }
+      ${
+        assumedState &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.STOP) &&
+        !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
+          ? html`
+              <ha-icon-button
+                .path=${mdiStop}
+                .label=${this.hass.localize(`ui.card.media_player.media_stop`)}
+                @click=${this._stop}
+              ></ha-icon-button>
+            `
+          : ""
+      }
+      ${
+        (entityState === "playing" ||
+          (assumedState &&
+            !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET))) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
+          ? html`
+              <ha-icon-button
+                .path=${mdiSkipNext}
+                .label=${this.hass.localize(
+                  "ui.card.media_player.media_next_track"
+                )}
+                @click=${this._nextTrack}
+              ></ha-icon-button>
+            `
+          : ""
+      }
     `;
 
     const mediaDescription = computeMediaDescription(stateObj);
@@ -189,105 +201,123 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        .secondaryText=${mediaDescription ||
-        this.hass.formatEntityState(stateObj)}
+        .secondaryText=${
+          mediaDescription || this.hass.formatEntityState(stateObj)
+        }
       >
         <div class="controls">
-          ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) &&
-          (!stateActive(stateObj) || assumedState) &&
-          entityState !== UNAVAILABLE
-            ? html`
-                <ha-icon-button
-                  .path=${assumedState ? mdiPowerOn : mdiPowerStandby}
-                  .label=${this.hass.localize("ui.card.media_player.turn_on")}
-                  @click=${this._turnOn}
-                ></ha-icon-button>
-              `
-            : ""}
-          ${!supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) &&
-          !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP) &&
-          (stateActive(stateObj) ||
-            assumedState ||
-            !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) ||
-            entityState === UNAVAILABLE)
-            ? buttons
-            : ""}
-          ${supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF) &&
-          (stateActive(stateObj) || assumedState)
-            ? html`
-                <ha-icon-button
-                  .path=${assumedState ? mdiPowerOff : mdiPowerStandby}
-                  .label=${this.hass.localize("ui.card.media_player.turn_off")}
-                  @click=${this._turnOff}
-                ></ha-icon-button>
-              `
-            : ""}
+          ${
+            supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) &&
+            (!stateActive(stateObj) || assumedState) &&
+            entityState !== UNAVAILABLE
+              ? html`
+                  <ha-icon-button
+                    .path=${assumedState ? mdiPowerOn : mdiPowerStandby}
+                    .label=${this.hass.localize("ui.card.media_player.turn_on")}
+                    @click=${this._turnOn}
+                  ></ha-icon-button>
+                `
+              : ""
+          }
+          ${
+            !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET) &&
+            !supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP) &&
+            (stateActive(stateObj) ||
+              assumedState ||
+              !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON) ||
+              entityState === UNAVAILABLE)
+              ? buttons
+              : ""
+          }
+          ${
+            supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_OFF) &&
+            (stateActive(stateObj) || assumedState)
+              ? html`
+                  <ha-icon-button
+                    .path=${assumedState ? mdiPowerOff : mdiPowerStandby}
+                    .label=${this.hass.localize("ui.card.media_player.turn_off")}
+                    @click=${this._turnOff}
+                  ></ha-icon-button>
+                `
+              : ""
+          }
         </div>
       </hui-generic-entity-row>
-      ${(supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)) &&
-      stateActive(stateObj)
-        ? html`
-            <div class="flex">
-              <div class="volume">
-                ${supportsFeature(
-                  stateObj,
-                  MediaPlayerEntityFeature.VOLUME_MUTE
-                )
-                  ? html`
-                      <ha-icon-button
-                        .path=${stateObj.attributes.is_volume_muted
-                          ? mdiVolumeOff
-                          : mdiVolumeHigh}
-                        .label=${this.hass.localize(
-                          `ui.card.media_player.${
-                            stateObj.attributes.is_volume_muted
-                              ? "media_volume_mute"
-                              : "media_volume_unmute"
-                          }`
-                        )}
-                        @click=${this._toggleMute}
-                      ></ha-icon-button>
-                    `
-                  : ""}
-                ${!this._veryNarrow &&
-                supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)
-                  ? html`
-                      <ha-slider
-                        labeled
-                        .value=${Number(stateObj.attributes.volume_level) * 100}
-                        @change=${this._selectedValueChanged}
-                        id="input"
-                      ></ha-slider>
-                    `
-                  : !this._veryNarrow &&
-                      supportsFeature(
-                        stateObj,
-                        MediaPlayerEntityFeature.VOLUME_STEP
-                      )
-                    ? html`
-                        <ha-icon-button
-                          .path=${mdiVolumeMinus}
-                          .label=${this.hass.localize(
-                            "ui.card.media_player.media_volume_down"
-                          )}
-                          @click=${this._volumeDown}
-                        ></ha-icon-button>
-                        <ha-icon-button
-                          .path=${mdiVolumePlus}
-                          .label=${this.hass.localize(
-                            "ui.card.media_player.media_volume_up"
-                          )}
-                          @click=${this._volumeUp}
-                        ></ha-icon-button>
-                      `
-                    : ""}
-              </div>
+      ${
+        (supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_STEP) ||
+          supportsFeature(stateObj, MediaPlayerEntityFeature.VOLUME_SET)) &&
+        stateActive(stateObj)
+          ? html`
+              <div class="flex">
+                <div class="volume">
+                  ${
+                    supportsFeature(
+                      stateObj,
+                      MediaPlayerEntityFeature.VOLUME_MUTE
+                    )
+                      ? html`
+                          <ha-icon-button
+                            .path=${
+                              stateObj.attributes.is_volume_muted
+                                ? mdiVolumeOff
+                                : mdiVolumeHigh
+                            }
+                            .label=${this.hass.localize(
+                              `ui.card.media_player.${
+                                stateObj.attributes.is_volume_muted
+                                  ? "media_volume_mute"
+                                  : "media_volume_unmute"
+                              }`
+                            )}
+                            @click=${this._toggleMute}
+                          ></ha-icon-button>
+                        `
+                      : ""
+                  }
+                  ${
+                    !this._veryNarrow &&
+                    supportsFeature(
+                      stateObj,
+                      MediaPlayerEntityFeature.VOLUME_SET
+                    )
+                      ? html`
+                          <ha-slider
+                            labeled
+                            .value=${Number(stateObj.attributes.volume_level) * 100}
+                            @change=${this._selectedValueChanged}
+                            id="input"
+                          ></ha-slider>
+                        `
+                      : !this._veryNarrow &&
+                          supportsFeature(
+                            stateObj,
+                            MediaPlayerEntityFeature.VOLUME_STEP
+                          )
+                        ? html`
+                            <ha-icon-button
+                              .path=${mdiVolumeMinus}
+                              .label=${this.hass.localize(
+                                "ui.card.media_player.media_volume_down"
+                              )}
+                              @click=${this._volumeDown}
+                            ></ha-icon-button>
+                            <ha-icon-button
+                              .path=${mdiVolumePlus}
+                              .label=${this.hass.localize(
+                                "ui.card.media_player.media_volume_up"
+                              )}
+                              @click=${this._volumeUp}
+                            ></ha-icon-button>
+                          `
+                        : ""
+                  }
+                </div>
 
-              <div class="controls">${buttons}</div>
-            </div>
-          `
-        : ""}
+                <div class="controls">${buttons}</div>
+              </div>
+            `
+          : ""
+      }
     `;
   }
 

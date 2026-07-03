@@ -120,62 +120,75 @@ export class HaConfigLogs extends LitElement {
         .header=${this.hass.localize("ui.panel.config.logs.caption")}
         back-path="/config/system"
       >
-        ${isComponentLoaded(this.hass.config, "hassio") && this._logProviders
-          ? html`
-              <ha-generic-picker
-                slot="toolbar-icon"
-                .hass=${this.hass}
-                .getItems=${this._getLogProviderItems}
-                value=""
-                .rowRenderer=${this._providerRenderer}
-                @value-changed=${this._handleDropdownSelect}
-              >
-                <ha-button
-                  slot="field"
-                  appearance="filled"
-                  @click=${this._openPicker}
+        ${
+          isComponentLoaded(this.hass.config, "hassio") && this._logProviders
+            ? html`
+                <ha-generic-picker
+                  slot="toolbar-icon"
+                  .hass=${this.hass}
+                  .getItems=${this._getLogProviderItems}
+                  value=""
+                  .rowRenderer=${this._providerRenderer}
+                  @value-changed=${this._handleDropdownSelect}
                 >
-                  ${selectedProvider?.icon
-                    ? html`<img
-                        src=${selectedProvider.icon}
-                        alt=${selectedProvider.primary}
-                        slot="start"
-                      />`
-                    : selectedProvider?.icon_path
-                      ? html`<ha-svg-icon
-                          slot="start"
-                          .path=${selectedProvider.icon_path}
-                        ></ha-svg-icon>`
-                      : nothing}
-                  ${selectedProvider?.primary}
-                  <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
-                </ha-button>
-              </ha-generic-picker>
-            `
-          : nothing}
+                  <ha-button
+                    slot="field"
+                    appearance="filled"
+                    @click=${this._openPicker}
+                  >
+                    ${
+                      selectedProvider?.icon
+                        ? html`<img
+                            src=${selectedProvider.icon}
+                            alt=${selectedProvider.primary}
+                            slot="start"
+                          />`
+                        : selectedProvider?.icon_path
+                          ? html`<ha-svg-icon
+                              slot="start"
+                              .path=${selectedProvider.icon_path}
+                            ></ha-svg-icon>`
+                          : nothing
+                    }
+                    ${selectedProvider?.primary}
+                    <ha-svg-icon
+                      slot="end"
+                      .path=${mdiChevronDown}
+                    ></ha-svg-icon>
+                  </ha-button>
+                </ha-generic-picker>
+              `
+            : nothing
+        }
         ${search}
         <div class="content">
-          ${this._selectedLogProvider === "core" && !this._detail
-            ? html`
-                <system-log-card
+          ${
+            this._selectedLogProvider === "core" && !this._detail
+              ? html`
+                  <system-log-card
+                    .hass=${this.hass}
+                    .header=${
+                      this._logProviders.find(
+                        (p) => p.key === this._selectedLogProvider
+                      )!.name
+                    }
+                    .filter=${this._filter}
+                    @switch-log-view=${this._showDetail}
+                  ></system-log-card>
+                `
+              : html`<error-log-card
                   .hass=${this.hass}
-                  .header=${this._logProviders.find(
-                    (p) => p.key === this._selectedLogProvider
-                  )!.name}
+                  .header=${
+                    this._logProviders.find(
+                      (p) => p.key === this._selectedLogProvider
+                    )!.name
+                  }
                   .filter=${this._filter}
+                  .provider=${this._selectedLogProvider}
                   @switch-log-view=${this._showDetail}
-                ></system-log-card>
-              `
-            : html`<error-log-card
-                .hass=${this.hass}
-                .header=${this._logProviders.find(
-                  (p) => p.key === this._selectedLogProvider
-                )!.name}
-                .filter=${this._filter}
-                .provider=${this._selectedLogProvider}
-                @switch-log-view=${this._showDetail}
-                allow-switch
-              ></error-log-card>`}
+                  allow-switch
+                ></error-log-card>`
+          }
         </div>
       </hass-subpage>
     `;
@@ -267,18 +280,22 @@ export class HaConfigLogs extends LitElement {
 
   private _providerRenderer = (item: PickerComboBoxItem) => html`
     <ha-combo-box-item type="button" compact>
-      ${item.icon
-        ? html`<img src=${item.icon} alt=${item.primary} slot="start" />`
-        : item.icon_path
-          ? html`<ha-svg-icon
-              slot="start"
-              .path=${item.icon_path}
-            ></ha-svg-icon>`
-          : nothing}
+      ${
+        item.icon
+          ? html`<img src=${item.icon} alt=${item.primary} slot="start" />`
+          : item.icon_path
+            ? html`<ha-svg-icon
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>`
+            : nothing
+      }
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
     </ha-combo-box-item>
   `;
 

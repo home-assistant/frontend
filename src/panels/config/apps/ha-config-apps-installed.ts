@@ -101,59 +101,67 @@ export class HaConfigAppsInstalled extends LitElement {
           </ha-input-search>
         </div>
         <div class="content">
-          ${addons.length === 0
-            ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <button class="link" @click=${this._openStore}>
-                      ${this.hass.localize(
-                        "ui.panel.config.apps.installed.no_apps"
-                      )}
-                    </button>
-                  </div>
-                </ha-card>
-              `
-            : addons.map(
-                (addon) => html`
-                  <ha-card
-                    role="button"
-                    tabindex="0"
-                    outlined
-                    .addon=${addon}
-                    @click=${this._addonTapped}
-                    aria-label=${getAppDisplayName(addon.name, addon.stage)}
-                  >
+          ${
+            addons.length === 0
+              ? html`
+                  <ha-card outlined>
                     <div class="card-content">
-                      <supervisor-apps-card-content
-                        .hass=${this.hass}
-                        .title=${addon.name}
-                        .stage=${addon.stage}
-                        .description=${addon.description}
-                        available
-                        .tags=${this._getAppTags(addon)}
-                        .state=${addon.state}
-                        .icon=${addon.update_available
-                          ? mdiArrowUpBoldCircle
-                          : mdiPuzzle}
-                        .iconTitle=${addon.state !== "started"
-                          ? this.hass.localize(
-                              "ui.panel.config.apps.installed.app_stopped"
-                            )
-                          : addon.update_available
-                            ? this.hass.localize(
-                                "ui.panel.config.apps.installed.app_update_available"
-                              )
-                            : this.hass.localize(
-                                "ui.panel.config.apps.installed.app_running"
-                              )}
-                        .iconImage=${addon.icon
-                          ? `/api/hassio/addons/${addon.slug}/icon`
-                          : undefined}
-                      ></supervisor-apps-card-content>
+                      <button class="link" @click=${this._openStore}>
+                        ${this.hass.localize(
+                          "ui.panel.config.apps.installed.no_apps"
+                        )}
+                      </button>
                     </div>
                   </ha-card>
                 `
-              )}
+              : addons.map(
+                  (addon) => html`
+                    <ha-card
+                      role="button"
+                      tabindex="0"
+                      outlined
+                      .addon=${addon}
+                      @click=${this._addonTapped}
+                      aria-label=${getAppDisplayName(addon.name, addon.stage)}
+                    >
+                      <div class="card-content">
+                        <supervisor-apps-card-content
+                          .hass=${this.hass}
+                          .title=${addon.name}
+                          .stage=${addon.stage}
+                          .description=${addon.description}
+                          available
+                          .tags=${this._getAppTags(addon)}
+                          .state=${addon.state}
+                          .icon=${
+                            addon.update_available
+                              ? mdiArrowUpBoldCircle
+                              : mdiPuzzle
+                          }
+                          .iconTitle=${
+                            addon.state !== "started"
+                              ? this.hass.localize(
+                                  "ui.panel.config.apps.installed.app_stopped"
+                                )
+                              : addon.update_available
+                                ? this.hass.localize(
+                                    "ui.panel.config.apps.installed.app_update_available"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.apps.installed.app_running"
+                                  )
+                          }
+                          .iconImage=${
+                            addon.icon
+                              ? `/api/hassio/addons/${addon.slug}/icon`
+                              : undefined
+                          }
+                        ></supervisor-apps-card-content>
+                      </div>
+                    </ha-card>
+                  `
+                )
+          }
         </div>
 
         <ha-button size="l" href="/config/apps/available">

@@ -162,63 +162,73 @@ class DialogAutomationSave
         @input=${this._valueChanged}
       ></ha-input>
 
-      ${this._params.domain === "script" &&
-      this._visibleOptionals.includes("icon")
-        ? html`
-            <ha-icon-picker
+      ${
+        this._params.domain === "script" &&
+        this._visibleOptionals.includes("icon")
+          ? html`
+              <ha-icon-picker
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.icon"
+                )}
+                .value=${this._newIcon}
+                @value-changed=${this._iconChanged}
+              >
+                <ha-domain-icon slot="start" domain=${this._params.domain}>
+                </ha-domain-icon>
+              </ha-icon-picker>
+            `
+          : nothing
+      }
+      ${
+        this._visibleOptionals.includes("description")
+          ? html`<ha-textarea
               .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.icon"
+                "ui.panel.config.automation.editor.description.label"
               )}
-              .value=${this._newIcon}
-              @value-changed=${this._iconChanged}
-            >
-              <ha-domain-icon slot="start" domain=${this._params.domain}>
-              </ha-domain-icon>
-            </ha-icon-picker>
-          `
-        : nothing}
-      ${this._visibleOptionals.includes("description")
-        ? html`<ha-textarea
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.label"
-            )}
-            .placeholder=${this.hass.localize(
-              "ui.panel.config.automation.editor.description.placeholder"
-            )}
-            name="description"
-            resize="auto"
-            .value=${this._newDescription}
-            .hint=${supportsMarkdownHelper(this.hass.localize)}
-            @input=${this._valueChanged}
-          ></ha-textarea>`
-        : nothing}
-      ${this._visibleOptionals.includes("category")
-        ? html` <ha-category-picker
-            id="category"
-            .hass=${this.hass}
-            .scope=${this._params.domain}
-            .label=${this.hass.localize(
-              "ui.components.category-picker.category"
-            )}
-            .value=${this._entryUpdates.category}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-category-picker>`
-        : nothing}
-      ${this._visibleOptionals.includes("labels")
-        ? html` <ha-labels-picker
-            id="labels"
-            .hass=${this.hass}
-            .value=${this._entryUpdates.labels}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-labels-picker>`
-        : nothing}
-      ${this._visibleOptionals.includes("area")
-        ? html` <ha-area-picker
-            id="area"
-            .value=${this._entryUpdates.area}
-            @value-changed=${this._registryEntryChanged}
-          ></ha-area-picker>`
-        : nothing}
+              .placeholder=${this.hass.localize(
+                "ui.panel.config.automation.editor.description.placeholder"
+              )}
+              name="description"
+              resize="auto"
+              .value=${this._newDescription}
+              .hint=${supportsMarkdownHelper(this.hass.localize)}
+              @input=${this._valueChanged}
+            ></ha-textarea>`
+          : nothing
+      }
+      ${
+        this._visibleOptionals.includes("category")
+          ? html` <ha-category-picker
+              id="category"
+              .hass=${this.hass}
+              .scope=${this._params.domain}
+              .label=${this.hass.localize(
+                "ui.components.category-picker.category"
+              )}
+              .value=${this._entryUpdates.category}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-category-picker>`
+          : nothing
+      }
+      ${
+        this._visibleOptionals.includes("labels")
+          ? html` <ha-labels-picker
+              id="labels"
+              .hass=${this.hass}
+              .value=${this._entryUpdates.labels}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-labels-picker>`
+          : nothing
+      }
+      ${
+        this._visibleOptionals.includes("area")
+          ? html` <ha-area-picker
+              id="area"
+              .value=${this._entryUpdates.area}
+              @value-changed=${this._registryEntryChanged}
+            ></ha-area-picker>`
+          : nothing
+      }
 
       <ha-chip-set>
         ${this._renderOptionalChip(
@@ -227,14 +237,16 @@ class DialogAutomationSave
             "ui.panel.config.automation.editor.dialog.add_description"
           )
         )}
-        ${this._params.domain === "script"
-          ? this._renderOptionalChip(
-              "icon",
-              this.hass.localize(
-                "ui.panel.config.automation.editor.dialog.add_icon"
+        ${
+          this._params.domain === "script"
+            ? this._renderOptionalChip(
+                "icon",
+                this.hass.localize(
+                  "ui.panel.config.automation.editor.dialog.add_icon"
+                )
               )
-            )
-          : nothing}
+            : nothing
+        }
         ${this._renderOptionalChip(
           "category",
           this.hass.localize(
@@ -275,24 +287,30 @@ class DialogAutomationSave
         header-title=${this._params.title || title}
         .preventScrimClose=${this.isDirtyState}
       >
-        ${this._params.hideInputs
-          ? nothing
-          : html`<ha-suggest-with-ai-button
-              slot="headerActionItems"
-              .hass=${this.hass}
-              .generateTask=${this._generateTask}
-              @suggestion=${this._handleSuggestion}
-            ></ha-suggest-with-ai-button>`}
-        ${this._error
-          ? html`<ha-alert alert-type="error"
-              >${this.hass.localize(
-                "ui.panel.config.automation.editor.missing_name"
-              )}</ha-alert
-            >`
-          : ""}
-        ${this._params.description
-          ? html`<p>${this._params.description}</p>`
-          : nothing}
+        ${
+          this._params.hideInputs
+            ? nothing
+            : html`<ha-suggest-with-ai-button
+                slot="headerActionItems"
+                .hass=${this.hass}
+                .generateTask=${this._generateTask}
+                @suggestion=${this._handleSuggestion}
+              ></ha-suggest-with-ai-button>`
+        }
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error"
+                >${this.hass.localize(
+                  "ui.panel.config.automation.editor.missing_name"
+                )}</ha-alert
+              >`
+            : ""
+        }
+        ${
+          this._params.description
+            ? html`<p>${this._params.description}</p>`
+            : nothing
+        }
         ${this._renderInputs()}
         <ha-dialog-footer slot="footer">
           ${this._renderDiscard()}

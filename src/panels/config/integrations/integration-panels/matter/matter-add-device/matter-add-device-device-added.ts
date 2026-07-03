@@ -187,52 +187,59 @@ class MatterAddDeviceDeviceAdded extends LitElement {
             .value=${this._area}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>
-          ${deviceClassOptions && domain
-            ? html`
-                <ha-select
-                  .label=${this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.device_class"
-                  )}
-                  .value=${this._deviceClass
-                    ? this.hass.localize(
-                        `ui.dialogs.entity_registry.editor.device_classes.${domain}.${this._deviceClass}`
-                      )
-                    : undefined}
-                  clearable
-                  @selected=${this._deviceClassChanged}
-                >
-                  ${this._deviceClassesSorted(
-                    domain,
-                    deviceClassOptions[0]
-                  ).map(
-                    (entry) => html`
-                      <ha-dropdown-item
-                        .value=${entry.deviceClass}
-                        .selected=${entry.deviceClass === this._deviceClass}
-                      >
-                        ${entry.label}
-                      </ha-dropdown-item>
-                    `
-                  )}
-                  ${deviceClassOptions[0].length && deviceClassOptions[1].length
-                    ? html`<wa-divider></wa-divider>`
-                    : nothing}
-                  ${this._deviceClassesSorted(
-                    domain,
-                    deviceClassOptions[1]
-                  ).map(
-                    (entry) => html`
-                      <ha-dropdown-item
-                        .value=${entry.deviceClass}
-                        .selected=${entry.deviceClass === this._deviceClass}
-                      >
-                        ${entry.label}
-                      </ha-dropdown-item>
-                    `
-                  )}
-                </ha-select>
-              `
-            : nothing}
+          ${
+            deviceClassOptions && domain
+              ? html`
+                  <ha-select
+                    .label=${this.hass.localize(
+                      "ui.dialogs.entity_registry.editor.device_class"
+                    )}
+                    .value=${
+                      this._deviceClass
+                        ? this.hass.localize(
+                            `ui.dialogs.entity_registry.editor.device_classes.${domain}.${this._deviceClass}`
+                          )
+                        : undefined
+                    }
+                    clearable
+                    @selected=${this._deviceClassChanged}
+                  >
+                    ${this._deviceClassesSorted(
+                      domain,
+                      deviceClassOptions[0]
+                    ).map(
+                      (entry) => html`
+                        <ha-dropdown-item
+                          .value=${entry.deviceClass}
+                          .selected=${entry.deviceClass === this._deviceClass}
+                        >
+                          ${entry.label}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                    ${
+                      deviceClassOptions[0].length &&
+                      deviceClassOptions[1].length
+                        ? html`<wa-divider></wa-divider>`
+                        : nothing
+                    }
+                    ${this._deviceClassesSorted(
+                      domain,
+                      deviceClassOptions[1]
+                    ).map(
+                      (entry) => html`
+                        <ha-dropdown-item
+                          .value=${entry.deviceClass}
+                          .selected=${entry.deviceClass === this._deviceClass}
+                        >
+                          ${entry.label}
+                        </ha-dropdown-item>
+                      `
+                    )}
+                  </ha-select>
+                `
+              : nothing
+          }
         </div>
       </div>
     `;

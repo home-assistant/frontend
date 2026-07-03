@@ -166,26 +166,30 @@ export class HuiEntityHeadingBadge
         style=${styleMap(style)}
         .title=${name}
       >
-        ${config.show_icon
-          ? html`
-              <ha-state-icon
-                slot="icon"
-                .icon=${config.icon}
-                .stateObj=${stateObj}
-              ></ha-state-icon>
-            `
-          : nothing}
-        ${config.show_state
-          ? html`
-              <state-display
-                .hass=${this.hass}
-                .stateObj=${stateObj}
-                .content=${config.state_content}
-                .name=${name}
-                dash-unavailable
-              ></state-display>
-            `
-          : nothing}
+        ${
+          config.show_icon
+            ? html`
+                <ha-state-icon
+                  slot="icon"
+                  .icon=${config.icon}
+                  .stateObj=${stateObj}
+                ></ha-state-icon>
+              `
+            : nothing
+        }
+        ${
+          config.show_state
+            ? html`
+                <state-display
+                  .hass=${this.hass}
+                  .stateObj=${stateObj}
+                  .content=${config.state_content}
+                  .name=${name}
+                  dash-unavailable
+                ></state-display>
+              `
+            : nothing
+        }
       </ha-heading-badge>
     `;
   }

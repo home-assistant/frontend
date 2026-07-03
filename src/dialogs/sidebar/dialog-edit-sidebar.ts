@@ -186,9 +186,11 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       <ha-dialog
         .open=${this._open}
         header-title=${dialogTitle}
-        header-subtitle=${!this._migrateToUserData
-          ? this.hass.localize("ui.sidebar.edit_subtitle")
-          : ""}
+        header-subtitle=${
+          !this._migrateToUserData
+            ? this.hass.localize("ui.sidebar.edit_subtitle")
+            : ""
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >

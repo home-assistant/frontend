@@ -198,16 +198,18 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       `;
       footer = html`
         <ha-dialog-footer slot="footer">
-          ${this._params?.domain
-            ? nothing
-            : html`<ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this._goBack}
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize("ui.common.back")}
-              </ha-button>`}
+          ${
+            this._params?.domain
+              ? nothing
+              : html`<ha-button
+                  slot="secondaryAction"
+                  appearance="plain"
+                  @click=${this._goBack}
+                  .disabled=${this._submitting}
+                >
+                  ${this.hass!.localize("ui.common.back")}
+                </ha-button>`
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._createItem}
@@ -273,20 +275,22 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                   referrerpolicy="no-referrer"
                 />
                 <span class="item-text"> ${label} </span>
-                ${isLoaded
-                  ? html`<ha-icon-next slot="meta"></ha-icon-next>`
-                  : html`<ha-svg-icon
-                        slot="meta"
-                        .id="icon-${domain}"
-                        path=${mdiAlertOutline}
-                        @click=${stopPropagation}
-                      ></ha-svg-icon>
-                      <ha-tooltip .for="icon-${domain}">
-                        ${this.hass.localize(
-                          "ui.dialogs.helper_settings.platform_not_loaded",
-                          { platform: domain }
-                        )}
-                      </ha-tooltip>`}
+                ${
+                  isLoaded
+                    ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                    : html`<ha-svg-icon
+                          slot="meta"
+                          .id="icon-${domain}"
+                          path=${mdiAlertOutline}
+                          @click=${stopPropagation}
+                        ></ha-svg-icon>
+                        <ha-tooltip .for="icon-${domain}">
+                          ${this.hass.localize(
+                            "ui.dialogs.helper_settings.platform_not_loaded",
+                            { platform: domain }
+                          )}
+                        </ha-tooltip>`
+                }
               </ha-list-item>
             `;
           })}
@@ -298,21 +302,23 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       <ha-dialog
         .open=${this._open}
         .preventScrimClose=${this.isDirtyState}
-        header-title=${this._domain
-          ? this.hass.localize(
-              "ui.panel.config.helpers.dialog.create_platform",
-              {
-                platform:
-                  (isHelperDomain(this._domain) &&
-                    this.hass.localize(
-                      `ui.panel.config.helpers.types.${
-                        this._domain as HelperDomain
-                      }`
-                    )) ||
-                  this._domain,
-              }
-            )
-          : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")}
+        header-title=${
+          this._domain
+            ? this.hass.localize(
+                "ui.panel.config.helpers.dialog.create_platform",
+                {
+                  platform:
+                    (isHelperDomain(this._domain) &&
+                      this.hass.localize(
+                        `ui.panel.config.helpers.types.${
+                          this._domain as HelperDomain
+                        }`
+                      )) ||
+                    this._domain,
+                }
+              )
+            : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
+        }
         @closed=${this._dialogClosed}
       >
         ${content} ${footer}

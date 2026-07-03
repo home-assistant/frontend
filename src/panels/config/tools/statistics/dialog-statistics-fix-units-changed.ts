@@ -53,13 +53,13 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
       <ha-dialog
         .open=${this._open}
         header-title=${this.hass.localize(
-          "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.title"
+          "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.title"
         )}
         @closed=${this._dialogClosed}
       >
         <p>
           ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_1",
+            "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.info_text_1",
             {
               name: getStatisticLabel(
                 this.hass,
@@ -72,16 +72,16 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
             }
           )}<br />
           ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_2"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.info_text_2"
           )}<br />
           ${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.info_text_3"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.info_text_3"
           )}
         </p>
 
         <ha-radio-group
           .label=${this.hass.localize(
-            "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.how_to_fix"
+            "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.how_to_fix"
           )}
           .value=${this._action}
           name="action"
@@ -89,13 +89,13 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         >
           <ha-radio-option value="update" autofocus>
             ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.update",
+              "ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.update",
               this._params.issue.data
             )}
           </ha-radio-option>
           <ha-radio-option value="clear">
             ${this.hass.localize(
-              `ui.panel.config.developer-tools.tabs.statistics.fix_issue.units_changed.clear`
+              `ui.panel.config.tools.tabs.statistics.fix_issue.units_changed.clear`
             )}
           </ha-radio-option>
         </ha-radio-group>
@@ -110,7 +110,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
           </ha-button>
           <ha-button slot="primaryAction" @click=${this._fixIssue}>
             ${this.hass.localize(
-              "ui.panel.config.developer-tools.tabs.statistics.fix_issue.fix"
+              "ui.panel.config.tools.tabs.statistics.fix_issue.fix"
             )}
           </ha-button>
         </ha-dialog-footer>
@@ -120,8 +120,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   private _handleActionChanged(ev: Event): void {
     this._action = (ev.currentTarget as HaRadioGroup).value as
-      | "update"
-      | "clear";
+      "update" | "clear";
   }
 
   private _cancel(): void {

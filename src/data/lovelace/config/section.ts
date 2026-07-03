@@ -32,8 +32,7 @@ export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig
 }
 
 export type LovelaceSectionRawConfig =
-  | LovelaceSectionConfig
-  | LovelaceStrategySectionConfig;
+  LovelaceSectionConfig | LovelaceStrategySectionConfig;
 
 export function resolveSectionBackground(
   background: boolean | LovelaceSectionBackgroundConfig | undefined

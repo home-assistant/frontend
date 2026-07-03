@@ -352,16 +352,18 @@ export class HaChartBase extends LitElement {
           <div
             class="chart-controls ${classMap({ small: this.smallControls })}"
           >
-            ${this._isZoomed && !this.hideResetButton
-              ? html`<ha-icon-button
-                  class="zoom-reset"
-                  .path=${mdiRestart}
-                  @click=${this._handleZoomReset}
-                  title=${this.hass.localize(
-                    "ui.components.history_charts.zoom_reset"
-                  )}
-                ></ha-icon-button>`
-              : nothing}
+            ${
+              this._isZoomed && !this.hideResetButton
+                ? html`<ha-icon-button
+                    class="zoom-reset"
+                    .path=${mdiRestart}
+                    @click=${this._handleZoomReset}
+                    title=${this.hass.localize(
+                      "ui.components.history_charts.zoom_reset"
+                    )}
+                  ></ha-icon-button>`
+                : nothing
+            }
             <slot name="button"></slot>
           </div>
         </div>
@@ -465,9 +467,11 @@ export class HaChartBase extends LitElement {
               @click=${this._toggleDataset}
             >
               <ha-svg-icon
-                .path=${this._hiddenDatasets.has(id)
-                  ? mdiCircleOutline
-                  : mdiCheckCircle}
+                .path=${
+                  this._hiddenDatasets.has(id)
+                    ? mdiCircleOutline
+                    : mdiCheckCircle
+                }
                 style=${styleMap({
                   color: this._hiddenDatasets.has(id) ? undefined : color,
                 })}
@@ -485,26 +489,30 @@ export class HaChartBase extends LitElement {
             ${value ? html`<div class="value">${value}</div>` : nothing}
           </li>`;
         })}
-        ${items.length > overflowLimit
-          ? html`<li>
-              <ha-assist-chip
-                @click=${this._toggleExpandedLegend}
-                filled
-                label=${this.expandLegend
-                  ? this.hass.localize(
-                      "ui.components.history_charts.collapse_legend"
-                    )
-                  : `${this.hass.localize(
-                      "ui.components.history_charts.expand_legend"
-                    )} (${items.length - overflowLimit})`}
-              >
-                <ha-svg-icon
-                  slot="trailing-icon"
-                  .path=${this.expandLegend ? mdiChevronUp : mdiChevronDown}
-                ></ha-svg-icon>
-              </ha-assist-chip>
-            </li>`
-          : nothing}
+        ${
+          items.length > overflowLimit
+            ? html`<li>
+                <ha-assist-chip
+                  @click=${this._toggleExpandedLegend}
+                  filled
+                  label=${
+                    this.expandLegend
+                      ? this.hass.localize(
+                          "ui.components.history_charts.collapse_legend"
+                        )
+                      : `${this.hass.localize(
+                          "ui.components.history_charts.expand_legend"
+                        )} (${items.length - overflowLimit})`
+                  }
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${this.expandLegend ? mdiChevronUp : mdiChevronDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+              </li>`
+            : nothing
+        }
       </ul>
     </div>`;
   }
@@ -667,8 +675,7 @@ export class HaChartBase extends LitElement {
   ): string[] {
     if (!options) return [primaryId];
     const legend = ensureArray(this.options?.legend || [])[0] as
-      | LegendComponentOption
-      | undefined;
+      LegendComponentOption | undefined;
 
     let customLegendItem;
     if (legend?.type === "custom") {
@@ -685,8 +692,7 @@ export class HaChartBase extends LitElement {
   private _updateHiddenStatsFromOptions(options: HaECOption | undefined) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
-      | LegendComponentOption
-      | undefined;
+      LegendComponentOption | undefined;
     Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
       if (selected === false) {
         this._getAllIdsFromLegend(options, stat).forEach((id) =>
@@ -699,11 +705,9 @@ export class HaChartBase extends LitElement {
 
   private _getDataZoomConfig(): DataZoomComponentOption | undefined {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
-      | XAXisOption
-      | undefined;
+      XAXisOption | undefined;
     const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
-      | YAXisOption
-      | undefined;
+      YAXisOption | undefined;
     if (xAxis?.type === "value" && yAxis?.type === "category") {
       // vertical data zoom doesn't work well in this case and horizontal is pointless
       return undefined;
@@ -1014,8 +1018,7 @@ export class HaChartBase extends LitElement {
 
   private _getSeries() {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
-      | XAXisOption
-      | undefined;
+      XAXisOption | undefined;
     const series = ensureArray(this.data).map((s) => {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined

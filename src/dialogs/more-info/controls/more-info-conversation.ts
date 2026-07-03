@@ -37,8 +37,7 @@ class MoreInfoConversation extends LitElement {
     }
 
     const oldStateObj = changedProperties.get("stateObj") as
-      | HassEntity
-      | undefined;
+      HassEntity | undefined;
 
     if (!oldStateObj || oldStateObj.entity_id !== this.stateObj.entity_id) {
       this._getPipeline();
@@ -76,22 +75,24 @@ class MoreInfoConversation extends LitElement {
     }
 
     return html`
-      ${this._errorLoadAssist
-        ? html`<ha-alert alert-type="error">
-            ${this._localize(
-              `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
-            )}
-          </ha-alert>`
-        : this._pipeline
-          ? html`
-              <ha-assist-chat
-                .pipeline=${this._pipeline}
-                disable-speech
-              ></ha-assist-chat>
-            `
-          : html`<div class="pipelines-loading">
-              <ha-spinner size="large"></ha-spinner>
-            </div>`}
+      ${
+        this._errorLoadAssist
+          ? html`<ha-alert alert-type="error">
+              ${this._localize(
+                `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
+              )}
+            </ha-alert>`
+          : this._pipeline
+            ? html`
+                <ha-assist-chat
+                  .pipeline=${this._pipeline}
+                  disable-speech
+                ></ha-assist-chat>
+              `
+            : html`<div class="pipelines-loading">
+                <ha-spinner size="large"></ha-spinner>
+              </div>`
+      }
     `;
   }
 

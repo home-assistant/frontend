@@ -55,11 +55,9 @@ function compareEntityDisplayEntry(
   entityId: string
 ) {
   const oldEntry = oldHass.entities[entityId] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
   const newEntry = newHass.entities[entityId] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
 
   return oldEntry?.display_precision !== newEntry?.display_precision;
 }

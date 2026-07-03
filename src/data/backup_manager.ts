@@ -1,10 +1,7 @@
 import type { HomeAssistant } from "../types";
 
 export type BackupManagerState =
-  | "idle"
-  | "create_backup"
-  | "receive_backup"
-  | "restore_backup";
+  "idle" | "create_backup" | "receive_backup" | "restore_backup";
 
 export type CreateBackupStage =
   | "addon_repositories"
@@ -74,16 +71,10 @@ export interface UploadBackupEvent {
 }
 
 export type ManagerState =
-  | "idle"
-  | "create_backup"
-  | "receive_backup"
-  | "restore_backup";
+  "idle" | "create_backup" | "receive_backup" | "restore_backup";
 
 export type ManagerStateEvent =
-  | IdleEvent
-  | CreateBackupEvent
-  | ReceiveBackupEvent
-  | RestoreBackupEvent;
+  IdleEvent | CreateBackupEvent | ReceiveBackupEvent | RestoreBackupEvent;
 
 export type BackupSubscriptionEvent = ManagerStateEvent | UploadBackupEvent;
 

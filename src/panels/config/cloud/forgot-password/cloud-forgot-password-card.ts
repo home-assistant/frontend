@@ -56,9 +56,11 @@ export class CloudForgotPasswordCard extends LitElement {
         <p>
           ${this.localize(`ui.panel.${this.translationKeyPanel}.instructions`)}
         </p>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-input
           autofocus
           id="email"

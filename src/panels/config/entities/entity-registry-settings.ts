@@ -92,48 +92,56 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       : undefined;
 
     return html`
-      ${!stateObj
-        ? html`
-            <ha-alert alert-type="warning">
-              ${device?.disabled_by
-                ? html`${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.device_disabled"
-                    )}<ha-button
-                      size="s"
-                      variant="warning"
-                      @click=${this._openDeviceSettings}
-                      slot="action"
-                    >
-                      ${this.hass!.localize(
-                        "ui.dialogs.entity_registry.editor.open_device_settings"
-                      )}
-                    </ha-button>`
-                : this.entry.disabled_by
-                  ? html`${this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.entity_disabled"
-                    )}${["user", "integration"].includes(
-                      this.entry.disabled_by!
-                    )
-                      ? html`<ha-button
+      ${
+        !stateObj
+          ? html`
+              <ha-alert alert-type="warning">
+                ${
+                  device?.disabled_by
+                    ? html`${this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.device_disabled"
+                        )}<ha-button
                           size="s"
                           variant="warning"
+                          @click=${this._openDeviceSettings}
                           slot="action"
-                          @click=${this._enableEntry}
                         >
                           ${this.hass!.localize(
-                            "ui.dialogs.entity_registry.editor.enable_entity"
-                          )}</ha-button
-                        >`
-                      : ""}`
-                  : this.hass!.localize(
-                      "ui.dialogs.entity_registry.editor.unavailable"
-                    )}
-            </ha-alert>
-          `
-        : ""}
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : ""}
+                            "ui.dialogs.entity_registry.editor.open_device_settings"
+                          )}
+                        </ha-button>`
+                    : this.entry.disabled_by
+                      ? html`${this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.entity_disabled"
+                        )}${
+                          ["user", "integration"].includes(
+                            this.entry.disabled_by!
+                          )
+                            ? html`<ha-button
+                                size="s"
+                                variant="warning"
+                                slot="action"
+                                @click=${this._enableEntry}
+                              >
+                                ${this.hass!.localize(
+                                  "ui.dialogs.entity_registry.editor.enable_entity"
+                                )}</ha-button
+                              >`
+                            : ""
+                        }`
+                      : this.hass!.localize(
+                          "ui.dialogs.entity_registry.editor.unavailable"
+                        )
+                }
+              </ha-alert>
+            `
+          : ""
+      }
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""
+      }
       <div class="form container">
         <entity-registry-settings-editor
           .hass=${this.hass}
@@ -147,8 +155,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           variant="danger"
           appearance="plain"
           @click=${this._confirmDeleteEntry}
-          .disabled=${this._submitting ||
-          (!this._helperConfigEntry && !stateObj?.attributes.restored)}
+          .disabled=${
+            this._submitting ||
+            (!this._helperConfigEntry && !stateObj?.attributes.restored)
+          }
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>

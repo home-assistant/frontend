@@ -57,53 +57,61 @@ export default class HaAutomationTriggerEditor extends LitElement {
           card: !this.inSidebar,
         })}
       >
-        ${yamlMode
-          ? html`
-              ${!this.uiSupported
-                ? html`
-                    <ha-automation-editor-warning
-                      .alertTitle=${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                        { platform: type }
-                      )}
-                      .localize=${this.hass.localize}
-                    ></ha-automation-editor-warning>
-                  `
-                : nothing}
-              <ha-yaml-editor
-                .defaultValue=${this.trigger}
-                .readOnly=${this.disabled}
-                @value-changed=${this._onYamlChange}
-              ></ha-yaml-editor>
-            `
-          : html`
-              ${showId && !isTriggerList(this.trigger)
-                ? html`
-                    <ha-input
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.id"
-                      )}
-                      .value=${this.trigger.id || ""}
-                      .disabled=${this.disabled}
-                      @change=${this._idChanged}
-                    ></ha-input>
-                  `
-                : nothing}
-              <div @value-changed=${this._onUiChanged}>
-                ${this.description
-                  ? html`<ha-automation-trigger-platform
-                      .hass=${this.hass}
-                      .trigger=${this.trigger}
-                      .description=${this.description}
-                      .disabled=${this.disabled}
-                    ></ha-automation-trigger-platform>`
-                  : dynamicElement(`ha-automation-trigger-${type}`, {
-                      hass: this.hass,
-                      trigger: this.trigger,
-                      disabled: this.disabled,
-                    })}
-              </div>
-            `}
+        ${
+          yamlMode
+            ? html`
+                ${
+                  !this.uiSupported
+                    ? html`
+                        <ha-automation-editor-warning
+                          .alertTitle=${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.unsupported_platform",
+                            { platform: type }
+                          )}
+                          .localize=${this.hass.localize}
+                        ></ha-automation-editor-warning>
+                      `
+                    : nothing
+                }
+                <ha-yaml-editor
+                  .defaultValue=${this.trigger}
+                  .readOnly=${this.disabled}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>
+              `
+            : html`
+                ${
+                  showId && !isTriggerList(this.trigger)
+                    ? html`
+                        <ha-input
+                          .label=${this.hass.localize(
+                            "ui.panel.config.automation.editor.triggers.id"
+                          )}
+                          .value=${this.trigger.id || ""}
+                          .disabled=${this.disabled}
+                          @change=${this._idChanged}
+                        ></ha-input>
+                      `
+                    : nothing
+                }
+                <div @value-changed=${this._onUiChanged}>
+                  ${
+                    this.description
+                      ? html`<ha-automation-trigger-platform
+                          .hass=${this.hass}
+                          .trigger=${this.trigger}
+                          .description=${this.description}
+                          .disabled=${this.disabled}
+                        ></ha-automation-trigger-platform>`
+                      : dynamicElement(`ha-automation-trigger-${type}`, {
+                          hass: this.hass,
+                          trigger: this.trigger,
+                          disabled: this.disabled,
+                        })
+                  }
+                </div>
+              `
+        }
       </div>
     `;
   }

@@ -101,9 +101,11 @@ class DemoBlackWhiteRow extends LitElement {
               </ha-button>
             </div>
           </ha-card>
-          ${this.value
-            ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
-            : nothing}
+          ${
+            this.value
+              ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
+              : nothing
+          }
         </section>
       </div>
     `;
