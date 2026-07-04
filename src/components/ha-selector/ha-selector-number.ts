@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { NumberSelector } from "../../data/selector";
+import { isSafari } from "../../util/is_safari";
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../input/ha-input";
@@ -66,6 +67,16 @@ export class HaNumberSelector extends LitElement {
       }
     }
 
+    // On iOS/iPadOS the numeric and decimal on-screen keypads have no minus key,
+    // so negatives can only be typed with the full "text" keyboard. Other
+    // platforms include a minus on their number keypads, so restrict this
+    // workaround to Safari/WebKit and only when the selector allows negatives
+    // (e.g. numeric_state triggers/conditions).
+    const useTextInputMode =
+      isSafari &&
+      this.selector.number?.min !== undefined &&
+      this.selector.number.min < 0;
+
     const translationKey = this.selector.number?.translation_key;
     let unit = this.selector.number?.unit_of_measurement;
     if (isBox && unit && this.localizeValue && translationKey) {
@@ -75,35 +86,43 @@ export class HaNumberSelector extends LitElement {
     }
 
     return html`
-      ${this.label && !isBox
-        ? html`${this.label}${this.required ? "*" : ""}`
-        : nothing}
+      ${
+        this.label && !isBox
+          ? html`${this.label}${this.required ? "*" : ""}`
+          : nothing
+      }
       <div class="input">
-        ${!isBox
-          ? html`
-              <ha-slider
-                labeled
-                .min=${this.selector.number!.min}
-                .max=${this.selector.number!.max}
-                .value=${this.value}
-                .step=${sliderStep}
-                .disabled=${this.disabled}
-                .required=${this.required}
-                @change=${this._handleSliderChange}
-                .withMarkers=${this.selector.number?.slider_ticks || false}
-              >
-              </ha-slider>
-            `
-          : nothing}
+        ${
+          !isBox
+            ? html`
+                <ha-slider
+                  labeled
+                  .min=${this.selector.number!.min}
+                  .max=${this.selector.number!.max}
+                  .value=${this.value}
+                  .step=${sliderStep}
+                  .disabled=${this.disabled}
+                  .required=${this.required}
+                  @change=${this._handleSliderChange}
+                  .withMarkers=${this.selector.number?.slider_ticks || false}
+                >
+                </ha-slider>
+              `
+            : nothing
+        }
         <ha-input
-          .inputMode=${this.selector.number?.step === "any" ||
-          (this.selector.number?.step ?? 1) % 1 !== 0
-            ? "decimal"
-            : "numeric"}
+          .inputmode=${
+            useTextInputMode
+              ? "text"
+              : this.selector.number?.step === "any" ||
+                  (this.selector.number?.step ?? 1) % 1 !== 0
+                ? "decimal"
+                : "numeric"
+          }
           .label=${!isBox ? undefined : this.label}
-          .placeholder=${this.placeholder !== undefined
-            ? this.placeholder.toString()
-            : ""}
+          .placeholder=${
+            this.placeholder !== undefined ? this.placeholder.toString() : ""
+          }
           class=${isBox ? "single" : ""}
           .min=${this.selector.number?.min}
           .max=${this.selector.number?.max}
@@ -120,11 +139,13 @@ export class HaNumberSelector extends LitElement {
           ${unit ? html`<span slot="end">${unit}</span>` : nothing}
         </ha-input>
       </div>
-      ${!isBox && this.helper
-        ? html`<ha-input-helper-text .disabled=${this.disabled}
-            >${this.helper}</ha-input-helper-text
-          >`
-        : nothing}
+      ${
+        !isBox && this.helper
+          ? html`<ha-input-helper-text .disabled=${this.disabled}
+              >${this.helper}</ha-input-helper-text
+            >`
+          : nothing
+      }
     `;
   }
 

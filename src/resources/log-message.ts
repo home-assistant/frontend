@@ -60,16 +60,24 @@ export const createLogMessage = async (
   // - a possible list of aggregated errors
   if (error instanceof Error) {
     lines.push(error.toString() || messageFallback);
-    const stackLines = (await fromError(error))
-      .slice(0, MAX_STACK_FRAMES)
-      .map((frame) => {
-        frame.fileName ??= "";
-        if (URL.canParse(frame.fileName)) {
-          frame.fileName = new URL(frame.fileName).pathname;
-        }
-        frame.fileName = frame.fileName.replace(REMOVAL_PATHS, "");
-        return frame.toString();
-      });
+    let stackLines: (string | undefined)[];
+    try {
+      stackLines = (await fromError(error))
+        .slice(0, MAX_STACK_FRAMES)
+        .map((frame) => {
+          frame.fileName ??= "";
+          if (URL.canParse(frame.fileName)) {
+            frame.fileName = new URL(frame.fileName).pathname;
+          }
+          frame.fileName = frame.fileName.replace(REMOVAL_PATHS, "");
+          return frame.toString();
+        });
+    } catch {
+      // stacktrace-js cannot always parse a stack (for example a DOMException
+      // with no, or an unrecognized, stack), so fall back to the raw stack
+      // instead of letting the error logger itself throw.
+      stackLines = error.stack ? [error.stack] : [];
+    }
     lines.push(...(stackLines.length > 0 ? stackLines : [stackFallback]));
     // @ts-expect-error Requires library bump to ES2022
     if (error.cause) {

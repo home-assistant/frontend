@@ -42,72 +42,75 @@ class HaPickDashboardRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.dashboard.description")}
         </span>
-        ${this._dashboards
-          ? html`
-              <ha-select
-                .label=${this.hass.localize(
-                  "ui.panel.profile.dashboard.dropdown_label"
-                )}
-                .value=${this._valueLabel(value)}
-                @selected=${this._dashboardChanged}
-              >
-                <ha-dropdown-item
-                  .value=${USE_SYSTEM_VALUE}
-                  .selected=${value === USE_SYSTEM_VALUE}
+        ${
+          this._dashboards
+            ? html`
+                <ha-select
+                  .label=${this.hass.localize(
+                    "ui.panel.profile.dashboard.dropdown_label"
+                  )}
+                  .value=${this._valueLabel(value)}
+                  @selected=${this._dashboardChanged}
                 >
-                  ${this.hass.localize("ui.panel.profile.dashboard.system")}
-                </ha-dropdown-item>
-                <wa-divider></wa-divider>
-                ${PANEL_DASHBOARDS.map((panel) => {
-                  const panelInfo = this.hass.panels[panel] as
-                    | PanelInfo
-                    | undefined;
-                  if (!panelInfo) {
-                    return nothing;
+                  <ha-dropdown-item
+                    .value=${USE_SYSTEM_VALUE}
+                    .selected=${value === USE_SYSTEM_VALUE}
+                  >
+                    ${this.hass.localize("ui.panel.profile.dashboard.system")}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>
+                  ${PANEL_DASHBOARDS.map((panel) => {
+                    const panelInfo = this.hass.panels[panel] as
+                      PanelInfo | undefined;
+                    if (!panelInfo) {
+                      return nothing;
+                    }
+                    return html`
+                      <ha-dropdown-item
+                        value=${panelInfo.url_path}
+                        .selected=${value === panelInfo.url_path}
+                      >
+                        <ha-icon
+                          slot="icon"
+                          .icon=${getPanelIcon(panelInfo)}
+                        ></ha-icon>
+                        ${getPanelTitle(this.hass, panelInfo)}
+                      </ha-dropdown-item>
+                    `;
+                  })}
+                  ${
+                    this._dashboards.length
+                      ? html`
+                          <wa-divider></wa-divider>
+                          ${this._dashboards.map((dashboard) => {
+                            if (
+                              !this.hass.user!.is_admin &&
+                              dashboard.require_admin
+                            ) {
+                              return "";
+                            }
+                            return html`
+                              <ha-dropdown-item
+                                .value=${dashboard.url_path}
+                                .selected=${value === dashboard.url_path}
+                              >
+                                <ha-icon
+                                  slot="icon"
+                                  .icon=${dashboard.icon || "mdi:view-dashboard"}
+                                ></ha-icon>
+                                ${dashboard.title}
+                              </ha-dropdown-item>
+                            `;
+                          })}
+                        `
+                      : nothing
                   }
-                  return html`
-                    <ha-dropdown-item
-                      value=${panelInfo.url_path}
-                      .selected=${value === panelInfo.url_path}
-                    >
-                      <ha-icon
-                        slot="icon"
-                        .icon=${getPanelIcon(panelInfo)}
-                      ></ha-icon>
-                      ${getPanelTitle(this.hass, panelInfo)}
-                    </ha-dropdown-item>
-                  `;
-                })}
-                ${this._dashboards.length
-                  ? html`
-                      <wa-divider></wa-divider>
-                      ${this._dashboards.map((dashboard) => {
-                        if (
-                          !this.hass.user!.is_admin &&
-                          dashboard.require_admin
-                        ) {
-                          return "";
-                        }
-                        return html`
-                          <ha-dropdown-item
-                            .value=${dashboard.url_path}
-                            .selected=${value === dashboard.url_path}
-                          >
-                            <ha-icon
-                              slot="icon"
-                              .icon=${dashboard.icon || "mdi:view-dashboard"}
-                            ></ha-icon>
-                            ${dashboard.title}
-                          </ha-dropdown-item>
-                        `;
-                      })}
-                    `
-                  : nothing}
-              </ha-select>
-            `
-          : html`<div class="loading">
-              <ha-spinner size="small"></ha-spinner>
-            </div>`}
+                </ha-select>
+              `
+            : html`<div class="loading">
+                <ha-spinner size="small"></ha-spinner>
+              </div>`
+        }
       </ha-settings-row>
     `;
   }

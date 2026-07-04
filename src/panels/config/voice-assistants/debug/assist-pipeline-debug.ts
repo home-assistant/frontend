@@ -64,57 +64,65 @@ export class AssistPipelineDebug extends LitElement {
         slot="toolbar-icon"
       ></ha-icon-button>
       <div class="toolbar">
-        ${this._runs?.length
-          ? html`
-              <ha-icon-button
-                .disabled=${this._runs[this._runs.length - 1]
-                  .pipeline_run_id === this._runId}
-                .label=${this.hass.localize(
-                  "ui.panel.config.voice_assistants.debug.older_run"
-                )}
-                @click=${this._pickOlderRun}
-                .path=${mdiRayEndArrow}
-              ></ha-icon-button>
-              <select .value=${this._runId} @change=${this._pickRun}>
-                ${repeat(
-                  this._runs,
-                  (run) => run.pipeline_run_id,
-                  (run) =>
-                    html`<option value=${run.pipeline_run_id}>
-                      ${formatDateTimeWithSeconds(
-                        new Date(run.timestamp),
-                        this.hass.locale,
-                        this.hass.config
-                      )}
-                    </option>`
-                )}
-              </select>
-              <ha-icon-button
-                .disabled=${this._runs[0].pipeline_run_id === this._runId}
-                .label=${this.hass.localize(
-                  "ui.panel.config.voice_assistants.debug.newer_run"
-                )}
-                @click=${this._pickNewerRun}
-                .path=${mdiRayStartArrow}
-              ></ha-icon-button>
-            `
-          : ""}
+        ${
+          this._runs?.length
+            ? html`
+                <ha-icon-button
+                  .disabled=${
+                    this._runs[this._runs.length - 1].pipeline_run_id ===
+                    this._runId
+                  }
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.debug.older_run"
+                  )}
+                  @click=${this._pickOlderRun}
+                  .path=${mdiRayEndArrow}
+                ></ha-icon-button>
+                <select .value=${this._runId} @change=${this._pickRun}>
+                  ${repeat(
+                    this._runs,
+                    (run) => run.pipeline_run_id,
+                    (run) =>
+                      html`<option value=${run.pipeline_run_id}>
+                        ${formatDateTimeWithSeconds(
+                          new Date(run.timestamp),
+                          this.hass.locale,
+                          this.hass.config
+                        )}
+                      </option>`
+                  )}
+                </select>
+                <ha-icon-button
+                  .disabled=${this._runs[0].pipeline_run_id === this._runId}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.voice_assistants.debug.newer_run"
+                  )}
+                  @click=${this._pickNewerRun}
+                  .path=${mdiRayStartArrow}
+                ></ha-icon-button>
+              `
+            : ""
+        }
       </div>
-      ${this._runs?.length === 0
-        ? html`<div class="container">
-            ${this.hass.localize(
-              "ui.panel.config.voice_assistants.debug.no_runs_found"
-            )}
-          </div>`
-        : ""}
+      ${
+        this._runs?.length === 0
+          ? html`<div class="container">
+              ${this.hass.localize(
+                "ui.panel.config.voice_assistants.debug.no_runs_found"
+              )}
+            </div>`
+          : ""
+      }
       <div class="content">
-        ${this._events
-          ? html`<assist-render-pipeline-events
-              .hass=${this.hass}
-              .events=${this._events}
-              .chatLog=${this._chatLog}
-            ></assist-render-pipeline-events>`
-          : ""}
+        ${
+          this._events
+            ? html`<assist-render-pipeline-events
+                .hass=${this.hass}
+                .events=${this._events}
+                .chatLog=${this._chatLog}
+              ></assist-render-pipeline-events>`
+            : ""
+        }
       </div>
     </hass-subpage>`;
   }

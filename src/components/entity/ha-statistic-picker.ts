@@ -341,32 +341,37 @@ export class HaStatisticPicker extends LitElement {
     const item = this._computeItem(statisticId);
 
     return html`
-      ${item.stateObj
-        ? html`
-            <state-badge
-              .hass=${this.hass}
-              .stateObj=${item.stateObj}
-              slot="start"
-            ></state-badge>
-          `
-        : item.icon_path
+      ${
+        item.stateObj
           ? html`
-              <ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>
+              <state-badge
+                .stateObj=${item.stateObj}
+                slot="start"
+              ></state-badge>
             `
-          : nothing}
+          : item.icon_path
+            ? html`
+                <ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>
+              `
+            : nothing
+      }
       <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${this.canEdit
-        ? html`<ha-icon-button
-            slot="end"
-            .value=${statisticId}
-            .label=${this.hass.localize("ui.common.edit")}
-            .path=${mdiPencil}
-            @click=${this._editItem}
-          ></ha-icon-button>`
-        : nothing}
+      ${
+        item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing
+      }
+      ${
+        this.canEdit
+          ? html`<ha-icon-button
+              slot="end"
+              .value=${statisticId}
+              .label=${this.hass.localize("ui.common.edit")}
+              .path=${mdiPencil}
+              @click=${this._editItem}
+            ></ha-icon-button>`
+          : nothing
+      }
     `;
   }
 
@@ -475,32 +480,37 @@ export class HaStatisticPicker extends LitElement {
     const showEntityId = this.hass.userData?.showEntityIdPicker;
     return html`
       <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
-        ${item.icon_path
-          ? html`
-              <ha-svg-icon
-                style="margin: 0 4px"
-                slot="start"
-                .path=${item.icon_path}
-              ></ha-svg-icon>
-            `
-          : item.stateObj
+        ${
+          item.icon_path
             ? html`
-                <state-badge
+                <ha-svg-icon
+                  style="margin: 0 4px"
                   slot="start"
-                  .stateObj=${item.stateObj}
-                  .hass=${this.hass}
-                ></state-badge>
+                  .path=${item.icon_path}
+                ></ha-svg-icon>
               `
-            : nothing}
+            : item.stateObj
+              ? html`
+                  <state-badge
+                    slot="start"
+                    .stateObj=${item.stateObj}
+                  ></state-badge>
+                `
+              : nothing
+        }
         <span slot="headline">${item.primary} </span>
-        ${item.secondary
-          ? html`<span slot="supporting-text">${item.secondary}</span>`
-          : nothing}
-        ${item.statistic_id && showEntityId
-          ? html`<span slot="supporting-text" class="code">
-              ${item.statistic_id}
-            </span>`
-          : nothing}
+        ${
+          item.secondary
+            ? html`<span slot="supporting-text">${item.secondary}</span>`
+            : nothing
+        }
+        ${
+          item.statistic_id && showEntityId
+            ? html`<span slot="supporting-text" class="code">
+                ${item.statistic_id}
+              </span>`
+            : nothing
+        }
       </ha-combo-box-item>
     `;
   };

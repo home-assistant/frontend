@@ -148,9 +148,9 @@ export class HaWebhookTrigger extends LitElement {
               </ha-dropdown-item>
             `
           )}
-          ${SUPPORTED_METHODS.length
-            ? html`<wa-divider></wa-divider>`
-            : nothing}
+          ${
+            SUPPORTED_METHODS.length ? html`<wa-divider></wa-divider>` : nothing
+          }
           <ha-dropdown-item
             type="checkbox"
             .checked=${localOnly!}

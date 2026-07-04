@@ -153,9 +153,10 @@ export class HaLanguagePicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass?.localize(
-          "ui.components.language-picker.no_languages"
-        ) || "No languages available"}
+        .emptyLabel=${
+          this.hass?.localize("ui.components.language-picker.no_languages") ||
+          "No languages available"
+        }
         .label=${label}
         .value=${value}
         .valueRenderer=${this._valueRenderer}
@@ -166,18 +167,20 @@ export class HaLanguagePicker extends LitElement {
         @value-changed=${this._changed}
         hide-clear-icon
       >
-        ${this.buttonStyle
-          ? html`<ha-button
-              slot="field"
-              .disabled=${this.disabled}
-              @click=${this._openPicker}
-              appearance="plain"
-              variant="neutral"
-            >
-              ${this._getLanguageName(value)}
-              <ha-svg-icon slot="end" .path=${mdiMenuDown}></ha-svg-icon>
-            </ha-button>`
-          : nothing}
+        ${
+          this.buttonStyle
+            ? html`<ha-button
+                slot="field"
+                .disabled=${this.disabled}
+                @click=${this._openPicker}
+                appearance="plain"
+                variant="neutral"
+              >
+                ${this._getLanguageName(value)}
+                <ha-svg-icon slot="end" .path=${mdiMenuDown}></ha-svg-icon>
+              </ha-button>`
+            : nothing
+        }
       </ha-generic-picker>
     `;
   }

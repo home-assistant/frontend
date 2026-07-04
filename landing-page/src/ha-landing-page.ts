@@ -61,39 +61,47 @@ class HaLandingPage extends LandingPageBaseElement {
       <ha-card>
         <div class="card-content">
           <h1>${this.localize("header")}</h1>
-          ${!networkIssue && !this._supervisorError
-            ? html`
-                <p>${this.localize("subheader")}</p>
-                <ha-progress-bar
-                  .indeterminate=${this._progress <= 0}
-                  .value=${this._progress > 0 ? this._progress : undefined}
-                  .loading=${this._progress >= 0}
-                  >${this._progress > 0
-                    ? `${Math.round(this._progress)}%`
-                    : nothing}</ha-progress-bar
-                >
-              `
-            : nothing}
-          ${networkIssue || this._networkInfoError
-            ? html`
-                <landing-page-network
-                  .localize=${this.localize}
-                  .networkInfo=${this._networkInfo}
-                  .error=${this._networkInfoError}
-                  @dns-set=${this._fetchSupervisorInfo}
-                ></landing-page-network>
-              `
-            : nothing}
-          ${this._supervisorError
-            ? html`
-                <ha-alert
-                  alert-type="error"
-                  .title=${this.localize("error_title")}
-                >
-                  ${this.localize("error_description")}
-                </ha-alert>
-              `
-            : nothing}
+          ${
+            !networkIssue && !this._supervisorError
+              ? html`
+                  <p>${this.localize("subheader")}</p>
+                  <ha-progress-bar
+                    .indeterminate=${this._progress <= 0}
+                    .value=${this._progress > 0 ? this._progress : undefined}
+                    .loading=${this._progress >= 0}
+                    >${
+                      this._progress > 0
+                        ? `${Math.round(this._progress)}%`
+                        : nothing
+                    }</ha-progress-bar
+                  >
+                `
+              : nothing
+          }
+          ${
+            networkIssue || this._networkInfoError
+              ? html`
+                  <landing-page-network
+                    .localize=${this.localize}
+                    .networkInfo=${this._networkInfo}
+                    .error=${this._networkInfoError}
+                    @dns-set=${this._fetchSupervisorInfo}
+                  ></landing-page-network>
+                `
+              : nothing
+          }
+          ${
+            this._supervisorError
+              ? html`
+                  <ha-alert
+                    alert-type="error"
+                    .title=${this.localize("error_title")}
+                  >
+                    ${this.localize("error_description")}
+                  </ha-alert>
+                `
+              : nothing
+          }
           <landing-page-logs
             .localize=${this.localize}
             @landing-page-error=${this._showError}

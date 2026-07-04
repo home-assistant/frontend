@@ -94,19 +94,22 @@ class PanelClimate extends LitElement {
         .backButton=${this._searchParams.has("historyBack")}
       >
         <div slot="title">${this.hass.localize("panel.climate")}</div>
-        ${this._lovelace
-          ? html`
-              <hui-view-container .hass=${this.hass}>
-                <hui-view-background .hass=${this.hass}> </hui-view-background>
-                <hui-view
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .lovelace=${this._lovelace}
-                  .index=${this._viewIndex}
-                ></hui-view
-              ></hui-view-container>
-            `
-          : nothing}
+        ${
+          this._lovelace
+            ? html`
+                <hui-view-container .hass=${this.hass}>
+                  <hui-view-background .hass=${this.hass}>
+                  </hui-view-background>
+                  <hui-view
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .lovelace=${this._lovelace}
+                    .index=${this._viewIndex}
+                  ></hui-view
+                ></hui-view-container>
+              `
+            : nothing
+        }
       </ha-top-app-bar-fixed>
     `;
   }

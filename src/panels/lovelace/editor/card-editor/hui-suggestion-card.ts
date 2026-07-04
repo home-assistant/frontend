@@ -82,26 +82,30 @@ export class HuiSuggestionCard extends LitElement {
         <div class="overlay" @click=${this._handleClick}></div>
         <div class="card-header">${label}</div>
         <div class="preview">
-          ${this._preview
-            ? html`
-                <hui-card
-                  .hass=${this.hass}
-                  .config=${this._preview.config}
-                  preview
-                ></hui-card>
-              `
-            : nothing}
+          ${
+            this._preview
+              ? html`
+                  <hui-card
+                    .hass=${this.hass}
+                    .config=${this._preview.config}
+                    preview
+                  ></hui-card>
+                `
+              : nothing
+          }
         </div>
-        ${hiddenCount > 0
-          ? html`
-              <div class="more-badge">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.editor.cardpicker.more_cards",
-                  { count: hiddenCount }
-                )}
-              </div>
-            `
-          : nothing}
+        ${
+          hiddenCount > 0
+            ? html`
+                <div class="more-badge">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.cardpicker.more_cards",
+                    { count: hiddenCount }
+                  )}
+                </div>
+              `
+            : nothing
+        }
         <ha-ripple></ha-ripple>
       </div>
     `;

@@ -97,9 +97,7 @@ export interface ValveEntityOptions {
 }
 
 export type FavoriteOption =
-  | "favorite_colors"
-  | "favorite_positions"
-  | "favorite_tilt_positions";
+  "favorite_colors" | "favorite_positions" | "favorite_tilt_positions";
 
 export type FavoritesDomain = "light" | "cover" | "valve";
 
@@ -211,14 +209,14 @@ export interface EntityRegistryEntryUpdateParams {
 
 const batteryPriorities = ["sensor", "binary_sensor"];
 export const findBatteryEntity = <T extends { entity_id: string }>(
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entities: T[]
 ): T | undefined => {
   const batteryEntities = entities
     .filter(
       (entity) =>
-        hass.states[entity.entity_id] &&
-        hass.states[entity.entity_id].attributes.device_class === "battery" &&
+        states[entity.entity_id] &&
+        states[entity.entity_id].attributes.device_class === "battery" &&
         batteryPriorities.includes(computeDomain(entity.entity_id))
     )
     .sort(
@@ -234,14 +232,13 @@ export const findBatteryEntity = <T extends { entity_id: string }>(
 };
 
 export const findBatteryChargingEntity = <T extends { entity_id: string }>(
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entities: T[]
 ): T | undefined =>
   entities.find(
     (entity) =>
-      hass.states[entity.entity_id] &&
-      hass.states[entity.entity_id].attributes.device_class ===
-        "battery_charging"
+      states[entity.entity_id] &&
+      states[entity.entity_id].attributes.device_class === "battery_charging"
   );
 
 export const computeEntityRegistryName = (
@@ -259,7 +256,7 @@ export const computeEntityRegistryName = (
 };
 
 export const getExtendedEntityRegistryEntry = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entityId: string
 ): Promise<ExtEntityRegistryEntry> =>
   hass.callWS({
@@ -277,7 +274,7 @@ export const getExtendedEntityRegistryEntries = (
   });
 
 export const updateEntityRegistryEntry = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
 ): Promise<UpdateEntityRegistryEntryResult> =>

@@ -89,9 +89,11 @@ class OnboardingCoreConfig extends LitElement {
       </div>`;
     }
     return html`
-      ${this._error
-        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-        : nothing}
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
 
       <p>
         ${this.onboardingLocalize(

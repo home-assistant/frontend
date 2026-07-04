@@ -56,8 +56,7 @@ export class HuiMediaPlayerSoundModeCardFeatureEditor
 
     const stateObj = this.context?.entity_id
       ? (this.hass.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
 
     const data = customizableListData(this._config, "sound_modes");
@@ -79,8 +78,7 @@ export class HuiMediaPlayerSoundModeCardFeatureEditor
   ): void {
     const stateObj = this.context?.entity_id
       ? (this.hass!.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
     const defaults = stateObj?.attributes.sound_mode_list ?? [];
     const config =

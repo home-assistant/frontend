@@ -84,6 +84,12 @@ describe("image_upload", () => {
       const file = new File([""], "image.png", { type: "image/png" });
       const hass = {
         fetchWithAuth: vi.fn().mockResolvedValue({ status: 413 }),
+        localize: vi.fn((key: string, values?: Record<string, string>) => {
+          if (key === "ui.common.upload_image_too_large") {
+            return `Uploaded image is too large (${values?.name})`;
+          }
+          return "Unknown error";
+        }),
       } as unknown as HomeAssistant;
       await expect(createImage(hass, file)).rejects.toThrow(
         "Uploaded image is too large (image.png)"
@@ -94,6 +100,7 @@ describe("image_upload", () => {
       const file = new File([""], "image.png", { type: "image/png" });
       const hass = {
         fetchWithAuth: vi.fn().mockResolvedValue({ status: 500 }),
+        localize: vi.fn(() => "Unknown error"),
       } as unknown as HomeAssistant;
       await expect(createImage(hass, file)).rejects.toThrow("Unknown error");
     });

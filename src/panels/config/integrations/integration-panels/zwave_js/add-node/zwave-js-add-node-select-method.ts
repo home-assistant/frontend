@@ -17,35 +17,39 @@ export class ZWaveJsAddNodeSelectMethod extends LitElement {
 
   render() {
     return html`
-      ${!this.hideQrWebcam && !window.isSecureContext
-        ? html`<ha-alert alert-type="warning">
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.select_method.webcam_unsupported"
-            )}</ha-alert
-          >`
-        : nothing}
+      ${
+        !this.hideQrWebcam && !window.isSecureContext
+          ? html`<ha-alert alert-type="warning">
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.add_node.select_method.webcam_unsupported"
+              )}</ha-alert
+            >`
+          : nothing
+      }
       <ha-md-list>
-        ${!this.hideQrWebcam
-          ? html`<ha-md-list-item
-              interactive
-              type="button"
-              @click=${this._selectMethod}
-              .value=${"qr_code_webcam"}
-              .disabled=${!window.isSecureContext}
-            >
-              <div slot="headline">
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.add_node.select_method.qr_code_webcam`
-                )}
-              </div>
-              <div slot="supporting-text">
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.add_node.select_method.qr_code_webcam_description`
-                )}
-              </div>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>`
-          : nothing}
+        ${
+          !this.hideQrWebcam
+            ? html`<ha-md-list-item
+                interactive
+                type="button"
+                @click=${this._selectMethod}
+                .value=${"qr_code_webcam"}
+                .disabled=${!window.isSecureContext}
+              >
+                <div slot="headline">
+                  ${this.hass.localize(
+                    `ui.panel.config.zwave_js.add_node.select_method.qr_code_webcam`
+                  )}
+                </div>
+                <div slot="supporting-text">
+                  ${this.hass.localize(
+                    `ui.panel.config.zwave_js.add_node.select_method.qr_code_webcam_description`
+                  )}
+                </div>
+                <ha-icon-next slot="end"></ha-icon-next>
+              </ha-md-list-item>`
+            : nothing
+        }
         <ha-md-list-item
           interactive
           type="button"

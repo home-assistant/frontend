@@ -1,4 +1,4 @@
-import timezones from "google-timezones-json";
+import { timeZonesNames } from "@vvo/tzdb";
 import { TimeZone } from "../../data/translation";
 
 const RESOLVED_RAW = Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
@@ -10,7 +10,7 @@ const RESOLVED_TIME_ZONE =
   RESOLVED_RAW &&
   (RESOLVED_RAW === "UTC" ||
     RESOLVED_RAW === "Etc/UTC" ||
-    RESOLVED_RAW in timezones)
+    timeZonesNames.includes(RESOLVED_RAW))
     ? RESOLVED_RAW
     : undefined;
 

@@ -12,16 +12,14 @@ export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
 }
 
 export type EnergyViewPath =
-  | "overview"
-  | "electricity"
-  | "gas"
-  | "water"
-  | "now";
+  "overview" | "electricity" | "gas" | "water" | "now";
 
 // --- Applicability helpers -------------------------------------------------
-// These mirror, one-to-one, the conditions the individual view strategies use
-// to decide whether to emit a card. The catalog and the strategies must agree
-// on what "applicable" means, so the conditions live here and are reused.
+// Source-shape predicates shared by the catalog entries below, the view
+// strategies (for view-level decisions and badges), and the dashboard
+// strategy. Card applicability itself lives in the catalog: strategies decide
+// whether to emit a card through `isEnergyCardVisible()`, so they never
+// re-derive these conditions inline and can never disagree with the catalog.
 
 export const hasGridSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some(
@@ -40,6 +38,12 @@ export const hasSolar = (prefs: EnergyPreferences): boolean =>
 
 export const hasBattery = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "battery");
+
+/** Any electricity-relevant source: grid, solar, or battery. */
+export const hasEnergySource = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some((source) =>
+    ["grid", "solar", "battery"].includes(source.type)
+  );
 
 export const hasGasSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "gas");
@@ -66,8 +70,20 @@ export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
 export const hasPowerDevices = (prefs: EnergyPreferences): boolean =>
   prefs.device_consumption.some((device) => device.stat_rate);
 
-export const hasPowerWaterDevices = (prefs: EnergyPreferences): boolean =>
+export const hasWaterRateDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water ?? []).some((device) => device.stat_rate);
+
+/** A water source exposing a live flow-rate statistic. */
+export const hasWaterRateSource = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some(
+    (source) => source.type === "water" && !!source.stat_rate
+  );
+
+/** A gas source exposing a live flow-rate statistic. */
+export const hasGasRateSource = (prefs: EnergyPreferences): boolean =>
+  prefs.energy_sources.some(
+    (source) => source.type === "gas" && !!source.stat_rate
+  );
 
 // --- Card catalog ----------------------------------------------------------
 
@@ -262,17 +278,49 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "now",
     "water-flow-sankey",
     "ui.panel.energy.cards.water_flow_sankey_title",
-    (p) => hasPowerWaterDevices(p)
+    (p) => hasWaterRateDevices(p)
   ),
 ];
 
 // --- Lookup helpers --------------------------------------------------------
+
+const ENERGY_CARD_CATALOG_BY_KEY = new Map<string, EnergyCardCatalogEntry>(
+  ENERGY_CARD_CATALOG.map((c) => [c.key, c])
+);
+
+/** The catalog entry for a `(view, cardType)` pair, or undefined if unknown. */
+export const energyCardEntry = (
+  view: EnergyViewPath,
+  cardType: string
+): EnergyCardCatalogEntry | undefined =>
+  ENERGY_CARD_CATALOG_BY_KEY.get(energyCardKey(view, cardType));
 
 export const isEnergyCardHidden = (
   view: EnergyViewPath,
   cardType: string,
   hidden: string[] | undefined
 ): boolean => !!hidden?.includes(energyCardKey(view, cardType));
+
+/**
+ * Single source of truth for whether a view strategy should emit a card: the
+ * card must be in the catalog, apply to the current preferences, and not be
+ * hidden by the user. Strategies call this instead of re-deriving the
+ * applicability conditions inline, so the catalog and the strategies can never
+ * disagree on what "applicable" means.
+ */
+export const isEnergyCardVisible = (
+  view: EnergyViewPath,
+  cardType: string,
+  prefs: EnergyPreferences,
+  hidden: string[] | undefined
+): boolean => {
+  const cardEntry = energyCardEntry(view, cardType);
+  return (
+    !!cardEntry &&
+    cardEntry.isApplicable(prefs) &&
+    !hidden?.includes(cardEntry.key)
+  );
+};
 
 /** Keys of all catalog cards that apply to the given preferences for a view. */
 export const applicableEnergyCardKeys = (

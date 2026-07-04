@@ -64,6 +64,26 @@ describe("formatNumber", () => {
     assert.strictEqual(formatNumber("", defaultLocale), "0");
   });
 
+  it("Returns consistent results for interleaved calls with different options (formatter cache)", () => {
+    // Exercises the cached Intl.NumberFormat instances: alternating option
+    // shapes must each keep producing their own correct output.
+    for (let i = 0; i < 3; i++) {
+      assert.strictEqual(formatNumber(1234.5, defaultLocale), "1,234.5");
+      assert.strictEqual(
+        formatNumber(1234.5, defaultLocale, { minimumFractionDigits: 2 }),
+        "1,234.50"
+      );
+      assert.strictEqual(formatNumber("1234.50", defaultLocale), "1,234.50");
+      assert.strictEqual(
+        formatNumber(1234.5, {
+          ...defaultLocale,
+          number_format: NumberFormat.none,
+        }),
+        "1234.5"
+      );
+    }
+  });
+
   it("Formats number with options", () => {
     assert.strictEqual(
       formatNumber(1234.5, defaultLocale, {

@@ -78,13 +78,16 @@ export class HaPictureUpload extends LitElement {
 
       return html`
         <ha-file-upload
-          .hass=${this.hass}
           .icon=${mdiImagePlus}
-          .label=${this.label ||
-          this.hass.localize("ui.components.picture-upload.label")}
+          .label=${
+            this.label ||
+            this.hass.localize("ui.components.picture-upload.label")
+          }
           .secondary=${secondary}
-          .supports=${this.supports ||
-          this.hass.localize("ui.components.picture-upload.supported_formats")}
+          .supports=${
+            this.supports ||
+            this.hass.localize("ui.components.picture-upload.supported_formats")
+          }
           .uploading=${this._uploading}
           @file-picked=${this._handleFilePicked}
           @change=${this._handleFileCleared}
@@ -96,8 +99,10 @@ export class HaPictureUpload extends LitElement {
       <div class="value">
         <img
           .src=${this.value}
-          alt=${this.currentImageAltText ||
-          this.hass.localize("ui.components.picture-upload.current_image_alt")}
+          alt=${
+            this.currentImageAltText ||
+            this.hass.localize("ui.components.picture-upload.current_image_alt")
+          }
         />
         <div>
           <ha-button

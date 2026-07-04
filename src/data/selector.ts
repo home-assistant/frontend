@@ -82,6 +82,7 @@ export type Selector =
   | UiActionSelector
   | UiColorSelector
   | UiStateContentSelector
+  | UiTimeFormatSelector
   | BackupLocationSelector;
 
 export interface ActionSelector {
@@ -130,8 +131,7 @@ export type AutomationBehaviorTriggerMode = "first" | "all" | "each";
 export type AutomationBehaviorConditionMode = "all" | "any";
 
 export type AutomationBehavior =
-  | AutomationBehaviorTriggerMode
-  | AutomationBehaviorConditionMode;
+  AutomationBehaviorTriggerMode | AutomationBehaviorConditionMode;
 
 export interface AutomationBehaviorSelector {
   automation_behavior: {
@@ -599,6 +599,10 @@ export interface UiStateContentSelector {
     allow_name?: boolean;
     allow_context?: boolean;
   } | null;
+}
+
+export interface UiTimeFormatSelector {
+  ui_time_format: {} | null;
 }
 
 export interface EntityNameSelector {

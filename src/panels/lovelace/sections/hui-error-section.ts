@@ -47,7 +47,9 @@ export class HuiErrorSection
 
     // Todo improve
     return html`
-      <h1>Error</h1>
+      <h1>
+        ${this.hass!.localize("ui.panel.lovelace.editor.error_section.title")}
+      </h1>
       <p>${this._config.error}</p>
     `;
   }

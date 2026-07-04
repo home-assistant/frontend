@@ -52,7 +52,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
@@ -214,11 +214,13 @@ class HaBlueprintOverview extends LitElement {
               filled
               .active=${count > 0}
               label=${String(count)}
-              title=${blueprint.error
-                ? String(count)
-                : this.hass.localize(
-                    `ui.panel.config.blueprint.overview.view_${blueprint.type}`
-                  )}
+              title=${
+                blueprint.error
+                  ? String(count)
+                  : this.hass.localize(
+                      `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                    )
+              }
               ?disabled=${blueprint.error}
               data-fullpath=${blueprint.fullpath}
               @click=${this._handleUsageClick}
@@ -605,9 +607,11 @@ class HaBlueprintOverview extends LitElement {
                 (item) => {
                   const automationState = this.hass.states[item];
                   return html`<li>
-                    ${automationState
-                      ? `${computeStateName(automationState)} (${item})`
-                      : item}
+                    ${
+                      automationState
+                        ? `${computeStateName(automationState)} (${item})`
+                        : item
+                    }
                   </li>`;
                 }
               )}

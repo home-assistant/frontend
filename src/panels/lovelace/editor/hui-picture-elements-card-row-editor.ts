@@ -79,22 +79,26 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
                       .path=${mdiDragHorizontalVariant}
                     ></ha-svg-icon>
                   </div>
-                  ${element.type
-                    ? html`
-                        <div class="element-row">
-                          <div>
-                            <span>
-                              ${this.hass?.localize(
-                                `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
-                              ) || element.type}
-                            </span>
-                            <span class="secondary"
-                              >${this._getSecondaryDescription(element)}</span
-                            >
+                  ${
+                    element.type
+                      ? html`
+                          <div class="element-row">
+                            <div>
+                              <span>
+                                ${
+                                  this.hass?.localize(
+                                    `ui.panel.lovelace.editor.card.picture-elements.element_types.${element.type}`
+                                  ) || element.type
+                                }
+                              </span>
+                              <span class="secondary"
+                                >${this._getSecondaryDescription(element)}</span
+                              >
+                            </div>
                           </div>
-                        </div>
-                      `
-                    : nothing}
+                        `
+                      : nothing
+                  }
                   <ha-icon-button
                     .label=${this.hass!.localize("ui.common.delete")}
                     .path=${mdiClose}
@@ -131,9 +135,11 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
           ${elementTypes.map(
             (element) => html`
               <ha-dropdown-item .value=${element}>
-                ${this.hass?.localize(
-                  `ui.panel.lovelace.editor.card.picture-elements.element_types.${element}`
-                ) || element}
+                ${
+                  this.hass?.localize(
+                    `ui.panel.lovelace.editor.card.picture-elements.element_types.${element}`
+                  ) || element
+                }
               </ha-dropdown-item>
             `
           )}

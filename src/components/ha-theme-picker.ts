@@ -1,10 +1,12 @@
+import { consume, type ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import { internationalizationContext, uiContext } from "../data/context";
+import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
@@ -23,7 +25,13 @@ export class HaThemePicker extends LitElement {
   @property({ attribute: "include-default", type: Boolean })
   public includeDefault = false;
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui?: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -56,8 +64,8 @@ export class HaThemePicker extends LitElement {
 
   private _getItems = () =>
     this._getThemeOptions(
-      this.hass?.themes.themes || {},
-      this.hass?.locale.language || "en",
+      this._ui?.themes.themes || {},
+      this._i18n?.locale.language || "en",
       this.includeDefault
     );
 
@@ -69,11 +77,15 @@ export class HaThemePicker extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
-        .label=${this.label ??
-        this.hass?.localize("ui.components.theme-picker.theme") ??
-        "Theme"}
-        .placeholder=${this.noThemeLabel ??
-        this.hass?.localize("ui.components.theme-picker.no_theme")}
+        .label=${
+          this.label ??
+          this._i18n?.localize("ui.components.theme-picker.theme") ??
+          "Theme"
+        }
+        .placeholder=${
+          this.noThemeLabel ??
+          this._i18n?.localize("ui.components.theme-picker.no_theme")
+        }
         .helper=${this.helper}
         .value=${this.value}
         .valueRenderer=${this._valueRenderer}

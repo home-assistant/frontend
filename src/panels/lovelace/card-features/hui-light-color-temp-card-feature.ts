@@ -1,3 +1,5 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -6,9 +8,16 @@ import {
   DEFAULT_MAX_KELVIN,
   DEFAULT_MIN_KELVIN,
 } from "../../../common/color/convert-light-color";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-slider";
+import { apiContext, internationalizationContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import {
@@ -16,14 +25,27 @@ import {
   lightSupportsColorMode,
   type LightEntity,
 } from "../../../data/light";
+import type { FrontendLocaleData } from "../../../data/translation";
 import { generateColorTemperatureGradient } from "../../../dialogs/more-info/components/lights/light-color-temp-picker";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LightColorTempCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsLightColorTempCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "light" &&
+    lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP)
+  );
+};
 
 export const supportsLightColorTempCardFeature = (
   hass: HomeAssistant,
@@ -33,11 +55,7 @@ export const supportsLightColorTempCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "light" &&
-    lightSupportsColorMode(stateObj, LightColorMode.COLOR_TEMP)
-  );
+  return supportsLightColorTempCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-light-color-temp-card-feature")
@@ -45,18 +63,28 @@ class HuiLightColorTempCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: LightColorTempCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: LightEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as LightEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state() private _config?: LightColorTempCardFeatureConfig;
 
   static getStubConfig(): LightColorTempCardFeatureConfig {
     return {
@@ -74,10 +102,9 @@ class HuiLightColorTempCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsLightColorTempCardFeature(this.hass, this.context)
+      !supportsLightColorTempCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -101,14 +128,14 @@ class HuiLightColorTempCardFeature
         .showHandle=${stateActive(this._stateObj)}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
         @value-changed=${this._valueChanged}
-        .label=${this.hass.localize("ui.card.light.color_temperature")}
+        .label=${this._localize("ui.card.light.color_temperature")}
         .min=${minKelvin}
         .max=${maxKelvin}
         style=${styleMap({
           "--gradient": gradient,
         })}
         .unit=${DOMAIN_ATTRIBUTES_UNITS.light.color_temp_kelvin}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
       ></ha-control-slider>
     `;
   }
@@ -121,7 +148,7 @@ class HuiLightColorTempCardFeature
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    this.hass!.callService("light", "turn_on", {
+    this._api.callService("light", "turn_on", {
       entity_id: this._stateObj!.entity_id,
       color_temp_kelvin: value,
     });

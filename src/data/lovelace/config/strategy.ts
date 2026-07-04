@@ -18,5 +18,4 @@ export type LovelaceBuiltinDashboardStrategyType =
 
 /** Dashboard strategy id from the new-dashboard picker: built-in key or `custom:…`. */
 export type LovelaceDashboardStrategyTypeId =
-  | LovelaceBuiltinDashboardStrategyType
-  | `custom:${string}`;
+  LovelaceBuiltinDashboardStrategyType | `custom:${string}`;

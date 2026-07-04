@@ -3,7 +3,7 @@ import type {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export const enum WaterHeaterEntityFeature {
+export enum WaterHeaterEntityFeature {
   TARGET_TEMPERATURE = 1,
   OPERATION_MODE = 2,
   AWAY_MODE = 4,

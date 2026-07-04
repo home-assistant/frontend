@@ -50,8 +50,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
-      | Lovelace
-      | undefined;
+      Lovelace | undefined;
 
     if (
       (!changedProperties.has("cards") &&
@@ -64,31 +63,35 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.cards!.length > 1
-        ? html`<ha-alert alert-type="warning"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
-            )}</ha-alert
-          >`
-        : ""}
+      ${
+        this.cards!.length > 1
+          ? html`<ha-alert alert-type="warning"
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
+              )}</ha-alert
+            >`
+          : ""
+      }
       ${this._card}
-      ${this.lovelace?.editMode && this.cards.length === 0
-        ? html`
-            <ha-button
-              size="l"
-              @click=${this._addCard}
-              class=${classMap({
-                rtl: computeRTL(
-                  this.hass!.language,
-                  this.hass!.translationMetadata.translations
-                ),
-              })}
-            >
-              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
-            </ha-button>
-          `
-        : ""}
+      ${
+        this.lovelace?.editMode && this.cards.length === 0
+          ? html`
+              <ha-button
+                size="l"
+                @click=${this._addCard}
+                class=${classMap({
+                  rtl: computeRTL(
+                    this.hass!.language,
+                    this.hass!.translationMetadata.translations
+                  ),
+                })}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.add")}
+              </ha-button>
+            `
+          : ""
+      }
     `;
   }
 

@@ -104,25 +104,27 @@ export class HaDeviceAction extends LitElement {
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
-      ${this._capabilities?.extra_fields?.length
-        ? html`
-            <ha-form
-              .hass=${this.hass}
-              .data=${this._extraFieldsData(this.action, this._capabilities)}
-              .schema=${this._capabilities.extra_fields}
-              .disabled=${this.disabled}
-              .computeLabel=${localizeExtraFieldsComputeLabelCallback(
-                this.hass.localize,
-                this.action
-              )}
-              .computeHelper=${localizeExtraFieldsComputeHelperCallback(
-                this.hass.localize,
-                this.action
-              )}
-              @value-changed=${this._extraFieldsChanged}
-            ></ha-form>
-          `
-        : ""}
+      ${
+        this._capabilities?.extra_fields?.length
+          ? html`
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._extraFieldsData(this.action, this._capabilities)}
+                .schema=${this._capabilities.extra_fields}
+                .disabled=${this.disabled}
+                .computeLabel=${localizeExtraFieldsComputeLabelCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                .computeHelper=${localizeExtraFieldsComputeHelperCallback(
+                  this.hass.localize,
+                  this.action
+                )}
+                @value-changed=${this._extraFieldsChanged}
+              ></ha-form>
+            `
+          : ""
+      }
     `;
   }
 

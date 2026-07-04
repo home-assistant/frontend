@@ -2,10 +2,12 @@ import { assert, describe, it } from "vitest";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 
 import {
+  computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   fillLineGaps,
   getCompareTransform,
   getSuggestedMax,
+  splitUntrackedConsumption,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/energy-chart-options";
 
 // Helper to get x value from either [x,y] or {value: [x,y]} format
@@ -270,6 +272,62 @@ describe("fillLineGaps", () => {
     const secondItem = result[0].data![1] as any;
     assert.equal(getX(secondItem), 2000);
     assert.equal(secondItem.itemStyle.color, "red");
+  });
+
+  it("keeps the last item when a dataset has duplicate timestamps", () => {
+    const datasets: LineSeriesOption[] = [
+      {
+        type: "line",
+        data: [
+          [1000, 10],
+          [1000, 99],
+          [2000, 20],
+        ],
+      },
+    ];
+
+    const result = fillLineGaps(datasets);
+
+    // Two distinct buckets; the later [1000, 99] wins for bucket 1000.
+    assert.equal(result[0].data!.length, 2);
+    assert.equal(getX(result[0].data![0]), 1000);
+    assert.equal(getY(result[0].data![0]), 99);
+    assert.equal(getX(result[0].data![1]), 2000);
+    assert.equal(getY(result[0].data![1]), 20);
+  });
+
+  it("produces a NaN bucket filled with zero across datasets", () => {
+    // A datapoint with no numeric x coerces to NaN. It adds a NaN bucket but is
+    // never stored in any dataset's map, so every dataset gets [NaN, 0] there.
+    const datasets: LineSeriesOption[] = [
+      {
+        type: "line",
+        data: [
+          [1000, 10],
+          [Number.NaN, 50],
+        ],
+      },
+      {
+        type: "line",
+        data: [[1000, 100]],
+      },
+    ];
+
+    const result = fillLineGaps(datasets);
+
+    // Buckets present: 1000 and NaN (NaN sorts to the end).
+    assert.equal(result[0].data!.length, 2);
+    assert.equal(getX(result[0].data![0]), 1000);
+    assert.equal(getY(result[0].data![0]), 10);
+    assert.isTrue(Number.isNaN(getX(result[0].data![1])));
+    assert.equal(getY(result[0].data![1]), 0);
+
+    // Second dataset is aligned to the same buckets, NaN filled with zero.
+    assert.equal(result[1].data!.length, 2);
+    assert.equal(getX(result[1].data![0]), 1000);
+    assert.equal(getY(result[1].data![0]), 100);
+    assert.isTrue(Number.isNaN(getX(result[1].data![1])));
+    assert.equal(getY(result[1].data![1]), 0);
   });
 });
 
@@ -569,5 +627,112 @@ describe("getCompareTransform", () => {
     assert.equal(result.getFullYear(), 2025);
     assert.equal(result.getMonth(), 2); // March
     assert.equal(result.getDate(), 1);
+  });
+});
+
+describe("computeStatMidpoint", () => {
+  const start = Date.UTC(2024, 0, 1, 10, 0, 0);
+  const end = Date.UTC(2024, 0, 1, 11, 0, 0);
+
+  it("returns midpoint for hour period", () => {
+    assert.equal(computeStatMidpoint(start, end, "hour"), (start + end) / 2);
+  });
+
+  it("returns midpoint for 5minute period", () => {
+    assert.equal(computeStatMidpoint(start, end, "5minute"), (start + end) / 2);
+  });
+
+  it("returns start for day and month periods", () => {
+    assert.equal(computeStatMidpoint(start, end, "day"), start);
+    assert.equal(computeStatMidpoint(start, end, "month"), start);
+  });
+
+  it("applies compare transform to start for non-centered periods", () => {
+    const transform = (ts: Date) => new Date(ts.getTime() + 1000);
+    assert.equal(
+      computeStatMidpoint(start, end, "day", transform),
+      start + 1000
+    );
+  });
+
+  it("applies compare transform to both ends for centered periods", () => {
+    const transform = (ts: Date) => new Date(ts.getTime() + 1000);
+    assert.equal(
+      computeStatMidpoint(start, end, "hour", transform),
+      (start + end) / 2 + 1000
+    );
+  });
+});
+
+describe("splitUntrackedConsumption", () => {
+  it("passes through positive untracked when grid exceeds devices", () => {
+    const usedTotal = { 1000: 5, 2000: 3 };
+    const deviceTotal = { 1000: 2, 2000: 1 };
+    const result = splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.deepEqual(result.positive, { 1000: 3, 2000: 2 });
+    assert.deepEqual(result.negative, {});
+  });
+
+  it("clamps positive to zero and records negatives separately", () => {
+    // Device sensors report more than the integer grid meter
+    const usedTotal = { 1000: 0, 2000: 1 };
+    const deviceTotal = { 1000: 0.3, 2000: 1.7 };
+    const result = splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result.positive[1000], 0);
+    assert.equal(result.positive[2000], 0);
+    assert.approximately(result.negative[1000], -0.3, 0.001);
+    assert.approximately(result.negative[2000], -0.7, 0.001);
+  });
+
+  it("treats grid equal to devices as zero with no negative", () => {
+    const usedTotal = { 1000: 2.5 };
+    const deviceTotal = { 1000: 2.5 };
+    const result = splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result.positive[1000], 0);
+    assert.deepEqual(result.negative, {});
+  });
+
+  it("returns full grid value when no device data exists for timestamp", () => {
+    const usedTotal = { 1000: 4 };
+    const deviceTotal = {};
+    const result = splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result.positive[1000], 4);
+    assert.deepEqual(result.negative, {});
+  });
+
+  it("ignores device timestamps not present in usedTotal", () => {
+    const usedTotal = { 1000: 2 };
+    const deviceTotal = { 1000: 1, 9999: 5 };
+    const result = splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.deepEqual(result.positive, { 1000: 1 });
+    assert.deepEqual(result.negative, {});
+  });
+
+  it("handles mixed positive and negative across timestamps", () => {
+    const usedTotal = { 1000: 0, 2000: 3, 3000: 1 };
+    const deviceTotal = { 1000: 0.5, 2000: 1, 3000: 2 };
+    const result = splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.equal(result.positive[1000], 0); // clamped
+    assert.equal(result.positive[2000], 2); // genuine untracked
+    assert.equal(result.positive[3000], 0); // clamped
+    assert.approximately(result.negative[1000], -0.5, 0.001);
+    assert.isUndefined(result.negative[2000]); // positive, not recorded
+    assert.approximately(result.negative[3000], -1, 0.001);
+  });
+
+  it("returns empty result for empty inputs", () => {
+    const result = splitUntrackedConsumption({}, {});
+    assert.deepEqual(result.positive, {});
+    assert.deepEqual(result.negative, {});
+  });
+
+  it("does not mutate input objects", () => {
+    const usedTotal = { 1000: 5 };
+    const deviceTotal = { 1000: 2 };
+    const usedCopy = { ...usedTotal };
+    const deviceCopy = { ...deviceTotal };
+    splitUntrackedConsumption(usedTotal, deviceTotal);
+    assert.deepEqual(usedTotal, usedCopy);
+    assert.deepEqual(deviceTotal, deviceCopy);
   });
 });

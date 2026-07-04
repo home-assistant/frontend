@@ -1,4 +1,5 @@
 import { mdiTuneVariant } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -12,6 +13,16 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 
+const supportsClimatePresetModesCardFeatureFromState = (
+  stateObj: HassEntity
+) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "climate" &&
+    supportsFeature(stateObj, ClimateEntityFeature.PRESET_MODE)
+  );
+};
+
 export const supportsClimatePresetModesCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -20,11 +31,7 @@ export const supportsClimatePresetModesCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "climate" &&
-    supportsFeature(stateObj, ClimateEntityFeature.PRESET_MODE)
-  );
+  return supportsClimatePresetModesCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-climate-preset-modes-card-feature")
@@ -65,9 +72,8 @@ class HuiClimatePresetModesCardFeature
 
   protected _isSupported(): boolean {
     return !!(
-      this.hass &&
-      this.context &&
-      supportsClimatePresetModesCardFeature(this.hass, this.context)
+      this._stateObj &&
+      supportsClimatePresetModesCardFeatureFromState(this._stateObj)
     );
   }
 }

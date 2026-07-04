@@ -10,11 +10,7 @@ import {
 } from "./query-params";
 
 export type HistoryLogbookTargetParamKey =
-  | "entity_id"
-  | "label_id"
-  | "floor_id"
-  | "area_id"
-  | "device_id";
+  "entity_id" | "label_id" | "floor_id" | "area_id" | "device_id";
 
 export const historyLogbookTargetParamKeys: readonly HistoryLogbookTargetParamKey[] =
   ["entity_id", "label_id", "floor_id", "area_id", "device_id"];

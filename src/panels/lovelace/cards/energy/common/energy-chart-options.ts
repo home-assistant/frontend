@@ -98,7 +98,10 @@ function createYAxisLabelFormatter(
   fractionDigits: number
 ) {
   return (value: number): string =>
-    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
+    formatNumber(value, locale, {
+      minimumFractionDigits: value === 0 ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
 }
 
 export function getCommonOptions(
@@ -267,8 +270,6 @@ function formatTooltip(
 
   let sumPositive = 0;
   let countPositive = 0;
-  let sumNegative = 0;
-  let countNegative = 0;
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
@@ -280,14 +281,12 @@ function formatTooltip(
     if (value === "0") {
       continue;
     }
-    if (param.componentSubType === "bar") {
-      if (y > 0) {
-        sumPositive += y;
-        countPositive++;
-      } else {
-        sumNegative += y;
-        countNegative++;
-      }
+    // Only the positive bars (consumption) are summed into a total. Negative
+    // bars mix unrelated categories (grid export and battery charge), so they
+    // are not totaled.
+    if (param.componentSubType === "bar" && y > 0) {
+      sumPositive += y;
+      countPositive++;
     }
     rows.push(
       html`<ha-chart-tooltip-marker
@@ -301,47 +300,41 @@ function formatTooltip(
     return nothing;
   }
   return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
-    ${rows.map(
-      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
-    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
-      : nothing}${sumNegative !== 0 && countNegative > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumNegative)}</b>`
-      : nothing}`;
-}
-
-function getDatapointX(datapoint: NonNullable<LineSeriesOption["data"]>[0]) {
-  const item =
-    datapoint && typeof datapoint === "object" && "value" in datapoint
-      ? datapoint
-      : { value: datapoint };
-  return Number(item.value?.[0]);
+    ${rows.map((row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`)}${
+      sumPositive !== 0 && countPositive > 1 && formatTotal
+        ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+        : nothing
+    }`;
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {
-  const buckets = Array.from(
-    new Set(
-      datasets
-        .map((dataset) =>
-          dataset.data!.map((datapoint) => getDatapointX(datapoint))
-        )
-        .flat()
-    )
-  ).sort((a, b) => a - b);
+  // Single pass per datapoint: normalise it to a LineDataItemOption, compute
+  // its x once, collect every x into the shared bucket set, and build each
+  // dataset's lookup map at the same time. This avoids re-deriving x and
+  // re-discriminating the tuple/object shape in a separate pass.
+  const bucketSet = new Set<number>();
+  const dataMaps: Map<number, LineDataItemOption>[] = [];
 
-  datasets.forEach((dataset) => {
+  for (const dataset of datasets) {
     const dataMap = new Map<number, LineDataItemOption>();
-    dataset.data!.forEach((datapoint) => {
+    for (const datapoint of dataset.data!) {
       const item: LineDataItemOption =
         datapoint && typeof datapoint === "object" && "value" in datapoint
           ? datapoint
           : ({ value: datapoint } as LineDataItemOption);
-      const x = getDatapointX(datapoint);
+      const x = Number(item.value?.[0]);
+      bucketSet.add(x);
       if (!Number.isNaN(x)) {
         dataMap.set(x, item);
       }
-    });
+    }
+    dataMaps.push(dataMap);
+  }
 
+  const buckets = Array.from(bucketSet).sort((a, b) => a - b);
+
+  datasets.forEach((dataset, index) => {
+    const dataMap = dataMaps[index];
     dataset.data = buckets.map((bucket) => dataMap.get(bucket) ?? [bucket, 0]);
   });
 
@@ -374,6 +367,58 @@ export function computeStatMidpoint(
     );
   }
   return (start + end) / 2;
+}
+
+const PERIOD_MS: Record<string, number> = {
+  "5minute": 5 * 60 * 1000,
+  hour: 60 * 60 * 1000,
+};
+
+/**
+ * Offset from a period's start to its midpoint, for centering sub-daily bars
+ * (and forecast lines) between axis ticks — 0 for daily+ periods, which sit at
+ * the start. Derived from the period, not from the data, so the first/only
+ * bucket centers identically to every other bucket. (Previously estimated from
+ * the gap between the first two entries, which collapsed to 0 with one bucket.)
+ */
+export function getPeriodMidpointOffset(period: string): number {
+  return (PERIOD_MS[period] ?? 0) / 2;
+}
+
+export interface UntrackedSplit {
+  /** Untracked consumption per timestamp, clamped to >= 0. */
+  positive: Record<number, number>;
+  /** Negative untracked per timestamp — only timestamps where the raw value
+   * was below zero (tracked devices reported more than total consumption). */
+  negative: Record<number, number>;
+}
+
+/**
+ * Split untracked energy consumption into positive and negative parts per
+ * timestamp.
+ *
+ * Untracked is `used_total - sum(tracked device consumption)`. It can go
+ * negative when meters report at coarser resolution than device sensors
+ * (e.g. an integer-kWh grid meter vs fractional device sensors). The positive
+ * part is the genuine untracked consumption; the negative part is surfaced as
+ * a separate, toggleable series so users can hide it without losing it as a
+ * diagnostic signal.
+ */
+export function splitUntrackedConsumption(
+  usedTotal: Record<number, number>,
+  totalDeviceConsumption: Record<number, number>
+): UntrackedSplit {
+  const positive: Record<number, number> = {};
+  const negative: Record<number, number> = {};
+  for (const time of Object.keys(usedTotal)) {
+    const ts = Number(time);
+    const raw = usedTotal[ts] - (totalDeviceConsumption[ts] || 0);
+    positive[ts] = Math.max(0, raw);
+    if (raw < 0) {
+      negative[ts] = raw;
+    }
+  }
+  return { positive, negative };
 }
 
 export function getCompareTransform(start: Date, compareStart?: Date) {

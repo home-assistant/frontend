@@ -4,7 +4,7 @@ import type {
 } from "home-assistant-js-websocket";
 import { temperature2rgb } from "../common/color/convert-light-color";
 
-export const enum LightEntityFeature {
+export enum LightEntityFeature {
   EFFECT = 4,
   FLASH = 8,
   TRANSITION = 32,
@@ -42,11 +42,6 @@ export const lightSupportsColorMode = (
   entity: LightEntity,
   mode: LightColorMode
 ) => entity.attributes.supported_color_modes?.includes(mode) || false;
-
-export const lightIsInColorMode = (entity: LightEntity) =>
-  (entity.attributes.color_mode &&
-    modesSupportingColor.includes(entity.attributes.color_mode)) ||
-  false;
 
 export const lightSupportsColor = (entity: LightEntity) =>
   entity.attributes.supported_color_modes?.some((mode) =>
@@ -159,5 +154,3 @@ export const computeDefaultFavoriteColors = (
 
   return colors;
 };
-
-export const formatTempColor = (value: number) => `${value} K`;

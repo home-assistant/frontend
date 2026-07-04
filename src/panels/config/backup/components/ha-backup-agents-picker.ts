@@ -59,25 +59,27 @@ class HaBackupAgentsPicker extends LitElement {
         @change=${this._checkboxChanged}
       >
         <span class="label ${classMap({ disabled })}">
-          ${isLocalAgent(agent.agent_id)
-            ? html` <ha-svg-icon .path=${mdiHarddisk}> </ha-svg-icon> `
-            : isNetworkMountAgent(agent.agent_id)
-              ? html` <ha-svg-icon .path=${mdiNas}></ha-svg-icon> `
-              : html`
-                  <img
-                    .src=${brandsUrl(
-                      {
-                        domain,
-                        type: "icon",
-                        darkOptimized: this.hass.themes?.darkMode,
-                      },
-                      this.hass.auth.data.hassUrl
-                    )}
-                    crossorigin="anonymous"
-                    referrerpolicy="no-referrer"
-                    alt=""
-                  />
-                `}
+          ${
+            isLocalAgent(agent.agent_id)
+              ? html` <ha-svg-icon .path=${mdiHarddisk}> </ha-svg-icon> `
+              : isNetworkMountAgent(agent.agent_id)
+                ? html` <ha-svg-icon .path=${mdiNas}></ha-svg-icon> `
+                : html`
+                    <img
+                      .src=${brandsUrl(
+                        {
+                          domain,
+                          type: "icon",
+                          darkOptimized: this.hass.themes?.darkMode,
+                        },
+                        this.hass.auth.data.hassUrl
+                      )}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      alt=""
+                    />
+                  `
+          }
           ${name}
         </span>
       </ha-checkbox>

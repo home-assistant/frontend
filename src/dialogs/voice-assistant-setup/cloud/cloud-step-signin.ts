@@ -37,9 +37,11 @@ export class CloudStepSignin extends LitElement {
           alt="Nabu Casa logo"
         />
         <h1>${this.hass.localize("ui.panel.config.cloud.login.sign_in")}</h1>
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : ""}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""
+        }
         <ha-input
           autofocus
           id="email"

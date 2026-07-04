@@ -107,9 +107,11 @@ export class ZHAAddGroupPage extends LitElement {
 
             <div class="buttons">
               <ha-button
-                .disabled=${!this._groupName ||
-                this._groupName === "" ||
-                this._processingAdd}
+                .disabled=${
+                  !this._groupName ||
+                  this._groupName === "" ||
+                  this._processingAdd
+                }
                 @click=${this._createGroup}
                 .loading=${this._processingAdd}
               >

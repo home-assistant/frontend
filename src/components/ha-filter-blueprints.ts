@@ -61,34 +61,38 @@ export class HaFilterBlueprints extends LitElement {
       >
         <div slot="header" class="header">
           ${this._localize("ui.panel.config.blueprint.caption")}
-          ${this.value?.length
-            ? html`<div class="badge">${this.value?.length}</div>
-                <ha-icon-button
-                  .path=${mdiFilterVariantRemove}
-                  @click=${this._clearFilter}
-                ></ha-icon-button>`
-            : nothing}
+          ${
+            this.value?.length
+              ? html`<div class="badge">${this.value?.length}</div>
+                  <ha-icon-button
+                    .path=${mdiFilterVariantRemove}
+                    @click=${this._clearFilter}
+                  ></ha-icon-button>`
+              : nothing
+          }
         </div>
-        ${this._blueprints && this._shouldRender
-          ? html`
-              <ha-list
-                @selected=${this._blueprintsSelected}
-                multi
-                class="ha-scrollbar"
-              >
-                ${Object.entries(this._blueprints).map(([id, blueprint]) =>
-                  "error" in blueprint
-                    ? nothing
-                    : html`<ha-check-list-item
-                        .value=${id}
-                        .selected=${(this.value || []).includes(id)}
-                      >
-                        ${blueprint.metadata.name || id}
-                      </ha-check-list-item>`
-                )}
-              </ha-list>
-            `
-          : nothing}
+        ${
+          this._blueprints && this._shouldRender
+            ? html`
+                <ha-list
+                  @selected=${this._blueprintsSelected}
+                  multi
+                  class="ha-scrollbar"
+                >
+                  ${Object.entries(this._blueprints).map(([id, blueprint]) =>
+                    "error" in blueprint
+                      ? nothing
+                      : html`<ha-check-list-item
+                          .value=${id}
+                          .selected=${(this.value || []).includes(id)}
+                        >
+                          ${blueprint.metadata.name || id}
+                        </ha-check-list-item>`
+                  )}
+                </ha-list>
+              `
+            : nothing
+        }
       </ha-expansion-panel>
     `;
   }

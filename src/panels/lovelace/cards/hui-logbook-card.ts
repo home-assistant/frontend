@@ -1,15 +1,23 @@
+import { startOfYesterday } from "date-fns";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { getEntityEntryContext } from "../../../common/entity/context/get_entity_context";
+import { createSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
+import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
 import type { HaLogbook } from "../../logbook/ha-logbook";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-warning";
@@ -20,8 +28,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { LogbookCardConfig } from "./types";
-import { resolveEntityIDs } from "../../../data/selector";
-import { ensureArray } from "../../../common/array/ensure-array";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 
@@ -65,6 +71,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   @state() private _targetPickerValue: HassServiceTarget = {};
 
   @state() private _stateFilter?: string[];
+
+  private _showMoreLinkId = `logbook-${Math.random().toString(36).substring(2, 9)}`;
 
   public getCardSize(): number {
     return 9 + (this._config?.title ? 1 : 0);
@@ -135,6 +143,30 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._stateFilter = ensureArray(config.state_filter);
   }
 
+  private _showMoreUrl(): string {
+    const target = this._targetPickerValue;
+    const params: Record<string, string> = {
+      start_date: startOfYesterday().toISOString(),
+      back: "1",
+    };
+    if (target.entity_id) {
+      params.entity_id = ensureArray(target.entity_id).join(",");
+    }
+    if (target.device_id) {
+      params.device_id = ensureArray(target.device_id).join(",");
+    }
+    if (target.area_id) {
+      params.area_id = ensureArray(target.area_id).join(",");
+    }
+    if (target.floor_id) {
+      params.floor_id = ensureArray(target.floor_id).join(",");
+    }
+    if (target.label_id) {
+      params.label_id = ensureArray(target.label_id).join(",");
+    }
+    return `/logbook?${createSearchParam(params)}`;
+  }
+
   private _getEntityIds(): string[] | undefined {
     const entities = this._getMemoizedEntityIds(
       this._targetPickerValue,
@@ -156,6 +188,60 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       areas: HomeAssistant["areas"]
     ): string[] =>
       resolveEntityIDs(this.hass, targetPickerValue, entities, devices, areas)
+  );
+
+  private _getNameDetail(): LogbookNameDetail | undefined {
+    const nameDetail = this._config?.name_detail ?? "auto";
+    if (nameDetail !== "auto") {
+      return nameDetail;
+    }
+    const entityIds = this._getEntityIds();
+    if (!entityIds) {
+      return undefined;
+    }
+    return this._getAutoNameDetail(
+      entityIds,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
+  }
+
+  // Pick the least detail the targeted entities need to stay unambiguous: a
+  // single entity needs no name, a shared device needs only the entity name, a
+  // shared area needs the device, otherwise show the full context.
+  private _getAutoNameDetail = memoizeOne(
+    (
+      entityIds: string[],
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"]
+    ): LogbookNameDetail => {
+      if (entityIds.length <= 1) {
+        return "none";
+      }
+      const deviceIds = new Set<string | undefined>();
+      const areaIds = new Set<string | undefined>();
+      for (const entityId of entityIds) {
+        const entry = entities[entityId];
+        const { device, area } = entry
+          ? getEntityEntryContext(entry, entities, devices, areas, floors)
+          : { device: null, area: null };
+        deviceIds.add(device?.id);
+        areaIds.add(area?.area_id);
+      }
+      // An entity without a device or area counts as its own group: it does not
+      // share the context, so it must not collapse the level.
+      if (deviceIds.size === 1 && !deviceIds.has(undefined)) {
+        return "entity";
+      }
+      if (areaIds.size === 1 && !areaIds.has(undefined)) {
+        return "device";
+      }
+      return "area";
+    }
   );
 
   protected update(changedProperties: PropertyValues<this>) {
@@ -200,10 +286,26 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card
-        .header=${this._config!.title}
-        class=${classMap({ "no-header": !this._config!.title })}
-      >
+      <ha-card class=${classMap({ "no-header": !this._config!.title })}>
+        ${
+          this._config!.title
+            ? html`<h1 class="card-header">
+                ${this._config!.title}
+                <a
+                  id=${this._showMoreLinkId}
+                  href=${this._showMoreUrl()}
+                  aria-label=${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}
+                >
+                  <ha-icon-next></ha-icon-next>
+                </a>
+                <ha-tooltip for=${this._showMoreLinkId} placement="left">
+                  ${this.hass.localize("ui.dialogs.more_info_control.show_more")}
+                </ha-tooltip>
+              </h1>`
+            : nothing
+        }
         <div class="content">
           <ha-logbook
             class=${classMap({
@@ -214,8 +316,9 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
             .stateFilter=${this._stateFilter}
+            .nameDetail=${this._getNameDetail()}
             narrow
-            relative-time
+            no-icon
             virtualize
           ></ha-logbook>
         </div>
@@ -233,9 +336,22 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           justify-content: space-between;
         }
 
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 0;
+        }
+
+        .card-header ha-icon-next {
+          --ha-icon-button-size: 24px;
+          line-height: 24px;
+          color: var(--primary-text-color);
+        }
+
         .content {
           height: 100%;
-          padding: 0 16px 16px;
+          padding: 0 0 16px;
         }
 
         .no-header .content {

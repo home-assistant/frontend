@@ -81,20 +81,25 @@ class DialogZWaveJSHardResetController extends LitElement {
           )}
         </p>
       </div>
-      ${this._resetStatus === ResetStatus.NotStarted
-        ? html`<ha-dialog-footer slot="footer">
-            <ha-button
-              slot="secondaryAction"
-              appearance="plain"
-              @click=${this.closeDialog}
-            >
-              ${this.hass.localize("ui.common.cancel")}
-            </ha-button>
-            <ha-button slot="primaryAction" @click=${this._hardResetController}>
-              ${this.hass.localize("ui.common.continue")}
-            </ha-button>
-          </ha-dialog-footer>`
-        : nothing}
+      ${
+        this._resetStatus === ResetStatus.NotStarted
+          ? html`<ha-dialog-footer slot="footer">
+              <ha-button
+                slot="secondaryAction"
+                appearance="plain"
+                @click=${this.closeDialog}
+              >
+                ${this.hass.localize("ui.common.cancel")}
+              </ha-button>
+              <ha-button
+                slot="primaryAction"
+                @click=${this._hardResetController}
+              >
+                ${this.hass.localize("ui.common.continue")}
+              </ha-button>
+            </ha-dialog-footer>`
+          : nothing
+      }
     </ha-dialog>`;
   }
 

@@ -52,41 +52,50 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        .hideName=${stateObj.attributes.has_date &&
-        stateObj.attributes.has_time}
+        .hideName=${
+          stateObj.attributes.has_date && stateObj.attributes.has_time
+        }
       >
         <div
-          class=${stateObj.attributes.has_date && stateObj.attributes.has_time
-            ? "both"
-            : ""}
+          class=${
+            stateObj.attributes.has_date && stateObj.attributes.has_time
+              ? "both"
+              : ""
+          }
         >
-          ${stateObj.attributes.has_date
-            ? html`
-                <ha-date-input
-                  .label=${stateObj.attributes.has_time ? name : undefined}
-                  .locale=${this.hass.locale}
-                  .disabled=${stateObj.state === UNAVAILABLE}
-                  .value=${stateToIsoDateString(stateObj)}
-                  @value-changed=${this._dateChanged}
-                >
-                </ha-date-input>
-              `
-            : ``}
-          ${stateObj.attributes.has_time
-            ? html`
-                <ha-time-input
-                  .value=${stateObj.state === UNKNOWN
-                    ? ""
-                    : stateObj.attributes.has_date
-                      ? stateObj.state.split(" ")[1]
-                      : stateObj.state}
-                  .locale=${this.hass.locale}
-                  .disabled=${stateObj.state === UNAVAILABLE}
-                  @value-changed=${this._timeChanged}
-                  @click=${this._stopEventPropagation}
-                ></ha-time-input>
-              `
-            : ``}
+          ${
+            stateObj.attributes.has_date
+              ? html`
+                  <ha-date-input
+                    .label=${stateObj.attributes.has_time ? name : undefined}
+                    .locale=${this.hass.locale}
+                    .disabled=${stateObj.state === UNAVAILABLE}
+                    .value=${stateToIsoDateString(stateObj)}
+                    @value-changed=${this._dateChanged}
+                  >
+                  </ha-date-input>
+                `
+              : ``
+          }
+          ${
+            stateObj.attributes.has_time
+              ? html`
+                  <ha-time-input
+                    .value=${
+                      stateObj.state === UNKNOWN
+                        ? ""
+                        : stateObj.attributes.has_date
+                          ? stateObj.state.split(" ")[1]
+                          : stateObj.state
+                    }
+                    .locale=${this.hass.locale}
+                    .disabled=${stateObj.state === UNAVAILABLE}
+                    @value-changed=${this._timeChanged}
+                    @click=${this._stopEventPropagation}
+                  ></ha-time-input>
+                `
+              : ``
+          }
         </div>
       </hui-generic-entity-row>
     `;
@@ -99,7 +108,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   private _timeChanged(ev: ValueChangedEvent<string>): void {
     const stateObj = this.hass!.states[this._config!.entity];
     setInputDateTimeValue(
-      this.hass!,
+      this.hass!.callService,
       stateObj.entity_id,
       ev.detail.value,
       stateObj.attributes.has_date ? stateObj.state.split(" ")[0] : undefined
@@ -110,7 +119,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     const stateObj = this.hass!.states[this._config!.entity];
 
     setInputDateTimeValue(
-      this.hass!,
+      this.hass!.callService,
       stateObj.entity_id,
       stateObj.attributes.has_time ? stateObj.state.split(" ")[1] : undefined,
       ev.detail.value

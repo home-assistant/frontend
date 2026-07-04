@@ -96,77 +96,89 @@ export class DialogLovelaceDashboardDetail extends DirtyStateProviderMixin<
     return html`
       <ha-dialog
         .open=${this._open}
-        header-title=${this._params.urlPath
-          ? this._data.title ||
-            this.hass.localize(
-              "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
-            )
-          : this.hass.localize(
-              "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
-            )}
+        header-title=${
+          this._params.urlPath
+            ? this._data.title ||
+              this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
+              )
+            : this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
+              )
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <div>
-          ${yamlMode
-            ? this.hass.localize(
-                "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
-              )
-            : html`
-                <ha-form
-                  autofocus
-                  .schema=${this._schema(
-                    this._params,
-                    this._data?.require_admin
-                  )}
-                  .data=${this._data}
-                  .hass=${this.hass}
-                  .error=${this._error}
-                  .computeLabel=${this._computeLabel}
-                  .computeHelper=${this._computeHelper}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `}
+          ${
+            yamlMode
+              ? this.hass.localize(
+                  "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
+                )
+              : html`
+                  <ha-form
+                    autofocus
+                    .schema=${this._schema(
+                      this._params,
+                      this._data?.require_admin
+                    )}
+                    .data=${this._data}
+                    .hass=${this.hass}
+                    .error=${this._error}
+                    .computeLabel=${this._computeLabel}
+                    .computeHelper=${this._computeHelper}
+                    @value-changed=${this._valueChanged}
+                  ></ha-form>
+                `
+          }
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._params.urlPath
-            ? html`
-                ${this._params.dashboard?.mode === "storage"
-                  ? html`
-                      <ha-button
-                        slot="secondaryAction"
-                        variant="danger"
-                        appearance="plain"
-                        @click=${this._deleteDashboard}
-                        .disabled=${this._submitting}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.lovelace.dashboards.detail.delete"
-                        )}
-                      </ha-button>
-                    `
-                  : cancelButton}
-              `
-            : cancelButton}
+          ${
+            this._params.urlPath
+              ? html`
+                  ${
+                    this._params.dashboard?.mode === "storage"
+                      ? html`
+                          <ha-button
+                            slot="secondaryAction"
+                            variant="danger"
+                            appearance="plain"
+                            @click=${this._deleteDashboard}
+                            .disabled=${this._submitting}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.lovelace.dashboards.detail.delete"
+                            )}
+                          </ha-button>
+                        `
+                      : cancelButton
+                  }
+                `
+              : cancelButton
+          }
           <ha-button
             slot="primaryAction"
             @click=${this._updateDashboard}
-            .disabled=${!yamlMode &&
-            ((this._error && "url_path" in this._error) ||
-              titleInvalid ||
-              this._submitting ||
-              !this.isDirtyState)}
+            .disabled=${
+              !yamlMode &&
+              ((this._error && "url_path" in this._error) ||
+                titleInvalid ||
+                this._submitting ||
+                !this.isDirtyState)
+            }
             ?autofocus=${yamlMode}
           >
-            ${this._params.urlPath
-              ? this._params.dashboard?.mode === "storage"
-                ? this.hass.localize(
-                    "ui.panel.config.lovelace.dashboards.detail.update"
+            ${
+              this._params.urlPath
+                ? this._params.dashboard?.mode === "storage"
+                  ? this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.update"
+                    )
+                  : this.hass.localize("ui.common.close")
+                : this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.detail.create"
                   )
-                : this.hass.localize("ui.common.close")
-              : this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.create"
-                )}
+            }
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>

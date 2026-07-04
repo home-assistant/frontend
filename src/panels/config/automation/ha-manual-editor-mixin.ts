@@ -115,9 +115,9 @@ export const ManualEditorMixin = <TConfig>(
         >
           <div class="content-wrapper">
             <div
-              class="content ${this.sidebarConfig && this.narrow
-                ? "has-bottom-sheet"
-                : ""}"
+              class="content ${
+                this.sidebarConfig && this.narrow ? "has-bottom-sheet" : ""
+              }"
             >
               <slot name="alerts"></slot>
               ${this.renderContent()}

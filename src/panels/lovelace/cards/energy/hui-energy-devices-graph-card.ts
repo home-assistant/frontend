@@ -161,19 +161,21 @@ export class HuiEnergyDevicesGraphCard
       <ha-card>
         <div class="card-header">
           <span>${this._config.title ? this._config.title : nothing}</span>
-          ${modes.length > 1
-            ? html`
-                <ha-icon-button
-                  .path=${this._chartType === "pie"
-                    ? mdiChartBar
-                    : mdiChartDonut}
-                  .label=${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
-                  )}
-                  @click=${this._handleChartTypeChange}
-                ></ha-icon-button>
-              `
-            : nothing}
+          ${
+            modes.length > 1
+              ? html`
+                  <ha-icon-button
+                    .path=${
+                      this._chartType === "pie" ? mdiChartBar : mdiChartDonut
+                    }
+                    .label=${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_devices_graph.change_chart_type"
+                    )}
+                    @click=${this._handleChartTypeChange}
+                  ></ha-icon-button>
+                `
+              : nothing
+          }
         </div>
         <div
           class="content ${classMap({
@@ -568,8 +570,11 @@ export class HuiEnergyDevicesGraphCard
     }
 
     if (compareData) {
+      const compareById = new Map(
+        chartDataCompare.map((d2) => [(d2 as any).id as string, d2] as const)
+      );
       datasets[1].data = chartData.map((d) =>
-        chartDataCompare.find((d2) => (d2 as any).id === d.id)
+        compareById.get(d.id)
       ) as typeof chartDataCompare;
     }
 

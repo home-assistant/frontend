@@ -53,21 +53,23 @@ export class HaIntegrationHeader extends LitElement {
           >
             ${domainName}
           </div>
-          ${this.error
-            ? html`
-                <div class="secondary error">
-                  <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
-                  <span>${this.error}</span>
-                </div>
-              `
-            : this.warning
+          ${
+            this.error
               ? html`
-                  <div class="secondary warning">
-                    <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
-                    <span>${this.warning}</span>
+                  <div class="secondary error">
+                    <ha-svg-icon .path=${mdiAlertCircleOutline}></ha-svg-icon>
+                    <span>${this.error}</span>
                   </div>
                 `
-              : nothing}
+              : this.warning
+                ? html`
+                    <div class="secondary warning">
+                      <ha-svg-icon .path=${mdiAlertOutline}></ha-svg-icon>
+                      <span>${this.warning}</span>
+                    </div>
+                  `
+                : nothing
+          }
         </div>
         <ha-icon-next
           class="header-button"

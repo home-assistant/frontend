@@ -25,8 +25,7 @@ export class HaAnalytics extends LitElement {
   @property({ attribute: false }) public analytics?: Analytics;
 
   @property({ attribute: "translation_key_panel" }) public translationKeyPanel:
-    | "page-onboarding"
-    | "config" = "config";
+    "page-onboarding" | "config" = "config";
 
   protected render(): TemplateResult {
     const loading = this.analytics === undefined;
@@ -74,13 +73,18 @@ export class HaAnalytics extends LitElement {
               .preference=${preference}
               name=${preference}
             ></ha-switch>
-            ${baseEnabled
-              ? nothing
-              : html`<ha-tooltip .for="switch-${preference}" placement="right">
-                  ${this.localize(
-                    `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
-                  )}
-                </ha-tooltip>`}
+            ${
+              baseEnabled
+                ? nothing
+                : html`<ha-tooltip
+                    .for="switch-${preference}"
+                    placement="right"
+                  >
+                    ${this.localize(
+                      `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                    )}
+                  </ha-tooltip>`
+            }
           </ha-row-item>
         `
       )}

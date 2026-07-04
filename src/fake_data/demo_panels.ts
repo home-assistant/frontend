@@ -87,11 +87,11 @@ export const demoPanels: Panels = {
     config: null,
     url_path: "energy",
   },
-  // config: {
-  //   component_name: "config",
-  //   icon: "mdi:cog",
-  //   title: "config",
-  //   config: null,
-  //   url_path: "config",
-  // },
+  config: {
+    component_name: "config",
+    icon: "mdi:cog",
+    title: "config",
+    config: null,
+    url_path: "config",
+  },
 };

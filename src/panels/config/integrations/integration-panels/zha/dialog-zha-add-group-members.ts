@@ -20,13 +20,18 @@ import {
   fetchGroupableDevices,
 } from "../../../../../data/zha";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
+import { DirtyStateProviderMixin } from "../../../../../mixins/dirty-state-provider-mixin";
 import { haStyleScrollbar } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZHAAddGroupMembersDialogParams } from "./show-dialog-zha-add-group-members";
 
+interface AddMembersFormState {
+  selected: string[];
+}
+
 @customElement("dialog-zha-add-group-members")
 class DialogZHAAddGroupMembers
-  extends LitElement
+  extends DirtyStateProviderMixin<AddMembersFormState>()(LitElement)
   implements HassDialog<ZHAAddGroupMembersDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -56,6 +61,7 @@ class DialogZHAAddGroupMembers
     this._group = undefined;
     this._selectedDevicesToAdd = [];
     this._open = true;
+    this._initDirtyTracking({ type: "deep" }, { selected: [] });
     this._fetchData();
   }
 
@@ -96,7 +102,7 @@ class DialogZHAAddGroupMembers
         header-title=${this.hass.localize(
           "ui.panel.config.zha.groups.add_members"
         )}
-        ?prevent-scrim-close=${this._selectedDevicesToAdd.length > 0}
+        ?prevent-scrim-close=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
         <ha-icon-button
@@ -107,43 +113,51 @@ class DialogZHAAddGroupMembers
           @click=${this.closeDialog}
         ></ha-icon-button>
         <div class="content">
-          ${this._loading
-            ? this._renderLoadingSpinner()
-            : html`
-                ${showSearch
-                  ? html`
-                      <ha-input-search
-                        appearance="outlined"
-                        .value=${this._filter}
-                        @input=${this._handleFilterChanged}
-                      ></ha-input-search>
-                    `
-                  : nothing}
-                <div class="list-container">
-                  ${deviceEndpoints.length
-                    ? html`
-                        <ha-list-selectable-virtualized
-                          multi
-                          .rows=${deviceEndpoints}
-                          .rowRenderer=${this._renderDeviceEndpoint}
-                          @ha-list-item-selected=${this._handleSelected}
-                          @ha-list-item-deselected=${this._handleDeselected}
-                        >
-                        </ha-list-selectable-virtualized>
-                      `
-                    : html`
-                        <div class="empty-list">
-                          ${this._filter
-                            ? this.hass.localize(
-                                "ui.panel.config.zha.groups.no_devices_found"
-                              )
-                            : this.hass.localize(
-                                "ui.panel.config.zha.groups.no_devices_to_add"
-                              )}
-                        </div>
-                      `}
-                </div>
-              `}
+          ${
+            this._loading
+              ? this._renderLoadingSpinner()
+              : html`
+                  ${
+                    showSearch
+                      ? html`
+                          <ha-input-search
+                            appearance="outlined"
+                            .value=${this._filter}
+                            @input=${this._handleFilterChanged}
+                          ></ha-input-search>
+                        `
+                      : nothing
+                  }
+                  <div class="list-container">
+                    ${
+                      deviceEndpoints.length
+                        ? html`
+                            <ha-list-selectable-virtualized
+                              multi
+                              .rows=${deviceEndpoints}
+                              .rowRenderer=${this._renderDeviceEndpoint}
+                              @ha-list-item-selected=${this._handleSelected}
+                              @ha-list-item-deselected=${this._handleDeselected}
+                            >
+                            </ha-list-selectable-virtualized>
+                          `
+                        : html`
+                            <div class="empty-list">
+                              ${
+                                this._filter
+                                  ? this.hass.localize(
+                                      "ui.panel.config.zha.groups.no_devices_found"
+                                    )
+                                  : this.hass.localize(
+                                      "ui.panel.config.zha.groups.no_devices_to_add"
+                                    )
+                              }
+                            </div>
+                          `
+                    }
+                  </div>
+                `
+          }
         </div>
 
         <ha-dialog-footer slot="footer">
@@ -157,9 +171,9 @@ class DialogZHAAddGroupMembers
           </ha-button>
           <ha-button
             slot="primaryAction"
-            .disabled=${this._loading ||
-            !this._selectedDevicesToAdd.length ||
-            this._processingAdd}
+            .disabled=${
+              this._loading || !this.isDirtyState || this._processingAdd
+            }
             .loading=${this._processingAdd}
             @click=${this._addMembersToGroup}
           >
@@ -302,6 +316,7 @@ class DialogZHAAddGroupMembers
     }
 
     this._selectedDevicesToAdd = selectedDevicesToAdd;
+    this._updateDirtyState({ selected: this._selectedDevicesToAdd });
   }
 
   private _handleDeselected(ev: CustomEvent<number>): void {
@@ -316,6 +331,7 @@ class DialogZHAAddGroupMembers
       );
     }
     this._selectedDevicesToAdd = selectedDevicesToAdd;
+    this._updateDirtyState({ selected: this._selectedDevicesToAdd });
   }
 
   private async _addMembersToGroup(): Promise<void> {
@@ -332,6 +348,7 @@ class DialogZHAAddGroupMembers
       );
       this._params!.devicesAddedCallback(group);
       this._processingAdd = false;
+      this._markDirtyStateClean();
       this.closeDialog();
     } finally {
       this._processingAdd = false;

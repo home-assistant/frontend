@@ -42,6 +42,7 @@ export interface PageNavigation {
   description?: string;
   iconColor?: string;
   info?: any;
+  filter?: (hass: HomeAssistant) => boolean;
 }
 
 @customElement("hass-tabs-subpage")
@@ -120,16 +121,20 @@ export class HassTabsSubpage extends LitElement {
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
-              .name=${page.translationKey
-                ? localizeFunc(page.translationKey)
-                : page.name}
+              .name=${
+                page.translationKey
+                  ? localizeFunc(page.translationKey)
+                  : page.name
+              }
             >
-              ${page.iconPath
-                ? html`<ha-svg-icon
-                    slot="icon"
-                    .path=${page.iconPath}
-                  ></ha-svg-icon>`
-                : ""}
+              ${
+                page.iconPath
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${page.iconPath}
+                    ></ha-svg-icon>`
+                  : ""
+              }
             </ha-tab>
           </a>
         `
@@ -163,45 +168,55 @@ export class HassTabsSubpage extends LitElement {
       <div class="toolbar ${classMap({ narrow: this._narrow })}">
         <slot name="toolbar">
           <div class="toolbar-content">
-            ${this.mainPage || (!this.backPath && history.state?.root)
-              ? html`<ha-menu-button></ha-menu-button>`
-              : this.backPath
-                ? html`
-                    <ha-icon-button-arrow-prev
-                      .href=${this.backPath}
-                    ></ha-icon-button-arrow-prev>
-                  `
-                : html`
-                    <ha-icon-button-arrow-prev
-                      @click=${this._backTapped}
-                    ></ha-icon-button-arrow-prev>
-                  `}
-            ${this._narrow || !this.showTabs
-              ? html`<div class="main-title">
-                  <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
-                </div>`
-              : ""}
-            ${this.showTabs && !this._narrow
-              ? html`<div id="tabbar">${tabs}</div>`
-              : ""}
+            ${
+              this.mainPage || (!this.backPath && history.state?.root)
+                ? html`<ha-menu-button></ha-menu-button>`
+                : this.backPath
+                  ? html`
+                      <ha-icon-button-arrow-prev
+                        .href=${this.backPath}
+                      ></ha-icon-button-arrow-prev>
+                    `
+                  : html`
+                      <ha-icon-button-arrow-prev
+                        @click=${this._backTapped}
+                      ></ha-icon-button-arrow-prev>
+                    `
+            }
+            ${
+              this._narrow || !this.showTabs
+                ? html`<div class="main-title">
+                    <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                  </div>`
+                : ""
+            }
+            ${
+              this.showTabs && !this._narrow
+                ? html`<div id="tabbar">${tabs}</div>`
+                : ""
+            }
             <div id="toolbar-icon">
               <slot name="toolbar-icon"></slot>
             </div>
           </div>
         </slot>
-        ${this.showTabs && this._narrow
-          ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
-          : ""}
+        ${
+          this.showTabs && this._narrow
+            ? html`<div id="tabbar" class="bottom-bar">${tabs}</div>`
+            : ""
+        }
       </div>
       <div class="container">
-        ${this.pane
-          ? html`<div class="pane">
-              <div class="shadow-container"></div>
-              <div class="ha-scrollbar">
-                <slot name="pane"></slot>
-              </div>
-            </div>`
-          : nothing}
+        ${
+          this.pane
+            ? html`<div class="pane">
+                <div class="shadow-container"></div>
+                <div class="ha-scrollbar">
+                  <slot name="pane"></slot>
+                </div>
+              </div>`
+            : nothing
+        }
         <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}

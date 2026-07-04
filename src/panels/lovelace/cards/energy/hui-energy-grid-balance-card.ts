@@ -121,10 +121,12 @@ class HuiEnergyGridBalanceCard
           </ha-tile-icon>
           <ha-tile-info>
             <span slot="primary">
-              ${this._config.title ||
-              this.hass.localize(
-                "ui.panel.lovelace.cards.energy.grid_balance.title"
-              )}
+              ${
+                this._config.title ||
+                this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.grid_balance.title"
+                )
+              }
             </span>
             <span slot="secondary" class="equation">
               <span class="imported" id="eq-imported">
@@ -175,21 +177,23 @@ class HuiEnergyGridBalanceCard
                 { value: fmt(exported) }
               )}
             </ha-tooltip>
-            ${!isConsumption
-              ? html`<div
-                    id="bar-net-left"
-                    class="bar-net return"
-                    style="width: ${netBarWidth}%"
-                  ></div>
-                  <ha-tooltip for="bar-net-left" placement="top">
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.grid_balance.net_export",
-                      {
-                        value: fmt(Math.abs(net)),
-                      }
-                    )}
-                  </ha-tooltip>`
-              : nothing}
+            ${
+              !isConsumption
+                ? html`<div
+                      id="bar-net-left"
+                      class="bar-net return"
+                      style="width: ${netBarWidth}%"
+                    ></div>
+                    <ha-tooltip for="bar-net-left" placement="top">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.grid_balance.net_export",
+                        {
+                          value: fmt(Math.abs(net)),
+                        }
+                      )}
+                    </ha-tooltip>`
+                : nothing
+            }
           </div>
           <div class="bar-center"></div>
           <div class="bar-half bar-right">
@@ -204,21 +208,23 @@ class HuiEnergyGridBalanceCard
                 { value: fmt(imported) }
               )}
             </ha-tooltip>
-            ${isConsumption
-              ? html`<div
-                    id="bar-net-right"
-                    class="bar-net consumption"
-                    style="width: ${netBarWidth}%"
-                  ></div>
-                  <ha-tooltip for="bar-net-right" placement="top">
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.grid_balance.net_import",
-                      {
-                        value: fmt(Math.abs(net)),
-                      }
-                    )}
-                  </ha-tooltip>`
-              : nothing}
+            ${
+              isConsumption
+                ? html`<div
+                      id="bar-net-right"
+                      class="bar-net consumption"
+                      style="width: ${netBarWidth}%"
+                    ></div>
+                    <ha-tooltip for="bar-net-right" placement="top">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.grid_balance.net_import",
+                        {
+                          value: fmt(Math.abs(net)),
+                        }
+                      )}
+                    </ha-tooltip>`
+                : nothing
+            }
           </div>
         </div>
       </ha-card>

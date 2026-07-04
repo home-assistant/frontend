@@ -23,7 +23,6 @@ import "../../components/ha-top-app-bar-fixed";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import { filterLogbookCompatibleEntities } from "../../data/logbook";
 import { resolveEntityIDs } from "../../data/selector";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
@@ -48,8 +47,6 @@ export class HaPanelLogbook extends LitElement {
     subscribe: false,
   })
   private _targetPickerValue: HassServiceTarget = {};
-
-  @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public constructor() {
     super();
@@ -100,6 +97,8 @@ export class HaPanelLogbook extends LitElement {
             .hass=${this.hass}
             .time=${this._time}
             .entityIds=${this._getEntityIds()}
+            .narrow=${this.narrow}
+            show-cause
             virtualize
           ></ha-logbook>
         </div>
@@ -108,7 +107,7 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _filterFunc: HaEntityPickerEntityFilterFunc = (entity) =>
-    filterLogbookCompatibleEntities(entity, this._sensorNumericDeviceClasses);
+    filterLogbookCompatibleEntities(entity);
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -120,15 +119,9 @@ export class HaPanelLogbook extends LitElement {
     this._applyURLParams();
   }
 
-  private async _loadNumericDeviceClasses() {
-    const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
-    this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
-  }
-
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
-    this._loadNumericDeviceClasses();
 
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {

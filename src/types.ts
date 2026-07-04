@@ -154,10 +154,7 @@ export interface CalendarViewChanged {
 }
 
 export type FullCalendarView =
-  | "dayGridMonth"
-  | "dayGridWeek"
-  | "dayGridDay"
-  | "listWeek";
+  "dayGridMonth" | "dayGridWeek" | "dayGridDay" | "listWeek";
 
 export const THEME_MODES = ["auto", "light", "dark"] as const;
 export type ThemeMode = (typeof THEME_MODES)[number];
@@ -322,9 +319,15 @@ export interface HomeAssistantUI {
   suspendWhenHidden: boolean;
 }
 
+export type LogFileDisabledReason = "environment";
+
+export interface HassLoggingConfig {
+  log_file_disabled_reason: LogFileDisabledReason | null;
+}
+
 export interface HomeAssistantConfig {
   auth: Auth & { external?: ExternalMessaging };
-  config: HassConfig;
+  config: HassConfig & { logging?: HassLoggingConfig };
   user?: CurrentUser;
   userData?: CoreFrontendUserData;
   systemData?: CoreFrontendSystemData;

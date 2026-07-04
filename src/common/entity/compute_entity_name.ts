@@ -14,8 +14,7 @@ export const computeEntityName = (
   devices: HomeAssistant["devices"]
 ): string | undefined => {
   const entry = entities[stateObj.entity_id] as
-    | EntityRegistryDisplayEntry
-    | undefined;
+    EntityRegistryDisplayEntry | undefined;
 
   if (!entry) {
     // Fall back to state name if not in the entity registry (friendly name)

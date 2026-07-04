@@ -56,8 +56,7 @@ export class HuiMediaPlayerSourceCardFeatureEditor
 
     const stateObj = this.context?.entity_id
       ? (this.hass.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
 
     const data = customizableListData(this._config, "sources");
@@ -79,8 +78,7 @@ export class HuiMediaPlayerSourceCardFeatureEditor
   ): void {
     const stateObj = this.context?.entity_id
       ? (this.hass!.states[this.context.entity_id] as
-          | MediaPlayerEntity
-          | undefined)
+          MediaPlayerEntity | undefined)
       : undefined;
     const defaults = stateObj?.attributes.source_list ?? [];
     const config =

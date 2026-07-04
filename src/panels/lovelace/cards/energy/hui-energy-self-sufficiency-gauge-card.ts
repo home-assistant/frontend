@@ -116,37 +116,39 @@ class HuiEnergySelfSufficiencyGaugeCard
 
     return html`
       <ha-card>
-        ${value !== undefined
-          ? html`
-              <ha-gauge
-                min="0"
-                max="100"
-                .value=${value}
-                label="%"
-                .formatOptions=${FORMAT_OPTIONS}
-                .locale=${this.hass.locale}
-                style=${styleMap({
-                  "--gauge-color": this._computeSeverity(value),
-                })}
-              ></ha-gauge>
-              <ha-svg-icon
-                id="info"
-                .path=${mdiInformationOutline}
-              ></ha-svg-icon>
-              <ha-tooltip for="info" placement="left">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
-                )}
-              </ha-tooltip>
-              <div class="name">
-                ${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_quota"
-                )}
-              </div>
-            `
-          : this.hass.localize(
-              "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_could_not_calc"
-            )}
+        ${
+          value !== undefined
+            ? html`
+                <ha-gauge
+                  min="0"
+                  max="100"
+                  .value=${value}
+                  label="%"
+                  .formatOptions=${FORMAT_OPTIONS}
+                  .locale=${this.hass.locale}
+                  style=${styleMap({
+                    "--gauge-color": this._computeSeverity(value),
+                  })}
+                ></ha-gauge>
+                <ha-svg-icon
+                  id="info"
+                  .path=${mdiInformationOutline}
+                ></ha-svg-icon>
+                <ha-tooltip for="info" placement="left">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.card_indicates_self_sufficiency_quota"
+                  )}
+                </ha-tooltip>
+                <div class="name">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_quota"
+                  )}
+                </div>
+              `
+            : this.hass.localize(
+                "ui.panel.lovelace.cards.energy.self_sufficiency_gauge.self_sufficiency_could_not_calc"
+              )
+        }
       </ha-card>
     `;
   }

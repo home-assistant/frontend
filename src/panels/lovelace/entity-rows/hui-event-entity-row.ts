@@ -68,19 +68,23 @@ class HuiEventEntityRow extends LitElement implements LovelaceRow {
           })}
         >
           <div class="when">
-            ${noValue
-              ? this.hass.formatEntityState(stateObj)
-              : html`<hui-timestamp-display
-                  .hass=${this.hass}
-                  .ts=${new Date(stateObj.state)}
-                  .format=${this._config.format}
-                  capitalize
-                ></hui-timestamp-display>`}
+            ${
+              noValue
+                ? this.hass.formatEntityState(stateObj)
+                : html`<hui-timestamp-display
+                    .hass=${this.hass}
+                    .ts=${new Date(stateObj.state)}
+                    .format=${this._config.time_format}
+                    capitalize
+                  ></hui-timestamp-display>`
+            }
           </div>
           <div class="what">
-            ${noValue
-              ? nothing
-              : this.hass.formatEntityAttributeValue(stateObj, "event_type")}
+            ${
+              noValue
+                ? nothing
+                : this.hass.formatEntityAttributeValue(stateObj, "event_type")
+            }
           </div>
         </div>
       </hui-generic-entity-row>

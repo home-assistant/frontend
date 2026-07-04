@@ -1,4 +1,6 @@
+import { consume } from "@lit/context";
 import { isToday } from "date-fns";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type {
   Circle,
   CircleMarker,
@@ -18,6 +20,7 @@ import {
   formatTimeWeekday,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
@@ -26,7 +29,22 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../common/entity/get_entity_location";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
 import { filterXSS } from "../../common/util/xss";
-import type { HomeAssistant, ThemeMode } from "../../types";
+import {
+  configContext,
+  connectionContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+  uiContext,
+} from "../../data/context";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+  ThemeMode,
+} from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
@@ -76,7 +94,32 @@ export interface HaMapEntity {
 
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: HomeAssistantUI;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
 
   @property({ attribute: false }) public entities?: string[] | HaMapEntity[];
 
@@ -175,17 +218,16 @@ export class HaMap extends ReactiveElement {
       return;
     }
     let autoFitRequired = false;
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldStates = changedProps.get("_states") as HassEntities | undefined;
 
     if (changedProps.has("_loaded") || changedProps.has("entities")) {
       this._drawEntities();
       autoFitRequired = !this._pauseAutoFit;
-    } else if (this._loaded && oldHass && this.entities) {
+    } else if (this._loaded && oldStates && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
         if (
-          oldHass.states[getEntityId(entity)] !==
-          this.hass!.states[getEntityId(entity)]
+          oldStates[getEntityId(entity)] !== this._states[getEntityId(entity)]
         ) {
           this._drawEntities();
           autoFitRequired = !this._pauseAutoFit;
@@ -219,10 +261,11 @@ export class HaMap extends ReactiveElement {
       }, PROGRAMMITIC_FIT_DELAY);
     }
 
+    const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
-      (!changedProps.has("hass") ||
-        (oldHass && oldHass.themes?.darkMode === this.hass.themes?.darkMode))
+      (!changedProps.has("_ui") ||
+        (oldUi && oldUi.themes?.darkMode === this._ui.themes?.darkMode))
     ) {
       return;
     }
@@ -233,7 +276,7 @@ export class HaMap extends ReactiveElement {
   private get _darkMode() {
     return (
       this.themeMode === "dark" ||
-      (this.themeMode === "auto" && Boolean(this.hass.themes.darkMode))
+      (this.themeMode === "auto" && Boolean(this._ui?.themes.darkMode))
     );
   }
 
@@ -258,8 +301,8 @@ export class HaMap extends ReactiveElement {
     this._loading = true;
     try {
       [this.leafletMap, this.Leaflet] = await setupLeafletMap(map, {
-        latitude: this.hass?.config.latitude ?? 52.3731339,
-        longitude: this.hass?.config.longitude ?? 4.8903147,
+        latitude: this._config?.latitude ?? 52.3731339,
+        longitude: this._config?.longitude ?? 4.8903147,
         zoom: this.zoom,
       });
       this._updateMapStyle();
@@ -300,7 +343,7 @@ export class HaMap extends ReactiveElement {
     if (options?.unpause_autofit) {
       this._pauseAutoFit = false;
     }
-    if (!this.leafletMap || !this.Leaflet || !this.hass) {
+    if (!this.leafletMap || !this.Leaflet || !this._config) {
       return;
     }
 
@@ -311,10 +354,7 @@ export class HaMap extends ReactiveElement {
     ) {
       this._isProgrammaticFit = true;
       this.leafletMap.setView(
-        new this.Leaflet.LatLng(
-          this.hass.config.latitude,
-          this.hass.config.longitude
-        ),
+        new this.Leaflet.LatLng(this._config.latitude, this._config.longitude),
         options?.zoom || this.zoom
       );
       setTimeout(() => {
@@ -351,7 +391,7 @@ export class HaMap extends ReactiveElement {
     boundingbox: LatLngExpression[],
     options?: { zoom?: number; pad?: number }
   ) {
-    if (!this.leafletMap || !this.Leaflet || !this.hass) {
+    if (!this.leafletMap || !this.Leaflet) {
       return;
     }
     const bounds = this.Leaflet.latLngBounds(boundingbox).pad(
@@ -382,32 +422,31 @@ export class HaMap extends ReactiveElement {
     if (path.fullDatetime) {
       formattedTime = formatDateTime(
         point.timestamp,
-        this.hass.locale,
-        this.hass.config
+        this._i18n.locale,
+        this._config
       );
     } else if (isToday(point.timestamp)) {
       formattedTime = formatTimeWithSeconds(
         point.timestamp,
-        this.hass.locale,
-        this.hass.config
+        this._i18n.locale,
+        this._config
       );
     } else {
       formattedTime = formatTimeWeekday(
         point.timestamp,
-        this.hass.locale,
-        this.hass.config
+        this._i18n.locale,
+        this._config
       );
     }
     return `${filterXSS(path.name ?? "")}<br>${formattedTime}`;
   }
 
   private _drawPaths(): void {
-    const hass = this.hass;
     const map = this.leafletMap;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const Leaflet = this.Leaflet;
 
-    if (!hass || !map || !Leaflet) {
+    if (!this._i18n || !this._config || !map || !Leaflet) {
       return;
     }
     if (this._mapPaths.length) {
@@ -535,12 +574,12 @@ export class HaMap extends ReactiveElement {
   }
 
   private _drawEntities(): void {
-    const hass = this.hass;
+    const states = this._states;
     const map = this.leafletMap;
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const Leaflet = this.Leaflet;
 
-    if (!hass || !map || !Leaflet) {
+    if (!states || !map || !Leaflet) {
       return;
     }
 
@@ -578,7 +617,7 @@ export class HaMap extends ReactiveElement {
     const className = this._darkMode ? "dark" : "light";
 
     for (const entity of this.entities) {
-      const stateObj = hass.states[getEntityId(entity)];
+      const stateObj = states[getEntityId(entity)];
       if (!stateObj) {
         continue;
       }
@@ -591,7 +630,7 @@ export class HaMap extends ReactiveElement {
         entity_picture: entityPicture,
       } = stateObj.attributes;
 
-      const location = getEntityLocation(stateObj, hass.states);
+      const location = getEntityLocation(stateObj, states);
       if (!location) {
         continue;
       }
@@ -648,11 +687,14 @@ export class HaMap extends ReactiveElement {
       // create icon
       const entityName =
         typeof entity !== "string" && entity.label_mode === "state"
-          ? this.hass.formatEntityState(stateObj)
+          ? this._formatters.formatEntityState(stateObj)
           : typeof entity !== "string" &&
               entity.label_mode === "attribute" &&
               entity.attribute !== undefined
-            ? this.hass.formatEntityAttributeValue(stateObj, entity.attribute)
+            ? this._formatters.formatEntityAttributeValue(
+                stateObj,
+                entity.attribute
+              )
             : (customTitle ??
               title
                 .split(" ")
@@ -661,7 +703,6 @@ export class HaMap extends ReactiveElement {
                 .substr(0, 3));
 
       const entityMarker = document.createElement("ha-entity-marker");
-      entityMarker.hass = this.hass;
       entityMarker.showIcon =
         typeof entity !== "string" && entity.label_mode === "icon";
       entityMarker.entityId = getEntityId(entity);
@@ -674,7 +715,7 @@ export class HaMap extends ReactiveElement {
           : "";
       entityMarker.entityPicture =
         entityPicture && (typeof entity === "string" || !entity.label_mode)
-          ? this.hass.hassUrl(entityPicture)
+          ? this._connection.hassUrl(entityPicture)
           : "";
       if (typeof entity !== "string") {
         entityMarker.entityColor = entity.color;

@@ -53,65 +53,70 @@ class ZWaveJSOptionsPage extends LitElement {
         .header=${this.hass.localize(
           "ui.panel.config.zwave_js.dashboard.options_title"
         )}
-        back-path="/config/zwave_js/dashboard?config_entry=${this
-          .configEntryId}"
+        back-path="/config/zwave_js/dashboard?config_entry=${
+          this.configEntryId
+        }"
       >
         <div class="container">
           <ha-card>
-            ${this._network
-              ? html`<ha-md-list>
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.rebuild_network_routes"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.rebuild_routes_description"
-                      )}
-                    </span>
-                    <ha-button
-                      appearance="plain"
-                      slot="end"
-                      size="s"
-                      @click=${this._rebuildNetworkRoutesClicked}
-                      .disabled=${this._status === "disconnected"}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.rebuild_routes_action"
-                      )}
-                    </ha-button>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <span slot="headline">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.remove_node"
-                      )}
-                    </span>
-                    <span slot="supporting-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.remove_node_description"
-                      )}
-                    </span>
-                    <ha-button
-                      appearance="plain"
-                      slot="end"
-                      size="s"
-                      @click=${this._removeNodeClicked}
-                      .disabled=${this._status !== "connected" ||
-                      (this._network?.controller.inclusion_state !==
-                        InclusionState.Idle &&
-                        this._network?.controller.inclusion_state !==
-                          InclusionState.SmartStart)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.dashboard.remove_node_action"
-                      )}
-                    </ha-button>
-                  </ha-md-list-item>
-                </ha-md-list>`
-              : nothing}
+            ${
+              this._network
+                ? html`<ha-md-list>
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.common.rebuild_network_routes"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.rebuild_routes_description"
+                        )}
+                      </span>
+                      <ha-button
+                        appearance="plain"
+                        slot="end"
+                        size="s"
+                        @click=${this._rebuildNetworkRoutesClicked}
+                        .disabled=${this._status === "disconnected"}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.rebuild_routes_action"
+                        )}
+                      </ha-button>
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <span slot="headline">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.common.remove_node"
+                        )}
+                      </span>
+                      <span slot="supporting-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.remove_node_description"
+                        )}
+                      </span>
+                      <ha-button
+                        appearance="plain"
+                        slot="end"
+                        size="s"
+                        @click=${this._removeNodeClicked}
+                        .disabled=${
+                          this._status !== "connected" ||
+                          (this._network?.controller.inclusion_state !==
+                            InclusionState.Idle &&
+                            this._network?.controller.inclusion_state !==
+                              InclusionState.SmartStart)
+                        }
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.remove_node_action"
+                        )}
+                      </ha-button>
+                    </ha-md-list-item>
+                  </ha-md-list>`
+                : nothing
+            }
           </ha-card>
         </div>
       </hass-subpage>

@@ -67,6 +67,7 @@ const LOAD_ELEMENTS = {
   ui_action: () => import("./ha-selector-ui-action"),
   ui_color: () => import("./ha-selector-ui-color"),
   ui_state_content: () => import("./ha-selector-ui-state-content"),
+  ui_time_format: () => import("./ha-selector-ui-time-format"),
 };
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);

@@ -86,10 +86,12 @@ class HaEntityAttributePicker extends LitElement {
       <ha-generic-picker
         .hass=${this.hass}
         .value=${this.value}
-        .label=${this.label ??
-        this.hass.localize(
-          "ui.components.entity.entity-attribute-picker.attribute"
-        )}
+        .label=${
+          this.label ??
+          this.hass.localize(
+            "ui.components.entity.entity-attribute-picker.attribute"
+          )
+        }
         .disabled=${this.disabled || !this.entityId}
         .required=${this.required}
         .helper=${this.helper}

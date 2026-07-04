@@ -138,11 +138,13 @@ export class HaLabelPicker extends LitElement {
   private _rowRenderer: RenderItemFunction<LabelComboBoxItem> = (item) =>
     html`<ha-combo-box-item type="button" compact>
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
-      ${item.id !== ADD_NEW_ID
-        ? html`<div slot="trailing-supporting-text">
-            ${renderLabelColorBadge(item.color)}
-          </div>`
-        : nothing}
+      ${
+        item.id !== ADD_NEW_ID
+          ? html`<div slot="trailing-supporting-text">
+              ${renderLabelColorBadge(item.color)}
+            </div>`
+          : nothing
+      }
     </ha-combo-box-item>`;
 
   private _getLabelsMemoized = memoizeOne(getLabels);

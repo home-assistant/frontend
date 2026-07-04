@@ -1,8 +1,12 @@
+import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import { apiContext } from "../../../data/context";
+import type { HomeAssistantApi } from "../../../types";
 import "../../../components/ha-assist-chat";
 import "../../../components/ha-spinner";
 import "../../../components/ha-alert";
@@ -11,13 +15,19 @@ import { getAssistPipeline } from "../../../data/assist_pipeline";
 
 @customElement("more-info-conversation")
 class MoreInfoConversation extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @state() public _pipeline?: AssistPipeline;
 
   @state() private _errorLoadAssist?: "not_found" | "unknown";
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
@@ -27,8 +37,7 @@ class MoreInfoConversation extends LitElement {
     }
 
     const oldStateObj = changedProperties.get("stateObj") as
-      | HassEntity
-      | undefined;
+      HassEntity | undefined;
 
     if (!oldStateObj || oldStateObj.entity_id !== this.stateObj.entity_id) {
       this._getPipeline();
@@ -40,7 +49,7 @@ class MoreInfoConversation extends LitElement {
     this._errorLoadAssist = undefined;
     const pipelineId = this.stateObj!.entity_id;
     try {
-      const pipeline = await getAssistPipeline(this.hass, pipelineId);
+      const pipeline = await getAssistPipeline(this._api, pipelineId);
       // Verify the pipeline is still the same.
       if (this.stateObj && pipelineId === this.stateObj.entity_id) {
         this._pipeline = pipeline;
@@ -61,28 +70,29 @@ class MoreInfoConversation extends LitElement {
   }
 
   protected render() {
-    if (!this.hass || !this.stateObj) {
+    if (!this._localize || !this.stateObj) {
       return nothing;
     }
 
     return html`
-      ${this._errorLoadAssist
-        ? html`<ha-alert alert-type="error">
-            ${this.hass.localize(
-              `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
-            )}
-          </ha-alert>`
-        : this._pipeline
-          ? html`
-              <ha-assist-chat
-                .hass=${this.hass}
-                .pipeline=${this._pipeline}
-                disable-speech
-              ></ha-assist-chat>
-            `
-          : html`<div class="pipelines-loading">
-              <ha-spinner size="large"></ha-spinner>
-            </div>`}
+      ${
+        this._errorLoadAssist
+          ? html`<ha-alert alert-type="error">
+              ${this._localize(
+                `ui.dialogs.voice_command.${this._errorLoadAssist}_error_load_assist`
+              )}
+            </ha-alert>`
+          : this._pipeline
+            ? html`
+                <ha-assist-chat
+                  .pipeline=${this._pipeline}
+                  disable-speech
+                ></ha-assist-chat>
+              `
+            : html`<div class="pipelines-loading">
+                <ha-spinner size="large"></ha-spinner>
+              </div>`
+      }
     `;
   }
 

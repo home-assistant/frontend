@@ -13,9 +13,7 @@ export class HUIViewBackground extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) background?:
-    | string
-    | LovelaceViewBackgroundConfig
-    | undefined;
+    string | LovelaceViewBackgroundConfig | undefined;
 
   @state({ attribute: false }) resolvedImage?: string;
 
