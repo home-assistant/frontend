@@ -451,6 +451,22 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   face_style?: "markers" | "numbers_upright" | "roman";
 }
 
+export interface DateCardConfig extends LovelaceCardConfig {
+  type: "date";
+  title?: string;
+  date_size?: "small" | "medium" | "large";
+  date_format?:
+    | "weekday_day"
+    | "long"
+    | "short"
+    | "numeric"
+    | "very_short"
+    | "weekday_very_short_date"
+    | "weekday_short_date";
+  time_zone?: string;
+  no_background?: boolean;
+}
+
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];

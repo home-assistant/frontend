@@ -8907,6 +8907,9 @@
           },
           "heading": {
             "default_heading": "Kitchen"
+          },
+          "date": {
+            "default_title": "Today"
           }
         },
         "unused_entities": {
@@ -9988,6 +9991,28 @@
                   "description": "Show Roman numerals (I-XII) around the clock face"
                 }
               }
+            },
+            "date": {
+              "name": "Date",
+              "description": "This card displays the current date using your desired size and format.",
+              "date_size": "Date size",
+              "date_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "date_format": "Date format",
+              "date_formats": {
+                "weekday_day": "Weekday, month day",
+                "long": "Month day, year",
+                "short": "Short month day, year",
+                "numeric": "Numeric",
+                "very_short": "Short month day",
+                "weekday_very_short_date": "Weekday, short month day",
+                "weekday_short_date": "Weekday, short month day, year"
+              },
+              "no_background": "[%key:ui::panel::lovelace::editor::card::clock::no_background%]",
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
             },
             "media-control": {
               "name": "Media control",
