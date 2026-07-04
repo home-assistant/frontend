@@ -586,8 +586,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                                         </span>
                                         <span>
                                           ${this.hass.localize(
-                                              "ui.components.media-browser.file_management.highlight_button"
-                                            )}
+                                            "ui.components.media-browser.file_management.highlight_button"
+                                          )}
                                         </span>
                                       </div>
                                     `
@@ -632,9 +632,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     <div class="grid not-shown">
                                       <div class="title">
                                         ${this.hass.localize(
-                                            "ui.components.media-browser.not_shown",
-                                            { count: notShown }
-                                          )}
+                                          "ui.components.media-browser.not_shown",
+                                          { count: notShown }
+                                        )}
                                       </div>
                                     </div>
                                   `
@@ -659,16 +659,16 @@ export class HaMediaPlayerBrowse extends LitElement {
                                         noninteractive
                                         class="not-shown"
                                         .graphic=${
-                                            mediaClass.show_list_images
-                                              ? "medium"
-                                              : "avatar"
-                                          }
+                                          mediaClass.show_list_images
+                                            ? "medium"
+                                            : "avatar"
+                                        }
                                       >
                                         <span class="title">
                                           ${this.hass.localize(
-                                              "ui.components.media-browser.not_shown",
-                                              { count: notShown }
-                                            )}
+                                            "ui.components.media-browser.not_shown",
+                                            { count: notShown }
+                                          )}
                                         </span>
                                       </ha-list-item>
                                     `
