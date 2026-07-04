@@ -78,6 +78,8 @@ export interface MediaPlayerItemId {
   media_content_type?: string | undefined;
 }
 
+const SEARCH_MIN_LENGTH = 2;
+
 const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
   can_expand: true,
   can_play: false,
@@ -132,6 +134,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @state() private _searching = false;
 
+  private _debouncedSearch = debounce(() => this._search(), 500);
+
   @query(".header") private _header?: HTMLDivElement;
 
   @query(".content") private _content?: HTMLDivElement;
@@ -154,6 +158,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
+    this._debouncedSearch.cancel();
   }
 
   public async refresh() {
@@ -210,6 +215,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._searchQuery = "";
     this._searchResults = undefined;
     this._searching = false;
+    this._debouncedSearch.cancel();
     const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
       navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
@@ -435,6 +441,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                         @transitionend=${this._setHeaderHeight}
                       >
                         ${
+                          currentItem.can_search
+                            ? this._renderSearchField(currentItem)
+                            : nothing
+                        }
+                        ${
                           currentItem.can_play
                             ? html`<div class="header-content">
                                 ${
@@ -517,11 +528,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                                   }
                                 </div>
                               </div>`
-                            : nothing
-                        }
-                        ${
-                          currentItem.can_search
-                            ? this._renderSearchField(currentItem)
                             : nothing
                         }
                       </div>
@@ -694,6 +700,14 @@ export class HaMediaPlayerBrowse extends LitElement {
           "ui.components.media-browser.search.search_placeholder",
           { name: currentItem.title }
         )}
+        .hint=${
+          this._searchQuery.trim().length === 1
+            ? this.hass.localize(
+                "ui.components.media-browser.search.min_length_hint",
+                { count: SEARCH_MIN_LENGTH }
+              )
+            : ""
+        }
         @input=${this._handleSearchInput}
         @keydown=${this._handleSearchKeydown}
       ></ha-input-search>
@@ -703,15 +717,21 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _handleSearchInput(ev: InputEvent): void {
     const value = (ev.target as HaInputSearch).value ?? "";
     this._searchQuery = value;
-    // Reset to browsing when the field is cleared
-    if (value === "" && this._searchResults !== undefined) {
-      this._clearSearch();
+    const trimmed = value.trim();
+    if (trimmed.length >= SEARCH_MIN_LENGTH) {
+      this._debouncedSearch();
+    } else {
+      // Not enough characters to search yet
+      this._debouncedSearch.cancel();
+      // Drop any stale results while below the minimum length
+      this._searchResults = undefined;
     }
   }
 
   private _handleSearchKeydown(ev: KeyboardEvent): void {
     if (ev.key === "Enter") {
       ev.preventDefault();
+      this._debouncedSearch.cancel();
       this._search();
     }
   }
@@ -731,6 +751,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     const navigateId = this.navigateIds[this.navigateIds.length - 1];
 
     this._searching = true;
+    // Clear previous results so stale data isn't shown while searching or on error
+    this._searchResults = undefined;
     try {
       const { result } =
         this.entityId && this.entityId !== BROWSER_PLAYER
@@ -747,12 +769,12 @@ export class HaMediaPlayerBrowse extends LitElement {
               searchQuery
             );
       this._searchResults = result;
-    } catch (err: any) {
+    } catch (err) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.components.media-browser.media_browsing_error"
         ),
-        text: err.message,
+        text: err instanceof Error ? err.message : String(err),
       });
     } finally {
       this._searching = false;
@@ -1124,7 +1146,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         .header {
           display: flex;
-          justify-content: space-between;
+          flex-direction: column;
+          gap: var(--ha-space-2);
           border-bottom: 1px solid var(--divider-color);
           background-color: var(--card-background-color);
           position: absolute;
@@ -1141,6 +1164,10 @@ export class HaMediaPlayerBrowse extends LitElement {
           flex: 1;
           --ha-input-padding-top: 0;
           --ha-input-padding-bottom: 0;
+        }
+        :host([narrow]) .search-input {
+          box-sizing: border-box;
+          padding: 8px 16px;
         }
         .header_button {
           position: relative;

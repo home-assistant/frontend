@@ -103,9 +103,6 @@ export enum MediaPlayerEntityFeature {
   BROWSE_MEDIA = 131072,
   REPEAT_SET = 262144,
   GROUPING = 524288,
-  MEDIA_ANNOUNCE = 1048576,
-  MEDIA_ENQUEUE = 2097152,
-  SEARCH_MEDIA = 4194304,
 }
 
 export type MediaPlayerBrowseAction = "pick" | "play";

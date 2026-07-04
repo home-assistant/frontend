@@ -1194,6 +1194,7 @@
         "pick-media": "Pick media",
         "search": {
           "search_placeholder": "Search {name}",
+          "min_length_hint": "Enter {count} or more characters to search",
           "no_results": "No results found"
         },
         "no_items": "No items",
