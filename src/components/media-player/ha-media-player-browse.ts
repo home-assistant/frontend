@@ -55,6 +55,7 @@ import "../ha-card";
 import "../ha-dropdown";
 import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
+import "../ha-expansion-panel";
 import "../ha-icon-button";
 import "../ha-list";
 import "../ha-list-item";
@@ -154,6 +155,12 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @state() private _mediaClassFilter: MediaClass[] = [];
 
+  @state() private _localFilter = "";
+
+  @state() private _localMediaClassFilter: MediaClass[] = [];
+
+  @state() private _filtersExpanded = false;
+
   private _searchRequestId = 0;
 
   private _debouncedSearch = debounce(() => this._search(), 500);
@@ -238,6 +245,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._searchQuery = "";
     this._searchResults = undefined;
     this._mediaClassFilter = [];
+    this._localFilter = "";
+    this._localMediaClassFilter = [];
+    this._filtersExpanded = false;
     const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
       navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
@@ -369,11 +379,22 @@ export class HaMediaPlayerBrowse extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (changedProps.has("_scrolled")) {
+    if (
+      changedProps.has("_scrolled") ||
+      changedProps.has("_filtersExpanded") ||
+      changedProps.has("_currentItem") ||
+      changedProps.has("_searchResults") ||
+      changedProps.has("_searching")
+    ) {
       this._animateHeaderHeight();
-    } else if (changedProps.has("_currentItem")) {
+    } else if (
+      changedProps.has("_localFilter") ||
+      changedProps.has("_localMediaClassFilter")
+    ) {
       this._setHeaderHeight();
+    }
 
+    if (changedProps.has("_currentItem")) {
       // This fixes a race condition for resizing of the cards using the grid layout
       if (this._observed) {
         return;
@@ -414,7 +435,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     let children = isSearching
       ? this._searchResults!
       : currentItem.children || [];
-    const notShown = isSearching ? 0 : currentItem.not_shown || 0;
+    let notShown = isSearching ? 0 : currentItem.not_shown || 0;
     const canPlayChildren = new Set<string>();
 
     // Filter children based on accept property if provided
@@ -459,6 +480,34 @@ export class HaMediaPlayerBrowse extends LitElement {
         )
       : [];
 
+    const localMediaClassOptions = Array.from(
+      new Set(children.map((child) => child.media_class))
+    ).sort((a, b) =>
+      this._localizeMediaClass(a).localeCompare(this._localizeMediaClass(b))
+    );
+    const activeLocalMediaClassFilter = this._localMediaClassFilter.filter(
+      (mediaClass) => localMediaClassOptions.includes(mediaClass)
+    );
+    const localFilterText = this._localFilter.trim().toLowerCase();
+    const totalCount = children.length;
+    if (localFilterText || activeLocalMediaClassFilter.length) {
+      children = children.filter(
+        (child) =>
+          (!localFilterText ||
+            child.title.toLowerCase().includes(localFilterText)) &&
+          (!activeLocalMediaClassFilter.length ||
+            activeLocalMediaClassFilter.includes(child.media_class))
+      );
+      notShown = 0;
+    }
+    const showLocalFilters =
+      this.navigateIds.length > 1 &&
+      !isManualMediaSourceContentId(currentItem.media_content_id) &&
+      !isTTSMediaSource(currentItem.media_content_id) &&
+      (totalCount > 1 ||
+        !!localFilterText ||
+        activeLocalMediaClassFilter.length > 0);
+
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -466,7 +515,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     return html`
               ${
-                currentItem.can_play || showMediaClassFilter
+                currentItem.can_play || showMediaClassFilter || showLocalFilters
                   ? html`
                       <div
                         class="header ${classMap({
@@ -481,6 +530,16 @@ export class HaMediaPlayerBrowse extends LitElement {
                             ? this._renderSearchRow(
                                 currentItem,
                                 mediaClassFilterOptions
+                              )
+                            : nothing
+                        }
+                        ${
+                          showLocalFilters
+                            ? this._renderLocalFilters(
+                                localMediaClassOptions,
+                                activeLocalMediaClassFilter,
+                                children.length,
+                                totalCount
                               )
                             : nothing
                         }
@@ -823,6 +882,115 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
+  private _renderLocalFilters(
+    localMediaClassOptions: MediaClass[],
+    activeLocalMediaClassFilter: MediaClass[],
+    shownCount: number,
+    totalCount: number
+  ): TemplateResult {
+    const activeCount =
+      (this._localFilter.trim() ? 1 : 0) + activeLocalMediaClassFilter.length;
+    return html`
+      <ha-expansion-panel
+        outlined
+        left-chevron
+        class="local-filters-panel"
+        .expanded=${this._filtersExpanded}
+        @expanded-changed=${this._filtersExpandedChanged}
+      >
+        <div slot="header" class="local-filters-header">
+          <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
+          <span>
+            ${this.hass.localize("ui.components.media-browser.filters")}
+          </span>
+          ${
+            activeCount
+              ? html`<div class="filter-count-badge">${activeCount}</div>`
+              : nothing
+          }
+        </div>
+        <div class="local-filters">
+          <ha-input-search
+            class="local-filter-input"
+            appearance="outlined"
+            .value=${this._localFilter}
+            .placeholder=${this.hass.localize(
+              "ui.components.media-browser.filter_results"
+            )}
+            @input=${this._handleLocalFilterInput}
+          ></ha-input-search>
+          ${
+            localMediaClassOptions.length > 1
+              ? html`
+                  <div class="local-media-classes">
+                    ${localMediaClassOptions.map((mediaClass) => {
+                      const selected =
+                        activeLocalMediaClassFilter.includes(mediaClass);
+                      return html`
+                        <ha-assist-chip
+                          class="local-media-class-chip"
+                          .label=${this._localizeMediaClass(mediaClass)}
+                          .active=${selected}
+                          .value=${mediaClass}
+                          @click=${this._toggleLocalMediaClassFilter}
+                        ></ha-assist-chip>
+                      `;
+                    })}
+                  </div>
+                `
+              : nothing
+          }
+          <div class="local-filters-footer">
+            <span class="local-filters-count">
+              ${this.hass.localize("ui.components.media-browser.filter_count", {
+                shown: shownCount,
+                total: totalCount,
+              })}
+            </span>
+            ${
+              activeCount
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      size="s"
+                      @click=${this._clearLocalFilters}
+                    >
+                      ${this.hass.localize(
+                        "ui.components.media-browser.clear_filters"
+                      )}
+                    </ha-button>
+                  `
+                : nothing
+            }
+          </div>
+        </div>
+      </ha-expansion-panel>
+    `;
+  }
+
+  private _handleLocalFilterInput(ev: InputEvent): void {
+    this._localFilter = (ev.target as HaInputSearch).value ?? "";
+  }
+
+  private _toggleLocalMediaClassFilter(ev: Event): void {
+    const mediaClass = (ev.currentTarget as HTMLElement & { value: MediaClass })
+      .value;
+    this._localMediaClassFilter = this._localMediaClassFilter.includes(
+      mediaClass
+    )
+      ? this._localMediaClassFilter.filter((cls) => cls !== mediaClass)
+      : [...this._localMediaClassFilter, mediaClass];
+  }
+
+  private _clearLocalFilters(): void {
+    this._localFilter = "";
+    this._localMediaClassFilter = [];
+  }
+
+  private _filtersExpandedChanged(ev: CustomEvent): void {
+    this._filtersExpanded = ev.detail.expanded;
+  }
+
   private _handleSearchInput(ev: InputEvent): void {
     const value = (ev.target as HaInputSearch).value ?? "";
     this._searchQuery = value;
@@ -856,6 +1024,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._abortSearch();
     this._searchQuery = "";
     this._searchResults = undefined;
+    this._localFilter = "";
+    this._localMediaClassFilter = [];
   }
 
   private async _search(): Promise<void> {
@@ -871,6 +1041,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._searching = true;
     // Clear previous results so stale data isn't shown while searching or on error
     this._searchResults = undefined;
+    // A new result set invalidates any local (client-side) filters
+    this._localFilter = "";
+    this._localMediaClassFilter = [];
     const mediaFilterClasses = this._mediaClassFilter.length
       ? this._mediaClassFilter
       : undefined;
@@ -1334,6 +1507,56 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding: 0px 2px;
           color: var(--text-primary-color);
           pointer-events: none;
+        }
+        .local-filters-panel {
+          --expansion-panel-summary-padding: 0 8px;
+        }
+        .local-filters-header {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          font-size: var(--ha-font-size-m);
+        }
+        .filter-count-badge {
+          min-width: 16px;
+          box-sizing: border-box;
+          border-radius: var(--ha-border-radius-circle);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-normal);
+          background-color: var(--primary-color);
+          text-align: center;
+          padding: 0 4px;
+          color: var(--text-primary-color);
+        }
+        .local-filters {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-3);
+          padding: var(--ha-space-2);
+        }
+        .local-filter-input {
+          --ha-input-padding-top: 0;
+          --ha-input-padding-bottom: 0;
+        }
+        .local-media-classes {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--ha-space-2);
+        }
+        .local-media-class-chip {
+          --ha-assist-chip-container-shape: 10px;
+          --ha-assist-chip-container-color: var(--card-background-color);
+        }
+        .local-filters-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: var(--ha-space-2);
+        }
+        .local-filters-count {
+          font-size: var(--ha-font-size-s);
+          color: var(--secondary-text-color);
         }
         .header_button {
           position: relative;

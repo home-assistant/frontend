@@ -1198,6 +1198,10 @@
           "no_results": "No results found"
         },
         "filter_media_type": "Media type",
+        "filters": "Filters",
+        "filter_results": "Filter results",
+        "filter_count": "Showing {shown} of {total}",
+        "clear_filters": "Clear filters",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
