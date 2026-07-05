@@ -414,7 +414,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     let children = isSearching
       ? this._searchResults!
       : currentItem.children || [];
-    let notShown = isSearching ? 0 : currentItem.not_shown || 0;
+    const notShown = isSearching ? 0 : currentItem.not_shown || 0;
     const canPlayChildren = new Set<string>();
 
     // Filter children based on accept property if provided
@@ -443,16 +443,6 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
         return !child.media_content_type || child.can_expand || canPlay;
       });
-    }
-
-    // Media type filter. In browse mode the loaded children are narrowed
-    // client-side; in search mode the results are already filtered server-side
-    // via `media_filter_classes`, so they are shown as-is.
-    if (!isSearching && this._mediaClassFilter.length) {
-      children = children.filter((child) =>
-        this._mediaClassFilter.includes(child.media_class)
-      );
-      notShown = 0;
     }
 
     // The media type filter narrows server-side search results, so only show it
