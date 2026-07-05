@@ -1197,6 +1197,7 @@
           "min_length_hint": "Enter {count} or more characters to search",
           "no_results": "No results found"
         },
+        "filter_media_type": "Media type",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
         "choose_player": "Choose player",
