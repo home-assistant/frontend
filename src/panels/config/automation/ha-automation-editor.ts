@@ -1011,7 +1011,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._manualEditor?.resetPastedConfig();
 
     const id = this.automationId || String(Date.now());
-    if (!this.automationId) {
+    if (!this.automationId && !this.config?.alias) {
       const saved = await this._promptAutomationAlias();
       if (!saved) {
         return;
