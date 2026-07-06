@@ -80,7 +80,6 @@ export class PowerViewStrategy extends ReactiveElement {
     ) {
       chartsSection.cards!.push({
         type: "energy-solar-scene-now",
-        title: hass.localize("ui.panel.energy.cards.energy_solar_scene_title"),
         collection_key: collectionKey,
         grid_options: {
           columns: 36,
