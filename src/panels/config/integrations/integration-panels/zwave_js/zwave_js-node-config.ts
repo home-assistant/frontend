@@ -372,7 +372,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`${labelAndDescription}
         <ha-input
           type="number"
-          .value=${item.value}
+          .value=${item.value?.toString()}
           .min=${item.metadata.min}
           .max=${item.metadata.max}
           .property=${item.property}
@@ -493,7 +493,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value === value) {
+    if (this._config![ev.target.key].value === Number(value)) {
       return;
     }
     this._setResult(ev.target.key, undefined);
@@ -506,7 +506,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return;
     }
     const value = Number(ev.target.value);
-    if (Number(this._config![ev.target.key].value) === value) {
+    if (this._config![ev.target.key].value === value) {
       return;
     }
     if (isNaN(value)) {
