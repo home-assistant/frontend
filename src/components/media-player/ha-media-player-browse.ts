@@ -748,12 +748,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                   }
                   @input=${this._handleSearchInput}
                   @keydown=${this._handleSearchKeydown}
-                >
-                  ${this._renderMediaClassFilter(mediaClassFilterOptions)}
-                </ha-input-search>
+                ></ha-input-search>
               `
             : nothing
         }
+        ${this._renderMediaClassFilter(mediaClassFilterOptions)}
       </div>
     `;
   }
@@ -763,7 +762,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   ): TemplateResult {
     const selectedCount = this._mediaClassFilter.length;
     return html`
-      <div class="media-class-filter" slot="end">
+      <div class="media-class-filter">
         <ha-dropdown
           placement="bottom-end"
           @wa-select=${this._toggleMediaClassFilter}
