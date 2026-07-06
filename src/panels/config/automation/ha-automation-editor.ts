@@ -646,8 +646,17 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ...baseConfig,
         ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
-      this._initDirtyTracking({ type: "deep" }, baseConfig as AutomationConfig);
-      this._updateDirtyState(this.config);
+      this._initDirtyTracking(
+        { type: "deep" },
+        {
+          config: baseConfig as AutomationConfig,
+          entityRegistryUpdate: this.entityRegistryUpdate,
+        }
+      );
+      this._updateDirtyState({
+        config: this.config,
+        entityRegistryUpdate: this.entityRegistryUpdate,
+      });
       this.currentEntityId = undefined;
       this.readOnly = false;
     }
@@ -655,7 +664,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (changedProps.has("entityId") && this.entityId) {
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeAutomationConfig(c.config);
-        this._initDirtyTracking({ type: "deep" }, this.config);
+        this._initDirtyTracking(
+          { type: "deep" },
+          {
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          }
+        );
         this._checkValidation();
       });
       this.currentEntityId = this.entityId;
@@ -721,7 +736,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     if (this.readOnly) {
       return;
     }
-    this._updateDirtyState(this.config);
+    this._updateDirtyState({
+      config: this.config,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
     this.errors = undefined;
   }
 
@@ -802,7 +820,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       id: this.config?.id,
       ...normalizeAutomationConfig(ev.detail.value),
     };
-    this._updateDirtyState(this.config!);
+    this._updateDirtyState({
+      config: this.config!,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
     this.errors = undefined;
   }
 
@@ -818,7 +839,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this._updateDirtyState(this.config);
+          this._updateDirtyState({
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          });
           this.requestUpdate();
 
           const id = this.automationId || String(Date.now());
@@ -932,7 +956,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this._updateDirtyState(this.config);
+          this._updateDirtyState({
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          });
           this.requestUpdate();
           resolve(true);
         },
@@ -949,7 +976,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         config: this.config!,
         updateConfig: (config) => {
           this.config = config;
-          this._updateDirtyState(config);
+          this._updateDirtyState({
+            config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          });
           this.requestUpdate();
           resolve();
         },
@@ -1100,7 +1130,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private _applyUndoRedo(config: AutomationConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this.config = config;
-    this._updateDirtyState(this.config);
+    this._updateDirtyState({
+      config: this.config,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
   }
 
   private _undo() {

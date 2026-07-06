@@ -560,15 +560,30 @@ export class HaScriptEditor extends SubscribeMixin(
         ...baseConfig,
         ...initData,
       } as ScriptConfig;
-      this._initDirtyTracking({ type: "deep" }, baseConfig as ScriptConfig);
-      this._updateDirtyState(this.config);
+      this._initDirtyTracking(
+        { type: "deep" },
+        {
+          config: baseConfig as ScriptConfig,
+          entityRegistryUpdate: this.entityRegistryUpdate,
+        }
+      );
+      this._updateDirtyState({
+        config: this.config,
+        entityRegistryUpdate: this.entityRegistryUpdate,
+      });
       this.readOnly = false;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeScriptConfig(c.config);
-        this._initDirtyTracking({ type: "deep" }, this.config);
+        this._initDirtyTracking(
+          { type: "deep" },
+          {
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          }
+        );
         this._checkValidation();
       });
       const regEntry = this.entityRegistry?.find(
@@ -613,7 +628,10 @@ export class HaScriptEditor extends SubscribeMixin(
 
     this.config = ev.detail.value;
     this.errors = undefined;
-    this._updateDirtyState(this.config!);
+    this._updateDirtyState({
+      config: this.config!,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
   }
 
   private async _runScript() {
@@ -700,7 +718,10 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     this._manualEditor?.addFields();
-    this._updateDirtyState(this.config!);
+    this._updateDirtyState({
+      config: this.config!,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
   }
 
   private _preprocessYaml() {
@@ -715,7 +736,10 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     this.yamlErrors = undefined;
     this.config = ev.detail.value;
-    this._updateDirtyState(this.config!);
+    this._updateDirtyState({
+      config: this.config!,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
     this.errors = undefined;
   }
 
@@ -731,7 +755,10 @@ export class HaScriptEditor extends SubscribeMixin(
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this._updateDirtyState(this.config);
+          this._updateDirtyState({
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          });
           this.requestUpdate();
 
           const id = this.scriptId || String(Date.now());
@@ -846,7 +873,10 @@ export class HaScriptEditor extends SubscribeMixin(
         updateConfig: async (config, entityRegistryUpdate) => {
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
-          this._updateDirtyState(this.config);
+          this._updateDirtyState({
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          });
           this.requestUpdate();
           resolve(true);
         },
@@ -865,7 +895,10 @@ export class HaScriptEditor extends SubscribeMixin(
         config: this.config!,
         updateConfig: (config) => {
           this.config = config;
-          this._updateDirtyState(config);
+          this._updateDirtyState({
+            config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          });
           this.requestUpdate();
           resolve();
         },
@@ -1012,7 +1045,10 @@ export class HaScriptEditor extends SubscribeMixin(
   private _applyUndoRedo(config: ScriptConfig) {
     this._manualEditor?.triggerCloseSidebar();
     this.config = config;
-    this._updateDirtyState(this.config);
+    this._updateDirtyState({
+      config: this.config,
+      entityRegistryUpdate: this.entityRegistryUpdate,
+    });
   }
 
   private _undo() {
