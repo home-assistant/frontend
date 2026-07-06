@@ -172,6 +172,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
         min="0"
         max="100"
         .step=${this._stateObj.attributes.percentage_step ?? 1}
+        round-value
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
           this._localize,
