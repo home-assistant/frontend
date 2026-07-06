@@ -15,3 +15,7 @@ export const fetchWebhooks = (hass: HomeAssistant): Promise<Webhook[]> =>
   hass.callWS({
     type: "webhook/list",
   });
+
+export const isActiveCloudWebhook = (hook: Webhook): boolean =>
+  !hook.local_only &&
+  (hook.domain !== "mobile_app" || hook.name !== "Deleted Webhook");
