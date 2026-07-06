@@ -11305,8 +11305,7 @@
             "grid_export": "grid export {value}",
             "battery_charge": "battery charging {value}",
             "battery_discharge": "battery discharging {value}",
-            "battery_soc": "battery charge {value}",
-            "low_carbon": "{value} low-carbon electricity"
+            "battery_soc": "battery charge {value}"
           },
           "energy_sources_table_title": "Sources",
           "energy_devices_graph_title": "Individual devices total usage",

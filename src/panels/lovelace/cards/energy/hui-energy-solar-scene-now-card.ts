@@ -21,6 +21,7 @@ import {
   getPowerFromState,
 } from "../../../../data/energy";
 import { hasLocation } from "../../../energy/strategies/energy-cards";
+import { batteryLevelIcon } from "../../../../common/entity/battery_icon";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { formatNumber } from "../../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../../common/translations/blank_before_unit";
@@ -334,7 +335,6 @@ export interface LivePower {
   battery: number | null; // W, + discharging into the home / - charging
   soc: number | null; // %
   home: number | null; // W consumption = max(0, pv + grid + battery)
-  lowCarbon: number | null; // % low-carbon (non-fossil) grid electricity, null if not configured
 }
 
 // `resolve` only depends on prefs (which change rarely): cache by prefs reference so the per-render
@@ -380,14 +380,7 @@ function livePower(data: EnergyData, states: HassEntities): LivePower {
       ? null
       : Math.max(0, (pv ?? 0) + (grid ?? 0) + (battery ?? 0));
 
-  // Low-carbon (non-fossil) % of the grid now = 100 - fossil% (the CO2-signal entity is the fossil %).
-  let lowCarbon: number | null = null;
-  if (data.co2SignalEntity) {
-    const fossil = parseFloat(states[data.co2SignalEntity]?.state ?? "");
-    if (isFinite(fossil)) lowCarbon = Math.max(0, Math.min(100, 100 - fossil));
-  }
-
-  return { pv, grid, battery, soc, home, lowCarbon };
+  return { pv, grid, battery, soc, home };
 }
 
 // True when two live snapshots carry the same values, so an unchanged frame skips its canvas redraw.
@@ -398,8 +391,7 @@ function livePowerEqual(a: LivePower, b?: LivePower): boolean {
     a.grid === b.grid &&
     a.battery === b.battery &&
     a.soc === b.soc &&
-    a.home === b.home &&
-    a.lowCarbon === b.lowCarbon
+    a.home === b.home
   );
 }
 
@@ -1326,7 +1318,7 @@ export class HuiEnergySolarSceneNowCard
     let rayY = home.y;
     if (this._power?.pv != null) {
       const cx = home.x;
-      const cy = home.y - 98; // PV chip centre (cluster lift 28 + PV offset 70)
+      const cy = home.y - 98; // PV chip centre (PV_LIFT in _renderLeaders)
       const halfW = 44;
       const halfH = 14;
       const straightHalfW = Math.max(0, halfW - halfH);
@@ -1377,10 +1369,8 @@ export class HuiEnergySolarSceneNowCard
     if (!p) return "";
     const hx = 0;
     const hy = 0;
-    const LIFT = 28;
     const SIDE = 84;
-    const HALF_GAP = 30;
-    const PV_OFF = 70;
+    const PV_LIFT = 98;
     const PILL_H = 14;
     const PILL_QX = 13;
     const FILLET = 12;
@@ -1388,16 +1378,16 @@ export class HuiEnergySolarSceneNowCard
     const PV_HH = 11;
     const LEADER_NUDGE = 22;
     const CHARGE_DOCK = 30;
+    // Home chip sits over the house (at the anchor); grid + battery flank it halfway up to the PV chip.
     const homeX = hx;
-    const homeY = hy - LIFT + PV_OFF;
+    const homeY = hy;
     const pvX = hx;
-    const pvY = hy - LIFT - PV_OFF;
-    const powerX = hx + SIDE;
-    const powerY = hy - LIFT - HALF_GAP;
+    const pvY = hy - PV_LIFT;
+    const sideY = (pvY + homeY) / 2;
     const socX = hx + SIDE;
-    const socY = hy - LIFT + HALF_GAP;
+    const socY = sideY;
     const gridX = hx - SIDE;
-    const gridY = hy - LIFT + HALF_GAP;
+    const gridY = sideY;
 
     const dur = (w: number): number =>
       Math.max(0.6, Math.min(6, (5000 / Math.max(50, Math.abs(w))) * 0.8));
@@ -1460,35 +1450,57 @@ export class HuiEnergySolarSceneNowCard
         p.grid,
         exporting
       );
-      // Low-carbon: static hairline up to its chip (a share of the import, not a flow → no bead),
-      // shown only while actually importing, exactly like the chip.
-      if (p.lowCarbon != null && p.grid > IDLE_W) {
-        const lcY = -LIFT - HALF_GAP; // mirror of the Power chip, top-left
-        s += plain(
-          `M ${gridX.toFixed(1)},${(gridY - PILL_H).toFixed(1)} L ${gridX.toFixed(1)},${(lcY + PILL_H).toFixed(1)}`,
-          "var(--energy-non-fossil-color)"
-        );
-      }
     }
     if (p.battery != null) {
-      const battColor =
-        p.battery >= 0
-          ? "var(--energy-battery-out-color)"
-          : "var(--energy-battery-in-color)";
-      s += plain(
-        `M ${socX.toFixed(1)},${(socY - PILL_H).toFixed(1)} L ${powerX.toFixed(1)},${(powerY + PILL_H).toFixed(1)}`,
-        "var(--energy-battery-out-color)"
-      );
-      if (p.battery < -IDLE_W && p.pv != null && p.pv > IDLE_W) {
-        // Charging FROM PV: only when PV is actually producing. When PV is 0 the charge is grid-fed
-        // (shown by the grid import beam) — never imply a PV → battery flow with no PV.
-        s += beaded(
-          lVFirst(pvX + PV_HW / 2, pvY + PV_HH, powerX - CHARGE_DOCK, powerY),
-          solar,
-          p.battery
-        );
-      } else if (p.battery > IDLE_W) {
-        s += beaded(lToHome(socX, socY, LEADER_NUDGE), battColor, p.battery);
+      if (p.battery < -IDLE_W) {
+        // Charging: draw a bead from the actual source into the battery (no battery → home
+        // line, since the battery is not supplying the home).
+        if (p.pv != null && p.pv > IDLE_W) {
+          // From PV when it is producing: bead PV → battery.
+          s += beaded(
+            lVFirst(pvX + PV_HW / 2, pvY + PV_HH, socX - CHARGE_DOCK, socY),
+            solar,
+            p.battery
+          );
+        } else if (p.grid != null && p.grid > IDLE_W) {
+          // Grid-fed (PV idle): bead grid → battery. The two chips flank the home, so a
+          // straight line would cross the house — route it over the home hub, where both
+          // side leaders already meet, and colour it as grid import to show the source.
+          const y = socY;
+          const topY = homeY - PILL_H;
+          const r = Math.min(
+            FILLET,
+            Math.abs(homeX - PILL_QX - (gridX + LEADER_NUDGE)) / 2,
+            Math.abs(topY - y) / 2
+          );
+          const gsx = gridX + LEADER_NUDGE;
+          const gex = homeX - PILL_QX;
+          const bex = homeX + PILL_QX;
+          const bsx = socX - LEADER_NUDGE;
+          const gridToBattery =
+            `M ${gsx.toFixed(1)},${y.toFixed(1)} L ${(gex - r).toFixed(1)},${y.toFixed(1)} ` +
+            `Q ${gex.toFixed(1)},${y.toFixed(1)} ${gex.toFixed(1)},${(y + r).toFixed(1)} ` +
+            `L ${gex.toFixed(1)},${topY.toFixed(1)} L ${bex.toFixed(1)},${topY.toFixed(1)} ` +
+            `L ${bex.toFixed(1)},${(y + r).toFixed(1)} Q ${bex.toFixed(1)},${y.toFixed(1)} ${(bex + r).toFixed(1)},${y.toFixed(1)} ` +
+            `L ${bsx.toFixed(1)},${y.toFixed(1)}`;
+          s += beaded(
+            gridToBattery,
+            "var(--energy-grid-consumption-color)",
+            p.battery
+          );
+        }
+      } else {
+        // Idle or discharging: link the battery to the home like the grid leader,
+        // with a bead toward the home only while discharging.
+        const battColor =
+          p.battery >= 0
+            ? "var(--energy-battery-out-color)"
+            : "var(--energy-battery-in-color)";
+        const homeLeader = lToHome(socX, socY, LEADER_NUDGE);
+        s +=
+          p.battery > IDLE_W
+            ? beaded(homeLeader, battColor, p.battery)
+            : plain(homeLeader, battColor);
       }
     }
     return s;
@@ -1558,31 +1570,11 @@ export class HuiEnergySolarSceneNowCard
         p.battery != null
           ? this._chip(
               "battery",
-              "mdi:lightning-bolt",
+              p.soc != null ? batteryLevelIcon(p.soc) : "mdi:battery",
               p.battery >= 0
                 ? "var(--energy-battery-out-color)"
                 : "var(--energy-battery-in-color)",
               this._fmtPower(Math.abs(p.battery))
-            )
-          : nothing
-      }
-      ${
-        p.soc != null
-          ? this._chip(
-              "soc",
-              "mdi:battery",
-              "var(--energy-battery-out-color)",
-              `${Math.round(p.soc)}${blankBeforeUnit("%", this.hass.locale)}%`
-            )
-          : nothing
-      }
-      ${
-        p.lowCarbon != null && p.grid != null && p.grid > IDLE_W
-          ? this._chip(
-              "lowcarbon",
-              "mdi:leaf",
-              "var(--energy-non-fossil-color)",
-              `${Math.round(p.lowCarbon)}${blankBeforeUnit("%", this.hass.locale)}%`
             )
           : nothing
       }
@@ -1618,9 +1610,6 @@ export class HuiEnergySolarSceneNowCard
       parts.push(a11y("battery_charge", this._fmtPower(-p.battery)));
     }
     if (p.soc != null) parts.push(a11y("battery_soc", pct(p.soc)));
-    if (p.lowCarbon != null && p.grid != null && p.grid > IDLE_W) {
-      parts.push(a11y("low_carbon", pct(p.lowCarbon)));
-    }
     return parts.length ? `${title}: ${parts.join(", ")}` : title;
   }
 
@@ -1870,8 +1859,9 @@ export class HuiEnergySolarSceneNowCard
       }
     }
     /* Energy chips: anchored to the home via the --home-x / --home-y vars with a fixed per-chip offset.
-       Cluster: PV top-centre, grid bottom-left, battery top-right, SoC bottom-right, low-carbon
-       top-left, home bottom-centre. z 9 keeps the home chip above the others. */
+       Cluster: home over the house, PV top-centre, grid left and battery right halfway between the
+       home and PV chips. Offsets mirror the leader geometry in _renderLeaders. z 9 keeps the home
+       chip above the others. */
     .chip {
       position: absolute;
       left: var(--home-x, 50%);
@@ -1902,22 +1892,16 @@ export class HuiEnergySolarSceneNowCard
     }
     .chip.home {
       z-index: 9;
-      transform: translate(-50%, calc(-50% + 42px));
+      transform: translate(-50%, -50%);
     }
     .chip.pv {
       transform: translate(-50%, calc(-50% - 98px));
     }
     .chip.grid {
-      transform: translate(calc(-50% - 84px), calc(-50% + 2px));
+      transform: translate(calc(-50% - 84px), calc(-50% - 49px));
     }
     .chip.battery {
-      transform: translate(calc(-50% + 84px), calc(-50% - 58px));
-    }
-    .chip.soc {
-      transform: translate(calc(-50% + 84px), calc(-50% + 2px));
-    }
-    .chip.lowcarbon {
-      transform: translate(calc(-50% - 84px), calc(-50% - 58px));
+      transform: translate(calc(-50% + 84px), calc(-50% - 49px));
     }
     .chip-leader {
       stroke-width: 1;
