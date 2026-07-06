@@ -505,7 +505,11 @@ class ZWaveJSNodeConfig extends LitElement {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    const value = Number(ev.target.value);
+    // An empty input must not be coerced to 0 by Number()
+    const value =
+      ev.target.value === undefined || ev.target.value === ""
+        ? NaN
+        : Number(ev.target.value);
     if (this._config![ev.target.key].value === value) {
       return;
     }
