@@ -321,8 +321,8 @@ ${
                         ? html`
                             <p>
                               ${this.hass.localize(
-                              "ui.panel.config.tools.tabs.templates.time"
-                            )}
+                                "ui.panel.config.tools.tabs.templates.time"
+                              )}
                             </p>
                           `
                         : ""
@@ -334,8 +334,8 @@ ${
                           ? html`
                               <p class="all_listeners">
                                 ${this.hass.localize(
-                                "ui.panel.config.tools.tabs.templates.all_listeners"
-                              )}
+                                  "ui.panel.config.tools.tabs.templates.all_listeners"
+                                )}
                               </p>
                             `
                           : this._templateResult.listeners.domains.length ||
@@ -343,43 +343,43 @@ ${
                             ? html`
                                 <p>
                                   ${this.hass.localize(
-                                  "ui.panel.config.tools.tabs.templates.listeners"
-                                )}
+                                    "ui.panel.config.tools.tabs.templates.listeners"
+                                  )}
                                 </p>
                                 <ul>
                                   ${this._templateResult.listeners.domains
-                                  .sort()
-                                  .map(
-                                    (domain) => html`
-                                      <li>
-                                        <b
-                                          >${this.hass.localize(
-                                          "ui.panel.config.tools.tabs.templates.domain"
-                                        )}</b
-                                        >: ${domain}
-                                      </li>
-                                    `
-                                  )}
+                                    .sort()
+                                    .map(
+                                      (domain) => html`
+                                        <li>
+                                          <b
+                                            >${this.hass.localize(
+                                            "ui.panel.config.tools.tabs.templates.domain"
+                                          )}</b
+                                          >: ${domain}
+                                        </li>
+                                      `
+                                    )}
                                   ${this._templateResult.listeners.entities
-                                  .sort()
-                                  .map(
-                                    (entity_id) => html`
-                                      <li>
-                                        <b
-                                          >${this.hass.localize(
-                                          "ui.panel.config.tools.tabs.templates.entity"
-                                        )}</b
-                                        >: ${entity_id}
-                                      </li>
-                                    `
-                                  )}
+                                    .sort()
+                                    .map(
+                                      (entity_id) => html`
+                                        <li>
+                                          <b
+                                            >${this.hass.localize(
+                                            "ui.panel.config.tools.tabs.templates.entity"
+                                          )}</b
+                                          >: ${entity_id}
+                                        </li>
+                                      `
+                                    )}
                                 </ul>
                               `
                             : !this._templateResult.listeners.time
                               ? html`<span class="all_listeners">
                                   ${this.hass.localize(
-                                  "ui.panel.config.tools.tabs.templates.no_listeners"
-                                )}
+                                    "ui.panel.config.tools.tabs.templates.no_listeners"
+                                  )}
                                 </span>`
                               : nothing
                     }
