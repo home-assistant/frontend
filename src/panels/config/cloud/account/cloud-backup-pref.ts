@@ -53,17 +53,19 @@ export class CloudBackupPref extends LitElement {
         back-path="/config/cloud/account"
       >
         <div class="content">
-          ${this._loaded
-            ? isConfigured
-              ? this._renderStatusCard()
-              : this._renderSetupCard()
-            : html`
-                <ha-card outlined>
-                  <div class="spinner">
-                    <ha-spinner></ha-spinner>
-                  </div>
-                </ha-card>
-              `}
+          ${
+            this._loaded
+              ? isConfigured
+                ? this._renderStatusCard()
+                : this._renderSetupCard()
+              : html`
+                  <ha-card outlined>
+                    <div class="spinner">
+                      <ha-spinner></ha-spinner>
+                    </div>
+                  </ha-card>
+                `
+          }
           ${this._renderInfoCard()}
         </div>
       </hass-subpage>
@@ -139,69 +141,77 @@ export class CloudBackupPref extends LitElement {
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
               <span slot="headline">
-                ${cloudBackup
-                  ? this.hass.localize(
-                      "ui.panel.config.cloud.account.backup.last_cloud_backup",
-                      {
-                        relative_time: relativeTime(
-                          new Date(cloudBackup.date),
-                          this.hass.locale,
-                          new Date(),
-                          true
-                        ),
-                      }
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.cloud.account.backup.no_cloud_backups"
-                    )}
+                ${
+                  cloudBackup
+                    ? this.hass.localize(
+                        "ui.panel.config.cloud.account.backup.last_cloud_backup",
+                        {
+                          relative_time: relativeTime(
+                            new Date(cloudBackup.date),
+                            this.hass.locale,
+                            new Date(),
+                            true
+                          ),
+                        }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.cloud.account.backup.no_cloud_backups"
+                      )
+                }
               </span>
             </ha-md-list-item>
-            ${cloudAgent
-              ? html`
-                  <ha-md-list-item>
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiHarddisk}
-                    ></ha-svg-icon>
-                    <span slot="headline">
-                      ${bytesToString(cloudAgent.size)}
-                    </span>
-                  </ha-md-list-item>
-                  <ha-md-list-item>
-                    <ha-svg-icon
-                      slot="start"
-                      .path=${mdiShieldLock}
-                    ></ha-svg-icon>
-                    <span slot="headline">
-                      ${cloudAgent.protected
-                        ? this.hass.localize(
-                            "ui.panel.config.cloud.account.backup.backup_encrypted"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.cloud.account.backup.backup_not_encrypted"
-                          )}
-                    </span>
-                  </ha-md-list-item>
-                `
-              : nothing}
+            ${
+              cloudAgent
+                ? html`
+                    <ha-md-list-item>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiHarddisk}
+                      ></ha-svg-icon>
+                      <span slot="headline">
+                        ${bytesToString(cloudAgent.size)}
+                      </span>
+                    </ha-md-list-item>
+                    <ha-md-list-item>
+                      <ha-svg-icon
+                        slot="start"
+                        .path=${mdiShieldLock}
+                      ></ha-svg-icon>
+                      <span slot="headline">
+                        ${
+                        cloudAgent.protected
+                          ? this.hass.localize(
+                              "ui.panel.config.cloud.account.backup.backup_encrypted"
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.cloud.account.backup.backup_not_encrypted"
+                            )
+                      }
+                      </span>
+                    </ha-md-list-item>
+                  `
+                : nothing
+            }
             <ha-md-list-item>
               <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
               <span slot="headline">
-                ${this._backupConfig?.next_automatic_backup
-                  ? this.hass.localize(
-                      "ui.panel.config.cloud.account.backup.next_backup",
-                      {
-                        relative_time: relativeTime(
-                          new Date(this._backupConfig.next_automatic_backup),
-                          this.hass.locale,
-                          new Date(),
-                          true
-                        ),
-                      }
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.cloud.account.backup.no_next_backup"
-                    )}
+                ${
+                  this._backupConfig?.next_automatic_backup
+                    ? this.hass.localize(
+                        "ui.panel.config.cloud.account.backup.next_backup",
+                        {
+                          relative_time: relativeTime(
+                            new Date(this._backupConfig.next_automatic_backup),
+                            this.hass.locale,
+                            new Date(),
+                            true
+                          ),
+                        }
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.cloud.account.backup.no_next_backup"
+                      )
+                }
               </span>
             </ha-md-list-item>
           </ha-md-list>

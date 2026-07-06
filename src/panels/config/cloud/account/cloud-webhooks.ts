@@ -62,42 +62,44 @@ export class CloudWebhooks extends LitElement {
                   "ui.panel.config.cloud.account.webhooks.info"
                 )}
               </p>
-              ${!this.cloudStatus ||
-              !this._customHooks ||
-              !this._mobileHooks ||
-              !this._cloudHooks ||
-              !this.hass
-                ? html`
-                    <div class="body-text">
-                      ${this.hass!.localize(
-                        "ui.panel.config.cloud.account.webhooks.loading"
-                      )}
-                    </div>
-                  `
-                : this._customHooks.length === 0 && !this._mobileHooks.length
+              ${
+                !this.cloudStatus ||
+                !this._customHooks ||
+                !this._mobileHooks ||
+                !this._cloudHooks ||
+                !this.hass
                   ? html`
                       <div class="body-text">
-                        ${this.hass.localize(
-                          "ui.panel.config.cloud.account.webhooks.no_hooks_yet"
-                        )}
-                        <a href="/config/integrations"
-                          >${this.hass.localize(
-                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_integration"
-                          )}
-                        </a>
-                        ${this.hass.localize(
-                          "ui.panel.config.cloud.account.webhooks.no_hooks_yet2"
-                        )}
-                        <a href="/config/automation/edit/new"
-                          >${this.hass.localize(
-                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_automation"
-                          )}</a
-                        >.
+                        ${this.hass!.localize(
+                        "ui.panel.config.cloud.account.webhooks.loading"
+                      )}
                       </div>
                     `
-                  : this._customHooks.map((entry) =>
-                      this._renderHookRow(entry)
-                    )}
+                  : this._customHooks.length === 0 && !this._mobileHooks.length
+                    ? html`
+                        <div class="body-text">
+                          ${this.hass.localize(
+                          "ui.panel.config.cloud.account.webhooks.no_hooks_yet"
+                        )}
+                          <a href="/config/integrations"
+                            >${this.hass.localize(
+                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_integration"
+                          )}
+                          </a>
+                          ${this.hass.localize(
+                          "ui.panel.config.cloud.account.webhooks.no_hooks_yet2"
+                        )}
+                          <a href="/config/automation/edit/new"
+                            >${this.hass.localize(
+                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_automation"
+                          )}</a
+                          >.
+                        </div>
+                      `
+                    : this._customHooks.map((entry) =>
+                        this._renderHookRow(entry)
+                      )
+              }
             </div>
             <div class="card-actions">
               <ha-button
@@ -113,27 +115,29 @@ export class CloudWebhooks extends LitElement {
             </div>
           </ha-card>
 
-          ${this._mobileHooks && this._mobileHooks.length
-            ? html`
-                <ha-card
-                  outlined
-                  header=${this.hass!.localize(
+          ${
+            this._mobileHooks && this._mobileHooks.length
+              ? html`
+                  <ha-card
+                    outlined
+                    header=${this.hass!.localize(
                     "ui.panel.config.cloud.account.webhooks.companion_title"
                   )}
-                >
-                  <div class="card-content">
-                    <p>
-                      ${this.hass!.localize(
+                  >
+                    <div class="card-content">
+                      <p>
+                        ${this.hass!.localize(
                         "ui.panel.config.cloud.account.webhooks.companion_info"
                       )}
-                    </p>
-                    ${this._mobileHooks.map((entry) =>
+                      </p>
+                      ${this._mobileHooks.map((entry) =>
                       this._renderHookRow(entry)
                     )}
-                  </div>
-                </ha-card>
-              `
-            : nothing}
+                    </div>
+                  </ha-card>
+                `
+              : nothing
+          }
 
           <ha-card
             outlined
@@ -198,36 +202,40 @@ export class CloudWebhooks extends LitElement {
       <ha-row-item>
         <span slot="headline"
           >${entry.name}
-          ${entry.domain !== entry.name.toLowerCase()
-            ? ` (${entry.domain})`
-            : ""}</span
+          ${
+            entry.domain !== entry.name.toLowerCase()
+              ? ` (${entry.domain})`
+              : ""
+          }</span
         >
         <span slot="supporting-text">${entry.webhook_id}</span>
-        ${this._progress.includes(entry.webhook_id)
-          ? html`
-              <div class="progress" slot="end">
-                <ha-spinner></ha-spinner>
-              </div>
-            `
-          : this._cloudHooks?.[entry.webhook_id]
+        ${
+          this._progress.includes(entry.webhook_id)
             ? html`
-                <ha-button
-                  slot="end"
-                  appearance="plain"
-                  size="s"
-                  data-webhook-id=${entry.webhook_id}
-                  @click=${this._handleManageButton}
-                >
-                  ${this.hass!.localize(
+                <div class="progress" slot="end">
+                  <ha-spinner></ha-spinner>
+                </div>
+              `
+            : this._cloudHooks?.[entry.webhook_id]
+              ? html`
+                  <ha-button
+                    slot="end"
+                    appearance="plain"
+                    size="s"
+                    data-webhook-id=${entry.webhook_id}
+                    @click=${this._handleManageButton}
+                  >
+                    ${this.hass!.localize(
                     "ui.panel.config.cloud.account.webhooks.manage"
                   )}
-                </ha-button>
-              `
-            : html`<ha-switch
-                slot="end"
-                data-webhook-id=${entry.webhook_id}
-                @click=${this._enableWebhook}
-              ></ha-switch>`}
+                  </ha-button>
+                `
+              : html`<ha-switch
+                  slot="end"
+                  data-webhook-id=${entry.webhook_id}
+                  @click=${this._enableWebhook}
+                ></ha-switch>`
+        }
       </ha-row-item>
     `;
   }

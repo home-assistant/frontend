@@ -162,9 +162,9 @@ export class CloudDemoControls extends LitElement {
             ([value, text]) => html`
               <ha-button
                 size="s"
-                appearance=${this._scenario[field] === value
-                  ? "filled"
-                  : "plain"}
+                appearance=${
+                  this._scenario[field] === value ? "filled" : "plain"
+                }
                 data-field=${field}
                 data-value=${value}
                 @click=${this._segmentClick}

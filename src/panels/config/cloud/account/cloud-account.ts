@@ -91,16 +91,18 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
           </ha-dropdown-item>
         </ha-dropdown>
         <div class="content">
-          ${this._showOnboarding
-            ? html`
-                <cloud-account-onboarding
-                  .hass=${this.hass}
-                  .cloudStatus=${this.cloudStatus}
-                  .backupConfig=${this._backupConfig}
-                  @cloud-open-onboarding=${this._openOnboardingDialog}
-                ></cloud-account-onboarding>
-              `
-            : nothing}
+          ${
+            this._showOnboarding
+              ? html`
+                  <cloud-account-onboarding
+                    .hass=${this.hass}
+                    .cloudStatus=${this.cloudStatus}
+                    .backupConfig=${this._backupConfig}
+                    @cloud-open-onboarding=${this._openOnboardingDialog}
+                  ></cloud-account-onboarding>
+                `
+              : nothing
+          }
           <cloud-account-overview
             .hass=${this.hass}
             .cloudStatus=${this.cloudStatus}

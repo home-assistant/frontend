@@ -61,184 +61,196 @@ export class CloudRemotePref extends LitElement {
         back-path="/config/cloud/account"
       >
         <div class="content">
-          ${!remote_certificate || remote_certificate_status !== "ready"
-            ? html`
-                <ha-card outlined>
-                  <div class="preparing">
-                    ${remote_certificate_status === "error"
-                      ? this.hass.localize(
-                          "ui.panel.config.cloud.account.remote.cerificate_error"
-                        )
-                      : remote_certificate_status === "loading"
+          ${
+            !remote_certificate || remote_certificate_status !== "ready"
+              ? html`
+                  <ha-card outlined>
+                    <div class="preparing">
+                      ${
+                      remote_certificate_status === "error"
                         ? this.hass.localize(
-                            "ui.panel.config.cloud.account.remote.cerificate_loading"
+                            "ui.panel.config.cloud.account.remote.cerificate_error"
                           )
-                        : remote_certificate_status === "loaded"
+                        : remote_certificate_status === "loading"
                           ? this.hass.localize(
-                              "ui.panel.config.cloud.account.remote.cerificate_loaded"
+                              "ui.panel.config.cloud.account.remote.cerificate_loading"
                             )
-                          : this.hass.localize(
-                              "ui.panel.config.cloud.account.remote.access_is_being_prepared"
-                            )}
-                  </div>
-                </ha-card>
-              `
-            : html`
-                <ha-card
-                  outlined
-                  header=${this.hass.localize(
+                          : remote_certificate_status === "loaded"
+                            ? this.hass.localize(
+                                "ui.panel.config.cloud.account.remote.cerificate_loaded"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.cloud.account.remote.access_is_being_prepared"
+                              )
+                    }
+                    </div>
+                  </ha-card>
+                `
+              : html`
+                  <ha-card
+                    outlined
+                    header=${this.hass.localize(
                     "ui.panel.config.cloud.account.remote.card_title"
                   )}
-                >
-                  <div class="header-actions">
-                    <ha-switch
-                      .checked=${remote_enabled}
-                      @change=${this._toggleChanged}
-                    ></ha-switch>
-                  </div>
+                  >
+                    <div class="header-actions">
+                      <ha-switch
+                        .checked=${remote_enabled}
+                        @change=${this._toggleChanged}
+                      ></ha-switch>
+                    </div>
 
-                  <div class="card-content">
-                    ${cloud === "connecting" && cloud_last_disconnect_reason
-                      ? html`
-                          <ha-alert
-                            alert-type="warning"
-                            .title=${cloud_last_disconnect_reason.reason}
-                          ></ha-alert>
-                        `
-                      : nothing}
-                    ${!remote_connected && remote_enabled
-                      ? html`
-                          <ha-alert
-                            .title=${this.hass.localize(
+                    <div class="card-content">
+                      ${
+                      cloud === "connecting" && cloud_last_disconnect_reason
+                        ? html`
+                            <ha-alert
+                              alert-type="warning"
+                              .title=${cloud_last_disconnect_reason.reason}
+                            ></ha-alert>
+                          `
+                        : nothing
+                    }
+                      ${
+                      !remote_connected && remote_enabled
+                        ? html`
+                            <ha-alert
+                              .title=${this.hass.localize(
                               `ui.panel.config.cloud.account.remote.reconnecting`
                             )}
-                          ></ha-alert>
-                        `
-                      : strict_connection === "drop_connection"
-                        ? html`<ha-alert
-                            alert-type="warning"
-                            .title=${this.hass.localize(
+                            ></ha-alert>
+                          `
+                        : strict_connection === "drop_connection"
+                          ? html`<ha-alert
+                              alert-type="warning"
+                              .title=${this.hass.localize(
                               `ui.panel.config.cloud.account.remote.drop_connection_warning_title`
                             )}
-                            >${this.hass.localize(
+                              >${this.hass.localize(
                               `ui.panel.config.cloud.account.remote.drop_connection_warning`
                             )}</ha-alert
-                          >`
-                        : nothing}
-                    <p>
-                      ${this.hass.localize(
+                            >`
+                          : nothing
+                    }
+                      <p>
+                        ${this.hass.localize(
                         "ui.panel.config.cloud.account.remote.info"
                       )}
-                    </p>
-                    ${remote_connected
-                      ? nothing
-                      : html`
-                          <p>
-                            ${this.hass.localize(
+                      </p>
+                      ${
+                      remote_connected
+                        ? nothing
+                        : html`
+                            <p>
+                              ${this.hass.localize(
                               "ui.panel.config.cloud.account.remote.info_instance_will_be_available"
                             )}
-                          </p>
-                        `}
+                            </p>
+                          `
+                    }
 
-                    <ha-input-copy
-                      readonly
-                      .value=${`https://${remote_domain}`}
-                      .maskedValue=${obfuscateUrl(`https://${remote_domain}`)}
-                      .label=${this.hass!.localize(
+                      <ha-input-copy
+                        readonly
+                        .value=${`https://${remote_domain}`}
+                        .maskedValue=${obfuscateUrl(`https://${remote_domain}`)}
+                        .label=${this.hass!.localize(
                         "ui.panel.config.common.copy_link"
                       )}
-                    ></ha-input-copy>
-                  </div>
-                  <div class="card-actions">
-                    <ha-button
-                      appearance="plain"
-                      href="https://www.nabucasa.com/config/remote/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
+                      ></ha-input-copy>
+                    </div>
+                    <div class="card-actions">
+                      <ha-button
+                        appearance="plain"
+                        href="https://www.nabucasa.com/config/remote/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass.localize(
                         "ui.panel.config.cloud.account.remote.link_learn_how_it_works"
                       )}
-                    </ha-button>
-                  </div>
-                </ha-card>
+                      </ha-button>
+                    </div>
+                  </ha-card>
 
-                <ha-card
-                  outlined
-                  .header=${this.hass.localize(
+                  <ha-card
+                    outlined
+                    .header=${this.hass.localize(
                     "ui.panel.config.cloud.account.remote.security_options"
                   )}
-                >
-                  <div class="card-content">
-                    <ha-md-list>
-                      <ha-md-list-item>
-                        <span slot="headline"
-                          >${this.hass.localize(
+                  >
+                    <div class="card-content">
+                      <ha-md-list>
+                        <ha-md-list-item>
+                          <span slot="headline"
+                            >${this.hass.localize(
                             "ui.panel.config.cloud.account.remote.external_activation"
                           )}</span
-                        >
-                        <span slot="supporting-text"
-                          >${this.hass.localize(
+                          >
+                          <span slot="supporting-text"
+                            >${this.hass.localize(
                             "ui.panel.config.cloud.account.remote.external_activation_secondary"
                           )}</span
-                        >
-                        <ha-switch
-                          slot="end"
-                          .checked=${remote_allow_remote_enable}
-                          @change=${this._toggleAllowRemoteEnabledChanged}
-                        ></ha-switch>
-                      </ha-md-list-item>
-                      <ha-md-list-item>
-                        <span slot="headline"
-                          >${this.hass.localize(
+                          >
+                          <ha-switch
+                            slot="end"
+                            .checked=${remote_allow_remote_enable}
+                            @change=${this._toggleAllowRemoteEnabledChanged}
+                          ></ha-switch>
+                        </ha-md-list-item>
+                        <ha-md-list-item>
+                          <span slot="headline"
+                            >${this.hass.localize(
                             "ui.panel.config.cloud.account.remote.certificate_info"
                           )}</span
-                        >
-                        <span slot="supporting-text"
-                          >${this.cloudStatus!.remote_certificate
-                            ? this.hass.localize(
-                                "ui.panel.config.cloud.account.remote.certificate_expire",
-                                {
-                                  date: formatDate(
-                                    new Date(
-                                      this.cloudStatus.remote_certificate
-                                        .expire_date
+                          >
+                          <span slot="supporting-text"
+                            >${
+                            this.cloudStatus!.remote_certificate
+                              ? this.hass.localize(
+                                  "ui.panel.config.cloud.account.remote.certificate_expire",
+                                  {
+                                    date: formatDate(
+                                      new Date(
+                                        this.cloudStatus.remote_certificate
+                                          .expire_date
+                                      ),
+                                      this.hass.locale,
+                                      this.hass.config
                                     ),
-                                    this.hass.locale,
-                                    this.hass.config
-                                  ),
-                                }
-                              )
-                            : nothing}</span
-                        >
-                        <ha-button
-                          slot="end"
-                          appearance="plain"
-                          size="s"
-                          @click=${this._openCertInfo}
-                        >
-                          ${this.hass.localize(
+                                  }
+                                )
+                              : nothing
+                          }</span
+                          >
+                          <ha-button
+                            slot="end"
+                            appearance="plain"
+                            size="s"
+                            @click=${this._openCertInfo}
+                          >
+                            ${this.hass.localize(
                             "ui.panel.config.cloud.account.remote.more_info"
                           )}
-                        </ha-button>
-                      </ha-md-list-item>
-                    </ha-md-list>
-                  </div>
-                </ha-card>
-                <ha-tip .hass=${this.hass}>
-                  ${this.hass.localize(
+                          </ha-button>
+                        </ha-md-list-item>
+                      </ha-md-list>
+                    </div>
+                  </ha-card>
+                  <ha-tip .hass=${this.hass}>
+                    ${this.hass.localize(
                     "ui.panel.config.cloud.account.remote.tip_custom_domain"
                   )}
-                  <a
-                    href="https://support.nabucasa.com/hc/en-us/articles/26497540527517"
-                    target="_blank"
-                    rel="noreferrer"
-                    >${this.hass.localize(
+                    <a
+                      href="https://support.nabucasa.com/hc/en-us/articles/26497540527517"
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
                       "ui.panel.config.cloud.account.remote.tip_custom_domain_link"
                     )}</a
-                  >
-                </ha-tip>
-              `}
+                    >
+                  </ha-tip>
+                `
+          }
         </div>
       </hass-subpage>
     `;

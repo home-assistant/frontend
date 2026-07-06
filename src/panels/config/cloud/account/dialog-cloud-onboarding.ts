@@ -122,13 +122,15 @@ export class DialogCloudOnboarding extends LitElement {
                 )}
               </p>
               <ha-button appearance="plain" @click=${this._toggleRemote}>
-                ${cloudStatus.prefs.remote_enabled
-                  ? this.hass.localize(
-                      "ui.panel.config.cloud.account.onboarding.turn_off"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.cloud.account.onboarding.turn_on"
-                    )}
+                ${
+                  cloudStatus.prefs.remote_enabled
+                    ? this.hass.localize(
+                        "ui.panel.config.cloud.account.onboarding.turn_off"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.cloud.account.onboarding.turn_on"
+                      )
+                }
               </ha-button>
             </div>
           </ha-expansion-panel>
@@ -150,42 +152,46 @@ export class DialogCloudOnboarding extends LitElement {
               )
             )}
             <div class="panel-body">
-              ${!this._backupConfig?.automatic_backups_configured
-                ? html`
-                    <p class="muted">
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.onboarding.backup_none_body"
-                      )}
-                    </p>
-                    <ha-button
-                      appearance="plain"
-                      href="/config/backup?historyBack=1"
-                      @click=${this.closeDialog}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.onboarding.backup_set_up"
-                      )}
-                    </ha-button>
-                  `
-                : html`
-                    <p class="muted">
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.onboarding.backup_body"
-                      )}
-                    </p>
-                    <ha-button
-                      appearance="plain"
-                      @click=${this._toggleCloudBackup}
-                    >
-                      ${this._cloudBackupEnabled
-                        ? this.hass.localize(
-                            "ui.panel.config.cloud.account.onboarding.turn_off"
-                          )
-                        : this.hass.localize(
-                            "ui.panel.config.cloud.account.onboarding.turn_on"
-                          )}
-                    </ha-button>
-                  `}
+              ${
+                !this._backupConfig?.automatic_backups_configured
+                  ? html`
+                      <p class="muted">
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.onboarding.backup_none_body"
+                        )}
+                      </p>
+                      <ha-button
+                        appearance="plain"
+                        href="/config/backup?historyBack=1"
+                        @click=${this.closeDialog}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.onboarding.backup_set_up"
+                        )}
+                      </ha-button>
+                    `
+                  : html`
+                      <p class="muted">
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.onboarding.backup_body"
+                        )}
+                      </p>
+                      <ha-button
+                        appearance="plain"
+                        @click=${this._toggleCloudBackup}
+                      >
+                        ${
+                          this._cloudBackupEnabled
+                            ? this.hass.localize(
+                                "ui.panel.config.cloud.account.onboarding.turn_off"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.cloud.account.onboarding.turn_on"
+                              )
+                        }
+                      </ha-button>
+                    `
+              }
             </div>
           </ha-expansion-panel>
 
@@ -276,13 +282,15 @@ export class DialogCloudOnboarding extends LitElement {
                 )}
               </p>
               <ha-button appearance="plain" @click=${this._toggleWebrtc}>
-                ${cloudStatus.prefs.cloud_ice_servers_enabled
-                  ? this.hass.localize(
-                      "ui.panel.config.cloud.account.onboarding.turn_off"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.cloud.account.onboarding.turn_on"
-                    )}
+                ${
+                  cloudStatus.prefs.cloud_ice_servers_enabled
+                    ? this.hass.localize(
+                        "ui.panel.config.cloud.account.onboarding.turn_off"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.cloud.account.onboarding.turn_on"
+                      )
+                }
               </ha-button>
             </div>
           </ha-expansion-panel>
@@ -402,52 +410,56 @@ export class DialogCloudOnboarding extends LitElement {
             <span class="option-title">${name}</span>
             <span class="option-sub">${tagline}</span>
           </div>
-          ${linked
-            ? html`
-                <span class="pill active"
-                  >${this.hass.localize(
-                    "ui.panel.config.cloud.account.onboarding.active"
-                  )}</span
-                >
-              `
-            : nothing}
+          ${
+            linked
+              ? html`
+                  <span class="pill active"
+                    >${this.hass.localize(
+                      "ui.panel.config.cloud.account.onboarding.active"
+                    )}</span
+                  >
+                `
+              : nothing
+          }
         </div>
-        ${linked
-          ? html`
-              <div class="option-actions">
-                <ha-button
-                  appearance="plain"
-                  href="/config/voice-assistants/assistants?historyBack=1"
-                  @click=${this.closeDialog}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.onboarding.manage"
+        ${
+          linked
+            ? html`
+                <div class="option-actions">
+                  <ha-button
+                    appearance="plain"
+                    href="/config/voice-assistants/assistants?historyBack=1"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.onboarding.manage"
+                    )}
+                  </ha-button>
+                </div>
+              `
+            : html`
+                <ul class="option-bullets">
+                  ${bullets.map(
+                    (bullet) => html`
+                      <li>
+                        <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>${bullet}
+                      </li>
+                    `
                   )}
-                </ha-button>
-              </div>
-            `
-          : html`
-              <ul class="option-bullets">
-                ${bullets.map(
-                  (bullet) => html`
-                    <li>
-                      <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>${bullet}
-                    </li>
-                  `
-                )}
-              </ul>
-              <div class="option-actions">
-                <ha-button
-                  href="/config/voice-assistants/assistants?historyBack=1"
-                  @click=${this.closeDialog}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.cloud.account.onboarding.set_up",
-                    { name }
-                  )}
-                </ha-button>
-              </div>
-            `}
+                </ul>
+                <div class="option-actions">
+                  <ha-button
+                    href="/config/voice-assistants/assistants?historyBack=1"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.cloud.account.onboarding.set_up",
+                      { name }
+                    )}
+                  </ha-button>
+                </div>
+              `
+        }
       </div>
     `;
   }

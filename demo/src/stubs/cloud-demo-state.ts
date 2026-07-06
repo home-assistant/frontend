@@ -13,11 +13,7 @@ import type { RemoteCertificateStatus } from "../../../src/data/cloud";
 
 // The five PaymentSubscriptionState values.
 export type DemoCloudAccount =
-  | "active"
-  | "trialing"
-  | "canceled"
-  | "expired"
-  | "unknown";
+  "active" | "trialing" | "canceled" | "expired" | "unknown";
 
 // "local": automatic backups are configured, but not to the cloud agent
 // (a backup exists, just no cloud copy). "none": no automatic backups at all.

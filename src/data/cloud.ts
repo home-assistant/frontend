@@ -33,11 +33,7 @@ export interface CloudPreferences {
 }
 
 export type RemoteCertificateStatus =
-  | "error"
-  | "generating"
-  | "loading"
-  | "loaded"
-  | "ready";
+  "error" | "generating" | "loading" | "loaded" | "ready";
 
 export interface CloudStatusLoggedIn {
   logged_in: true;
@@ -74,11 +70,7 @@ export const ONBOARDING_ITEMS = [
 export type CloudOnboardingItem = (typeof ONBOARDING_ITEMS)[number];
 
 type SubscriptionStatus =
-  | "active"
-  | "canceled"
-  | "expired"
-  | "trialing"
-  | "unknown";
+  "active" | "canceled" | "expired" | "trialing" | "unknown";
 
 export interface SubscriptionInfo {
   human_description: string;

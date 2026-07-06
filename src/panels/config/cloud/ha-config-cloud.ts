@@ -21,8 +21,7 @@ const LOGGED_IN_URLS = [
 const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"] as const;
 
 type CloudPage =
-  | (typeof LOGGED_IN_URLS)[number]
-  | (typeof NOT_LOGGED_IN_URLS)[number];
+  (typeof LOGGED_IN_URLS)[number] | (typeof NOT_LOGGED_IN_URLS)[number];
 
 @customElement("ha-config-cloud")
 class HaConfigCloud extends HassRouterPage {
@@ -116,8 +115,7 @@ class HaConfigCloud extends HassRouterPage {
 
     if (changedProps.has("cloudStatus")) {
       const oldStatus = changedProps.get("cloudStatus") as
-        | CloudStatus
-        | undefined;
+        CloudStatus | undefined;
       if (oldStatus === undefined) {
         this._resolveCloudStatusLoaded();
       } else if (oldStatus.logged_in !== this.cloudStatus.logged_in) {

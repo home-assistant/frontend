@@ -206,9 +206,9 @@ class HaConfigBackupOverview extends LitElement {
 
     return html`
       <hass-subpage
-        .backPath=${this._searchParms.has("historyBack")
-          ? undefined
-          : "/config/system"}
+        .backPath=${
+          this._searchParms.has("historyBack") ? undefined : "/config/system"
+        }
         .hass=${this.hass}
         .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.backup.overview.header")}
@@ -231,12 +231,13 @@ class HaConfigBackupOverview extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <div class="content">
-          ${this.info && Object.keys(this.info.agent_errors).length
-            ? html`${Object.entries(this.info.agent_errors).map(
-                ([agentId, error]) =>
-                  html`<ha-alert
-                    alert-type="error"
-                    .title=${this.hass.localize(
+          ${
+            this.info && Object.keys(this.info.agent_errors).length
+              ? html`${Object.entries(this.info.agent_errors).map(
+                  ([agentId, error]) =>
+                    html`<ha-alert
+                      alert-type="error"
+                      .title=${this.hass.localize(
                       "ui.panel.config.backup.overview.agent_error",
                       {
                         name: computeBackupAgentName(
@@ -246,83 +247,90 @@ class HaConfigBackupOverview extends LitElement {
                         ),
                       }
                     )}
-                  >
-                    ${error}
-                  </ha-alert>`
-              )}`
-            : nothing}
-          ${backupInProgress
-            ? html`
-                <ha-backup-overview-progress
-                  .hass=${this.hass}
-                  .manager=${this.manager}
-                  .agents=${this.agents}
-                  .uploadProgress=${this.uploadProgress}
-                >
-                </ha-backup-overview-progress>
-              `
-            : this._needsOnboarding
-              ? html`
-                  <ha-backup-overview-onboarding
-                    .hass=${this.hass}
-                    @button-click=${this._handleOnboardingButtonClick}
-                  >
-                  </ha-backup-overview-onboarding>
-                `
-              : this.config
-                ? html`
-                    <ha-backup-overview-summary
-                      .hass=${this.hass}
-                      .backups=${this.backups}
-                      .config=${this.config}
-                      .fetching=${this.fetching}
                     >
-                    </ha-backup-overview-summary>
+                      ${error}
+                    </ha-alert>`
+                )}`
+              : nothing
+          }
+          ${
+            backupInProgress
+              ? html`
+                  <ha-backup-overview-progress
+                    .hass=${this.hass}
+                    .manager=${this.manager}
+                    .agents=${this.agents}
+                    .uploadProgress=${this.uploadProgress}
+                  >
+                  </ha-backup-overview-progress>
+                `
+              : this._needsOnboarding
+                ? html`
+                    <ha-backup-overview-onboarding
+                      .hass=${this.hass}
+                      @button-click=${this._handleOnboardingButtonClick}
+                    >
+                    </ha-backup-overview-onboarding>
                   `
-                : nothing}
+                : this.config
+                  ? html`
+                      <ha-backup-overview-summary
+                        .hass=${this.hass}
+                        .backups=${this.backups}
+                        .config=${this.config}
+                        .fetching=${this.fetching}
+                      >
+                      </ha-backup-overview-summary>
+                    `
+                  : nothing
+          }
 
           <ha-backup-overview-backups
             .hass=${this.hass}
             .backups=${this.backups}
           ></ha-backup-overview-backups>
 
-          ${!this._needsOnboarding && this._config
-            ? html`
-                <ha-card>
-                  <div class="card-header">
-                    ${this.hass.localize(
+          ${
+            !this._needsOnboarding && this._config
+              ? html`
+                  <ha-card>
+                    <div class="card-header">
+                      ${this.hass.localize(
                       "ui.panel.config.backup.settings.encryption_key.title"
                     )}
-                  </div>
-                  <div class="card-content">
-                    <p>
-                      ${this.hass.localize(
+                    </div>
+                    <div class="card-content">
+                      <p>
+                        ${this.hass.localize(
                         "ui.panel.config.backup.settings.encryption_key.description"
                       )}
-                    </p>
-                    <ha-backup-config-encryption-key
-                      .hass=${this.hass}
-                      .value=${this._config.create_backup.password}
-                      @value-changed=${this._encryptionKeyChanged}
-                    ></ha-backup-config-encryption-key>
-                  </div>
-                </ha-card>
-
-                <ha-backup-overview-settings
-                  .hass=${this.hass}
-                  .config=${this._config}
-                  .agents=${this.agents}
-                ></ha-backup-overview-settings>
-
-                ${this.hass.config.components.includes("hassio")
-                  ? html`
-                      <ha-backup-overview-app-update-backup
+                      </p>
+                      <ha-backup-config-encryption-key
                         .hass=${this.hass}
-                      ></ha-backup-overview-app-update-backup>
-                    `
-                  : nothing}
-              `
-            : nothing}
+                        .value=${this._config.create_backup.password}
+                        @value-changed=${this._encryptionKeyChanged}
+                      ></ha-backup-config-encryption-key>
+                    </div>
+                  </ha-card>
+
+                  <ha-backup-overview-settings
+                    .hass=${this.hass}
+                    .config=${this._config}
+                    .agents=${this.agents}
+                  ></ha-backup-overview-settings>
+
+                  ${
+                  this.hass.config.components.includes("hassio")
+                    ? html`
+                        <ha-backup-overview-app-update-backup
+                          .hass=${this.hass}
+                        ></ha-backup-overview-app-update-backup>
+                      `
+                    : nothing
+                }
+                `
+              : nothing
+          }
         </div>
 
         <ha-button

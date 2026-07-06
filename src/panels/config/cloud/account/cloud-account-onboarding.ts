@@ -103,14 +103,16 @@ export class CloudAccountOnboarding extends LitElement {
       <div class="ready-chip ${key}">
         <div class="ready-chip-icon">
           <ha-svg-icon .path=${icon}></ha-svg-icon>
-          ${this._panelCompleted(key)
-            ? html`
-                <ha-svg-icon
-                  class="chip-badge on"
-                  .path=${mdiCheckCircle}
-                ></ha-svg-icon>
-              `
-            : nothing}
+          ${
+            this._panelCompleted(key)
+              ? html`
+                  <ha-svg-icon
+                    class="chip-badge on"
+                    .path=${mdiCheckCircle}
+                  ></ha-svg-icon>
+                `
+              : nothing
+          }
         </div>
         <span>${label}</span>
       </div>

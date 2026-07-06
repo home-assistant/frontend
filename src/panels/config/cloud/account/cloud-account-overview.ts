@@ -249,10 +249,9 @@ export class CloudAccountOverview extends LitElement {
           <img
             class="nc-logo"
             alt="Nabu Casa"
-            src="https://brands.home-assistant.io/_/cloud/${this.hass.themes
-              ?.darkMode
-              ? "dark_"
-              : ""}icon.png"
+            src="https://brands.home-assistant.io/_/cloud/${
+              this.hass.themes?.darkMode ? "dark_" : ""
+            }icon.png"
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
           />
@@ -269,13 +268,15 @@ export class CloudAccountOverview extends LitElement {
                 <span>${this._emailRevealed ? email : maskedEmail}</span>
                 <ha-icon-button
                   .path=${this._emailRevealed ? mdiEyeOff : mdiEye}
-                  .label=${this._emailRevealed
-                    ? this.hass.localize(
-                        "ui.panel.config.cloud.account.hide_email"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.cloud.account.show_email"
-                      )}
+                  .label=${
+                    this._emailRevealed
+                      ? this.hass.localize(
+                          "ui.panel.config.cloud.account.hide_email"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.cloud.account.show_email"
+                        )
+                  }
                   @click=${this._toggleEmail}
                 ></ha-icon-button>
               </span>
@@ -567,11 +568,7 @@ export class CloudAccountOverview extends LitElement {
   }
 
   private get _accountState():
-    | "subscribed"
-    | "trial"
-    | "canceled"
-    | "expired"
-    | "unknown" {
+    "subscribed" | "trial" | "canceled" | "expired" | "unknown" {
     const active = this.cloudStatus.active_subscription;
     switch (this.subscription?.subscription?.status) {
       case "trialing":
