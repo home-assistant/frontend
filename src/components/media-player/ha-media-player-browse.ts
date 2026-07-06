@@ -743,17 +743,17 @@ export class HaMediaPlayerBrowse extends LitElement {
                   appearance="outlined"
                   .value=${this._searchQuery}
                   .placeholder=${this.hass.localize(
-                  "ui.components.media-browser.search.search_placeholder",
-                  { name: currentItem.title }
-                )}
+                    "ui.components.media-browser.search.search_placeholder",
+                    { name: currentItem.title }
+                  )}
                   .hint=${
-                  this._searchQuery.trim().length === 1
-                    ? this.hass.localize(
-                        "ui.components.media-browser.search.min_length_hint",
-                        { count: SEARCH_MIN_LENGTH }
-                      )
-                    : ""
-                }
+                    this._searchQuery.trim().length === 1
+                      ? this.hass.localize(
+                          "ui.components.media-browser.search.min_length_hint",
+                          { count: SEARCH_MIN_LENGTH }
+                        )
+                      : ""
+                  }
                   @input=${this._handleSearchInput}
                   @keydown=${this._handleSearchKeydown}
                 ></ha-input-search>
