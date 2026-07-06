@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../components/ha-marquee-text";
 import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
@@ -155,29 +156,47 @@ export class HuiClockCardDigital extends LitElement {
         <div class="time-parts ${sizeClass}">
           <div class="time-part hour">${this._timeHour}</div>
           <div class="time-part minute">${this._timeMinute}</div>
-          ${this._timeSecond !== undefined
-            ? html`<div class="time-part second">${this._timeSecond}</div>`
-            : nothing}
-          ${this._timeAmPm !== undefined
-            ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
-            : nothing}
+          ${
+            this._timeSecond !== undefined
+              ? html`<div class="time-part second">${this._timeSecond}</div>`
+              : nothing
+          }
+          ${
+            this._timeAmPm !== undefined
+              ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
+              : nothing
+          }
         </div>
       </div>
-      ${showDate
-        ? html`<div class="date-container">
-            <div class="date ${sizeClass}">
-              ${this._date
-                ?.split("\n")
-                .map((line, index) => (index > 0 ? html`<br />${line}` : line))}
-            </div>
-          </div>`
-        : nothing}
+      ${
+        showDate
+          ? html`<div class="date-container">
+              <div class="date ${sizeClass}">
+                ${this._date
+                  ?.split("\n")
+                  .map(
+                    (line) => html`
+                      <ha-marquee-text
+                        class="date-line"
+                        speed="10"
+                        pause-duration="1500"
+                        pause-on-hover
+                      >
+                        ${line}
+                      </ha-marquee-text>
+                    `
+                  )}
+              </div>
+            </div>`
+          : nothing
+      }
     `;
   }
 
   static styles = css`
     :host {
       display: block;
+      width: 100%;
     }
 
     .clock-container {
@@ -260,10 +279,18 @@ export class HuiClockCardDigital extends LitElement {
     }
 
     .date {
+      margin-inline: auto;
       text-align: center;
       opacity: 0.8;
       font-size: var(--ha-font-size-s);
       line-height: 1.1;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .date-line {
+      width: 100%;
     }
 
     .date.size-medium {

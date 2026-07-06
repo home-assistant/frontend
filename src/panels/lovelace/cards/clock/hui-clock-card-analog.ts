@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import "../../../../components/ha-marquee-text";
 import type { HomeAssistant } from "../../../../types";
 import type { ClockCardConfig } from "../types";
 import {
@@ -201,6 +202,7 @@ export class HuiClockCardAnalog extends LitElement {
 
     const { sizeClass, isNumbers, isRoman, isUpright, isLongDate, showDate } =
       this._computeClock(this.config);
+    const dateLines = this._date?.split("\n") ?? [];
 
     const indicator = (number?: number) => html`
       <div
@@ -244,69 +246,82 @@ export class HuiClockCardAnalog extends LitElement {
             "dial-border": this.config.border ?? false,
           })}
         >
-          ${this.config.ticks === "quarter"
-            ? QUARTER_TICKS.map(
-                (i) =>
-                  // 4 ticks (12, 3, 6, 9) at 0°, 90°, 180°, 270°
-                  html`
-                    <div
-                      aria-hidden="true"
-                      class="tick hour"
-                      style=${styleMap({ "--tick-rotation": `${i * 90}deg` })}
-                    >
-                      ${indicator([12, 3, 6, 9][i])}
-                    </div>
-                  `
-              )
-            : !this.config.ticks || // Default to hour ticks
-                this.config.ticks === "hour"
-              ? HOUR_TICKS.map(
+          ${
+            this.config.ticks === "quarter"
+              ? QUARTER_TICKS.map(
                   (i) =>
-                    // 12 ticks (1-12)
+                    // 4 ticks (12, 3, 6, 9) at 0°, 90°, 180°, 270°
                     html`
                       <div
                         aria-hidden="true"
                         class="tick hour"
-                        style=${styleMap({ "--tick-rotation": `${i * 30}deg` })}
+                        style=${styleMap({ "--tick-rotation": `${i * 90}deg` })}
                       >
-                        ${indicator(((i + 11) % 12) + 1)}
+                        ${indicator([12, 3, 6, 9][i])}
                       </div>
                     `
                 )
-              : this.config.ticks === "minute"
-                ? MINUTE_TICKS.map(
+              : !this.config.ticks || // Default to hour ticks
+                  this.config.ticks === "hour"
+                ? HOUR_TICKS.map(
                     (i) =>
-                      // 60 ticks (1-60)
+                      // 12 ticks (1-12)
                       html`
                         <div
                           aria-hidden="true"
-                          class="tick ${i % 5 === 0 ? "hour" : "minute"}"
-                          style=${styleMap({
-                            "--tick-rotation": `${i * 6}deg`,
-                          })}
+                          class="tick hour"
+                          style=${styleMap({ "--tick-rotation": `${i * 30}deg` })}
                         >
-                          ${i % 5 === 0
-                            ? indicator(((i / 5 + 11) % 12) + 1)
-                            : indicator()}
+                          ${indicator(((i + 11) % 12) + 1)}
                         </div>
                       `
                   )
-                : nothing}
-          ${showDate
-            ? html`<div
-                class=${classMap({
-                  date: true,
-                  [sizeClass]: true,
-                  "long-date": isLongDate,
-                })}
-              >
-                ${this._date
-                  ?.split("\n")
-                  .map((line, index) =>
-                    index > 0 ? html`<br />${line}` : line
+                : this.config.ticks === "minute"
+                  ? MINUTE_TICKS.map(
+                      (i) =>
+                        // 60 ticks (1-60)
+                        html`
+                          <div
+                            aria-hidden="true"
+                            class="tick ${i % 5 === 0 ? "hour" : "minute"}"
+                            style=${styleMap({
+                              "--tick-rotation": `${i * 6}deg`,
+                            })}
+                          >
+                            ${
+                              i % 5 === 0
+                                ? indicator(((i / 5 + 11) % 12) + 1)
+                                : indicator()
+                            }
+                          </div>
+                        `
+                    )
+                  : nothing
+          }
+          ${
+            showDate
+              ? html`<div
+                  class=${classMap({
+                    date: true,
+                    [sizeClass]: true,
+                    "long-date": isLongDate,
+                  })}
+                >
+                  ${dateLines.map(
+                    (line) => html`
+                      <ha-marquee-text
+                        class="date-line"
+                        speed="5"
+                        pause-duration="1500"
+                        pause-on-hover
+                      >
+                        ${line}
+                      </ha-marquee-text>
+                    `
                   )}
-              </div>`
-            : nothing}
+                </div>`
+              : nothing
+          }
 
           <div class="center-dot"></div>
           <div
@@ -321,22 +336,24 @@ export class HuiClockCardAnalog extends LitElement {
               "animation-delay": `-${this._minuteOffsetSec ?? 0}s`,
             })}
           ></div>
-          ${this.config.show_seconds
-            ? html`<div
-                class=${classMap({
-                  hand: true,
-                  second: true,
-                  step: this.config.seconds_motion === "tick",
-                })}
-                style=${styleMap({
-                  "animation-delay": `-${
-                    this.config.seconds_motion === "tick"
-                      ? Math.floor(this._secondOffsetSec ?? 0)
-                      : (this._secondOffsetSec ?? 0)
-                  }s`,
-                })}
-              ></div>`
-            : nothing}
+          ${
+            this.config.show_seconds
+              ? html`<div
+                  class=${classMap({
+                    hand: true,
+                    second: true,
+                    step: this.config.seconds_motion === "tick",
+                  })}
+                  style=${styleMap({
+                    "animation-delay": `-${
+                      this.config.seconds_motion === "tick"
+                        ? Math.floor(this._secondOffsetSec ?? 0)
+                        : (this._secondOffsetSec ?? 0)
+                    }s`,
+                  })}
+                ></div>`
+              : nothing
+          }
         </div>
       </div>
     `;
@@ -526,14 +543,20 @@ export class HuiClockCardAnalog extends LitElement {
       line-height: var(--ha-line-height-condensed);
       text-align: center;
       opacity: 0.8;
-      max-width: 87%;
       overflow: hidden;
       white-space: nowrap;
-      text-overflow: ellipsis;
+      width: 100%;
+    }
+
+    .date-line {
+      width: 100%;
     }
 
     .date.long-date:not(.size-medium):not(.size-large) {
+      top: 66%;
       font-size: var(--ha-font-size-xs);
+      line-height: 1;
+      width: 45%;
     }
 
     .date.size-medium {
