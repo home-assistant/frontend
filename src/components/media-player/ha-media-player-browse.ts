@@ -1,13 +1,7 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 
-import {
-  mdiArrowUpRight,
-  mdiFilterVariant,
-  mdiKeyboard,
-  mdiPlay,
-  mdiPlus,
-} from "@mdi/js";
+import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -47,14 +41,10 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import "../chips/ha-assist-chip";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button";
 import "../ha-card";
-import "../ha-dropdown";
-import type { HaDropdownSelectEvent } from "../ha-dropdown";
-import "../ha-dropdown-item";
 import "../ha-icon-button";
 import "../ha-list";
 import "../ha-list-item";
@@ -89,14 +79,6 @@ export interface MediaPlayerItemId {
 }
 
 const SEARCH_MIN_LENGTH = 2;
-
-type MediaClass = MediaPlayerItem["media_class"];
-
-// The media-class filter offers a fixed, known list of classes. Search is
-// server-side, so the set of available classes can't be derived from results.
-const MEDIA_CLASS_FILTER_OPTIONS = Object.keys(
-  MediaClassBrowserSettings
-) as MediaClass[];
 
 const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
   can_expand: true,
@@ -151,8 +133,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   @state() private _searchResults?: MediaPlayerItem[];
 
   @state() private _searching = false;
-
-  @state() private _mediaClassFilter: MediaClass[] = [];
 
   private _searchRequestId = 0;
 
@@ -237,7 +217,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._abortSearch();
     this._searchQuery = "";
     this._searchResults = undefined;
-    this._mediaClassFilter = [];
     const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
       navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
@@ -414,7 +393,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     let children = isSearching
       ? this._searchResults!
       : currentItem.children || [];
-    let notShown = isSearching ? 0 : currentItem.not_shown || 0;
+    const notShown = isSearching ? 0 : currentItem.not_shown || 0;
     const canPlayChildren = new Set<string>();
 
     // Filter children based on accept property if provided
@@ -445,28 +424,6 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
-    // Media type filter. In browse mode the loaded children are narrowed
-    // client-side; in search mode the results are already filtered server-side
-    // via `media_filter_classes`, so they are shown as-is.
-    if (!isSearching && this._mediaClassFilter.length) {
-      children = children.filter((child) =>
-        this._mediaClassFilter.includes(child.media_class)
-      );
-      notShown = 0;
-    }
-
-    // Show the filter consistently for any browsable listing (searchable
-    // sources and folders with children alike).
-    const showMediaClassFilter =
-      !isManualMediaSourceContentId(currentItem.media_content_id) &&
-      !isTTSMediaSource(currentItem.media_content_id) &&
-      (currentItem.can_search || !!currentItem.children?.length);
-    const mediaClassFilterOptions = showMediaClassFilter
-      ? [...MEDIA_CLASS_FILTER_OPTIONS].sort((a, b) =>
-          this._localizeMediaClass(a).localeCompare(this._localizeMediaClass(b))
-        )
-      : [];
-
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -474,7 +431,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     return html`
               ${
-                currentItem.can_play || showMediaClassFilter
+                currentItem.can_play || currentItem.can_search
                   ? html`
                       <div
                         class="header ${classMap({
@@ -485,11 +442,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                         @transitionend=${this._setHeaderHeight}
                       >
                         ${
-                          showMediaClassFilter
-                            ? this._renderSearchRow(
-                                currentItem,
-                                mediaClassFilterOptions
-                              )
+                          currentItem.can_search
+                            ? this._renderSearchField(currentItem)
                             : nothing
                         }
                         ${
@@ -729,105 +683,28 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   }
 
-  private _renderSearchRow(
-    currentItem: MediaPlayerItem,
-    mediaClassFilterOptions: MediaClass[]
-  ): TemplateResult {
+  private _renderSearchField(currentItem: MediaPlayerItem): TemplateResult {
     return html`
-      <div class="search-row">
-        ${
-          currentItem.can_search
-            ? html`
-                <ha-input-search
-                  class="search-input"
-                  appearance="outlined"
-                  .value=${this._searchQuery}
-                  .placeholder=${this.hass.localize(
-                  "ui.components.media-browser.search.search_placeholder",
-                  { name: currentItem.title }
-                )}
-                  .hint=${
-                  this._searchQuery.trim().length === 1
-                    ? this.hass.localize(
-                        "ui.components.media-browser.search.min_length_hint",
-                        { count: SEARCH_MIN_LENGTH }
-                      )
-                    : ""
-                }
-                  @input=${this._handleSearchInput}
-                  @keydown=${this._handleSearchKeydown}
-                ></ha-input-search>
-              `
-            : nothing
+      <ha-input-search
+        class="search-input"
+        appearance="outlined"
+        .value=${this._searchQuery}
+        .placeholder=${this.hass.localize(
+          "ui.components.media-browser.search.search_placeholder",
+          { name: currentItem.title }
+        )}
+        .hint=${
+          this._searchQuery.trim().length === 1
+            ? this.hass.localize(
+                "ui.components.media-browser.search.min_length_hint",
+                { count: SEARCH_MIN_LENGTH }
+              )
+            : ""
         }
-        ${this._renderMediaClassFilter(mediaClassFilterOptions)}
-      </div>
+        @input=${this._handleSearchInput}
+        @keydown=${this._handleSearchKeydown}
+      ></ha-input-search>
     `;
-  }
-
-  private _renderMediaClassFilter(
-    mediaClassFilterOptions: MediaClass[]
-  ): TemplateResult {
-    const selectedCount = this._mediaClassFilter.length;
-    return html`
-      <div class="media-class-filter">
-        <ha-dropdown
-          placement="bottom-end"
-          @wa-select=${this._toggleMediaClassFilter}
-        >
-          <ha-assist-chip
-            slot="trigger"
-            .label=${this.hass.localize(
-              "ui.components.media-browser.filter_media_type"
-            )}
-            .active=${selectedCount > 0}
-          >
-            <ha-svg-icon slot="icon" .path=${mdiFilterVariant}></ha-svg-icon>
-          </ha-assist-chip>
-          ${mediaClassFilterOptions.map((mediaClass) => {
-            const selected = this._mediaClassFilter.includes(mediaClass);
-            return html`
-              <ha-dropdown-item
-                .value=${mediaClass}
-                .action=${selected ? "remove" : "add"}
-                type="checkbox"
-                .checked=${selected}
-              >
-                ${this._localizeMediaClass(mediaClass)}
-              </ha-dropdown-item>
-            `;
-          })}
-        </ha-dropdown>
-        ${
-          selectedCount
-            ? html`<div class="filter-badge">${selectedCount}</div>`
-            : nothing
-        }
-      </div>
-    `;
-  }
-
-  private _localizeMediaClass(mediaClass: MediaClass): string {
-    return (
-      this.hass.localize(`ui.components.media-browser.class.${mediaClass}`) ||
-      mediaClass
-    );
-  }
-
-  private _toggleMediaClassFilter(ev: HaDropdownSelectEvent<MediaClass>): void {
-    ev.preventDefault(); // keep the dropdown open for multi-select
-    const value = ev.detail.item.value;
-    const action = (ev.detail.item as { action?: "add" | "remove" }).action;
-    this._mediaClassFilter =
-      action === "add"
-        ? [...this._mediaClassFilter, value]
-        : this._mediaClassFilter.filter((mediaClass) => mediaClass !== value);
-    // In search mode, re-run the search so filtering happens server-side.
-    // In browse mode, the render applies the filter to the loaded children.
-    if (this._searchQuery.trim().length >= SEARCH_MIN_LENGTH) {
-      this._debouncedSearch.cancel();
-      this._search();
-    }
   }
 
   private _handleSearchInput(ev: InputEvent): void {
@@ -878,9 +755,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._searching = true;
     // Clear previous results so stale data isn't shown while searching or on error
     this._searchResults = undefined;
-    const mediaFilterClasses = this._mediaClassFilter.length
-      ? this._mediaClassFilter
-      : undefined;
     try {
       const { result } =
         this.entityId && this.entityId !== BROWSER_PLAYER
@@ -889,14 +763,12 @@ export class HaMediaPlayerBrowse extends LitElement {
               this.entityId,
               searchQuery,
               navigateId.media_content_id,
-              navigateId.media_content_type,
-              mediaFilterClasses
+              navigateId.media_content_type
             )
           : await searchMedia(
               this.hass,
               navigateId.media_content_id,
-              searchQuery,
-              mediaFilterClasses
+              searchQuery
             );
       // Ignore the response if a newer search started or we navigated away
       if (requestId !== this._searchRequestId) {
@@ -1312,46 +1184,14 @@ export class HaMediaPlayerBrowse extends LitElement {
         .header.search-only {
           padding: 8px 16px;
         }
-        .search-row {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          gap: var(--ha-space-2);
-        }
         .search-input {
           flex: 1;
           --ha-input-padding-top: 0;
           --ha-input-padding-bottom: 0;
         }
-        :host([narrow]) .search-row {
+        :host([narrow]) .search-input {
           box-sizing: border-box;
           padding: 8px 16px;
-        }
-        .media-class-filter {
-          position: relative;
-          flex: none;
-        }
-        .media-class-filter ha-assist-chip {
-          --ha-assist-chip-container-shape: 10px;
-          --ha-assist-chip-container-color: var(--card-background-color);
-        }
-        .filter-badge {
-          position: absolute;
-          top: -4px;
-          right: -4px;
-          inset-inline-end: -4px;
-          inset-inline-start: initial;
-          min-width: 16px;
-          box-sizing: border-box;
-          border-radius: var(--ha-border-radius-circle);
-          font-size: var(--ha-font-size-xs);
-          font-weight: var(--ha-font-weight-normal);
-          background-color: var(--primary-color);
-          line-height: var(--ha-line-height-normal);
-          text-align: center;
-          padding: 0px 2px;
-          color: var(--text-primary-color);
-          pointer-events: none;
         }
         .header_button {
           position: relative;
