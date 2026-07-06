@@ -829,7 +829,6 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-
   private _handleSearchInput(ev: InputEvent): void {
     const value = (ev.target as HaInputSearch).value ?? "";
     this._searchQuery = value;
