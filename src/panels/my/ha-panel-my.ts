@@ -165,7 +165,7 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/bluetooth/visualization",
   },
   config_ai_task: {
-    redirect: "/config/general/#ai-task",
+    redirect: "/config/ai-tasks",
   },
   config_bluetooth: {
     component: "bluetooth",
