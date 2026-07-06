@@ -85,12 +85,17 @@ export interface EditorDomainHooks<TConfig> {
   domain: "automation" | "script";
 }
 
+interface AutomationEditorConfig<TConfig> {
+  config: TConfig;
+  entityRegistryUpdate?: EntityRegistryUpdate;
+}
+
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
-  class AutomationScriptEditorClass extends DirtyStateProviderMixin<TConfig>()(
-    superClass
-  ) {
+  class AutomationScriptEditorClass extends DirtyStateProviderMixin<
+    AutomationEditorConfig<TConfig>
+  >()(superClass) {
     @property({ attribute: false }) public hass!: HomeAssistant;
 
     @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -220,8 +225,17 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected takeControlSave() {
       this.readOnly = false;
       // Force dirty: set baseline to null so current config always differs
-      this._initDirtyTracking({ type: "deep" }, null as unknown as TConfig);
-      this._updateDirtyState(this.config!);
+      this._initDirtyTracking(
+        { type: "deep" },
+        {
+          config: null as unknown as TConfig,
+          entityRegistryUpdate: this.entityRegistryUpdate,
+        }
+      );
+      this._updateDirtyState({
+        config: this.config!,
+        entityRegistryUpdate: this.entityRegistryUpdate,
+      });
       this.blueprintConfig = undefined;
     }
 
@@ -266,7 +280,13 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         // looks dirty. Surface an alert offering to save when deprecated
         // options were migrated.
         this.deprecatedConfigMigrated = report.deprecated;
-        this._initDirtyTracking({ type: "deep" }, this.config);
+        this._initDirtyTracking(
+          { type: "deep" },
+          {
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          }
+        );
         hooks.checkValidation();
       } catch (err: any) {
         if (err.status_code !== 404) {

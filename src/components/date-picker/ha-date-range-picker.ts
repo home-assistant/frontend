@@ -26,6 +26,8 @@ import "../ha-icon-button-prev";
 import "../ha-textarea";
 import type { HaTextArea } from "../ha-textarea";
 import "./date-range-picker";
+import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import { translationMetadata } from "../../resources/translations-metadata";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
 
@@ -239,8 +241,13 @@ export class HaDateRangePicker extends LitElement {
     if (!this._opened) {
       return nothing;
     }
+    const dir = emitRTLDirection(
+      computeRTL(this._i18n.locale.language, translationMetadata.translations)
+    );
+
     return html`
       <date-range-picker
+        dir=${dir}
         .ranges=${this.ranges === false ? false : this.ranges || this._ranges}
         .startDate=${this.startDate}
         .endDate=${this.endDate}
