@@ -135,18 +135,20 @@ export class HaClockDateFormatPicker extends LitElement {
                 (entry: ClockDatePartValueItem) => entry.key,
                 ({ item, idx }) => this._renderValueChip(item, idx, sections)
               )}
-              ${this.disabled
-                ? nothing
-                : html`
-                    <ha-assist-chip
-                      @click=${this._addItem}
-                      .disabled=${this.disabled}
-                      label=${this._i18n.localize("ui.common.add")}
-                      class="add"
-                    >
-                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                    </ha-assist-chip>
-                  `}
+              ${
+                this.disabled
+                  ? nothing
+                  : html`
+                      <ha-assist-chip
+                        @click=${this._addItem}
+                        .disabled=${this.disabled}
+                        label=${this._i18n.localize("ui.common.add")}
+                        class="add"
+                      >
+                        <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                      </ha-assist-chip>
+                    `
+              }
             </ha-chip-set>
           </ha-sortable>
         </div>
