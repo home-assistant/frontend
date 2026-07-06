@@ -147,45 +147,58 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         }
       </style>
 
-      ${!this._ownInstance
-        ? html`<ha-alert .alertType=${app ? "info" : "warning"}>
-            ${app
-              ? this.localize("ui.panel.page-authorize.authorizing_app", {
-                  app: appNames[this.clientId!],
-                })
-              : this.localize("ui.panel.page-authorize.authorizing_client", {
-                  clientId: html`<b
-                    >${this.clientId
-                      ? punycode.toASCII(this.clientId)
-                      : this.clientId}</b
-                  >`,
-                })}
-          </ha-alert>`
-        : nothing}
+      ${
+        !this._ownInstance
+          ? html`<ha-alert .alertType=${app ? "info" : "warning"}>
+              ${
+                app
+                  ? this.localize("ui.panel.page-authorize.authorizing_app", {
+                      app: appNames[this.clientId!],
+                    })
+                  : this.localize(
+                      "ui.panel.page-authorize.authorizing_client",
+                      {
+                        clientId: html`<b
+                          >${
+                            this.clientId
+                              ? punycode.toASCII(this.clientId)
+                              : this.clientId
+                          }</b
+                        >`,
+                      }
+                    )
+              }
+            </ha-alert>`
+          : nothing
+      }
 
       <div class="card-content">
-        ${!this._authProvider
-          ? html`<p>
-              ${this.localize("ui.panel.page-authorize.initializing")}
-            </p> `
-          : html`<ha-auth-flow
-                .clientId=${this.clientId}
-                .redirectUri=${this.redirectUri}
-                .oauth2State=${this.oauth2State}
-                .authProvider=${this._authProvider}
-                .localize=${this.localize}
-                .initStoreToken=${this._preselectStoreToken}
-              ></ha-auth-flow>
-              ${inactiveProviders!.length > 0
-                ? html`
-                    <ha-pick-auth-provider
-                      .localize=${this.localize}
-                      .clientId=${this.clientId}
-                      .authProviders=${inactiveProviders!}
-                      @pick-auth-provider=${this._handleAuthProviderPick}
-                    ></ha-pick-auth-provider>
-                  `
-                : ""}`}
+        ${
+          !this._authProvider
+            ? html`<p>
+                ${this.localize("ui.panel.page-authorize.initializing")}
+              </p> `
+            : html`<ha-auth-flow
+                  .clientId=${this.clientId}
+                  .redirectUri=${this.redirectUri}
+                  .oauth2State=${this.oauth2State}
+                  .authProvider=${this._authProvider}
+                  .localize=${this.localize}
+                  .initStoreToken=${this._preselectStoreToken}
+                ></ha-auth-flow>
+                ${
+                  inactiveProviders!.length > 0
+                    ? html`
+                        <ha-pick-auth-provider
+                          .localize=${this.localize}
+                          .clientId=${this.clientId}
+                          .authProviders=${inactiveProviders!}
+                          @pick-auth-provider=${this._handleAuthProviderPick}
+                        ></ha-pick-auth-provider>
+                      `
+                    : ""
+                }`
+        }
       </div>
       <div class="footer">
         <ha-language-picker

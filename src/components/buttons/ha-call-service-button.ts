@@ -1,16 +1,18 @@
+import { consume, type ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "./ha-progress-button";
-import type { HomeAssistant } from "../../types";
+import { apiContext } from "../../data/context";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { Appearance } from "../ha-button";
 
 @customElement("ha-call-service-button")
 class HaCallServiceButton extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -56,7 +58,7 @@ class HaCallServiceButton extends LitElement {
       this.shadowRoot!.querySelector("ha-progress-button")!;
 
     try {
-      await this.hass.callService(
+      await this._api.callService(
         this.domain,
         this.service,
         this.data,

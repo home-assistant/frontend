@@ -39,6 +39,7 @@ import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
+  getPeriodMidpointOffset,
 } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
@@ -135,21 +136,25 @@ export class HuiEnergyUsageGraphCard
 
     return html`
       <ha-card>
-        ${this._config.title
-          ? html` <div class="card-header">
-              <span>${this._config.title}</span>
-              ${this._total
-                ? html`<hui-energy-graph-chip
-                    .tooltip=${this._formatTotal(this._total)}
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
-                      { num: formatNumber(this._total, this.hass.locale) }
-                    )}
-                  </hui-energy-graph-chip>`
-                : nothing}
-            </div>`
-          : nothing}
+        ${
+          this._config.title
+            ? html` <div class="card-header">
+                <span>${this._config.title}</span>
+                ${
+                  this._total
+                    ? html`<hui-energy-graph-chip
+                        .tooltip=${this._formatTotal(this._total)}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_usage_graph.total_usage",
+                          { num: formatNumber(this._total, this.hass.locale) }
+                        )}
+                      </hui-energy-graph-chip>`
+                    : nothing
+                }
+              </div>`
+            : nothing
+        }
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -170,15 +175,21 @@ export class HuiEnergyUsageGraphCard
             )}
             chart-type="bar"
           ></ha-chart-base>
-          ${!this._chartData.some((dataset) => dataset.data!.length)
-            ? html`<div class="no-data">
-                ${isToday(this._start)
-                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
-                  : this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.no_data_period"
-                    )}
-              </div>`
-            : ""}
+          ${
+            !this._chartData.some((dataset) => dataset.data!.length)
+              ? html`<div class="no-data">
+                  ${
+                    isToday(this._start)
+                      ? this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.no_data_period"
+                        )
+                  }
+                </div>`
+              : ""
+          }
         </div>
       </ha-card>
     `;
@@ -585,14 +596,15 @@ export class HuiEnergyUsageGraphCard
 
     const uniqueKeys = summedData.timestamps;
 
-    // Only center bars for sub-daily periods (hour/5min).
-    // Only start timestamps available here, so estimate midpoint from the gap
-    // between the first two entries. Assumes uniform period spacing.
+    // Only center bars for sub-daily periods (hour/5min). Only start timestamps
+    // available here, so estimate midpoint from the gap between the first two
+    // entries; with a lone first-of-day bucket there is no gap to measure, so
+    // fall back to the nominal period midpoint so the bar stays centered.
     const period = getSuggestedPeriod(this._start, this._end);
     const periodOffset =
       (period === "hour" || period === "5minute") && uniqueKeys.length >= 2
         ? (uniqueKeys[1] - uniqueKeys[0]) / 2
-        : 0;
+        : getPeriodMidpointOffset(period);
 
     const compareTransform = getCompareTransform(
       this._start,

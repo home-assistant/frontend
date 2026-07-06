@@ -25,6 +25,7 @@ import type {
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
+import type { LogbookNameDetail } from "../../logbook/logbook-entry-model";
 import type { TimestampRenderingFormat } from "../components/types";
 import type { LovelaceElementConfig } from "../elements/types";
 import type {
@@ -37,11 +38,7 @@ import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
 
 export type AlarmPanelCardConfigState =
-  | "arm_away"
-  | "arm_home"
-  | "arm_night"
-  | "arm_vacation"
-  | "arm_custom_bypass";
+  "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -334,7 +331,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   image?: string;
   show_state?: boolean;
   state_color?: boolean;
-  format?: TimestampRenderingFormat;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -387,6 +384,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   theme?: string;
   state_filter?: string[];
+  name_detail?: "auto" | LogbookNameDetail;
 }
 
 export interface MapEntityConfig extends EntityConfig {

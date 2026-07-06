@@ -434,24 +434,28 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
     return html`
       <div class="groups">
-        ${supportsPosition
-          ? this._renderKindSection(
-              "position",
-              this._localize("ui.card.cover.position"),
-              this._favoritePositions,
-              showDoneOnPosition,
-              showLabels
-            )
-          : nothing}
-        ${supportsTiltPosition
-          ? this._renderKindSection(
-              "tilt",
-              this._localize("ui.card.cover.tilt_position"),
-              this._favoriteTiltPositions,
-              true,
-              showLabels
-            )
-          : nothing}
+        ${
+          supportsPosition
+            ? this._renderKindSection(
+                "position",
+                this._localize("ui.card.cover.position"),
+                this._favoritePositions,
+                showDoneOnPosition,
+                showLabels
+              )
+            : nothing
+        }
+        ${
+          supportsTiltPosition
+            ? this._renderKindSection(
+                "tilt",
+                this._localize("ui.card.cover.tilt_position"),
+                this._favoriteTiltPositions,
+                true,
+                showLabels
+              )
+            : nothing
+        }
       </div>
     `;
   }

@@ -22,43 +22,51 @@ class OnboardingRestoreBackupStatus extends LitElement {
           `ui.panel.page-onboarding.restore.${this.backupInfo.state === "restore_backup" ? "in_progress" : "failed"}`
         )}
       </h1>
-      ${this.backupInfo.state === "restore_backup"
-        ? html` <p>
-            ${this.localize(
-              `ui.panel.page-onboarding.restore.in_progress_description`
-            )}
-          </p>`
-        : nothing}
+      ${
+        this.backupInfo.state === "restore_backup"
+          ? html` <p>
+              ${this.localize(
+                `ui.panel.page-onboarding.restore.in_progress_description`
+              )}
+            </p>`
+          : nothing
+      }
       <div class="card-content">
-        ${this.backupInfo.state === "restore_backup"
-          ? html`
-              <div class="loading">
-                <ha-progress-bar indeterminate></ha-progress-bar>
-              </div>
-            `
-          : html`
-              <ha-alert alert-type="error">
-                ${this.localize(
-                  "ui.panel.page-onboarding.restore.failed_status_description"
-                )}
-              </ha-alert>
-              ${this.backupInfo.last_action_event?.reason
-                ? html`
-                    <div class="failed">
-                      <h4>Error:</h4>
-                      ${this.backupInfo.last_action_event?.reason}
-                    </div>
-                  `
-                : nothing}
-            `}
+        ${
+          this.backupInfo.state === "restore_backup"
+            ? html`
+                <div class="loading">
+                  <ha-progress-bar indeterminate></ha-progress-bar>
+                </div>
+              `
+            : html`
+                <ha-alert alert-type="error">
+                  ${this.localize(
+                    "ui.panel.page-onboarding.restore.failed_status_description"
+                  )}
+                </ha-alert>
+                ${
+                  this.backupInfo.last_action_event?.reason
+                    ? html`
+                        <div class="failed">
+                          <h4>Error:</h4>
+                          ${this.backupInfo.last_action_event?.reason}
+                        </div>
+                      `
+                    : nothing
+                }
+              `
+        }
       </div>
-      ${this.backupInfo.state !== "restore_backup"
-        ? html`<div class="actions">
-            <ha-button @click=${this._back}>
-              ${this.localize("ui.panel.page-onboarding.restore.back")}
-            </ha-button>
-          </div>`
-        : nothing}
+      ${
+        this.backupInfo.state !== "restore_backup"
+          ? html`<div class="actions">
+              <ha-button @click=${this._back}>
+                ${this.localize("ui.panel.page-onboarding.restore.back")}
+              </ha-button>
+            </div>`
+          : nothing
+      }
     `;
   }
 

@@ -13,7 +13,7 @@ export const entitiesConfigStruct = union([
     icon: optional(string()),
     image: optional(string()),
     secondary_info: optional(string()),
-    format: optional(timeFormatConfigStruct),
+    time_format: optional(timeFormatConfigStruct),
     state_color: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),

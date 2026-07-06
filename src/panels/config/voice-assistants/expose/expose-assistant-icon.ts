@@ -18,9 +18,7 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
   @property({ type: Boolean }) public manual = false;
 
   @property() public assistant?:
-    | "conversation"
-    | "cloud.alexa"
-    | "cloud.google_assistant";
+    "conversation" | "cloud.alexa" | "cloud.google_assistant";
 
   render() {
     if (!this.assistant || !voiceAssistants[this.assistant]) return nothing;
@@ -32,34 +30,39 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
             filter: this.manual ? "grayscale(100%)" : undefined,
           })}
           .voiceAssistantId=${this.assistant}
-          .hass=${this.hass}
         >
         </voice-assistant-brand-icon>
-        ${this.unsupported
-          ? html`
-              <ha-svg-icon
-                .path=${mdiAlertCircle}
-                class="unsupported"
-              ></ha-svg-icon>
-            `
-          : nothing}
+        ${
+          this.unsupported
+            ? html`
+                <ha-svg-icon
+                  .path=${mdiAlertCircle}
+                  class="unsupported"
+                ></ha-svg-icon>
+              `
+            : nothing
+        }
       </div>
       <ha-tooltip
         for=${id}
         placement="left"
         .disabled=${!this.unsupported && !this.manual}
       >
-        ${this.unsupported
-          ? this.hass.localize(
-              "ui.panel.config.voice_assistants.expose.not_supported"
-            )
-          : ""}
+        ${
+          this.unsupported
+            ? this.hass.localize(
+                "ui.panel.config.voice_assistants.expose.not_supported"
+              )
+            : ""
+        }
         ${this.unsupported && this.manual ? html`<br />` : nothing}
-        ${this.manual
-          ? this.hass.localize(
-              "ui.panel.config.voice_assistants.expose.manually_configured"
-            )
-          : nothing}
+        ${
+          this.manual
+            ? this.hass.localize(
+                "ui.panel.config.voice_assistants.expose.manually_configured"
+              )
+            : nothing
+        }
       </ha-tooltip>
     `;
   }

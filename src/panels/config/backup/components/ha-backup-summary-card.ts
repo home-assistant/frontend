@@ -13,12 +13,7 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-spinner";
 
 type SummaryStatus =
-  | "success"
-  | "error"
-  | "info"
-  | "warning"
-  | "loading"
-  | "none";
+  "success" | "error" | "info" | "warning" | "loading" | "none";
 
 const ICONS: Partial<Record<SummaryStatus, string>> = {
   success: mdiCheck,
@@ -46,27 +41,31 @@ class HaBackupSummaryCard extends LitElement {
     return html`
       <ha-card outlined>
         <div class="summary">
-          ${this.status === "loading"
-            ? html`<ha-spinner></ha-spinner>`
-            : this.status === "none"
-              ? nothing
-              : html`
-                  <div class="icon ${this.status}">
-                    <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
-                  </div>
-                `}
+          ${
+            this.status === "loading"
+              ? html`<ha-spinner></ha-spinner>`
+              : this.status === "none"
+                ? nothing
+                : html`
+                    <div class="icon ${this.status}">
+                      <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
+                    </div>
+                  `
+          }
 
           <div class="content">
             <p class="heading">${this.heading}</p>
             <p class="description">${this.description}</p>
           </div>
-          ${this.hasAction
-            ? html`
-                <div class="action">
-                  <slot name="action"></slot>
-                </div>
-              `
-            : nothing}
+          ${
+            this.hasAction
+              ? html`
+                  <div class="action">
+                    <slot name="action"></slot>
+                  </div>
+                `
+              : nothing
+          }
         </div>
         <div class="content">
           <slot></slot>

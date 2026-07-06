@@ -3,15 +3,13 @@ import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-textarea";
 import "../input/ha-input";
 import "../input/ha-input-multi";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property() public value?: any;
 
   @property() public name?: string;
@@ -89,12 +87,16 @@ export class HaTextSelector extends LitElement {
       .autocomplete=${this.selector.text?.autocomplete}
       .passwordToggle=${this.selector.text?.type === "password"}
     >
-      ${this.selector.text?.prefix
-        ? html`<span slot="start">${this.selector.text.prefix}</span>`
-        : nothing}
-      ${this.selector.text?.suffix
-        ? html`<span slot="end">${this.selector.text.suffix}</span>`
-        : nothing}
+      ${
+        this.selector.text?.prefix
+          ? html`<span slot="start">${this.selector.text.prefix}</span>`
+          : nothing
+      }
+      ${
+        this.selector.text?.suffix
+          ? html`<span slot="end">${this.selector.text.suffix}</span>`
+          : nothing
+      }
     </ha-input>`;
   }
 

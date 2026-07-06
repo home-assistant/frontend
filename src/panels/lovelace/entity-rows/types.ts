@@ -14,6 +14,7 @@ export interface EntityConfig {
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
   image?: string;
+  time_format?: TimestampRenderingFormat;
 }
 
 export interface ConfirmableRowConfig extends EntityConfig {
@@ -107,5 +108,4 @@ export interface AttributeRowConfig extends EntityConfig {
   attribute: string;
   prefix?: string;
   suffix?: string;
-  format?: TimestampRenderingFormat;
 }

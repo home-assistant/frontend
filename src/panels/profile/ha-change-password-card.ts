@@ -39,12 +39,18 @@ class HaChangePasswordCard extends LitElement {
         .header=${this.hass.localize("ui.panel.profile.change_password.header")}
       >
         <div class="card-content">
-          ${this._errorMsg
-            ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
-            : ""}
-          ${this._statusMsg
-            ? html`<ha-alert alert-type="success">${this._statusMsg}</ha-alert>`
-            : ""}
+          ${
+            this._errorMsg
+              ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
+              : ""
+          }
+          ${
+            this._statusMsg
+              ? html`<ha-alert alert-type="success"
+                  >${this._statusMsg}</ha-alert
+                >`
+              : ""
+          }
 
           <ha-input
             id="currentPassword"
@@ -61,36 +67,38 @@ class HaChangePasswordCard extends LitElement {
             required
           ></ha-input>
 
-          ${this._currentPassword
-            ? html`<ha-input
-                  type="password"
-                  password-toggle
-                  .label=${this.hass.localize(
-                    "ui.panel.profile.change_password.new_password"
-                  )}
-                  name="password"
-                  autocomplete="new-password"
-                  .value=${this._password}
-                  @input=${this._newPasswordChanged}
-                  @change=${this._newPasswordChanged}
-                  required
-                  autoValidate
-                ></ha-input>
-                <ha-input
-                  type="password"
-                  password-toggle
-                  .label=${this.hass.localize(
-                    "ui.panel.profile.change_password.confirm_new_password"
-                  )}
-                  name="passwordConfirm"
-                  autocomplete="new-password"
-                  .value=${this._passwordConfirm}
-                  @input=${this._newPasswordConfirmChanged}
-                  @change=${this._newPasswordConfirmChanged}
-                  required
-                  autoValidate
-                ></ha-input>`
-            : ""}
+          ${
+            this._currentPassword
+              ? html`<ha-input
+                    type="password"
+                    password-toggle
+                    .label=${this.hass.localize(
+                      "ui.panel.profile.change_password.new_password"
+                    )}
+                    name="password"
+                    autocomplete="new-password"
+                    .value=${this._password}
+                    @input=${this._newPasswordChanged}
+                    @change=${this._newPasswordChanged}
+                    required
+                    autoValidate
+                  ></ha-input>
+                  <ha-input
+                    type="password"
+                    password-toggle
+                    .label=${this.hass.localize(
+                      "ui.panel.profile.change_password.confirm_new_password"
+                    )}
+                    name="passwordConfirm"
+                    autocomplete="new-password"
+                    .value=${this._passwordConfirm}
+                    @input=${this._newPasswordConfirmChanged}
+                    @change=${this._newPasswordConfirmChanged}
+                    required
+                    autoValidate
+                  ></ha-input>`
+              : ""
+          }
         </div>
 
         <div class="card-actions">

@@ -205,9 +205,9 @@ export class StateHistoryChartLine extends LitElement {
       return html`<br /><ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}
         ></ha-chart-tooltip-marker>
-        ${param.seriesName
-          ? html`${param.seriesName}: `
-          : nothing}${value}${statSuffix}`;
+        ${
+          param.seriesName ? html`${param.seriesName}: ` : nothing
+        }${value}${statSuffix}`;
     })}`;
   };
 
@@ -445,6 +445,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _formatYAxisLabel = (value: number) => {
     const label = formatNumber(value, this.hass.locale, {
+      minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
     const width = measureTextWidth(label, 12) + 5;

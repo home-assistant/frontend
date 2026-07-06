@@ -65,39 +65,43 @@ class HaAttributes extends LitElement {
         @expanded-will-change=${this._expandedChanged}
       >
         <div class="attribute-container">
-          ${this._expanded
-            ? html`
-                ${attributes.map(
-                  (attribute) => html`
-                    <div class="data-entry">
-                      <div class="key">
-                        ${computeAttributeNameDisplay(
-                          this.hass.localize,
-                          this.stateObj!,
-                          this.hass.entities,
-                          attribute
-                        )}
+          ${
+            this._expanded
+              ? html`
+                  ${attributes.map(
+                    (attribute) => html`
+                      <div class="data-entry">
+                        <div class="key">
+                          ${computeAttributeNameDisplay(
+                            this.hass.localize,
+                            this.stateObj!,
+                            this.hass.entities,
+                            attribute
+                          )}
+                        </div>
+                        <div class="value">
+                          <ha-attribute-value
+                            .attribute=${attribute}
+                            .stateObj=${this.stateObj}
+                          ></ha-attribute-value>
+                        </div>
                       </div>
-                      <div class="value">
-                        <ha-attribute-value
-                          .attribute=${attribute}
-                          .stateObj=${this.stateObj}
-                        ></ha-attribute-value>
-                      </div>
-                    </div>
-                  `
-                )}
-              `
-            : ""}
+                    `
+                  )}
+                `
+              : ""
+          }
         </div>
       </ha-expansion-panel>
-      ${this.stateObj.attributes.attribution
-        ? html`
-            <div class="attribution">
-              ${this.stateObj.attributes.attribution}
-            </div>
-          `
-        : ""}
+      ${
+        this.stateObj.attributes.attribution
+          ? html`
+              <div class="attribution">
+                ${this.stateObj.attributes.attribution}
+              </div>
+            `
+          : ""
+      }
     `;
   }
 

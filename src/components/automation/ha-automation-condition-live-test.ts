@@ -56,11 +56,13 @@ export class HaAutomationConditionLiveTest extends LitElement {
           )}
         ></ha-automation-row-live-test>
       </div>
-      ${this._liveTestResult.message
-        ? html`<ha-tooltip for="indicator"
-            >${this._liveTestResult.message}</ha-tooltip
-          >`
-        : nothing}
+      ${
+        this._liveTestResult.message
+          ? html`<ha-tooltip for="indicator"
+              >${this._liveTestResult.message}</ha-tooltip
+            >`
+          : nothing
+      }
     `;
   }
 

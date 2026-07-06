@@ -31,6 +31,21 @@ const useHash = __DEMO__;
 const curPath = () =>
   useHash ? location.hash.substring(1) : location.pathname;
 
+// Developer tools was renamed to Tools (/config/tools) in 2026.8; it had moved
+// from /developer-tools to /config in 2026.2. Redirect both old locations to
+// the new one. Applied on the initial route and on every navigation so
+// bookmarks and external links to the old URLs resolve too, not just in-app
+// navigation.
+const redirectLegacyToolsPath = (path: string): string => {
+  if (path.startsWith("/config/developer-tools")) {
+    return path.replace("/config/developer-tools", "/config/tools");
+  }
+  if (path.startsWith("/developer-tools")) {
+    return path.replace("/developer-tools", "/config/tools");
+  }
+  return path;
+};
+
 const panelUrl = (path: string) => {
   const dividerPos = path.indexOf("/", 1);
   return dividerPos === -1 ? path.substring(1) : path.substring(1, dividerPos);
@@ -55,7 +70,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   constructor() {
     super();
-    const path = curPath();
+    const path = redirectLegacyToolsPath(curPath());
 
     this._route = {
       prefix: "",
@@ -121,10 +136,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
     // Navigation
     const updateRoute = (path = curPath()) => {
-      // Developer tools panel was moved to config in 2026.2
-      if (path.startsWith("/developer-tools")) {
-        path = path.replace("/developer-tools", "/config/developer-tools");
-      }
+      path = redirectLegacyToolsPath(path);
       if (this._route && path === this._route.path) {
         return;
       }

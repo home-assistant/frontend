@@ -98,9 +98,11 @@ class DialogDownloadDecryptedBackup
           @input=${this._keyChanged}
         ></ha-input>
 
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"

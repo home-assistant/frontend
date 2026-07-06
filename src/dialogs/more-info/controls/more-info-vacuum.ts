@@ -142,13 +142,15 @@ class MoreInfoVacuum extends LitElement {
 
       return html`
         <span class="battery" slot="after-time">
-          ${batteryDomain === "binary_sensor"
-            ? nothing
-            : html`<span
-                >${Number(battery.state).toFixed()}${blankBeforePercent(
-                  this._i18n.locale
-                )}%</span
-              >`}
+          ${
+            batteryDomain === "binary_sensor"
+              ? nothing
+              : html`<span
+                  >${Number(battery.state).toFixed()}${blankBeforePercent(
+                    this._i18n.locale
+                  )}%</span
+                >`
+          }
           <ha-battery-icon
             .batteryStateObj=${battery}
             .batteryChargingStateObj=${batteryCharging}
@@ -353,143 +355,167 @@ class MoreInfoVacuum extends LitElement {
           .stateObj=${this.stateObj}
         ></ha-state-control-vacuum-status>
 
-        ${hasAnyCommand
-          ? html`
-              <div class="buttons">
-                <ha-control-button-group>
-                  ${this._supportsStartPause
-                    ? html`
-                        <ha-control-button
-                          .label=${this._startPauseLabel}
-                          @click=${this._handleStartPause}
-                          .disabled=${this._startPauseDisabled}
-                        >
-                          <ha-svg-icon
-                            .path=${this._startPauseIcon}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                  ${supportsStop
-                    ? html`
-                        <ha-control-button
-                          .label=${this._i18n.localize(
-                            "ui.dialogs.more_info_control.vacuum.stop"
-                          )}
-                          @click=${this._handleStop}
-                          .disabled=${isUnavailable || !canStop(stateObj)}
-                        >
-                          <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                  ${supportsReturnHome
-                    ? html`
-                        <ha-control-button
-                          .label=${this._i18n.localize(
-                            "ui.dialogs.more_info_control.vacuum.return_home"
-                          )}
-                          @click=${this._handleReturnHome}
-                          .disabled=${isUnavailable || !canReturnHome(stateObj)}
-                        >
-                          <ha-svg-icon
-                            .path=${mdiHomeImportOutline}
-                          ></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                  ${supportsLocate
-                    ? html`
-                        <ha-control-button
-                          .label=${this._i18n.localize(
-                            "ui.dialogs.more_info_control.vacuum.locate"
-                          )}
-                          @click=${this._handleLocate}
-                          .disabled=${isUnavailable}
-                        >
-                          <ha-svg-icon .path=${mdiMapMarker}></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                  ${supportsCleanSpot
-                    ? html`
-                        <ha-control-button
-                          .label=${this._i18n.localize(
-                            "ui.dialogs.more_info_control.vacuum.clean_spot"
-                          )}
-                          @click=${this._handleCleanSpot}
-                          .disabled=${isUnavailable}
-                        >
-                          <ha-svg-icon .path=${mdiTargetVariant}></ha-svg-icon>
-                        </ha-control-button>
-                      `
-                    : nothing}
-                </ha-control-button-group>
-              </div>
-            `
-          : nothing}
+        ${
+          hasAnyCommand
+            ? html`
+                <div class="buttons">
+                  <ha-control-button-group>
+                    ${
+                      this._supportsStartPause
+                        ? html`
+                            <ha-control-button
+                              .label=${this._startPauseLabel}
+                              @click=${this._handleStartPause}
+                              .disabled=${this._startPauseDisabled}
+                            >
+                              <ha-svg-icon
+                                .path=${this._startPauseIcon}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsStop
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.vacuum.stop"
+                              )}
+                              @click=${this._handleStop}
+                              .disabled=${isUnavailable || !canStop(stateObj)}
+                            >
+                              <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsReturnHome
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.vacuum.return_home"
+                              )}
+                              @click=${this._handleReturnHome}
+                              .disabled=${isUnavailable || !canReturnHome(stateObj)}
+                            >
+                              <ha-svg-icon
+                                .path=${mdiHomeImportOutline}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsLocate
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.vacuum.locate"
+                              )}
+                              @click=${this._handleLocate}
+                              .disabled=${isUnavailable}
+                            >
+                              <ha-svg-icon .path=${mdiMapMarker}></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                    ${
+                      supportsCleanSpot
+                        ? html`
+                            <ha-control-button
+                              .label=${this._i18n.localize(
+                                "ui.dialogs.more_info_control.vacuum.clean_spot"
+                              )}
+                              @click=${this._handleCleanSpot}
+                              .disabled=${isUnavailable}
+                            >
+                              <ha-svg-icon
+                                .path=${mdiTargetVariant}
+                              ></ha-svg-icon>
+                            </ha-control-button>
+                          `
+                        : nothing
+                    }
+                  </ha-control-button-group>
+                </div>
+              `
+            : nothing
+        }
       </div>
 
-      ${(supportsFanSpeed && stateObj.attributes.fan_speed_list) ||
-      supportsCleanArea
-        ? html`
-            <ha-more-info-control-select-container>
-              ${supportsFanSpeed && stateObj.attributes.fan_speed_list
-                ? html`
-                    <ha-control-select-menu
-                      .label=${this._formatters.formatEntityAttributeName(
-                        stateObj,
-                        "fan_speed"
-                      )}
-                      .value=${stateObj.attributes.fan_speed}
-                      .disabled=${isUnavailable}
-                      @wa-select=${this._handleFanSpeedChanged}
-                      .options=${stateObj.attributes.fan_speed_list.map(
-                        (mode) => ({
-                          value: mode,
-                          label: this._formatters.formatEntityAttributeValue(
+      ${
+        (supportsFanSpeed && stateObj.attributes.fan_speed_list) ||
+        supportsCleanArea
+          ? html`
+              <ha-more-info-control-select-container>
+                ${
+                  supportsFanSpeed && stateObj.attributes.fan_speed_list
+                    ? html`
+                        <ha-control-select-menu
+                          .label=${this._formatters.formatEntityAttributeName(
                             stateObj,
-                            "fan_speed",
-                            mode
-                          ),
-                        })
-                      )}
-                    >
-                      <ha-svg-icon slot="icon" .path=${mdiFan}></ha-svg-icon>
-                    </ha-control-select-menu>
-                  `
-                : nothing}
-              ${supportsCleanArea
-                ? html`
-                    <button
-                      class="clean-areas-button"
-                      ?disabled=${isUnavailable}
-                      @click=${this._handleCleanAreas}
-                    >
-                      <div class="icon">
-                        <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
-                      </div>
-                      <div class="content">
-                        <p class="label">
-                          ${this._i18n.localize(
-                            "ui.dialogs.more_info_control.vacuum.cleaning"
+                            "fan_speed"
                           )}
-                        </p>
-                        <p class="value">
-                          ${this._i18n.localize(
-                            "ui.dialogs.more_info_control.vacuum.by_area"
+                          .value=${stateObj.attributes.fan_speed}
+                          .disabled=${isUnavailable}
+                          @wa-select=${this._handleFanSpeedChanged}
+                          .options=${stateObj.attributes.fan_speed_list.map(
+                            (mode) => ({
+                              value: mode,
+                              label:
+                                this._formatters.formatEntityAttributeValue(
+                                  stateObj,
+                                  "fan_speed",
+                                  mode
+                                ),
+                            })
                           )}
-                        </p>
-                      </div>
-                      <div class="icon">
-                        <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-                      </div>
-                    </button>
-                  `
-                : nothing}
-            </ha-more-info-control-select-container>
-          `
-        : nothing}
+                        >
+                          <ha-svg-icon
+                            slot="icon"
+                            .path=${mdiFan}
+                          ></ha-svg-icon>
+                        </ha-control-select-menu>
+                      `
+                    : nothing
+                }
+                ${
+                  supportsCleanArea
+                    ? html`
+                        <button
+                          class="clean-areas-button"
+                          ?disabled=${isUnavailable}
+                          @click=${this._handleCleanAreas}
+                        >
+                          <div class="icon">
+                            <ha-svg-icon .path=${mdiTextureBox}></ha-svg-icon>
+                          </div>
+                          <div class="content">
+                            <p class="label">
+                              ${this._i18n.localize(
+                                "ui.dialogs.more_info_control.vacuum.cleaning"
+                              )}
+                            </p>
+                            <p class="value">
+                              ${this._i18n.localize(
+                                "ui.dialogs.more_info_control.vacuum.by_area"
+                              )}
+                            </p>
+                          </div>
+                          <div class="icon">
+                            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+                          </div>
+                        </button>
+                      `
+                    : nothing
+                }
+              </ha-more-info-control-select-container>
+            `
+          : nothing
+      }
     `;
   }
 

@@ -38,9 +38,9 @@ class MoreInfoDate extends LitElement {
     return html`
       <ha-date-input
         .locale=${this._locale}
-        .value=${this.stateObj.state === UNKNOWN
-          ? undefined
-          : this.stateObj.state}
+        .value=${
+          this.stateObj.state === UNKNOWN ? undefined : this.stateObj.state
+        }
         @value-changed=${this._dateChanged}
       >
       </ha-date-input>

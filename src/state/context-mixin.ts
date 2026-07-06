@@ -7,6 +7,7 @@ import {
   apiContext,
   areasContext,
   authContext,
+  conditionDescriptionsContext,
   configContext,
   configEntriesContext,
   configSingleContext,
@@ -28,14 +29,19 @@ import {
   servicesContext,
   statesContext,
   themesContext,
+  triggerDescriptionsContext,
   uiContext,
   userContext,
   userDataContext,
 } from "../data/context";
+import type { ConditionDescriptions } from "../data/condition";
+import { subscribeConditions } from "../data/condition";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
 import { fetchIntegrationManifestsCollection } from "../data/integration";
 import { subscribeLabelRegistry } from "../data/label/label_registry";
+import type { TriggerDescriptions } from "../data/trigger";
+import { subscribeTriggers } from "../data/trigger";
 import type { Constructor, HomeAssistant } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { LazyContextProvider } from "./lazy-context-provider";
@@ -199,6 +205,30 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       manifests: new LazyContextProvider(this, {
         context: manifestsContext,
         subscribeFn: fetchIntegrationManifestsCollection,
+      }),
+      triggerDescriptions: new LazyContextProvider(this, {
+        context: triggerDescriptionsContext,
+        subscribeFn: (connection, setValue) => {
+          // The backend streams trigger platforms in batches, so accumulate
+          // them into a single descriptions map.
+          let descriptions: TriggerDescriptions = {};
+          return subscribeTriggers(connection, (update) => {
+            descriptions = { ...descriptions, ...update };
+            setValue(descriptions);
+          });
+        },
+      }),
+      conditionDescriptions: new LazyContextProvider(this, {
+        context: conditionDescriptionsContext,
+        subscribeFn: (connection, setValue) => {
+          // The backend streams condition platforms in batches, so accumulate
+          // them into a single descriptions map.
+          let descriptions: ConditionDescriptions = {};
+          return subscribeConditions(connection, (update) => {
+            descriptions = { ...descriptions, ...update };
+            setValue(descriptions);
+          });
+        },
       }),
     };
 

@@ -117,8 +117,7 @@ export const ScrollableFadeMixin = <T extends Constructor<LitElement>>(
 
     static get styles() {
       const superCtor = Object.getPrototypeOf(this) as
-        | typeof LitElement
-        | undefined;
+        typeof LitElement | undefined;
       const inheritedStyles = stylesArray(
         (superCtor?.styles ?? []) as CSSResultGroup | CSSResultGroup[]
       );

@@ -98,7 +98,10 @@ function createYAxisLabelFormatter(
   fractionDigits: number
 ) {
   return (value: number): string =>
-    formatNumber(value, locale, { maximumFractionDigits: fractionDigits });
+    formatNumber(value, locale, {
+      minimumFractionDigits: value === 0 ? 0 : fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
 }
 
 export function getCommonOptions(
@@ -297,11 +300,11 @@ function formatTooltip(
     return nothing;
   }
   return html`<h4 style="text-align: center; margin: 0;">${period}</h4>
-    ${rows.map(
-      (row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`
-    )}${sumPositive !== 0 && countPositive > 1 && formatTotal
-      ? html`<br /><b>${formatTotal(sumPositive)}</b>`
-      : nothing}`;
+    ${rows.map((row, i) => html`${i > 0 ? html`<br />` : nothing}${row}`)}${
+      sumPositive !== 0 && countPositive > 1 && formatTotal
+        ? html`<br /><b>${formatTotal(sumPositive)}</b>`
+        : nothing
+    }`;
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {
@@ -364,6 +367,22 @@ export function computeStatMidpoint(
     );
   }
   return (start + end) / 2;
+}
+
+const PERIOD_MS: Record<string, number> = {
+  "5minute": 5 * 60 * 1000,
+  hour: 60 * 60 * 1000,
+};
+
+/**
+ * Offset from a period's start to its midpoint, for centering sub-daily bars
+ * (and forecast lines) between axis ticks — 0 for daily+ periods, which sit at
+ * the start. Derived from the period, not from the data, so the first/only
+ * bucket centers identically to every other bucket. (Previously estimated from
+ * the gap between the first two entries, which collapsed to 0 with one bucket.)
+ */
+export function getPeriodMidpointOffset(period: string): number {
+  return (PERIOD_MS[period] ?? 0) / 2;
 }
 
 export interface UntrackedSplit {

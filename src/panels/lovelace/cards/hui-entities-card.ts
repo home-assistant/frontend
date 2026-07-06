@@ -49,6 +49,33 @@ export const computeShowHeaderToggle = <
   return !!config.show_header_toggle;
 };
 
+export const migrateEntitiesCardConfig = (
+  config: EntitiesCardConfig
+): EntitiesCardConfig => {
+  let changed = false;
+  const newEntities = config.entities?.map((e) => {
+    if (typeof e !== "object") {
+      return e;
+    }
+    if (!("format" in e)) {
+      return e;
+    }
+    changed = true;
+    const { format, ...rest } = e;
+    return {
+      ...rest,
+      time_format: (rest as EntityConfig).time_format ?? format,
+    };
+  });
+  if (!changed) {
+    return config;
+  }
+  return {
+    ...config,
+    entities: newEntities as (LovelaceRowConfig | string)[],
+  };
+};
+
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -153,11 +180,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       throw new Error("Entities must be specified");
     }
 
-    const entities = processConfigEntities(config.entities);
+    const migratedConfig = migrateEntitiesCardConfig(config);
+    const entities = processConfigEntities(migratedConfig.entities);
 
-    this._config = config;
+    this._config = migratedConfig;
     this._configEntities = entities;
-    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
+    this._showHeaderToggle = computeShowHeaderToggle(migratedConfig, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header
@@ -190,8 +218,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("_hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntitiesCardConfig
-      | undefined;
+      EntitiesCardConfig | undefined;
 
     if (
       (changedProps.has("_hass") &&
@@ -210,47 +237,61 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${this._headerElement
-          ? html`<div class="header-footer header">${this._headerElement}</div>`
-          : ""}
-        ${!this._config.title && !this._showHeaderToggle && !this._config.icon
-          ? ""
-          : html`
-              <h1 class="card-header">
-                <div class="name">
-                  ${this._config.icon
-                    ? html`
-                        <ha-icon
-                          class="icon"
-                          .icon=${this._config.icon}
-                        ></ha-icon>
-                      `
-                    : ""}
-                  ${this._config.title}
-                </div>
-                ${!this._showHeaderToggle
-                  ? nothing
-                  : html`
-                      <hui-entities-toggle
-                        .hass=${this._hass}
-                        .entities=${(
-                          this._configEntities!.filter(
-                            (conf) => "entity" in conf
-                          ) as EntityConfig[]
-                        ).map((conf) => conf.entity)}
-                      ></hui-entities-toggle>
-                    `}
-              </h1>
-            `}
+        ${
+          this._headerElement
+            ? html`<div class="header-footer header">
+                ${this._headerElement}
+              </div>`
+            : ""
+        }
+        ${
+          !this._config.title && !this._showHeaderToggle && !this._config.icon
+            ? ""
+            : html`
+                <h1 class="card-header">
+                  <div class="name">
+                    ${
+                      this._config.icon
+                        ? html`
+                            <ha-icon
+                              class="icon"
+                              .icon=${this._config.icon}
+                            ></ha-icon>
+                          `
+                        : ""
+                    }
+                    ${this._config.title}
+                  </div>
+                  ${
+                    !this._showHeaderToggle
+                      ? nothing
+                      : html`
+                          <hui-entities-toggle
+                            .hass=${this._hass}
+                            .entities=${(
+                              this._configEntities!.filter(
+                                (conf) => "entity" in conf
+                              ) as EntityConfig[]
+                            ).map((conf) => conf.entity)}
+                          ></hui-entities-toggle>
+                        `
+                  }
+                </h1>
+              `
+        }
         <div id="states" class="card-content ha-scrollbar">
           ${this._configEntities!.map((entityConf) =>
             this._renderEntity(entityConf)
           )}
         </div>
 
-        ${this._footerElement
-          ? html`<div class="header-footer footer">${this._footerElement}</div>`
-          : ""}
+        ${
+          this._footerElement
+            ? html`<div class="header-footer footer">
+                ${this._footerElement}
+              </div>`
+            : ""
+        }
       </ha-card>
     `;
   }

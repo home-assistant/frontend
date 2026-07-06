@@ -8,12 +8,12 @@ import type {
 import { css, html } from "lit";
 import { property, state } from "lit/decorators";
 import { transform } from "../../../common/decorators/transform";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-spinner"; // used by renderLoading() provided to both editors
-import { fullEntitiesContext } from "../../../data/context";
+import type { AutomationMigrationReport } from "../../../data/automation";
+import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   showAlertDialog,
@@ -80,17 +80,22 @@ export const automationScriptEditorStyles: CSSResult = css`
 
 export interface EditorDomainHooks<TConfig> {
   fetchFileConfig(hass: HomeAssistant, id: string): Promise<TConfig>;
-  normalizeConfig(raw: TConfig): TConfig;
+  normalizeConfig(raw: TConfig, report?: AutomationMigrationReport): TConfig;
   checkValidation(): Promise<void>;
   domain: "automation" | "script";
+}
+
+interface AutomationEditorConfig<TConfig> {
+  config: TConfig;
+  entityRegistryUpdate?: EntityRegistryUpdate;
 }
 
 export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
   superClass: Constructor<LitElement>
 ) => {
-  class AutomationScriptEditorClass extends DirtyStateProviderMixin<TConfig>()(
-    superClass
-  ) {
+  class AutomationScriptEditorClass extends DirtyStateProviderMixin<
+    AutomationEditorConfig<TConfig>
+  >()(superClass) {
     @property({ attribute: false }) public hass!: HomeAssistant;
 
     @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -116,6 +121,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     @state() protected readOnly = false;
 
     @state() protected saving = false;
+
+    @state() protected deprecatedConfigMigrated = false;
 
     @state() protected validationErrors?: (string | TemplateResult)[];
 
@@ -167,9 +174,8 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       }
 
       this._relatedContextAreaId = areaId;
-      fireEvent(
+      fireRelatedContext(
         this,
-        "hass-related-context",
         areaId
           ? {
               itemType: "area",
@@ -219,8 +225,17 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
     protected takeControlSave() {
       this.readOnly = false;
       // Force dirty: set baseline to null so current config always differs
-      this._initDirtyTracking({ type: "deep" }, null as unknown as TConfig);
-      this._updateDirtyState(this.config!);
+      this._initDirtyTracking(
+        { type: "deep" },
+        {
+          config: null as unknown as TConfig,
+          entityRegistryUpdate: this.entityRegistryUpdate,
+        }
+      );
+      this._updateDirtyState({
+        config: this.config!,
+        entityRegistryUpdate: this.entityRegistryUpdate,
+      });
       this.blueprintConfig = undefined;
     }
 
@@ -259,8 +274,19 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       try {
         const config = await hooks.fetchFileConfig(this.hass, id);
         this.readOnly = false;
-        this.config = hooks.normalizeConfig(config);
-        this._initDirtyTracking({ type: "deep" }, this.config);
+        const report: AutomationMigrationReport = { deprecated: false };
+        this.config = hooks.normalizeConfig(config, report);
+        // The config is loaded as its migrated (clean) version, so it never
+        // looks dirty. Surface an alert offering to save when deprecated
+        // options were migrated.
+        this.deprecatedConfigMigrated = report.deprecated;
+        this._initDirtyTracking(
+          { type: "deep" },
+          {
+            config: this.config,
+            entityRegistryUpdate: this.entityRegistryUpdate,
+          }
+        );
         hooks.checkValidation();
       } catch (err: any) {
         if (err.status_code !== 404) {

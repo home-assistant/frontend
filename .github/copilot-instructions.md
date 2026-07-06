@@ -25,7 +25,8 @@ yarn lint          # ESLint + Prettier + TypeScript + Lit
 yarn format        # Auto-fix ESLint + Prettier
 yarn lint:types    # TypeScript compiler (run WITHOUT file arguments)
 yarn test          # Vitest
-script/develop     # Development server
+yarn dev           # Dev server (app; --background/--status/--stop/--logs)
+yarn dev:serve     # Dev server with serve (-c core URL, -p port; --background/--status/--stop/--logs)
 ```
 
 > **WARNING:** Never run `tsc` or `yarn lint:types` with file arguments (e.g., `yarn lint:types src/file.ts`). When `tsc` receives file arguments, it ignores `tsconfig.json` and emits `.js` files into `src/`, polluting the codebase. Always run `yarn lint:types` without arguments. For individual file type checking, rely on IDE diagnostics. If `.js` files are accidentally generated, clean up with `git clean -fd src/`.
@@ -494,6 +495,26 @@ this.hass.localize("ui.panel.config.updates.update_available", {
 3. **Lint**: `yarn lint` - Run all linting before committing
 4. **Test**: `yarn test` - Add and run tests
 5. **Build**: `script/build_frontend` - Test production build
+
+### Dev servers
+
+`yarn dev` builds and watches the app, served by a running Home Assistant core (`development_repo` setting). `yarn dev:serve` also serves it locally (`-c` core URL, `-p` port, default 8124).
+
+These and the e2e dev servers below take `--background`, `--status`, `--stop`, and `--logs [--follow]`.
+
+### End-to-end (e2e) tests
+
+Each Playwright suite has a dev server on its own port. Playwright reuses a server already on the port (`reuseExistingServer` locally); otherwise it does a slow full build. The rspack watcher recompiles on save, so re-runs need no restart.
+
+Start the suite's dev server, then run the suite:
+
+- **App** (8095): `yarn test:e2e:app:dev`, then `yarn test:e2e:app`
+- **Demo** (8090): `yarn dev:demo`, then `yarn test:e2e:demo`
+- **Gallery** (8100): `yarn dev:gallery`, then `yarn test:e2e:gallery`
+
+Server reuse and `--stop` key off a `/__ha_dev_status` health check, so starting or stopping twice is harmless. The app suite uses a stripped-down harness built only for e2e; demo and gallery use their normal dev servers.
+
+Add `-g "<title>" --project=chromium` to narrow a run; `yarn test:e2e` runs all three. Run the suite directly, since piping through `tail`/`head` hides progress and truncates results.
 
 ### Gallery
 

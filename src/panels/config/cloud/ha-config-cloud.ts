@@ -79,8 +79,7 @@ class HaConfigCloud extends HassRouterPage {
 
     if (changedProps.has("cloudStatus")) {
       const oldStatus = changedProps.get("cloudStatus") as
-        | CloudStatus
-        | undefined;
+        CloudStatus | undefined;
       if (oldStatus === undefined) {
         this._resolveCloudStatusLoaded();
       } else if (oldStatus.logged_in !== this.cloudStatus.logged_in) {

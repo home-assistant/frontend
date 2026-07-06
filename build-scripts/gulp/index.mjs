@@ -4,6 +4,7 @@ import "./clean.js";
 import "./compress.js";
 import "./demo.js";
 import "./download-translations.js";
+import "./e2e-test-app.js";
 import "./entry-html.js";
 import "./fetch-nightly-translations.js";
 import "./gallery.js";

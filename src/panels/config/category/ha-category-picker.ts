@@ -104,9 +104,11 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         }
 
         return html`
-          ${category.icon
-            ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
-            : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`}
+          ${
+            category.icon
+              ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
+              : html`<ha-svg-icon slot="start" .path=${mdiTag}></ha-svg-icon>`
+          }
           <span slot="headline">${category.name}</span>
         `;
       }

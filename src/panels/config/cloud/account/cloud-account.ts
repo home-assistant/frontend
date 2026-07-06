@@ -100,53 +100,60 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                     "$1***@$2"
                   )}
                   <span slot="secondary" class="wrap">
-                    ${this._subscription
-                      ? this._subscription.human_description.replace(
-                          "{periodEnd}",
-                          this._subscription.plan_renewal_date
-                            ? formatDateTime(
-                                new Date(
-                                  this._subscription.plan_renewal_date * 1000
-                                ),
-                                this.hass.locale,
-                                this.hass.config
-                              )
-                            : ""
-                        )
-                      : this.hass.localize(
-                          "ui.panel.config.cloud.account.fetching_subscription"
-                        )}
+                    ${
+                      this._subscription
+                        ? this._subscription.human_description.replace(
+                            "{periodEnd}",
+                            this._subscription.plan_renewal_date
+                              ? formatDateTime(
+                                  new Date(
+                                    this._subscription.plan_renewal_date * 1000
+                                  ),
+                                  this.hass.locale,
+                                  this.hass.config
+                                )
+                              : ""
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.cloud.account.fetching_subscription"
+                          )
+                    }
                   </span>
                 </ha-list-item>
               </div>
 
-              ${this.cloudStatus.cloud === "connecting" &&
-              this.cloudStatus.cloud_last_disconnect_reason
-                ? html`
-                    <ha-alert
-                      alert-type="warning"
-                      .title=${this.cloudStatus.cloud_last_disconnect_reason
-                        .reason}
-                    ></ha-alert>
-                  `
-                : ""}
+              ${
+                this.cloudStatus.cloud === "connecting" &&
+                this.cloudStatus.cloud_last_disconnect_reason
+                  ? html`
+                      <ha-alert
+                        alert-type="warning"
+                        .title=${
+                          this.cloudStatus.cloud_last_disconnect_reason.reason
+                        }
+                      ></ha-alert>
+                    `
+                  : ""
+              }
 
               <div class="account-row">
                 <ha-list-item noninteractive>
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.connection_status"
                   )}:
-                  ${this.cloudStatus.cloud === "connected"
-                    ? this.hass.localize(
-                        "ui.panel.config.cloud.account.connected"
-                      )
-                    : this.cloudStatus.cloud === "disconnected"
+                  ${
+                    this.cloudStatus.cloud === "connected"
                       ? this.hass.localize(
-                          "ui.panel.config.cloud.account.not_connected"
+                          "ui.panel.config.cloud.account.connected"
                         )
-                      : this.hass.localize(
-                          "ui.panel.config.cloud.account.connecting"
-                        )}
+                      : this.cloudStatus.cloud === "disconnected"
+                        ? this.hass.localize(
+                            "ui.panel.config.cloud.account.not_connected"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.cloud.account.connecting"
+                          )
+                  }
                 </ha-list-item>
               </div>
 

@@ -109,63 +109,67 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         back-path="/config/system"
         .header=${this.hass.localize("ui.panel.config.labs.caption")}
       >
-        ${sortedFeatures.length
-          ? html`
-              <ha-icon-button
-                slot="toolbar-icon"
-                .href=${documentationUrl(this.hass, "/integrations/labs/")}
-                target="_blank"
-                rel="noopener noreferrer"
-                .title=${this.hass.localize("ui.common.help")}
-                .label=${this.hass.localize("ui.common.help")}
-                .path=${mdiHelpCircleOutline}
-              ></ha-icon-button>
-            `
-          : nothing}
-        <div class="content">
-          ${!sortedFeatures.length
+        ${
+          sortedFeatures.length
             ? html`
-                <div class="empty">
-                  <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
-                  <h1>
-                    ${this.hass.localize("ui.panel.config.labs.empty.title")}
-                  </h1>
-                  ${this.hass.localize(
-                    "ui.panel.config.labs.empty.description"
-                  )}
-                  <a
-                    href=${documentationUrl(this.hass, "/integrations/labs/")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${this.hass.localize("ui.panel.config.labs.learn_more")}
-                    <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-                  </a>
-                </div>
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  .href=${documentationUrl(this.hass, "/integrations/labs/")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  .title=${this.hass.localize("ui.common.help")}
+                  .label=${this.hass.localize("ui.common.help")}
+                  .path=${mdiHelpCircleOutline}
+                ></ha-icon-button>
               `
-            : html`
-                <ha-card outlined>
-                  <div class="card-content intro-card">
+            : nothing
+        }
+        <div class="content">
+          ${
+            !sortedFeatures.length
+              ? html`
+                  <div class="empty">
+                    <ha-svg-icon .path=${mdiFlask}></ha-svg-icon>
                     <h1>
-                      ${this.hass.localize("ui.panel.config.labs.intro_title")}
+                      ${this.hass.localize("ui.panel.config.labs.empty.title")}
                     </h1>
-                    <p class="intro-text">
-                      ${this.hass.localize(
-                        "ui.panel.config.labs.intro_description"
-                      )}
-                    </p>
-                    <ha-alert alert-type="warning">
-                      ${this.hass.localize(
-                        "ui.panel.config.labs.intro_warning"
-                      )}
-                    </ha-alert>
+                    ${this.hass.localize(
+                      "ui.panel.config.labs.empty.description"
+                    )}
+                    <a
+                      href=${documentationUrl(this.hass, "/integrations/labs/")}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${this.hass.localize("ui.panel.config.labs.learn_more")}
+                      <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                    </a>
                   </div>
-                </ha-card>
+                `
+              : html`
+                  <ha-card outlined>
+                    <div class="card-content intro-card">
+                      <h1>
+                        ${this.hass.localize("ui.panel.config.labs.intro_title")}
+                      </h1>
+                      <p class="intro-text">
+                        ${this.hass.localize(
+                          "ui.panel.config.labs.intro_description"
+                        )}
+                      </p>
+                      <ha-alert alert-type="warning">
+                        ${this.hass.localize(
+                          "ui.panel.config.labs.intro_warning"
+                        )}
+                      </ha-alert>
+                    </div>
+                  </ha-card>
 
-                ${sortedFeatures.map((preview_feature) =>
-                  this._renderPreviewFeature(preview_feature)
-                )}
-              `}
+                  ${sortedFeatures.map((preview_feature) =>
+                    this._renderPreviewFeature(preview_feature)
+                  )}
+                `
+          }
         </div>
       </hass-subpage>
     `;
@@ -232,32 +236,36 @@ class HaConfigLabs extends SubscribeMixin(LitElement) {
         </div>
         <div class="card-actions">
           <div>
-            ${preview_feature.feedback_url
-              ? html`
-                  <ha-button
-                    appearance="plain"
-                    href=${preview_feature.feedback_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.labs.provide_feedback"
-                    )}
-                  </ha-button>
-                `
-              : nothing}
-            ${preview_feature.report_issue_url
-              ? html`
-                  <ha-button
-                    appearance="plain"
-                    href=${preview_feature.report_issue_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    ${this.hass.localize("ui.panel.config.labs.report_issue")}
-                  </ha-button>
-                `
-              : nothing}
+            ${
+              preview_feature.feedback_url
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      href=${preview_feature.feedback_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.labs.provide_feedback"
+                      )}
+                    </ha-button>
+                  `
+                : nothing
+            }
+            ${
+              preview_feature.report_issue_url
+                ? html`
+                    <ha-button
+                      appearance="plain"
+                      href=${preview_feature.report_issue_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ${this.hass.localize("ui.panel.config.labs.report_issue")}
+                    </ha-button>
+                  `
+                : nothing
+            }
           </div>
           <ha-button
             appearance="filled"

@@ -3,14 +3,7 @@ import type { FrontendLocaleData } from "../../data/translation";
 import { firstWeekdayIndex } from "../datetime/first_weekday";
 
 export type Unit =
-  | "second"
-  | "minute"
-  | "hour"
-  | "day"
-  | "week"
-  | "month"
-  | "quarter"
-  | "year";
+  "second" | "minute" | "hour" | "day" | "week" | "month" | "quarter" | "year";
 
 const MS_PER_SECOND = 1e3;
 const SECS_PER_MIN = 60;

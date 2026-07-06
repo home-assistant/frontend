@@ -178,13 +178,15 @@ export class DialogEnergyWaterSettings
           type="text"
           .disabled=${!this._source?.stat_energy_from}
           .value=${this._source?.name || ""}
-          .placeholder=${this._source?.stat_energy_from
-            ? getStatisticLabel(
-                this.hass,
-                this._source.stat_energy_from,
-                this._params?.statsMetadata?.[this._source.stat_energy_from]
-              )
-            : ""}
+          .placeholder=${
+            this._source?.stat_energy_from
+              ? getStatisticLabel(
+                  this.hass,
+                  this._source.stat_energy_from,
+                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                )
+              : ""
+          }
           @input=${this._nameChanged}
         >
         </ha-input>
@@ -216,50 +218,53 @@ export class DialogEnergyWaterSettings
             )}
           </ha-radio-option>
         </ha-radio-group>
-        ${this._costs === "statistic"
-          ? html`<ha-statistic-picker
-              class="price-options"
-              .hass=${this.hass}
-              statistic-types="sum"
-              .value=${this._source.stat_cost}
-              .label=${`${this.hass.localize(
-                "ui.panel.config.energy.water.dialog.cost_stat_input"
-              )} (${this.hass.config.currency})`}
-              @value-changed=${this._priceStatChanged}
-            ></ha-statistic-picker>`
-          : this._costs === "entity"
-            ? html`<ha-entity-picker
+        ${
+          this._costs === "statistic"
+            ? html`<ha-statistic-picker
                 class="price-options"
                 .hass=${this.hass}
-                include-domains='["sensor", "input_number"]'
-                .value=${this._source.entity_energy_price}
-                .label=${this.hass.localize(
-                  "ui.panel.config.energy.water.dialog.cost_entity_input"
-                )}
-                .helper=${html`<ha-markdown
-                  .content=${this.hass.localize(
-                    "ui.panel.config.energy.water.dialog.cost_entity_helper",
-                    { currency: this.hass.config.currency }
-                  )}
-                ></ha-markdown>`}
-                @value-changed=${this._priceEntityChanged}
-              ></ha-entity-picker>`
-            : this._costs === "number"
-              ? html`<ha-input
-                  .label=${`${this.hass.localize(
-                    "ui.panel.config.energy.water.dialog.cost_number_input"
-                  )} (${unitPriceFixed})`}
+                statistic-types="sum"
+                .value=${this._source.stat_cost}
+                .label=${`${this.hass.localize(
+                  "ui.panel.config.energy.water.dialog.cost_stat_input"
+                )} (${this.hass.config.currency})`}
+                @value-changed=${this._priceStatChanged}
+              ></ha-statistic-picker>`
+            : this._costs === "entity"
+              ? html`<ha-entity-picker
                   class="price-options"
-                  step="any"
-                  type="number"
-                  .value=${this._source.number_energy_price !== null
-                    ? String(this._source.number_energy_price)
-                    : ""}
-                  @change=${this._numberPriceChanged}
-                >
-                  <span slot="end">${unitPriceFixed}</span>
-                </ha-input>`
-              : nothing}
+                  include-domains='["sensor", "input_number"]'
+                  .value=${this._source.entity_energy_price}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.energy.water.dialog.cost_entity_input"
+                  )}
+                  .helper=${html`<ha-markdown
+                    .content=${this.hass.localize(
+                      "ui.panel.config.energy.water.dialog.cost_entity_helper",
+                      { currency: this.hass.config.currency }
+                    )}
+                  ></ha-markdown>`}
+                  @value-changed=${this._priceEntityChanged}
+                ></ha-entity-picker>`
+              : this._costs === "number"
+                ? html`<ha-input
+                    .label=${`${this.hass.localize(
+                      "ui.panel.config.energy.water.dialog.cost_number_input"
+                    )} (${unitPriceFixed})`}
+                    class="price-options"
+                    step="any"
+                    type="number"
+                    .value=${
+                      this._source.number_energy_price !== null
+                        ? String(this._source.number_energy_price)
+                        : ""
+                    }
+                    @change=${this._numberPriceChanged}
+                  >
+                    <span slot="end">${unitPriceFixed}</span>
+                  </ha-input>`
+                : nothing
+        }
 
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -271,8 +276,10 @@ export class DialogEnergyWaterSettings
           </ha-button>
           <ha-button
             @click=${this._save}
-            .disabled=${!this._source!.stat_energy_from ||
-            (!!this._params?.source && !this.isDirtyState)}
+            .disabled=${
+              !this._source!.stat_energy_from ||
+              (!!this._params?.source && !this.isDirtyState)
+            }
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}

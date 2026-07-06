@@ -222,21 +222,25 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             render-passive
           ></ha-map>
           <div id="buttons">
-            ${this._filteredMapEntities.length > 1
-              ? html`
-                  <ha-icon-button
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.map.toggle_grouping"
-                    )}
-                    .path=${this._clusterMarkers
-                      ? mdiGoogleCirclesCommunities
-                      : mdiDotsHexagon}
-                    style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-                    @click=${this._toggleClusterMarkers}
-                    tabindex="0"
-                  ></ha-icon-button>
-                `
-              : nothing}
+            ${
+              this._filteredMapEntities.length > 1
+                ? html`
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.cards.map.toggle_grouping"
+                      )}
+                      .path=${
+                        this._clusterMarkers
+                          ? mdiGoogleCirclesCommunities
+                          : mdiDotsHexagon
+                      }
+                      style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+                      @click=${this._toggleClusterMarkers}
+                      tabindex="0"
+                    ></ha-icon-button>
+                  `
+                : nothing
+            }
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.cards.map.reset_focus"

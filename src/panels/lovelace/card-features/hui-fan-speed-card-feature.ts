@@ -1,13 +1,27 @@
+import { consume } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-slider";
+import {
+  apiContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../../data/fan";
@@ -20,13 +34,26 @@ import {
   fanPercentageToSpeed,
   fanSpeedToPercentage,
 } from "../../../data/fan";
-import type { HomeAssistant } from "../../../types";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   FanSpeedCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+const supportsFanSpeedCardFeatureFromState = (stateObj: HassEntity) => {
+  const domain = computeDomain(stateObj.entity_id);
+  return (
+    domain === "fan" && supportsFeature(stateObj, FanEntityFeature.SET_SPEED)
+  );
+};
 
 export const supportsFanSpeedCardFeature = (
   hass: HomeAssistant,
@@ -36,26 +63,41 @@ export const supportsFanSpeedCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return (
-    domain === "fan" && supportsFeature(stateObj, FanEntityFeature.SET_SPEED)
-  );
+  return supportsFanSpeedCardFeatureFromState(stateObj);
 };
 
 @customElement("hui-fan-speed-card-feature")
 class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: FanSpeedCardFeatureConfig;
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: FanEntity;
 
-  private get _stateObj() {
-    if (!this.hass || !this.context || !this.context.entity_id) {
-      return undefined;
-    }
-    return this.hass.states[this.context.entity_id!] as FanEntity | undefined;
-  }
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state() private _config?: FanSpeedCardFeatureConfig;
 
   static getStubConfig(): FanSpeedCardFeatureConfig {
     return {
@@ -72,18 +114,17 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
 
   private _localizeSpeed(speed: FanSpeed) {
     if (speed === "on" || speed === "off") {
-      return this.hass!.formatEntityState(this._stateObj!, speed);
+      return this._formatters.formatEntityState(this._stateObj!, speed);
     }
-    return this.hass!.localize(`ui.card.fan.speed.${speed}`) || speed;
+    return this._localize(`ui.card.fan.speed.${speed}`) || speed;
   }
 
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsFanSpeedCardFeature(this.hass, this.context)
+      !supportsFanSpeedCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -112,9 +153,9 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
           @value-changed=${this._speedValueChanged}
           hide-option-label
           .label=${computeAttributeNameDisplay(
-            this.hass.localize,
+            this._localize,
             this._stateObj,
-            this.hass.entities,
+            this._entities,
             "percentage"
           )}
           .disabled=${this._stateObj!.state === UNAVAILABLE}
@@ -131,16 +172,17 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
         min="0"
         max="100"
         .step=${this._stateObj.attributes.percentage_step ?? 1}
+        round-value
         @value-changed=${this._valueChanged}
         .label=${computeAttributeNameDisplay(
-          this.hass.localize,
+          this._localize,
           this._stateObj,
-          this.hass.entities,
+          this._entities,
           "percentage"
         )}
         .disabled=${this._stateObj!.state === UNAVAILABLE}
         .unit=${DOMAIN_ATTRIBUTES_UNITS.fan.percentage}
-        .locale=${this.hass.locale}
+        .locale=${this._locale}
       ></ha-control-slider>
     `;
   }
@@ -150,7 +192,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
 
     const percentage = fanSpeedToPercentage(this._stateObj!, speed);
 
-    this.hass!.callService("fan", "set_percentage", {
+    this._api.callService("fan", "set_percentage", {
       entity_id: this._stateObj!.entity_id,
       percentage: percentage,
     });
@@ -160,7 +202,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
 
-    this.hass!.callService("fan", "set_percentage", {
+    this._api.callService("fan", "set_percentage", {
       entity_id: this._stateObj!.entity_id,
       percentage: value,
     });

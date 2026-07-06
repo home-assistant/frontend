@@ -100,8 +100,7 @@ export const showDialog = async (
     LOADED[dialogTag] = {
       element: dialogImport().then(() => {
         const dialogEl = document.createElement(dialogTag) as
-          | HassDialogNext
-          | HassDialog;
+          HassDialogNext | HassDialog;
 
         if ("showDialog" in dialogEl) {
           // provide hass for legacy persistent dialogs

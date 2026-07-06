@@ -106,11 +106,13 @@ export class DialogTryTts extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.cloud.account.tts.dialog.message"
             )}
-            .value=${this._message ||
-            this.hass.localize(
-              "ui.panel.config.cloud.account.tts.dialog.example_message",
-              { name: this.hass.user!.name }
-            )}
+            .value=${
+              this._message ||
+              this.hass.localize(
+                "ui.panel.config.cloud.account.tts.dialog.example_message",
+                { name: this.hass.user!.name }
+              )
+            }
           >
           </ha-textarea>
 

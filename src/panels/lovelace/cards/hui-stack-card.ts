@@ -68,9 +68,6 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
         this._cards.forEach((card) => {
           card.hass = this.hass;
         });
-        if (this._errorCard) {
-          this._errorCard.hass = this.hass;
-        }
       }
       if (changedProperties.has("preview")) {
         this._cards.forEach((card) => {
@@ -102,9 +99,11 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     }
 
     return html`
-      ${this._config.title
-        ? html`<h1 class="card-header">${this._config.title}</h1>`
-        : ""}
+      ${
+        this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : ""
+      }
       <div id="root" dir=${this.hass ? computeRTLDirection(this.hass) : "ltr"}>
         ${this._cards}
         ${this.preview && this._errorCard ? this._errorCard : nothing}

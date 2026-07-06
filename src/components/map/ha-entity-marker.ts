@@ -31,25 +31,29 @@ class HaEntityMarker extends LitElement {
         style=${styleMap({ "border-color": this.entityColor })}
         @click=${this._badgeTap}
       >
-        ${this.entityPicture
-          ? html`<div
-              class="entity-picture"
-              style=${styleMap({
-                "background-image": `url(${this.entityPicture})`,
-              })}
-            ></div>`
-          : this.showIcon && this.entityId
-            ? html`<ha-state-icon .stateObj=${this._stateObj}></ha-state-icon>`
-            : !this.entityUnit
-              ? this.entityName
-              : html`
-                  ${this.entityName}
-                  <span
-                    class="unit"
-                    style="display: ${this.entityUnit ? "initial" : "none"}"
-                    >${this.entityUnit}</span
-                  >
-                `}
+        ${
+          this.entityPicture
+            ? html`<div
+                class="entity-picture"
+                style=${styleMap({
+                  "background-image": `url(${this.entityPicture})`,
+                })}
+              ></div>`
+            : this.showIcon && this.entityId
+              ? html`<ha-state-icon
+                  .stateObj=${this._stateObj}
+                ></ha-state-icon>`
+              : !this.entityUnit
+                ? this.entityName
+                : html`
+                    ${this.entityName}
+                    <span
+                      class="unit"
+                      style="display: ${this.entityUnit ? "initial" : "none"}"
+                      >${this.entityUnit}</span
+                    >
+                  `
+        }
       </div>
     `;
   }

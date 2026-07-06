@@ -1,9 +1,10 @@
 #!/bin/sh
-# Run the gallery
+# Run the gallery. Pass --background/--status/--stop/--logs to manage a
+# detached instance (see build-scripts/dev-server.mjs).
 
 # Stop on errors
 set -e
 
 cd "$(dirname "$0")/../.."
 
-./node_modules/.bin/gulp develop-gallery
+exec node build-scripts/dev-server.mjs --suite gallery "$@"

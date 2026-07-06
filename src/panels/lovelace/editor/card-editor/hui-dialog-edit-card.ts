@@ -6,6 +6,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireRelatedContext,
+  type RelatedContextItem,
+} from "../../../../data/context";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { stripDefaults } from "../../../../common/util/strip-defaults";
 import { withViewTransition } from "../../../../common/util/view-transition";
@@ -33,6 +37,7 @@ import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
+import { getConfigRelatedContext } from "../../common/get-config-related-context";
 import "../../sections/hui-section";
 import { getCardDefaultConfig } from "../get-card-default-config";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
@@ -125,6 +130,7 @@ export class HuiDialogEditCard
     this._cardConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
+    this._updateRelatedContext(undefined);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -141,6 +147,21 @@ export class HuiDialogEditCard
         this._cardConfig!.type
       );
     }
+
+    this._updateRelatedContext(getConfigRelatedContext(this._cardConfig));
+  }
+
+  private _relatedContext?: RelatedContextItem;
+
+  private _updateRelatedContext(context: RelatedContextItem | undefined): void {
+    if (
+      context?.itemType === this._relatedContext?.itemType &&
+      context?.itemId === this._relatedContext?.itemId
+    ) {
+      return;
+    }
+    this._relatedContext = context;
+    fireRelatedContext(this, context);
   }
 
   protected render() {
@@ -196,19 +217,21 @@ export class HuiDialogEditCard
           @click=${this._enlarge}
           >${heading}</span
         >
-        ${this._documentationURL !== undefined
-          ? html`
-              <ha-icon-button
-                .path=${mdiHelpCircleOutline}
-                slot="headerActionItems"
-                href=${this._documentationURL}
-                title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                target="_blank"
-                rel="noreferrer"
-                dir=${computeRTLDirection(this.hass)}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this._documentationURL !== undefined
+            ? html`
+                <ha-icon-button
+                  .path=${mdiHelpCircleOutline}
+                  slot="headerActionItems"
+                  href=${this._documentationURL}
+                  title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  target="_blank"
+                  rel="noreferrer"
+                  dir=${computeRTLDirection(this.hass)}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
         <div class="content">
           <div class="element-editor ha-scrollbar">
             <hui-card-element-editor
@@ -225,46 +248,54 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview ha-scrollbar">
-            ${this._sectionConfig
-              ? html`
-                  <hui-section
-                    .hass=${this.hass}
-                    .config=${this._cardConfigInSection(this._cardConfig)}
-                    preview
-                    class=${this._error ? "blur" : ""}
-                  ></hui-section>
-                `
-              : html`
-                  <hui-card
-                    .hass=${this.hass}
-                    .config=${this._cardConfig}
-                    preview
-                    class=${this._error ? "blur" : ""}
-                  ></hui-card>
-                `}
-            ${this._error
-              ? html` <ha-spinner aria-label="Can't update card"></ha-spinner> `
-              : ``}
+            ${
+              this._sectionConfig
+                ? html`
+                    <hui-section
+                      .hass=${this.hass}
+                      .config=${this._cardConfigInSection(this._cardConfig)}
+                      preview
+                      class=${this._error ? "blur" : ""}
+                    ></hui-section>
+                  `
+                : html`
+                    <hui-card
+                      .hass=${this.hass}
+                      .config=${this._cardConfig}
+                      preview
+                      class=${this._error ? "blur" : ""}
+                    ></hui-card>
+                  `
+            }
+            ${
+              this._error
+                ? html`
+                    <ha-spinner aria-label="Can't update card"></ha-spinner>
+                  `
+                : ``
+            }
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._cardConfig !== undefined
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  @click=${this._toggleMode}
-                  .disabled=${!this._guiModeAvailable}
-                  class="gui-mode-button"
-                  appearance="plain"
-                >
-                  ${this.hass!.localize(
-                    !this._cardEditorEl || this._GUImode
-                      ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                      : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                  )}
-                </ha-button>
-              `
-            : ""}
+          ${
+            this._cardConfig !== undefined
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    @click=${this._toggleMode}
+                    .disabled=${!this._guiModeAvailable}
+                    class="gui-mode-button"
+                    appearance="plain"
+                  >
+                    ${this.hass!.localize(
+                      !this._cardEditorEl || this._GUImode
+                        ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                        : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                    )}
+                  </ha-button>
+                `
+              : ""
+          }
           <ha-button
             appearance="plain"
             slot="secondaryAction"

@@ -14,6 +14,7 @@ import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
   getCompareTransform,
+  getPeriodMidpointOffset,
 } from "./common/energy-chart-options";
 
 export interface EnergySolarGraphDataParams {
@@ -323,7 +324,8 @@ function processForecast(
         const solarForecastData: LineSeriesOption["data"] = [];
         // Only center forecast points for sub-daily periods to align with bars.
         // Only start timestamps available, so estimate midpoint from the gap
-        // between the first two entries. Assumes uniform spacing.
+        // between the first two entries; with a lone first bucket there is no
+        // gap to measure, so fall back to the nominal period midpoint.
         let forecastOffset = 0;
         if (period === "hour" || period === "5minute") {
           const forecastTimes = Object.keys(forecastsData)
@@ -332,7 +334,7 @@ function processForecast(
           forecastOffset =
             forecastTimes.length >= 2
               ? (forecastTimes[1] - forecastTimes[0]) / 2
-              : 0;
+              : getPeriodMidpointOffset(period);
         }
         for (const [time, value] of Object.entries(forecastsData)) {
           const kWh = value / 1000;

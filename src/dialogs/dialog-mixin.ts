@@ -34,11 +34,7 @@ export const DialogMixin = <
       const dialogElement = this.shadowRoot?.querySelector(
         "ha-adaptive-popover, ha-adaptive-dialog, ha-dialog, ha-bottom-sheet"
       ) as
-        | HaAdaptivePopover
-        | HaAdaptiveDialog
-        | HaDialog
-        | HaBottomSheet
-        | null;
+        HaAdaptivePopover | HaAdaptiveDialog | HaDialog | HaBottomSheet | null;
 
       if (dialogElement) {
         this._closePromise = new Promise<boolean>((resolve) => {

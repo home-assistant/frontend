@@ -159,7 +159,7 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       value: panel.url_path,
       label:
         (getPanelTitle(this.hass, panel) || panel.url_path) +
-        `${defaultPanel === panel.url_path ? " (default)" : ""}`,
+        `${defaultPanel === panel.url_path ? ` (${this.hass.localize("ui.sidebar.default")})` : ""}`,
       icon: getPanelIcon(panel),
       iconPath: getPanelIconPath(panel),
       disableHiding: panel.url_path === defaultPanel,
@@ -186,9 +186,11 @@ class DialogEditSidebar extends DirtyStateProviderMixin<SidebarState>()(
       <ha-dialog
         .open=${this._open}
         header-title=${dialogTitle}
-        header-subtitle=${!this._migrateToUserData
-          ? this.hass.localize("ui.sidebar.edit_subtitle")
-          : ""}
+        header-subtitle=${
+          !this._migrateToUserData
+            ? this.hass.localize("ui.sidebar.edit_subtitle")
+            : ""
+        }
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >

@@ -131,17 +131,19 @@ export class HaImagecropperDialog
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          ${this._isTargetAspectRatio
-            ? html`
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  @click=${this._useOriginal}
-                >
-                  ${this.hass.localize("ui.dialogs.image_cropper.use_original")}
-                </ha-button>
-              `
-            : nothing}
+          ${
+            this._isTargetAspectRatio
+              ? html`
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this._useOriginal}
+                  >
+                    ${this.hass.localize("ui.dialogs.image_cropper.use_original")}
+                  </ha-button>
+                `
+              : nothing
+          }
           <ha-button slot="primaryAction" @click=${this._cropImage}>
             ${this.hass.localize("ui.dialogs.image_cropper.crop")}
           </ha-button>

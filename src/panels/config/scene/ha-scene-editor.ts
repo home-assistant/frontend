@@ -42,6 +42,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
 import {
+  fireRelatedContext,
   fullEntitiesContext,
   type RelatedContextItem,
 } from "../../../data/context";
@@ -235,8 +236,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${this._config?.name ||
-        this.hass.localize("ui.panel.config.scene.editor.default_name")}
+        .header=${
+          this._config?.name ||
+          this.hass.localize("ui.panel.config.scene.editor.default_name")
+        }
       >
         <ha-dropdown
           slot="toolbar-icon"
@@ -361,161 +364,75 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         ),
       })}
     >
-      ${this._config
-        ? html`
-            <div
-              class=${classMap({
-                container: true,
-                narrow: !this.isWide,
-              })}
-            >
-              <ha-alert
-                alert-type="info"
-                .narrow=${this.narrow}
-                .title=${this.hass.localize(
-                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit" : "review_mode"}`
-                )}
+      ${
+        this._config
+          ? html`
+              <div
+                class=${classMap({
+                  container: true,
+                  narrow: !this.isWide,
+                })}
               >
-                ${this.hass.localize(
-                  `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit_detail" : "review_mode_detail"}`
-                )}
-                <span slot="icon">
-                  <ha-svg-icon
-                    .path=${this._mode === "live"
-                      ? mdiMotionPlayOutline
-                      : mdiEye}
-                  ></ha-svg-icon>
-                </span>
-                <ha-button
-                  size="s"
-                  slot="action"
-                  @click=${this._toggleLiveMode}
+                <ha-alert
+                  alert-type="info"
+                  .narrow=${this.narrow}
+                  .title=${this.hass.localize(
+                    `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit" : "review_mode"}`
+                  )}
                 >
                   ${this.hass.localize(
-                    `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
+                    `ui.panel.config.scene.editor.${this._mode === "live" ? "live_edit_detail" : "review_mode_detail"}`
                   )}
-                </ha-button>
-              </ha-alert>
-            </div>
-
-            <ha-config-section vertical .isWide=${this.isWide}>
-              <div slot="header">
-                ${this.hass.localize(
-                  "ui.panel.config.scene.editor.devices.header"
-                )}
-              </div>
-              ${this._mode === "live" || devices.length === 0
-                ? html`<div slot="introduction">
+                  <span slot="icon">
+                    <ha-svg-icon
+                      .path=${
+                        this._mode === "live" ? mdiMotionPlayOutline : mdiEye
+                      }
+                    ></ha-svg-icon>
+                  </span>
+                  <ha-button
+                    size="s"
+                    slot="action"
+                    @click=${this._toggleLiveMode}
+                  >
                     ${this.hass.localize(
-                      `ui.panel.config.scene.editor.devices.introduction${this._mode === "review" ? "_review" : ""}`
+                      `ui.panel.config.scene.editor.${this._mode === "live" ? "switch_to_review_mode" : "live_edit"}`
                     )}
-                  </div>`
-                : nothing}
-              ${devices.map(
-                (device) => html`
-                  <ha-card outlined>
-                    <h1 class="card-header">
-                      ${device.name}
-                      <ha-icon-button
-                        .path=${mdiDelete}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.scene.editor.devices.delete"
+                  </ha-button>
+                </ha-alert>
+              </div>
+
+              <ha-config-section vertical .isWide=${this.isWide}>
+                <div slot="header">
+                  ${this.hass.localize(
+                    "ui.panel.config.scene.editor.devices.header"
+                  )}
+                </div>
+                ${
+                  this._mode === "live" || devices.length === 0
+                    ? html`<div slot="introduction">
+                        ${this.hass.localize(
+                          `ui.panel.config.scene.editor.devices.introduction${this._mode === "review" ? "_review" : ""}`
                         )}
-                        .device=${device.id}
-                        @click=${this._deleteDevice}
-                      ></ha-icon-button>
-                    </h1>
-                    <ha-list>
-                      ${device.entities.map((entityId) => {
-                        const entityStateObj = this.hass.states[entityId];
-                        if (!entityStateObj) {
-                          return nothing;
-                        }
-                        const { primary, secondary } =
-                          computeEntityPickerDisplay(this.hass, entityStateObj);
-                        const platform =
-                          entityRegistryLookup[entityId]?.platform;
-                        const integrationName = platform
-                          ? domainToName(this.hass.localize, platform)
-                          : undefined;
-                        return html`
-                          <ha-list-item
-                            hasMeta
-                            ?twoline=${!!secondary}
-                            .graphic=${this._mode === "live"
-                              ? "icon"
-                              : undefined}
-                            .entityId=${entityId}
-                            @click=${this._mode === "live"
-                              ? this._showMoreInfo
-                              : undefined}
-                            .noninteractive=${this._mode === "review"}
-                          >
-                            ${this._mode === "live"
-                              ? html`
-                                  <state-badge
-                                    .hass=${this.hass}
-                                    .stateObj=${entityStateObj}
-                                    slot="graphic"
-                                  ></state-badge>
-                                `
-                              : nothing}
-                            ${primary}
-                            ${secondary
-                              ? html`<span slot="secondary">${secondary}</span>`
-                              : nothing}
-                            ${integrationName
-                              ? html`<span slot="meta" class="domain"
-                                  >${integrationName}</span
-                                >`
-                              : nothing}
-                          </ha-list-item>
-                        `;
-                      })}
-                    </ha-list>
-                  </ha-card>
-                `
-              )}
-              ${this._mode === "live"
-                ? html`
-                    <ha-card
-                      outlined
-                      .header=${this.hass.localize(
-                        "ui.panel.config.scene.editor.devices.add"
-                      )}
-                    >
-                      <div class="card-content">
-                        <ha-device-picker
-                          @value-changed=${this._devicePicked}
-                          .hass=${this.hass}
+                      </div>`
+                    : nothing
+                }
+                ${devices.map(
+                  (device) => html`
+                    <ha-card outlined>
+                      <h1 class="card-header">
+                        ${device.name}
+                        <ha-icon-button
+                          .path=${mdiDelete}
                           .label=${this.hass.localize(
-                            "ui.panel.config.scene.editor.devices.add"
+                            "ui.panel.config.scene.editor.devices.delete"
                           )}
-                        ></ha-device-picker>
-                      </div>
-                    </ha-card>
-                  `
-                : nothing}
-            </ha-config-section>
-
-            <ha-config-section vertical .isWide=${this.isWide}>
-              <div slot="header">
-                ${this.hass.localize(
-                  "ui.panel.config.scene.editor.entities.header"
-                )}
-              </div>
-              ${this._mode === "live" || entities.length === 0
-                ? html`<div slot="introduction">
-                    ${this.hass.localize(
-                      `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
-                    )}
-                  </div>`
-                : nothing}
-              ${entities.length
-                ? html`
-                    <ha-card outlined class="entities">
+                          .device=${device.id}
+                          @click=${this._deleteDevice}
+                        ></ha-icon-button>
+                      </h1>
                       <ha-list>
-                        ${entities.map((entityId) => {
+                        ${device.entities.map((entityId) => {
                           const entityStateObj = this.hass.states[entityId];
                           if (!entityStateObj) {
                             return nothing;
@@ -525,77 +442,191 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               this.hass,
                               entityStateObj
                             );
-                          const domainName = domainToName(
-                            this.hass.localize,
-                            computeDomain(entityId)
-                          );
+                          const platform =
+                            entityRegistryLookup[entityId]?.platform;
+                          const integrationName = platform
+                            ? domainToName(this.hass.localize, platform)
+                            : undefined;
                           return html`
                             <ha-list-item
-                              class="entity"
                               hasMeta
                               ?twoline=${!!secondary}
-                              .graphic=${this._mode === "live"
-                                ? "icon"
-                                : undefined}
+                              .graphic=${
+                                this._mode === "live" ? "icon" : undefined
+                              }
                               .entityId=${entityId}
-                              @click=${this._mode === "live"
-                                ? this._showMoreInfo
-                                : undefined}
+                              @click=${
+                                this._mode === "live"
+                                  ? this._showMoreInfo
+                                  : undefined
+                              }
                               .noninteractive=${this._mode === "review"}
                             >
-                              ${this._mode === "live"
-                                ? html` <state-badge
-                                    .hass=${this.hass}
-                                    .stateObj=${entityStateObj}
-                                    slot="graphic"
-                                  ></state-badge>`
-                                : nothing}
+                              ${
+                                this._mode === "live"
+                                  ? html`
+                                      <state-badge
+                                        .stateObj=${entityStateObj}
+                                        slot="graphic"
+                                      ></state-badge>
+                                    `
+                                  : nothing
+                              }
                               ${primary}
-                              ${secondary
-                                ? html`<span slot="secondary"
-                                    >${secondary}</span
-                                  >`
-                                : nothing}
-                              <div slot="meta">
-                                <span class="domain">${domainName}</span>
-                                <ha-icon-button
-                                  .path=${mdiDelete}
-                                  .entityId=${entityId}
-                                  .label=${this.hass.localize(
-                                    "ui.panel.config.scene.editor.entities.delete"
-                                  )}
-                                  @click=${this._deleteEntity}
-                                ></ha-icon-button>
-                              </div>
+                              ${
+                                secondary
+                                  ? html`<span slot="secondary"
+                                      >${secondary}</span
+                                    >`
+                                  : nothing
+                              }
+                              ${
+                                integrationName
+                                  ? html`<span slot="meta" class="domain"
+                                      >${integrationName}</span
+                                    >`
+                                  : nothing
+                              }
                             </ha-list-item>
                           `;
                         })}
                       </ha-list>
                     </ha-card>
                   `
-                : ""}
-              ${this._mode === "live"
-                ? html` <ha-card
-                    outlined
-                    header=${this.hass.localize(
-                      "ui.panel.config.scene.editor.entities.add"
-                    )}
-                  >
-                    <div class="card-content">
-                      <ha-entity-picker
-                        @value-changed=${this._entityPicked}
-                        .excludeDomains=${SCENE_IGNORED_DOMAINS}
-                        .hass=${this.hass}
-                        label=${this.hass.localize(
+                )}
+                ${
+                  this._mode === "live"
+                    ? html`
+                        <ha-card
+                          outlined
+                          .header=${this.hass.localize(
+                            "ui.panel.config.scene.editor.devices.add"
+                          )}
+                        >
+                          <div class="card-content">
+                            <ha-device-picker
+                              @value-changed=${this._devicePicked}
+                              .hass=${this.hass}
+                              .label=${this.hass.localize(
+                                "ui.panel.config.scene.editor.devices.add"
+                              )}
+                            ></ha-device-picker>
+                          </div>
+                        </ha-card>
+                      `
+                    : nothing
+                }
+              </ha-config-section>
+
+              <ha-config-section vertical .isWide=${this.isWide}>
+                <div slot="header">
+                  ${this.hass.localize(
+                    "ui.panel.config.scene.editor.entities.header"
+                  )}
+                </div>
+                ${
+                  this._mode === "live" || entities.length === 0
+                    ? html`<div slot="introduction">
+                        ${this.hass.localize(
+                          `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
+                        )}
+                      </div>`
+                    : nothing
+                }
+                ${
+                  entities.length
+                    ? html`
+                        <ha-card outlined class="entities">
+                          <ha-list>
+                            ${entities.map((entityId) => {
+                              const entityStateObj = this.hass.states[entityId];
+                              if (!entityStateObj) {
+                                return nothing;
+                              }
+                              const { primary, secondary } =
+                                computeEntityPickerDisplay(
+                                  this.hass,
+                                  entityStateObj
+                                );
+                              const domainName = domainToName(
+                                this.hass.localize,
+                                computeDomain(entityId)
+                              );
+                              return html`
+                                <ha-list-item
+                                  class="entity"
+                                  hasMeta
+                                  ?twoline=${!!secondary}
+                                  .graphic=${
+                                    this._mode === "live" ? "icon" : undefined
+                                  }
+                                  .entityId=${entityId}
+                                  @click=${
+                                    this._mode === "live"
+                                      ? this._showMoreInfo
+                                      : undefined
+                                  }
+                                  .noninteractive=${this._mode === "review"}
+                                >
+                                  ${
+                                    this._mode === "live"
+                                      ? html` <state-badge
+                                          .stateObj=${entityStateObj}
+                                          slot="graphic"
+                                        ></state-badge>`
+                                      : nothing
+                                  }
+                                  ${primary}
+                                  ${
+                                    secondary
+                                      ? html`<span slot="secondary"
+                                          >${secondary}</span
+                                        >`
+                                      : nothing
+                                  }
+                                  <div slot="meta">
+                                    <span class="domain">${domainName}</span>
+                                    <ha-icon-button
+                                      .path=${mdiDelete}
+                                      .entityId=${entityId}
+                                      .label=${this.hass.localize(
+                                        "ui.panel.config.scene.editor.entities.delete"
+                                      )}
+                                      @click=${this._deleteEntity}
+                                    ></ha-icon-button>
+                                  </div>
+                                </ha-list-item>
+                              `;
+                            })}
+                          </ha-list>
+                        </ha-card>
+                      `
+                    : ""
+                }
+                ${
+                  this._mode === "live"
+                    ? html` <ha-card
+                        outlined
+                        header=${this.hass.localize(
                           "ui.panel.config.scene.editor.entities.add"
                         )}
-                      ></ha-entity-picker>
-                    </div>
-                  </ha-card>`
-                : nothing}
-            </ha-config-section>
-          `
-        : nothing}
+                      >
+                        <div class="card-content">
+                          <ha-entity-picker
+                            @value-changed=${this._entityPicked}
+                            .excludeDomains=${SCENE_IGNORED_DOMAINS}
+                            label=${this.hass.localize(
+                              "ui.panel.config.scene.editor.entities.add"
+                            )}
+                          ></ha-entity-picker>
+                        </div>
+                      </ha-card>`
+                    : nothing
+                }
+              </ha-config-section>
+            `
+          : nothing
+      }
     </div>`;
   }
 
@@ -735,7 +766,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     }
 
     this._relatedContext = context;
-    fireEvent(this, "hass-related-context", context);
+    fireRelatedContext(this, context);
   }
 
   private _handleMenuAction(ev: HaDropdownSelectEvent) {

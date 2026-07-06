@@ -13,7 +13,7 @@ import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
-import type { LogbookScope } from "./logbook-entry-model";
+import type { LogbookNameDetail } from "./logbook-entry-model";
 
 interface LogbookTimePeriod {
   now: Date;
@@ -67,9 +67,10 @@ export class HaLogbook extends LitElement {
   @property({ type: Boolean, attribute: "show-cause" }) public showCause =
     false;
 
-  // Surface scope: removes the context (and, for "entity", the subject name)
-  // the surface already implies.
-  @property({ attribute: false }) public scope?: LogbookScope;
+  // How much naming detail an entity row shows; `none` also hides the name when
+  // the surface already implies the subject.
+  @property({ type: String, attribute: "name-detail" })
+  public nameDetail?: LogbookNameDetail;
 
   @property({ attribute: "show-more-link", type: Boolean })
   public showMoreLink = true;
@@ -79,6 +80,8 @@ export class HaLogbook extends LitElement {
   @state() private _traceContexts: TraceContexts = {};
 
   @state() private _userIdToName = {};
+
+  @state() private _systemUserIds = new Set<string>();
 
   @state() private _error?: string;
 
@@ -94,6 +97,8 @@ export class HaLogbook extends LitElement {
   );
 
   private _logbookSubscriptionId = 0;
+
+  private _readyListenerAttached = false;
 
   protected render() {
     if (!isComponentLoaded(this.hass.config, "logbook")) {
@@ -130,10 +135,11 @@ export class HaLogbook extends LitElement {
         .noIcon=${this.noIcon}
         .graphColor=${this.graphColor}
         .showCause=${this.showCause}
-        .scope=${this.scope}
+        .nameDetail=${this.nameDetail}
         .entries=${this._logbookEntries}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
+        .systemUserIds=${this._systemUserIds}
         @hass-logbook-live=${this._handleLogbookLive}
       ></ha-logbook-renderer>
     `;
@@ -240,6 +246,7 @@ export class HaLogbook extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._attachReadyListener();
     if (this.hasUpdated) {
       // Ensure clean state before subscribing
       this._subscribeLogbookPeriod(this._calculateLogbookPeriod());
@@ -248,8 +255,42 @@ export class HaLogbook extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._detachReadyListener();
     this._unsubscribe(true);
   }
+
+  private _attachReadyListener(): void {
+    if (this._readyListenerAttached || !this.hass) {
+      return;
+    }
+    this.hass.connection.addEventListener("ready", this._handleConnectionReady);
+    this._readyListenerAttached = true;
+  }
+
+  private _detachReadyListener(): void {
+    if (!this._readyListenerAttached) {
+      return;
+    }
+    this.hass?.connection.removeEventListener(
+      "ready",
+      this._handleConnectionReady
+    );
+    this._readyListenerAttached = false;
+  }
+
+  private _handleConnectionReady = () => {
+    // The old subscription died with the dropped connection and isn't restored
+    // server-side. Drop the stale handle and resubscribe from scratch, else the
+    // replayed history would duplicate the entries we already have.
+    if (!this._unsubLogbook) {
+      return;
+    }
+    this._unsubLogbook = undefined;
+    this._logbookEntries = undefined;
+    this._pendingStreamMessages = [];
+    this._liveUpdatesEnabled = true;
+    this._throttleGetLogbookEntries();
+  };
 
   private _calculateLogbookPeriod() {
     const now = new Date();
@@ -283,6 +324,9 @@ export class HaLogbook extends LitElement {
     if (this._unsubLogbook) {
       return;
     }
+
+    // connectedCallback may have run before hass was set; attach now.
+    this._attachReadyListener();
 
     try {
       this._logbookSubscriptionId++;
@@ -414,6 +458,7 @@ export class HaLogbook extends LitElement {
 
   private _updateUsers = throttle(async () => {
     const userIdToName = {};
+    const systemUserIds = new Set<string>();
 
     // Start loading users
     const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
@@ -436,10 +481,14 @@ export class HaLogbook extends LitElement {
         if (!(user.id in userIdToName)) {
           userIdToName[user.id] = user.name;
         }
+        if (user.system_generated) {
+          systemUserIds.add(user.id);
+        }
       }
     }
 
     this._userIdToName = userIdToName;
+    this._systemUserIds = systemUserIds;
   }, 60000);
 
   static get styles() {

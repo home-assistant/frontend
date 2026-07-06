@@ -19,11 +19,7 @@ import { monthNames } from "../../common/translations/month_names";
 import type { HomeAssistant } from "../../types";
 
 export type RepeatFrequency =
-  | "none"
-  | "yearly"
-  | "monthly"
-  | "weekly"
-  | "daily";
+  "none" | "yearly" | "monthly" | "weekly" | "daily";
 
 export type RepeatEnd = "never" | "on" | "after";
 

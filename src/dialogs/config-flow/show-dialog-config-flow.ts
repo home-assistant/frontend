@@ -178,15 +178,17 @@ export const showConfigFlowDialog = (
             "ui.panel.config.integrations.config_flow.external_step.description"
           )}
         </p>
-        ${description
-          ? html`
-              <ha-markdown
-                allow-svg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : ""}
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  allow-svg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : ""
+        }
       `;
     },
 
@@ -199,15 +201,17 @@ export const showConfigFlowDialog = (
       );
 
       return html`
-        ${description
-          ? html`
-              <ha-markdown
-                allow-svg
-                breaks
-                .content=${description}
-              ></ha-markdown>
-            `
-          : nothing}
+        ${
+          description
+            ? html`
+                <ha-markdown
+                  allow-svg
+                  breaks
+                  .content=${description}
+                ></ha-markdown>
+              `
+            : nothing
+        }
       `;
     },
 

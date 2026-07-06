@@ -41,16 +41,18 @@ export class HaAutomationRow extends LitElement {
         role="button"
         @keydown=${this._handleKeydown}
       >
-        ${this.leftChevron
-          ? html`
-              <ha-icon-button
-                class="expand-button"
-                .path=${mdiChevronUp}
-                @click=${this._handleExpand}
-                @keydown=${this._handleExpand}
-              ></ha-icon-button>
-            `
-          : nothing}
+        ${
+          this.leftChevron
+            ? html`
+                <ha-icon-button
+                  class="expand-button"
+                  .path=${mdiChevronUp}
+                  @click=${this._handleExpand}
+                  @keydown=${this._handleExpand}
+                ></ha-icon-button>
+              `
+            : nothing
+        }
         <div class="leading-icon-wrapper">
           <slot name="leading-icon"></slot>
         </div>

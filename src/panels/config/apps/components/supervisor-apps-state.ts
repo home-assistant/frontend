@@ -17,9 +17,11 @@ class SupervisorAppsState extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.state === "unknown"
-        ? html`<ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>`
-        : html` <div class="dot state-${this.state}"></div> `}
+      ${
+        this.state === "unknown"
+          ? html`<ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>`
+          : html` <div class="dot state-${this.state}"></div> `
+      }
       <span
         >${this._i18n.localize(
           `ui.panel.config.apps.dashboard.capability.state.${this.state}`

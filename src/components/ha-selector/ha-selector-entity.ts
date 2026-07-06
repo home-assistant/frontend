@@ -63,7 +63,6 @@ export class HaEntitySelector extends LitElement {
 
     if (!this.selector.entity?.multiple) {
       return html`<ha-entity-picker
-        .hass=${this.hass}
         .value=${typeof this.value === "string" ? this.value : ""}
         .label=${this.label}
         .placeholder=${this.placeholder}
@@ -80,7 +79,6 @@ export class HaEntitySelector extends LitElement {
 
     return html`
       <ha-entities-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .placeholder=${this.placeholder}

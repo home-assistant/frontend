@@ -84,9 +84,11 @@ class MqttSubscribeCard extends LitElement {
           </p>
           <div class="panel-dev-mqtt-subscribe-fields">
             <ha-input
-              .label=${this._subscribed
-                ? this.hass.localize("ui.panel.config.mqtt.listening_to")
-                : this.hass.localize("ui.panel.config.mqtt.subscribe_to")}
+              .label=${
+                this._subscribed
+                  ? this.hass.localize("ui.panel.config.mqtt.listening_to")
+                  : this.hass.localize("ui.panel.config.mqtt.subscribe_to")
+              }
               .disabled=${this._subscribed !== undefined}
               .value=${this._topic}
               @change=${this._handleTopic}
@@ -105,9 +107,11 @@ class MqttSubscribeCard extends LitElement {
               .disabled=${this._topic === ""}
               @click=${this._handleSubmit}
             >
-              ${this._subscribed
-                ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
-                : this.hass.localize("ui.panel.config.mqtt.start_listening")}
+              ${
+                this._subscribed
+                  ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
+                  : this.hass.localize("ui.panel.config.mqtt.start_listening")
+              }
             </ha-button>
           </div>
         </form>

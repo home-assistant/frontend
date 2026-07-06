@@ -119,15 +119,7 @@ export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
   power?: "W" | "kW";
   pressure?:
-    | "Pa"
-    | "hPa"
-    | "kPa"
-    | "bar"
-    | "cbar"
-    | "mbar"
-    | "inHg"
-    | "psi"
-    | "mmHg";
+    "Pa" | "hPa" | "kPa" | "bar" | "cbar" | "mbar" | "inHg" | "psi" | "mmHg";
   temperature?: "°C" | "°F" | "K";
   volume?: (typeof VOLUME_UNITS)[number];
 }
@@ -151,6 +143,21 @@ export type StatisticsValidationResults = Record<
 export const getRecorderInfo = (conn: Connection) =>
   conn.sendMessagePromise<RecorderInfo>({
     type: "recorder/info",
+  });
+
+export type EntityRecordingDisabler = "user";
+
+export interface RecorderEntityOptions {
+  recording_disabled_by: EntityRecordingDisabler | null;
+}
+
+export const getRecorderEntityOptions = (
+  hass: Pick<HomeAssistant, "callWS">,
+  entity_id: string
+) =>
+  hass.callWS<RecorderEntityOptions>({
+    type: "recorder/entity_options/get",
+    entity_id,
   });
 
 export const getStatisticIds = (

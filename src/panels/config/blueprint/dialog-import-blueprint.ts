@@ -102,113 +102,123 @@ class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState
           </span>
         </ha-dialog-header>
         <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : this._sourceUrlWarning
-              ? html`
-                  <ha-alert
-                    alert-type="warning"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.blueprint.add.source_warning_title"
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : this._sourceUrlWarning
+                ? html`
+                    <ha-alert
+                      alert-type="warning"
+                      .title=${this.hass.localize(
+                        "ui.panel.config.blueprint.add.source_warning_title"
+                      )}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.blueprint.add.source_warning_description"
+                      )}
+                    </ha-alert>
+                  `
+                : nothing
+          }
+          ${
+            this._result
+              ? html`${this.hass.localize(
+                    "ui.panel.config.blueprint.add.import_header",
+                    {
+                      name: html`<b
+                        >${this._result.blueprint.metadata.name}</b
+                      >`,
+                      domain: this._result.blueprint.metadata.domain,
+                    }
+                  )}
+                  <br />
+                  <ha-markdown
+                    breaks
+                    .content=${this._result.blueprint.metadata.description}
+                  ></ha-markdown>
+                  ${
+                    this._result.validation_errors
+                      ? html`
+                          <p class="error">
+                            ${this.hass.localize(
+                              "ui.panel.config.blueprint.add.unsupported_blueprint"
+                            )}
+                          </p>
+                          <ul class="error">
+                            ${this._result.validation_errors.map(
+                              (error) => html`<li>${error}</li>`
+                            )}
+                          </ul>
+                        `
+                      : html`
+                          <ha-input
+                            id="input"
+                            .value=${this._result.suggested_filename || ""}
+                            .label=${this.hass.localize(
+                              "ui.panel.config.blueprint.add.file_name"
+                            )}
+                            @input=${this._inputChanged}
+                            autofocus
+                          ></ha-input>
+                        `
+                  }
+                  <ha-expansion-panel
+                    .header=${this.hass.localize(
+                      "ui.panel.config.blueprint.add.raw_blueprint"
                     )}
                   >
+                    <ha-code-editor
+                      mode="yaml"
+                      .value=${this._result.raw_data}
+                      read-only
+                      dir="ltr"
+                    ></ha-code-editor>
+                  </ha-expansion-panel>
+                  ${
+                    this._result?.exists
+                      ? html`
+                          <ha-alert
+                            alert-type="warning"
+                            .title=${this.hass.localize(
+                              "ui.panel.config.blueprint.add.override_title"
+                            )}
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.blueprint.add.override_description"
+                            )}
+                          </ha-alert>
+                        `
+                      : nothing
+                  } `
+              : html`
+                  <p>
                     ${this.hass.localize(
-                      "ui.panel.config.blueprint.add.source_warning_description"
+                      "ui.panel.config.blueprint.add.import_introduction"
                     )}
-                  </ha-alert>
+                  </p>
+                  <ha-button
+                    size="s"
+                    appearance="plain"
+                    href=${documentationUrl(this.hass, "/get-blueprints")}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.blueprint.add.community_forums"
+                    )}
+                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-button>
+                  <ha-input
+                    id="input"
+                    .label=${this.hass.localize(
+                      "ui.panel.config.blueprint.add.url"
+                    )}
+                    .value=${this._url || ""}
+                    @input=${this._inputChanged}
+                    autofocus
+                  ></ha-input>
                 `
-              : nothing}
-          ${this._result
-            ? html`${this.hass.localize(
-                  "ui.panel.config.blueprint.add.import_header",
-                  {
-                    name: html`<b>${this._result.blueprint.metadata.name}</b>`,
-                    domain: this._result.blueprint.metadata.domain,
-                  }
-                )}
-                <br />
-                <ha-markdown
-                  breaks
-                  .content=${this._result.blueprint.metadata.description}
-                ></ha-markdown>
-                ${this._result.validation_errors
-                  ? html`
-                      <p class="error">
-                        ${this.hass.localize(
-                          "ui.panel.config.blueprint.add.unsupported_blueprint"
-                        )}
-                      </p>
-                      <ul class="error">
-                        ${this._result.validation_errors.map(
-                          (error) => html`<li>${error}</li>`
-                        )}
-                      </ul>
-                    `
-                  : html`
-                      <ha-input
-                        id="input"
-                        .value=${this._result.suggested_filename || ""}
-                        .label=${this.hass.localize(
-                          "ui.panel.config.blueprint.add.file_name"
-                        )}
-                        @input=${this._inputChanged}
-                        autofocus
-                      ></ha-input>
-                    `}
-                <ha-expansion-panel
-                  .header=${this.hass.localize(
-                    "ui.panel.config.blueprint.add.raw_blueprint"
-                  )}
-                >
-                  <ha-code-editor
-                    mode="yaml"
-                    .value=${this._result.raw_data}
-                    read-only
-                    dir="ltr"
-                  ></ha-code-editor>
-                </ha-expansion-panel>
-                ${this._result?.exists
-                  ? html`
-                      <ha-alert
-                        alert-type="warning"
-                        .title=${this.hass.localize(
-                          "ui.panel.config.blueprint.add.override_title"
-                        )}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.blueprint.add.override_description"
-                        )}
-                      </ha-alert>
-                    `
-                  : nothing} `
-            : html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.panel.config.blueprint.add.import_introduction"
-                  )}
-                </p>
-                <ha-button
-                  size="s"
-                  appearance="plain"
-                  href=${documentationUrl(this.hass, "/get-blueprints")}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.blueprint.add.community_forums"
-                  )}
-                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-                </ha-button>
-                <ha-input
-                  id="input"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.blueprint.add.url"
-                  )}
-                  .value=${this._url || ""}
-                  @input=${this._inputChanged}
-                  autofocus
-                ></ha-input>
-              `}
+          }
         </div>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -219,41 +229,45 @@ class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          ${!this._result
-            ? html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._import}
-                  .disabled=${this._importing}
-                  .loading=${this._importing}
-                  .ariaLabel=${this.hass.localize(
-                    `ui.panel.config.blueprint.add.${this._importing ? "importing" : "import_btn"}`
-                  )}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.blueprint.add.import_btn"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  slot="primaryAction"
-                  @click=${this._save}
-                  .disabled=${this._saving || !!this._result.validation_errors}
-                  .loading=${this._saving}
-                  .ariaLabel=${this.hass.localize(
-                    `ui.panel.config.blueprint.add.${this._saving ? "saving" : this._result.exists ? "save_btn_override" : "save_btn"}`
-                  )}
-                >
-                  ${this._result.exists
-                    ? this.hass.localize(
-                        "ui.panel.config.blueprint.add.save_btn_override"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.blueprint.add.save_btn"
-                      )}
-                </ha-button>
-              `}
+          ${
+            !this._result
+              ? html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._import}
+                    .disabled=${this._importing}
+                    .loading=${this._importing}
+                    .ariaLabel=${this.hass.localize(
+                      `ui.panel.config.blueprint.add.${this._importing ? "importing" : "import_btn"}`
+                    )}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.blueprint.add.import_btn"
+                    )}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="primaryAction"
+                    @click=${this._save}
+                    .disabled=${this._saving || !!this._result.validation_errors}
+                    .loading=${this._saving}
+                    .ariaLabel=${this.hass.localize(
+                      `ui.panel.config.blueprint.add.${this._saving ? "saving" : this._result.exists ? "save_btn_override" : "save_btn"}`
+                    )}
+                  >
+                    ${
+                      this._result.exists
+                        ? this.hass.localize(
+                            "ui.panel.config.blueprint.add.save_btn_override"
+                          )
+                        : this.hass.localize(
+                            "ui.panel.config.blueprint.add.save_btn"
+                          )
+                    }
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;

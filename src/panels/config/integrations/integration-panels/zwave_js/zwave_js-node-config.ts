@@ -133,14 +133,16 @@ class ZWaveJSNodeConfig extends LitElement {
           </div>
 
           <div slot="introduction">
-            ${device
-              ? html`
-                  <div class="device-info">
-                    <h2>${deviceName}</h2>
-                    <p>${device.manufacturer} ${device.model}</p>
-                  </div>
-                `
-              : ``}
+            ${
+              device
+                ? html`
+                    <div class="device-info">
+                      <h2>${deviceName}</h2>
+                      <p>${device.manufacturer} ${device.model}</p>
+                    </div>
+                  `
+                : ``
+            }
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.introduction"
             )}
@@ -151,8 +153,10 @@ class ZWaveJSNodeConfig extends LitElement {
                   {
                     device_database: html`<a
                       rel="noreferrer noopener"
-                      href=${this._nodeMetadata?.device_database_url ||
-                      "https://devices.zwave-js.io"}
+                      href=${
+                        this._nodeMetadata?.device_database_url ||
+                        "https://devices.zwave-js.io"
+                      }
                       target="_blank"
                       >${this.hass.localize(
                         "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
@@ -196,19 +200,21 @@ class ZWaveJSNodeConfig extends LitElement {
                 </ha-card>
               </div>`
           )}
-          ${this._canResetAll
-            ? html`<div class="reset">
-                <ha-progress-button
-                  .disabled=${this._resetDialogProgress}
-                  .progress=${this._resetDialogProgress}
-                  @click=${this._openResetDialog}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
-                  )}
-                </ha-progress-button>
-              </div>`
-            : nothing}
+          ${
+            this._canResetAll
+              ? html`<div class="reset">
+                  <ha-progress-button
+                    .disabled=${this._resetDialogProgress}
+                    .progress=${this._resetDialogProgress}
+                    @click=${this._openResetDialog}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.node_config.reset_to_default.button_label"
+                    )}
+                  </ha-progress-button>
+                </div>`
+              : nothing
+          }
           <h3>
             ${this.hass.localize(
               "ui.panel.config.zwave_js.node_config.custom_config"
@@ -246,49 +252,59 @@ class ZWaveJSNodeConfig extends LitElement {
         ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
         <br />
         <span>${item.property}</span>
-        ${item.property_key !== null
-          ? html`<br />
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.bitmask"
-              )}
-              <br />
-              <span>${item.property_key.toString(16)}</span>`
-          : nothing}
+        ${
+          item.property_key !== null
+            ? html`<br />
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.bitmask"
+                )}
+                <br />
+                <span>${item.property_key.toString(16)}</span>`
+            : nothing
+        }
       </span>
       <span slot="heading" class="heading" .title=${item.metadata.label}>
         ${item.metadata.label}
       </span>
       <span slot="description">
         ${item.metadata.description}
-        ${item.metadata.description !== null && !item.metadata.writeable
-          ? html`<br />`
-          : nothing}
-        ${!item.metadata.writeable
-          ? html`<em>
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
-              )}
-            </em>`
-          : nothing}
-        ${result?.status
-          ? html`<p
-              class="result ${classMap({
-                [result.status]: true,
-              })}"
-            >
-              <ha-svg-icon
-                .path=${icons[result.status] ? icons[result.status] : mdiCircle}
-                class="result-icon"
-                slot="item-icon"
-              ></ha-svg-icon>
-              ${this.hass.localize(
-                `ui.panel.config.zwave_js.node_config.set_param_${result.status}`
-              )}
-              ${result.status === "error" && result.error
-                ? html` <br /><em>${result.error}</em> `
-                : nothing}
-            </p>`
-          : nothing}
+        ${
+          item.metadata.description !== null && !item.metadata.writeable
+            ? html`<br />`
+            : nothing
+        }
+        ${
+          !item.metadata.writeable
+            ? html`<em>
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
+                )}
+              </em>`
+            : nothing
+        }
+        ${
+          result?.status
+            ? html`<p
+                class="result ${classMap({
+                  [result.status]: true,
+                })}"
+              >
+                <ha-svg-icon
+                  .path=${icons[result.status] ? icons[result.status] : mdiCircle}
+                  class="result-icon"
+                  slot="item-icon"
+                ></ha-svg-icon>
+                ${this.hass.localize(
+                  `ui.panel.config.zwave_js.node_config.set_param_${result.status}`
+                )}
+                ${
+                  result.status === "error" && result.error
+                    ? html` <br /><em>${result.error}</em> `
+                    : nothing
+                }
+              </p>`
+            : nothing
+        }
       </span>
     `;
 
@@ -356,7 +372,7 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`${labelAndDescription}
         <ha-input
           type="number"
-          .value=${item.value}
+          .value=${item.value?.toString()}
           .min=${item.metadata.min}
           .max=${item.metadata.max}
           .property=${item.property}
@@ -367,9 +383,11 @@ class ZWaveJSNodeConfig extends LitElement {
           @change=${this._numericInputChanged}
           .hint=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
         >
-          ${item.metadata.unit
-            ? html`<span slot="end">${item.metadata.unit}</span>`
-            : nothing}
+          ${
+            item.metadata.unit
+              ? html`<span slot="end">${item.metadata.unit}</span>`
+              : nothing
+          }
         </ha-input>`;
     }
 
@@ -475,7 +493,7 @@ class ZWaveJSNodeConfig extends LitElement {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    if (this._config![ev.target.key].value === value) {
+    if (this._config![ev.target.key].value === Number(value)) {
       return;
     }
     this._setResult(ev.target.key, undefined);
@@ -487,8 +505,12 @@ class ZWaveJSNodeConfig extends LitElement {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    const value = Number(ev.target.value);
-    if (Number(this._config![ev.target.key].value) === value) {
+    // An empty input must not be coerced to 0 by Number()
+    const value =
+      ev.target.value === undefined || ev.target.value === ""
+        ? NaN
+        : Number(ev.target.value);
+    if (this._config![ev.target.key].value === value) {
       return;
     }
     if (isNaN(value)) {

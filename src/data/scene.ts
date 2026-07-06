@@ -28,8 +28,7 @@ export const SCENE_IGNORED_DOMAINS = [
 ];
 
 let inititialSceneEditorData:
-  | { config?: Partial<SceneConfig>; areaId?: string }
-  | undefined;
+  { config?: Partial<SceneConfig>; areaId?: string } | undefined;
 
 export const showSceneEditor = (
   config?: Partial<SceneConfig>,

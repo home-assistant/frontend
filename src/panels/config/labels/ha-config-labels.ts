@@ -57,7 +57,7 @@ import {
   getCreatedAtTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
-import { configSections } from "../ha-panel-config";
+import { configSections } from "../config-sections";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
 
 type ConfigTranslationKey = FlattenObjectKeys<
@@ -174,9 +174,11 @@ export class HaConfigLabels extends LitElement {
           ? undefined
           : (label) => html`
               <div>${label.name}</div>
-              ${label.description
-                ? html`<div class="secondary">${label.description}</div>`
-                : nothing}
+              ${
+                label.description
+                  ? html`<div class="secondary">${label.description}</div>`
+                  : nothing
+              }
             `,
       },
       description: {

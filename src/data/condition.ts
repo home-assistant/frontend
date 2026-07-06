@@ -1,7 +1,7 @@
-import { mdiMapClock, mdiShape } from "@mdi/js";
+import { mdiClockOutline, mdiShape, mdiWeatherSunny } from "@mdi/js";
+import type { Connection } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import type { HomeAssistant } from "../types";
 import type { AutomationElementGroupCollection } from "./automation";
 import type { Selector, TargetSelector } from "./selector";
 
@@ -9,9 +9,14 @@ export const CONDITION_COLLECTIONS: AutomationElementGroupCollection[] = [
   {
     groups: {
       dynamicGroups: {},
-      time_location: {
-        icon: mdiMapClock,
-        members: { sun: {}, time: {}, zone: {} },
+      time: {
+        icon: mdiClockOutline,
+        members: { time: {} },
+        domains: ["calendar", "schedule"],
+      },
+      sun: {
+        icon: mdiWeatherSunny,
+        domains: ["sun"],
       },
       helpers: {},
       template: {},
@@ -68,10 +73,10 @@ export interface ConditionDescription {
 export type ConditionDescriptions = Record<string, ConditionDescription>;
 
 export const subscribeConditions = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (conditions: ConditionDescriptions) => void
 ) =>
-  hass.connection.subscribeMessage<ConditionDescriptions>(callback, {
+  connection.subscribeMessage<ConditionDescriptions>(callback, {
     type: "condition_platforms/subscribe",
   });
 

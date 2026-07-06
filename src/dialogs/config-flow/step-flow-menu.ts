@@ -90,11 +90,13 @@ class StepFlowMenu extends LitElement {
               ?multiline-secondary=${optionDescriptions[option]}
             >
               <span>${translations[option]}</span>
-              ${optionDescriptions[option]
-                ? html`<span slot="secondary">
-                    ${optionDescriptions[option]}
-                  </span>`
-                : nothing}
+              ${
+                optionDescriptions[option]
+                  ? html`<span slot="secondary">
+                      ${optionDescriptions[option]}
+                    </span>`
+                  : nothing
+              }
               <ha-icon-next slot="meta"></ha-icon-next>
             </ha-list-item>
           `

@@ -40,51 +40,56 @@ export class HaIconOverflowMenu extends LitElement {
       return nothing;
     }
     return html`
-      ${this.narrow
-        ? html` <!-- Collapsed representation for small screens -->
-            <ha-dropdown
-              @wa-show=${this._handleIconOverflowMenuOpened}
-              @click=${stopPropagation}
-            >
-              <ha-icon-button
-                .label=${this._localize("ui.common.overflow_menu")}
-                .path=${mdiDotsVertical}
-                slot="trigger"
-              ></ha-icon-button>
+      ${
+        this.narrow
+          ? html` <!-- Collapsed representation for small screens -->
+              <ha-dropdown
+                @wa-show=${this._handleIconOverflowMenuOpened}
+                @click=${stopPropagation}
+              >
+                <ha-icon-button
+                  .label=${this._localize("ui.common.overflow_menu")}
+                  .path=${mdiDotsVertical}
+                  slot="trigger"
+                ></ha-icon-button>
 
-              ${this.items.map((item) =>
-                item.divider
-                  ? html`<wa-divider></wa-divider>`
-                  : html`<ha-dropdown-item
-                      ?disabled=${item.disabled}
-                      @click=${item.action}
-                      variant=${item.warning ? "danger" : "default"}
-                    >
-                      <ha-svg-icon slot="icon" .path=${item.path}></ha-svg-icon>
-                      ${item.label}
-                    </ha-dropdown-item>`
-              )}
-            </ha-dropdown>`
-        : html`
-            <!-- Icon representation for big screens -->
-            ${this.items.map((item) =>
-              item.narrowOnly
-                ? nothing
-                : item.divider
-                  ? html`<div role="separator"></div>`
-                  : html`<ha-tooltip
-                        .disabled=${!item.tooltip}
-                        .for="icon-button-${item.label}"
-                        >${item.tooltip ?? ""} </ha-tooltip
-                      ><ha-icon-button
-                        .id="icon-button-${item.label}"
-                        @click=${item.action}
-                        .label=${item.label}
-                        .path=${item.path}
+                ${this.items.map((item) =>
+                  item.divider
+                    ? html`<wa-divider></wa-divider>`
+                    : html`<ha-dropdown-item
                         ?disabled=${item.disabled}
-                      ></ha-icon-button> `
-            )}
-          `}
+                        @click=${item.action}
+                        variant=${item.warning ? "danger" : "default"}
+                      >
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${item.path}
+                        ></ha-svg-icon>
+                        ${item.label}
+                      </ha-dropdown-item>`
+                )}
+              </ha-dropdown>`
+          : html`
+              <!-- Icon representation for big screens -->
+              ${this.items.map((item) =>
+                item.narrowOnly
+                  ? nothing
+                  : item.divider
+                    ? html`<div role="separator"></div>`
+                    : html`<ha-tooltip
+                          .disabled=${!item.tooltip}
+                          .for="icon-button-${item.label}"
+                          >${item.tooltip ?? ""} </ha-tooltip
+                        ><ha-icon-button
+                          .id="icon-button-${item.label}"
+                          @click=${item.action}
+                          .label=${item.label}
+                          .path=${item.path}
+                          ?disabled=${item.disabled}
+                        ></ha-icon-button> `
+              )}
+            `
+      }
     `;
   }
 

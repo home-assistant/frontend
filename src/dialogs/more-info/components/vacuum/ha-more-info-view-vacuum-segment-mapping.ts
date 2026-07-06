@@ -102,9 +102,11 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
 
     return html`
       <div class="content">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
 
         <ha-vacuum-segment-area-mapper
           .hass=${this.hass}

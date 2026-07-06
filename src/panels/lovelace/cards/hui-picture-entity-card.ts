@@ -106,8 +106,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PictureEntityCardConfig
-      | undefined;
+      PictureEntityCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -210,14 +209,16 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
             .image=${image}
             .stateImage=${this._config.state_image}
             .stateFilter=${this._config.state_filter}
-            .cameraImage=${domain === "camera"
-              ? this._config.entity
-              : this._config.camera_image}
+            .cameraImage=${
+              domain === "camera"
+                ? this._config.entity
+                : this._config.camera_image
+            }
             .cameraView=${this._config.camera_view}
             .entity=${this._config.entity}
-            .aspectRatio=${ignoreAspectRatio
-              ? undefined
-              : this._config.aspect_ratio}
+            .aspectRatio=${
+              ignoreAspectRatio ? undefined : this._config.aspect_ratio
+            }
             .fitMode=${this._config.fit_mode}
           ></hui-image>
         </div>
