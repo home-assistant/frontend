@@ -918,9 +918,11 @@ export class HaScriptEditor extends SubscribeMixin(
     this._manualEditor?.resetPastedConfig();
 
     if (!this.scriptId) {
-      const saved = await this._promptScriptAlias();
-      if (!saved) {
-        return;
+      if (!this.config?.alias) {
+        const saved = await this._promptScriptAlias();
+        if (!saved) {
+          return;
+        }
       }
       this.currentEntityId = this._computeEntityIdFromAlias(this.config!.alias);
     }
