@@ -420,7 +420,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     let children = isSearching
       ? this._searchResults!
       : currentItem.children || [];
-    let notShown = isSearching ? 0 : currentItem.not_shown || 0;
+    const notShown = isSearching ? 0 : currentItem.not_shown || 0;
     const canPlayChildren = new Set<string>();
 
     // Filter children based on accept property if provided
