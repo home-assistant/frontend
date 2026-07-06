@@ -456,10 +456,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     // Show the filter consistently for any browsable listing (searchable
-    // sources and folders with children alike), but not on the root media
-    // sources page, where filtering by media type is not meaningful.
+    // sources and folders with children alike).
     const showMediaClassFilter =
-      this.navigateIds.length > 1 &&
       !isManualMediaSourceContentId(currentItem.media_content_id) &&
       !isTTSMediaSource(currentItem.media_content_id) &&
       (currentItem.can_search || !!currentItem.children?.length);
