@@ -40,13 +40,17 @@ export class HaPanelLogbook extends LitElement {
   @state()
   private _showBack?: boolean;
 
-  @state()
+  @state() private _targetPickerValue: HassServiceTarget = {};
+
+  // Remembers the last user-picked selection as a fallback for visits without
+  // URL params. Kept separate from _targetPickerValue because localStorage is
+  // synced across tabs and would leak one tab's selection into the others.
   @storage({
     key: "logbookPickedValue",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _targetPickerValue: HassServiceTarget = {};
+  private _storedTargetPickerValue?: HassServiceTarget;
 
   public constructor() {
     super();
@@ -176,6 +180,8 @@ export class HaPanelLogbook extends LitElement {
     const targetPickerValue = historyLogbookTargetFromQueryParams(queryParams);
     if (targetPickerValue) {
       this._targetPickerValue = targetPickerValue;
+    } else if (!this.hasUpdated && this._storedTargetPickerValue) {
+      this._targetPickerValue = this._storedTargetPickerValue;
     }
 
     if (queryParams.start_date || queryParams.end_date) {
@@ -208,6 +214,7 @@ export class HaPanelLogbook extends LitElement {
 
   private _targetsChanged(ev) {
     this._targetPickerValue = ev.detail.value || {};
+    this._storedTargetPickerValue = this._targetPickerValue;
     this._updatePath();
   }
 
