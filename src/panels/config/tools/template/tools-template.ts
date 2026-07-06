@@ -354,8 +354,8 @@ ${
                                         <li>
                                           <b
                                             >${this.hass.localize(
-                                            "ui.panel.config.tools.tabs.templates.domain"
-                                          )}</b
+                                              "ui.panel.config.tools.tabs.templates.domain"
+                                            )}</b
                                           >: ${domain}
                                         </li>
                                       `
@@ -367,8 +367,8 @@ ${
                                         <li>
                                           <b
                                             >${this.hass.localize(
-                                            "ui.panel.config.tools.tabs.templates.entity"
-                                          )}</b
+                                              "ui.panel.config.tools.tabs.templates.entity"
+                                            )}</b
                                           >: ${entity_id}
                                         </li>
                                       `
