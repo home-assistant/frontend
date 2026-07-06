@@ -179,14 +179,14 @@ export class CloudBackupPref extends LitElement {
                       ></ha-svg-icon>
                       <span slot="headline">
                         ${
-                        cloudAgent.protected
-                          ? this.hass.localize(
-                              "ui.panel.config.cloud.account.backup.backup_encrypted"
-                            )
-                          : this.hass.localize(
-                              "ui.panel.config.cloud.account.backup.backup_not_encrypted"
-                            )
-                      }
+                          cloudAgent.protected
+                            ? this.hass.localize(
+                                "ui.panel.config.cloud.account.backup.backup_encrypted"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.cloud.account.backup.backup_not_encrypted"
+                              )
+                        }
                       </span>
                     </ha-md-list-item>
                   `
