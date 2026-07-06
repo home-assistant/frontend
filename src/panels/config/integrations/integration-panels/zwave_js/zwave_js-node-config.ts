@@ -97,10 +97,7 @@ class ZWaveJSNodeConfig extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._unsubscribeConfigParameterUpdates();
-    Object.values(this._resultTimeouts).forEach((timeout) =>
-      clearTimeout(timeout)
-    );
-    this._resultTimeouts = {};
+    this._clearAllResultTimeouts();
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -108,10 +105,11 @@ class ZWaveJSNodeConfig extends LitElement {
     if (!changedProps.has("route") || !this.route) {
       return;
     }
-    const deviceId = this.route.path.substr(1);
+    const deviceId = this.route.path.slice(1);
     if (deviceId !== this.deviceId) {
       this.deviceId = deviceId;
       this._config = undefined;
+      this._clearAllResultTimeouts();
       this._results = {};
       this._error = undefined;
     }
@@ -485,11 +483,20 @@ class ZWaveJSNodeConfig extends LitElement {
       this.deviceId,
       this._handleConfigParameterUpdate
     );
+    this._unsubConfigParamUpdates.catch(() => {
+      // The backend doesn't support the subscription; the page still works,
+      // it just won't receive live updates
+      this._unsubConfigParamUpdates = undefined;
+    });
   }
 
   private _unsubscribeConfigParameterUpdates(): void {
     if (this._unsubConfigParamUpdates) {
-      this._unsubConfigParamUpdates.then((unsub) => unsub());
+      this._unsubConfigParamUpdates
+        .then((unsub) => unsub())
+        .catch(() => {
+          // The subscription never succeeded, so there is nothing to clean up
+        });
       this._unsubConfigParamUpdates = undefined;
     }
   }
@@ -689,6 +696,13 @@ class ZWaveJSNodeConfig extends LitElement {
       clearTimeout(this._resultTimeouts[key]);
       delete this._resultTimeouts[key];
     }
+  }
+
+  private _clearAllResultTimeouts(): void {
+    Object.values(this._resultTimeouts).forEach((timeout) =>
+      clearTimeout(timeout)
+    );
+    this._resultTimeouts = {};
   }
 
   private _setResult(key: string, value: string | undefined) {
