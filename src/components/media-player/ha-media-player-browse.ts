@@ -455,14 +455,14 @@ export class HaMediaPlayerBrowse extends LitElement {
       notShown = 0;
     }
 
-    // The media type filter narrows server-side search results, so only show it
-    // for sources that support search, and never on the root media
+    // Show the filter consistently for any browsable listing (searchable
+    // sources and folders with children alike), but not on the root media
     // sources page, where filtering by media type is not meaningful.
     const showMediaClassFilter =
       this.navigateIds.length > 1 &&
       !isManualMediaSourceContentId(currentItem.media_content_id) &&
       !isTTSMediaSource(currentItem.media_content_id) &&
-      currentItem.can_search;
+      (currentItem.can_search || !!currentItem.children?.length);
     const mediaClassFilterOptions = showMediaClassFilter
       ? [...MEDIA_CLASS_FILTER_OPTIONS].sort((a, b) =>
           this._localizeMediaClass(a).localeCompare(this._localizeMediaClass(b))
