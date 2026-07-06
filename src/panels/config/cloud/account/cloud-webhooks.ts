@@ -71,28 +71,28 @@ export class CloudWebhooks extends LitElement {
                   ? html`
                       <div class="body-text">
                         ${this.hass!.localize(
-                        "ui.panel.config.cloud.account.webhooks.loading"
-                      )}
+                          "ui.panel.config.cloud.account.webhooks.loading"
+                        )}
                       </div>
                     `
                   : this._customHooks.length === 0 && !this._mobileHooks.length
                     ? html`
                         <div class="body-text">
                           ${this.hass.localize(
-                          "ui.panel.config.cloud.account.webhooks.no_hooks_yet"
-                        )}
+                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet"
+                          )}
                           <a href="/config/integrations"
                             >${this.hass.localize(
-                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_integration"
-                          )}
+                              "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_integration"
+                            )}
                           </a>
                           ${this.hass.localize(
-                          "ui.panel.config.cloud.account.webhooks.no_hooks_yet2"
-                        )}
+                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet2"
+                          )}
                           <a href="/config/automation/edit/new"
                             >${this.hass.localize(
-                            "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_automation"
-                          )}</a
+                              "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_automation"
+                            )}</a
                           >.
                         </div>
                       `
@@ -121,18 +121,18 @@ export class CloudWebhooks extends LitElement {
                   <ha-card
                     outlined
                     header=${this.hass!.localize(
-                    "ui.panel.config.cloud.account.webhooks.companion_title"
-                  )}
+                      "ui.panel.config.cloud.account.webhooks.companion_title"
+                    )}
                   >
                     <div class="card-content">
                       <p>
                         ${this.hass!.localize(
-                        "ui.panel.config.cloud.account.webhooks.companion_info"
-                      )}
+                          "ui.panel.config.cloud.account.webhooks.companion_info"
+                        )}
                       </p>
                       ${this._mobileHooks.map((entry) =>
-                      this._renderHookRow(entry)
-                    )}
+                        this._renderHookRow(entry)
+                      )}
                     </div>
                   </ha-card>
                 `
@@ -226,15 +226,17 @@ export class CloudWebhooks extends LitElement {
                     @click=${this._handleManageButton}
                   >
                     ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.webhooks.manage"
-                  )}
+                      "ui.panel.config.cloud.account.webhooks.manage"
+                    )}
                   </ha-button>
                 `
-              : html`<ha-switch
-                  slot="end"
-                  data-webhook-id=${entry.webhook_id}
-                  @click=${this._enableWebhook}
-                ></ha-switch>`
+              : html`
+                  <ha-switch
+                    slot="end"
+                    data-webhook-id=${entry.webhook_id}
+                    @click=${this._enableWebhook}
+                  ></ha-switch>
+                `
         }
       </ha-row-item>
     `;
