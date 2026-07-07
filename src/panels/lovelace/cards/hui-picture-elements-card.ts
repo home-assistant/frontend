@@ -31,13 +31,6 @@ import type { PersonEntity } from "../../../data/person";
 // their visible hit target via getHitInfo(); the card binds the shared
 // action-handler on #root with a resolver, so routed gestures run on the same
 // engine (hold ripple, cancellation, timers) as every other card.
-const NEAREST_ROUTED_TYPES = new Set([
-  "state-icon",
-  "state-badge",
-  "icon",
-  "state-label",
-]);
-
 // How far (px) a tap may sit from an icon seed and still be routed to it.
 const NEAREST_HIT_REACH = 24;
 
@@ -146,8 +139,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | PictureElementsCardConfig
-      | undefined;
+      PictureElementsCardConfig | undefined;
 
     if (
       !oldHass ||
@@ -211,10 +203,13 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   private _collectSeeds(rootRect: DOMRect): NearestSeed[] {
     const seeds: NearestSeed[] = [];
-    if (!this._elements) {
+    const root = this._root;
+    if (!root) {
       return seeds;
     }
-    for (const element of this._elements) {
+    // Routed targets can be nested (e.g. inside hui-conditional-element), so
+    // walk the rendered subtree rather than only the top-level elements.
+    for (const element of root.querySelectorAll<LovelaceElement>("*")) {
       if (!element.delegatedActions || !element.getHitInfo) {
         continue;
       }
@@ -324,9 +319,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     elementConfig: LovelaceElementConfig
   ): LovelaceElement {
     const element = createStyledHuiElement(elementConfig) as LovelaceCard;
-    if (NEAREST_ROUTED_TYPES.has(elementConfig.type)) {
-      (element as LovelaceElement).delegatedActions = true;
-    }
     if (this.hass) {
       element.hass = this.hass;
     }

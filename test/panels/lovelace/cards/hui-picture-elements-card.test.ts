@@ -94,6 +94,17 @@ const makeCard = (elements: HTMLElement[]) => {
 const iconAt = (x: number, y: number, init: FakeElementInit = {}) =>
   makeElement({ rect: new DOMRect(x - 12, y - 12, 24, 24), ...init });
 
+// A routed element created inside hui-conditional-element: a transparent
+// wrapper (no "element" class) holding the delegated child. When its condition
+// is unmet the child is kept out of the DOM (pass no child).
+const conditional = (child?: HTMLElement): HTMLElement => {
+  const wrapper = document.createElement("div");
+  if (child) {
+    wrapper.appendChild(child);
+  }
+  return wrapper;
+};
+
 describe("hui-picture-elements-card gesture resolver", () => {
   it("routes a background press in reach to the nearest icon", () => {
     const near = iconAt(100, 100);
@@ -159,5 +170,30 @@ describe("hui-picture-elements-card gesture resolver", () => {
     const collapsed = makeElement({ rect: new DOMRect(100, 100, 0, 0) });
     const { press } = makeCard([hidden, collapsed]);
     expect(press(100, 100)).toBeNull();
+  });
+
+  it("routes a near press to an icon nested inside a conditional", () => {
+    const child = iconAt(100, 100);
+    const { press } = makeCard([conditional(child)]);
+    expect(press(120, 100)?.target).toBe(child);
+  });
+
+  it("routes a direct press on a conditional-nested icon", () => {
+    const child = iconAt(100, 100);
+    const { press } = makeCard([conditional(child)]);
+    // The delegated child is in the composed path (must not bail) and is a
+    // seed even though it is not a top-level element.
+    expect(press(100, 100, child)?.target).toBe(child);
+  });
+
+  it("ignores a conditional whose child is not rendered", () => {
+    const { press } = makeCard([conditional()]);
+    expect(press(100, 100)).toBeNull();
+  });
+
+  it("leaves a non-routed conditional child to itself", () => {
+    const reserved = makeElement({ delegated: false, rect: null });
+    const { press } = makeCard([conditional(reserved)]);
+    expect(press(105, 100, reserved)).toBeNull();
   });
 });
