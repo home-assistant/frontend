@@ -842,6 +842,8 @@ export const getEnergyDataCollection = (
           if (err.code === "not_found") {
             return {
               prefs: EMPTY_PREFERENCES,
+              start: collection.start,
+              end: collection.end,
             } as EnergyData;
           }
           throw err;
