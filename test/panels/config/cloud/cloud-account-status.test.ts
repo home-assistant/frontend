@@ -80,7 +80,7 @@ const makeStatus = (
   remote_certificate_status: "ready",
   http_use_ssl: false,
   active_subscription: true,
-  is_onboarding_postponed: false,
+  onboarding_postponed: false,
   onboarding_completed: false,
   ...overrides,
 });

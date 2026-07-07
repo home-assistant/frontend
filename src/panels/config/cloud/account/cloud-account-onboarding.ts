@@ -147,14 +147,15 @@ export class CloudAccountOnboarding extends LitElement {
           display: block;
           width: 100%;
         }
+        ha-card.onboarding-card {
+          container-type: inline-size;
+        }
         .ready-card {
           display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: var(--ha-space-8);
+          flex-direction: column;
+          gap: var(--ha-space-6);
         }
         .ready-left {
-          flex: 1.1;
           display: flex;
           flex-direction: column;
           min-width: 0;
@@ -177,16 +178,13 @@ export class CloudAccountOnboarding extends LitElement {
           margin-top: var(--ha-space-4);
         }
         .ready-grid {
-          flex: 1;
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: var(--ha-space-4) var(--ha-space-4);
+          gap: var(--ha-space-4);
         }
-        @media (max-width: 600px) {
-          .ready-card {
-            flex-direction: column;
-            align-items: stretch;
-            gap: var(--ha-space-5);
+        @container (max-width: 450px) {
+          .ready-grid {
+            grid-template-columns: 1fr;
           }
         }
         .ready-chip {

@@ -360,9 +360,10 @@ export const cloudBackupHealth = (
     return "failed";
   }
 
-  const next = backupConfig?.next_automatic_backup
-    ? new Date(backupConfig.next_automatic_backup).getTime()
-    : 0;
+  const next =
+    backupConfig?.next_automatic_backup &&
+    new Date(backupConfig.next_automatic_backup).getTime();
+
   if (next && next < Date.now() - BACKUP_OVERDUE_MARGIN_MS) {
     return "old";
   }
