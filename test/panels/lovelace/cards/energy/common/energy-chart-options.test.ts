@@ -770,11 +770,36 @@ describe("generateFillBuckets", () => {
     assert.include(buckets, anchor);
   });
 
+  it("falls back to a compare anchor when only compare data exists", () => {
+    // Compare-only view (e.g. just after midnight: today has no data yet but
+    // the compare period does). The lone compare bar must still be zero-filled
+    // so ECharts keeps the configured axis instead of expanding it. Regression
+    // test for the compare edge case in #52938.
+    const compareAnchor = start.getTime() + 9.5 * HOUR;
+    const buckets = generateFillBuckets(
+      [
+        { type: "bar", id: "compare-placeholder", data: [] },
+        barsAt([compareAnchor], "compare-sensor.water"),
+        barsAt([], "sensor.water"),
+      ],
+      start,
+      end,
+      "hour"
+    );
+
+    assert.equal(buckets.length, 24);
+    assert.include(buckets, compareAnchor);
+    assert.isTrue(
+      buckets.every((ts) => (ts - compareAnchor) % HOUR === 0),
+      "grid must be anchored on the compare series"
+    );
+  });
+
   it("returns an empty grid when there is no data to anchor on", () => {
     assert.deepEqual(generateFillBuckets([], start, end, "hour"), []);
     assert.deepEqual(
       generateFillBuckets(
-        [barsAt([], "sensor.empty"), barsAt([1000], "compare-sensor.water")],
+        [barsAt([], "sensor.empty"), barsAt([], "compare-sensor.empty")],
         start,
         end,
         "hour"

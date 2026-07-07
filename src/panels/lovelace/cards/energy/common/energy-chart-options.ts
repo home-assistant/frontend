@@ -402,11 +402,14 @@ export function getPeriodMidpointOffset(
  * oversized bars, and a single point makes ECharts expand the time axis by
  * ±40% of its span, ignoring the configured min/max.
  *
- * The grid is anchored on the first real data bucket of a non-compare bar
- * series rather than on `start`: recorder buckets are UTC-aligned, so in
- * half-hour timezones they don't sit on local period boundaries. Stepping
- * from a real bucket keeps generated buckets exactly on the data's grid
- * (midpoints for sub-daily periods, period starts otherwise). Returns an
+ * The grid is anchored on a real data bucket rather than on `start`: recorder
+ * buckets are UTC-aligned, so in half-hour timezones they don't sit on local
+ * period boundaries. Stepping from a real bucket keeps generated buckets
+ * exactly on the data's grid (midpoints for sub-daily periods, period starts
+ * otherwise). A non-compare series is preferred so the grid aligns with the
+ * main data; a compare series is only used as a fallback so a compare-only
+ * view — e.g. today has no data yet but the compare period does — still gets
+ * zero-filled instead of leaving a lone bar that expands the axis. Returns an
  * empty array when there is no data to anchor on.
  */
 export function generateFillBuckets(
@@ -415,26 +418,30 @@ export function generateFillBuckets(
   end: Date,
   period: "5minute" | "hour" | "day" | "month"
 ): number[] {
-  let anchor: number | undefined;
-  for (const dataset of datasets) {
-    if (
-      dataset.type !== "bar" ||
-      String(dataset.id).startsWith("compare-") ||
-      !dataset.data?.length
-    ) {
-      continue;
+  const firstBucketX = (includeCompare: boolean): number | undefined => {
+    for (const dataset of datasets) {
+      if (
+        dataset.type !== "bar" ||
+        !dataset.data?.length ||
+        (!includeCompare && String(dataset.id).startsWith("compare-"))
+      ) {
+        continue;
+      }
+      const first = dataset.data[0];
+      const value =
+        first && typeof first === "object" && "value" in first
+          ? first.value
+          : first;
+      const x = Number((value as number[])?.[0]);
+      if (!Number.isNaN(x)) {
+        return x;
+      }
     }
-    const first = dataset.data[0];
-    const value =
-      first && typeof first === "object" && "value" in first
-        ? first.value
-        : first;
-    const x = Number((value as number[])?.[0]);
-    if (!Number.isNaN(x)) {
-      anchor = x;
-      break;
-    }
-  }
+    return undefined;
+  };
+
+  // Prefer a non-compare anchor; fall back to any bar series (compare included).
+  const anchor = firstBucketX(false) ?? firstBucketX(true);
   if (anchor === undefined) {
     return [];
   }
