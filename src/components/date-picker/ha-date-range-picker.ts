@@ -36,6 +36,9 @@ const EXTENDED_RANGE_KEYS: DateRange[] = [
   "this_month",
   "this_year",
   "now-1h",
+  "now-2h",
+  "now-4h",
+  "now-8h",
   "now-12h",
   "now-24h",
   "now-7d",
@@ -113,6 +116,10 @@ export class HaDateRangePicker extends LitElement {
     this._handleResize();
     window.addEventListener("resize", this._handleResize);
 
+    this._updateRanges();
+  }
+
+  private _updateRanges() {
     const rangeKeys = this.extendedPresets
       ? [...RANGE_KEYS, ...EXTENDED_RANGE_KEYS]
       : RANGE_KEYS;
@@ -333,6 +340,9 @@ export class HaDateRangePicker extends LitElement {
       ev?.stopImmediatePropagation();
       return;
     }
+    // Recompute relative presets (e.g. "Last 4 hours") so they anchor to the
+    // current time each time the picker opens, not to when it was mounted.
+    this._updateRanges();
     this._openedNarrow = this._narrow;
     this._popoverWidth = this._containerElement?.offsetWidth || 250;
     this._pickerWrapperOpen = true;
