@@ -10,7 +10,10 @@ import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockAssist } from "../../../../demo/src/stubs/assist";
 import { mockAuth } from "../../../../demo/src/stubs/auth";
 import { mockCloud } from "../../../../demo/src/stubs/cloud";
-import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
+import {
+  demoConfigEntries,
+  mockConfigEntries,
+} from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEnergy } from "../../../../demo/src/stubs/energy";
 import { energyEntities } from "../../../../demo/src/stubs/entities";
@@ -20,6 +23,8 @@ import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockFrontend } from "../../../../demo/src/stubs/frontend";
 import { mockHistory } from "../../../../demo/src/stubs/history";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
+import { mockIntegration } from "../../../../demo/src/stubs/integration";
+import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
 import { mockLovelace } from "../../../../demo/src/stubs/lovelace";
 import { mockMediaPlayer } from "../../../../demo/src/stubs/media_player";
@@ -32,8 +37,44 @@ import { mockTemplate } from "../../../../demo/src/stubs/template";
 import { mockTodo } from "../../../../demo/src/stubs/todo";
 import { mockTranslations } from "../../../../demo/src/stubs/translations";
 import { mockUpdate } from "../../../../demo/src/stubs/update";
+import type { EntityRegistryDisplayEntry } from "../../../../src/data/entity/entity_registry";
+import { demoConfig } from "../../../../src/fake_data/demo_config";
 import { e2eTestPanels } from "./ha-test-panels";
 import { scenarios } from "./scenarios";
+
+const E2E_CONFIG_COMPONENTS = [
+  ...demoConfig.components,
+  "bluetooth",
+  "dhcp",
+  "hardware",
+  "infrared",
+  "insteon",
+  "knx",
+  "lovelace",
+  "matter",
+  "mqtt",
+  "radio_frequency",
+  "ssdp",
+  "tag",
+  "thread",
+  "zeroconf",
+  "zha",
+  "zone",
+  "zwave_js",
+];
+
+const E2E_FILTER_ENTITIES: Record<string, EntityRegistryDisplayEntry> = {
+  "infrared.remote": {
+    entity_id: "infrared.remote",
+    labels: [],
+    platform: "demo",
+  },
+  "radio_frequency.remote": {
+    entity_id: "radio_frequency.remote",
+    labels: [],
+    platform: "demo",
+  },
+};
 
 declare global {
   interface Window {
@@ -56,6 +97,13 @@ export class HaTest extends HomeAssistantAppEl {
     const initial: Partial<MockHomeAssistant> = {
       // Use the full panel map (history + config enabled)
       panels: e2eTestPanels,
+      config: {
+        ...demoConfig,
+        // Include common protocol and discovery integrations so Settings shows
+        // the same high-level panels most real Home Assistant instances expose.
+        components: E2E_CONFIG_COMPONENTS,
+      },
+      entities: E2E_FILTER_ENTITIES,
       panelUrl: (() => {
         const path = window.location.pathname;
         const dividerPos = path.indexOf("/", 1);
@@ -100,8 +148,46 @@ export class HaTest extends HomeAssistantAppEl {
     mockEntityRegistry(hass, []);
     mockConfigEntries(hass);
     mockIcons(hass);
+    mockIntegration(hass);
+    mockHassioSupervisor(hass);
     mockPersistentNotification(hass);
     mockSearch(hass);
+    const { mockConfigPanel } =
+      await import("../../../../demo/src/stubs/config-panel");
+    mockConfigPanel(hass);
+
+    hass.mockWS("config_entries/get", (msg: { domain?: string }) => {
+      const protocolEntries = demoConfigEntries
+        .map(({ entry }) => entry)
+        .concat(
+          [
+            { entry_id: "mock-bluetooth", domain: "bluetooth" },
+            { entry_id: "mock-lovelace", domain: "lovelace" },
+          ].map((entry) => ({
+            disabled_by: null,
+            domain: entry.domain,
+            entry_id: entry.entry_id,
+            error_reason_translation_key: null,
+            error_reason_translation_placeholders: null,
+            num_subentries: 0,
+            pref_disable_new_entities: false,
+            pref_disable_polling: false,
+            reason: null,
+            source: "user" as const,
+            state: "loaded" as const,
+            supported_subentry_types: {},
+            supports_options: false,
+            supports_reconfigure: false,
+            supports_remove_device: false,
+            supports_unload: true,
+            title: entry.domain,
+          }))
+        );
+      return protocolEntries.filter(
+        (entry) => !msg.domain || entry.domain === msg.domain
+      );
+    });
+    hass.mockWS("radio_frequency/list", () => ({ transmitters: [] }));
 
     // Load default entities from the sections config
     hass.addEntities(energyEntities());
