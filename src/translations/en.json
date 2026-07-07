@@ -9782,9 +9782,9 @@
               "entity": "Entity",
               "fit_mode": "Fit mode",
               "fit_mode_options": {
-                "contain": "Contain",
-                "cover": "Cover",
-                "fill": "Fill"
+                "contain": "Scaled (Contain)",
+                "cover": "Cropped (Cover)",
+                "fill": "Stretched (Fill)"
               },
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
