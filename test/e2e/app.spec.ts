@@ -7,6 +7,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import type { MoreInfoView } from "../../src/dialogs/more-info/const";
 import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+import { e2ePanelRouteAssertions } from "./app/src/ha-test-panels";
 
 /**
  * Each More info view renders one root element inside the dialog, plus one or
@@ -205,48 +206,14 @@ test.describe("App shell", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Panel navigation", () => {
-  test("navigates to lovelace dashboard", async ({ page }) => {
-    await goToPanel(page, "/lovelace");
-    await expect(
-      page.locator("ha-panel-lovelace, hui-root").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
+  for (const [path, element] of e2ePanelRouteAssertions) {
+    test(`renders registered panel ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element).first()).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
     });
-  });
-
-  test("navigates to energy panel", async ({ page }) => {
-    await goToPanel(page, "/energy");
-    await expect(
-      page.locator("ha-panel-energy, energy-view").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to map panel", async ({ page }) => {
-    await goToPanel(page, "/map");
-    await expect(
-      page.locator("ha-panel-lovelace, hui-root").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to history panel", async ({ page }) => {
-    await goToPanel(page, "/history");
-    await expect(
-      page.locator("ha-panel-history, history-panel").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to profile panel", async ({ page }) => {
-    await goToPanel(page, "/profile");
-    await expect(
-      page.locator("ha-panel-profile, ha-config-user-profile").first()
-    ).toBeAttached({ timeout: PANEL_TIMEOUT });
-  });
+  }
 });
 
 // ---------------------------------------------------------------------------
