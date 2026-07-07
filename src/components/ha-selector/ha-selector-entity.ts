@@ -155,8 +155,10 @@ export class HaEntitySelector extends LitElement {
           this._configEntries = entries;
         })
         .catch(() => {
-          // Allow a retry and fall back to no entries so the picker renders
-          this._fetchedConfigEntries = false;
+          // Fall back to no entries so the picker still renders. We keep
+          // `_fetchedConfigEntries` set so the failed fetch is not retried on
+          // every re-render; the connection-change handler above retries on
+          // reconnect.
           this._configEntries = [];
         });
     }
