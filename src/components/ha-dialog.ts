@@ -135,8 +135,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @state()
   private _bodyScrolled = false;
 
-  private _escapePressed = false;
-
   public connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener(
@@ -290,7 +288,6 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
 
   private _handleKeyDown(ev: KeyboardEvent) {
     if (ev.key === "Escape") {
-      this._escapePressed = true;
       if (this.preventScrimClose) {
         ev.preventDefault();
       }
@@ -300,13 +297,23 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   private _handleHide(ev: DialogHideEvent) {
-    const sourceIsDialog = ev.detail?.source === (ev.target as WaDialog).dialog;
-
-    if (this.preventScrimClose && this._escapePressed && sourceIsDialog) {
-      ev.preventDefault();
+    // Ignore wa-hide events bubbling up from nested overlays (pickers,
+    // popovers, bottom sheets, nested dialogs); only handle this dialog's own
+    // hide, like the sibling wa-* handlers above.
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
     }
 
-    this._escapePressed = false;
+    const sourceIsDialog = ev.detail?.source === (ev.target as WaDialog).dialog;
+
+    // A dialog-sourced hide (Escape, native cancel, or scrim) while the host
+    // still wants the dialog open is a user dismissal, not a programmatic
+    // close. Block it when closing must be guarded, regardless of where focus
+    // currently is — e.g. after a picker overlay took focus and dropped it
+    // outside the dialog, the Escape keydown never reaches this element.
+    if (this.preventScrimClose && sourceIsDialog && this.open) {
+      ev.preventDefault();
+    }
   }
 
   static get styles() {
