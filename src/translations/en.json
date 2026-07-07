@@ -1480,6 +1480,18 @@
         "title": "Safe mode",
         "text": "Home Assistant is running in safe mode, custom integrations and community frontend modules are not available. Restart Home Assistant to exit safe mode."
       },
+      "http_pending_config": {
+        "title": "Confirm new HTTP server configuration",
+        "description": "Home Assistant has restarted with new HTTP server settings. Confirm to keep them, or revert to undo the change.",
+        "auto_revert": "Settings will automatically revert in {time}.",
+        "reverted": "Home Assistant reverted the HTTP server settings.",
+        "changes_label": "Changed settings:",
+        "confirm": "Confirm",
+        "revert": "Revert",
+        "close": "Close",
+        "confirm_error": "Failed to confirm the new configuration: {error}",
+        "revert_error": "Failed to revert the configuration: {error}"
+      },
       "quick-bar": {
         "commands_title": "Commands",
         "navigate_title": "Navigate",
@@ -8503,6 +8515,53 @@
             "ssdp_info": "Show devices discovered using SSDP/UPnP.",
             "zeroconf": "Zeroconf browser",
             "zeroconf_info": "Show services discovered using mDNS. Does not include services unknown to Home Assistant."
+          },
+          "http": {
+            "caption": "HTTP server",
+            "description": "Configure how Home Assistant serves its web interface. Saving restarts Home Assistant.",
+            "save": "Save",
+            "save_no_changes": "Nothing changed — no restart needed.",
+            "save_confirm": {
+              "title": "Restart required",
+              "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
+              "confirm": "Save and restart"
+            },
+            "ssl_profile_modern": "Modern",
+            "ssl_profile_intermediate": "Intermediate",
+            "sections": {
+              "ssl": "SSL/TLS",
+              "reverse_proxy": "Reverse proxy",
+              "ip_banning": "IP banning",
+              "advanced": "Advanced"
+            },
+            "fields": {
+              "server_port": "Server port",
+              "server_host": "Listen addresses",
+              "ssl_certificate": "SSL certificate path",
+              "ssl_key": "SSL key path",
+              "ssl_peer_certificate": "SSL peer certificate path",
+              "ssl_profile": "SSL profile",
+              "cors_allowed_origins": "CORS allowed origins",
+              "use_x_forwarded_for": "Trust X-Forwarded-For",
+              "trusted_proxies": "Trusted proxies",
+              "use_x_frame_options": "Send X-Frame-Options",
+              "ip_ban_enabled": "Enable IP banning",
+              "login_attempts_threshold": "Login attempts before ban"
+            },
+            "helpers": {
+              "server_port": "The port Home Assistant listens on. Default is 8123.",
+              "server_host": "IP addresses to bind to. Leave empty to listen on all interfaces.",
+              "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
+              "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
+              "ssl_peer_certificate": "Absolute path to a client certificate Home Assistant should require for secure connections.",
+              "ssl_profile": "Mozilla SSL profile. Use 'Intermediate' only if integrations have SSL handshake issues.",
+              "cors_allowed_origins": "Origins that may make cross-origin requests. Include the scheme, for example https://example.com.",
+              "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
+              "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
+              "use_x_frame_options": "Send the X-Frame-Options header to help prevent clickjacking.",
+              "ip_ban_enabled": "Automatically ban IP addresses after repeated failed logins.",
+              "login_attempts_threshold": "Failed login attempts before an IP is banned. Set to -1 to disable automatic bans."
+            }
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. A restart is required for these settings to apply.",

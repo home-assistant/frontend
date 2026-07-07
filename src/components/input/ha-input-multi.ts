@@ -156,7 +156,7 @@ class HaInputMulti extends LitElement {
           )}
         </div>
       </ha-sortable>
-      <div class="layout horizontal">
+      <div class="layout horizontal add-row">
         <ha-button
           size="s"
           appearance="filled"
@@ -257,6 +257,9 @@ class HaInputMulti extends LitElement {
         .row {
           margin-bottom: 8px;
           --ha-input-padding-bottom: 0;
+        }
+        .add-row:has(+ ha-input-helper-text) {
+          margin-bottom: var(--ha-space-1);
         }
         ha-icon-button {
           display: block;
