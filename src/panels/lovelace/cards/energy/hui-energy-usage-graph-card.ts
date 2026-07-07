@@ -554,10 +554,17 @@ export class HuiEnergyUsageGraphCard
       combinedData[key] = sets;
     });
 
-    combinedData.used_solar = { used_solar: consumptionData.used_solar };
-    combinedData.used_battery = {
-      used_battery: consumptionData.used_battery,
-    };
+    // Only add solar/battery consumption series when such a source is
+    // actually configured, otherwise the legend shows empty solar/battery
+    // entries for grid-only setups.
+    if (statIdsByCat.solar) {
+      combinedData.used_solar = { used_solar: consumptionData.used_solar };
+    }
+    if (statIdsByCat.from_battery) {
+      combinedData.used_battery = {
+        used_battery: consumptionData.used_battery,
+      };
+    }
 
     if (combinedData.from_grid && summedData.to_battery) {
       const used_grid = {};
