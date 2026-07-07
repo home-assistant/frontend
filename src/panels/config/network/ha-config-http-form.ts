@@ -174,46 +174,54 @@ class HaConfigHttpForm extends LitElement {
           <p class="description">
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          ${this._showNoChanges
-            ? html`
-                <ha-alert alert-type="success">
-                  ${this.hass.localize(
-                    "ui.panel.config.network.http.save_no_changes"
-                  )}
-                </ha-alert>
-              `
-            : nothing}
-          ${this._config
-            ? html`
-                <ha-form
-                  .hass=${this.hass}
-                  .data=${this._config}
-                  .schema=${schema}
-                  .error=${this._fieldErrors}
-                  .disabled=${this._saving}
-                  .computeLabel=${this._computeLabel}
-                  .computeHelper=${this._computeHelper}
-                  @value-changed=${this._valueChanged}
-                ></ha-form>
-              `
-            : nothing}
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
+          ${
+            this._showNoChanges
+              ? html`
+                  <ha-alert alert-type="success">
+                    ${this.hass.localize(
+                      "ui.panel.config.network.http.save_no_changes"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
+          ${
+            this._config
+              ? html`
+                  <ha-form
+                    .hass=${this.hass}
+                    .data=${this._config}
+                    .schema=${schema}
+                    .error=${this._fieldErrors}
+                    .disabled=${this._saving}
+                    .computeLabel=${this._computeLabel}
+                    .computeHelper=${this._computeHelper}
+                    @value-changed=${this._valueChanged}
+                  ></ha-form>
+                `
+              : nothing
+          }
         </div>
-        ${this._config
-          ? html`
-              <div class="card-actions">
-                <ha-button
-                  @click=${this._save}
-                  .disabled=${this._saving}
-                  .loading=${this._saving}
-                >
-                  ${this.hass.localize("ui.panel.config.network.http.save")}
-                </ha-button>
-              </div>
-            `
-          : nothing}
+        ${
+          this._config
+            ? html`
+                <div class="card-actions">
+                  <ha-button
+                    @click=${this._save}
+                    .disabled=${this._saving}
+                    .loading=${this._saving}
+                  >
+                    ${this.hass.localize("ui.panel.config.network.http.save")}
+                  </ha-button>
+                </div>
+              `
+            : nothing
+        }
       </ha-card>
     `;
   }

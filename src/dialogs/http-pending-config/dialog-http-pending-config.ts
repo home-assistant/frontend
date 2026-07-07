@@ -138,91 +138,101 @@ export class DialogHttpPendingConfig
       >
         <span slot="headerNavigationIcon"></span>
         <div class="content">
-          ${this._reverted
-            ? html`
-                <ha-alert alert-type="info">
-                  ${this.hass.localize(
-                    "ui.dialogs.http_pending_config.reverted"
-                  )}
-                </ha-alert>
-              `
-            : html`
-                <p>
-                  ${this.hass.localize(
-                    "ui.dialogs.http_pending_config.description"
-                  )}
-                </p>
-                ${this._secondsRemaining !== undefined
-                  ? html`
-                      <p class="countdown">
-                        ${this.hass.localize(
-                          "ui.dialogs.http_pending_config.auto_revert",
-                          {
-                            time:
-                              formatNumericDuration(this.hass.locale, {
-                                minutes: Math.floor(
-                                  this._secondsRemaining / 60
-                                ),
-                                seconds: this._secondsRemaining % 60,
-                              }) ?? "0",
-                          }
-                        )}
-                      </p>
-                    `
-                  : nothing}
-              `}
-          ${changes.length
-            ? html`
-                <p class="changes-label">
-                  ${this.hass.localize(
-                    "ui.dialogs.http_pending_config.changes_label"
-                  )}
-                </p>
-                <ul>
-                  ${changes.map(
-                    (key) => html`
-                      <li>
-                        ${this.hass.localize(
-                          `ui.panel.config.network.http.fields.${key}` as any
-                        )}
-                      </li>
-                    `
-                  )}
-                </ul>
-              `
-            : nothing}
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
+          ${
+            this._reverted
+              ? html`
+                  <ha-alert alert-type="info">
+                    ${this.hass.localize(
+                      "ui.dialogs.http_pending_config.reverted"
+                    )}
+                  </ha-alert>
+                `
+              : html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.dialogs.http_pending_config.description"
+                    )}
+                  </p>
+                  ${
+                    this._secondsRemaining !== undefined
+                      ? html`
+                          <p class="countdown">
+                            ${this.hass.localize(
+                              "ui.dialogs.http_pending_config.auto_revert",
+                              {
+                                time:
+                                  formatNumericDuration(this.hass.locale, {
+                                    minutes: Math.floor(
+                                      this._secondsRemaining / 60
+                                    ),
+                                    seconds: this._secondsRemaining % 60,
+                                  }) ?? "0",
+                              }
+                            )}
+                          </p>
+                        `
+                      : nothing
+                  }
+                `
+          }
+          ${
+            changes.length
+              ? html`
+                  <p class="changes-label">
+                    ${this.hass.localize(
+                      "ui.dialogs.http_pending_config.changes_label"
+                    )}
+                  </p>
+                  <ul>
+                    ${changes.map(
+                      (key) => html`
+                        <li>
+                          ${this.hass.localize(
+                            `ui.panel.config.network.http.fields.${key}` as any
+                          )}
+                        </li>
+                      `
+                    )}
+                  </ul>
+                `
+              : nothing
+          }
+          ${
+            this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
-          ${this._reverted
-            ? html`
-                <ha-button slot="primaryAction" @click=${this._close}>
-                  ${this.hass.localize("ui.dialogs.http_pending_config.close")}
-                </ha-button>
-              `
-            : html`
-                <ha-button
-                  slot="secondaryAction"
-                  appearance="plain"
-                  .loading=${this._busy === "revert"}
-                  .disabled=${this._busy === "confirm"}
-                  @click=${this._revert}
-                >
-                  ${this.hass.localize("ui.dialogs.http_pending_config.revert")}
-                </ha-button>
-                <ha-button
-                  slot="primaryAction"
-                  .loading=${this._busy === "confirm"}
-                  .disabled=${this._busy === "revert"}
-                  @click=${this._confirm}
-                >
-                  ${this.hass.localize(
-                    "ui.dialogs.http_pending_config.confirm"
-                  )}
-                </ha-button>
-              `}
+          ${
+            this._reverted
+              ? html`
+                  <ha-button slot="primaryAction" @click=${this._close}>
+                    ${this.hass.localize("ui.dialogs.http_pending_config.close")}
+                  </ha-button>
+                `
+              : html`
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    .loading=${this._busy === "revert"}
+                    .disabled=${this._busy === "confirm"}
+                    @click=${this._revert}
+                  >
+                    ${this.hass.localize("ui.dialogs.http_pending_config.revert")}
+                  </ha-button>
+                  <ha-button
+                    slot="primaryAction"
+                    .loading=${this._busy === "confirm"}
+                    .disabled=${this._busy === "revert"}
+                    @click=${this._confirm}
+                  >
+                    ${this.hass.localize(
+                      "ui.dialogs.http_pending_config.confirm"
+                    )}
+                  </ha-button>
+                `
+          }
         </ha-dialog-footer>
       </ha-dialog>
     `;
