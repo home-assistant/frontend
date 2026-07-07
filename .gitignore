@@ -6,6 +6,8 @@ build/
 dist/
 /hass_frontend/
 /translations/
+# Composite action source, not build output
+!/.github/actions/build/
 
 # yarn
 .yarn/*

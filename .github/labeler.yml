@@ -42,5 +42,6 @@ Dependencies:
 GitHub Actions:
   - changed-files:
       - any-glob-to-any-file:
+          - .github/actions/**
           - .github/workflows/**
           - .github/*.yml

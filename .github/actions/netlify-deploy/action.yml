@@ -1,0 +1,40 @@
+name: Deploy to Netlify
+description: Deploy a directory to Netlify (production when alias is empty, otherwise to the alias)
+
+inputs:
+  dir:
+    description: Directory to deploy
+    required: true
+  alias:
+    description: Deploy alias; leave empty to deploy to production
+    default: ""
+  auth-token:
+    description: NETLIFY_AUTH_TOKEN
+    required: true
+  site-id:
+    description: NETLIFY_SITE_ID
+    required: true
+
+outputs:
+  netlify_url:
+    description: The deployed URL
+    value: ${{ steps.deploy.outputs.netlify_url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Deploy to Netlify
+      id: deploy
+      shell: bash
+      env:
+        DIR: ${{ inputs.dir }}
+        ALIAS: ${{ inputs.alias }}
+        NETLIFY_AUTH_TOKEN: ${{ inputs.auth-token }}
+        NETLIFY_SITE_ID: ${{ inputs.site-id }}
+      run: |
+        if [ -n "$ALIAS" ]; then
+          npx -y netlify-cli deploy --dir="$DIR" --alias "$ALIAS" --json > deploy_output.json
+        else
+          npx -y netlify-cli deploy --dir="$DIR" --prod --json > deploy_output.json
+        fi
+        echo "netlify_url=$(jq -r '.url // .deploy_url' deploy_output.json)" >> "$GITHUB_OUTPUT"
