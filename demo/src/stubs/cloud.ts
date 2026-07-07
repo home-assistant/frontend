@@ -57,7 +57,7 @@ const cloudStatus: CloudStatusLoggedIn = {
   remote_certificate_status: "ready",
   http_use_ssl: false,
   active_subscription: true,
-  is_onboarding_postponed: false,
+  onboarding_postponed: false,
   onboarding_completed: true,
   prefs: {
     google_enabled: true,
@@ -124,7 +124,7 @@ const applyScenario = () => {
     ? [...ONBOARDING_ITEMS]
     : [];
   cloudStatus.onboarding_completed = scenario.onboarded;
-  cloudStatus.is_onboarding_postponed = scenario.postponed;
+  cloudStatus.onboarding_postponed = scenario.postponed;
   cloudStatus.prefs.onboarding_postponed_until = scenario.postponed
     ? new Date(Date.now() + 24 * 3600 * 1000).toISOString()
     : null;
@@ -165,7 +165,7 @@ const syncScenarioFromStatus = () => {
   const scenario = getCloudDemoScenario();
   const next = {
     onboarded: cloudStatus.onboarding_completed,
-    postponed: cloudStatus.is_onboarding_postponed,
+    postponed: cloudStatus.onboarding_postponed,
     remote: cloudStatus.prefs.remote_enabled,
     webrtc: cloudStatus.prefs.cloud_ice_servers_enabled,
     webhooks: Object.keys(cloudStatus.prefs.cloudhooks).length > 0,
@@ -201,7 +201,7 @@ export const mockCloud = (hass: MockHomeAssistant) => {
     cloudStatus.prefs.onboarding_postponed_until = new Date(
       Date.now() + 24 * 3600 * 1000
     ).toISOString();
-    cloudStatus.is_onboarding_postponed = true;
+    cloudStatus.onboarding_postponed = true;
     syncScenarioFromStatus();
     // Backend returns the full logged-in status object.
     return { ...cloudStatus, prefs: { ...cloudStatus.prefs } };

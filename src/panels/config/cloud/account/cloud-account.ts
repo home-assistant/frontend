@@ -119,7 +119,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
   private get _onboarded(): boolean {
     return (
       this.cloudStatus.onboarding_completed ||
-      this.cloudStatus.is_onboarding_postponed
+      this.cloudStatus.onboarding_postponed
     );
   }
 

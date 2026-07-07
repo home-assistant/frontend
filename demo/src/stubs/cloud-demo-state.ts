@@ -22,7 +22,7 @@ export type DemoCloudBackup = "fresh" | "stale" | "failed" | "local" | "none";
 export interface CloudDemoScenario {
   account: DemoCloudAccount;
   onboarded: boolean;
-  // Onboarding postponed server-side (maps to is_onboarding_postponed); hides
+  // Onboarding postponed server-side (maps to onboarding_postponed); hides
   // the onboarding UI without marking it completed.
   postponed: boolean;
   remote: boolean;

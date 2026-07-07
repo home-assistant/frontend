@@ -52,7 +52,7 @@ export interface CloudStatusLoggedIn {
   remote_certificate_status: RemoteCertificateStatus | null;
   http_use_ssl: boolean;
   active_subscription: boolean;
-  is_onboarding_postponed: boolean;
+  onboarding_postponed: boolean;
   onboarding_completed: boolean;
 }
 
