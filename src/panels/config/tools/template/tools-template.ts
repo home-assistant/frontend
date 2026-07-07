@@ -212,8 +212,8 @@ class HaPanelDevTemplate extends LitElement {
         class="divider-toggle"
         .title=${label}
         aria-label=${label}
-        @mousedown=${this._dividerPointerDown}
-        @touchstart=${this._dividerPointerDown}
+        @pointerdown=${this._dividerPointerDown}
+        @pointerup=${this._dividerPointerUp}
         @click=${this._dividerClick}
       >
         <ha-svg-icon
@@ -406,22 +406,26 @@ ${
 
   private _dividerPointerStart?: { x: number; y: number };
 
-  private _dividerPointerDown = (ev: MouseEvent | TouchEvent) => {
-    const point = "touches" in ev ? ev.touches[0] : ev;
-    if (point) {
-      this._dividerPointerStart = { x: point.clientX, y: point.clientY };
-    }
+  private _dividerPointerDown = (ev: PointerEvent) => {
+    this._dividerPointerStart = { x: ev.clientX, y: ev.clientY };
   };
 
-  private _dividerClick = (ev: MouseEvent) => {
+  private _dividerPointerUp = (ev: PointerEvent) => {
     const start = this._dividerPointerStart;
     this._dividerPointerStart = undefined;
-    // Ignore the click that ends a drag-resize; only a genuine (still) click
-    // toggles the orientation.
-    if (start && Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 5) {
+    // Ignore the pointerup that ends a drag-resize; only a genuine (still)
+    // tap or click toggles the orientation.
+    if (!start || Math.hypot(ev.clientX - start.x, ev.clientY - start.y) > 5) {
       return;
     }
     this._toggleOrientation();
+  };
+
+  private _dividerClick = (ev: MouseEvent) => {
+    // Allow Enter/Space to toggle orientation when the divider is focused.
+    if (ev.detail === 0) {
+      this._toggleOrientation();
+    }
   };
 
   private _storeSplitPosition = debounce(
