@@ -67,7 +67,6 @@ export const e2eTestPanels: Record<string, E2ETestPanelInfo> = {
     title: "todo",
     config: null,
     url_path: "todo",
-    testSelector: "ha-panel-todo",
   },
   "media-browser": {
     component_name: "media-browser",
