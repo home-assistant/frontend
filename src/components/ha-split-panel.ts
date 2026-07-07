@@ -18,7 +18,7 @@ export class HaSplitPanel extends SplitPanel {
 
         .divider {
           background-color: var(--divider-color);
-          transition: background-color var(--ha-animation-duration-fast, 150ms)
+          transition: background-color var(--ha-animation-duration-fast)
             ease-out;
         }
 
@@ -29,18 +29,18 @@ export class HaSplitPanel extends SplitPanel {
         .divider::before {
           content: "";
           width: 2px;
-          height: var(--ha-space-8, 32px);
+          height: var(--ha-space-8);
           display: var(--ha-split-panel-grip-display, block);
           border-radius: var(--ha-border-radius-pill, 9999px);
           background-color: var(--secondary-text-color);
           opacity: 0.5;
-          transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
+          transition: opacity var(--ha-animation-duration-fast) ease-out;
         }
 
         /* In vertical orientation the divider is horizontal, so the grip pill
            lies flat instead of standing upright. */
         :host([orientation="vertical"]) .divider::before {
-          width: var(--ha-space-8, 32px);
+          width: var(--ha-space-8);
           height: 2px;
         }
 

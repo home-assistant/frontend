@@ -495,8 +495,8 @@ ${
           cursor: pointer;
           --mdc-icon-size: 16px;
           transition:
-            color var(--ha-animation-duration-fast, 150ms) ease-out,
-            border-color var(--ha-animation-duration-fast, 150ms) ease-out;
+            color var(--ha-animation-duration-fast) ease-out,
+            border-color var(--ha-animation-duration-fast) ease-out;
         }
 
         @media (hover: hover) {
