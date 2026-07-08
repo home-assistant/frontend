@@ -205,6 +205,10 @@ test.describe("App shell", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Panel navigation", () => {
+  test("intentionally fails to exercise report output", () => {
+    expect(true).toBe(false);
+  });
+
   test("navigates to lovelace dashboard", async ({ page }) => {
     await goToPanel(page, "/lovelace");
     await expect(
