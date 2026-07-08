@@ -451,6 +451,96 @@ test.describe("Theming", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Config panel", () => {
+  const DASHBOARD_LINKS = [
+    { href: "/config/integrations", label: "Devices & services" },
+    { href: "/config/automation", label: "Automations & scenes" },
+    { href: "/config/areas", label: "Areas, labels & zones" },
+    { href: "/config/apps", label: "Apps" },
+    { href: "/config/lovelace/dashboards", label: "Dashboards" },
+    { href: "/config/voice-assistants", label: "Voice assistants" },
+    { href: "/config/matter", label: "Matter" },
+    { href: "/config/zha", label: "Zigbee" },
+    { href: "/config/zwave_js", label: "Z-Wave" },
+    { href: "/knx", label: "KNX" },
+    { href: "/config/thread", label: "Thread" },
+    { href: "/config/bluetooth", label: "Bluetooth" },
+    { href: "/config/infrared", label: "Infrared" },
+    { href: "/config/radio-frequency", label: "Radio frequency" },
+    { href: "/insteon", label: "Insteon" },
+    { href: "/config/tags", label: "Tags" },
+    { href: "/config/person", label: "People" },
+    { href: "/config/system", label: "System" },
+    { href: "/config/tools", label: "Tools" },
+    { href: "/config/info", label: "About" },
+  ];
+
+  const CONFIG_ROUTES: { path: string; element: string }[] = [
+    { path: "/config/integrations", element: "ha-config-integrations" },
+    { path: "/config/devices", element: "ha-config-devices" },
+    { path: "/config/entities", element: "ha-config-entities" },
+    { path: "/config/helpers", element: "ha-config-helpers" },
+    { path: "/config/areas", element: "ha-config-areas" },
+    { path: "/config/apps", element: "ha-config-apps" },
+    { path: "/config/app", element: "ha-config-app-dashboard" },
+    { path: "/config/automation", element: "ha-config-automation" },
+    { path: "/config/backup", element: "ha-config-backup" },
+    { path: "/config/scene", element: "ha-config-scene" },
+    { path: "/config/script", element: "ha-config-script" },
+    { path: "/config/blueprint", element: "ha-config-blueprint" },
+    { path: "/config/cloud", element: "ha-config-cloud" },
+    { path: "/config/energy", element: "ha-config-energy" },
+    { path: "/config/hardware", element: "ha-config-hardware" },
+    { path: "/config/labs", element: "ha-config-labs" },
+    { path: "/config/lovelace", element: "ha-config-lovelace" },
+    { path: "/config/person", element: "ha-config-person" },
+    { path: "/config/storage", element: "ha-config-section-storage" },
+    { path: "/config/tags", element: "ha-config-tags" },
+    { path: "/config/users", element: "ha-config-users" },
+    { path: "/config/voice-assistants", element: "ha-config-voice-assistants" },
+    { path: "/config/system", element: "ha-config-system-navigation" },
+    { path: "/config/info", element: "ha-config-info" },
+    { path: "/config/logs", element: "ha-config-logs" },
+    { path: "/config/general", element: "ha-config-section-general" },
+    { path: "/config/updates", element: "ha-config-section-updates" },
+    { path: "/config/repairs", element: "ha-config-repairs-dashboard" },
+    { path: "/config/analytics", element: "ha-config-section-analytics" },
+    { path: "/config/ai-tasks", element: "ha-config-section-ai-tasks" },
+    { path: "/config/labels", element: "ha-config-labels" },
+    { path: "/config/zone", element: "ha-config-zone" },
+    { path: "/config/network", element: "ha-config-section-network" },
+    {
+      path: "/config/application_credentials",
+      element: "ha-config-application-credentials",
+    },
+    { path: "/config/bluetooth", element: "bluetooth-config-dashboard-router" },
+    { path: "/config/dhcp", element: "dhcp-config-panel" },
+    { path: "/config/infrared", element: "infrared-config-dashboard-router" },
+    { path: "/config/matter", element: "matter-config-panel" },
+    { path: "/config/mqtt", element: "mqtt-config-panel" },
+    {
+      path: "/config/radio-frequency",
+      element: "radio-frequency-config-dashboard-router",
+    },
+    { path: "/config/ssdp", element: "ssdp-config-panel" },
+    { path: "/config/thread", element: "thread-config-panel" },
+    { path: "/config/zeroconf", element: "zeroconf-config-panel" },
+    { path: "/config/zha", element: "zha-config-dashboard-router" },
+    { path: "/config/zwave_js", element: "zwave_js-config-router" },
+  ];
+
+  const NESTED_CONFIG_ROUTES: { path: string; element: string }[] = [
+    {
+      path: "/config/integrations/dashboard",
+      element: "ha-config-integrations-dashboard",
+    },
+    {
+      path: "/config/devices/dashboard",
+      element: "ha-config-devices-dashboard",
+    },
+    { path: "/config/areas/dashboard", element: "ha-config-areas-dashboard" },
+    { path: "/config/backup/settings", element: "ha-config-backup-settings" },
+  ];
+
   test("config panel loads without JS errors", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
@@ -466,4 +556,39 @@ test.describe("Config panel", () => {
     );
     expect(realErrors).toHaveLength(0);
   });
+
+  test("dashboard renders key settings links", async ({ page }) => {
+    await goToPanel(page, "/config");
+
+    const dashboard = page.locator("ha-config-dashboard");
+    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    for (const { href, label } of DASHBOARD_LINKS) {
+      const link = dashboard.getByRole("link", {
+        name: new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`),
+      });
+      // eslint-disable-next-line no-await-in-loop
+      await expect(link).toHaveAttribute("href", href, {
+        timeout: QUICK_TIMEOUT,
+      });
+    }
+  });
+
+  for (const { path, element } of CONFIG_ROUTES) {
+    test(`renders ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element)).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
+
+  for (const { path, element } of NESTED_CONFIG_ROUTES) {
+    test(`renders ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element)).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
 });
