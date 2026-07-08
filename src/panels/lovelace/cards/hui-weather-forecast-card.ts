@@ -516,12 +516,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _isForecastInteraction(ev: Event): boolean {
-    return ev
-      .composedPath()
-      .some(
-        (node) =>
-          node instanceof HTMLElement && node.classList.contains("forecast")
-      );
+    return (
+      (this._dragScrollController.scrolled ||
+        this._dragScrollController.scrolling) &&
+      ev
+        .composedPath()
+        .some(
+          (node) =>
+            node instanceof HTMLElement && node.classList.contains("forecast")
+        )
+    );
   }
 
   private _groupForecastByDay(forecast: ForecastAttribute[]) {
