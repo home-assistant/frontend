@@ -61,6 +61,8 @@ test/e2e/reports/
 test/e2e/test-results/
 # E2E test app build output
 test/e2e/app/dist/
+# MCP server
+.playwright-mcp/
 
 # AI tooling
 .claude
