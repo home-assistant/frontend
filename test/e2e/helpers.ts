@@ -23,8 +23,15 @@ export const NAVIGATION_TIMEOUT = 30_000;
 export async function goToPanel(page: Page, path: string) {
   const url = path.startsWith("/?") ? path : `/#${path}`;
   await page.goto(url);
-  await page.waitForSelector("ha-test", { state: "attached" });
-  await page.waitForFunction(() => Boolean((window as any).__mockHass));
+  await page.waitForSelector("ha-test", {
+    state: "attached",
+    timeout: SHELL_TIMEOUT,
+  });
+  await page.waitForFunction(
+    () => Boolean((window as any).__mockHass),
+    undefined,
+    { timeout: SHELL_TIMEOUT }
+  );
 }
 
 // ── Error filtering ─────────────────────────────────────────────────────────
@@ -126,7 +133,7 @@ async function assertRouteSmoke(page: Page, route: RouteSmokeCase) {
   await goToPanel(page, route.path);
   await route.action?.(page);
   if (route.url) {
-    await expect(page).toHaveURL(route.url, { timeout: SHELL_TIMEOUT });
+    await expect(page).toHaveURL(route.url, { timeout: QUICK_TIMEOUT });
   }
   await expect(page.locator(route.element).first()).toBeAttached({
     timeout: PANEL_TIMEOUT,

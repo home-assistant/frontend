@@ -28,7 +28,9 @@ test.describe("App shell", () => {
 
     await goToPanel(page, "/");
 
-    await expect(page.locator("ha-test")).toBeAttached();
+    await expect(page.locator("ha-test")).toBeAttached({
+      timeout: QUICK_TIMEOUT,
+    });
     expect(errors).toHaveLength(0);
   });
 
@@ -42,14 +44,14 @@ test.describe("App shell", () => {
         page.locator(
           `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-panel-${urlPath}`
         )
-      ).toBeAttached();
+      ).toBeAttached({ timeout: QUICK_TIMEOUT });
     }
     // Config has its own special element with id="sidebar-config"
     await expect(
       page.locator(
         `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
       )
-    ).toBeAttached();
+    ).toBeAttached({ timeout: QUICK_TIMEOUT });
   });
 
   test("sidebar navigation changes the active panel", async ({ page }) => {
@@ -58,7 +60,7 @@ test.describe("App shell", () => {
     const sidebar = page.locator(
       "ha-test >> home-assistant-main >> ha-sidebar"
     );
-    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(sidebar).toBeAttached({ timeout: QUICK_TIMEOUT });
 
     const historyLink = sidebar.locator("#sidebar-panel-history");
     if (!(await historyLink.isVisible().catch(() => false))) {
@@ -73,10 +75,10 @@ test.describe("App shell", () => {
       });
     }
 
-    await expect(historyLink).toBeVisible({ timeout: SHELL_TIMEOUT });
+    await expect(historyLink).toBeVisible({ timeout: QUICK_TIMEOUT });
     await historyLink.click({ force: true });
 
-    await expect(page).toHaveURL(/\/#\/history$/, { timeout: SHELL_TIMEOUT });
+    await expect(page).toHaveURL(/\/#\/history$/, { timeout: QUICK_TIMEOUT });
     await expect(
       page.locator("ha-panel-history, history-panel").first()
     ).toBeAttached({ timeout: PANEL_TIMEOUT });
@@ -88,12 +90,12 @@ test.describe("App shell", () => {
     const sidebar = page.locator(
       "ha-test >> home-assistant-main >> ha-sidebar"
     );
-    await expect(sidebar).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(sidebar).toBeAttached({ timeout: QUICK_TIMEOUT });
 
     const notificationsLink = sidebar.locator("#sidebar-notifications");
-    await expect(notificationsLink).toBeAttached({ timeout: SHELL_TIMEOUT });
+    await expect(notificationsLink).toBeAttached({ timeout: QUICK_TIMEOUT });
     await expect(notificationsLink.locator(".badge").first()).toHaveText("1", {
-      timeout: SHELL_TIMEOUT,
+      timeout: QUICK_TIMEOUT,
     });
   });
 
@@ -106,13 +108,13 @@ test.describe("App shell", () => {
 
     await goToPanel(page, "/lovelace");
     await expect(lovelaceLink).toHaveClass(/selected/, {
-      timeout: SHELL_TIMEOUT,
+      timeout: QUICK_TIMEOUT,
     });
     await expect(historyLink).not.toHaveClass(/selected/);
 
     await goToPanel(page, "/history");
     await expect(historyLink).toHaveClass(/selected/, {
-      timeout: SHELL_TIMEOUT,
+      timeout: QUICK_TIMEOUT,
     });
     await expect(lovelaceLink).not.toHaveClass(/selected/);
   });
@@ -127,13 +129,13 @@ test.describe("App shell", () => {
     // Wait for the sidebar to mount before asserting on its contents.
     await expect(
       page.locator("ha-test >> home-assistant-main >> ha-sidebar")
-    ).toBeAttached({ timeout: SHELL_TIMEOUT });
+    ).toBeAttached({ timeout: QUICK_TIMEOUT });
 
     // Config panel is adminOnly — should not appear for non-admin.
     const configLink = page.locator(
       `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
     );
-    await expect(configLink).not.toBeAttached();
+    await expect(configLink).not.toBeAttached({ timeout: QUICK_TIMEOUT });
   });
 });
 
@@ -289,7 +291,7 @@ test.describe("Config panel", () => {
   const getDashboard = async (page) => {
     await goToPanel(page, "/config");
     const dashboard = page.locator("ha-config-dashboard");
-    await expect(dashboard).toBeAttached({ timeout: PANEL_TIMEOUT });
+    await expect(dashboard).toBeAttached({ timeout: QUICK_TIMEOUT });
     return dashboard;
   };
 
