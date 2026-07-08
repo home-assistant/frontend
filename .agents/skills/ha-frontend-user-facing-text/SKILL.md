@@ -1,9 +1,9 @@
 ---
-name: ha-frontend-copy
+name: ha-frontend-user-facing-text
 description: Home Assistant frontend copy, localization, terminology, and user-facing text guidance. Use when adding or reviewing labels, buttons, dialogs, errors, translations, or UI strings.
 ---
 
-# HA Frontend Copy
+# HA Frontend User-Facing Text
 
 Use this skill for all user-facing text, translations, labels, buttons, dialog copy, errors, helper text, and review comments about wording.
 

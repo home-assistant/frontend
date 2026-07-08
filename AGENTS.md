@@ -44,7 +44,7 @@ Detailed guidance lives in project skills under `.agents/skills/`. Load the matc
 - `ha-frontend-components`: dialogs, forms, alerts, shortcuts, tooltips, panels, and Lovelace cards.
 - `ha-frontend-styling`: theme variables, spacing tokens, responsive layout, RTL, and view transitions.
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
-- `ha-frontend-copy`: localization, terminology, sentence case, and Home Assistant copy style.
+- `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
 - `ha-frontend-review`: PR template use, review checklist, and recurring review issues.
 
 ## Pull Requests

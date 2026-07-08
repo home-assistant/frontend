@@ -23,7 +23,7 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 - `yarn lint` passes when practical for the scope.
 - `yarn test` or focused relevant tests are green when practical for the scope.
 - Tests are added or updated for new data processing and utilities where applicable.
-- User-facing text is localized and follows `ha-frontend-copy` guidance.
+- User-facing text is localized and follows `ha-frontend-user-facing-text` guidance.
 - Components handle loading, error, unavailable, and missing-entity states.
 - Entity existence is checked before property access.
 - Event listeners and subscriptions are cleaned up.
@@ -70,4 +70,4 @@ Configuration and props:
 - Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.
-- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-styling`, `ha-frontend-testing`, or `ha-frontend-copy` when a finding falls in that area.
+- Cross-load `ha-frontend-contexts`, `ha-frontend-components`, `ha-frontend-styling`, `ha-frontend-testing`, or `ha-frontend-user-facing-text` when a finding falls in that area.
