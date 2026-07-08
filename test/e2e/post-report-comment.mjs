@@ -40,7 +40,7 @@ const collectFailures = (report) => {
 
         const title = [...here, spec.title].join(" › ");
         failures.push({
-          title: test.projectName ? `[${test.projectName}] ${title}` : title,
+          title: test.projectName ? `\`${test.projectName}\` ${title}` : title,
           location: `${spec.file ?? suite.file ?? ""}:${spec.line ?? ""}`,
           attempts,
         });
