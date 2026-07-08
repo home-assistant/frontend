@@ -92,20 +92,28 @@ const URL_NORMALIZATION_ASSERTIONS: {
     path: "/lovelace",
     element: "ha-panel-lovelace, hui-root",
     url: /\/\?edit=1#\/lovelace\/home$/,
-    action: async (page) => {
-      await page.getByRole("button", { name: /Edit dashboard/ }).click();
-    },
+    action: (page) => setLovelaceEditMode(page, true),
   },
   {
     name: "keeps the lovelace panel when removing the edit query",
-    path: "/?edit=1#/lovelace/home",
+    path: "/lovelace",
     element: "ha-panel-lovelace, hui-root",
     url: /\/#\/lovelace\/home$/,
     action: async (page) => {
-      await page.getByRole("button", { name: "Done" }).click();
+      await setLovelaceEditMode(page, true);
+      await expect(page).toHaveURL(/\/\?edit=1#\/lovelace\/home$/, {
+        timeout: SHELL_TIMEOUT,
+      });
+      await setLovelaceEditMode(page, false);
     },
   },
 ];
+
+interface E2ELovelaceRoot extends HTMLElement {
+  lovelace?: {
+    setEditMode: (editMode: boolean) => void;
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -124,6 +132,31 @@ async function goToPanel(page: Page, path: string) {
   await page.waitForSelector("ha-test", { state: "attached" });
   // Wait for the app to finish initialising (hassConnected sets panels)
   await page.waitForFunction(() => Boolean((window as any).__mockHass));
+}
+
+async function setLovelaceEditMode(page: Page, editMode: boolean) {
+  await page
+    .locator("hui-root")
+    .first()
+    .evaluate(async (el: Element, value) => {
+      const root = el as E2ELovelaceRoot;
+      const start = performance.now();
+      await new Promise<void>((resolve, reject) => {
+        const check = () => {
+          if (root.lovelace?.setEditMode) {
+            resolve();
+            return;
+          }
+          if (performance.now() - start > 5000) {
+            reject(new Error("Lovelace edit mode action was not available"));
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        check();
+      });
+      root.lovelace!.setEditMode(value);
+    }, editMode);
 }
 
 // ---------------------------------------------------------------------------
