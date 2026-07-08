@@ -138,6 +138,10 @@ async function setLovelaceEditMode(page: Page, editMode: boolean) {
   await page
     .locator("hui-root")
     .first()
+    .waitFor({ state: "attached", timeout: QUICK_TIMEOUT });
+  await page
+    .locator("hui-root")
+    .first()
     .evaluate(async (el: Element, value) => {
       const root = el as E2ELovelaceRoot;
       const start = performance.now();
@@ -147,7 +151,7 @@ async function setLovelaceEditMode(page: Page, editMode: boolean) {
             resolve();
             return;
           }
-          if (performance.now() - start > 5000) {
+          if (performance.now() - start > 2000) {
             reject(new Error("Lovelace edit mode action was not available"));
             return;
           }
