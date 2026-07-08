@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "../helpers";
+import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "../../helpers";
 
 const APP_MAIN_SELECTOR = "ha-test >> home-assistant-main";
 const APP_SIDEBAR_SELECTOR = `${APP_MAIN_SELECTOR} >> ha-sidebar`;

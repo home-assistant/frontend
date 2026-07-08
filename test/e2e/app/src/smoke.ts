@@ -9,7 +9,7 @@ import {
   type RouteSmokeCase,
   type RouteSmokeGroup,
   type ViewElementSmokeCase,
-} from "../helpers";
+} from "./helpers";
 import { e2ePanelRouteAssertions } from "./ha-test-panels";
 
 // ── Config dashboard links ───────────────────────────────────────────────────

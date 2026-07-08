@@ -14,7 +14,7 @@ import {
   defineRouteSmokeTests,
   ensureAppSidebarPanelVisible,
   goToPanel,
-} from "./app/helpers";
+} from "./app/src/helpers";
 import {
   expectNoPageErrors,
   PANEL_TIMEOUT,
