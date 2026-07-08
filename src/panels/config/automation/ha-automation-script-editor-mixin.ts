@@ -71,6 +71,7 @@ export const automationScriptEditorStyles: CSSResult = css`
     width: 12px;
   }
   ha-tooltip .shortcut {
+    direction: ltr;
     display: inline-flex;
     flex-direction: row;
     align-items: center;

@@ -2686,6 +2686,7 @@ class DialogAddAutomationElement
         }
 
         .shortcut {
+          direction: ltr;
           --mdc-icon-size: var(--ha-space-3);
           display: inline-flex;
           flex-direction: row;
