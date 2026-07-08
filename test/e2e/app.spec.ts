@@ -62,6 +62,51 @@ const MORE_INFO_VIEW_ELEMENTS: {
   },
 ];
 
+const URL_NORMALIZATION_ASSERTIONS: {
+  name: string;
+  path: string;
+  element: string;
+  url: RegExp;
+  action?: (page: Page) => Promise<void>;
+}[] = [
+  {
+    name: "keeps the todo panel when adding the selected entity query",
+    path: "/todo",
+    element: "ha-panel-todo",
+    url: /\/\?entity_id=todo\.shopping_list#\/todo$/,
+  },
+  {
+    name: "keeps the history panel when removing the back query",
+    path: "/?back=1#/history",
+    element: "ha-panel-history, history-panel",
+    url: /\/#\/history$/,
+  },
+  {
+    name: "keeps the logbook panel when removing the back query",
+    path: "/?back=1#/logbook",
+    element: "ha-panel-logbook",
+    url: /\/#\/logbook$/,
+  },
+  {
+    name: "keeps the lovelace panel when adding the edit query",
+    path: "/lovelace",
+    element: "ha-panel-lovelace, hui-root",
+    url: /\/\?edit=1#\/lovelace\/home$/,
+    action: async (page) => {
+      await page.getByRole("button", { name: /Edit dashboard/ }).click();
+    },
+  },
+  {
+    name: "keeps the lovelace panel when removing the edit query",
+    path: "/?edit=1#/lovelace/home",
+    element: "ha-panel-lovelace, hui-root",
+    url: /\/#\/lovelace\/home$/,
+    action: async (page) => {
+      await page.getByRole("button", { name: "Done" }).click();
+    },
+  },
+];
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -209,6 +254,25 @@ test.describe("Panel navigation", () => {
   for (const [path, element] of e2ePanelRouteAssertions) {
     test(`renders registered panel ${path}`, async ({ page }) => {
       await goToPanel(page, path);
+      await expect(page.locator(element).first()).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
+    });
+  }
+});
+
+test.describe("Panel URL normalization", () => {
+  for (const {
+    name,
+    path,
+    element,
+    url,
+    action,
+  } of URL_NORMALIZATION_ASSERTIONS) {
+    test(name, async ({ page }) => {
+      await goToPanel(page, path);
+      await action?.(page);
+      await expect(page).toHaveURL(url, { timeout: SHELL_TIMEOUT });
       await expect(page.locator(element).first()).toBeAttached({
         timeout: PANEL_TIMEOUT,
       });
