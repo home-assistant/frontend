@@ -257,10 +257,6 @@ class HaMoreInfoDetails extends LitElement {
       font-weight: var(--ha-font-weight-medium);
     }
 
-    ha-card {
-      direction: ltr;
-    }
-
     .card-content {
       padding: var(--ha-space-2) var(--ha-space-4);
     }
