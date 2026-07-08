@@ -1,0 +1,98 @@
+---
+name: ha-frontend-components
+description: Home Assistant frontend component patterns. Use when implementing or reviewing dialogs, ha-form, ha-alert, keyboard shortcuts, tooltips, panels, Lovelace cards, or ha-button usage.
+---
+
+# HA Frontend Components
+
+Use this skill when creating or reviewing Home Assistant UI components and common interaction patterns.
+
+## Dialogs
+
+Open dialogs through the fire-event pattern:
+
+```ts
+fireEvent(this, "show-dialog", {
+  dialogTag: "dialog-example",
+  dialogImport: () => import("./dialog-example"),
+  dialogParams: { title: "Example", data: someData },
+});
+```
+
+Dialog implementation requirements:
+
+- Use `ha-dialog`.
+- Implement `HassDialog<T>`.
+- Use `@state() private _open = false` to control visibility.
+- Set `_open = true` in `showDialog()` and `_open = false` in `closeDialog()`.
+- Return `nothing` while required params are absent.
+- Fire `dialog-closed` in the close handler.
+- Use `header-title` and `header-subtitle` for simple header text.
+- Use slots when standard header attributes are not enough.
+- Use `ha-dialog-footer` with `primaryAction` and `secondaryAction` slots.
+- Add `autofocus` to the first focusable element, such as `<ha-form autofocus>`, and forward it internally if needed.
+
+Use standard dialog widths: `small`, `medium`, `large`, or `full`. Avoid custom dialog sizing unless there is a clear product need.
+
+## Buttons
+
+`ha-button` wraps the Web Awesome button in `src/components/ha-button.ts`.
+
+Axes:
+
+- `variant`: `brand`, `neutral`, `danger`, `warning`, `success`.
+- `appearance`: `accent`, `filled`, `outlined`, `plain`.
+- `size`: `xs`, `s`, `m`, `l`, `xl`.
+
+Common usage:
+
+- Use `appearance="filled"` for primary emphasis when needed.
+- Use `appearance="plain"` for cancel and dismiss actions.
+- Use `variant="danger"` for destructive actions.
+- Place primary actions in `slot="primaryAction"` and secondary actions in `slot="secondaryAction"`.
+
+## Forms
+
+`ha-form` is schema-driven with `HaFormSchema[]` and supports common selectors for entities, devices, areas, targets, numbers, booleans, time, actions, text, objects, selects, icons, media, and location.
+
+Use `computeLabel`, `computeError`, and `computeHelper` for translated labels, validation, and helper text.
+
+```ts
+<ha-form
+  .hass=${this.hass}
+  .data=${this._data}
+  .schema=${this._schema}
+  .error=${this._errors}
+  .computeLabel=${(schema) => this.hass.localize(`ui.panel.${schema.name}`)}
+  @value-changed=${this._valueChanged}
+></ha-form>
+```
+
+## Alerts
+
+Use `ha-alert` for user-visible status messaging.
+
+- Alert types: `error`, `warning`, `info`, `success`.
+- Useful properties: `title`, `alert-type`, `dismissable`, `narrow`.
+- Slots: `icon` for custom leading icon, `action` for custom action content.
+- Content is announced by screen readers when dynamically displayed.
+
+```html
+<ha-alert alert-type="error">Error message</ha-alert>
+<ha-alert alert-type="warning" title="Warning">Description</ha-alert>
+<ha-alert alert-type="success" dismissable>Success message</ha-alert>
+```
+
+## Shortcuts And Tooltips
+
+Use `ShortcutManager` from `src/common/keyboard/shortcuts.ts` for keyboard shortcuts. It blocks shortcuts in input fields, can prevent shortcuts during text selection, and supports character and KeyCode shortcuts for non-latin keyboards. See `src/state/quick-bar-mixin.ts` for global shortcut examples.
+
+Use `ha-tooltip` from `src/components/ha-tooltip.ts` for contextual hover help. See `src/components/ha-label.ts` for an example.
+
+## Panels And Lovelace Cards
+
+Panels commonly extend `SubscribeMixin(LitElement)` and receive route and narrow-layout properties.
+
+Lovelace cards should implement `LovelaceCard`, validate config in `setConfig()`, handle loading, error, unavailable, and missing-entity states, and add a configuration editor when needed.
+
+Cards are user-story surfaces. Support different households, entity types, responsive layouts, and accessible interaction states.
