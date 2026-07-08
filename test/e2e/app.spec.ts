@@ -6,7 +6,18 @@
  */
 import { test, expect, type Page } from "@playwright/test";
 import type { MoreInfoView } from "../../src/dialogs/more-info/const";
-import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+import {
+  defineRouteSmokeTests,
+  goToPanel,
+  PANEL_TIMEOUT,
+  QUICK_TIMEOUT,
+  rendersRoute,
+  routeCase,
+  routeCases,
+  SHELL_TIMEOUT,
+  type RouteSmokeCase,
+  type RouteSmokeGroup,
+} from "./helpers";
 import { e2ePanelRouteAssertions } from "./app/src/ha-test-panels";
 
 /**
@@ -62,13 +73,47 @@ const MORE_INFO_VIEW_ELEMENTS: {
   },
 ];
 
-const URL_NORMALIZATION_ASSERTIONS: {
-  name: string;
-  path: string;
-  element: string;
-  url: RegExp;
-  action?: (page: Page) => Promise<void>;
-}[] = [
+interface E2ELovelaceRoot extends HTMLElement {
+  lovelace?: {
+    setEditMode: (editMode: boolean) => void;
+  };
+}
+
+async function setLovelaceEditMode(page: Page, editMode: boolean) {
+  await page
+    .locator("hui-root")
+    .first()
+    .waitFor({ state: "attached", timeout: QUICK_TIMEOUT });
+  await page
+    .locator("hui-root")
+    .first()
+    .evaluate(async (el: Element, value) => {
+      const root = el as E2ELovelaceRoot;
+      const start = performance.now();
+      await new Promise<void>((resolve, reject) => {
+        const check = () => {
+          if (root.lovelace?.setEditMode) {
+            resolve();
+            return;
+          }
+          if (performance.now() - start > 2000) {
+            reject(new Error("Lovelace edit mode action was not available"));
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        check();
+      });
+      root.lovelace!.setEditMode(value);
+    }, editMode);
+}
+
+const PANEL_ROUTE_ASSERTIONS: RouteSmokeCase[] = Array.from(
+  e2ePanelRouteAssertions,
+  ([path, element]) => routeCase(path, element)
+);
+
+const URL_NORMALIZATION_ASSERTIONS: RouteSmokeCase[] = [
   {
     name: "keeps the todo panel when adding the selected entity query",
     path: "/todo",
@@ -109,59 +154,119 @@ const URL_NORMALIZATION_ASSERTIONS: {
   },
 ];
 
-interface E2ELovelaceRoot extends HTMLElement {
-  lovelace?: {
-    setEditMode: (editMode: boolean) => void;
-  };
-}
+const TOOLS_SUBPAGES: { route: string; element: string }[] = [
+  { route: "yaml", element: "tools-yaml-config" },
+  { route: "state", element: "tools-state" },
+  { route: "action", element: "tools-action" },
+  { route: "template", element: "tools-template" },
+  { route: "event", element: "tools-event" },
+  { route: "statistics", element: "tools-statistics" },
+  { route: "assist", element: "tools-assist" },
+  { route: "debug", element: "tools-debug" },
+];
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+const TOOLS_ROUTE_ASSERTIONS: RouteSmokeCase[] = [
+  routeCase("/config/tools", "ha-panel-tools"),
+  ...TOOLS_SUBPAGES.map(({ route, element }) =>
+    routeCase(`/config/tools/${route}`, element)
+  ),
+  routeCase("/config/tools/service", "tools-action"),
+];
 
-// The test app is built with __DEMO__=true which enables hash-based routing.
-// Panel paths must use hash URLs: /#/lovelace, /#/energy, etc.
-// Scenario selection uses query params: /?scenario=foo (always at root).
+const TOOLS_REDIRECT_ASSERTIONS: RouteSmokeCase[] = [
+  ...["/developer-tools", "/config/developer-tools"].flatMap((oldBase) => [
+    routeCase(oldBase, "ha-panel-tools"),
+    routeCase(`${oldBase}/state`, "tools-state"),
+  ]),
+];
 
-/** Navigate to a panel (hash routing) and wait for app to initialize. */
-async function goToPanel(page: Page, path: string) {
-  // Paths starting with /? are root-level (scenario selection); panel paths
-  // need to use hash routing (/#/panelname).
-  const url = path.startsWith("/?") ? path : `/#${path}`;
-  await page.goto(url);
-  await page.waitForSelector("ha-test", { state: "attached" });
-  // Wait for the app to finish initialising (hassConnected sets panels)
-  await page.waitForFunction(() => Boolean((window as any).__mockHass));
-}
+const CONFIG_ROUTES = routeCases([
+  ["/config/integrations", "ha-config-integrations"],
+  ["/config/devices", "ha-config-devices"],
+  ["/config/entities", "ha-config-entities"],
+  ["/config/helpers", "ha-config-helpers"],
+  ["/config/areas", "ha-config-areas"],
+  ["/config/apps", "ha-config-apps"],
+  ["/config/app", "ha-config-app-dashboard"],
+  ["/config/automation", "ha-config-automation"],
+  ["/config/backup", "ha-config-backup"],
+  ["/config/scene", "ha-config-scene"],
+  ["/config/script", "ha-config-script"],
+  ["/config/blueprint", "ha-config-blueprint"],
+  ["/config/cloud", "ha-config-cloud"],
+  ["/config/energy", "ha-config-energy"],
+  ["/config/hardware", "ha-config-hardware"],
+  ["/config/labs", "ha-config-labs"],
+  ["/config/lovelace", "ha-config-lovelace"],
+  ["/config/person", "ha-config-person"],
+  ["/config/storage", "ha-config-section-storage"],
+  ["/config/tags", "ha-config-tags"],
+  ["/config/users", "ha-config-users"],
+  ["/config/voice-assistants", "ha-config-voice-assistants"],
+  ["/config/system", "ha-config-system-navigation"],
+  ["/config/info", "ha-config-info"],
+  ["/config/logs", "ha-config-logs"],
+  ["/config/general", "ha-config-section-general"],
+  ["/config/updates", "ha-config-section-updates"],
+  ["/config/repairs", "ha-config-repairs-dashboard"],
+  ["/config/analytics", "ha-config-section-analytics"],
+  ["/config/ai-tasks", "ha-config-section-ai-tasks"],
+  ["/config/labels", "ha-config-labels"],
+  ["/config/zone", "ha-config-zone"],
+  ["/config/network", "ha-config-section-network"],
+  ["/config/application_credentials", "ha-config-application-credentials"],
+  ["/config/bluetooth", "bluetooth-config-dashboard-router"],
+  ["/config/dhcp", "dhcp-config-panel"],
+  ["/config/infrared", "infrared-config-dashboard-router"],
+  ["/config/matter", "matter-config-panel"],
+  ["/config/mqtt", "mqtt-config-panel"],
+  ["/config/radio-frequency", "radio-frequency-config-dashboard-router"],
+  ["/config/ssdp", "ssdp-config-panel"],
+  ["/config/thread", "thread-config-panel"],
+  ["/config/zeroconf", "zeroconf-config-panel"],
+  ["/config/zha", "zha-config-dashboard-router"],
+  ["/config/zwave_js", "zwave_js-config-router"],
+]);
 
-async function setLovelaceEditMode(page: Page, editMode: boolean) {
-  await page
-    .locator("hui-root")
-    .first()
-    .waitFor({ state: "attached", timeout: QUICK_TIMEOUT });
-  await page
-    .locator("hui-root")
-    .first()
-    .evaluate(async (el: Element, value) => {
-      const root = el as E2ELovelaceRoot;
-      const start = performance.now();
-      await new Promise<void>((resolve, reject) => {
-        const check = () => {
-          if (root.lovelace?.setEditMode) {
-            resolve();
-            return;
-          }
-          if (performance.now() - start > 2000) {
-            reject(new Error("Lovelace edit mode action was not available"));
-            return;
-          }
-          requestAnimationFrame(check);
-        };
-        check();
-      });
-      root.lovelace!.setEditMode(value);
-    }, editMode);
-}
+const NESTED_CONFIG_ROUTES = routeCases([
+  ["/config/integrations/dashboard", "ha-config-integrations-dashboard"],
+  ["/config/devices/dashboard", "ha-config-devices-dashboard"],
+  ["/config/areas/dashboard", "ha-config-areas-dashboard"],
+  ["/config/backup/settings", "ha-config-backup-settings"],
+]);
+
+const ROUTE_SMOKE_GROUPS: RouteSmokeGroup[] = [
+  {
+    name: "Panel navigation",
+    routes: PANEL_ROUTE_ASSERTIONS,
+    testName: (route) => `renders registered panel ${route.path}`,
+  },
+  {
+    name: "Panel URL normalization",
+    routes: URL_NORMALIZATION_ASSERTIONS,
+    testName: (route) => route.name!,
+  },
+  {
+    name: "Tools panel",
+    routes: TOOLS_ROUTE_ASSERTIONS,
+    testName: rendersRoute,
+  },
+  {
+    name: "Tools redirects",
+    routes: TOOLS_REDIRECT_ASSERTIONS,
+    testName: (route) => `redirects ${route.path}`,
+  },
+  {
+    name: "Config routes",
+    routes: CONFIG_ROUTES,
+    testName: rendersRoute,
+  },
+  {
+    name: "Nested config routes",
+    routes: NESTED_CONFIG_ROUTES,
+    testName: rendersRoute,
+  },
+];
 
 // ---------------------------------------------------------------------------
 // App shell
@@ -220,7 +325,7 @@ test.describe("App shell", () => {
     }
 
     await expect(historyLink).toBeVisible({ timeout: SHELL_TIMEOUT });
-    await historyLink.click();
+    await historyLink.click({ force: true });
 
     await expect(page).toHaveURL(/\/#\/history$/, { timeout: SHELL_TIMEOUT });
     await expect(
@@ -283,112 +388,7 @@ test.describe("App shell", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// Panel navigation
-// ---------------------------------------------------------------------------
-
-test.describe("Panel navigation", () => {
-  for (const [path, element] of e2ePanelRouteAssertions) {
-    test(`renders registered panel ${path}`, async ({ page }) => {
-      await goToPanel(page, path);
-      await expect(page.locator(element).first()).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-  }
-});
-
-test.describe("Panel URL normalization", () => {
-  for (const {
-    name,
-    path,
-    element,
-    url,
-    action,
-  } of URL_NORMALIZATION_ASSERTIONS) {
-    test(name, async ({ page }) => {
-      await goToPanel(page, path);
-      await action?.(page);
-      await expect(page).toHaveURL(url, { timeout: SHELL_TIMEOUT });
-      await expect(page.locator(element).first()).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// Tools panel (formerly Developer tools)
-// ---------------------------------------------------------------------------
-
-/**
- * Every tool sub-page reachable under /config/tools, mapped to the custom
- * element tools-router mounts for it (see tools-router.ts). Asserting on the
- * specific element proves the route actually rendered its tool, not just the
- * shared ha-panel-tools shell.
- */
-const TOOLS_SUBPAGES: { route: string; element: string }[] = [
-  { route: "yaml", element: "tools-yaml-config" },
-  { route: "state", element: "tools-state" },
-  { route: "action", element: "tools-action" },
-  { route: "template", element: "tools-template" },
-  { route: "event", element: "tools-event" },
-  { route: "statistics", element: "tools-statistics" },
-  { route: "assist", element: "tools-assist" },
-  { route: "debug", element: "tools-debug" },
-];
-
-test.describe("Tools panel", () => {
-  test("base path renders the tools panel", async ({ page }) => {
-    await goToPanel(page, "/config/tools");
-    await expect(page.locator("ha-panel-tools")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  for (const { route, element } of TOOLS_SUBPAGES) {
-    test(`renders the ${route} sub-page`, async ({ page }) => {
-      await goToPanel(page, `/config/tools/${route}`);
-      await expect(page.locator(element)).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-  }
-
-  test("service is an alias for the action tool", async ({ page }) => {
-    await goToPanel(page, "/config/tools/service");
-    await expect(page.locator("tools-action")).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Tools redirects (old developer-tools URLs)
-// ---------------------------------------------------------------------------
-
-test.describe("Tools redirects", () => {
-  // The panel moved from top-level /developer-tools (pre-2026.2) to
-  // /config/developer-tools (2026.2), then was renamed to /config/tools
-  // (2026.8). Both old locations must redirect to the new one, and deep links
-  // must keep their sub-page. See the updateRoute() redirect in
-  // src/layouts/home-assistant.ts.
-  for (const oldBase of ["/developer-tools", "/config/developer-tools"]) {
-    test(`redirects ${oldBase} to the tools panel`, async ({ page }) => {
-      await goToPanel(page, oldBase);
-      await expect(page.locator("ha-panel-tools")).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-
-    test(`redirects ${oldBase}/state to the state tool`, async ({ page }) => {
-      await goToPanel(page, `${oldBase}/state`);
-      await expect(page.locator("tools-state")).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-  }
-});
+defineRouteSmokeTests(ROUTE_SMOKE_GROUPS);
 
 // ---------------------------------------------------------------------------
 // Lovelace
@@ -544,73 +544,6 @@ test.describe("Config panel", () => {
     { href: "/config/info", label: "About" },
   ];
 
-  const CONFIG_ROUTES: { path: string; element: string }[] = [
-    { path: "/config/integrations", element: "ha-config-integrations" },
-    { path: "/config/devices", element: "ha-config-devices" },
-    { path: "/config/entities", element: "ha-config-entities" },
-    { path: "/config/helpers", element: "ha-config-helpers" },
-    { path: "/config/areas", element: "ha-config-areas" },
-    { path: "/config/apps", element: "ha-config-apps" },
-    { path: "/config/app", element: "ha-config-app-dashboard" },
-    { path: "/config/automation", element: "ha-config-automation" },
-    { path: "/config/backup", element: "ha-config-backup" },
-    { path: "/config/scene", element: "ha-config-scene" },
-    { path: "/config/script", element: "ha-config-script" },
-    { path: "/config/blueprint", element: "ha-config-blueprint" },
-    { path: "/config/cloud", element: "ha-config-cloud" },
-    { path: "/config/energy", element: "ha-config-energy" },
-    { path: "/config/hardware", element: "ha-config-hardware" },
-    { path: "/config/labs", element: "ha-config-labs" },
-    { path: "/config/lovelace", element: "ha-config-lovelace" },
-    { path: "/config/person", element: "ha-config-person" },
-    { path: "/config/storage", element: "ha-config-section-storage" },
-    { path: "/config/tags", element: "ha-config-tags" },
-    { path: "/config/users", element: "ha-config-users" },
-    { path: "/config/voice-assistants", element: "ha-config-voice-assistants" },
-    { path: "/config/system", element: "ha-config-system-navigation" },
-    { path: "/config/info", element: "ha-config-info" },
-    { path: "/config/logs", element: "ha-config-logs" },
-    { path: "/config/general", element: "ha-config-section-general" },
-    { path: "/config/updates", element: "ha-config-section-updates" },
-    { path: "/config/repairs", element: "ha-config-repairs-dashboard" },
-    { path: "/config/analytics", element: "ha-config-section-analytics" },
-    { path: "/config/ai-tasks", element: "ha-config-section-ai-tasks" },
-    { path: "/config/labels", element: "ha-config-labels" },
-    { path: "/config/zone", element: "ha-config-zone" },
-    { path: "/config/network", element: "ha-config-section-network" },
-    {
-      path: "/config/application_credentials",
-      element: "ha-config-application-credentials",
-    },
-    { path: "/config/bluetooth", element: "bluetooth-config-dashboard-router" },
-    { path: "/config/dhcp", element: "dhcp-config-panel" },
-    { path: "/config/infrared", element: "infrared-config-dashboard-router" },
-    { path: "/config/matter", element: "matter-config-panel" },
-    { path: "/config/mqtt", element: "mqtt-config-panel" },
-    {
-      path: "/config/radio-frequency",
-      element: "radio-frequency-config-dashboard-router",
-    },
-    { path: "/config/ssdp", element: "ssdp-config-panel" },
-    { path: "/config/thread", element: "thread-config-panel" },
-    { path: "/config/zeroconf", element: "zeroconf-config-panel" },
-    { path: "/config/zha", element: "zha-config-dashboard-router" },
-    { path: "/config/zwave_js", element: "zwave_js-config-router" },
-  ];
-
-  const NESTED_CONFIG_ROUTES: { path: string; element: string }[] = [
-    {
-      path: "/config/integrations/dashboard",
-      element: "ha-config-integrations-dashboard",
-    },
-    {
-      path: "/config/devices/dashboard",
-      element: "ha-config-devices-dashboard",
-    },
-    { path: "/config/areas/dashboard", element: "ha-config-areas-dashboard" },
-    { path: "/config/backup/settings", element: "ha-config-backup-settings" },
-  ];
-
   test("config panel loads without JS errors", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
@@ -643,22 +576,4 @@ test.describe("Config panel", () => {
       });
     }
   });
-
-  for (const { path, element } of CONFIG_ROUTES) {
-    test(`renders ${path}`, async ({ page }) => {
-      await goToPanel(page, path);
-      await expect(page.locator(element)).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-  }
-
-  for (const { path, element } of NESTED_CONFIG_ROUTES) {
-    test(`renders ${path}`, async ({ page }) => {
-      await goToPanel(page, path);
-      await expect(page.locator(element)).toBeAttached({
-        timeout: PANEL_TIMEOUT,
-      });
-    });
-  }
 });
