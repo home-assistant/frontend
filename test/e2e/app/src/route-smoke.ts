@@ -1,13 +1,12 @@
 import { expect, type Page } from "@playwright/test";
 import {
-  QUICK_TIMEOUT,
   rendersRoute,
   routeCase,
   routeCases,
-  SHELL_TIMEOUT,
   type RouteSmokeCase,
   type RouteSmokeGroup,
-} from "../../helpers";
+} from "../helpers";
+import { QUICK_TIMEOUT, SHELL_TIMEOUT } from "../../helpers";
 import { e2ePanelRouteAssertions } from "./ha-test-panels";
 
 interface E2ELovelaceRoot extends HTMLElement {

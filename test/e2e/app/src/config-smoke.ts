@@ -1,4 +1,4 @@
-import type { LinkSmokeCase } from "../../helpers";
+import type { LinkSmokeCase } from "../helpers";
 
 export const configLinks: LinkSmokeCase[] = [
   { href: "/config/integrations", label: "Devices & services" },

@@ -6,12 +6,21 @@
  */
 import { test, expect } from "@playwright/test";
 import {
+  appSidebar,
+  appSidebarConfig,
+  appSidebarPanel,
+  assertElementContent,
   defineLinkSmokeTests,
   defineRouteSmokeTests,
+  ensureAppSidebarPanelVisible,
   goToPanel,
+} from "./app/helpers";
+import {
+  expectNoPageErrors,
   PANEL_TIMEOUT,
   QUICK_TIMEOUT,
   SHELL_TIMEOUT,
+  trackPageErrors,
 } from "./helpers";
 import { configLinks } from "./app/src/config-smoke";
 import { moreInfoViewElements } from "./app/src/more-info-smoke";
@@ -23,15 +32,14 @@ import { appRouteSmokeGroups } from "./app/src/route-smoke";
 
 test.describe("App shell", () => {
   test("page loads and ha-test element mounts", async ({ page }) => {
-    const errors: string[] = [];
-    page.on("pageerror", (e) => errors.push(e.message));
+    const errors = trackPageErrors(page);
 
     await goToPanel(page, "/");
 
     await expect(page.locator("ha-test")).toBeAttached({
       timeout: QUICK_TIMEOUT,
     });
-    expect(errors).toHaveLength(0);
+    expectNoPageErrors(errors);
   });
 
   test("sidebar renders with expected panels", async ({ page }) => {
@@ -40,42 +48,20 @@ test.describe("App shell", () => {
     // Regular panels use #sidebar-panel-{urlPath} inside ha-sidebar's shadow root
     for (const urlPath of ["lovelace", "map", "energy", "history"]) {
       // eslint-disable-next-line no-await-in-loop
-      await expect(
-        page.locator(
-          `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-panel-${urlPath}`
-        )
-      ).toBeAttached({ timeout: QUICK_TIMEOUT });
+      await expect(appSidebarPanel(page, urlPath)).toBeAttached({
+        timeout: QUICK_TIMEOUT,
+      });
     }
     // Config has its own special element with id="sidebar-config"
-    await expect(
-      page.locator(
-        `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
-      )
-    ).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(appSidebarConfig(page)).toBeAttached({
+      timeout: QUICK_TIMEOUT,
+    });
   });
 
   test("sidebar navigation changes the active panel", async ({ page }) => {
     await goToPanel(page, "/lovelace");
 
-    const sidebar = page.locator(
-      "ha-test >> home-assistant-main >> ha-sidebar"
-    );
-    await expect(sidebar).toBeAttached({ timeout: QUICK_TIMEOUT });
-
-    const historyLink = sidebar.locator("#sidebar-panel-history");
-    if (!(await historyLink.isVisible().catch(() => false))) {
-      await page.locator("ha-test >> home-assistant-main").evaluate((el) => {
-        el.dispatchEvent(
-          new CustomEvent("hass-toggle-menu", {
-            detail: { open: true },
-            bubbles: true,
-            composed: true,
-          })
-        );
-      });
-    }
-
-    await expect(historyLink).toBeVisible({ timeout: QUICK_TIMEOUT });
+    const historyLink = await ensureAppSidebarPanelVisible(page, "history");
     await historyLink.click({ force: true });
 
     await expect(page).toHaveURL(/\/#\/history$/, { timeout: QUICK_TIMEOUT });
@@ -87,9 +73,7 @@ test.describe("App shell", () => {
   test("sidebar renders notification badge", async ({ page }) => {
     await goToPanel(page, "/lovelace");
 
-    const sidebar = page.locator(
-      "ha-test >> home-assistant-main >> ha-sidebar"
-    );
+    const sidebar = appSidebar(page);
     await expect(sidebar).toBeAttached({ timeout: QUICK_TIMEOUT });
 
     const notificationsLink = sidebar.locator("#sidebar-notifications");
@@ -100,11 +84,8 @@ test.describe("App shell", () => {
   });
 
   test("sidebar marks the active panel as selected", async ({ page }) => {
-    const sidebar = page.locator(
-      "ha-test >> home-assistant-main >> ha-sidebar"
-    );
-    const lovelaceLink = sidebar.locator("#sidebar-panel-lovelace");
-    const historyLink = sidebar.locator("#sidebar-panel-history");
+    const lovelaceLink = appSidebarPanel(page, "lovelace");
+    const historyLink = appSidebarPanel(page, "history");
 
     await goToPanel(page, "/lovelace");
     await expect(lovelaceLink).toHaveClass(/selected/, {
@@ -127,15 +108,12 @@ test.describe("App shell", () => {
     await goToPanel(page, "/?scenario=non-admin#/lovelace");
 
     // Wait for the sidebar to mount before asserting on its contents.
-    await expect(
-      page.locator("ha-test >> home-assistant-main >> ha-sidebar")
-    ).toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(appSidebar(page)).toBeAttached({ timeout: QUICK_TIMEOUT });
 
     // Config panel is adminOnly — should not appear for non-admin.
-    const configLink = page.locator(
-      `ha-test >> home-assistant-main >> ha-sidebar >> #sidebar-config`
-    );
-    await expect(configLink).not.toBeAttached({ timeout: QUICK_TIMEOUT });
+    await expect(appSidebarConfig(page)).not.toBeAttached({
+      timeout: QUICK_TIMEOUT,
+    });
   });
 });
 
@@ -206,16 +184,7 @@ test.describe("Light more-info dialog", () => {
 
       // Each view should render its own characteristic content, not just an
       // empty shell.
-      for (const { selector, text } of content) {
-        const locator = dialog.locator(selector).first();
-        if (text) {
-          // eslint-disable-next-line no-await-in-loop
-          await expect(locator).toContainText(text, { timeout: QUICK_TIMEOUT });
-        } else {
-          // eslint-disable-next-line no-await-in-loop
-          await expect(locator).toBeAttached({ timeout: QUICK_TIMEOUT });
-        }
-      }
+      await assertElementContent(dialog, content);
     });
   }
 });
@@ -273,19 +242,14 @@ test.describe("Theming", () => {
 
 test.describe("Config panel", () => {
   test("config panel loads without JS errors", async ({ page }) => {
-    const errors: string[] = [];
-    page.on("pageerror", (e) => errors.push(e.message));
+    const errors = trackPageErrors(page);
 
     await goToPanel(page, "/config");
     await expect(
       page.locator("ha-panel-config, ha-config-dashboard").first()
     ).toBeAttached({ timeout: PANEL_TIMEOUT + 5_000 });
 
-    // Filter known pre-existing errors from vendor code
-    const realErrors = errors.filter(
-      (e) => !e.includes("ResizeObserver") && !e.includes("Non-Error")
-    );
-    expect(realErrors).toHaveLength(0);
+    expectNoPageErrors(errors);
   });
 
   const getDashboard = async (page) => {

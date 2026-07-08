@@ -1,5 +1,5 @@
 import type { MoreInfoView } from "../../../../src/dialogs/more-info/const";
-import type { ViewElementSmokeCase } from "../../helpers";
+import type { ViewElementSmokeCase } from "../helpers";
 
 export const moreInfoViewElements: ViewElementSmokeCase<MoreInfoView>[] = [
   {
