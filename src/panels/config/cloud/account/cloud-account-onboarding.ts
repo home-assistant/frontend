@@ -33,7 +33,7 @@ export class CloudAccountOnboarding extends LitElement {
 
   protected render() {
     return html`
-      <ha-card outlined class="onboarding-card">
+      <ha-card outlined>
         <div class="card-content ready-card">
           <div class="ready-left">
             <h2>
@@ -146,8 +146,8 @@ export class CloudAccountOnboarding extends LitElement {
         ha-card {
           display: block;
           width: 100%;
-        }
-        ha-card.onboarding-card {
+          max-width: 600px;
+          margin-inline: auto;
           container-type: inline-size;
         }
         .ready-card {
@@ -167,9 +167,6 @@ export class CloudAccountOnboarding extends LitElement {
           white-space: normal;
           overflow: visible;
           text-overflow: clip;
-        }
-        .ready-left p {
-          margin: 0;
         }
         .ready-actions {
           display: flex;
