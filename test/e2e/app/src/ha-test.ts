@@ -2,6 +2,7 @@ import { customElement } from "lit/decorators";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
 import { navigate } from "../../../../src/common/navigate";
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
+import type { LogbookStreamMessage } from "../../../../src/data/logbook";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../../../src/types";
@@ -74,6 +75,17 @@ const E2E_FILTER_ENTITIES: Record<string, EntityRegistryDisplayEntry> = {
     labels: [],
     platform: "demo",
   },
+};
+
+const MEDIA_BROWSER_ROOT = {
+  title: "Media",
+  media_content_id: "media-source://media_source",
+  media_content_type: "app",
+  media_class: "directory",
+  can_play: false,
+  can_expand: true,
+  can_search: false,
+  children: [],
 };
 
 declare global {
@@ -188,9 +200,31 @@ export class HaTest extends HomeAssistantAppEl {
       );
     });
     hass.mockWS("radio_frequency/list", () => ({ transmitters: [] }));
+    hass.mockWS("calendar/event/subscribe", (_msg, _currentHass, onChange) => {
+      onChange?.({ events: [] });
+      return () => undefined;
+    });
+    hass.mockWS("logbook/event_stream", (_msg, _currentHass, onChange) => {
+      const message: LogbookStreamMessage = { events: [] };
+      onChange?.(message);
+      return () => undefined;
+    });
+    hass.mockWS("config/auth/list", () => []);
+    hass.mockWS("trace/contexts", () => ({}));
+    hass.mockWS("media_source/browse_media", () => MEDIA_BROWSER_ROOT);
 
     // Load default entities from the sections config
-    hass.addEntities(energyEntities());
+    hass.addEntities([
+      ...energyEntities(),
+      {
+        entity_id: "todo.shopping_list",
+        state: "0",
+        attributes: {
+          friendly_name: "Shopping list",
+          supported_features: 15,
+        },
+      },
+    ]);
     Promise.all([Promise.resolve(demoSections), localizePromise]).then(
       ([conf, localize]) => {
         hass.addEntities(conf.entities(localize));
