@@ -2,6 +2,7 @@ import { arrayLiteralIncludes } from "../../../common/array/literal-includes";
 import type { Counter } from "../../../data/counter";
 import type { InputBoolean } from "../../../data/input_boolean";
 import type { InputButton } from "../../../data/input_button";
+import type { InputColor } from "../../../data/input_color";
 import type { InputDateTime } from "../../../data/input_datetime";
 import type { InputNumber } from "../../../data/input_number";
 import type { InputSelect } from "../../../data/input_select";
@@ -12,6 +13,7 @@ import type { Timer } from "../../../data/timer";
 export const HELPER_DOMAINS = [
   "input_boolean",
   "input_button",
+  "input_color",
   "input_text",
   "input_number",
   "input_datetime",
@@ -27,6 +29,7 @@ export const isHelperDomain = arrayLiteralIncludes(HELPER_DOMAINS);
 export type Helper =
   | InputBoolean
   | InputButton
+  | InputColor
   | InputText
   | InputNumber
   | InputSelect

@@ -23,6 +23,7 @@ import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
 import { createInputButton } from "../../../data/input_button";
+import { createInputColor } from "../../../data/input_color";
 import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
@@ -68,6 +69,11 @@ const HELPERS: HelperCreators = {
   input_button: {
     create: createInputButton,
     import: () => import("./forms/ha-input_button-form"),
+  },
+  input_color: {
+    create: createInputColor,
+    import: () => import("./forms/ha-input_color-form"),
+    alias: ["color", "palette"],
   },
   input_text: {
     create: createInputText,

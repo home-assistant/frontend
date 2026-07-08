@@ -10,6 +10,11 @@ import {
   updateInputButton,
 } from "./input_button";
 import {
+  deleteInputColor,
+  fetchInputColor,
+  updateInputColor,
+} from "./input_color";
+import {
   deleteInputDateTime,
   fetchInputDateTime,
   updateInputDateTime,
@@ -38,6 +43,11 @@ export const HELPERS_CRUD = {
     fetch: fetchInputButton,
     update: updateInputButton,
     delete: deleteInputButton,
+  },
+  input_color: {
+    fetch: fetchInputColor,
+    update: updateInputColor,
+    delete: deleteInputColor,
   },
   input_text: {
     fetch: fetchInputText,
