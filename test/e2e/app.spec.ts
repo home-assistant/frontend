@@ -7,6 +7,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import type { MoreInfoView } from "../../src/dialogs/more-info/const";
 import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+import { e2ePanelRouteAssertions } from "./app/src/ha-test-panels";
 
 /**
  * Each More info view renders one root element inside the dialog, plus one or
@@ -61,6 +62,59 @@ const MORE_INFO_VIEW_ELEMENTS: {
   },
 ];
 
+const URL_NORMALIZATION_ASSERTIONS: {
+  name: string;
+  path: string;
+  element: string;
+  url: RegExp;
+  action?: (page: Page) => Promise<void>;
+}[] = [
+  {
+    name: "keeps the todo panel when adding the selected entity query",
+    path: "/todo",
+    element: "ha-panel-todo",
+    url: /\/\?entity_id=todo\.shopping_list#\/todo$/,
+  },
+  {
+    name: "keeps the history panel when removing the back query",
+    path: "/?back=1#/history",
+    element: "ha-panel-history, history-panel",
+    url: /\/#\/history$/,
+  },
+  {
+    name: "keeps the logbook panel when removing the back query",
+    path: "/?back=1#/logbook",
+    element: "ha-panel-logbook",
+    url: /\/#\/logbook$/,
+  },
+  {
+    name: "keeps the lovelace panel when adding the edit query",
+    path: "/lovelace",
+    element: "ha-panel-lovelace, hui-root",
+    url: /\/\?edit=1#\/lovelace\/home$/,
+    action: (page) => setLovelaceEditMode(page, true),
+  },
+  {
+    name: "keeps the lovelace panel when removing the edit query",
+    path: "/lovelace",
+    element: "ha-panel-lovelace, hui-root",
+    url: /\/#\/lovelace\/home$/,
+    action: async (page) => {
+      await setLovelaceEditMode(page, true);
+      await expect(page).toHaveURL(/\/\?edit=1#\/lovelace\/home$/, {
+        timeout: SHELL_TIMEOUT,
+      });
+      await setLovelaceEditMode(page, false);
+    },
+  },
+];
+
+interface E2ELovelaceRoot extends HTMLElement {
+  lovelace?: {
+    setEditMode: (editMode: boolean) => void;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -78,6 +132,35 @@ async function goToPanel(page: Page, path: string) {
   await page.waitForSelector("ha-test", { state: "attached" });
   // Wait for the app to finish initialising (hassConnected sets panels)
   await page.waitForFunction(() => Boolean((window as any).__mockHass));
+}
+
+async function setLovelaceEditMode(page: Page, editMode: boolean) {
+  await page
+    .locator("hui-root")
+    .first()
+    .waitFor({ state: "attached", timeout: QUICK_TIMEOUT });
+  await page
+    .locator("hui-root")
+    .first()
+    .evaluate(async (el: Element, value) => {
+      const root = el as E2ELovelaceRoot;
+      const start = performance.now();
+      await new Promise<void>((resolve, reject) => {
+        const check = () => {
+          if (root.lovelace?.setEditMode) {
+            resolve();
+            return;
+          }
+          if (performance.now() - start > 2000) {
+            reject(new Error("Lovelace edit mode action was not available"));
+            return;
+          }
+          requestAnimationFrame(check);
+        };
+        check();
+      });
+      root.lovelace!.setEditMode(value);
+    }, editMode);
 }
 
 // ---------------------------------------------------------------------------
@@ -205,48 +288,33 @@ test.describe("App shell", () => {
 // ---------------------------------------------------------------------------
 
 test.describe("Panel navigation", () => {
-  test("navigates to lovelace dashboard", async ({ page }) => {
-    await goToPanel(page, "/lovelace");
-    await expect(
-      page.locator("ha-panel-lovelace, hui-root").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
+  for (const [path, element] of e2ePanelRouteAssertions) {
+    test(`renders registered panel ${path}`, async ({ page }) => {
+      await goToPanel(page, path);
+      await expect(page.locator(element).first()).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
     });
-  });
+  }
+});
 
-  test("navigates to energy panel", async ({ page }) => {
-    await goToPanel(page, "/energy");
-    await expect(
-      page.locator("ha-panel-energy, energy-view").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
+test.describe("Panel URL normalization", () => {
+  for (const {
+    name,
+    path,
+    element,
+    url,
+    action,
+  } of URL_NORMALIZATION_ASSERTIONS) {
+    test(name, async ({ page }) => {
+      await goToPanel(page, path);
+      await action?.(page);
+      await expect(page).toHaveURL(url, { timeout: SHELL_TIMEOUT });
+      await expect(page.locator(element).first()).toBeAttached({
+        timeout: PANEL_TIMEOUT,
+      });
     });
-  });
-
-  test("navigates to map panel", async ({ page }) => {
-    await goToPanel(page, "/map");
-    await expect(
-      page.locator("ha-panel-lovelace, hui-root").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to history panel", async ({ page }) => {
-    await goToPanel(page, "/history");
-    await expect(
-      page.locator("ha-panel-history, history-panel").first()
-    ).toBeAttached({
-      timeout: PANEL_TIMEOUT,
-    });
-  });
-
-  test("navigates to profile panel", async ({ page }) => {
-    await goToPanel(page, "/profile");
-    await expect(
-      page.locator("ha-panel-profile, ha-config-user-profile").first()
-    ).toBeAttached({ timeout: PANEL_TIMEOUT });
-  });
+  }
 });
 
 // ---------------------------------------------------------------------------
