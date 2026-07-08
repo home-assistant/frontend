@@ -12,7 +12,7 @@ export default defineConfig({
 
   retries: process.env.CI ? 1 : 0,
 
-  outputDir: "test-results",
+  outputDir: "test-results/app",
   reporter: [["list"], ["blob", { outputDir: "reports/app" }]],
 
   use: {
