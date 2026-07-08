@@ -236,7 +236,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             group="section"
             handle-selector=".handle"
             draggable-selector=".section"
-            .rollback=${false}
           >
             <div
               class="content ${classMap({
