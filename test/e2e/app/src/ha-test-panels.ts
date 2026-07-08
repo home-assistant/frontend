@@ -62,12 +62,12 @@ export const e2eTestPanels: Record<string, E2ETestPanelInfo> = {
     testSelector: "ha-panel-calendar",
   },
   todo: {
-    component_name: "e2e-todo",
+    component_name: "todo",
     icon: "mdi:clipboard-list",
     title: "todo",
     config: null,
     url_path: "todo",
-    testSelector: "ha-panel-e2e-todo",
+    testSelector: "ha-panel-todo",
   },
   "media-browser": {
     component_name: "media-browser",
