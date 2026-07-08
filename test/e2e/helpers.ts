@@ -1,7 +1,7 @@
 /**
  * Shared helpers and constants for Playwright e2e suites.
  */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 // ── Timeouts ────────────────────────────────────────────────────────────────
 // Centralised so tweaks don't require search-and-replace across spec files.
@@ -15,6 +15,17 @@ export const SHELL_TIMEOUT = 15_000;
 export const PANEL_TIMEOUT = 20_000;
 /** First navigation / cold-cache loads on slow runners. */
 export const NAVIGATION_TIMEOUT = 30_000;
+
+// ── App navigation ──────────────────────────────────────────────────────────
+
+// The app e2e harness is built with __DEMO__=true, which enables hash routing.
+// Scenario selection uses query params at root: /?scenario=foo#/lovelace.
+export async function goToPanel(page: Page, path: string) {
+  const url = path.startsWith("/?") ? path : `/#${path}`;
+  await page.goto(url);
+  await page.waitForSelector("ha-test", { state: "attached" });
+  await page.waitForFunction(() => Boolean((window as any).__mockHass));
+}
 
 // ── Error filtering ─────────────────────────────────────────────────────────
 
@@ -35,6 +46,52 @@ export function appErrors(errors: { message: string }[] | string[]) {
       !msg.includes("Non-Error") &&
       !msg.includes("Extension context")
   );
+}
+
+// ── Link smoke helpers ──────────────────────────────────────────────────────
+
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+export interface LinkSmokeCase {
+  href: string;
+  label: string;
+}
+
+export async function assertLink(
+  root: Locator,
+  { href, label }: LinkSmokeCase
+) {
+  const link = root.getByRole("link", {
+    name: new RegExp(`^${escapeRegExp(label)}\\b`),
+  });
+  await expect(link).toHaveAttribute("href", href, {
+    timeout: QUICK_TIMEOUT,
+  });
+}
+
+export function defineLinkSmokeTests(
+  links: LinkSmokeCase[],
+  getRoot: (page: Page) => Promise<Locator>
+) {
+  for (const link of links) {
+    test(`${link.label} links to ${link.href}`, async ({ page }) => {
+      await assertLink(await getRoot(page), link);
+    });
+  }
+}
+
+// ── Element smoke types ─────────────────────────────────────────────────────
+
+export interface ElementContentAssertion {
+  selector: string;
+  text?: string;
+}
+
+export interface ViewElementSmokeCase<TView extends string = string> {
+  view: TView;
+  element: string;
+  content: ElementContentAssertion[];
 }
 
 // ── Route smoke helpers ─────────────────────────────────────────────────────
@@ -64,15 +121,6 @@ export const routeCases = (routes: [string, string][]): RouteSmokeCase[] =>
   routes.map(([path, element]) => routeCase(path, element));
 
 export const rendersRoute = (route: RouteSmokeCase) => `renders ${route.path}`;
-
-// The app e2e harness is built with __DEMO__=true, which enables hash routing.
-// Scenario selection uses query params at root: /?scenario=foo#/lovelace.
-export async function goToPanel(page: Page, path: string) {
-  const url = path.startsWith("/?") ? path : `/#${path}`;
-  await page.goto(url);
-  await page.waitForSelector("ha-test", { state: "attached" });
-  await page.waitForFunction(() => Boolean((window as any).__mockHass));
-}
 
 async function assertRouteSmoke(page: Page, route: RouteSmokeCase) {
   await goToPanel(page, route.path);
