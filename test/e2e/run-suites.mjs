@@ -9,6 +9,7 @@
 //
 // Running suites independently avoids the && short-circuit problem where a
 // failing suite skips the remaining suites and their blob reports.
+// Set E2E_WORKERS to a number or percentage to override local workers.
 
 import { execFileSync, spawn } from "child_process";
 
@@ -37,17 +38,20 @@ const flushPrefixed = (suite, stream, pending) => {
   pending.value = "";
 };
 
-const runSuite = (suite) =>
+const runSuite = (suite, env) =>
   new Promise((resolve) => {
     const started = Date.now();
     const child = spawn("yarn", [`test:e2e:${suite}`], {
       stdio: ["ignore", "pipe", "pipe"],
-      env: process.env,
+      env,
     });
     const pendingStdout = { value: "" };
     const pendingStderr = { value: "" };
+    const workerLabel = env.E2E_WORKERS ? ` (workers: ${env.E2E_WORKERS})` : "";
 
-    process.stdout.write(`\n--- Running suite: test:e2e:${suite} ---\n`);
+    process.stdout.write(
+      `\n--- Running suite: test:e2e:${suite}${workerLabel} ---\n`
+    );
 
     child.stdout.on("data", (chunk) =>
       writePrefixed(suite, process.stdout, chunk, pendingStdout)
@@ -82,16 +86,28 @@ if (!suites.length) {
 
 const sequential = isTruthy(process.env.E2E_SEQUENTIAL);
 const skipMerge = isTruthy(process.env.E2E_SKIP_MERGE);
+const suiteWorkers =
+  !sequential &&
+  !process.env.CI &&
+  !process.env.E2E_WORKERS &&
+  suites.length > 1
+    ? `${Math.max(1, Math.floor(60 / suites.length))}%`
+    : undefined;
+const suiteEnv = suiteWorkers
+  ? { ...process.env, E2E_WORKERS: suiteWorkers }
+  : process.env;
 
 const results = [];
 
 if (sequential) {
   for (const suite of suites) {
     // eslint-disable-next-line no-await-in-loop
-    results.push(await runSuite(suite));
+    results.push(await runSuite(suite, suiteEnv));
   }
 } else {
-  results.push(...(await Promise.all(suites.map((suite) => runSuite(suite)))));
+  results.push(
+    ...(await Promise.all(suites.map((suite) => runSuite(suite, suiteEnv))))
+  );
 }
 
 const failures = results

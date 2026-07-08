@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { getE2EWorkers } from "./playwright-workers";
 
 const GALLERY_PORT = 8100;
 const GALLERY_BASE_URL = `http://localhost:${GALLERY_PORT}`;
@@ -11,6 +12,8 @@ export default defineConfig({
   expect: { timeout: 15_000 },
 
   retries: process.env.CI ? 1 : 0,
+  fullyParallel: true,
+  workers: getE2EWorkers(),
 
   outputDir: "test-results/gallery",
   reporter: [["list"], ["blob", { outputDir: "reports/gallery" }]],
