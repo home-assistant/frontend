@@ -27,6 +27,7 @@ const cardConfigStruct = assign(
     title: optional(union([string(), boolean()])),
     initial_view: optional(string()),
     theme: optional(string()),
+    show_addfab: optional(boolean()),
     entities: array(string()),
   })
 );
@@ -72,6 +73,7 @@ export class HuiCalendarCardEditor
           ],
         },
         { name: "theme", required: false, selector: { theme: {} } },
+        { name: "show_addfab", required: false, selector: { boolean: {} } },
       ] as const
   );
 
