@@ -1,13 +1,88 @@
 import { expect, type Page } from "@playwright/test";
+import type { MoreInfoView } from "../../../../src/dialogs/more-info/const";
+import { QUICK_TIMEOUT, SHELL_TIMEOUT } from "../../helpers";
 import {
   rendersRoute,
   routeCase,
   routeCases,
+  type LinkSmokeCase,
   type RouteSmokeCase,
   type RouteSmokeGroup,
+  type ViewElementSmokeCase,
 } from "../helpers";
-import { QUICK_TIMEOUT, SHELL_TIMEOUT } from "../../helpers";
 import { e2ePanelRouteAssertions } from "./ha-test-panels";
+
+// ── Config dashboard links ───────────────────────────────────────────────────
+
+export const configLinks: LinkSmokeCase[] = [
+  { href: "/config/integrations", label: "Devices & services" },
+  { href: "/config/automation", label: "Automations & scenes" },
+  { href: "/config/areas", label: "Areas, labels & zones" },
+  { href: "/config/apps", label: "Apps" },
+  { href: "/config/lovelace/dashboards", label: "Dashboards" },
+  { href: "/config/voice-assistants", label: "Voice assistants" },
+  { href: "/config/matter", label: "Matter" },
+  { href: "/config/zha", label: "Zigbee" },
+  { href: "/config/zwave_js", label: "Z-Wave" },
+  { href: "/knx", label: "KNX" },
+  { href: "/config/thread", label: "Thread" },
+  { href: "/config/bluetooth", label: "Bluetooth" },
+  { href: "/config/infrared", label: "Infrared" },
+  { href: "/config/radio-frequency", label: "Radio frequency" },
+  { href: "/insteon", label: "Insteon" },
+  { href: "/config/tags", label: "Tags" },
+  { href: "/config/person", label: "People" },
+  { href: "/config/system", label: "System" },
+  { href: "/config/tools", label: "Tools" },
+  { href: "/config/info", label: "About" },
+];
+
+// ── More-info dialog views ───────────────────────────────────────────────────
+
+export const moreInfoViewElements: ViewElementSmokeCase<MoreInfoView>[] = [
+  {
+    view: "info",
+    element: "ha-more-info-info",
+    content: [
+      { selector: "more-info-light" },
+      { selector: "span.title", text: "Test Light" },
+    ],
+  },
+  {
+    view: "history",
+    element: "ha-more-info-history-and-logbook",
+    // The demo loads the history component but not logbook.
+    content: [{ selector: "ha-more-info-history" }],
+  },
+  {
+    view: "settings",
+    element: "ha-more-info-settings",
+    // The scenario mocks config/entity_registry/get, so the real registry
+    // panel renders instead of the "no unique ID" warning.
+    content: [{ selector: "entity-registry-settings" }],
+  },
+  {
+    view: "related",
+    element: "ha-related-items",
+    // search/related is mocked to return no relations, so the empty list
+    // renders.
+    content: [{ selector: "ha-related-items >> ha-list" }],
+  },
+  {
+    view: "add_to",
+    element: "ha-more-info-add-to",
+    // Admin users get the default add-to action list.
+    content: [{ selector: "ha-add-to-action-list" }],
+  },
+  {
+    view: "details",
+    element: "ha-more-info-details",
+    // The details view renders the state and attributes cards.
+    content: [{ selector: "ha-card" }],
+  },
+];
+
+// ── Route smoke tests ────────────────────────────────────────────────────────
 
 interface E2ELovelaceRoot extends HTMLElement {
   lovelace?: {

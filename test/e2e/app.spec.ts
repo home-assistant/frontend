@@ -22,9 +22,11 @@ import {
   SHELL_TIMEOUT,
   trackPageErrors,
 } from "./helpers";
-import { configLinks } from "./app/src/config-smoke";
-import { moreInfoViewElements } from "./app/src/more-info-smoke";
-import { appRouteSmokeGroups } from "./app/src/route-smoke";
+import {
+  appRouteSmokeGroups,
+  configLinks,
+  moreInfoViewElements,
+} from "./app/src/smoke";
 
 // ---------------------------------------------------------------------------
 // App shell
