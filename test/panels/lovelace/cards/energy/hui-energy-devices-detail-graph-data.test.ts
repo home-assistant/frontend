@@ -164,27 +164,26 @@ describe("generateEnergyDevicesDetailGraphData", () => {
     ).toMatchSnapshot();
   });
 
-  // Regression test for #52937: at the start of the day only the first hour
-  // has data. The untracked/over-reported bars must center on the same period
-  // midpoint as the device bars so they stack as one bar instead of splitting
-  // into a second stack at the period start.
-  it("stacks untracked bars on the device bars for a lone first-of-day bucket", () => {
-    // Full-day range (so getSuggestedPeriod stays "hour") but keep only the
-    // first hourly bucket in every stat. gapChance: 0 makes the bucket dense.
-    const full = generateEnergyData(1, {
+  // Regression test for #52937/#52938: at the start of the day only the first
+  // hour has data. The untracked bars must center on the same period midpoint
+  // as the device bars (one stack, not two), and the whole day must be
+  // zero-filled so ECharts keeps the configured axis range instead of
+  // expanding it around the lone bucket.
+  it("keeps a lone first-of-day bucket on the shared zero-filled grid", () => {
+    const HOUR = 60 * 60 * 1000;
+    const full = generateEnergyData(12, {
       days: 1,
       period: "hour",
-      gapChance: 0,
       prefs: buildPrefs(false),
     });
     const firstStart = full.start.getTime();
     const energyData = {
       ...full,
       stats: Object.fromEntries(
-        Object.entries(full.stats).map(
-          ([id, values]) =>
-            [id, values.filter((s) => s.start === firstStart)] as const
-        )
+        Object.entries(full.stats).map(([id, rows]) => [
+          id,
+          rows.filter((row) => row.start === firstStart),
+        ])
       ),
     };
 
@@ -193,26 +192,29 @@ describe("generateEnergyDevicesDetailGraphData", () => {
       energyData,
     });
 
-    // Collect the display x of every bar across all series.
-    const xs = new Set<number>();
-    let nonEmptySeries = 0;
+    const nonZeroXs = new Set<number>();
     for (const series of result.chartData) {
-      const points = series.data ?? [];
-      if (points.length) {
-        nonEmptySeries++;
+      if (!series.data?.length) {
+        continue;
       }
-      for (const point of points as any[]) {
-        const x = Array.isArray(point) ? point[0] : point?.value?.[0];
-        if (x != null) {
-          xs.add(Number(x));
+      // Every non-empty series covers the full day grid...
+      const xs = series.data.map((item: any) =>
+        Number(item?.value?.[0] ?? item?.[0])
+      );
+      assert.equal(xs.length, 24);
+      const sorted = [...xs].sort((a, b) => a - b);
+      for (let i = 1; i < sorted.length; i++) {
+        assert.equal(sorted[i] - sorted[i - 1], HOUR);
+      }
+      for (const [index, item] of (series.data as any[]).entries()) {
+        const y = Number(item?.value?.[1] ?? item?.[1]);
+        if (y !== 0) {
+          nonZeroXs.add(xs[index]);
         }
       }
     }
-
-    // Device bars + at least one untracked series are present...
-    assert.isAtLeast(nonEmptySeries, 2);
-    // ...and they all share a single x, so they render as one full stack.
-    assert.equal(xs.size, 1);
+    // ...and all real values stack on the single bucket midpoint.
+    assert.deepEqual([...nonZeroXs], [firstStart + HOUR / 2]);
   });
 
   // The seeded fixtures above all happen to produce fully-negative untracked

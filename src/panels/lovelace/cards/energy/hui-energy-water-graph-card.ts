@@ -31,6 +31,7 @@ import {
   computeStatMidpoint,
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
+  generateFillBuckets,
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
@@ -263,7 +264,16 @@ export class HuiEnergyWaterGraphCard
       )
     );
 
-    fillDataGapsAndRoundCaps(datasets);
+    fillDataGapsAndRoundCaps(
+      datasets,
+      true,
+      generateFillBuckets(
+        datasets,
+        this._start,
+        this._end,
+        getSuggestedPeriod(this._start, this._end)
+      )
+    );
     this._yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax);
     this._chartData = datasets;
     this._total = this._processTotal(energyData.stats, waterSources);
