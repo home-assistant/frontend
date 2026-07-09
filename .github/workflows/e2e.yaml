@@ -106,7 +106,8 @@ jobs:
   # ── Run Playwright tests locally against Chromium ──────────────────────────
   e2e-demo:
     name: E2E demo
-    needs: [build-demo]
+    needs:
+      - build-demo
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -156,10 +157,16 @@ jobs:
           retention-days: 3
 
   e2e-app:
-    name: E2E app
-    needs: [build-e2e-test-app]
+    name: E2E app (${{ matrix.shardIndex }}/${{ matrix.shardTotal }})
+    needs:
+      - build-e2e-test-app
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -190,21 +197,22 @@ jobs:
           path: test/e2e/app/dist/
 
       - name: Run Playwright app tests
-        run: yarn test:e2e:app
+        run: yarn test:e2e:app --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         timeout-minutes: 15
 
       - name: Upload app blob report
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: blob-report-app
+          name: blob-report-app-${{ matrix.shardIndex }}
           path: test/e2e/reports/app/
           if-no-files-found: warn
           retention-days: 3
 
   e2e-gallery:
     name: E2E gallery
-    needs: [build-gallery]
+    needs:
+      - build-gallery
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -251,7 +259,10 @@ jobs:
 
   e2e-local:
     name: E2E (local Chromium)
-    needs: [e2e-demo, e2e-app, e2e-gallery]
+    needs:
+      - e2e-demo
+      - e2e-app
+      - e2e-gallery
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
@@ -274,7 +285,10 @@ jobs:
   # ── Merge blob reports and post PR comment ─────────────────────────────────
   report:
     name: Report
-    needs: [e2e-demo, e2e-app, e2e-gallery]
+    needs:
+      - e2e-demo
+      - e2e-app
+      - e2e-gallery
     runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     permissions:
@@ -296,11 +310,11 @@ jobs:
           name: blob-report-demo
           path: test/e2e/reports/demo/
 
-      - name: Download app blob report
+      - name: Download app blob reports
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         continue-on-error: true
         with:
-          name: blob-report-app
+          pattern: blob-report-app-*
           path: test/e2e/reports/app/
 
       - name: Download gallery blob report
