@@ -74,14 +74,21 @@ export async function assertLink(
 }
 
 export function defineLinkSmokeTests(
+  name: string,
   links: LinkSmokeCase[],
   getRoot: (page: Page) => Promise<Locator>
 ) {
-  for (const link of links) {
-    test(`${link.label} links to ${link.href}`, async ({ page }) => {
-      await assertLink(await getRoot(page), link);
-    });
-  }
+  test(name, async ({ page }) => {
+    const root = await getRoot(page);
+
+    await Promise.all(
+      links.map((link) =>
+        test.step(`${link.label} links to ${link.href}`, async () => {
+          await assertLink(root, link);
+        })
+      )
+    );
+  });
 }
 
 export interface ElementContentAssertion {
