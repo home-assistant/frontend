@@ -65,7 +65,8 @@ test/e2e/app/dist/
 .playwright-mcp/
 
 # AI tooling
-.claude
+.claude/*
+!.claude/skills
 .cursor
 .opencode
 .serena
