@@ -520,6 +520,7 @@ ${
           min-width: 0;
           height: 100%;
           box-sizing: border-box;
+          contain: size;
         }
 
         .pane[slot="start"] {
