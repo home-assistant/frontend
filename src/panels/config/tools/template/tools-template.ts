@@ -310,7 +310,7 @@ class HaPanelDevTemplate extends LitElement {
                       )}:
                       ${resultType}
                     </ha-label>
-                    <pre class="rendered">
+                    <pre class="rendered ha-scrollbar">
 ${
   type === "object"
     ? JSON.stringify(this._templateResult.result, null, 2)
@@ -448,7 +448,6 @@ ${
           display: flex;
           flex-direction: column;
           height: 100%;
-          user-select: none;
         }
 
         .about {
@@ -573,7 +572,6 @@ ${
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-2);
-          user-select: text;
         }
 
         .edit-pane {
@@ -619,6 +617,7 @@ ${
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
+          overflow: auto;
         }
 
         p,
