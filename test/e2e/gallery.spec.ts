@@ -52,13 +52,7 @@ test.describe("Component interactions", () => {
     // The demo uses property binding (.alertType) not attribute binding, so we
     // verify that multiple ha-alert elements are present.
     const alerts = demo.locator("ha-alert");
-    await expect(alerts.first()).toBeAttached({ timeout: QUICK_TIMEOUT });
-    await expect(alerts)
-      .toHaveCount(4, { timeout: QUICK_TIMEOUT })
-      .catch(async () => {
-        const count = await alerts.count();
-        expect(count).toBeGreaterThanOrEqual(4);
-      });
+    await expect(alerts.nth(3)).toBeAttached({ timeout: QUICK_TIMEOUT });
   });
 
   test("ha-button renders primary action button", async ({ page }) => {
