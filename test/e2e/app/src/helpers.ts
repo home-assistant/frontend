@@ -1,5 +1,10 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "../../helpers";
+import {
+  defineParallelSmokeTests,
+  PANEL_TIMEOUT,
+  QUICK_TIMEOUT,
+  SHELL_TIMEOUT,
+} from "../../helpers";
 
 const APP_MAIN_SELECTOR = "ha-test >> home-assistant-main";
 const APP_SIDEBAR_SELECTOR = `${APP_MAIN_SELECTOR} >> ha-sidebar`;
@@ -164,20 +169,18 @@ function shouldRunRouteSmoke(
 }
 
 export function defineRouteSmokeTests(groups: RouteSmokeGroup[]) {
-  for (const group of groups) {
-    test.describe(group.name, () => {
-      for (const route of group.routes) {
-        test(
-          route.name ?? group.testName?.(route) ?? rendersRoute(route),
-          async ({ page }, testInfo) => {
-            test.skip(
-              !shouldRunRouteSmoke(testInfo.project.name, group, route),
-              "Route smoke coverage does not run for this project"
-            );
-            await assertRouteSmoke(page, route);
-          }
-        );
-      }
-    });
-  }
+  defineParallelSmokeTests({
+    groups,
+    groupName: (group) => group.name,
+    cases: (group) => group.routes,
+    testName: (route, group) =>
+      route.name ?? group.testName?.(route) ?? rendersRoute(route),
+    run: async ({ page, testInfo, group, smokeCase }) => {
+      test.skip(
+        !shouldRunRouteSmoke(testInfo.project.name, group, smokeCase),
+        "Route smoke coverage does not run for this project"
+      );
+      await assertRouteSmoke(page, smokeCase);
+    },
+  });
 }

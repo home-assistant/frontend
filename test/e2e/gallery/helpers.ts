@@ -1,5 +1,6 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import {
+  defineParallelSmokeTests,
   expectNoPageErrors,
   QUICK_TIMEOUT,
   SHELL_TIMEOUT,
@@ -69,12 +70,18 @@ export function defineGallerySmokeTests(
   routePrefix: string,
   pages: GalleryPageSmokeCase[]
 ) {
-  test.describe(groupName, () => {
-    for (const { name, selector } of pages) {
-      test(`${name} renders without errors`, async ({ page }) => {
-        await assertGalleryPageLoads(page, `${routePrefix}/${name}`, selector);
-      });
-    }
+  defineParallelSmokeTests({
+    groups: [{ name: groupName, routePrefix, pages }],
+    groupName: (group) => group.name,
+    cases: (group) => group.pages,
+    testName: (smokeCase) => `${smokeCase.name} renders without errors`,
+    run: async ({ page, group, smokeCase }) => {
+      await assertGalleryPageLoads(
+        page,
+        `${group.routePrefix}/${smokeCase.name}`,
+        smokeCase.selector
+      );
+    },
   });
 }
 
