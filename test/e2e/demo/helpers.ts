@@ -40,19 +40,30 @@ export async function clickFirstVisibleDemoSidebarPanel(
   page: Page,
   panels: string[]
 ) {
-  for (const panel of panels) {
-    const navItem = page.locator(`#sidebar-panel-${panel}`);
-    // eslint-disable-next-line no-await-in-loop
-    if (await navItem.isVisible().catch(() => false)) {
-      // eslint-disable-next-line no-await-in-loop
-      await navItem.click();
-      // eslint-disable-next-line no-await-in-loop
-      await expect(page).toHaveURL(new RegExp(`/${panel}`), {
-        timeout: SHELL_TIMEOUT,
-      });
-      return true;
-    }
+  const panelSelectors = panels.map((panel) => `#sidebar-panel-${panel}`);
+  await expect(page.locator(panelSelectors.join(", ")).first()).toBeVisible({
+    timeout: SHELL_TIMEOUT,
+  });
+
+  const navItems = await Promise.all(
+    panels.map(async (panel) => {
+      const navItem = page.locator(`#sidebar-panel-${panel}`);
+      return {
+        panel,
+        navItem,
+        isVisible: await navItem.isVisible().catch(() => false),
+      };
+    })
+  );
+
+  const visibleNavItem = navItems.find(({ isVisible }) => isVisible);
+  if (!visibleNavItem) {
+    return false;
   }
 
-  return false;
+  await visibleNavItem.navItem.click();
+  await expect(page).toHaveURL(new RegExp(`/${visibleNavItem.panel}`), {
+    timeout: SHELL_TIMEOUT,
+  });
+  return true;
 }

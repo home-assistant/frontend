@@ -47,17 +47,18 @@ test.describe("App shell", () => {
   test("sidebar renders with expected panels", async ({ page }) => {
     await goToPanel(page, "/lovelace");
 
-    // Regular panels use #sidebar-panel-{urlPath} inside ha-sidebar's shadow root
-    for (const urlPath of ["lovelace", "map", "energy", "history"]) {
-      // eslint-disable-next-line no-await-in-loop
-      await expect(appSidebarPanel(page, urlPath)).toBeAttached({
+    await Promise.all([
+      // Regular panels use #sidebar-panel-{urlPath} inside ha-sidebar's shadow root.
+      ...["lovelace", "map", "energy", "history"].map((urlPath) =>
+        expect(appSidebarPanel(page, urlPath)).toBeAttached({
+          timeout: QUICK_TIMEOUT,
+        })
+      ),
+      // Config has its own special element with id="sidebar-config".
+      expect(appSidebarConfig(page)).toBeAttached({
         timeout: QUICK_TIMEOUT,
-      });
-    }
-    // Config has its own special element with id="sidebar-config"
-    await expect(appSidebarConfig(page)).toBeAttached({
-      timeout: QUICK_TIMEOUT,
-    });
+      }),
+    ]);
   });
 
   test("sidebar navigation changes the active panel", async ({ page }) => {
