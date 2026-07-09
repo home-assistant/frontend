@@ -51,6 +51,8 @@ export class StateHistoryChartLine extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public entityContext?: Record<string, string>;
+
   @property({ attribute: false }) public colors?: Record<
     string,
     string | undefined
@@ -180,6 +182,7 @@ export class StateHistoryChartLine extends LitElement {
 
     return html`${title}${datapoints.map((param) => {
       const entityId = this._entityIds[param.seriesIndex];
+      const context = this.entityContext?.[entityId];
       const stateObj = this.hass.states[entityId];
       const entry = this.hass.entities[entityId];
       const stateValue = String(param.value[1]);
@@ -207,7 +210,11 @@ export class StateHistoryChartLine extends LitElement {
         ></ha-chart-tooltip-marker>
         ${param.seriesName
           ? html`${param.seriesName}: `
-          : nothing}${value}${statSuffix}`;
+          : nothing}${value}${context
+          ? html`<br /><span style="opacity: 0.6"
+                >${" ".repeat(2)}${context}</span
+              >`
+          : nothing}${statSuffix}`;
     })}`;
   };
 

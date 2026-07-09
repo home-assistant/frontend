@@ -58,6 +58,8 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public entityContext?: Record<string, string>;
+
   @property({ attribute: false }) public colors?: Record<
     string,
     string | undefined
@@ -197,6 +199,7 @@ export class StateHistoryCharts extends LitElement {
           .endTime=${this._computedEndTime}
           .paddingYAxis=${this._maxYWidth}
           .names=${this.names}
+          .entityContext=${this.entityContext}
           .colors=${this.colors}
           .chartIndex=${index}
           .clickForMoreInfo=${this.clickForMoreInfo}
@@ -220,6 +223,7 @@ export class StateHistoryCharts extends LitElement {
         .endTime=${this._computedEndTime}
         .showNames=${this.showNames}
         .names=${this.names}
+        .entityContext=${this.entityContext}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
         .paddingYAxis=${this._maxYWidth}

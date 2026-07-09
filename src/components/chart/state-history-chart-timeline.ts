@@ -33,6 +33,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public names?: Record<string, string>;
 
+  @property({ attribute: false }) public entityContext?: Record<string, string>;
+
   @property() public unit?: string;
 
   @property() public identifier?: string;
@@ -145,8 +147,18 @@ export class StateHistoryChartTimeline extends LitElement {
       this.hass.language,
       this.hass.translationMetadata.translations
     );
+    const entityId = seriesName
+      ? this._chartData.find((d) => (d.name as string) === seriesName)?.id
+      : undefined;
+    const context = entityId
+      ? this.entityContext?.[entityId as string]
+      : undefined;
     return html`${seriesName
         ? html`<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
+        : nothing}${context
+        ? html`<div style="text-align: center; opacity: 0.6; margin: 0 0 4px">
+            ${context}
+          </div>`
         : nothing}<ha-chart-tooltip-marker
         .color=${String(color ?? "")}
         .rtl=${rtl}
