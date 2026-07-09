@@ -57,6 +57,12 @@ export const migrateEntitiesCardConfig = (
     if (typeof e !== "object") {
       return e;
     }
+    // Custom rows own their config schema and may use `format` with a
+    // different meaning (e.g. custom:multiple-entity-row), so leave it
+    // untouched.
+    if (e.type?.startsWith("custom:")) {
+      return e;
+    }
     if (!("format" in e)) {
       return e;
     }
