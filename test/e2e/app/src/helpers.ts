@@ -9,15 +9,17 @@ const APP_SIDEBAR_SELECTOR = `${APP_MAIN_SELECTOR} >> ha-sidebar`;
 export async function goToPanel(page: Page, path: string) {
   const url = path.startsWith("/?") ? path : `/#${path}`;
   await page.goto(url);
-  await page.waitForSelector("ha-test", {
-    state: "attached",
-    timeout: SHELL_TIMEOUT,
-  });
-  await page.waitForFunction(
-    () => "__mockHass" in window && Boolean(window.__mockHass),
-    undefined,
-    { timeout: SHELL_TIMEOUT }
-  );
+  await Promise.all([
+    page.waitForSelector("ha-test", {
+      state: "attached",
+      timeout: SHELL_TIMEOUT,
+    }),
+    page.waitForFunction(
+      () => "__mockHass" in window && Boolean(window.__mockHass),
+      undefined,
+      { timeout: SHELL_TIMEOUT }
+    ),
+  ]);
 }
 
 export const appMain = (page: Page) => page.locator(APP_MAIN_SELECTOR);
