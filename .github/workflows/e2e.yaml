@@ -66,7 +66,7 @@ jobs:
       - name: Build e2e test app
         uses: ./.github/actions/build
         with:
-          target: build-e2e-test-app
+          target: build-e2e-test-app-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
 

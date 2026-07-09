@@ -274,3 +274,14 @@ gulp.task("rspack-prod-e2e-test-app", () =>
     })
   )
 );
+
+gulp.task("rspack-prod-e2e-test-app-e2e", () =>
+  prodBuild(
+    createE2eTestAppConfig({
+      isProdBuild: true,
+      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+    })
+  )
+);
