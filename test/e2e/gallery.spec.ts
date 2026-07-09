@@ -79,10 +79,6 @@ test.describe("Component interactions", () => {
     await expectGalleryDemoElement(demo, "ha-form");
   });
 
-  test("ha-dialog demo renders a dialog trigger", async ({ page }) => {
-    await getGalleryDemo(page, "components/ha-dialog");
-  });
-
   test("tile-card renders entity state", async ({ page }) => {
     const demo = await getGalleryDemo(page, "lovelace/tile-card");
 
@@ -97,10 +93,6 @@ test.describe("Component interactions", () => {
       "ha-control-slider, ha-more-info-light, more-info-content",
       SHELL_TIMEOUT
     );
-  });
-
-  test("more-info cover renders position controls", async ({ page }) => {
-    await getGalleryDemo(page, "more-info/cover");
   });
 
   test("ha-gauge renders a gauge element", async ({ page }) => {

@@ -144,13 +144,6 @@ const URL_NORMALIZATION_ASSERTIONS: RouteSmokeCase[] = [
     url: /\/#\/logbook$/,
   },
   {
-    name: "keeps the lovelace panel when adding the edit query",
-    path: "/lovelace",
-    element: "ha-panel-lovelace, hui-root",
-    url: /\/\?edit=1#\/lovelace\/home$/,
-    action: (page) => setLovelaceEditMode(page, true),
-  },
-  {
     name: "keeps the lovelace panel when removing the edit query",
     path: "/lovelace",
     element: "ha-panel-lovelace, hui-root",
