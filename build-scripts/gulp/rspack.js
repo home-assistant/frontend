@@ -177,6 +177,7 @@ gulp.task("rspack-prod-demo", () =>
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
@@ -269,6 +270,7 @@ gulp.task("rspack-prod-e2e-test-app", () =>
     bothBuilds(createE2eTestAppConfig, {
       isProdBuild: true,
       isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
     })
   )
 );
