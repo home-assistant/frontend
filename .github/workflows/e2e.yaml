@@ -38,7 +38,7 @@ jobs:
       - name: Build demo
         uses: ./.github/actions/build
         with:
-          target: build-demo
+          target: build-demo-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
           is-test: true
 

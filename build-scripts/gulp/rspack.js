@@ -182,6 +182,17 @@ gulp.task("rspack-prod-demo", () =>
   )
 );
 
+gulp.task("rspack-prod-demo-e2e", () =>
+  prodBuild(
+    createDemoConfig({
+      isProdBuild: true,
+      latestBuild: true,
+      isStatsBuild: env.isStatsBuild(),
+      isTestBuild: env.isTestBuild(),
+    })
+  )
+);
+
 gulp.task("rspack-dev-server-cast", () =>
   runDevServer({
     compiler: rspack(
