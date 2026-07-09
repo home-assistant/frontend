@@ -2,7 +2,7 @@
 // Collects blob reports from each suite into a single staging directory so
 // `playwright merge-reports` can consume them from one path.
 //
-// Usage: node test/e2e/collect-blob-reports.mjs [<suite> ...]
+// Usage: node test/e2e/collect-blob-reports.mjs
 
 import { cpSync, mkdirSync, readdirSync, rmSync } from "fs";
 import { relative } from "path";
@@ -33,10 +33,7 @@ const dest = "test/e2e/reports/blob";
 rmSync(dest, { recursive: true, force: true });
 mkdirSync(dest, { recursive: true });
 
-const suites = process.argv.slice(2);
-const selectedSuites = suites.length ? suites : ["demo", "app", "gallery"];
-
-for (const suite of selectedSuites) {
+for (const suite of ["demo", "app", "gallery"]) {
   const src = `test/e2e/reports/${suite}`;
   const files = findBlobReports(src);
   if (!files?.length) {

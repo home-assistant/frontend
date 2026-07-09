@@ -29,7 +29,6 @@
     "dev:demo": "demo/script/develop_demo",
     "dev:gallery": "gallery/script/develop_gallery",
     "test:e2e": "node test/e2e/run-suites.mjs demo app gallery",
-    "test:e2e:sharded": "node test/e2e/run-sharded-suites.mjs",
     "test:e2e:show-report": "yarn playwright show-report test/e2e/reports/combined",
     "test:e2e:demo": "playwright test --config test/e2e/playwright.demo.config.ts",
     "test:e2e:app": "playwright test --config test/e2e/playwright.app.config.ts",
