@@ -416,9 +416,9 @@ export class HuiCalendarCard
 
     ha-full-calendar {
       --calendar-height: 400px;
-      display: block;
+      display: flex;
       width: 100%;
-      height: var(--calendar-height);
+      height: 100%;
       min-height: var(--calendar-height);
     }
 
@@ -433,9 +433,14 @@ export class HuiCalendarCard
 
     ha-full-calendar.is-grid.has-title,
     ha-full-calendar.is-panel.has-title {
+      --header-height: calc(
+        var(--ha-card-header-font-size, var(--ha-font-size-2xl)) *
+          var(--ha-line-height-condensed) + 16px
+      );
       --calendar-height: calc(
         100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
       );
+      height: calc(100% - var(--header-height));
     }
 
     .loading {
