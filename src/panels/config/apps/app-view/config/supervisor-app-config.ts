@@ -182,7 +182,13 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
     }
     if (entry.type === "string") {
       return entry.multiple
-        ? { select: { options: [], multiple: true, custom_value: true } }
+        ? {
+            select: {
+              options: entry.options ?? [],
+              multiple: true,
+              custom_value: true,
+            },
+          }
         : {
             text: {
               type: entry.format
