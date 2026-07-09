@@ -16,7 +16,7 @@ env:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  queue: max
+  cancel-in-progress: false
 
 permissions:
   contents: read
