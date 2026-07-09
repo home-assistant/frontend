@@ -168,8 +168,10 @@ jobs:
         shardIndex:
           - 1
           - 2
+          - 3
+          - 4
         shardTotal:
-          - 2
+          - 4
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
