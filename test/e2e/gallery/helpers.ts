@@ -40,7 +40,6 @@ export async function goToGalleryHome(page: Page) {
 
 export async function goToGalleryPage(page: Page, hash: string) {
   await page.goto(`/#${hash}`);
-  await waitForGalleryReady(page);
 }
 
 async function expectGalleryPageSelector(page: Page, selector: string) {
