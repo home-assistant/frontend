@@ -258,7 +258,7 @@ jobs:
           retention-days: 3
 
   report:
-    name: E2E (local Chromium)
+    name: Report
     needs:
       - e2e-demo
       - e2e-app
