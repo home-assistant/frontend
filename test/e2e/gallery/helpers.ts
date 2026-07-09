@@ -25,10 +25,9 @@ export interface GalleryPageSmokeCase {
 export const galleryLocator = (page: Page, selector: string) =>
   page.locator(`ha-gallery >> ${selector}`);
 
-export const galleryDemoTag = (hash: string) =>
-  `demo-${hash.replace(/\//g, "-")}`;
+const galleryDemoTag = (hash: string) => `demo-${hash.replace(/\//g, "-")}`;
 
-export async function waitForGalleryReady(page: Page) {
+async function waitForGalleryReady(page: Page) {
   await expect(page.locator("ha-gallery")).toBeAttached({
     timeout: SHELL_TIMEOUT,
   });
@@ -42,22 +41,17 @@ export async function goToGalleryHome(page: Page) {
 export async function goToGalleryPage(page: Page, hash: string) {
   await page.goto(`/#${hash}`);
   await waitForGalleryReady(page);
+}
 
-  // page-description is only rendered for pages with descriptions, so wait for
-  // the demo tag derived from the hash instead.
-  await page.waitForFunction(
-    (tag) =>
-      document.querySelector("ha-gallery")?.shadowRoot?.querySelector(tag),
-    galleryDemoTag(hash),
-    { timeout: SHELL_TIMEOUT }
-  );
+async function expectGalleryPageSelector(page: Page, selector: string) {
+  const locator = galleryLocator(page, selector).first();
+  await expect(locator).toBeAttached({ timeout: SHELL_TIMEOUT });
+  return locator;
 }
 
 export async function getGalleryDemo(page: Page, hash: string) {
   await goToGalleryPage(page, hash);
-  const demo = galleryLocator(page, galleryDemoTag(hash));
-  await expect(demo).toBeAttached({ timeout: SHELL_TIMEOUT });
-  return demo;
+  return expectGalleryPageSelector(page, galleryDemoTag(hash));
 }
 
 export async function assertGalleryPageLoads(
@@ -67,10 +61,7 @@ export async function assertGalleryPageLoads(
 ) {
   const errors = trackPageErrors(page);
   await goToGalleryPage(page, hash);
-
-  await expect(galleryLocator(page, selector).first()).toBeAttached({
-    timeout: SHELL_TIMEOUT,
-  });
+  await expectGalleryPageSelector(page, selector);
   expectNoPageErrors(errors, hash, GALLERY_IGNORED_PAGE_ERRORS);
 }
 
