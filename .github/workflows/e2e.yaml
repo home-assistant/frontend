@@ -257,7 +257,7 @@ jobs:
           if-no-files-found: warn
           retention-days: 3
 
-  e2e-local:
+  report:
     name: E2E (local Chromium)
     needs:
       - e2e-demo
@@ -265,32 +265,6 @@ jobs:
       - e2e-gallery
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    steps:
-      - name: Check suite results
-        run: |
-          failed=0
-          for suite in \
-            "demo:${{ needs.e2e-demo.result }}" \
-            "app:${{ needs.e2e-app.result }}" \
-            "gallery:${{ needs.e2e-gallery.result }}"; do
-            name="${suite%%:*}"
-            result="${suite#*:}"
-            echo "E2E ${name}: ${result}"
-            if [ "$result" != "success" ]; then
-              failed=1
-            fi
-          done
-          exit "$failed"
-
-  # ── Merge blob reports and post PR comment ─────────────────────────────────
-  report:
-    name: Report
-    needs:
-      - e2e-demo
-      - e2e-app
-      - e2e-gallery
-    runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
     permissions:
       contents: read
       pull-requests: write
@@ -351,3 +325,19 @@ jobs:
               `${process.env.GITHUB_WORKSPACE}/test/e2e/post-report-comment.mjs`
             );
             await postReportComment({ github, context, core });
+
+      - name: Check suite results
+        run: |
+          failed=0
+          for suite in \
+            "demo:${{ needs.e2e-demo.result }}" \
+            "app:${{ needs.e2e-app.result }}" \
+            "gallery:${{ needs.e2e-gallery.result }}"; do
+            name="${suite%%:*}"
+            result="${suite#*:}"
+            echo "E2E ${name}: ${result}"
+            if [ "$result" != "success" ]; then
+              failed=1
+            fi
+          done
+          exit "$failed"
