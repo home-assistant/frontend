@@ -14696,7 +14696,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for 5minute per
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -16102,7 +16102,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for a small hou
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -16658,7 +16658,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot for daily perio
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -18227,7 +18227,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with child devi
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -23011,7 +23011,7 @@ exports[`generateEnergyDevicesDetailGraphData > matches snapshot with compare da
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;
 
@@ -24181,6 +24181,6 @@ exports[`generateEnergyDevicesDetailGraphData > respects max_devices config 1`] 
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
-  "yAxisFractionDigits": 1,
+  "yAxisFractionDigits": 0,
 }
 `;

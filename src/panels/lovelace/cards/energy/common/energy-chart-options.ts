@@ -38,6 +38,7 @@ import { formatTime } from "../../../../../common/datetime/format_time";
 import type { HaECOption } from "../../../../../resources/echarts/echarts";
 import type { StatisticPeriod } from "../../../../../data/recorder";
 import { getPeriodicAxisLabelConfig } from "../../../../../components/chart/axis-label";
+import { createYAxisPrecisionBounds } from "../../../../../components/chart/y-axis-fraction-digits";
 import "../../../../../components/chart/ha-chart-tooltip-marker";
 import { getSuggestedPeriod } from "../../../../../data/energy";
 
@@ -97,13 +98,15 @@ export function getSuggestedMax(
 
 function createYAxisLabelFormatter(
   locale: FrontendLocaleData,
-  fractionDigits: number
+  getFractionDigits: () => number
 ) {
-  return (value: number): string =>
-    formatNumber(value, locale, {
+  return (value: number): string => {
+    const fractionDigits = getFractionDigits();
+    return formatNumber(value, locale, {
       minimumFractionDigits: value === 0 ? 0 : fractionDigits,
       maximumFractionDigits: fractionDigits,
     });
+  };
 }
 
 export function getCommonOptions(
@@ -124,6 +127,11 @@ export function getCommonOptions(
   const compare = compareStart !== undefined && compareEnd !== undefined;
   const showCompareYear =
     compare && start.getFullYear() !== compareStart.getFullYear();
+
+  // Recompute the tick-label precision from the visible axis extent so labels
+  // stay distinct when zooming in on a narrow range. Energy axes are anchored
+  // at 0, so the extent is unioned with 0 to match the rendered ticks.
+  let currentFractionDigits = yAxisFractionDigits;
 
   // Extend suggestedMax so compare bars that land past the main end
   // (e.g. Feb compared to Jan) stay visible instead of being clipped.
@@ -170,8 +178,17 @@ export function getCommonOptions(
       nameTextStyle: {
         align: "left",
       },
+      ...createYAxisPrecisionBounds({
+        includeZero: true,
+        onFractionDigits: (digits) => {
+          currentFractionDigits = digits;
+        },
+      }),
       axisLabel: {
-        formatter: createYAxisLabelFormatter(locale, yAxisFractionDigits),
+        formatter: createYAxisLabelFormatter(
+          locale,
+          () => currentFractionDigits
+        ),
       },
       splitLine: {
         show: true,
