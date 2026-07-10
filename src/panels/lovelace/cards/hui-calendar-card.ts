@@ -216,7 +216,16 @@ export class HuiCalendarCard
             : nothing
         }
         <ha-full-calendar
-          ?add-fab=${this._config.show_add_event}
+          add-fab=${
+            this._config.show_add_event
+              ? [
+                  this._config.add_event_style ?? "below",
+                  this._config.add_event_size ?? "s",
+                ]
+                  .join(" ")
+                  .trim()
+              : nothing
+          }
           class=${classMap({
             "is-grid": this.layout === "grid",
             "is-panel": this.layout === "panel",
