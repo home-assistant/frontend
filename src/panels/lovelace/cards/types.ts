@@ -52,7 +52,9 @@ export interface CalendarCardConfig extends LovelaceCardConfig {
   initial_view?: FullCalendarView;
   title?: string;
   theme?: string;
-  show_addfab?: boolean;
+  show_add_event?: boolean;
+  add_event_style?: "below" | "on_top" | "header";
+  add_event_size?: "s" | "m" | "l";
 }
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {

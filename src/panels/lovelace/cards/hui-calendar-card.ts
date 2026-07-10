@@ -216,13 +216,22 @@ export class HuiCalendarCard
             : nothing
         }
         <ha-full-calendar
-          ?add-fab=${this._config.show_addfab}
+          add-fab=${
+            this._config.show_add_event
+              ? [
+                  this._config.add_event_style ?? "below",
+                  this._config.add_event_size ?? "s",
+                ]
+                  .join(" ")
+                  .trim()
+              : nothing
+          }
           class=${classMap({
             "is-grid": this.layout === "grid",
             "is-panel": this.layout === "panel",
             "has-title": !!this._config.title,
             loading: loading,
-            addfab: this._config.show_addfab,
+            addfab: this._config.show_add_event,
           })}
           .narrow=${this._narrow}
           .events=${this._events}
@@ -416,9 +425,9 @@ export class HuiCalendarCard
 
     ha-full-calendar {
       --calendar-height: 400px;
-      display: block;
+      display: flex;
       width: 100%;
-      height: var(--calendar-height);
+      height: 100%;
       min-height: var(--calendar-height);
     }
 
@@ -433,9 +442,14 @@ export class HuiCalendarCard
 
     ha-full-calendar.is-grid.has-title,
     ha-full-calendar.is-panel.has-title {
+      --header-height: calc(
+        var(--ha-card-header-font-size, var(--ha-font-size-2xl)) *
+          var(--ha-line-height-condensed) + 16px
+      );
       --calendar-height: calc(
         100% - var(--ha-card-header-font-size, var(--ha-font-size-2xl)) - 22px
       );
+      height: calc(100% - var(--header-height));
     }
 
     .loading {

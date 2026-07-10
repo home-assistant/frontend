@@ -27,7 +27,9 @@ const cardConfigStruct = assign(
     title: optional(union([string(), boolean()])),
     initial_view: optional(string()),
     theme: optional(string()),
-    show_addfab: optional(boolean()),
+    show_add_event: optional(boolean()),
+    add_event_style: optional(string()),
+    add_event_size: optional(string()),
     entities: array(string()),
   })
 );
@@ -73,7 +75,71 @@ export class HuiCalendarCardEditor
           ],
         },
         { name: "theme", required: false, selector: { theme: {} } },
-        { name: "show_addfab", required: false, selector: { boolean: {} } },
+        { name: "show_add_event", required: false, selector: { boolean: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "add_event_style",
+              required: false,
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "below",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.style.below"
+                      ),
+                    },
+                    {
+                      value: "on_top",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.style.on_top"
+                      ),
+                    },
+                    {
+                      value: "header",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.style.header"
+                      ),
+                    },
+                  ],
+                  mode: "dropdown",
+                },
+              },
+            },
+            {
+              name: "add_event_size",
+              required: false,
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "s",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.size.s"
+                      ),
+                    },
+                    {
+                      value: "m",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.size.m"
+                      ),
+                    },
+                    {
+                      value: "l",
+                      label: localize(
+                        "ui.panel.lovelace.editor.card.calendar.add_event.size.l"
+                      ),
+                    },
+                  ],
+                  mode: "dropdown",
+                },
+              },
+            },
+          ],
+        },
       ] as const
   );
 
