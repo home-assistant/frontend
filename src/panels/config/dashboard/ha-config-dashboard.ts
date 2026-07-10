@@ -334,25 +334,27 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
                 </div>`
               : ""
           }
-          ${this._pages(
-            this.cloudStatus,
-            isComponentLoaded(this.hass.config, "cloud"),
-            this.hass.auth.external?.config.hasSettingsScreen,
-            this.hass.userData?.apps_info_dismissed,
-            isComponentLoaded(this.hass.config, "hassio")
-          ).map((categoryPages) =>
-            categoryPages.length === 0
-              ? nothing
-              : html`
-                  <ha-card outlined>
-                    <ha-config-navigation
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .pages=${categoryPages}
-                    ></ha-config-navigation>
-                  </ha-card>
-                `
-          )}
+          <div class="cards">
+            ${this._pages(
+              this.cloudStatus,
+              isComponentLoaded(this.hass.config, "cloud"),
+              this.hass.auth.external?.config.hasSettingsScreen,
+              this.hass.userData?.apps_info_dismissed,
+              isComponentLoaded(this.hass.config, "hassio")
+            ).map((categoryPages) =>
+              categoryPages.length === 0
+                ? nothing
+                : html`
+                    <ha-card outlined>
+                      <ha-config-navigation
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .pages=${categoryPages}
+                      ></ha-config-navigation>
+                    </ha-card>
+                  `
+            )}
+          </div>
           <ha-tip>${this._tip}</ha-tip>
         </ha-config-section>
       </ha-top-app-bar-fixed>
@@ -414,7 +416,20 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         ha-config-section {
           margin: auto;
           margin-top: -32px;
-          max-width: 600px;
+          max-width: 1040px;
+          padding: 0 var(--ha-space-4);
+          box-sizing: border-box;
+        }
+
+        .cards {
+          columns: 400px 2;
+          column-gap: var(--ha-space-4);
+          margin-bottom: calc(-1 * var(--ha-space-4));
+        }
+
+        .cards > * {
+          break-inside: avoid;
+          margin-bottom: var(--ha-space-4);
         }
 
         ha-card {
@@ -427,9 +442,13 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         .dashboard-alerts {
-          display: flex;
-          flex-direction: column;
+          display: grid;
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(min(400px, 100%), 1fr)
+          );
           gap: var(--ha-space-4);
+          align-items: start;
         }
 
         .dashboard-alert-title {
@@ -457,6 +476,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           }
           ha-config-section {
             margin-top: -42px;
+            padding: 0;
           }
         }
 
