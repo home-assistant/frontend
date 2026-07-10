@@ -37,6 +37,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
+import { stringSchemaEntrySelector } from "../util/string-schema-selector";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -52,8 +53,6 @@ const secretTag = defineScalarTag("!secret", {
 });
 
 const ADDON_YAML_SCHEMA = YAML11_SCHEMA.withTags(secretTag);
-
-const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("supervisor-app-config")
 class SupervisorAppConfig extends DirtyStateProviderMixin<
@@ -181,24 +180,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
       return { select: { options: entry.options, multiple: entry.multiple } };
     }
     if (entry.type === "string") {
-      if (entry.multiple) {
-        return {
-          select: {
-            options: entry.options ?? [],
-            multiple: true,
-            custom_value: true,
-          },
-        };
-      }
-      const textType = entry.format
-        ? entry.format
-        : MASKED_FIELDS.includes(entry.name)
-          ? "password"
-          : "text";
-      if (textType === "text" && entry.options?.length) {
-        return { select: { options: entry.options, custom_value: true } };
-      }
-      return { text: { type: textType } };
+      return stringSchemaEntrySelector(entry);
     }
     if (entry.type === "boolean") {
       return { boolean: {} };
