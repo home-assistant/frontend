@@ -9653,6 +9653,21 @@
                 "dayGridWeek": "Week",
                 "dayGridDay": "Day",
                 "listWeek": "List (7 days)"
+              },
+              "show_add_event": "Show Add Event Button",
+              "add_event_style": "Add Event Button Style",
+              "add_event_size": "Add Event Button Size",
+              "add_event": {
+                "style": {
+                  "header": "Header",
+                  "below": "Below",
+                  "on_top": "On Top"
+                },
+                "size": {
+                  "s": "Small",
+                  "m": "Medium",
+                  "l": "Large"
+                }
               }
             },
             "conditional": {
