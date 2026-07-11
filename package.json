@@ -106,7 +106,7 @@
     "gulp-zopfli-green": "7.0.0",
     "hls.js": "1.6.16",
     "home-assistant-js-websocket": "9.6.0",
-    "idb-keyval": "6.2.6",
+    "idb-keyval": "6.3.0",
     "intl-messageformat": "11.2.9",
     "js-yaml": "5.2.1",
     "leaflet": "1.9.4",
