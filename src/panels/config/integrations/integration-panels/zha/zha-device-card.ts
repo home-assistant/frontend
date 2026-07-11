@@ -107,7 +107,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           ></ha-input>
           <ha-area-picker
             .device=${this.device.device_reg_id}
-            .value=${device.area_id ?? undefined}
+            .value=${this.device.area_id ?? undefined}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>
         </div>
