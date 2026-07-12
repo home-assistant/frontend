@@ -2775,13 +2775,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:7.4.9":
-  version: 7.4.9
-  resolution: "@formatjs/intl-datetimeformat@npm:7.4.9"
+"@formatjs/intl-datetimeformat@npm:7.4.10":
+  version: 7.4.10
+  resolution: "@formatjs/intl-datetimeformat@npm:7.4.10"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.6"
-    "@formatjs/intl-localematcher": "npm:0.8.10"
-  checksum: 10/e8739e71f472f1b4beb871c5920b612481c04b440daca01aaadf562b5fdb262e1d40505d767c447595490129ca31b975a1cacb8eef04b50fb307535155f58cae
+    "@formatjs/intl-localematcher": "npm:0.8.11"
+  checksum: 10/67fd55857555fe2651bc8ed5544fb036807d926542c92ccc07e475c14493d93a87d2cc805d04c812c6df68c9fdaeb4d64b399ac019f8c27940e2b872c9837618
   languageName: node
   linkType: hard
 
@@ -2827,15 +2827,6 @@ __metadata:
     "@formatjs/intl-getcanonicallocales": "npm:3.2.10"
     "@formatjs/intl-supportedvaluesof": "npm:2.3.8"
   checksum: 10/e2af858ec3ff75611d5412a1e39abce882eab2cf13eb278e4cd1647481321823cc2303c74e86c38b95662e668f6900f9d666136debb2377231d5ddf0bdba3218
-  languageName: node
-  linkType: hard
-
-"@formatjs/intl-localematcher@npm:0.8.10":
-  version: 0.8.10
-  resolution: "@formatjs/intl-localematcher@npm:0.8.10"
-  dependencies:
-    "@formatjs/fast-memoize": "npm:3.1.6"
-  checksum: 10/d9d3f408363091bf35950a842f58c662d88d9f54d9a53b1238cb673a73d1345412d78e01a2d56ec58cef81b9c66a8ce0ee78ed9c31976bd56dc68a38ef3cbc0f
   languageName: node
   linkType: hard
 
@@ -9745,7 +9736,7 @@ __metadata:
     "@date-fns/tz": "npm:1.5.0"
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
-    "@formatjs/intl-datetimeformat": "npm:7.4.9"
+    "@formatjs/intl-datetimeformat": "npm:7.4.10"
     "@formatjs/intl-displaynames": "npm:7.3.11"
     "@formatjs/intl-durationformat": "npm:0.10.16"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.10"
