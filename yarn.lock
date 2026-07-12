@@ -2785,12 +2785,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-displaynames@npm:7.3.10":
-  version: 7.3.10
-  resolution: "@formatjs/intl-displaynames@npm:7.3.10"
+"@formatjs/intl-displaynames@npm:7.3.11":
+  version: 7.3.11
+  resolution: "@formatjs/intl-displaynames@npm:7.3.11"
   dependencies:
-    "@formatjs/intl-localematcher": "npm:0.8.10"
-  checksum: 10/da8809106f59e42c80d71f64d6965cb0c57daf5309976dedf2516ef1bd57912d46a5076f67f396406056425f42d415d10c6ddf9ed760971b484ac799462eb147
+    "@formatjs/intl-localematcher": "npm:0.8.11"
+  checksum: 10/3278e430d7f2bbb0656f5cf0a76a1a539a572c58f0d2473e2a175bc927de7e3a4a01823c3c98a38dc2878fd05ca3a6ebe83afa94dbd254733fe9195377064347
   languageName: node
   linkType: hard
 
@@ -9746,7 +9746,7 @@ __metadata:
     "@egjs/hammerjs": "npm:2.0.17"
     "@eslint/js": "npm:10.0.1"
     "@formatjs/intl-datetimeformat": "npm:7.4.9"
-    "@formatjs/intl-displaynames": "npm:7.3.10"
+    "@formatjs/intl-displaynames": "npm:7.3.11"
     "@formatjs/intl-durationformat": "npm:0.10.16"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.10"
     "@formatjs/intl-listformat": "npm:8.3.11"
