@@ -2858,13 +2858,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-pluralrules@npm:6.3.10":
-  version: 6.3.10
-  resolution: "@formatjs/intl-pluralrules@npm:6.3.10"
+"@formatjs/intl-pluralrules@npm:6.3.11":
+  version: 6.3.11
+  resolution: "@formatjs/intl-pluralrules@npm:6.3.11"
   dependencies:
     "@formatjs/bigdecimal": "npm:0.2.6"
-    "@formatjs/intl-localematcher": "npm:0.8.10"
-  checksum: 10/88ade192dca87d3efa3367e68efb703495a8fbcca9bd30b0aea62286134407dfffada0adb5125618c157eacd83575ffaf890db478fabd82c3f67f1ea0b5472ab
+    "@formatjs/intl-localematcher": "npm:0.8.11"
+  checksum: 10/c5506c1a20f1aa7fdca24b6800243aec5cbacd5aa0de96d01b497fa9485f6affa7abf6b0d2ea04ebff0ec8a2d22a41913f4353b9fd9c6054899a9f168ef2ebd0
   languageName: node
   linkType: hard
 
@@ -9752,7 +9752,7 @@ __metadata:
     "@formatjs/intl-listformat": "npm:8.3.11"
     "@formatjs/intl-locale": "npm:5.3.9"
     "@formatjs/intl-numberformat": "npm:9.3.11"
-    "@formatjs/intl-pluralrules": "npm:6.3.10"
+    "@formatjs/intl-pluralrules": "npm:6.3.11"
     "@formatjs/intl-relativetimeformat": "npm:12.3.11"
     "@fullcalendar/core": "npm:6.1.21"
     "@fullcalendar/daygrid": "npm:6.1.21"
