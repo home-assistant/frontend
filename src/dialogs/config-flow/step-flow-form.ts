@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,6 +17,10 @@ import type {
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
+import {
+  dirtyStateContext,
+  type DirtyStateContext,
+} from "../../data/context/dirty-state";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import { previewModule } from "../../data/preview";
 import { haStyle } from "../../resources/styles";
@@ -48,6 +53,10 @@ class StepFlowForm extends LitElement {
   @state() private _submitErrors?: Record<string, string>;
 
   @state() private _errorMsg?: string;
+
+  @consume({ context: dirtyStateContext, subscribe: true })
+  @state()
+  private _dirtyState?: DirtyStateContext<Record<string, unknown>, "form">;
 
   private _errors?: Record<string, string>;
 
@@ -150,6 +159,7 @@ class StepFlowForm extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.addEventListener("keydown", this._handleKeyDown);
+    this._dirtyState?.setState(this._stepDataProcessed, "form");
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -303,6 +313,7 @@ class StepFlowForm extends LitElement {
     ev: ValueChangedEvent<Record<string, unknown>>
   ): void {
     this._stepData = ev.detail.value;
+    this._dirtyState?.setState(this._stepData, "form");
   }
 
   private _labelCallback = (field: HaFormSchema, _data, options): string =>
