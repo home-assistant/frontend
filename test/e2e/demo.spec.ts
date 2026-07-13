@@ -16,16 +16,17 @@ import {
 } from "./demo/helpers";
 
 test.describe("Home Assistant Demo", () => {
+  let pageErrors: ReturnType<typeof trackPageErrors>;
+
   test.beforeEach(async ({ page }) => {
+    pageErrors = trackPageErrors(page);
     await page.goto("/");
   });
 
   test("page loads and ha-demo mounts without JS errors", async ({ page }) => {
-    const errors = trackPageErrors(page);
-
     await waitForDemoReady(page);
 
-    expectNoPageErrors(errors);
+    expectNoPageErrors(pageErrors);
   });
 
   test("dashboard renders Lovelace cards", async ({ page }) => {
@@ -37,8 +38,6 @@ test.describe("Home Assistant Demo", () => {
   });
 
   test("sidebar navigation changes the active panel", async ({ page }) => {
-    const errors = trackPageErrors(page);
-
     await waitForDemoReady(page);
     await openDemoSidebar(page);
 
@@ -50,14 +49,12 @@ test.describe("Home Assistant Demo", () => {
     ]);
 
     expect(clicked, "No known sidebar panel was found to click").toBe(true);
-    expectNoPageErrors(errors);
+    expectNoPageErrors(pageErrors);
   });
 
   test("clicking an entity card opens the more-info dialog", async ({
     page,
   }) => {
-    const errors = trackPageErrors(page);
-
     await waitForDemoReady(page);
 
     // Tile cards are the most common card type in the demo; fall back to other
@@ -73,6 +70,6 @@ test.describe("Home Assistant Demo", () => {
       timeout: QUICK_TIMEOUT,
     });
 
-    expectNoPageErrors(errors);
+    expectNoPageErrors(pageErrors);
   });
 });
