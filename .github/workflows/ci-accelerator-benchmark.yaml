@@ -47,7 +47,7 @@ jobs:
             node_modules/.cache/prettier
             node_modules/.cache/eslint
             node_modules/.cache/typescript
-          key: benchmark-baseline-lint-${{ github.run_id }}-${{ github.run_attempt }}
+          key: lint-${{ github.sha }}
           restore-keys: lint-
       - name: Run eslint
         if: matrix.workload == 'lint'
@@ -104,7 +104,7 @@ jobs:
             node_modules/.cache/prettier
             node_modules/.cache/eslint
             node_modules/.cache/typescript
-          key: benchmark-image-lint-${{ github.run_id }}-${{ github.run_attempt }}
+          key: lint-${{ github.sha }}
           restore-keys: lint-
       - name: Run eslint
         if: matrix.workload == 'lint'
