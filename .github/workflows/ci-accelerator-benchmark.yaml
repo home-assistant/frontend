@@ -1,0 +1,126 @@
+name: CI accelerator benchmark
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - workflows-global-build-image
+
+env:
+  NODE_OPTIONS: --max_old_space_size=6144
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    name: Baseline / ${{ matrix.workload }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        workload:
+          - lint
+          - test
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Setup Node and install
+        uses: ./.github/actions/setup
+      - name: Check for duplicate dependencies
+        if: matrix.workload == 'lint'
+        run: yarn dedupe --check
+      - name: Build resources
+        id: build_resources
+        run: >-
+          ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
+          ${{ matrix.workload == 'lint' && 'gather-gallery-pages' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup lint cache
+        if: matrix.workload == 'lint'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            node_modules/.cache/prettier
+            node_modules/.cache/eslint
+            node_modules/.cache/typescript
+          key: benchmark-baseline-lint-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: lint-
+      - name: Run eslint
+        if: matrix.workload == 'lint'
+        run: yarn run lint:eslint --quiet
+      - name: Run tsc
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:types
+      - name: Run lit-analyzer
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:lit --quiet
+      - name: Run prettier
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:prettier
+      - name: Check dependency licenses
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:licenses
+      - name: Run tests
+        if: matrix.workload == 'test'
+        run: yarn run test
+
+  image:
+    name: Image / ${{ matrix.workload }}
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/timmo001/home-assistant-frontend-ci-images/frontend-workflow@sha256:ba6eed31fb0a11f5adcce3b1265b896eb406efc0a7ccf03df9559618c25797fe
+    strategy:
+      fail-fast: false
+      matrix:
+        workload:
+          - lint
+          - test
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install dependencies
+        run: frontend-install
+      - name: Check for duplicate dependencies
+        if: matrix.workload == 'lint'
+        run: yarn dedupe --check
+      - name: Build resources
+        id: build_resources
+        run: >-
+          ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
+          ${{ matrix.workload == 'lint' && 'gather-gallery-pages' || '' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup lint cache
+        if: matrix.workload == 'lint'
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            node_modules/.cache/prettier
+            node_modules/.cache/eslint
+            node_modules/.cache/typescript
+          key: benchmark-image-lint-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: lint-
+      - name: Run eslint
+        if: matrix.workload == 'lint'
+        run: yarn run lint:eslint --quiet
+      - name: Run tsc
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:types
+      - name: Run lit-analyzer
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:lit --quiet
+      - name: Run prettier
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:prettier
+      - name: Check dependency licenses
+        if: matrix.workload == 'lint' && !cancelled() && steps.build_resources.outcome == 'success'
+        run: yarn run lint:licenses
+      - name: Run tests
+        if: matrix.workload == 'test'
+        run: yarn run test
