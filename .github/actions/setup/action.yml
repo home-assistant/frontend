@@ -9,7 +9,7 @@ inputs:
     description: Enable the yarn cache in setup-node
     default: "true"
   node-modules-cache:
-    description: Restore the exact shared node_modules cache instead of installing
+    description: Restore the exact shared node_modules cache before installing
     default: "false"
 
 runs:
@@ -22,18 +22,19 @@ runs:
         cache: ${{ inputs.cache == 'true' && inputs.node-modules-cache != 'true' && 'yarn' || '' }}
 
     - name: Restore complete dependency tree
+      id: dependency-cache
       if: inputs.node-modules-cache == 'true'
+      continue-on-error: true
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: |
           node_modules
           .yarn/install-state.gz
-        fail-on-cache-miss: true
         key: >-
           node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
 
     - name: Install dependencies
-      if: inputs.node-modules-cache != 'true'
+      if: inputs.node-modules-cache != 'true' || steps.dependency-cache.outputs.cache-hit != 'true'
       shell: bash
       run: yarn install ${{ inputs.immutable == 'true' && '--immutable' || '' }}
