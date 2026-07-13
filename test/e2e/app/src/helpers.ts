@@ -127,7 +127,6 @@ export interface RouteSmokeCase {
   name?: string;
   path: string;
   element: string;
-  projects?: string[];
   url?: RegExp;
   action?: (page: Page) => Promise<void>;
 }
@@ -136,7 +135,6 @@ export interface RouteSmokeGroup {
   name: string;
   routes: RouteSmokeCase[];
   testName?: (route: RouteSmokeCase) => string;
-  projects?: string[];
 }
 
 export const routeCase = (path: string, element: string): RouteSmokeCase => ({
@@ -160,14 +158,6 @@ async function assertRouteSmoke(page: Page, route: RouteSmokeCase) {
   });
 }
 
-function shouldRunRouteSmoke(
-  projectName: string,
-  group: RouteSmokeGroup,
-  route: RouteSmokeCase
-) {
-  return (route.projects ?? group.projects)?.includes(projectName) ?? true;
-}
-
 export function defineRouteSmokeTests(groups: RouteSmokeGroup[]) {
   defineParallelSmokeTests({
     groups,
@@ -175,11 +165,7 @@ export function defineRouteSmokeTests(groups: RouteSmokeGroup[]) {
     cases: (group) => group.routes,
     testName: (route, group) =>
       route.name ?? group.testName?.(route) ?? rendersRoute(route),
-    run: async ({ page, testInfo, group, smokeCase }) => {
-      test.skip(
-        !shouldRunRouteSmoke(testInfo.project.name, group, smokeCase),
-        "Route smoke coverage does not run for this project"
-      );
+    run: async ({ page, smokeCase }) => {
       await assertRouteSmoke(page, smokeCase);
     },
   });
