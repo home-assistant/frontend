@@ -20,6 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         workload:
+          - build
           - lint
           - test
     steps:
@@ -33,6 +34,7 @@ jobs:
         if: matrix.workload == 'lint'
         run: yarn dedupe --check
       - name: Build resources
+        if: matrix.workload != 'build'
         id: build_resources
         run: >-
           ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
@@ -67,6 +69,31 @@ jobs:
       - name: Run tests
         if: matrix.workload == 'test'
         run: yarn run test
+      - name: Build Application
+        if: matrix.workload == 'build'
+        uses: ./.github/actions/build
+        with:
+          target: build-app
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
+      - name: Upload bundle stats
+        if: matrix.workload == 'build'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: baseline-frontend-bundle-stats
+          path: build/stats/*.json
+          if-no-files-found: error
+      - name: Check entrypoint bundle size budget
+        if: matrix.workload == 'build'
+        run: yarn run check-bundlesize
+      - name: Upload frontend build
+        if: matrix.workload == 'build'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: baseline-frontend-build
+          path: hass_frontend/
+          if-no-files-found: error
+          retention-days: 7
 
   prepare-dependencies:
     name: Prepare dependencies
@@ -113,6 +140,7 @@ jobs:
       fail-fast: false
       matrix:
         workload:
+          - build
           - lint
           - test
     steps:
@@ -139,6 +167,7 @@ jobs:
         if: matrix.workload == 'lint'
         run: yarn dedupe --check
       - name: Build resources
+        if: matrix.workload != 'build'
         id: build_resources
         run: >-
           ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
@@ -173,3 +202,28 @@ jobs:
       - name: Run tests
         if: matrix.workload == 'test'
         run: yarn run test
+      - name: Build Application
+        if: matrix.workload == 'build'
+        uses: ./.github/actions/build
+        with:
+          target: build-app
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          is-test: true
+      - name: Upload bundle stats
+        if: matrix.workload == 'build'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: shared-cache-frontend-bundle-stats
+          path: build/stats/*.json
+          if-no-files-found: error
+      - name: Check entrypoint bundle size budget
+        if: matrix.workload == 'build'
+        run: yarn run check-bundlesize
+      - name: Upload frontend build
+        if: matrix.workload == 'build'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: shared-cache-frontend-build
+          path: hass_frontend/
+          if-no-files-found: error
+          retention-days: 7
