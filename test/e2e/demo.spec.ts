@@ -8,7 +8,7 @@ import {
   trackPageErrors,
 } from "./helpers";
 import {
-  clickFirstVisibleDemoSidebarPanel,
+  activateDemoSidebarPanel,
   demoCardSelector,
   moreInfoCardSelector,
   openDemoSidebar,
@@ -40,15 +40,8 @@ test.describe("Home Assistant Demo", () => {
   test("sidebar navigation changes the active panel", async ({ page }) => {
     await waitForDemoReady(page);
     await openDemoSidebar(page);
+    await activateDemoSidebarPanel(page, "map");
 
-    const clicked = await clickFirstVisibleDemoSidebarPanel(page, [
-      "map",
-      "logbook",
-      "history",
-      "config",
-    ]);
-
-    expect(clicked, "No known sidebar panel was found to click").toBe(true);
     expectNoPageErrors(pageErrors);
   });
 

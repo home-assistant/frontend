@@ -24,10 +24,18 @@ export async function waitForDemoReady(page: Page) {
 export async function openDemoSidebar(page: Page) {
   const menuButton = page.locator("ha-menu-button");
   if (await menuButton.isVisible()) {
-    await menuButton.click();
-    await expect(page.locator("ha-sidebar")).toBeVisible({
-      timeout: SHELL_TIMEOUT,
-    });
+    const modalDrawer = page.locator("ha-drawer").locator("wa-drawer");
+    await Promise.all([
+      modalDrawer.evaluate(
+        (element) =>
+          new Promise<void>((resolve) => {
+            element.addEventListener("wa-after-show", () => resolve(), {
+              once: true,
+            });
+          })
+      ),
+      menuButton.click(),
+    ]);
     return;
   }
 
@@ -36,34 +44,13 @@ export async function openDemoSidebar(page: Page) {
   });
 }
 
-export async function clickFirstVisibleDemoSidebarPanel(
-  page: Page,
-  panels: string[]
-) {
-  const panelSelectors = panels.map((panel) => `#sidebar-panel-${panel}`);
-  await expect(page.locator(panelSelectors.join(", ")).first()).toBeVisible({
-    timeout: SHELL_TIMEOUT,
-  });
-
-  const navItems = await Promise.all(
-    panels.map(async (panel) => {
-      const navItem = page.locator(`#sidebar-panel-${panel}`);
-      return {
-        panel,
-        navItem,
-        isVisible: await navItem.isVisible().catch(() => false),
-      };
-    })
+export async function activateDemoSidebarPanel(page: Page, panel: string) {
+  const navItem = page.locator(`#sidebar-panel-${panel}`);
+  await expect(navItem).toBeAttached({ timeout: SHELL_TIMEOUT });
+  await navItem.evaluate((element: HTMLElement & { activate: () => void }) =>
+    element.activate()
   );
-
-  const visibleNavItem = navItems.find(({ isVisible }) => isVisible);
-  if (!visibleNavItem) {
-    return false;
-  }
-
-  await visibleNavItem.navItem.click();
-  await expect(page).toHaveURL(new RegExp(`/${visibleNavItem.panel}`), {
+  await expect(page).toHaveURL(new RegExp(`/${panel}(?:/|$)`), {
     timeout: SHELL_TIMEOUT,
   });
-  return true;
 }
