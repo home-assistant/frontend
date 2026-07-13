@@ -20,7 +20,7 @@ import {
   galleryLocator,
   getGalleryDemo,
   goToGalleryHome,
-  GALLERY_IGNORED_PAGE_ERRORS,
+  GALLERY_SHELL_IGNORED_PAGE_ERRORS,
 } from "./gallery/helpers";
 import { componentPages, lovelacePages, moreInfoPages } from "./gallery/pages";
 
@@ -30,7 +30,7 @@ test.describe("Gallery shell", () => {
 
     await goToGalleryHome(page);
 
-    expectNoPageErrors(errors, undefined, GALLERY_IGNORED_PAGE_ERRORS);
+    expectNoPageErrors(errors, undefined, GALLERY_SHELL_IGNORED_PAGE_ERRORS);
   });
 
   test("sidebar renders navigation links", async ({ page }) => {

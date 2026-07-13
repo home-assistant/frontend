@@ -7,9 +7,13 @@ import {
   trackPageErrors,
 } from "../helpers";
 
-export const GALLERY_IGNORED_PAGE_ERRORS: RegExp[] = [
+export const GALLERY_SHELL_IGNORED_PAGE_ERRORS: RegExp[] = [
   /ResizeObserver/,
   /Non-Error/,
+];
+
+export const GALLERY_IGNORED_PAGE_ERRORS: RegExp[] = [
+  ...GALLERY_SHELL_IGNORED_PAGE_ERRORS,
   /Extension context/,
   // Plain objects thrown by mock WebSocket/data-fetch show up as "Object".
   /^Object$/,
