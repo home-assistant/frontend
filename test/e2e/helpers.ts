@@ -1,7 +1,7 @@
 /**
  * Shared helpers and constants for Playwright e2e suites.
  */
-import { expect, test, type Page, type TestInfo } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 // ── Timeouts ────────────────────────────────────────────────────────────────
 // Centralised so tweaks don't require search-and-replace across spec files.
@@ -63,7 +63,6 @@ export interface DefineParallelSmokeTestsOptions<TGroup, TCase> {
   testName: (smokeCase: TCase, group: TGroup) => string;
   run: (context: {
     page: Page;
-    testInfo: TestInfo;
     group: TGroup;
     smokeCase: TCase;
   }) => Promise<void>;
@@ -78,11 +77,9 @@ export function defineParallelSmokeTests<TGroup, TCase>({
 }: DefineParallelSmokeTestsOptions<TGroup, TCase>) {
   for (const group of groups) {
     test.describe(groupName(group), () => {
-      test.describe.configure({ mode: "parallel" });
-
       for (const smokeCase of cases(group)) {
-        test(testName(smokeCase, group), async ({ page }, testInfo) => {
-          await run({ page, testInfo, group, smokeCase });
+        test(testName(smokeCase, group), async ({ page }) => {
+          await run({ page, group, smokeCase });
         });
       }
     });
