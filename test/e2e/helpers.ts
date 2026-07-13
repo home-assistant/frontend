@@ -32,10 +32,7 @@ export function trackPageErrors(page: Page) {
   return errors;
 }
 
-export function pageErrors(
-  errors: PageError[],
-  ignoredErrors = IGNORED_PAGE_ERRORS
-) {
+function pageErrors(errors: PageError[], ignoredErrors = IGNORED_PAGE_ERRORS) {
   return errors
     .map((error) => (typeof error === "string" ? error : error.message))
     .filter((message) =>
