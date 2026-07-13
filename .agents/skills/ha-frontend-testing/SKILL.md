@@ -59,7 +59,7 @@ The custom development wrappers use `/__ha_dev_status` to identify and manage th
 
 Local runs against a watched development server do not always match CI's clean build artifacts, environment, sharding, or worker configuration. Use background servers for the fast iteration loop, but confirm the relevant CI jobs complete successfully before considering E2E changes verified.
 
-Use `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs all three suites. Run suites directly; piping through output truncation hides progress and failures.
+Use `-g "<title>" --project=chromium` to narrow a run. `yarn test:e2e` runs all three suites in parallel when every managed server is available, otherwise it runs them sequentially to prevent cold builds racing over shared generated assets. Run suites directly; piping through output truncation hides progress and failures.
 
 The app suite uses a stripped-down harness for e2e. Demo and gallery use their normal dev servers.
 

@@ -10,12 +10,36 @@
 // Running suites independently avoids the && short-circuit problem where a
 // failing suite skips the remaining suites and their blob reports.
 // Set E2E_WORKERS to a number or percentage to override local workers.
+// Cold local builds run sequentially because suites share generated assets.
 
 import { execFileSync, spawn } from "child_process";
 
 const TRUE_VALUES = new Set(["1", "true", "yes"]);
 
+const SUITE_SERVERS = {
+  demo: { port: 8090, suite: "demo" },
+  app: { port: 8095, suite: "e2e-app" },
+  gallery: { port: 8100, suite: "gallery" },
+};
+
 const isTruthy = (value) => TRUE_VALUES.has(value?.toLowerCase() ?? "");
+
+const hasManagedServer = async (suite) => {
+  const server = SUITE_SERVERS[suite];
+  if (!server) return false;
+
+  try {
+    const response = await fetch(
+      `http://localhost:${server.port}/__ha_dev_status`,
+      { signal: AbortSignal.timeout(1000) }
+    );
+    if (!response.ok) return false;
+    const status = await response.json();
+    return status.server === "ha-frontend-dev" && status.suite === server.suite;
+  } catch {
+    return false;
+  }
+};
 
 const formatDuration = (ms) => {
   const totalSeconds = Math.round(ms / 1000);
@@ -84,7 +108,12 @@ if (!suites.length) {
   process.exit(1);
 }
 
-const sequential = isTruthy(process.env.E2E_SEQUENTIAL);
+const hasAllManagedServers =
+  Boolean(process.env.CI) ||
+  (await Promise.all(suites.map(hasManagedServer))).every(Boolean);
+const sequential =
+  isTruthy(process.env.E2E_SEQUENTIAL) ||
+  (suites.length > 1 && !hasAllManagedServers);
 const skipMerge = isTruthy(process.env.E2E_SKIP_MERGE);
 const suiteWorkers =
   !sequential &&
@@ -100,6 +129,11 @@ const suiteEnv = suiteWorkers
 const results = [];
 
 if (sequential) {
+  if (!isTruthy(process.env.E2E_SEQUENTIAL)) {
+    process.stdout.write(
+      "Running suites sequentially because not all managed dev servers are available.\n"
+    );
+  }
   for (const suite of suites) {
     // eslint-disable-next-line no-await-in-loop
     results.push(await runSuite(suite, suiteEnv));
