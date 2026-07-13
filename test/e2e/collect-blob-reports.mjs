@@ -5,17 +5,17 @@
 // Usage: node test/e2e/collect-blob-reports.mjs
 
 import { cpSync, mkdirSync, readdirSync, rmSync } from "fs";
-import { relative } from "path";
+import { join, relative } from "path";
 
 const findBlobReports = (dir) => {
   const files = [];
   const walk = (currentDir) => {
     for (const entry of readdirSync(currentDir, { withFileTypes: true })) {
-      const path = `${currentDir}/${entry.name}`;
+      const entryPath = join(currentDir, entry.name);
       if (entry.isDirectory()) {
-        walk(path);
+        walk(entryPath);
       } else if (entry.name.endsWith(".zip")) {
-        files.push(path);
+        files.push(entryPath);
       }
     }
   };
@@ -46,6 +46,6 @@ for (const suite of ["demo", "app", "gallery"]) {
   }
   for (const file of files) {
     const name = relative(src, file).replace(/[\\/]/g, "-");
-    cpSync(file, `${dest}/${suite}-${name}`);
+    cpSync(file, join(dest, `${suite}-${name}`));
   }
 }

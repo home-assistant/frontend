@@ -65,7 +65,7 @@ test.describe("App shell", () => {
     await goToPanel(page, "/lovelace");
 
     const historyLink = await ensureAppSidebarPanelVisible(page, "history");
-    await historyLink.click({ force: true });
+    await historyLink.click();
 
     await expect(page).toHaveURL(/\/#\/history$/, { timeout: QUICK_TIMEOUT });
     await expect(

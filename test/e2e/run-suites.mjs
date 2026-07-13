@@ -108,9 +108,9 @@ if (!suites.length) {
   process.exit(1);
 }
 
-const hasAllManagedServers =
-  Boolean(process.env.CI) ||
-  (await Promise.all(suites.map(hasManagedServer))).every(Boolean);
+const hasAllManagedServers = (
+  await Promise.all(suites.map(hasManagedServer))
+).every(Boolean);
 const sequential =
   isTruthy(process.env.E2E_SEQUENTIAL) ||
   (suites.length > 1 && !hasAllManagedServers);
