@@ -72,7 +72,7 @@ jobs:
     name: Image / ${{ matrix.workload }}
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/timmo001/home-assistant-frontend-ci-images/frontend-workflow@sha256:ba6eed31fb0a11f5adcce3b1265b896eb406efc0a7ccf03df9559618c25797fe
+      image: ghcr.io/timmo001/home-assistant-frontend-ci-images/frontend-workflow@sha256:ffa4d621b4495bf456b7ab3c632f550e329fe78c2d571167aa0899a52c4932c3
     strategy:
       fail-fast: false
       matrix:
