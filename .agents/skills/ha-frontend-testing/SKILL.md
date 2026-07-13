@@ -1,11 +1,17 @@
 ---
 name: ha-frontend-testing
-description: Home Assistant frontend validation workflow. Use when running lint, TypeScript checks, Vitest, Playwright e2e suites, dev servers, or chart-data benchmarks.
+description: Home Assistant frontend testing and validation workflow. Use when adding or updating tests, running lint, TypeScript checks, Vitest, Playwright e2e suites, dev servers, or chart-data benchmarks.
 ---
 
 # HA Frontend Testing
 
 Use this skill when choosing or running validation for frontend changes.
+
+## Test Helpers
+
+- Before adding or changing tests, inspect the relevant suite's existing helpers and fixtures. Reuse them instead of duplicating setup, test data, navigation, interactions, waits, or assertions.
+- When the same test flow appears more than once, move it into the closest suite-local helper with a focused interface.
+- Keep one-off test behaviour in the test unless a helper makes the intent materially clearer. Do not hide the behaviour under test behind broad, configurable abstractions.
 
 ## Core Commands
 
