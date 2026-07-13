@@ -41,7 +41,7 @@ test.describe("App shell", () => {
     await expect(page.locator("ha-test")).toBeAttached({
       timeout: QUICK_TIMEOUT,
     });
-    expectNoPageErrors(errors);
+    expectNoPageErrors(errors, undefined, []);
   });
 
   test("sidebar renders with expected panels", async ({ page }) => {
