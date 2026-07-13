@@ -46,10 +46,8 @@ export async function openDemoSidebar(page: Page) {
 
 export async function activateDemoSidebarPanel(page: Page, panel: string) {
   const navItem = page.locator(`#sidebar-panel-${panel}`);
-  await expect(navItem).toBeAttached({ timeout: SHELL_TIMEOUT });
-  await navItem.evaluate((element: HTMLElement & { activate: () => void }) =>
-    element.activate()
-  );
+  await expect(navItem).toBeVisible({ timeout: SHELL_TIMEOUT });
+  await navItem.click();
   await expect(page).toHaveURL(new RegExp(`/${panel}(?:/|$)`), {
     timeout: SHELL_TIMEOUT,
   });
