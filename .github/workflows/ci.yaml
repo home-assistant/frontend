@@ -21,16 +21,52 @@ permissions:
   contents: read
 
 jobs:
-  lint:
-    name: Lint and check format
+  prepare-dependencies:
+    name: Prepare dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
+      - name: Check for complete dependency tree
+        id: dependencies
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            node_modules
+            .yarn/install-state.gz
+          key: >-
+            node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
+            hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
+          lookup-only: true
       - name: Setup Node and install
+        if: steps.dependencies.outputs.cache-hit != 'true'
         uses: ./.github/actions/setup
+        with:
+          cache: false
+      - name: Save complete dependency tree
+        if: steps.dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            node_modules
+            .yarn/install-state.gz
+          key: ${{ steps.dependencies.outputs.cache-primary-key }}
+
+  lint:
+    name: Lint and check format
+    needs: prepare-dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out files from GitHub
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Setup Node with shared dependencies
+        uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
       - name: Check for duplicate dependencies
         run: yarn dedupe --check
       - name: Build resources
@@ -63,14 +99,17 @@ jobs:
         run: yarn run lint:licenses
   test:
     name: Run tests
+    needs: prepare-dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations build-locale-data
         env:
@@ -80,6 +119,7 @@ jobs:
   build:
     name: Build frontend
     needs:
+      - prepare-dependencies
       - lint
       - test
     runs-on: ubuntu-latest
@@ -88,8 +128,10 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - name: Setup Node and install
+      - name: Setup Node with shared dependencies
         uses: ./.github/actions/setup
+        with:
+          node-modules-cache: true
       - name: Build Application
         uses: ./.github/actions/build
         with:

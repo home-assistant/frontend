@@ -8,6 +8,12 @@ inputs:
   cache:
     description: Enable the yarn cache in setup-node
     default: "true"
+  node-modules-cache:
+    description: Restore the exact shared node_modules cache instead of installing
+    default: "false"
+  node-modules-cache-key:
+    description: Prefix for the shared node_modules cache key
+    default: node-modules-v1
 
 runs:
   using: composite
@@ -16,8 +22,21 @@ runs:
       uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
       with:
         node-version-file: ".nvmrc"
-        cache: ${{ inputs.cache == 'true' && 'yarn' || '' }}
+        cache: ${{ inputs.cache == 'true' && inputs.node-modules-cache != 'true' && 'yarn' || '' }}
+
+    - name: Restore complete dependency tree
+      if: inputs.node-modules-cache == 'true'
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          .yarn/install-state.gz
+        fail-on-cache-miss: true
+        key: >-
+          ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
+          hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
 
     - name: Install dependencies
+      if: inputs.node-modules-cache != 'true'
       shell: bash
       run: yarn install ${{ inputs.immutable == 'true' && '--immutable' || '' }}
