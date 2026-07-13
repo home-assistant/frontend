@@ -11,9 +11,6 @@ inputs:
   node-modules-cache:
     description: Restore the exact shared node_modules cache instead of installing
     default: "false"
-  node-modules-cache-key:
-    description: Prefix for the shared node_modules cache key
-    default: node-modules-v1
 
 runs:
   using: composite
@@ -33,7 +30,7 @@ runs:
           .yarn/install-state.gz
         fail-on-cache-miss: true
         key: >-
-          ${{ inputs.node-modules-cache-key }}-${{ runner.os }}-${{ runner.arch }}-${{
+          node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
           hashFiles('.nvmrc', 'package.json', 'yarn.lock', '.yarnrc.yml', '.yarn/releases/**', '.yarn/patches/**') }}
 
     - name: Install dependencies
