@@ -2759,6 +2759,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/fast-memoize@npm:3.1.7":
+  version: 3.1.7
+  resolution: "@formatjs/fast-memoize@npm:3.1.7"
+  checksum: 10/2d7ead48684539764ecb8a52178719169186595e830d9d6941eff12bec1ae31e20642a9cfd197007c48a8cc7e965bf61445ffcccc0fd77281341271d00e7b8fb
+  languageName: node
+  linkType: hard
+
 "@formatjs/icu-messageformat-parser@npm:3.5.13":
   version: 3.5.13
   resolution: "@formatjs/icu-messageformat-parser@npm:3.5.13"
@@ -2811,6 +2818,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/intl-getcanonicallocales@npm:3.2.11":
+  version: 3.2.11
+  resolution: "@formatjs/intl-getcanonicallocales@npm:3.2.11"
+  checksum: 10/3132dba96c7cfe63787e126a91e620211a32fa6a623cb763f96102ff153845fb12486f378aa1d761736a7641adb19f5cc307156c8b7a40eedd00223b87c8d2a9
+  languageName: node
+  linkType: hard
+
 "@formatjs/intl-listformat@npm:8.3.11":
   version: 8.3.11
   resolution: "@formatjs/intl-listformat@npm:8.3.11"
@@ -2820,13 +2834,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-locale@npm:5.3.9":
-  version: 5.3.9
-  resolution: "@formatjs/intl-locale@npm:5.3.9"
+"@formatjs/intl-locale@npm:5.3.10":
+  version: 5.3.10
+  resolution: "@formatjs/intl-locale@npm:5.3.10"
   dependencies:
-    "@formatjs/intl-getcanonicallocales": "npm:3.2.10"
-    "@formatjs/intl-supportedvaluesof": "npm:2.3.8"
-  checksum: 10/e2af858ec3ff75611d5412a1e39abce882eab2cf13eb278e4cd1647481321823cc2303c74e86c38b95662e668f6900f9d666136debb2377231d5ddf0bdba3218
+    "@formatjs/intl-getcanonicallocales": "npm:3.2.11"
+    "@formatjs/intl-supportedvaluesof": "npm:2.3.9"
+  checksum: 10/f7d8be5ea145089b9daa56e24158f835ed0f3d67d3230b42c3a8a32f3dbdd98534236e9262d86f628288d09968fec32d1c2f5906ec1d5f38e692d436a4052255
   languageName: node
   linkType: hard
 
@@ -2868,12 +2882,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-supportedvaluesof@npm:2.3.8":
-  version: 2.3.8
-  resolution: "@formatjs/intl-supportedvaluesof@npm:2.3.8"
+"@formatjs/intl-supportedvaluesof@npm:2.3.9":
+  version: 2.3.9
+  resolution: "@formatjs/intl-supportedvaluesof@npm:2.3.9"
   dependencies:
-    "@formatjs/fast-memoize": "npm:3.1.6"
-  checksum: 10/d9d4e4d5dda1c26c771d0f2746e1031f9695dee663fb2d2ef9f83794c1e8683de88caf6cdb9718022c592cc879c5c1afa7f72af4c77da9ce5e1d98b54267dfff
+    "@formatjs/fast-memoize": "npm:3.1.7"
+  checksum: 10/36254064dd8aab3cb2cbe31db88d751cb0c1d2b0739563ddd1736ed7bd8ec02881de385a69cc4ab7b691f670a3f11ec61a41ba678baa3d0967d87dc0b395cc7b
   languageName: node
   linkType: hard
 
@@ -9741,7 +9755,7 @@ __metadata:
     "@formatjs/intl-durationformat": "npm:0.10.16"
     "@formatjs/intl-getcanonicallocales": "npm:3.2.10"
     "@formatjs/intl-listformat": "npm:8.3.11"
-    "@formatjs/intl-locale": "npm:5.3.9"
+    "@formatjs/intl-locale": "npm:5.3.10"
     "@formatjs/intl-numberformat": "npm:9.3.12"
     "@formatjs/intl-pluralrules": "npm:6.3.11"
     "@formatjs/intl-relativetimeformat": "npm:12.3.11"
