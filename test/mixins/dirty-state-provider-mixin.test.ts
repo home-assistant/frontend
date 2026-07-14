@@ -272,6 +272,30 @@ describe("DirtyStateProviderMixin", () => {
     window.removeEventListener("dirty-state-changed", listener);
   });
 
+  it("hands global dirty state to the next provider after disconnecting", async () => {
+    const firstProvider = await mountProvider();
+    firstProvider.initialize(
+      { type: "shallow" },
+      { name: "Kitchen", enabled: false }
+    );
+    firstProvider.setValue({ name: "Bedroom", enabled: false });
+    await firstProvider.updateComplete;
+    expect(window.isDirtyState).toBe(true);
+
+    firstProvider.remove();
+    expect(window.isDirtyState).toBe(false);
+
+    const nextProvider = await mountProvider();
+    nextProvider.initialize(
+      { type: "shallow" },
+      { name: "Hallway", enabled: false }
+    );
+    nextProvider.setValue({ name: "Hallway", enabled: true });
+    await nextProvider.updateComplete;
+
+    expect(window.isDirtyState).toBe(true);
+  });
+
   it("tracks independent context slices and marks all of them clean", async () => {
     const element = await mountProvider();
     element.initialize({ type: "shallow" });

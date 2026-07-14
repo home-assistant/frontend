@@ -27,6 +27,10 @@ export type CompareStrategy<State> =
  * so independent contributors (e.g. a helper form alongside the entity
  * registry editor) can coexist without overwriting each other.
  *
+ * Only one provider is expected to be connected at a time. A provider must
+ * become clean or disconnect before another provider takes ownership of the
+ * global dirty state.
+ *
  * `isEffectiveDirty` runs the same comparison, but first passes each slice's
  * initial and current value through the optional `effectiveNormalize` function
  * given to `_initDirtyTracking`. Provide a normalizer that collapses values you
