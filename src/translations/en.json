@@ -9160,6 +9160,7 @@
           "assist": "Assist",
           "assist_tooltip": "Assist",
           "search_home_assistant": "Search Home Assistant",
+          "app_configuration": "[%key:ui::sidebar::external_app_configuration%]",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close",

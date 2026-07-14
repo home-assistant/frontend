@@ -1,5 +1,6 @@
 import {
   mdiAccount,
+  mdiCellphoneCog,
   mdiCodeBraces,
   mdiCommentProcessingOutline,
   mdiDevices,
@@ -310,6 +311,17 @@ class HUIRoot extends LitElement {
           this.hass.enableShortcuts && !isMobileClient ? "(A)" : undefined,
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
+        overflow: this.narrow,
+      },
+      {
+        icon: mdiCellphoneCog,
+        key: "ui.panel.lovelace.menu.app_configuration",
+        buttonAction: this._showExternalAppConfiguration,
+        overflowAction: this._showExternalAppConfiguration,
+        visible:
+          !this._editMode &&
+          !this.hass.kioskMode &&
+          !!this.hass.auth.external?.config.hasSettingsScreen,
         overflow: this.narrow,
       },
       {
@@ -886,6 +898,10 @@ class HUIRoot extends LitElement {
 
   private _showQuickBar = () => {
     showQuickBar(this, { showHint: this.hass.enableShortcuts });
+  };
+
+  private _showExternalAppConfiguration = () => {
+    this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
   };
 
   private _goBack(): void {
