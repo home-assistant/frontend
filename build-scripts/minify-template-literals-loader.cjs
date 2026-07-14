@@ -11,19 +11,31 @@
 
 const remapping = require("@ampproject/remapping");
 
-// minify-literals is ESM-only, so load it via dynamic import from this CJS loader.
-let minifyPromise;
-const getMinifier = () => {
-  if (!minifyPromise) {
-    minifyPromise = import("minify-literals").then((m) => m.minifyHTMLLiterals);
+// minify-literals and lightningcss are ESM-only, so load them via dynamic import.
+let loaderInitPromise;
+const initLoader = () => {
+  if (!loaderInitPromise) {
+    loaderInitPromise = Promise.all([
+      import("minify-literals"),
+      import("browserslist"),
+      import("lightningcss"),
+    ]).then(([minifyModule, browserslistModule, lightningcssModule]) => {
+      const browserslist = browserslistModule.default;
+      const { browserslistToTargets } = lightningcssModule;
+      const rawTargets = browserslist();
+      const lightningcssTargets = browserslistToTargets(rawTargets);
+
+      return {
+        minifyHTMLLiterals: minifyModule.minifyHTMLLiterals,
+        lightningcssTargets,
+      };
+    });
   }
-  return minifyPromise;
+  return loaderInitPromise;
 };
 
 // HTML options mirror the previous babel-plugin-template-html-minifier config
-// (html-minifier-next is option-compatible with html-minifier-terser). CSS in
-// css`` templates and inline <style> is handled by minify-literals' lightningcss
-// default.
+// (html-minifier-next is option-compatible with html-minifier-terser).
 //
 // `keepClosingSlash` is required for `svg`` templates: SVG elements such as
 // `<path />` and `<circle />` are not void elements in HTML, so dropping the
@@ -40,11 +52,15 @@ const htmlOptions = {
 
 module.exports = function minifyTemplateLiteralsLoader(source, map, meta) {
   const callback = this.async();
-  getMinifier()
-    .then((minifyHTMLLiterals) =>
+
+  initLoader()
+    .then(({ minifyHTMLLiterals, lightningcssTargets }) =>
       minifyHTMLLiterals(source, {
         fileName: this.resourcePath,
         html: htmlOptions,
+        lightningcss: {
+          targets: lightningcssTargets,
+        },
       })
     )
     .then((result) => {
