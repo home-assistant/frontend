@@ -1,6 +1,5 @@
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
-import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { LocalizeKeys } from "../common/translations/localize";
@@ -138,7 +137,7 @@ class NotificationManager extends LitElement {
     }
     return html`
       <ha-button
-        appearance=${ifDefined(action.primary ? undefined : "plain")}
+        appearance=${action.primary ? "filled" : "plain"}
         size="s"
         slot="action"
         @click=${secondary ? this._secondaryButtonClicked : this._buttonClicked}
