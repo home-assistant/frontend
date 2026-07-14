@@ -41,8 +41,8 @@ describe("Create hassio session", () => {
     global.location = {};
   });
   it("Test fail to create", async () => {
+    // @ts-ignore
     const createSessionPromise = createHassioSession({
-      // @ts-ignore
       callWS: async () => {
         throw new Error("Failed to create session");
       },
