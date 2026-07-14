@@ -18,6 +18,18 @@ export type CompareStrategy<State> =
   | { type: "shallow" }
   | { type: "custom"; compare: (a: State, b: State) => boolean };
 
+const connectedDirtyStateProviders = new Map<object, boolean>();
+
+const publishGlobalDirtyState = (): void => {
+  const isDirty = Array.from(connectedDirtyStateProviders.values()).some(
+    Boolean
+  );
+  if (isDirty !== window.isDirtyState) {
+    window.isDirtyState = isDirty;
+    fireEvent(window, "dirty-state-changed", { isDirty });
+  }
+};
+
 /**
  * Mixin that provides dirty-state tracking via Lit context.
  *
@@ -27,9 +39,8 @@ export type CompareStrategy<State> =
  * so independent contributors (e.g. a helper form alongside the entity
  * registry editor) can coexist without overwriting each other.
  *
- * Only one provider is expected to be connected at a time. A provider must
- * become clean or disconnect before another provider takes ownership of the
- * global dirty state.
+ * Connected providers contribute to the global dirty state. It remains dirty
+ * while any provider has unsaved changes.
  *
  * `isEffectiveDirty` runs the same comparison, but first passes each slice's
  * initial and current value through the optional `effectiveNormalize` function
@@ -123,20 +134,21 @@ export const DirtyStateProviderMixin =
         this._dirtyStateContext = this._buildContextValue();
       }
 
+      public connectedCallback(): void {
+        super.connectedCallback();
+        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        publishGlobalDirtyState();
+      }
+
       protected updated(changedProperties: PropertyValues<this>): void {
         super.updated(changedProperties);
-        const isDirty = this.isDirtyState;
-        if (isDirty !== window.isDirtyState) {
-          window.isDirtyState = isDirty;
-          fireEvent(window, "dirty-state-changed", { isDirty });
-        }
+        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        publishGlobalDirtyState();
       }
 
       public disconnectedCallback(): void {
-        if (window.isDirtyState) {
-          window.isDirtyState = false;
-          fireEvent(window, "dirty-state-changed", { isDirty: false });
-        }
+        connectedDirtyStateProviders.delete(this);
+        publishGlobalDirtyState();
         super.disconnectedCallback();
       }
 

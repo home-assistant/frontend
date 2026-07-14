@@ -68,7 +68,9 @@ const mountProvider = async () => {
 };
 
 afterEach(() => {
-  provider?.remove();
+  document.querySelectorAll("test-dirty-state-provider").forEach((element) => {
+    element.remove();
+  });
   provider = undefined;
   window.isDirtyState = false;
 });
@@ -292,6 +294,52 @@ describe("DirtyStateProviderMixin", () => {
     );
     nextProvider.setValue({ name: "Hallway", enabled: true });
     await nextProvider.updateComplete;
+
+    expect(window.isDirtyState).toBe(true);
+  });
+
+  it("stays globally dirty while any connected provider is dirty", async () => {
+    const dirtyProvider = await mountProvider();
+    dirtyProvider.initialize(
+      { type: "shallow" },
+      { name: "Kitchen", enabled: false }
+    );
+    dirtyProvider.setValue({ name: "Bedroom", enabled: false });
+    await dirtyProvider.updateComplete;
+
+    const cleanProvider = document.createElement("test-dirty-state-provider");
+    document.body.append(cleanProvider);
+    cleanProvider.initialize(
+      { type: "shallow" },
+      { name: "Hallway", enabled: false }
+    );
+    await cleanProvider.updateComplete;
+
+    expect(window.isDirtyState).toBe(true);
+
+    cleanProvider.remove();
+
+    expect(window.isDirtyState).toBe(true);
+
+    dirtyProvider.setValue({ name: "Kitchen", enabled: false });
+    await dirtyProvider.updateComplete;
+
+    expect(window.isDirtyState).toBe(false);
+  });
+
+  it("restores a provider's dirty state after reconnecting", async () => {
+    const element = await mountProvider();
+    element.initialize(
+      { type: "shallow" },
+      { name: "Kitchen", enabled: false }
+    );
+    element.setValue({ name: "Bedroom", enabled: false });
+    await element.updateComplete;
+
+    element.remove();
+    expect(window.isDirtyState).toBe(false);
+
+    document.body.append(element);
 
     expect(window.isDirtyState).toBe(true);
   });
