@@ -3,6 +3,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import {
+  IP_ADDRESS_OR_NETWORK_PATTERN,
+  IP_ADDRESS_PATTERN,
+} from "../../../common/string/is_ip_address";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -10,7 +14,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-form/ha-form";
 import type { HaForm } from "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import { fetchHttpConfig, saveHttpConfig } from "../../../data/http";
+import {
+  fetchHttpConfig,
+  HTTP_CONFIG_FIELDS,
+  saveHttpConfig,
+} from "../../../data/http";
 import type { HttpConfig } from "../../../data/http";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
@@ -23,10 +31,6 @@ const SCHEMA = memoizeOne(
         name: "server_port",
         required: true,
         selector: { number: { min: 1, max: 65535, mode: "box" } },
-      },
-      {
-        name: "server_host",
-        selector: { text: { multiple: true } },
       },
       {
         name: "ssl",
@@ -81,7 +85,15 @@ const SCHEMA = memoizeOne(
           },
           {
             name: "trusted_proxies",
-            selector: { text: { multiple: true } },
+            selector: {
+              text: {
+                multiple: true,
+                pattern: IP_ADDRESS_OR_NETWORK_PATTERN,
+                validation_message: localize(
+                  "ui.panel.config.network.http.invalid_network"
+                ),
+              },
+            },
           },
         ],
       },
@@ -108,6 +120,18 @@ const SCHEMA = memoizeOne(
         flatten: true,
         title: localize("ui.panel.config.network.http.sections.advanced"),
         schema: [
+          {
+            name: "server_host",
+            selector: {
+              text: {
+                multiple: true,
+                pattern: IP_ADDRESS_PATTERN,
+                validation_message: localize(
+                  "ui.panel.config.network.http.invalid_host"
+                ),
+              },
+            },
+          },
           {
             name: "cors_allowed_origins",
             selector: { text: { multiple: true } },
@@ -165,6 +189,9 @@ class HaConfigHttpForm extends LitElement {
 
     const schema = SCHEMA(this.hass.localize);
 
+    const portChanged =
+      !!this._stable && this._config?.server_port !== this._stable.server_port;
+
     return html`
       <ha-card
         outlined
@@ -174,6 +201,17 @@ class HaConfigHttpForm extends LitElement {
           <p class="description">
             ${this.hass.localize("ui.panel.config.network.http.description")}
           </p>
+          ${
+            portChanged
+              ? html`
+                  <ha-alert alert-type="warning">
+                    ${this.hass.localize(
+                      "ui.panel.config.network.http.port_warning"
+                    )}
+                  </ha-alert>
+                `
+              : nothing
+          }
           ${
             this._error
               ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
@@ -318,15 +356,7 @@ class HaConfigHttpForm extends LitElement {
       ) {
         return;
       }
-      // voluptuous formats errors as "<message> @ data['<field>']".
-      // If a field is identified, mark it inline; otherwise show a card-level
-      // alert.
-      const fieldMatch = err.message?.match(/\bdata\['([^']+)'\]/);
-      if (fieldMatch) {
-        this._fieldErrors = { [fieldMatch[1]]: err.message };
-      } else {
-        this._error = err.message;
-      }
+      this._handleSaveError(err);
     } finally {
       this._saving = false;
     }
@@ -338,6 +368,34 @@ class HaConfigHttpForm extends LitElement {
       this._firstAlert ??
       this._form?.shadowRoot?.querySelector<HTMLElement>("ha-alert");
     target?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  private _handleSaveError(err: any): void {
+    const rawMessage =
+      (typeof err === "string" ? err : err?.message) ||
+      this.hass.localize("ui.panel.config.network.http.save_error");
+    // Voluptuous formats validation errors as
+    //   "<reason> @ data['config']['<field>'][<index>]. Got '<value>'"
+    // Strip the internal data path for display and pick the deepest known
+    // field name so it can also be flagged inline.
+    const message =
+      rawMessage.replace(/\s*@\s*data(\['[^']*'\]|\[\d+\])+/g, "").trim() ||
+      rawMessage;
+    const field = [...rawMessage.matchAll(/\['([^']+)'\]/g)]
+      .map((match) => match[1])
+      .reverse()
+      .find((name) => HTTP_CONFIG_FIELDS.includes(name as keyof HttpConfig)) as
+      keyof HttpConfig | undefined;
+
+    if (field) {
+      // Show a card-level alert too — the field may sit in a collapsed section.
+      this._error = `${this.hass.localize(
+        `ui.panel.config.network.http.fields.${field}` as any
+      )}: ${message}`;
+      this._fieldErrors = { [field]: message };
+    } else {
+      this._error = message;
+    }
   }
 
   static get styles(): CSSResultGroup {

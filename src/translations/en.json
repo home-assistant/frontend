@@ -1486,6 +1486,7 @@
         "auto_revert": "Settings will automatically revert in {time}.",
         "reverted": "Home Assistant reverted the HTTP server settings.",
         "changes_label": "Changed settings:",
+        "not_set": "Not set",
         "confirm": "Confirm",
         "revert": "Revert",
         "close": "Close",
@@ -8679,6 +8680,10 @@
             "description": "Configure how Home Assistant serves its web interface. Saving restarts Home Assistant.",
             "save": "Save",
             "save_no_changes": "Nothing changed — no restart needed.",
+            "save_error": "Could not save the HTTP configuration.",
+            "port_warning": "Changing the server port breaks the connection for the Home Assistant mobile apps and other clients until you update the port in their settings.",
+            "invalid_host": "Enter a valid IP address.",
+            "invalid_network": "Enter a valid IP address or network.",
             "save_confirm": {
               "title": "Restart required",
               "text": "Saving will restart Home Assistant to apply the new HTTP settings.",
@@ -8690,7 +8695,7 @@
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
               "ip_banning": "IP banning",
-              "advanced": "Advanced"
+              "advanced": "More options"
             },
             "fields": {
               "server_port": "Server port",
