@@ -1,7 +1,8 @@
 import { provide } from "@lit/context";
 import deepClone from "deep-clone-simple";
-import type { LitElement } from "lit";
+import type { LitElement, PropertyValues } from "lit";
 import { state } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import { shallowEqual } from "../common/util/shallow-equal";
 import {
@@ -116,6 +117,23 @@ export const DirtyStateProviderMixin =
 
       private _publishContext(): void {
         this._dirtyStateContext = this._buildContextValue();
+      }
+
+      protected updated(changedProperties: PropertyValues<this>): void {
+        super.updated(changedProperties);
+        const isDirty = this.isDirtyState;
+        if (isDirty !== window.isDirtyState) {
+          window.isDirtyState = isDirty;
+          fireEvent(window, "dirty-state-changed", { isDirty });
+        }
+      }
+
+      public disconnectedCallback(): void {
+        if (window.isDirtyState) {
+          window.isDirtyState = false;
+          fireEvent(window, "dirty-state-changed", { isDirty: false });
+        }
+        super.disconnectedCallback();
       }
 
       private _writeSlice(key: Key | DefaultDirtyStateKey, value: State): void {
