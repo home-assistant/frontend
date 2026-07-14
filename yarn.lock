@@ -2811,6 +2811,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formatjs/intl-getcanonicallocales@npm:3.2.11":
+  version: 3.2.11
+  resolution: "@formatjs/intl-getcanonicallocales@npm:3.2.11"
+  checksum: 10/3132dba96c7cfe63787e126a91e620211a32fa6a623cb763f96102ff153845fb12486f378aa1d761736a7641adb19f5cc307156c8b7a40eedd00223b87c8d2a9
+  languageName: node
+  linkType: hard
+
 "@formatjs/intl-listformat@npm:8.3.11":
   version: 8.3.11
   resolution: "@formatjs/intl-listformat@npm:8.3.11"
@@ -9739,7 +9746,7 @@ __metadata:
     "@formatjs/intl-datetimeformat": "npm:7.4.10"
     "@formatjs/intl-displaynames": "npm:7.3.11"
     "@formatjs/intl-durationformat": "npm:0.10.16"
-    "@formatjs/intl-getcanonicallocales": "npm:3.2.10"
+    "@formatjs/intl-getcanonicallocales": "npm:3.2.11"
     "@formatjs/intl-listformat": "npm:8.3.11"
     "@formatjs/intl-locale": "npm:5.3.9"
     "@formatjs/intl-numberformat": "npm:9.3.12"
