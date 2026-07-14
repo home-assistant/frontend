@@ -54,7 +54,7 @@
     "@egjs/hammerjs": "2.0.17",
     "@formatjs/intl-datetimeformat": "7.4.10",
     "@formatjs/intl-displaynames": "7.3.11",
-    "@formatjs/intl-durationformat": "0.10.16",
+    "@formatjs/intl-durationformat": "0.10.17",
     "@formatjs/intl-getcanonicallocales": "3.2.10",
     "@formatjs/intl-listformat": "8.3.11",
     "@formatjs/intl-locale": "5.3.9",
