@@ -3,9 +3,8 @@ import { createHassioSession } from "../../src/data/hassio/ingress";
 
 describe("Create hassio session", () => {
   const hass = {
-    config: { version: "1.0.0" },
-    callApi: async () => ({
-      data: { session: "fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh" },
+    callWS: async () => ({
+      session: "fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh",
     }),
   };
 
@@ -44,8 +43,8 @@ describe("Create hassio session", () => {
   it("Test fail to create", async () => {
     const createSessionPromise = createHassioSession({
       // @ts-ignore
-      callApi: async () => {
-        // noop
+      callWS: async () => {
+        throw new Error("Failed to create session");
       },
     }).then(
       () => true,
