@@ -4465,7 +4465,18 @@
           "configure": "Configure",
           "documentation_description": "Find extra information about your device",
           "restart_homeassistant": "[%key:ui::panel::config::system_dashboard::restart_homeassistant%]",
-          "loading_system_data": "Loading processor and memory data..."
+          "loading_system_data": "Loading processor and memory data...",
+          "ssh_authorized_keys": {
+            "title": "SSH access",
+            "description": "Set authorized keys for SSH access to the operating system",
+            "dialog_title": "SSH authorized keys",
+            "dialog_description": "Set the SSH public keys that are authorized to access the Home Assistant Operating System developer SSH service on port 22222. Enter one public key per line.",
+            "replace_warning": "Saving replaces all previously configured authorized keys. Existing keys cannot be shown here.",
+            "keys_label": "Authorized keys",
+            "delete_all_title": "Delete all authorized keys?",
+            "delete_all_text": "You didn't enter any keys. Saving deletes all SSH authorized keys and disables SSH access to the operating system.",
+            "failed_to_save": "Failed to save SSH authorized keys"
+          }
         },
         "info": {
           "caption": "About",

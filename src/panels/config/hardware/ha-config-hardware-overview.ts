@@ -25,8 +25,14 @@ import type {
 } from "../../../data/hardware";
 import { BOARD_NAMES } from "../../../data/hardware";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { HassioHassOSInfo } from "../../../data/hassio/host";
-import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
+import type {
+  HassioHassOSInfo,
+  HassioHostInfo,
+} from "../../../data/hassio/host";
+import {
+  fetchHassioHassOsInfo,
+  fetchHassioHostInfo,
+} from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -38,6 +44,7 @@ import { DefaultPrimaryColor } from "../../../resources/theme/color/color.global
 import type { HomeAssistant, Route } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { hardwareTabs } from "./ha-config-hardware";
+import { showSSHAuthorizedKeysDialog } from "./show-dialog-ssh-authorized-keys";
 
 const DATASAMPLES = 60;
 
@@ -63,6 +70,8 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
   @state() private _error?: string;
 
   @state() private _OSData?: HassioHassOSInfo;
+
+  @state() private _hostInfo?: HassioHostInfo;
 
   @state() private _hardwareInfo?: HardwareInfo;
 
@@ -326,6 +335,28 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                         : nothing
                     }
                     ${
+                      this._hostInfo?.features.includes("haos")
+                        ? html`
+                            <ha-md-list-item
+                              type="button"
+                              @click=${this._showSSHAuthorizedKeysDialog}
+                            >
+                              <span
+                                >${this.hass.localize(
+                                  "ui.panel.config.hardware.ssh_authorized_keys.title"
+                                )}</span
+                              >
+                              <span slot="supporting-text"
+                                >${this.hass.localize(
+                                  "ui.panel.config.hardware.ssh_authorized_keys.description"
+                                )}</span
+                              >
+                              <ha-icon-next slot="end"></ha-icon-next>
+                            </ha-md-list-item>
+                          `
+                        : nothing
+                    }
+                    ${
                       boardConfigEntries.length
                         ? html`<div class="card-actions">
                             <ha-button
@@ -471,6 +502,10 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
       if (isHassioLoaded && !this._hardwareInfo?.hardware.length) {
         this._OSData = await fetchHassioHassOsInfo(this.hass);
       }
+
+      if (isHassioLoaded) {
+        this._hostInfo = await fetchHassioHostInfo(this.hass);
+      }
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
@@ -486,6 +521,10 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
 
   private async _showRestartDialog() {
     showRestartDialog(this);
+  }
+
+  private _showSSHAuthorizedKeysDialog() {
+    showSSHAuthorizedKeysDialog(this);
   }
 
   private _getChartData = memoizeOne(

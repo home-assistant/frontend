@@ -158,6 +158,26 @@ export const changeHostOptions = async (hass: HomeAssistant, options: any) => {
   );
 };
 
+export const setOSSSHAuthorizedKeys = async (
+  hass: HomeAssistant,
+  keys: string[]
+) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/os/ssh/authorized_keys",
+      method: "post",
+      data: { keys },
+    });
+  }
+
+  return hass.callApi<HassioResponse<void>>(
+    "POST",
+    "hassio/os/ssh/authorized_keys",
+    { keys }
+  );
+};
+
 export const moveDatadisk = async (hass: HomeAssistant, device: string) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     return hass.callWS({
