@@ -67,6 +67,7 @@ export class HaPanelLogbook extends LitElement {
         <ha-icon-button
           slot="actionItems"
           @click=${this._resetLogbook}
+          .disabled=${this._isDefaultState()}
           .path=${mdiPlaylistRemove}
           .label=${this.hass.localize("ui.common.reset")}
         ></ha-icon-button>
@@ -237,6 +238,15 @@ export class HaPanelLogbook extends LitElement {
     end.setHours(end.getHours() + 2, 0, 0, 0);
 
     return { range: [start, end] };
+  }
+
+  private _isDefaultState(): boolean {
+    const defaultTime = this._defaultTimeRange();
+    return (
+      Object.keys(this._targetPickerValue).length === 0 &&
+      this._time.range[0].getTime() === defaultTime.range[0].getTime() &&
+      this._time.range[1].getTime() === defaultTime.range[1].getTime()
+    );
   }
 
   private _resetLogbook() {
