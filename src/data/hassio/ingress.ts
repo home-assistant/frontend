@@ -10,7 +10,7 @@ function setIngressCookie(session: string): string {
 }
 
 export const createHassioSession = async (
-  hass: HomeAssistant
+  hass: Pick<HomeAssistant, "callWS">
 ): Promise<string> => {
   const wsResponse: { session: string } = await hass.callWS({
     type: "supervisor/api",
@@ -40,7 +40,7 @@ export const getIngressPanelInfoCollection = (conn: Connection) =>
   );
 
 export const validateHassioSession = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callWS">,
   session: string
 ): Promise<void> => {
   await hass.callWS({

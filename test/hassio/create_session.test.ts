@@ -1,19 +1,19 @@
 import { assert, describe, it } from "vitest";
 import { createHassioSession } from "../../src/data/hassio/ingress";
+import type { HomeAssistant } from "../../src/types";
 
 describe("Create hassio session", () => {
   const hass = {
     callWS: async () => ({
       session: "fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh",
     }),
-  };
+  } as unknown as Pick<HomeAssistant, "callWS">;
 
   it("Test create session without HTTPS", async () => {
     // @ts-ignore
     global.document = {};
     // @ts-ignore
     global.location = {};
-    // @ts-ignore
     await createHassioSession(hass);
     assert.strictEqual(
       // @ts-ignore
@@ -26,7 +26,6 @@ describe("Create hassio session", () => {
     global.document = {};
     // @ts-ignore
     global.location = { protocol: "https:" };
-    // @ts-ignore
     await createHassioSession(hass);
     assert.strictEqual(
       // @ts-ignore
@@ -41,7 +40,6 @@ describe("Create hassio session", () => {
     global.location = {};
   });
   it("Test fail to create", async () => {
-    // @ts-ignore
     const createSessionPromise = createHassioSession({
       callWS: async () => {
         throw new Error("Failed to create session");
