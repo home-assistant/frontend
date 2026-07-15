@@ -16,6 +16,7 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/date-picker/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-target-picker";
@@ -26,6 +27,11 @@ import { resolveEntityIDs } from "../../data/selector";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+
+interface LogbookState {
+  time: { range: [Date, Date] };
+  targetPickerValue: HassServiceTarget;
+}
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -54,7 +60,7 @@ export class HaPanelLogbook extends LitElement {
 
   public constructor() {
     super();
-    this._time = this._defaultTimeRange();
+    this._time = this._defaultState().time;
   }
 
   protected render() {
@@ -230,28 +236,30 @@ export class HaPanelLogbook extends LitElement {
     );
   }
 
-  private _defaultTimeRange(): { range: [Date, Date] } {
+  private _defaultState(): LogbookState {
     const start = new Date();
     start.setHours(start.getHours() - 1, 0, 0, 0);
 
     const end = new Date();
     end.setHours(end.getHours() + 2, 0, 0, 0);
 
-    return { range: [start, end] };
+    return {
+      time: { range: [start, end] },
+      targetPickerValue: {},
+    };
   }
 
   private _isDefaultState(): boolean {
-    const defaultTime = this._defaultTimeRange();
-    return (
-      Object.keys(this._targetPickerValue).length === 0 &&
-      this._time.range[0].getTime() === defaultTime.range[0].getTime() &&
-      this._time.range[1].getTime() === defaultTime.range[1].getTime()
+    return deepEqual(
+      { time: this._time, targetPickerValue: this._targetPickerValue },
+      this._defaultState()
     );
   }
 
   private _resetLogbook() {
-    this._time = this._defaultTimeRange();
-    this._targetPickerValue = {};
+    const defaultState = this._defaultState();
+    this._time = defaultState.time;
+    this._targetPickerValue = defaultState.targetPickerValue;
     this._storedTargetPickerValue = undefined;
     navigate("/logbook", { replace: true });
   }
