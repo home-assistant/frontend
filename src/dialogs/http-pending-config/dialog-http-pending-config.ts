@@ -322,6 +322,8 @@ export class DialogHttpPendingConfig
       ul {
         margin: 0 0 var(--ha-space-4) 0;
         padding-left: var(--ha-space-6);
+        padding-inline-start: var(--ha-space-6);
+        padding-inline-end: initial;
         color: var(--secondary-text-color);
       }
       li {
