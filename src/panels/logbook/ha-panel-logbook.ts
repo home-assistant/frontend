@@ -60,7 +60,7 @@ export class HaPanelLogbook extends LitElement {
 
   public constructor() {
     super();
-    this._time = this._defaultState().time;
+    this._time = this._defaultState.time;
   }
 
   protected render() {
@@ -236,7 +236,7 @@ export class HaPanelLogbook extends LitElement {
     );
   }
 
-  private _defaultState(): LogbookState {
+  private get _defaultState(): LogbookState {
     const start = new Date();
     start.setHours(start.getHours() - 1, 0, 0, 0);
 
@@ -252,12 +252,12 @@ export class HaPanelLogbook extends LitElement {
   private _isDefaultState(): boolean {
     return deepEqual(
       { time: this._time, targetPickerValue: this._targetPickerValue },
-      this._defaultState()
+      this._defaultState
     );
   }
 
   private _resetLogbook() {
-    const defaultState = this._defaultState();
+    const defaultState = this._defaultState;
     this._time = defaultState.time;
     this._targetPickerValue = defaultState.targetPickerValue;
     this._storedTargetPickerValue = undefined;
