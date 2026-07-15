@@ -33,7 +33,12 @@ import {
   TimeZone,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant, Resources, ValuePart } from "../types";
+import type {
+  HomeAssistant,
+  Resources,
+  ThemeSettings,
+  ValuePart,
+} from "../types";
 import { getLocalLanguage, getTranslation } from "../util/common-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
@@ -83,7 +88,10 @@ export interface MockHomeAssistant extends HomeAssistant {
     loader: () => Promise<unknown>
   );
   mockEvent(event);
-  mockTheme(theme: Record<string, string> | null);
+  mockTheme(
+    theme: Record<string, string> | null,
+    selectedTheme?: ThemeSettings
+  );
   formatEntityState(stateObj: HassEntity, state?: string): string;
   formatEntityStateToParts(stateObj: HassEntity, state?: string): ValuePart[];
   formatEntityAttributeValue(
@@ -503,25 +511,33 @@ export const provideHass = (
     },
     mockAPI,
     mockEvent(event) {
-      (eventListeners[event] || []).forEach((fn) => fn(event));
+      (eventListeners[event] || []).forEach((fn) => {
+        fn(event);
+      });
     },
-    mockTheme(theme) {
+    mockTheme(theme, selectedTheme) {
       invalidateThemeCache();
+      const themeName =
+        selectedTheme?.theme || (theme ? "fake-data" : "default");
+      selectedTheme ??= { theme: themeName, dark: false };
+      const darkMode =
+        selectedTheme.dark ??
+        matchMedia("(prefers-color-scheme: dark)").matches;
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default", dark: false },
+        selectedTheme,
         themes: {
           ...hass().themes,
-          themes: {
-            mock: theme as any,
-          },
+          darkMode,
+          theme: themeName,
+          themes: theme ? { [themeName]: theme as any } : {},
         },
       });
-      const { themes, selectedTheme } = hass();
+      const { themes } = hass();
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme!.theme,
-        { dark: false },
+        themeName,
+        { ...selectedTheme, dark: darkMode },
         true
       );
     },
