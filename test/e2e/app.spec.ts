@@ -483,6 +483,7 @@ test.describe("Theming", () => {
       () =>
         (document.querySelector("ha-test") as any)?.hass?.themes?.darkMode ===
         true,
+      undefined,
       { timeout: QUICK_TIMEOUT }
     );
   });
@@ -499,6 +500,7 @@ test.describe("Theming", () => {
         getComputedStyle(document.documentElement)
           .getPropertyValue("--primary-color")
           .trim() !== "",
+      undefined,
       { timeout: QUICK_TIMEOUT }
     );
 

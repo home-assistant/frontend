@@ -41,13 +41,15 @@ export const mockFrontend = (hass: MockHomeAssistant) => {
       });
     }
   });
-  hass.mockWS("frontend/subscribe_user_data", (msg, _hass, onChange) => {
+  hass.mockWS("frontend/subscribe_user_data", (msg, currentHass, onChange) => {
     if (msg.key === "sidebar") {
       sidebarChangeCallback = onChange;
     }
     if (msg.key === "theme") {
       themeChangeCallback = onChange;
-      onChange?.({ value: getDemoTheme() });
+      onChange?.({
+        value: getDemoTheme(currentHass.selectedTheme ?? undefined),
+      });
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       return () => {};
     }
