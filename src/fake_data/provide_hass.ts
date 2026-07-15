@@ -517,9 +517,11 @@ export const provideHass = (
     },
     mockTheme(theme, selectedTheme) {
       invalidateThemeCache();
-      const themeName =
-        selectedTheme?.theme || (theme ? "fake-data" : "default");
-      selectedTheme ??= { theme: themeName, dark: false };
+      selectedTheme ??= {
+        theme: theme ? "fake-data" : "default",
+        dark: false,
+      };
+      const themeName = selectedTheme.theme;
       const darkMode =
         selectedTheme.dark ??
         matchMedia("(prefers-color-scheme: dark)").matches;
