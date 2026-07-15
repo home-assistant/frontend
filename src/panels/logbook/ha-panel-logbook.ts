@@ -1,4 +1,4 @@
-import { mdiPlaylistRemove, mdiRefresh } from "@mdi/js";
+import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -74,7 +74,7 @@ export class HaPanelLogbook extends LitElement {
           slot="actionItems"
           @click=${this._resetLogbook}
           .disabled=${this._isDefaultState()}
-          .path=${mdiPlaylistRemove}
+          .path=${mdiFilterRemove}
           .label=${this.hass.localize("ui.common.reset")}
         ></ha-icon-button>
         <ha-icon-button
