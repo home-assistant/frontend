@@ -1,4 +1,4 @@
-import { mdiRefresh } from "@mdi/js";
+import { mdiPlaylistRemove, mdiRefresh } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -54,14 +54,7 @@ export class HaPanelLogbook extends LitElement {
 
   public constructor() {
     super();
-
-    const start = new Date();
-    start.setHours(start.getHours() - 1, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(end.getHours() + 2, 0, 0, 0);
-
-    this._time = { range: [start, end] };
+    this._time = this._defaultTimeRange();
   }
 
   protected render() {
@@ -71,6 +64,12 @@ export class HaPanelLogbook extends LitElement {
         .backButton=${!!this._showBack}
       >
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._resetLogbook}
+          .path=${mdiPlaylistRemove}
+          .label=${this.hass.localize("ui.common.reset")}
+        ></ha-icon-button>
         <ha-icon-button
           slot="actionItems"
           @click=${this._refreshLogbook}
@@ -228,6 +227,23 @@ export class HaPanelLogbook extends LitElement {
       ),
       { replace: true }
     );
+  }
+
+  private _defaultTimeRange(): { range: [Date, Date] } {
+    const start = new Date();
+    start.setHours(start.getHours() - 1, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(end.getHours() + 2, 0, 0, 0);
+
+    return { range: [start, end] };
+  }
+
+  private _resetLogbook() {
+    this._time = this._defaultTimeRange();
+    this._targetPickerValue = {};
+    this._storedTargetPickerValue = undefined;
+    navigate("/logbook", { replace: true });
   }
 
   private _refreshLogbook() {
