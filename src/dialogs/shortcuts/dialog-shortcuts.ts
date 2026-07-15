@@ -249,6 +249,7 @@ class DialogShortcuts extends DialogMixin(LitElement) {
   static styles = [
     css`
       .shortcut {
+        direction: ltr;
         display: flex;
         flex-direction: row;
         align-items: center;

@@ -1,4 +1,4 @@
-import { mdiRefresh } from "@mdi/js";
+import { mdiFilterRemove, mdiRefresh } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -16,6 +16,7 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/date-picker/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-target-picker";
@@ -26,6 +27,11 @@ import { resolveEntityIDs } from "../../data/selector";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
+
+interface LogbookState {
+  time: { range: [Date, Date] };
+  targetPickerValue: HassServiceTarget;
+}
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -54,14 +60,7 @@ export class HaPanelLogbook extends LitElement {
 
   public constructor() {
     super();
-
-    const start = new Date();
-    start.setHours(start.getHours() - 1, 0, 0, 0);
-
-    const end = new Date();
-    end.setHours(end.getHours() + 2, 0, 0, 0);
-
-    this._time = { range: [start, end] };
+    this._time = this._defaultState.time;
   }
 
   protected render() {
@@ -71,6 +70,13 @@ export class HaPanelLogbook extends LitElement {
         .backButton=${!!this._showBack}
       >
         <div slot="title">${this.hass.localize("panel.logbook")}</div>
+        <ha-icon-button
+          slot="actionItems"
+          @click=${this._resetLogbook}
+          .disabled=${this._isDefaultState()}
+          .path=${mdiFilterRemove}
+          .label=${this.hass.localize("ui.common.reset")}
+        ></ha-icon-button>
         <ha-icon-button
           slot="actionItems"
           @click=${this._refreshLogbook}
@@ -228,6 +234,34 @@ export class HaPanelLogbook extends LitElement {
       ),
       { replace: true }
     );
+  }
+
+  private get _defaultState(): LogbookState {
+    const start = new Date();
+    start.setHours(start.getHours() - 1, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(end.getHours() + 2, 0, 0, 0);
+
+    return {
+      time: { range: [start, end] },
+      targetPickerValue: {},
+    };
+  }
+
+  private _isDefaultState(): boolean {
+    return deepEqual(
+      { time: this._time, targetPickerValue: this._targetPickerValue },
+      this._defaultState
+    );
+  }
+
+  private _resetLogbook() {
+    const defaultState = this._defaultState;
+    this._time = defaultState.time;
+    this._targetPickerValue = defaultState.targetPickerValue;
+    this._storedTargetPickerValue = undefined;
+    navigate("/logbook", { replace: true });
   }
 
   private _refreshLogbook() {
