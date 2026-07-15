@@ -5,7 +5,7 @@ import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
-import { selectedDemoConfig } from "./configs/demo-configs";
+import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
@@ -173,9 +173,7 @@ export class HaDemo extends HomeAssistantAppEl {
     Promise.all([selectedDemoConfig, localizePromise]).then(
       ([conf, localize]) => {
         hass.addEntities(conf.entities(localize));
-        if (conf.theme) {
-          hass.mockTheme(conf.theme());
-        }
+        applyDemoTheme(hass, conf.theme);
       }
     );
 
