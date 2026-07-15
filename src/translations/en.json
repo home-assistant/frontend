@@ -5718,11 +5718,11 @@
                 "device_id": {
                   "label": "Device"
                 },
-                "helpers": {
-                  "label": "Helpers"
+                "generic": {
+                  "label": "Generic"
                 },
-                "other": {
-                  "label": "Other actions"
+                "custom_integrations": {
+                  "label": "Custom integrations"
                 },
                 "building_blocks": {
                   "label": "Building blocks"

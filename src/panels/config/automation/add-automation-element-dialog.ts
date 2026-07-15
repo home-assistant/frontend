@@ -199,6 +199,12 @@ const TIME_LOCATION_GROUPS = ["time", "sun"];
 
 type CollectionGroupType = "helper" | "other" | "dynamic" | "customDynamic";
 
+interface DomainClassificationOptions {
+  type: AddAutomationElementDialogParams["type"];
+  usedDomains?: Set<string>;
+  activeSystemDomains?: Set<string>;
+}
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
   extends KeyboardShortcutMixin(LitElement)
@@ -501,7 +507,9 @@ class DialogAddAutomationElement
   );
 
   private get _systemDomains() {
-    if (!this._manifests) {
+    // System domains are derived from trigger/condition descriptions, so
+    // they don't apply to actions.
+    if (!this._manifests || this._params?.type === "action") {
       return undefined;
     }
     const descriptions =
@@ -1029,7 +1037,6 @@ class DialogAddAutomationElement
                 this._params!.type,
                 this._selectedGroup,
                 this._selectedCollectionIndex ?? 0,
-                this._domains,
                 this.hass.localize,
                 this.hass.services,
                 this._manifests,
@@ -1123,6 +1130,13 @@ class DialogAddAutomationElement
 
       const exclusiveDomains = this._getExclusiveDomains(type);
 
+      const domainList =
+        type === "trigger"
+          ? Object.keys(triggerDescriptions ?? {}).map(getTriggerDomain)
+          : type === "condition"
+            ? Object.keys(conditionDescriptions ?? {}).map(getConditionDomain)
+            : Object.keys(services ?? {});
+
       collections.forEach((collection, index) => {
         let collectionGroups = Object.entries(collection.groups);
         const groups: AddAutomationElementListItem[] = [];
@@ -1141,63 +1155,19 @@ class DialogAddAutomationElement
           types.push("customDynamic");
         }
 
-        if (
-          type === "trigger" &&
-          Object.keys(collection.groups).some((item) =>
-            DYNAMIC_KEYWORDS.includes(item)
-          )
-        ) {
+        if (types.length) {
           groups.push(
-            ...this._triggerGroups(
+            ...this._dynamicDomainGroups(
               localize,
-              triggerDescriptions,
+              domainList,
               manifests,
-              domains,
               types,
-              exclusiveDomains
-            )
-          );
-
-          collectionGroups = collectionGroups.filter(
-            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
-          );
-        } else if (
-          type === "condition" &&
-          Object.keys(collection.groups).some((item) =>
-            DYNAMIC_KEYWORDS.includes(item)
-          )
-        ) {
-          groups.push(
-            ...this._conditionGroups(
-              localize,
-              conditionDescriptions,
-              manifests,
-              domains,
-              types,
-              exclusiveDomains
-            )
-          );
-
-          collectionGroups = collectionGroups.filter(
-            ([key]) => !DYNAMIC_KEYWORDS.includes(key)
-          );
-        } else if (
-          type === "action" &&
-          Object.keys(collection.groups).some((item) =>
-            DYNAMIC_KEYWORDS.includes(item)
-          )
-        ) {
-          groups.push(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              collection.groups.dynamicGroups
-                ? undefined
-                : collection.groups.helpers
-                  ? "helper"
-                  : "other"
+              {
+                type,
+                usedDomains: domains,
+                activeSystemDomains: this._systemDomains?.active,
+                exclusiveDomains,
+              }
             )
           );
 
@@ -1289,7 +1259,6 @@ class DialogAddAutomationElement
       type: AddAutomationElementDialogParams["type"],
       group: string,
       collectionIndex: number,
-      domains: Set<string> | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup,
@@ -1339,144 +1308,72 @@ class DialogAddAutomationElement
         }
       }
 
-      if (type === "action") {
-        if (!this._selectedGroup) {
-          result.unshift(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              undefined
-            )
-          );
-        } else if (this._selectedGroup === "helpers") {
-          result.unshift(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              "helper"
-            )
-          );
-        } else if (this._selectedGroup === "other") {
-          result.unshift(
-            ...this._serviceGroups(
-              localize,
-              services,
-              manifests,
-              domains,
-              "other"
-            )
-          );
-        }
-      }
-
       return result.sort((a, b) =>
         stringCompare(a.name, b.name, this.hass.locale.language)
       );
     }
   );
 
-  private _serviceGroups = (
-    localize: LocalizeFunc,
-    services: HomeAssistant["services"],
-    manifests: DomainManifestLookup | undefined,
-    domains: Set<string> | undefined,
-    type: "helper" | "other" | undefined
-  ): AddAutomationElementListItem[] => {
-    if (!services || !manifests) {
-      return [];
-    }
-    const result: AddAutomationElementListItem[] = [];
-    Object.keys(services).forEach((domain) => {
-      const manifest = manifests[domain];
-      const domainUsed = !domains ? true : domains.has(domain);
-      if (
-        (type === undefined &&
-          (ENTITY_DOMAINS_MAIN.has(domain) ||
-            (manifest?.integration_type === "entity" &&
-              domainUsed &&
-              !ENTITY_DOMAINS_OTHER.has(domain)))) ||
-        (type === "helper" && manifest?.integration_type === "helper") ||
-        (type === "other" &&
-          !ENTITY_DOMAINS_MAIN.has(domain) &&
-          (ENTITY_DOMAINS_OTHER.has(domain) ||
-            (!domainUsed && manifest?.integration_type === "entity") ||
-            !["helper", "entity"].includes(manifest?.integration_type || "")))
-      ) {
-        result.push({
-          icon: html`
-            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
-          `,
-          key: `${DYNAMIC_PREFIX}${domain}`,
-          name: domainToName(localize, domain, manifest),
-          description: "",
-        });
-      }
-    });
-    return result.sort((a, b) =>
-      stringCompare(a.name, b.name, this.hass.locale.language)
-    );
-  };
-
-  private _domainMatchesGroupType(
+  private _classifyDomain(
     domain: string,
     manifest: DomainManifestLookup[string] | undefined,
-    domainUsed: boolean,
-    types: CollectionGroupType[]
-  ): boolean {
-    const matchDynamic =
-      ((types.includes("dynamic") && (!manifest || manifest.is_built_in)) ||
-        (types.includes("customDynamic") &&
-          !(manifest?.is_built_in ?? true))) &&
-      (ENTITY_DOMAINS_MAIN.has(domain) ||
-        (manifest?.integration_type === "entity" &&
-          !ENTITY_DOMAINS_OTHER.has(domain) &&
-          (domainUsed || (this._systemDomains?.active.has(domain) ?? false))) ||
-        (manifest?.integration_type === "system" &&
-          (this._systemDomains?.active.has(domain) ?? false)));
+    options: DomainClassificationOptions
+  ): CollectionGroupType | undefined {
+    if (manifest && !manifest.is_built_in) {
+      return "customDynamic";
+    }
 
-    const matchHelper =
-      types.includes("helper") && manifest?.integration_type === "helper";
+    const domainUsed = !options.usedDomains || options.usedDomains.has(domain);
 
-    const matchOther =
-      types.includes("other") &&
-      !ENTITY_DOMAINS_MAIN.has(domain) &&
-      (ENTITY_DOMAINS_OTHER.has(domain) ||
-        !["helper", "entity", "system"].includes(
-          manifest?.integration_type || ""
-        ));
+    if (
+      ENTITY_DOMAINS_MAIN.has(domain) ||
+      (manifest?.integration_type === "entity" &&
+        !ENTITY_DOMAINS_OTHER.has(domain) &&
+        (domainUsed || (options.activeSystemDomains?.has(domain) ?? false))) ||
+      (manifest?.integration_type === "system" &&
+        (options.activeSystemDomains?.has(domain) ?? false))
+    ) {
+      return "dynamic";
+    }
 
-    return matchDynamic || matchHelper || matchOther;
+    if (manifest?.integration_type === "helper") {
+      return "helper";
+    }
+
+    const hiddenTypes =
+      options.type === "action" ? ["entity"] : ["entity", "system"];
+    if (
+      !ENTITY_DOMAINS_OTHER.has(domain) &&
+      hiddenTypes.includes(manifest?.integration_type || "")
+    ) {
+      return undefined;
+    }
+
+    return "other";
   }
 
-  private _triggerGroups = (
+  private _dynamicDomainGroups = (
     localize: LocalizeFunc,
-    triggers: TriggerDescriptions,
+    domains: string[],
     manifests: DomainManifestLookup | undefined,
-    domains: Set<string> | undefined,
     types: CollectionGroupType[],
-    exclusiveDomains: Set<string>
+    options: DomainClassificationOptions & { exclusiveDomains?: Set<string> }
   ): AddAutomationElementListItem[] => {
-    if (!triggers || !manifests) {
+    if (!manifests) {
       return [];
     }
     const result: AddAutomationElementListItem[] = [];
     const addedDomains = new Set<string>();
-    Object.keys(triggers).forEach((trigger) => {
-      const domain = getTriggerDomain(trigger);
-
-      if (addedDomains.has(domain) || exclusiveDomains.has(domain)) {
+    domains.forEach((domain) => {
+      if (addedDomains.has(domain) || options.exclusiveDomains?.has(domain)) {
         return;
       }
       addedDomains.add(domain);
 
       const manifest = manifests[domain];
-      const domainUsed = !domains ? true : domains.has(domain);
+      const groupType = this._classifyDomain(domain, manifest, options);
 
-      if (this._domainMatchesGroupType(domain, manifest, domainUsed, types)) {
+      if (groupType && types.includes(groupType)) {
         result.push({
           icon: html`
             <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
@@ -1524,46 +1421,6 @@ class DialogAddAutomationElement
       );
     }
   );
-
-  private _conditionGroups = (
-    localize: LocalizeFunc,
-    conditions: ConditionDescriptions,
-    manifests: DomainManifestLookup | undefined,
-    domains: Set<string> | undefined,
-    types: CollectionGroupType[],
-    exclusiveDomains: Set<string>
-  ): AddAutomationElementListItem[] => {
-    if (!conditions || !manifests) {
-      return [];
-    }
-    const result: AddAutomationElementListItem[] = [];
-    const addedDomains = new Set<string>();
-    Object.keys(conditions).forEach((condition) => {
-      const domain = getConditionDomain(condition);
-
-      if (addedDomains.has(domain) || exclusiveDomains.has(domain)) {
-        return;
-      }
-      addedDomains.add(domain);
-
-      const manifest = manifests[domain];
-      const domainUsed = !domains ? true : domains.has(domain);
-
-      if (this._domainMatchesGroupType(domain, manifest, domainUsed, types)) {
-        result.push({
-          icon: html`
-            <ha-domain-icon .domain=${domain} brand-fallback></ha-domain-icon>
-          `,
-          key: `${DYNAMIC_PREFIX}${domain}`,
-          name: domainToName(localize, domain, manifest),
-          description: "",
-        });
-      }
-    });
-    return result.sort((a, b) =>
-      stringCompare(a.name, b.name, this.hass.locale.language)
-    );
-  };
 
   private _conditions = memoizeOne(
     (
@@ -1665,26 +1522,13 @@ class DialogAddAutomationElement
         );
       }
 
-      if (group && !["helpers", "other"].includes(group)) {
+      if (group) {
         return [];
       }
 
       Object.keys(services)
         .sort()
-        .forEach((dmn) => {
-          const manifest = manifests?.[dmn];
-          if (group === "helpers" && manifest?.integration_type !== "helper") {
-            return;
-          }
-          if (
-            group === "other" &&
-            (ENTITY_DOMAINS_OTHER.has(dmn) ||
-              ["helper", "entity"].includes(manifest?.integration_type || ""))
-          ) {
-            return;
-          }
-          addDomain(dmn);
-        });
+        .forEach((dmn) => addDomain(dmn));
 
       return result;
     }
@@ -1695,23 +1539,19 @@ class DialogAddAutomationElement
   );
 
   private _getDomainType(domain: string) {
-    if (
-      ENTITY_DOMAINS_MAIN.has(domain) ||
-      (this._manifests?.[domain]?.integration_type === "entity" &&
-        !ENTITY_DOMAINS_OTHER.has(domain) &&
-        (this._domains?.has(domain) ||
-          (this._systemDomains?.active.has(domain) ?? false)))
-    ) {
+    const groupType = this._classifyDomain(domain, this._manifests?.[domain], {
+      type: this._params!.type,
+      usedDomains: this._domains,
+      activeSystemDomains: this._systemDomains?.active,
+    });
+    if (groupType === "dynamic") {
       return "dynamicGroups";
     }
-    if (this._manifests?.[domain]?.integration_type === "helper") {
+    if (groupType === "helper") {
       return "helpers";
     }
-    if (
-      this._manifests?.[domain]?.integration_type === "system" &&
-      this._systemDomains?.active.has(domain)
-    ) {
-      return "dynamicGroups";
+    if (groupType === "customDynamic") {
+      return "customDynamicGroups";
     }
     return "other";
   }
