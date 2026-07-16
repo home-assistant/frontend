@@ -24,6 +24,7 @@ import { customType } from "../../../../common/structs/is-custom-type";
 import "../../../../components/ha-card";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-selector/ha-selector";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-theme-picker";
 import "../../../../components/input/ha-input";
@@ -181,6 +182,13 @@ const entitiesRowConfigStruct = dynamic<any>((value) => {
   return entitiesConfigStruct;
 });
 
+const COLOR_SELECTOR = {
+  ui_color: {
+    include_state: true,
+    include_none: true,
+  },
+};
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -190,6 +198,7 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     show_header_toggle: optional(boolean()),
     state_color: optional(boolean()),
+    color: optional(string()),
     entities: array(entitiesRowConfigStruct),
     header: optional(headerFooterConfigStructs),
     footer: optional(headerFooterConfigStructs),
@@ -211,9 +220,14 @@ export class HuiEntitiesCardEditor
 
   public setConfig(config: EntitiesCardConfig): void {
     const migratedConfig = migrateEntitiesCardConfig(config);
-    assert(migratedConfig, cardConfigStruct);
-    this._config = migratedConfig;
-    this._configEntities = processEditorEntities(migratedConfig.entities);
+    if (migratedConfig !== config) {
+      fireEvent(this, "config-changed", { config: migratedConfig });
+      return;
+    }
+
+    assert(config, cardConfigStruct);
+    this._config = config;
+    this._configEntities = processEditorEntities(config.entities);
   }
 
   private _showHeaderToggle = memoizeOne((config: EntitiesCardConfig) => {
@@ -285,17 +299,16 @@ export class HuiEntitiesCardEditor
               @change=${this._valueChanged}
             ></ha-switch>
           </ha-formfield>
-          <ha-formfield
+          <ha-selector
+            .hass=${this.hass}
+            .selector=${COLOR_SELECTOR}
             .label=${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.state_color"
+              "ui.panel.lovelace.editor.card.generic.color"
             )}
-          >
-            <ha-switch
-              .checked=${this._config!.state_color}
-              .configValue=${"state_color"}
-              @change=${this._valueChanged}
-            ></ha-switch>
-          </ha-formfield>
+            .value=${this._config!.color}
+            .configValue=${"color"}
+            @value-changed=${this._valueChanged}
+          ></ha-selector>
         </div>
         <hui-header-footer-editor
           .hass=${this.hass}
@@ -331,9 +344,11 @@ export class HuiEntitiesCardEditor
     const configValue =
       target.configValue || this._subElementEditorConfig?.type;
     const value =
-      target.checked !== undefined
-        ? target.checked
-        : target.value || ev.detail.config || ev.detail.value;
+      configValue === "color"
+        ? ev.detail.value
+        : target.checked !== undefined
+          ? target.checked
+          : target.value || ev.detail.config || ev.detail.value;
 
     if (
       (configValue === "title" && target.value === this._title) ||
@@ -359,7 +374,7 @@ export class HuiEntitiesCardEditor
       this._config = { ...this._config!, entities: newConfigEntities };
       this._configEntities = processEditorEntities(this._config!.entities);
     } else if (configValue) {
-      if (value === "") {
+      if (value === "" || value === undefined) {
         this._config = { ...this._config };
         delete this._config[configValue!];
       } else {

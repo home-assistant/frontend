@@ -26,6 +26,7 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
+import { migrateStateColorConfig } from "../common/migrate-state-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -42,21 +43,26 @@ export const migrateGlanceCardConfig = (
     if (typeof e !== "object") {
       return e;
     }
-    if (!("format" in e)) {
-      return e;
+    let newConf = e;
+    if ("format" in e) {
+      const { format, ...rest } = e;
+      newConf = {
+        ...rest,
+        time_format: rest.time_format ?? format,
+      } as GlanceConfigEntity;
     }
-    changed = true;
-    const { format, ...rest } = e;
-    return {
-      ...rest,
-      time_format: rest.time_format ?? format,
-    };
+    newConf = migrateStateColorConfig(newConf);
+    if (newConf !== e) {
+      changed = true;
+    }
+    return newConf;
   });
+  const newConfig = migrateStateColorConfig(config);
   if (!changed) {
-    return config;
+    return newConfig;
   }
   return {
-    ...config,
+    ...newConfig,
     entities: newEntities as (GlanceConfigEntity | string)[],
   };
 };
@@ -111,12 +117,14 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       show_name: true,
       show_state: true,
       show_icon: true,
-      state_color: true,
+      color: "state",
       ...migratedConfig,
     };
+    const cardColor = this._config.color;
     const entities = processConfigEntities(migratedConfig.entities).map(
       (entityConf) => ({
         hold_action: { action: "more-info" } as MoreInfoActionConfig,
+        color: cardColor,
         ...entityConf,
       })
     );
@@ -318,9 +326,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                   .stateObj=${stateObj}
                   .overrideIcon=${entityConf.icon}
                   .overrideImage=${entityConf.image}
-                  .stateColor=${
-                    entityConf.state_color ?? this._config!.state_color
-                  }
+                  .color=${entityConf.color}
                 ></state-badge>
               `
             : ""

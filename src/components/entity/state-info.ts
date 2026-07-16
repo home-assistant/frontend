@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import type { HomeAssistant } from "../../types";
 import "../ha-relative-time";
 import "../ha-tooltip";
@@ -25,8 +26,8 @@ class StateInfo extends LitElement {
 
     return html`<state-badge
         .stateObj=${this.stateObj}
-        .stateColor=${true}
-        .color=${this.color}
+        .stateColor=${!this.color}
+        style=${styleMap({ color: this.color })}
       ></state-badge>
       <div class="info">
         <div class="name ${this.inDialog ? "in-dialog" : ""}" .title=${name}>

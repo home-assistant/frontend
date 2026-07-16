@@ -15,6 +15,7 @@ export const entitiesConfigStruct = union([
     secondary_info: optional(string()),
     time_format: optional(timeFormatConfigStruct),
     state_color: optional(boolean()),
+    color: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),

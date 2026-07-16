@@ -6,8 +6,10 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../common/color/compute-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { stateActive } from "../../common/entity/state_active";
 import {
   stateColorBrightness,
   stateColorCss,
@@ -31,6 +33,8 @@ export class StateBadge extends LitElement {
   // false.  When it is undefined, state is still colored for light entities.
   @property({ attribute: false }) public stateColor?: boolean;
 
+  // "state", "none" or a color (theme color name or CSS color). Custom colors
+  // apply when the entity is active. Takes precedence over stateColor.
   @property() public color?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
@@ -67,11 +71,17 @@ export class StateBadge extends LitElement {
     }
   }
 
-  private get _stateColor() {
+  private get _color(): string | undefined {
+    if (this.color) {
+      return this.color;
+    }
+    if (this.stateColor !== undefined) {
+      return this.stateColor ? "state" : "none";
+    }
     const domain = this.stateObj
       ? computeStateDomain(this.stateObj)
       : undefined;
-    return this.stateColor ?? domain === "light";
+    return domain === "light" ? "state" : undefined;
   }
 
   protected render() {
@@ -147,10 +157,7 @@ export class StateBadge extends LitElement {
           }
           backgroundImage = `url(${imageUrl})`;
           this.icon = false;
-        } else if (this.color) {
-          // Externally provided overriding color wins over state color
-          iconStyle.color = this.color;
-        } else if (this._stateColor) {
+        } else if (this._color === "state") {
           const color = stateColorCss(stateObj);
           if (color) {
             iconStyle.color = color;
@@ -180,6 +187,12 @@ export class StateBadge extends LitElement {
               delete iconStyle.color;
             }
           }
+        } else if (
+          this._color &&
+          this._color !== "none" &&
+          stateActive(stateObj)
+        ) {
+          iconStyle.color = computeCssColor(this._color);
         }
       } else if (this.overrideImage) {
         backgroundImage = `url(${this._resolveImageUrl(this.overrideImage)})`;

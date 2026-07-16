@@ -8,11 +8,13 @@ import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
+import { migrateStateColorConfig } from "../common/migrate-state-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-entities-toggle";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { createRowElement } from "../create-element/create-row-element";
 import type {
+  ConditionalRowConfig,
   EntityConfig,
   LovelaceRow,
   LovelaceRowConfig,
@@ -23,7 +25,7 @@ import type {
   LovelaceGridOptions,
   LovelaceHeaderFooter,
 } from "../types";
-import type { EntitiesCardConfig } from "./types";
+import type { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { haStyleScrollbar } from "../../../resources/styles";
 
 export const computeShowHeaderToggle = <
@@ -49,30 +51,52 @@ export const computeShowHeaderToggle = <
   return !!config.show_header_toggle;
 };
 
+const migrateEntitiesRowConfig = (
+  rowConf: LovelaceRowConfig | string
+): LovelaceRowConfig | string => {
+  if (typeof rowConf !== "object") {
+    return rowConf;
+  }
+  let newConf = rowConf;
+  if ("format" in newConf) {
+    const { format, ...rest } = newConf;
+    newConf = {
+      ...rest,
+      time_format: (rest as EntityConfig).time_format ?? format,
+    } as LovelaceRowConfig;
+  }
+  if (!("type" in newConf)) {
+    newConf = migrateStateColorConfig(newConf as EntitiesCardEntityConfig);
+  } else if (newConf.type === "conditional") {
+    const row = (newConf as ConditionalRowConfig).row;
+    if (row && typeof row === "object" && !("type" in row)) {
+      const newRow = migrateStateColorConfig(row as EntitiesCardEntityConfig);
+      if (newRow !== row) {
+        newConf = { ...newConf, row: newRow } as ConditionalRowConfig;
+      }
+    }
+  }
+  return newConf;
+};
+
 export const migrateEntitiesCardConfig = (
   config: EntitiesCardConfig
 ): EntitiesCardConfig => {
   let changed = false;
   const newEntities = config.entities?.map((e) => {
-    if (typeof e !== "object") {
-      return e;
+    const newConf = migrateEntitiesRowConfig(e);
+    if (newConf !== e) {
+      changed = true;
     }
-    if (!("format" in e)) {
-      return e;
-    }
-    changed = true;
-    const { format, ...rest } = e;
-    return {
-      ...rest,
-      time_format: (rest as EntityConfig).time_format ?? format,
-    };
+    return newConf;
   });
+  const newConfig = migrateStateColorConfig(config);
   if (!changed) {
-    return config;
+    return newConfig;
   }
   return {
-    ...config,
-    entities: newEntities as (LovelaceRowConfig | string)[],
+    ...newConfig,
+    entities: newEntities,
   };
 };
 
@@ -368,13 +392,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   ];
 
   private _renderEntity(entityConf: LovelaceRowConfig): TemplateResult {
+    const cardColor = this._config!.color;
     const element = createRowElement(
       (!("type" in entityConf) || entityConf.type === "conditional") &&
-        "state_color" in this._config!
-        ? ({
-            state_color: this._config.state_color,
-            ...(entityConf as EntityConfig),
-          } as EntityConfig)
+        cardColor !== undefined &&
+        (entityConf as EntitiesCardEntityConfig).color === undefined &&
+        (entityConf as EntitiesCardEntityConfig).state_color === undefined
+        ? ({ ...entityConf, color: cardColor } as EntitiesCardEntityConfig)
         : entityConf.type === "perform-action"
           ? { ...entityConf, type: "call-service" }
           : entityConf
