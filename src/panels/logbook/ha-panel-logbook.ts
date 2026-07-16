@@ -281,7 +281,7 @@ export class HaPanelLogbook extends LitElement {
         csvSafeString(d.attributes?.event_type),
         d.context_id || "",
         d.context_user_id || "",
-        d.context_event_type || "",
+        csvSafeString(d.context_event_type),
         d.context_domain || "",
         d.context_service || "",
         d.context_entity_id || "",
