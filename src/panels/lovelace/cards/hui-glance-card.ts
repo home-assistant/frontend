@@ -31,35 +31,11 @@ import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import { migrateGlanceCardConfig } from "./migrate-card-config";
 import type { GlanceCardConfig, GlanceConfigEntity } from "./types";
 import { TIMESTAMP_STATE_DOMAINS } from "../../../common/const";
 
-export const migrateGlanceCardConfig = (
-  config: GlanceCardConfig
-): GlanceCardConfig => {
-  let changed = false;
-  const newEntities = config.entities?.map((e) => {
-    if (typeof e !== "object") {
-      return e;
-    }
-    if (!("format" in e)) {
-      return e;
-    }
-    changed = true;
-    const { format, ...rest } = e;
-    return {
-      ...rest,
-      time_format: rest.time_format ?? format,
-    };
-  });
-  if (!changed) {
-    return config;
-  }
-  return {
-    ...config,
-    entities: newEntities as (GlanceConfigEntity | string)[],
-  };
-};
+export { migrateGlanceCardConfig };
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
