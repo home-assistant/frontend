@@ -26,6 +26,7 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
+import { applyDefaultColor } from "../common/entity-color-config";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -87,14 +88,19 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       show_name: true,
       show_state: true,
       show_icon: true,
-      state_color: true,
+      color: "state",
       ...migratedConfig,
     };
+    const cardColor = this._config.color;
     const entities = processConfigEntities(migratedConfig.entities).map(
-      (entityConf) => ({
-        hold_action: { action: "more-info" } as MoreInfoActionConfig,
-        ...entityConf,
-      })
+      (entityConf) =>
+        applyDefaultColor(
+          {
+            hold_action: { action: "more-info" } as MoreInfoActionConfig,
+            ...entityConf,
+          },
+          cardColor
+        )
     );
 
     for (const entity of entities) {
@@ -294,9 +300,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                   .stateObj=${stateObj}
                   .overrideIcon=${entityConf.icon}
                   .overrideImage=${entityConf.image}
-                  .stateColor=${
-                    entityConf.state_color ?? this._config!.state_color
-                  }
+                  .color=${entityConf.color}
                 ></state-badge>
               `
             : ""

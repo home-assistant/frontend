@@ -83,6 +83,75 @@ describe("migrateEntitiesCardConfig", () => {
       time_format: "datetime",
     });
   });
+
+  it("migrates card and entity level state_color to color", () => {
+    expect(
+      migrateEntitiesCardConfig({
+        type: "entities",
+        state_color: true,
+        entities: [
+          "light.bed_light",
+          { entity: "switch.ac", state_color: false },
+          {
+            entity: "sensor.humidity",
+            type: "simple-entity",
+            state_color: true,
+          },
+        ],
+      } as unknown as EntitiesCardConfig)
+    ).toEqual({
+      type: "entities",
+      color: "state",
+      entities: [
+        "light.bed_light",
+        { entity: "switch.ac", color: "none" },
+        { entity: "sensor.humidity", type: "simple-entity", color: "state" },
+      ],
+    });
+  });
+
+  it("keeps state_color on custom rows untouched", () => {
+    const customRow = {
+      entity: "sensor.power",
+      type: "custom:multiple-entity-row",
+      state_color: true,
+    };
+    const config = {
+      type: "entities",
+      entities: [customRow],
+    } as unknown as EntitiesCardConfig;
+
+    const result = migrateEntitiesCardConfig(config);
+
+    expect(result).toBe(config);
+    expect(result.entities[0]).toEqual(customRow);
+  });
+
+  it("migrates conditional rows and their inner rows", () => {
+    expect(
+      migrateEntitiesCardConfig({
+        type: "entities",
+        entities: [
+          {
+            type: "conditional",
+            state_color: false,
+            conditions: [],
+            row: { entity: "light.bed_light", state_color: true },
+          },
+        ],
+      } as unknown as EntitiesCardConfig)
+    ).toEqual({
+      type: "entities",
+      entities: [
+        {
+          type: "conditional",
+          color: "none",
+          conditions: [],
+          row: { entity: "light.bed_light", color: "state" },
+        },
+      ],
+    });
+  });
 });
 
 describe("migrateGlanceCardConfig", () => {
@@ -122,6 +191,23 @@ describe("migrateGlanceCardConfig", () => {
     expect(result.entities[0]).toEqual({
       entity: "sensor.x",
       time_format: "datetime",
+    });
+  });
+
+  it("migrates card and entity level state_color to color", () => {
+    expect(
+      migrateGlanceCardConfig({
+        type: "glance",
+        state_color: false,
+        entities: [
+          "light.bed_light",
+          { entity: "switch.ac", state_color: true },
+        ],
+      } as unknown as GlanceCardConfig)
+    ).toEqual({
+      type: "glance",
+      color: "none",
+      entities: ["light.bed_light", { entity: "switch.ac", color: "state" }],
     });
   });
 });
