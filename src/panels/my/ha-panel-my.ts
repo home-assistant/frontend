@@ -608,22 +608,24 @@ class HaPanelMy extends LitElement {
     }
     const resultParams = {};
     for (const [key, type] of Object.entries(this._redirect!.params || {})) {
-      if (!params[key] && type.endsWith("?")) {
+      const value = params[key];
+      if (!value && type.endsWith("?")) {
         continue;
       }
-      if (!params[key] || !this._checkParamType(type, params[key])) {
+      if (!value || !this._checkParamType(type, value)) {
         throw Error();
       }
-      resultParams[key] = params[key];
+      resultParams[key] = value;
     }
     for (const [key, type] of Object.entries(
       this._redirect!.optional_params || {}
     )) {
-      if (params[key]) {
-        if (!this._checkParamType(type, params[key])) {
+      const value = params[key];
+      if (value) {
+        if (!this._checkParamType(type, value)) {
           throw Error();
         }
-        resultParams[key] = params[key];
+        resultParams[key] = value;
       }
     }
     return Object.keys(resultParams).length
@@ -637,11 +639,12 @@ class HaPanelMy extends LitElement {
     }
     const resultParams = {};
     for (const [key, type] of Object.entries(this._redirect!.optional_params)) {
-      if (params[key]) {
-        if (!this._checkParamType(type, params[key])) {
+      const value = params[key];
+      if (value) {
+        if (!this._checkParamType(type, value)) {
           throw Error();
         }
-        resultParams[key] = params[key];
+        resultParams[key] = value;
       }
     }
     return Object.keys(resultParams).length
