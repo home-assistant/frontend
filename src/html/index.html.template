@@ -59,9 +59,6 @@
       #ha-launch-screen.removing {
         opacity: 0;
       }
-      /* Companion apps that render their own loader ask us to keep the launch
-         screen blank, so hide the logo, spinner and badge but keep the
-         background to avoid a flash. */
       #ha-launch-screen.blank > * {
         display: none;
       }

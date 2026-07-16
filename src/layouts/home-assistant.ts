@@ -310,10 +310,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       const { auth, conn } = result;
       this._checkUpdate(conn);
       this.initializeHass(auth, conn);
-      // When running inside a companion app that renders its own loading
-      // screen, keep the frontend launch screen blank to avoid two competing
-      // loaders. The config is only known after the connection is ready, so
-      // clear any loader that was already rendered.
       if (this.hass?.auth.external?.config.hasLoader) {
         this._appHandlesLoader = true;
         blankLaunchScreen();
@@ -379,7 +375,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _renderInitInfo(error: boolean) {
     if (this._appHandlesLoader) {
-      // The companion app displays its own loader; keep ours blank.
       clearLaunchScreenInfoBox();
       return;
     }
