@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { render } from "lit";
+import { nothing, render } from "lit";
 import { parseAnimationDuration } from "../common/util/parse-animation-duration";
 import { withViewTransition } from "../common/util/view-transition";
 
@@ -27,9 +27,21 @@ export const removeLaunchScreen = () => {
   });
 };
 
+export const blankLaunchScreen = () => {
+  const launchScreenElement = document.getElementById("ha-launch-screen");
+  launchScreenElement?.classList.add("blank");
+};
+
 export const renderLaunchScreenInfoBox = (content: TemplateResult) => {
   const infoBoxElement = document.getElementById("ha-launch-screen-info-box");
   if (infoBoxElement) {
     render(content, infoBoxElement);
+  }
+};
+
+export const clearLaunchScreenInfoBox = () => {
+  const infoBoxElement = document.getElementById("ha-launch-screen-info-box");
+  if (infoBoxElement) {
+    render(nothing, infoBoxElement);
   }
 };

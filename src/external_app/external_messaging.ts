@@ -366,6 +366,7 @@ export interface ExternalConfig {
   appVersion?: string;
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
+  hasLoader?: boolean; // App renders its own loading screen, so the frontend launch screen stays blank
 }
 
 export interface ExternalEntityAddToAction {
