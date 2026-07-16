@@ -146,7 +146,7 @@
     "@bundle-stats/plugin-webpack-filter": "4.22.2",
     "@eslint/js": "10.0.1",
     "@html-eslint/eslint-plugin": "0.64.0",
-    "@lokalise/node-api": "16.0.0",
+    "@lokalise/node-api": "16.1.0",
     "@octokit/auth-oauth-device": "8.0.3",
     "@octokit/plugin-retry": "8.1.0",
     "@octokit/rest": "22.0.1",
