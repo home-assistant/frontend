@@ -37,6 +37,7 @@ const isWsl =
  *   listenHost?: string,
  *   open?: boolean,
  *   logUrlAfterFirstBuild?: boolean,
+ *   suite?: string,
  * }}
  */
 const runDevServer = async ({
@@ -47,6 +48,7 @@ const runDevServer = async ({
   open = true,
   logUrlAfterFirstBuild = false,
   proxy = undefined,
+  suite = undefined,
 }) => {
   if (listenHost === undefined) {
     // For dev container, we need to listen on all hosts
@@ -80,6 +82,19 @@ const runDevServer = async ({
           runtimeErrors: (error) =>
             !error?.message?.includes("ResizeObserver loop"),
         },
+      },
+      setupMiddlewares: (middlewares) => {
+        // Status endpoint so the dev-server manager can confirm this is our
+        // server for the expected suite. Unshifted to beat the static handler.
+        middlewares.unshift({
+          name: "ha-dev-status",
+          path: "/__ha_dev_status",
+          middleware: (_req, res) => {
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ server: "ha-frontend-dev", suite, port }));
+          },
+        });
+        return middlewares;
       },
       proxy,
     },
@@ -152,6 +167,8 @@ gulp.task("rspack-dev-server-demo", () =>
     ),
     contentBase: paths.demo_output_root,
     port: 8090,
+    open: false,
+    suite: "demo",
   })
 );
 
@@ -173,6 +190,7 @@ gulp.task("rspack-dev-server-cast", () =>
     port: 8080,
     // Accessible from the network, because that's how Cast hits it.
     listenHost: "0.0.0.0",
+    suite: "cast",
   })
 );
 
@@ -194,6 +212,7 @@ gulp.task("rspack-dev-server-gallery", () =>
     listenHost: "0.0.0.0",
     open: false,
     logUrlAfterFirstBuild: true,
+    suite: "gallery",
   })
 );
 
@@ -241,6 +260,7 @@ gulp.task("rspack-dev-server-e2e-test-app", () =>
     contentBase: paths.e2eTestApp_output_root,
     port: 8095,
     open: false,
+    suite: "e2e-app",
   })
 );
 

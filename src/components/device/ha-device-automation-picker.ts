@@ -1,3 +1,4 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { consume } from "@lit/context";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -15,7 +16,12 @@ import {
 } from "../../data/device/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { CallWS, HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-combo-box-item";
 import "../ha-generic-picker";
+import {
+  DEFAULT_ROW_RENDERER_CONTENT,
+  type PickerComboBoxItem,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -105,6 +111,7 @@ export abstract class HaDeviceAutomationPicker<
       .disabled=${!this._automations || this._automations.length === 0}
       .getItems=${this._getItems(value, this._automations)}
       @value-changed=${this._automationChanged}
+      .rowRenderer=${this._rowRenderer}
       .valueRenderer=${this._valueRenderer}
       .unknownItemText=${this.hass.localize(
         "ui.panel.config.devices.automation.actions.unknown_action"
@@ -159,6 +166,13 @@ export abstract class HaDeviceAutomationPicker<
       return () => automationListItems;
     }
   );
+
+  // Device automation labels (entity name + subtype) are often longer than the
+  // field, so let the option wrap onto multiple lines instead of truncating.
+  private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
+    html`<ha-combo-box-item type="button" compact multiline>
+      ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+    </ha-combo-box-item>`;
 
   private _valueRenderer: PickerValueRenderer = (value: string) => {
     const automation = this._automations?.find(

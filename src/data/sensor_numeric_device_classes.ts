@@ -42,6 +42,7 @@ export const SENSOR_NUMERIC_DEVICE_CLASSES: string[] = [
   "precipitation",
   "precipitation_intensity",
   "pressure",
+  "radon",
   "reactive_energy",
   "reactive_power",
   "signal_strength",

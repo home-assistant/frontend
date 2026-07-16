@@ -1,7 +1,16 @@
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import type { Lovelace } from "../../../src/panels/lovelace/types";
 import { energyEntities } from "../stubs/entities";
-import type { DemoConfig } from "./types";
+import { getDemoTheme } from "../stubs/frontend";
+import type { DemoConfig, DemoTheme } from "./types";
+
+export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
+  if (typeof theme === "function") {
+    hass.mockTheme(theme());
+    return;
+  }
+  hass.mockTheme(null, getDemoTheme(theme));
+};
 
 export const demoConfigs: (() => Promise<DemoConfig>)[] = [
   () => import("./sections").then((mod) => mod.demoSections),
@@ -31,5 +40,5 @@ export const setDemoConfig = async (
   hass.addEntities(config.entities(hass.localize), true);
   hass.addEntities(energyEntities());
   lovelace.saveConfig(config.lovelace(hass.localize));
-  hass.mockTheme(config.theme());
+  applyDemoTheme(hass, config.theme);
 };

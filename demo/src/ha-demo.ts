@@ -5,7 +5,7 @@ import type { MockHomeAssistant } from "../../src/fake_data/provide_hass";
 import { provideHass } from "../../src/fake_data/provide_hass";
 import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
 import type { HomeAssistant } from "../../src/types";
-import { selectedDemoConfig } from "./configs/demo-configs";
+import { applyDemoTheme, selectedDemoConfig } from "./configs/demo-configs";
 import { mockAreaRegistry } from "./stubs/area_registry";
 import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
@@ -29,11 +29,13 @@ import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
+import "./cloud/cloud-demo-controls";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
 // config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
 const CONFIG_PANEL_COMMANDS = [
   "cloud/",
+  "webhook/list",
   "validate_config",
   "config_entries/",
   "device_automation/",
@@ -69,6 +71,22 @@ export class HaDemo extends HomeAssistantAppEl {
     // `false` for contexts: HomeAssistantAppEl already provides them via
     // `contextMixin`, so let provideHass skip them to avoid duplicate providers.
     const hass = provideHass(this, initial, true, false);
+
+    // The cloud account page only fetches backup config and the webhook count
+    // when those integrations are loaded. Enable them here (demo only) so the
+    // mocked backup/config/info and webhook/list are queried.
+    hass.updateHass({
+      config: {
+        ...hass.config,
+        components: [...(hass.config?.components ?? []), "backup", "webhook"],
+      },
+    });
+
+    // Demo-only floating panel to flip the mocked cloud state. Mounted once at
+    // the document level; it shows itself only on the cloud panel.
+    if (!document.querySelector("cloud-demo-controls")) {
+      document.body.appendChild(document.createElement("cloud-demo-controls"));
+    }
     const localizePromise =
       // @ts-ignore
       this._loadFragmentTranslations(hass.language, "page-demo").then(
@@ -155,9 +173,7 @@ export class HaDemo extends HomeAssistantAppEl {
     Promise.all([selectedDemoConfig, localizePromise]).then(
       ([conf, localize]) => {
         hass.addEntities(conf.entities(localize));
-        if (conf.theme) {
-          hass.mockTheme(conf.theme());
-        }
+        applyDemoTheme(hass, conf.theme);
       }
     );
 

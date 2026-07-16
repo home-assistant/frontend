@@ -137,6 +137,9 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     ha-slider {
       width: 100%;
       max-width: 200px;
+      /* Horizontal margin leaves room for the thumb at min and max so it
+         isn't clipped by the card's overflow-x: hidden. */
+      margin: 1px var(--ha-space-2);
     }
   `;
 

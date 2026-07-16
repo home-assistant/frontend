@@ -18,6 +18,7 @@ import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/list/ha-list-base";
 import type { BackupConfig, BackupContent } from "../../../../../data/backup";
 import {
+  BACKUP_OVERDUE_MARGIN_HOURS,
   BackupScheduleRecurrence,
   getFormattedBackupTime,
 } from "../../../../../data/backup";
@@ -25,8 +26,6 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showAlertDialog } from "../../../../lovelace/custom-card-helpers";
 import "../ha-backup-summary-card";
-
-const OVERDUE_MARGIN_HOURS = 3;
 
 @customElement("ha-backup-overview-summary")
 class HaBackupOverviewBackups extends LitElement {
@@ -74,26 +73,33 @@ class HaBackupOverviewBackups extends LitElement {
           </ha-list-item-base>
           ${
             description || description === null
-              ? html`<ha-list-item-base>
-                  <ha-svg-icon slot="start" .path=${mdiCalendar}></ha-svg-icon>
-                  <span
-                    slot="headline"
-                    class=${description === null ? "skeleton" : ""}
-                    >${description}</span
-                  >
+              ? html`
+                  <ha-list-item-base>
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiCalendar}
+                    ></ha-svg-icon>
+                    <span
+                      slot="headline"
+                      class=${description === null ? "skeleton" : ""}
+                      >${description}</span
+                    >
 
-                  ${
-                    lastCompletedDate
-                      ? html` <ha-icon-button
-                          slot="end"
-                          @click=${this._createAdditionalBackupDescription(
-                            lastCompletedDate
-                          )}
-                          .path=${mdiInformationOutline}
-                        ></ha-icon-button>`
-                      : nothing
-                  }
-                </ha-list-item-base>`
+                    ${
+                      lastCompletedDate
+                        ? html`
+                            <ha-icon-button
+                              slot="end"
+                              @click=${this._createAdditionalBackupDescription(
+                                lastCompletedDate
+                              )}
+                              .path=${mdiInformationOutline}
+                            ></ha-icon-button>
+                          `
+                        : nothing
+                    }
+                  </ha-list-item-base>
+                `
               : nothing
           }
         </ha-list-base>
@@ -293,7 +299,7 @@ class HaBackupOverviewBackups extends LitElement {
 
     const numberOfDays = differenceInDays(
       // Subtract a few hours to avoid showing as overdue if it's just a few hours (e.g. daylight saving)
-      addHours(now, -OVERDUE_MARGIN_HOURS),
+      addHours(now, -BACKUP_OVERDUE_MARGIN_HOURS),
       lastBackupDate
     );
 

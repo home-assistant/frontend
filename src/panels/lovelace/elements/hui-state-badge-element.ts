@@ -16,7 +16,11 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import "../components/hui-warning-element";
 import type { LovelacePictureElementEditor } from "../types";
-import type { LovelaceElement, StateBadgeElementConfig } from "./types";
+import type {
+  LovelaceElement,
+  LovelaceElementHitInfo,
+  StateBadgeElementConfig,
+} from "./types";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement
@@ -51,7 +55,35 @@ export class HuiStateBadgeElement
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  // Pointer gestures are delegated to the picture-elements card's routing;
+  // this element keeps keyboard activation (see LovelaceElement).
+  public delegatedActions = false;
+
   @state() private _config?: StateBadgeElementConfig;
+
+  public constructor() {
+    super();
+    // Listen on the host so both the own (keyboard) gesture path and an
+    // action delegated by the picture-elements card land here.
+    this.addEventListener("action", (ev) =>
+      this._handleAction(ev as ActionHandlerEvent)
+    );
+  }
+
+  public getHitInfo(): LovelaceElementHitInfo | null {
+    if (!this._config || !this.hass?.states[this._config.entity!]) {
+      return null;
+    }
+    const options = {
+      hasTap: hasAction(this._config.tap_action),
+      hasHold: hasAction(this._config.hold_action),
+      hasDoubleClick: hasAction(this._config.double_tap_action),
+    };
+    if (!options.hasTap && !options.hasHold && !options.hasDoubleClick) {
+      return null;
+    }
+    return { rect: this.getBoundingClientRect(), options };
+  }
 
   public setConfig(config: StateBadgeElementConfig): void {
     if (!config.entity) {
@@ -102,10 +134,10 @@ export class HuiStateBadgeElement
               : this._config.title
         }
         show-name
-        @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
+          keyboardOnly: this.delegatedActions || undefined,
         })}
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined

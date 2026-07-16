@@ -19,7 +19,6 @@ import {
   DEFAULT_CREDENTIAL_MIN_LENGTH,
   ENTERABLE_ZWAVE_CREDENTIAL_TYPES,
   deleteZwaveCredential,
-  deleteZwaveUser,
   enterableCredentialTypes,
   getCredentialError,
   compatibleUserTypes,
@@ -539,27 +538,16 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
     credentialType: ZwaveCredentialType
   ): Promise<void> {
     const params = this._params!;
-    const { user_id } = await setZwaveUser(this.hass, params.entity_id, {
-      user_name: this._supportsUserNames ? this._userName.trim() : undefined,
-      user_type: this._userType,
-      active: true,
-    });
-
     try {
-      await setZwaveCredential(this.hass, params.entity_id, {
-        user_id,
+      await setZwaveUser(this.hass, params.entity_id, {
+        // Omit user_id to create a new user with the given credential.
+        user_name: this._supportsUserNames ? this._userName.trim() : undefined,
+        user_type: this._userType,
+        active: true,
         credential_type: credentialType,
         credential_data: this._credentialData,
       });
     } catch (err: unknown) {
-      // Roll back the user so the lock returns to its prior state. We
-      // ignore rollback errors — the credential error is the actionable
-      // one to surface; a stranded user will reappear on next refresh.
-      try {
-        await deleteZwaveUser(this.hass, params.entity_id, user_id);
-      } catch {
-        // Ignore.
-      }
       this._error = this.hass.localize(
         "ui.panel.config.zwave_js.credentials.errors.add_user_failed",
         {
