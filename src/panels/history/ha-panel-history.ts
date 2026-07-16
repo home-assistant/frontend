@@ -49,8 +49,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
+import { csvSafeString, csvDownload } from "../../util/csv";
 
 @customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
@@ -449,8 +449,8 @@ class HaPanelHistory extends LitElement {
       return;
     }
 
-    const csv: string[] = [""]; // headers will be replaced later.
     const headers = ["entity_id", "state", "last_changed"];
+    const csv: string[][] = [[]]; // headers will be replaced later.
     const processedDomainAttributes = new Set<string>();
     const domainAttributes: Record<string, Record<string, number>> = {
       climate: {
@@ -492,7 +492,7 @@ class HaPanelHistory extends LitElement {
 
         if (entity.statistics) {
           for (const s of entity.statistics) {
-            csv.push(`${entityId},${s.state},${formatDate(s.last_changed)}\n`);
+            csv.push([entityId, s.state, formatDate(s.last_changed)]);
           }
         }
 
@@ -509,25 +509,22 @@ class HaPanelHistory extends LitElement {
             }
           }
 
-          csv.push(data.join(",") + "\n");
+          csv.push(data);
         }
       }
     }
     for (const timeline of this._mungedStateHistory.timeline) {
       const entityId = timeline.entity_id;
       for (const s of timeline.data) {
-        const safeState = /,|"/.test(s.state)
-          ? `"${s.state.replaceAll('"', '""')}"`
-          : s.state;
-        csv.push(`${entityId},${safeState},${formatDate(s.last_changed)}\n`);
+        csv.push([
+          entityId,
+          csvSafeString(s.state),
+          formatDate(s.last_changed),
+        ]);
       }
     }
-    csv[0] = headers.join(",") + "\n";
-    const blob = new Blob(csv, {
-      type: "text/csv",
-    });
-    const url = window.URL.createObjectURL(blob);
-    fileDownload(url, "history.csv");
+    csv[0] = headers;
+    csvDownload(csv, "history.csv");
   }
 
   private _suggestCard() {

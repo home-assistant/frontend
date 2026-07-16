@@ -4,6 +4,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fromUnixTime } from "date-fns";
 import { storage } from "../../common/decorators/storage";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -26,8 +27,8 @@ import { resolveEntityIDs } from "../../data/selector";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook";
-import { fileDownload } from "../../util/file_download";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { csvDownload, csvSafeString } from "../../util/csv";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -269,39 +270,26 @@ export class HaPanelLogbook extends LitElement {
       "context_state",
       "context_source",
     ];
-    const csv: string[] = [headers.join(",").concat("\n")];
-
-    function safeState(s: string | undefined): string {
-      if (!s) return "";
-      return /,|"/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
-    }
+    const csv: string[][] = [headers];
 
     for (const d of data) {
-      const time = new Date(d.when * 1000).toISOString();
-      csv.push(
-        [
-          time,
-          d.entity_id || "",
-          safeState(d.state),
-          d.attributes?.event_type || "",
-          d.context_id || "",
-          d.context_user_id || "",
-          d.context_event_type || "",
-          d.context_domain || "",
-          d.context_service || "",
-          d.context_entity_id || "",
-          safeState(d.context_state),
-          d.context_source || "",
-        ]
-          .join(",")
-          .concat("\n")
-      );
+      const time = fromUnixTime(d.when).toISOString();
+      csv.push([
+        time,
+        d.entity_id || "",
+        csvSafeString(d.state),
+        csvSafeString(d.attributes?.event_type),
+        d.context_id || "",
+        d.context_user_id || "",
+        d.context_event_type || "",
+        d.context_domain || "",
+        d.context_service || "",
+        d.context_entity_id || "",
+        csvSafeString(d.context_state),
+        d.context_source || "",
+      ]);
     }
-    const blob = new Blob(csv, {
-      type: "text/csv",
-    });
-    const url = window.URL.createObjectURL(blob);
-    fileDownload(url, "activity.csv");
+    csvDownload(csv, "activity.csv");
   }
 
   static get styles() {
